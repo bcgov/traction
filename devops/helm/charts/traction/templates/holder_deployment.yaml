@@ -57,6 +57,8 @@ spec:
               value: {{ .Values.postgresql.service.port | quote }}
             - name: POSTGRESQL_USER
               value: {{ .Values.postgresql.postgresqlUsername }}
+            - name: POSTGRESQL_DB
+              value: {{ .Values.postgresql.postgresqlDatabase }}
           resources:
             {{- toYaml .Values.holder.resources | nindent 12 }}
       {{- with .Values.holder.nodeSelector }}
