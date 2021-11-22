@@ -1,0 +1,23 @@
+apiVersion: v2
+name: traction
+description:
+type: application
+
+version: 0.0.0
+appVersion: 
+
+home: "https://github.com/hyperledger-labs/business-partner-agent-chart"
+sources: ["https://github.com/hyperledger-labs/business-partner-agent-chart"]
+engine: gotpl
+maintainers:
+  - email: jsherman@parcsystems.ca
+    name: parc-jason
+    url: https://github.com/parc-jason
+  - email: jason.syrotuck@nttdata.com
+    name: Jsyro
+    url: https://github.com/Jsyro
+dependencies:
+  - name: postgresql
+    version: 10.3.13
+    repository: https://charts.bitnami.com/bitnami/
+    condition: persistence.deployPostgres
