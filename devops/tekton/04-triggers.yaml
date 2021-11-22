@@ -17,7 +17,7 @@ spec:
               - pull_request
             secretRef:
               secretKey: secretToken
-              secretName: traction-gh-secret
+              secretName: devops-traction-gh-secret
         - cel:
             filter: 'body.action in [''opened'', ''synchronize'', ''reopened'']'
       name: traction-gh-listener
