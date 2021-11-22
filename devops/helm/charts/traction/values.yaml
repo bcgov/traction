@@ -210,17 +210,17 @@ postgresql:
   service:
     port: 5432
 
+  # --  PostgreSQL Password for postgres user
+  postgresqlPostgresPassword: change-me
+  
   # --  PostgreSQL User to create. Do not change - otherwise non-admin user is created!
-  postgresqlUsername: postgres
-
+  postgresqlUsername: tractionuser
   # --  PostgreSQL Password for the new user. If not set, a random 10 characters password will be used.
-  postgresqlPassword: change-me
-
+  postgresqlPassword: transactionPass
   # -- PostgreSQL Database to create.
   postgresqlDatabase: traction
   initdbScripts:
     setup.sql: |
-      CREATE USER tractionuser PASSWORD 'transactionPass';
       CREATE USER holderuser PASSWORD 'holderPass'; 
       CREATE USER verifieruser PASSWORD 'verifierPass';
       \connect traction;
@@ -228,7 +228,6 @@ postgresql:
       CREATE SCHEMA IF NOT EXISTS verifier AUTHORIZATION verifieruser;
       GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA holder TO holderuser;
       GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA verifier TO verifieruser;
-      GRANT ALL ON ALL TABLES TO tractionuser;
 
   # --  Persistent Volume Storage configuration. ref: https://kubernetes.io/docs/user-guide/persistent-volumes
   persistence:
