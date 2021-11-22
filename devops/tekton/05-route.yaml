@@ -1,0 +1,14 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: traction-gh-listener
+spec:
+  host: traction-gh-listener-tools.apps.silver.devops.gov.bc.ca
+  path: /hooks
+  to:
+    kind: Service
+    name: el-traction-gh-listener
+    weight: 100
+  port:
+    targetPort: http-listener
+  wildcardPolicy: None

@@ -1,0 +1,22 @@
+{{- if (and .Values.verifier.openshift.route.enabled (not .Values.verifier.ingress.enabled)) -}}
+{{- $fullName := include "verifier.fullname" . -}}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "verifier.fullname" . }}
+  annotations:
+    haproxy.router.openshift.io/timeout: {{ .Values.verifier.openshift.route.timeout }}
+  labels:
+    {{- include "verifier.labels" . | nindent 4 }}
+spec:
+  host: {{ include "verifier.host" . | quote }}
+  path: {{ .Values.verifier.openshift.route.path }}
+  to:
+    kind: Service
+    name: {{ $fullName }}
+    weight: 100
+  port:
+    targetPort: {{ .Values.verifier.openshift.route.targetPort }}
+  wildcardPolicy: {{ .Values.verifier.openshift.route.wildcardPolicy }}
+{{ include "verifier.openshift.route.tls" . | indent 2}}
+{{- end }}
