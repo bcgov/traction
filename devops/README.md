@@ -24,21 +24,43 @@ deleting task runs and pipeline runs will free up some pods that are created to 
 
 ### list all task runs
 
+```
 tkn tr ls
+```
 
 ### delete all task runs
 
+```
 kubectl delete tr --all
+```
 
 ### get last task run logs
 
+```
 tkn tr logs -f -a $(tkn tr ls | awk 'NR==2{print $1}')
+```
 
 ### list all pipeline runs
 
+```
 tkn pr ls
+```
 
 ### delete all pipeline runs
 
+```
 kubectl delete pr --all
+```
+
+## remove deployment
+some commands if you want to remove a deployment and start fresh...
+
+```
+kubectl delete pr --all
+
+cd devops/helm/charts
+helm uninstall traction
+
+oc delete secret traction-acapy
+oc delete pvc data-traction-postgresql-0
 
