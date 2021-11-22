@@ -43,7 +43,7 @@ spec:
         - name: DOCKERFILE
           value: services/holder/Dockerfile
         - name: CONTEXT
-          value: holder
+          value: services/holder
       workspaces:
         - name: source
           workspace: shared-workspace  
@@ -61,7 +61,7 @@ spec:
         - name: DOCKERFILE
           value: services/verifier/Dockerfile
         - name: CONTEXT
-          value: verifier
+          value: services/verifier
       workspaces:
         - name: source
           workspace: shared-workspace  
