@@ -6,7 +6,7 @@ spec:
   namespaceSelector: {}
   podTemplate: {}
   resources: {}
-  serviceAccountName: traction-sa
+  serviceAccountName: devops-traction-sa
   triggers:
     - bindings:
         - kind: TriggerBinding
