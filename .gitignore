@@ -1,0 +1,3 @@
+__pycache__
+devops/helm/charts/traction/charts/**
+**/.env

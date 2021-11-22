@@ -1,0 +1,479 @@
+# Default values for helm-chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  nameOverride: ""
+  fullnameOverride: ""
+
+  # -- Domain suffix to be used for default hostpaths in ingress
+  # override in different environments, or for each app
+  # --set global.ingressSuffix
+  ingressSuffix: -tools.apps.silver.devops.gov.bc.ca
+
+  persistence:
+    # -- If true, the Postgres chart is deployed
+    deployPostgres: true
+
+  # -- The used ledger. Will be used for default values.
+  ledger: bcovrin-test
+
+traction:
+
+  config:
+    ledger:
+      browserUrlOverride: ""
+      genesisUrlOverride: ""
+    # -- The scheme that is used to register the profile endpoint on the ledger
+    scheme: https
+
+  imagePullSecrets: []
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  ingress:
+    enabled: false
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    # Uncomment this to define your own hosts and override global.ingressSuffix
+    # hosts:
+    #     host:
+    #     paths: ['/']
+    tls: []
+    #  - secretName: my-bpa-tls
+    #    hosts:
+    #      - my-bpa.local
+
+  openshift:
+    route:
+      enabled: true
+      path: "/"
+      targetPort: http
+      timeout: 2m
+      tls:
+        enabled: true
+        insecureEdgeTerminationPolicy: None
+        termination: edge
+      wildcardPolicy: None
+
+  resources:
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+    
+acapy:
+  image:
+    repository: bcgovimages/aries-cloudagent
+    pullPolicy: IfNotPresent
+    # --  Overrides the image tag whose default is the chart appVersion.
+    tag: py36-1.16-1_0.7.2
+
+  adminURLApiKey: 2f9729eef0be49608c1cffd49ee3cc4a
+
+
+  # The agent seed, 32 characters. Will be generated if not defined here
+  agentSeed: ""
+
+  labelOverride: ""
+
+  readOnlyMode: false
+
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: ""
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+
+  securityContext:
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1001
+
+  service:
+    type: ClusterIP
+    adminPort: 8031
+    httpPort: 8030
+
+  ingress:
+    enabled: false
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+
+    # Uncomment this to define your own hosts and override global.ingressSuffix
+    # hosts:
+    #     host:
+    #     paths: ['/']
+    tls: []
+    #  - secretName: my-acapy-tls
+    #    hosts:
+    #      - my-acapy.local
+
+  openshift:
+    route:
+      enabled: true
+      path: "/"
+      targetPort: http
+      timeout: 2m
+      tls:
+        enabled: true
+        insecureEdgeTerminationPolicy: None
+        termination: edge
+      wildcardPolicy: None
+
+  tails:
+    # -- Set to true to enable revocation (external tails server required)
+    enabled: false
+
+    # -- Override the otherwise ledger-specifically generated base URL of the external tails server
+    baseUrlOverride: ""
+
+    # -- Override the otherwise ledger-specifically generated upload URL of the external tails server
+    uploadUrlOverride: ""
+
+  resources:
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  staticArgs:
+    autoAcceptInvites: true
+    autoAcceptRequests: true
+    autoRespondMessages: true
+    autoRespondCredentialProposal: true
+    autoRespondCredentialOffer: true
+    autoRespondCredentialRequest: true
+    autoRespondPresentationProposal: true
+    autoRespondPresentationRequest: true
+    autoStoreCredential: true
+    autoVerifyPresentation: true
+    autoPingConnection: true
+    autoProvision: true
+    monitorPing: true
+    publicInvites: true
+    logLevel: info
+    multitenant: true
+    multitenantAdmin: true
+    jwtSecret: 1234567
+
+postgresql:
+  # --  PostgreSQL service configuration
+  service:
+    port: 5432
+
+  # --  PostgreSQL User to create. Do not change - otherwise non-admin user is created!
+  postgresqlUsername: postgres
+
+  # --  PostgreSQL Password for the new user. If not set, a random 10 characters password will be used.
+  postgresqlPassword: change-me
+
+  # -- PostgreSQL Database to create.
+  postgresqlDatabase: traction
+  initdbScripts:
+    setup.sql: |
+      CREATE USER tractionuser PASSWORD 'transactionPass';
+      CREATE USER holderuser PASSWORD 'holderPass'; 
+      CREATE USER verifieruser PASSWORD 'verifierPass';
+      \connect traction;
+      CREATE SCHEMA IF NOT EXISTS holder AUTHORIZATION holderuser;
+      CREATE SCHEMA IF NOT EXISTS verifier AUTHORIZATION verifieruser;
+      GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA holder TO holderuser;
+      GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA verifier TO verifieruser;
+      GRANT ALL ON ALL TABLES TO tractionuser;
+
+  # --  Persistent Volume Storage configuration. ref: https://kubernetes.io/docs/user-guide/persistent-volumes
+  persistence:
+
+    # -- Enable PostgreSQL persistence using Persistent Volume Claims.
+    enabled: true
+    size: 1Gi
+    storageClass: netapp-file-standard
+  image:
+    tag: 12
+  # -- add securityContext (fsGroup, runAsUser). These need to be false for Openshift 4
+  securityContext:
+    enabled: false
+  containerSecurityContext:
+    enabled: false
+  resources:
+    limits:
+      cpu: 100m
+      memory: 384Mi
+    requests:
+      cpu: 50m
+      memory: 256Mi
+
+holder:
+  image:
+    repository: image-registry.openshift-image-registry.svc:5000/f6b17d-tools/traction-holder
+    pullPolicy: Always
+    # --  Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
+
+  serviceAccount:
+    # -- Specifies whether a service account should be created
+    create: false
+    # -- Annotations to add to the service account
+    annotations: {}
+    # -- The name of the service account to use. If not set and create is true, a name is generated using the fullname template
+    name: ""
+
+  config:
+    # -- Override name shown in the frontend (may contain whitespaces and so on). Default: Helm release name, capitalized
+    nameOverride: ""
+
+    # -- Override title shown in the browser tab. Default: Helm release name, capitalized (or NameOverride if given)
+    titleOverride: ""
+    security:
+      enabled: true
+    bootstrap:
+      username: admin
+      password: changeme
+    webhook:
+      # -- Optional: secures aca-py to backend webhook communication with an api-key
+      key: ""
+    ledger:
+      browserUrlOverride: ""
+      genesisUrlOverride: ""
+    # -- The scheme that is used to register the profile endpoint on the ledger
+    scheme: https
+    web:
+      only: false
+    creddef:
+      revocationRegistrySize: 3000
+    imprint:
+      enabled: false
+      urlOverride: ""
+    privacyPolicy:
+      enabled: false
+      urlOverride: ""
+    i18n:
+      locale: bcgov
+      fallbackLocale: en
+    # --  log4j2 configuration file which must be in the classpath. Use log4j2.xml for non-json.
+    logConfigurationFile: log4j2.xml
+
+  imagePullSecrets: []
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  service:
+    type: ClusterIP
+    port: 5000
+
+  ingress:
+    enabled: false
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    # Uncomment this to define your own hosts and override global.ingressSuffix
+    # hosts:
+    #     host:
+    #     paths: ['/']
+    tls: []
+    #  - secretName: my-bpa-tls
+    #    hosts:
+    #      - my-bpa.local
+
+  openshift:
+    route:
+      enabled: true
+      path: "/"
+      targetPort: http
+      timeout: 2m
+      tls:
+        enabled: true
+        insecureEdgeTerminationPolicy: None
+        termination: edge
+      wildcardPolicy: None
+
+  resources:
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    limits:
+      cpu: 100m
+      memory: 384Mi
+    requests:
+      cpu: 50m
+      memory: 256Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+verifier:
+  image:
+    repository: image-registry.openshift-image-registry.svc:5000/f6b17d-tools/traction-verifier
+    pullPolicy: Always
+    # --  Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
+
+  serviceAccount:
+    # -- Specifies whether a service account should be created
+    create: false
+    # -- Annotations to add to the service account
+    annotations: {}
+    # -- The name of the service account to use. If not set and create is true, a name is generated using the fullname template
+    name: ""
+
+  config:
+    # -- Override name shown in the frontend (may contain whitespaces and so on). Default: Helm release name, capitalized
+    nameOverride: ""
+
+    # -- Override title shown in the browser tab. Default: Helm release name, capitalized (or NameOverride if given)
+    titleOverride: ""
+    security:
+      enabled: true
+    bootstrap:
+      username: admin
+      password: changeme
+    webhook:
+      # -- Optional: secures aca-py to backend webhook communication with an api-key
+      key: ""
+    ledger:
+      browserUrlOverride: ""
+      genesisUrlOverride: ""
+    # -- The scheme that is used to register the profile endpoint on the ledger
+    scheme: https
+    web:
+      only: false
+    creddef:
+      revocationRegistrySize: 3000
+    imprint:
+      enabled: false
+      urlOverride: ""
+    privacyPolicy:
+      enabled: false
+      urlOverride: ""
+    i18n:
+      locale: bcgov
+      fallbackLocale: en
+    # --  log4j2 configuration file which must be in the classpath. Use log4j2.xml for non-json.
+    logConfigurationFile: log4j2.xml
+
+  imagePullSecrets: []
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  service:
+    type: ClusterIP
+    port: 5000
+
+  ingress:
+    enabled: false
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    # Uncomment this to define your own hosts and override global.ingressSuffix
+    # hosts:
+    #     host:
+    #     paths: ['/']
+    tls: []
+    #  - secretName: my-bpa-tls
+    #    hosts:
+    #      - my-bpa.local
+
+  openshift:
+    route:
+      enabled: true
+      path: "/"
+      targetPort: http
+      timeout: 2m
+      tls:
+        enabled: true
+        insecureEdgeTerminationPolicy: None
+        termination: edge
+      wildcardPolicy: None
+
+  resources:
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    limits:
+      cpu: 100m
+      memory: 384Mi
+    requests:
+      cpu: 50m
+      memory: 256Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}

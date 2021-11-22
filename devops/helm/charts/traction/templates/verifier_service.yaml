@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "verifier.fullname" . }}
+  labels:
+    {{- include "verifier.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.verifier.service.type }}
+  ports:
+    - port: {{ .Values.verifier.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "verifier.selectorLabels" . | nindent 4 }}

@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "holder.fullname" . }}
+  labels:
+    {{- include "holder.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "holder.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.holder.podAnnotations -}}  
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "holder.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.holder.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "holder.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.holder.podSecurityContext | nindent 8 }}
+      containers:
+        - name: holder
+          securityContext:
+            {{- toYaml .Values.holder.securityContext | nindent 12 }}
+          image: "{{ .Values.holder.image.repository }}:{{ .Values.holder.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.holder.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 30
+            periodSeconds: 10  
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 30
+            periodSeconds: 30   
+          env:
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "global.postgresql.fullname" . }}
+                  key: postgresql-password
+            - name: POSTGRESQL_HOST
+              value: {{ include "global.postgresql.fullname" . }}
+            - name: POSTGRESQL_PORT
+              value: {{ .Values.postgresql.service.port | quote }}
+            - name: POSTGRESQL_USER
+              value: {{ .Values.postgresql.postgresqlUsername }}
+          resources:
+            {{- toYaml .Values.holder.resources | nindent 12 }}
+      {{- with .Values.holder.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.holder.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.holder.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
