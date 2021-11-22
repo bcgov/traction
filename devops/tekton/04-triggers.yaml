@@ -50,10 +50,10 @@ spec:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
-        generateName: traction-pipeline-run-
+        generateName: devops-traction-pipeline-run-
       spec:
         pipelineRef:
-          name: traction-pipeline
+          name: devops-traction-pipeline
         params:
           - name: git-revision
             value: $(tt.params.gitrevision)
