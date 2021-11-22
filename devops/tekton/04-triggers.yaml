@@ -1,0 +1,72 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: traction-gh-listener
+spec:
+  namespaceSelector: {}
+  podTemplate: {}
+  resources: {}
+  serviceAccountName: traction-sa
+  triggers:
+    - bindings:
+        - kind: TriggerBinding
+          ref: traction-pr-binding
+      interceptors:
+        - github:
+            eventTypes:
+              - pull_request
+            secretRef:
+              secretKey: secretToken
+              secretName: traction-gh-secret
+        - cel:
+            filter: 'body.action in [''opened'', ''synchronize'', ''reopened'']'
+      name: traction-gh-listener
+      template:
+        ref: traction-pr-pipeline-template
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: traction-pr-binding
+spec:
+  params:
+    - name: gitrepositoryurl
+      value: $(body.repository.clone_url)
+    - name: gitrevision
+      value: $(body.pull_request.head.sha)
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: traction-pr-pipeline-template
+spec:
+  params:
+    - name: gitrevision
+      description: The git revision (SHA)
+      default: main
+    - name: gitrepositoryurl
+      description: The git repository url ("https://github.com/foo/bar.git")
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        generateName: traction-pipeline-run-
+      spec:
+        pipelineRef:
+          name: traction-pipeline
+        params:
+          - name: git-revision
+            value: $(tt.params.gitrevision)
+          - name: git-url
+            value: $(tt.params.gitrepositoryurl)
+        serviceAccountName: pipeline
+        workspaces:
+          - name: shared-workspace
+            volumeClaimTemplate:
+              metadata:
+                name: traction-pvc
+              spec:
+                accessModes: ["ReadWriteOnce"]
+                resources:
+                   requests:
+                      storage: 1Gi

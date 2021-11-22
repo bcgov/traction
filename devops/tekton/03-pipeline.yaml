@@ -1,0 +1,148 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: devops-traction-pipeline
+spec:
+  params:
+    - default: https://github.com/bcgov/traction.git
+      description: url of the git repo for the code of deployment
+      name: git-url
+      type: string
+    - default: main
+      description: revision to be used from repo of the code for deployment
+      name: git-revision
+      type: string
+  tasks:
+    - name: fetch-repository
+      params:
+        - name: url
+          value: $(params.git-url)
+        - name: deleteExisting
+          value: 'true'
+        - name: revision
+          value: $(params.git-revision)
+        - name: sslVerify
+          value: 'false'
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+    - name: buildah-holder
+      taskRef:
+        kind: ClusterTask
+        name: buildah
+      runAfter:
+        - fetch-repository
+      params:
+        - name: IMAGE
+          value: 'image-registry.openshift-image-registry.svc:5000/f6b17d-tools/traction-holder'
+        - name: TLSVERIFY
+          value: 'false'
+        - name: DOCKERFILE
+          value: services/holder/Dockerfile
+        - name: CONTEXT
+          value: holder
+      workspaces:
+        - name: source
+          workspace: shared-workspace  
+    - name: buildah-verifier
+      taskRef:
+        kind: ClusterTask
+        name: buildah
+      runAfter:
+        - buildah-holder
+      params:
+        - name: IMAGE
+          value: 'image-registry.openshift-image-registry.svc:5000/f6b17d-tools/traction-verifier'
+        - name: TLSVERIFY
+          value: 'false'
+        - name: DOCKERFILE
+          value: services/verifier/Dockerfile
+        - name: CONTEXT
+          value: verifier
+      workspaces:
+        - name: source
+          workspace: shared-workspace  
+    - name: helm-upgrade-from-source
+      params:
+        - name: charts_dir
+          value: devops/helm/charts/traction
+        - name: release_version
+          value: v0.0.1
+        - name: release_name
+          value: traction
+        - name: release_namespace
+          value: f6b17d-tools
+        - name: values_file
+          value: values.yaml
+      runAfter:
+        - buildah-verifier
+      taskRef:
+        kind: Task
+        name: traction-helm
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+  workspaces:
+    - name: shared-workspace
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: traction-helm
+spec:
+  description: >-
+    These tasks will install / upgrade a helm chart into your Kubernetes /
+    OpenShift Cluster using Helm
+  params:
+    - description: The directory in source that contains the helm chart
+      name: charts_dir
+      type: string
+    - default: v10.0.0
+      description: The helm release version in semantic versioning format
+      name: release_version
+      type: string
+    - default: helm-release
+      description: The helm release name
+      name: release_name
+      type: string
+    - default: ''
+      description: The helm release namespace
+      name: release_namespace
+      type: string
+    - default: ''
+      description: >-
+        Specify the values you want to overwrite, comma separated:
+        autoscaling.enabled=true,replicas=1
+      name: overwrite_values
+      type: string
+    - default: values.yaml
+      description: The values file to be used
+      name: values_file
+      type: string
+    - default: >-
+        docker.io/lachlanevenson/k8s-helm@sha256:5c792f29950b388de24e7448d378881f68b3df73a7b30769a6aa861061fd08ae
+      description: helm image to be used
+      name: helm_image
+      type: string
+  steps:
+    - image: $(params.helm_image)
+      name: upgrade
+      resources: {}
+      script: >
+        echo current installed helm releases
+
+        helm dep up "$(params.charts_dir)"
+
+        echo installing helm chart...
+
+        helm upgrade --install --wait --values
+        "$(params.charts_dir)/$(params.values_file)" --namespace
+        "$(params.release_namespace)" --version $(params.release_version)
+        $(params.release_name) $(params.charts_dir) --debug --set
+        "$(params.overwrite_values)"
+      workingDir: /workspace/source
+  workspaces:
+    - name: source
