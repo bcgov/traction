@@ -1,0 +1,78 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: {{ include "tekton.triggers.pr.listenerName" . }}
+  labels:
+{{ include "tekton.labels" . | nindent 4 }}
+spec:
+  namespaceSelector: {}
+  podTemplate: {}
+  resources: {}
+  serviceAccountName: devops-traction-sa
+  triggers:
+    - bindings:
+        - kind: TriggerBinding
+          ref: {{ include "tekton.triggers.pr.bindingName" . }}
+      interceptors:
+        - github:
+            eventTypes:
+              - pull_request
+            secretRef:
+              secretKey: secretToken
+              secretName: {{ include "tekton.githubSecret" . }}
+        - cel:
+            filter: 'body.action in [''opened'', ''synchronize'', ''reopened'']'
+      name: {{ include "tekton.triggers.pr.listenerName" . }}
+      template:
+        ref: {{ include "tekton.triggers.pr.templateName" . }}
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: {{ include "tekton.triggers.pr.bindingName" . }}
+  labels:
+{{ include "tekton.labels" . | nindent 4 }}
+spec:
+  params:
+    - name: gitrepositoryurl
+      value: $(body.repository.clone_url)
+    - name: gitrevision
+      value: $(body.pull_request.head.sha)
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: {{ include "tekton.triggers.pr.templateName" . }}
+  labels:
+{{ include "tekton.labels" . | nindent 4 }}
+spec:
+  params:
+    - name: gitrevision
+      description: The git revision (SHA)
+      default: main
+    - name: gitrepositoryurl
+      description: The git repository url ("https://github.com/foo/bar.git")
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        generateName: {{ include "tekton.pipelineRunName" . }}
+      spec:
+        pipelineRef:
+          name: {{ include "tekton.pipelineName" . }}
+        params:
+          - name: git-revision
+            value: $(tt.params.gitrevision)
+          - name: git-url
+            value: $(tt.params.gitrepositoryurl)
+        serviceAccountName: pipeline
+        workspaces:
+          - name: shared-workspace
+            volumeClaimTemplate:
+              metadata:
+                name: {{ include "tekton.pipelinePvcName" . }}
+              spec:
+                accessModes: ["ReadWriteOnce"]
+                resources:
+                   requests:
+                      storage: 1Gi

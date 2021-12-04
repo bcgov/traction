@@ -1,0 +1,95 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: {{ include "tekton.pipelineName" . }}
+  labels:
+    {{ include "tekton.labels" . | nindent 4 }}  
+  annotations:
+  {{- with .Values.pipeline.annotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}  
+spec:
+  params:
+    - default: {{ .Values.pipeline.git.url}}
+      description: url of the git repo for the code of deployment
+      name: git-url
+      type: string
+    - default: {{ .Values.pipeline.git.revision}}
+      description: revision to be used from repo of the code for deployment
+      name: git-revision
+      type: string
+  tasks:
+    - name: fetch-repository
+      params:
+        - name: url
+          value: $(params.git-url)
+        - name: deleteExisting
+          value: 'true'
+        - name: revision
+          value: $(params.git-revision)
+        - name: sslVerify
+          value: 'false'
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+    - name: build-holder
+      taskRef:
+        kind: ClusterTask
+        name: buildah
+      runAfter:
+        - fetch-repository
+      params:
+        - name: IMAGE
+          value: 'image-registry.openshift-image-registry.svc:5000/bc0192-tools/traction-holder'
+        - name: TLSVERIFY
+          value: 'false'
+        - name: DOCKERFILE
+          value: services/holder/Dockerfile
+        - name: CONTEXT
+          value: services/holder
+      workspaces:
+        - name: source
+          workspace: shared-workspace  
+    - name: build-verifier
+      taskRef:
+        kind: ClusterTask
+        name: buildah
+      runAfter:
+        - build-holder
+      params:
+        - name: IMAGE
+          value: 'image-registry.openshift-image-registry.svc:5000/bc0192-tools/traction-verifier'
+        - name: TLSVERIFY
+          value: 'false'
+        - name: DOCKERFILE
+          value: services/verifier/Dockerfile
+        - name: CONTEXT
+          value: services/verifier
+      workspaces:
+        - name: source
+          workspace: shared-workspace  
+    - name: run-helm
+      params:
+        - name: charts_dir
+          value: devops/helm/charts/traction
+        - name: release_version
+          value: v0.0.1
+        - name: release_name
+          value: traction
+        - name: release_namespace
+          value: bc0192-tools
+        - name: values_file
+          value: values.yaml
+      runAfter:
+        - build-verifier
+      taskRef:
+        kind: ClusterTask
+        name: helm-upgrade-from-source
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+  workspaces:
+    - name: shared-workspace
