@@ -23,7 +23,7 @@ global:
 
   deployment:
     # tools, dev, test, prod
-    env: tools
+    env: dev
 
 traction:
 
