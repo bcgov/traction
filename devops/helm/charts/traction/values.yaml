@@ -18,6 +18,13 @@ global:
   # -- The used ledger. Will be used for default values.
   ledger: bcovrin-test
 
+  namespaces:
+    prefix: bc0192
+
+  deployment:
+    # tools, dev, test, prod
+    env: tools
+
 traction:
 
   config:
@@ -254,7 +261,7 @@ postgresql:
 
 holder:
   image:
-    repository: image-registry.openshift-image-registry.svc:5000/f6b17d-tools/traction-holder
+    repository: image-registry.openshift-image-registry.svc:5000/bc0192-tools/traction-holder
     pullPolicy: Always
     # --  Overrides the image tag whose default is the chart appVersion.
     tag: "latest"
@@ -367,7 +374,7 @@ holder:
 
 verifier:
   image:
-    repository: image-registry.openshift-image-registry.svc:5000/f6b17d-tools/traction-verifier
+    repository: image-registry.openshift-image-registry.svc:5000/bc0192-tools/traction-verifier
     pullPolicy: Always
     # --  Overrides the image tag whose default is the chart appVersion.
     tag: "latest"

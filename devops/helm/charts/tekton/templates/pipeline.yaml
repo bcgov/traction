@@ -18,6 +18,15 @@ spec:
       description: revision to be used from repo of the code for deployment
       name: git-revision
       type: string
+    - default: {{ .Values.pipeline.git.pullreq.action}}
+      name: pullreq-action
+      type: string
+    - default: {{ .Values.pipeline.git.pullreq.number}}
+      name: pullreq-number
+      type: string
+    - default: {{ .Values.pipeline.target.env}}
+      name: target-env
+      type: string
   tasks:
     - name: fetch-repository
       params:
@@ -43,7 +52,7 @@ spec:
         - fetch-repository
       params:
         - name: IMAGE
-          value: 'image-registry.openshift-image-registry.svc:5000/bc0192-tools/traction-holder'
+          value: "image-registry.openshift-image-registry.svc:5000/bc0192-tools/traction-holder:$(pullreq-number)"
         - name: TLSVERIFY
           value: 'false'
         - name: DOCKERFILE
@@ -61,7 +70,7 @@ spec:
         - build-holder
       params:
         - name: IMAGE
-          value: 'image-registry.openshift-image-registry.svc:5000/bc0192-tools/traction-verifier'
+          value: 'image-registry.openshift-image-registry.svc:5000/bc0192-tools/traction-verifier:$(params.pullreq-number)'
         - name: TLSVERIFY
           value: 'false'
         - name: DOCKERFILE
@@ -80,11 +89,11 @@ spec:
         - name: release_name
           value: traction
         - name: release_namespace
-          value: bc0192-tools
+          value: {{ .Values.namespaces.prefix}}-$(params.target-env)
         - name: values_file
           value: values.yaml
         - name: overwrite_values
-          value: verifier.image.repository=image-registry.openshift-image-registry.svc:5000/bc0192-tools/traction-verifier,verifier.image.tag=latest,holder.image.repository=image-registry.openshift-image-registry.svc:5000/bc0192-tools/traction-holder,holder.image.tag=latest
+          value: global.deployment.env=$(params.target-env),verifier.image.tag=$(params.pullreq-number),holder.image.tag=$(params.pullreq-number)
       runAfter:
         - build-verifier
       taskRef:

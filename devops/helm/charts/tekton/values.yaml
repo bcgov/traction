@@ -2,6 +2,9 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+namespaces:
+  prefix: bc0192
+
 nameOverride: ""
 fullnameOverride: "devops-traction"
 
@@ -36,6 +39,11 @@ pipeline:
   git:
     url: https://github.com/bcgov/traction
     revision: main
+    pullreq:
+      action: ""
+      number: ""
+  target:
+    env: tools
 
 listeners:
   ingressSuffix: -tools.apps.silver.devops.gov.bc.ca

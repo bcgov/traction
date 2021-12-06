@@ -8,11 +8,11 @@ spec:
   namespaceSelector: {}
   podTemplate: {}
   resources: {}
-  serviceAccountName: devops-traction-sa
+  serviceAccountName: {{ include "tekton.serviceAccountName" . }}
   triggers:
     - bindings:
-        - kind: TriggerBinding
-          ref: {{ include "tekton.triggers.pr.bindingName" . }}
+        - kind: ClusterTriggerBinding
+          ref: github-pullreq
       interceptors:
         - github:
             eventTypes:
@@ -27,19 +27,6 @@ spec:
         ref: {{ include "tekton.triggers.pr.templateName" . }}
 ---
 apiVersion: triggers.tekton.dev/v1alpha1
-kind: TriggerBinding
-metadata:
-  name: {{ include "tekton.triggers.pr.bindingName" . }}
-  labels:
-{{ include "tekton.labels" . | nindent 4 }}
-spec:
-  params:
-    - name: gitrepositoryurl
-      value: $(body.repository.clone_url)
-    - name: gitrevision
-      value: $(body.pull_request.head.sha)
----
-apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
   name: {{ include "tekton.triggers.pr.templateName" . }}
@@ -47,11 +34,17 @@ metadata:
 {{ include "tekton.labels" . | nindent 4 }}
 spec:
   params:
-    - name: gitrevision
+    - name: pullreq-sha
       description: The git revision (SHA)
       default: main
-    - name: gitrepositoryurl
+    - name: git-repo-url
       description: The git repository url ("https://github.com/foo/bar.git")
+    - name: pullreq-action
+      description: The pull request action
+      default: ""
+    - name: pullreq-number
+      description: The pull request number
+      default: ""
   resourcetemplates:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
@@ -62,9 +55,15 @@ spec:
           name: {{ include "tekton.pipelineName" . }}
         params:
           - name: git-revision
-            value: $(tt.params.gitrevision)
+            value: $(tt.params.pullreq-sha)
           - name: git-url
-            value: $(tt.params.gitrepositoryurl)
+            value: $(tt.params.git-repo-url)
+          - name: pullreq-action
+            value: $(tt.params.pullreq-action)
+          - name: pullreq-number
+            value: $(tt.params.pullreq-number)
+          - name: target-env
+            value: dev
         serviceAccountName: pipeline
         workspaces:
           - name: shared-workspace
