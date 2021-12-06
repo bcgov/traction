@@ -52,7 +52,7 @@ spec:
         - fetch-repository
       params:
         - name: IMAGE
-          value: "image-registry.openshift-image-registry.svc:5000/bc0192-tools/traction-holder:$(pullreq-number)"
+          value: 'image-registry.openshift-image-registry.svc:5000/bc0192-tools/traction-holder:$(params.pullreq-number)'
         - name: TLSVERIFY
           value: 'false'
         - name: DOCKERFILE
