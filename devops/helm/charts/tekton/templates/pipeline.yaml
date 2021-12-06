@@ -83,6 +83,8 @@ spec:
           value: bc0192-tools
         - name: values_file
           value: values.yaml
+        - name: overwrite_values
+          value: verifier.image.repository=image-registry.openshift-image-registry.svc:5000/bc0192-tools/traction-verifier,verifier.image.tag=latest,holder.image.repository=image-registry.openshift-image-registry.svc:5000/bc0192-tools/traction-holder,holder.image.tag=latest
       runAfter:
         - build-verifier
       taskRef:
