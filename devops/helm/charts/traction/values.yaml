@@ -22,7 +22,7 @@ global:
     prefix: bc0192
 
   deployment:
-    # tools, dev, test, prod
+    # tools, dev, test, prod.
     env: dev
 
 traction:
