@@ -1,3 +1,9 @@
+{{- define "add.tag" -}}
+{{- if .Values.global.tag }}
+{{- printf "-%s" ( .Values.global.tag | toString ) | trimSuffix "-" }}
+{{- end }}
+{{- end }}
+
 {{/*
 Expand the name of the chart.
 */}}
@@ -36,7 +42,7 @@ Create a default fully qualified acapy name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "acapy.fullname" -}}
-{{ template "global.fullname" . }}-acapy
+{{ template "global.fullname" . }}-acapy{{ template "add.tag" . }}
 {{- end -}}
 
 {{/*
@@ -71,7 +77,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector acapy labels
 */}}
 {{- define "acapy.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "global.fullname" . }}-acapy
+app.kubernetes.io/name: {{ include "acapy.fullname" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
@@ -169,8 +175,12 @@ generate tails uploadUrl
 Create a default fully qualified app name for the postgres requirement.
 */}}
 {{- define "global.postgresql.fullname" -}}
+{{- if .Values.postgresql.fullnameOverride }}
+{{- .Values.postgresql.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- else }}
 {{- $postgresContext := dict "Values" .Values.postgresql "Release" .Release "Chart" (dict "Name" "postgresql") -}}
 {{ template "postgresql.primary.fullname" $postgresContext }}
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -180,7 +190,7 @@ Create the name for the database secret.
 {{- if .Values.global.persistence.existingSecret -}}
   {{- .Values.global.persistence.existingSecret -}}
 {{- else -}}
-  {{- template "global.fullname" . -}}-db
+  {{- template "global.fullname" . -}}-db{{ template "add.tag" . }}
 {{- end -}}
 {{- end -}}
 
@@ -242,73 +252,12 @@ tls:
 {{- end -}}
 
 
-
-{{/*
-Create a default fully qualified servicea name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-*/}}
-{{- define "servicea.fullname" -}}
-{{ template "global.fullname" . }}-service-a
-{{- end -}}
-
-{{/*
-Common servicea labels
-*/}}
-{{- define "servicea.labels" -}}
-helm.sh/chart: {{ include "global.chart" . }}
-{{ include "servicea.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
-
-{{/*
-Selector servicea labels
-*/}}
-{{- define "servicea.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "global.fullname" . }}-service-a
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
-
-{{/*
-Create the name of the service account to use
-*/}}
-{{- define "servicea.serviceAccountName" -}}
-{{- if .Values.servicea.serviceAccount.create }}
-{{- default (include "servicea.fullname" .) .Values.servicea.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.servicea.serviceAccount.name }}
-{{- end }}
-{{- end }}
-
-{{/*
-generate hosts if not overriden
-*/}}
-{{- define "servicea.host" -}}
-{{- if .Values.servicea.ingress.hosts -}}
-{{- (index .Values.servicea.ingress.hosts 0).host -}}
-{{- else }}
-{{- include "servicea.fullname" . }}{{ .Values.global.ingressSuffix -}}
-{{- end -}}
-{{- end }}
-
-{{- define "servicea.openshift.route.tls" -}}
-{{- if (.Values.servicea.openshift.route.tls.enabled) -}}
-tls:
-  insecureEdgeTerminationPolicy: {{ .Values.servicea.openshift.route.tls.insecureEdgeTerminationPolicy }}
-  termination: {{ .Values.servicea.openshift.route.tls.termination }}
-{{- end -}}
-{{- end -}}
-
-
-
 {{/*
 Create a default fully qualified holder name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "holder.fullname" -}}
-{{ template "global.fullname" . }}-holder
+{{ template "global.fullname" . }}-holder{{ template "add.tag" . }}
 {{- end -}}
 
 {{/*
@@ -327,7 +276,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector holder labels
 */}}
 {{- define "holder.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "global.fullname" . }}-holder
+app.kubernetes.io/name: {{ include "holder.fullname" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
@@ -367,7 +316,7 @@ Create a default fully qualified verifier name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "verifier.fullname" -}}
-{{ template "global.fullname" . }}-verifier
+{{ template "global.fullname" . }}-verifier{{ template "add.tag" . }}
 {{- end -}}
 
 {{/*
@@ -386,7 +335,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector verifier labels
 */}}
 {{- define "verifier.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "global.fullname" . }}-verifier
+app.kubernetes.io/name: {{ include "verifier.fullname" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 

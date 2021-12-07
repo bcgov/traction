@@ -4,12 +4,12 @@
 
 global:
   nameOverride: ""
-  fullnameOverride: ""
+  fullnameOverride: "traction"
 
   # -- Domain suffix to be used for default hostpaths in ingress
   # override in different environments, or for each app
   # --set global.ingressSuffix
-  ingressSuffix: -tools.apps.silver.devops.gov.bc.ca
+  ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
 
   persistence:
     # -- If true, the Postgres chart is deployed
@@ -24,6 +24,11 @@ global:
   deployment:
     # tools, dev, test, prod.
     env: dev
+
+  # when deploying a Pull Request, this will be the pr number, other use cases may be hotfixes, UAT etc
+  # this will be used to generate object names and routes etc.
+  tag: ''
+  
 
 traction:
 
@@ -213,6 +218,7 @@ acapy:
     jwtSecret: 1234567
 
 postgresql:
+  fullnameOverride: 'traction'
   # --  PostgreSQL service configuration
   service:
     port: 5432
@@ -261,7 +267,7 @@ postgresql:
 
 holder:
   image:
-    repository: image-registry.openshift-image-registry.svc:5000/bc0192-tools/traction-holder
+    repository: image-registry.openshift-image-registry.svc:5000/bc0192-dev/traction-holder
     pullPolicy: Always
     # --  Overrides the image tag whose default is the chart appVersion.
     tag: "latest"
@@ -374,7 +380,7 @@ holder:
 
 verifier:
   image:
-    repository: image-registry.openshift-image-registry.svc:5000/bc0192-tools/traction-verifier
+    repository: image-registry.openshift-image-registry.svc:5000/bc0192-dev/traction-verifier
     pullPolicy: Always
     # --  Overrides the image tag whose default is the chart appVersion.
     tag: "latest"

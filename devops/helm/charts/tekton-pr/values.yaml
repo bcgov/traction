@@ -1,0 +1,50 @@
+# Default values for tekton.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+namespaces:
+  prefix: bc0192
+
+nameOverride: ""
+fullnameOverride: "devops-traction-pr"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+
+githubSecret:
+  # Specifies whether a secret should be created
+  create: true
+  # Annotations to add to the secret
+  annotations: {
+    "helm.sh/resource-policy": "keep"
+  }
+  # The name of the secret to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+pipeline:
+  # Specifies whether pipeline should be created
+  create: true
+  # Annotations to add to the pipeline
+  annotations: {}
+  # The name of the pipeline.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+  git:
+    url: https://github.com/bcgov/traction
+    revision: develop
+    pullreq:
+      action: ""
+      number: ""
+  target:
+    env: dev
+
+listeners:
+  ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
