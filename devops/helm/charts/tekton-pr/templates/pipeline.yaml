@@ -87,7 +87,7 @@ spec:
         - name: release_version
           value: v0.0.1
         - name: release_name
-          value: traction
+          value: traction-$(params.pullreq-number)
         - name: release_namespace
           value: {{ .Values.namespaces.prefix}}-$(params.target-env)
         - name: values_file
