@@ -10,7 +10,7 @@ jobs:
   init:
     runs-on: ubuntu-20.04
     steps:
-       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       # will need some work here to determine what CD we kick off... 
       
@@ -23,7 +23,8 @@ jobs:
     needs: init
     
     steps:
-    
+      - uses: actions/checkout@v2
+  
       - name: Prepare docker tags for image
         id: meta
         uses: docker/metadata-action@v3
@@ -66,6 +67,7 @@ jobs:
     needs: init
     
     steps:
+      - uses: actions/checkout@v2
     
       - name: Prepare docker tags for image
         id: meta
