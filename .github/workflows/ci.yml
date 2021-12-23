@@ -124,6 +124,8 @@ jobs:
         shell: bash
         run: |
           ls -l
+          cd charts/traction
+          ls -l
           yq eval '.holder.image.tag = "${{needs.holder-image.outputs.tag }}"' -i values-${{ needs.init.outputs.deploy }}.yaml
           yq eval '.verifier.image.tag = "${{needs.verifier-image.outputs.tag }}"' -i values-${{ needs.init.outputs.deploy }}.yaml
           cat values-${{ needs.init.outputs.deploy }}.yaml
