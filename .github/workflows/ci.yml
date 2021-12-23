@@ -59,7 +59,7 @@ jobs:
           labels: ${{ steps.meta.outputs.tags }}
     
     outputs:
-     tag: ${{ steps.meta.outputs.tags[0] }}
+     tag: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
     
   verifier-image:
      # The type of runner that the job will run on
@@ -103,7 +103,7 @@ jobs:
           labels: ${{ steps.meta.outputs.tags }}
     
     outputs:
-     tag: ${{ steps.meta.outputs.tags[0] }}
+     tag: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
 
   update-config:
     runs-on: ubuntu-20.04
