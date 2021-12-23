@@ -7,7 +7,125 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  init:
     runs-on: ubuntu-20.04
     steps:
+       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+      # will need some work here to determine what CD we kick off... 
+      
+    outputs:
+     deploy: 'dev'
+
+  holder-image:
+     # The type of runner that the job will run on
+    runs-on: ubuntu-20.04
+    needs: init
+    
+    steps:
+    
+      - name: Prepare docker tags for image
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ghcr.io/bcgov/traction/traction-holder
+          tags: type=sha        
+    
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner}}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+        
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner}}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push holder image
+        id: builder
+        uses: docker/build-push-action@v2
+        with:
+          context: ./services/holder
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.tags }}
+    
+    outputs:
+     tag: ${{ steps.meta.outputs.tags[0] }}
+    
+  verifier-image:
+     # The type of runner that the job will run on
+    runs-on: ubuntu-20.04
+    needs: init
+    
+    steps:
+    
+      - name: Prepare docker tags for image
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ghcr.io/bcgov/traction/traction-verifier
+          tags: type=sha        
+    
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner}}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+        
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner}}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push holder image
+        id: builder
+        uses: docker/build-push-action@v2
+        with:
+          context: ./services/verifier
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.tags }}
+    
+    outputs:
+     tag: ${{ steps.meta.outputs.tags[0] }}
+
+  update-config:
+    runs-on: ubuntu-20.04
+    needs: 
+      - init
+      - holder-image
+      - verifier-image
+    if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) }}
+    
+    steps:  
+      - name: Check out config repo
+        uses: actions/checkout@v2
+        with:
+          ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
+          repository: ${{ secrets.MANIFEST_REPO }}
+
+      - name: Update image ID and commit change
+        shell: bash
+        run: |
+          ls -l
+          yq eval '.holder.image.tag = "${{needs.holder-image.outputs.tag }}"' -i values-${{ needs.init.outputs.deploy }}.yaml
+          yq eval '.verifier.image.tag = "${{needs.verifier-image.outputs.tag }}"' -i values-${{ needs.init.outputs.deploy }}.yaml
+          cat values-${{ needs.init.outputs.deploy }}.yaml
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -am "Update image ID for ${{ env.TAG_NAME }}"
+          git push origin
