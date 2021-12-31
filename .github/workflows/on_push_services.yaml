@@ -1,0 +1,96 @@
+name: Push Instance to Develop
+on:
+  push:
+    branches: 
+      - develop
+    paths:
+      - 'services/**'
+
+jobs:
+
+  build_holder:
+    name: 'Build Holder Service'
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2  
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            src:
+              - './services/holder/**'          
+      - name: Build service
+        if: steps.changes.outputs.src == 'true'
+        uses: ./.github/actions/build_service
+        id: builder
+        with:
+          context: './services/holder'
+          image_name: ${{ github.repository_owner}}/traction-holder
+          registry: ghcr.io
+          registry_username: ${{ github.actor}}          
+          registry_password: ${{ secrets.GITHUB_TOKEN }}
+    outputs:
+      image_tag: ${{ steps.builder.outputs.image_tag }}
+      image_version: ${{ steps.builder.outputs.image_version }}
+      buildtime: ${{ steps.builder.outputs.buildtime }}
+
+  build_verifier:
+    name: 'Build Verifier Service'
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2  
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            src:
+              - './services/verifier/**'          
+      - name: Build service
+        if: steps.changes.outputs.src == 'true'
+        uses: ./.github/actions/build_service
+        id: builder
+        with:
+          context: './services/verifier'
+          image_name: ${{ github.repository_owner}}/traction-verifier
+          registry: ghcr.io
+          registry_username: ${{ github.actor}}          
+          registry_password: ${{ secrets.GITHUB_TOKEN }}
+    outputs:
+      image_tag: ${{ steps.builder.outputs.image_tag }}
+      image_version: ${{ steps.builder.outputs.image_version }}
+      buildtime: ${{ steps.builder.outputs.buildtime }}
+
+  update_manifest:
+    name: Update manifests
+    runs-on: ubuntu-20.04
+    needs: 
+      - build_holder
+      - build_verifier
+    if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) }}
+    
+    steps:  
+      - uses: actions/checkout@v2  
+
+      - name: Read Production Release values
+        id: read_repo
+        uses: ./.github/actions/read_manifest_repo
+        with:
+          target: prod
+          repository_key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
+          repository: ${{ secrets.MANIFEST_REPO }} 
+
+      - name: Update repo
+        uses: ./.github/actions/update_manifest_repo
+        with:
+          repository_key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
+          repository: ${{ secrets.MANIFEST_REPO }}
+          release_version: ${{ steps.read_repo.outputs.release_version }}
+          holder_image_tag: ${{ needs.build_holder.outputs.image_tag }}
+          holder_image_version: ${{ needs.build_holder.outputs.image_version }}
+          holder_image_buildtime: ${{ needs.build_holder.outputs.buildtime }}
+          verifier_image_tag: ${{ needs.build_verifier.outputs.image_tag }}
+          verifier_image_version: ${{ needs.build_verifier.outputs.image_version }}
+          verifier_image_buildtime: ${{ needs.build_verifier.outputs.buildtime }}
+
+
+
