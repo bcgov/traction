@@ -1,0 +1,42 @@
+name: Uninstall PR instance
+on:
+  pull_request:
+    branches:
+      - develop
+    types:
+      - closed
+jobs:
+
+  uninstall:
+    name: Uninstall PR
+    runs-on: ubuntu-20.04
+    steps:  
+      - uses: actions/checkout@v2  
+      - name: Check out manifest repo
+        uses: actions/checkout@v2
+        with:
+          ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
+          repository: ${{ secrets.MANIFEST_REPO }}
+          path: charts-repo
+
+      - name: Authenticate and set context
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          certificate_authority_data: ${{ secrets.OPENSHIFT_CA_CRT }}
+          namespace: ${{ env.OPENSHIFT_NAMESPACE }}
+      
+      - name: Uninstall via Helm 
+        run: |
+          helm uninstall pr-${{ github.event.number }}-traction
+      
+      - name: Remove Openshift Objects 
+        run: |
+          oc delete secret pr-${{ github.event.number }}-traction-acapy          
+          oc delete pvc data-pr-${{ github.event.number }}-traction-0
+
+
+
+
+

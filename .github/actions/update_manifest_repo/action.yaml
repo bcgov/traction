@@ -1,0 +1,91 @@
+name: Update Manifests
+description: Update Manifest Repository
+inputs:
+  repository_key:
+    required: true
+    type: string
+  repository:
+    required: true
+    type: string
+  repository_checkout_path:
+    required: true
+    type: string
+    default: manifests-repo
+  charts_path:
+    required: true
+    type: string
+    default: charts/traction
+  target:
+    required: true
+    type: string
+    default: 'dev'
+  release_version:
+    required: false
+    type: string
+  holder_image_tag:
+    required: false
+    type: string
+  holder_image_version:
+    required: false
+    type: string
+  holder_image_buildtime:
+    required: false
+    type: string
+  verifier_image_tag:
+    required: false
+    type: string
+  verifier_image_version:
+    required: false
+    type: string
+  verifier_image_buildtime:
+    required: false
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Check out manifest repo
+      uses: actions/checkout@v2
+      with:
+        ssh-key: ${{ inputs.repository_key }}
+        repository: ${{ inputs.repository }}
+        path: ${{ inputs.repository_checkout_path }}
+
+    - name: Set up git
+      shell: bash
+      run: |
+        cd ./${{ inputs.repository_checkout_path }}
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+
+    - name: Update release version
+      shell: bash
+      if: inputs.release_version != null
+      run: |
+        cd ./${{ inputs.repository_checkout_path }}/${{ inputs.charts_path }}
+        yq eval '.release.version = "${{ inputs.release_version }}"' -i values-${{ inputs.target }}.yaml
+
+    - name: Update holder image
+      shell: bash
+      if: inputs.holder_image_tag != null
+      run: |
+        cd ./${{ inputs.repository_checkout_path }}/${{ inputs.charts_path }}
+        yq eval '.holder.image.tag = "${{ inputs.holder_image_tag }}"' -i values-${{ inputs.target }}.yaml
+        yq eval '.holder.image.version = "${{ inputs.holder_image_version }}"' -i values-${{ inputs.target }}.yaml
+        yq eval '.holder.image.buildtime = "${{ inputs.holder_image_buildtime }}"' -i values-${{ inputs.target }}.yaml
+
+    - name: Update verifier image
+      shell: bash
+      if: inputs.verifier_image_tag != null
+      run: |
+        cd ./${{ inputs.repository_checkout_path }}/${{ inputs.charts_path }}
+        yq eval '.verifier.image.tag = "${{ inputs.verifier_image_tag }}"' -i values-${{ inputs.target }}.yaml
+        yq eval '.verifier.image.version = "${{ inputs.verifier_image_version }}"' -i values-${{ inputs.target }}.yaml
+        yq eval '.verifier.image.buildtime = "${{ inputs.verifier_image_buildtime }}"' -i values-${{ inputs.target }}.yaml
+
+    - name: Push config changes
+      shell: bash
+      run: |
+        cd ./${{ inputs.repository_checkout_path }}
+        git commit -am "Update manifests for ${{ inputs.target }}"
+        git push origin
