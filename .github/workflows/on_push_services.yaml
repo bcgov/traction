@@ -25,7 +25,7 @@ jobs:
         id: builder
         with:
           context: './services/holder'
-          image_name: ${{ github.repository_owner}}/holder_image
+          image_name: ${{ github.repository_owner}}/traction-holder
           registry: ghcr.io
           registry_username: ${{ github.actor}}          
           registry_password: ${{ secrets.GITHUB_TOKEN }}
@@ -51,7 +51,7 @@ jobs:
         id: builder
         with:
           context: './services/verifier'
-          image_name: ${{ github.repository_owner}}/verifier_image
+          image_name: ${{ github.repository_owner}}/traction-verifier
           registry: ghcr.io
           registry_username: ${{ github.actor}}          
           registry_password: ${{ secrets.GITHUB_TOKEN }}
