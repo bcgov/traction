@@ -15,6 +15,7 @@ permissions:
 jobs:
 
   build_holder:
+    environment: develop-pr
     name: 'Build Holder Service'
     runs-on: ubuntu-20.04
     steps:      
@@ -25,15 +26,16 @@ jobs:
         with:
           context: './services/holder'
           image_name: traction-holder
-          registry: ${{ env.OPENSHIFT_IMAGE_REGISTRY }}
-          registry_username: ${{ env.OPENSHIFT_USERNAME}}          
-          registry_password: ${{ env.OPENSHIFT_TOKEN }}
+          registry: ${{ secrets.OPENSHIFT_IMAGE_REGISTRY }}
+          registry_username: ${{ secrets.OPENSHIFT_USERNAME}}          
+          registry_password: ${{ secrets.OPENSHIFT_TOKEN }}
     outputs:
       image_tag: ${{ steps.builder.outputs.image_tag }}
       image_version: ${{ steps.builder.outputs.image_version }}
       buildtime: ${{ steps.builder.outputs.buildtime }}
 
   build_verifier:
+    environment: develop-pr
     name: 'Build Verifier Service'
     runs-on: ubuntu-20.04
     steps:
@@ -44,15 +46,16 @@ jobs:
         with:
           context: './services/verifier'
           image_name: traction-verifier
-          registry: ${{ env.OPENSHIFT_IMAGE_REGISTRY }}
-          registry_username: ${{ env.OPENSHIFT_USERNAME}}          
-          registry_password: ${{ env.OPENSHIFT_TOKEN }}
+          registry: ${{ secrets.OPENSHIFT_IMAGE_REGISTRY }}
+          registry_username: ${{ secrets.OPENSHIFT_USERNAME}}          
+          registry_password: ${{ secrets.OPENSHIFT_TOKEN }}
     outputs:
       image_tag: ${{ steps.builder.outputs.image_tag }}
       image_version: ${{ steps.builder.outputs.image_version }}
       buildtime: ${{ steps.builder.outputs.buildtime }}
 
   deploy:
+    environment: develop-pr
     name: Deploy PR
     runs-on: ubuntu-20.04
     needs: 
@@ -81,10 +84,10 @@ jobs:
       - name: Authenticate and set context
         uses: redhat-actions/oc-login@v1
         with:
-          openshift_server_url: ${{ env.OPENSHIFT_SERVER }}
-          openshift_token: ${{ env.OPENSHIFT_TOKEN }}
-          certificate_authority_data: ${{ env.OPENSHIFT_CA_CRT }}
-          namespace: ${{ env.OPENSHIFT_NAMESPACE }}
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          certificate_authority_data: ${{ secrets.OPENSHIFT_CA_CRT }}
+          namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
       
       - name: Run PR Helm 
         run: |
