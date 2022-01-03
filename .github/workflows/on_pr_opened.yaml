@@ -87,7 +87,6 @@ jobs:
         run: |
           yq eval '.global.fullnameOverride = "pr-${{ github.event.number }}-traction"' -i ./charts-repo/charts/traction/values-pr.yaml
           yq eval '.postgresql.fullnameOverride = "pr-${{ github.event.number }}-traction"' -i ./charts-repo/charts/traction/values-pr.yaml
-          yq eval '.release.version = "${{ steps.read_repo.outputs.release_version }}"' -i ./charts-repo/charts/traction/values-pr.yaml
           yq eval '.holder.image.tag = "${{ needs.build_holder.outputs.image_tag }}"' -i ./charts-repo/charts/traction/values-pr.yaml
           yq eval '.holder.image.version = "${{ needs.build_holder.outputs.image_version }}"' -i ./charts-repo/charts/traction/values-pr.yaml
           yq eval '.holder.image.buildtime = "${{ needs.build_holder.outputs.buildtime }}"' -i ./charts-repo/charts/traction/values-pr.yaml

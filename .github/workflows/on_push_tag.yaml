@@ -87,3 +87,22 @@ jobs:
           verifier_image_tag: ${{ steps.read_repo.outputs.verifier_image_tag }}
           verifier_image_version: ${{ steps.read_repo.outputs.verifier_image_version }}
           verifier_image_buildtime: ${{ steps.read_repo.outputs.verifier_image_buildtime }}
+
+  merge_to_main:
+    name: Merge to main
+    runs-on: ubuntu-20.04
+    needs: 
+      - init
+      - update_config
+    if: ${{ contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) && needs.init.outputs.promote_to == 'prod' }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Merge develop to main
+        uses: devmasx/merge-branch@v1.4.0
+        with:
+          type: now
+          from_branch: develop
+          target_branch: main
+          github_token: ${{ github.token }}

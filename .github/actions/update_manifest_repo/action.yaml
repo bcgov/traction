@@ -60,10 +60,10 @@ runs:
 
     - name: Update release version
       shell: bash
-      if: inputs.release_version != null
+      if: inputs.release_version != null && inputs.target == 'prod'
       run: |
         cd ./${{ inputs.repository_checkout_path }}/${{ inputs.charts_path }}
-        yq eval '.release.version = "${{ inputs.release_version }}"' -i values-${{ inputs.target }}.yaml
+        yq eval '.appVersion = "${{ inputs.release_version }}"' -i Chart.yaml
 
     - name: Update holder image
       shell: bash
