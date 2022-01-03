@@ -1,6 +1,6 @@
 name: Install/upgrade PR Instance
 on:
-  pull_request:
+  pull_request_target:
     branches:
       - develop
     paths:
@@ -9,13 +9,9 @@ on:
       - opened
       - synchronize
 
-permissions:
-  packages: write
-  
 jobs:
 
   build_holder:
-    environment: develop-pr
     name: 'Build Holder Service'
     runs-on: ubuntu-20.04
     steps:      
@@ -25,17 +21,16 @@ jobs:
         id: builder
         with:
           context: './services/holder'
-          image_name: traction-holder
-          registry: ${{ secrets.OPENSHIFT_IMAGE_REGISTRY }}
-          registry_username: ${{ secrets.OPENSHIFT_USERNAME}}          
-          registry_password: ${{ secrets.OPENSHIFT_TOKEN }}
+          image_name: ${{ github.repository_owner}}/traction-holder
+          registry: ghcr.io
+          registry_username: ${{ github.repository_owner}}          
+          registry_password: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       image_tag: ${{ steps.builder.outputs.image_tag }}
       image_version: ${{ steps.builder.outputs.image_version }}
       buildtime: ${{ steps.builder.outputs.buildtime }}
 
   build_verifier:
-    environment: develop-pr
     name: 'Build Verifier Service'
     runs-on: ubuntu-20.04
     steps:
@@ -45,17 +40,16 @@ jobs:
         id: builder
         with:
           context: './services/verifier'
-          image_name: traction-verifier
-          registry: ${{ secrets.OPENSHIFT_IMAGE_REGISTRY }}
-          registry_username: ${{ secrets.OPENSHIFT_USERNAME}}          
-          registry_password: ${{ secrets.OPENSHIFT_TOKEN }}
+          image_name: ${{ github.repository_owner}}/traction-verifier
+          registry: ghcr.io
+          registry_username: ${{ github.repository_owner}}          
+          registry_password: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       image_tag: ${{ steps.builder.outputs.image_tag }}
       image_version: ${{ steps.builder.outputs.image_version }}
       buildtime: ${{ steps.builder.outputs.buildtime }}
 
   deploy:
-    environment: develop-pr
     name: Deploy PR
     runs-on: ubuntu-20.04
     needs: 
@@ -101,7 +95,3 @@ jobs:
           yq eval '.verifier.image.version = "${{ needs.build_verifier.outputs.image_version }}"' -i ./charts-repo/charts/traction/values-pr.yaml
           yq eval '.verifier.image.buildtime = "${{ needs.build_verifier.outputs.buildtime }}"' -i ./charts-repo/charts/traction/values-pr.yaml
           helm upgrade -f ./charts-repo/charts/traction/values.yaml -f ./charts-repo/charts/traction/values-pr.yaml pr-${{ github.event.number }}-traction ./charts-repo/charts/traction --install --wait
-
-
-
-
