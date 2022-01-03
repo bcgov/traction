@@ -25,7 +25,7 @@ jobs:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           certificate_authority_data: ${{ secrets.OPENSHIFT_CA_CRT }}
-          namespace: ${{ env.OPENSHIFT_NAMESPACE }}
+          namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
       
       - name: Uninstall via Helm 
         run: |
