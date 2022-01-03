@@ -1,6 +1,6 @@
 name: Install/upgrade PR Instance
 on:
-  pull_request_target:
+  pull_request:
     branches:
       - develop
     paths:
