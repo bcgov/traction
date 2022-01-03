@@ -24,7 +24,7 @@ jobs:
           image_name: ${{ github.repository_owner}}/traction-holder
           registry: ghcr.io
           registry_username: ${{ github.actor}}          
-          registry_password: ${{ secrets.GITHUB_TOKEN }}
+          registry_password: ${{ secrets.PULL_REQUEST_PAT }}
     outputs:
       image_tag: ${{ steps.builder.outputs.image_tag }}
       image_version: ${{ steps.builder.outputs.image_version }}
@@ -43,7 +43,7 @@ jobs:
           image_name: ${{ github.repository_owner}}/traction-verifier
           registry: ghcr.io
           registry_username: ${{ github.actor}}          
-          registry_password: ${{ secrets.GITHUB_TOKEN }}
+          registry_password: ${{ secrets.PULL_REQUEST_PAT }}
     outputs:
       image_tag: ${{ steps.builder.outputs.image_tag }}
       image_version: ${{ steps.builder.outputs.image_version }}
