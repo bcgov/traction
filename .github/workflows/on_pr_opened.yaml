@@ -1,6 +1,6 @@
 name: Install/upgrade PR Instance
 on:
-  pull_request:
+  pull_request_target:
     branches:
       - develop
     paths:
@@ -24,7 +24,7 @@ jobs:
           image_name: ${{ github.repository_owner}}/traction-holder
           registry: ghcr.io
           registry_username: ${{ github.repository_owner}}          
-          registry_password: ${{ secrets.PULL_REQUEST_PAT }}
+          registry_password: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       image_tag: ${{ steps.builder.outputs.image_tag }}
       image_version: ${{ steps.builder.outputs.image_version }}
@@ -43,7 +43,7 @@ jobs:
           image_name: ${{ github.repository_owner}}/traction-verifier
           registry: ghcr.io
           registry_username: ${{ github.repository_owner}}          
-          registry_password: ${{ secrets.PULL_REQUEST_PAT }}
+          registry_password: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       image_tag: ${{ steps.builder.outputs.image_tag }}
       image_version: ${{ steps.builder.outputs.image_version }}
