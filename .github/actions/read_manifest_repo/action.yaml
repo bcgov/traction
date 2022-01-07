@@ -54,6 +54,7 @@ runs:
       with:
         ssh-key: ${{ inputs.repository_key }}
         repository: ${{ inputs.repository }}
+        ref: postgresql-config
         path: ${{ inputs.repository_checkout_path }}
     
     - id: release_version

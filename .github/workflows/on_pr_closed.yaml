@@ -17,6 +17,7 @@ jobs:
         with:
           ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
           repository: ${{ secrets.MANIFEST_REPO }}
+          ref: postgresql-config
           path: charts-repo
 
       - name: Authenticate and set context
@@ -33,8 +34,7 @@ jobs:
       
       - name: Remove Openshift Objects 
         run: |
-          oc delete secret pr-${{ github.event.number }}-traction-acapy          
-          oc delete pvc data-pr-${{ github.event.number }}-traction-0
+          oc delete secret,pvc --selector "app.kubernetes.io/instance"=pr-${{ github.event.number }}-traction
 
 
 

@@ -73,6 +73,7 @@ jobs:
         with:
           ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
           repository: ${{ secrets.MANIFEST_REPO }}
+          ref: postgresql-config
           path: charts-repo
 
       - name: Authenticate and set context
