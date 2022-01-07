@@ -16,7 +16,7 @@ TOPICS = ['']
 
 @app.route("/")
 def hello_world():
-    return "<p>Hello, World!!</p>"
+    return "<p>Hello, World:)</p>"
 
 @app.route("/log/topic/<topic>/", methods=['POST'])
 def acapy_event_handler(topic):
