@@ -92,6 +92,7 @@ jobs:
     needs: 
       - build_holder
       - build_verifier
+      - build_innkeeper
     if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) }}
     
     steps:  
