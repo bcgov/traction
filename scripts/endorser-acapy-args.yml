@@ -16,14 +16,13 @@ plugin: 'aries_cloudagent.messaging.jsonld'
 outbound-transport: http
 wallet-type: 'indy'
 log-level: info
-multitenant: true
-multitenant-admin: true
 jwt-secret: 1234567
 
-endorser-protocol-role: author
-endorser-alias: 'endorser'
-endorser-public-did: 'SVfHGCEEvEFmpBPcxgNqRR'
-auto-request-endorsement: true
-# auto-endorse-transactions: <for Endorsers>
-auto-write-transactions: true
-auto-create-revocation-transactions: true
+endorser-protocol-role: endorser
+#endorser-public-did: <for author>
+#endorser-alias: <for author>
+#auto-request-endorsement: <for author>
+auto-endorse-transactions: true
+#auto-write-transactions: <for author>
+#auto-create-revocation-transactions: <for author>
+
