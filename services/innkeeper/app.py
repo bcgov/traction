@@ -3,6 +3,7 @@ from flask import Flask
 
 from config import Config
 from extensions import db, migrate, api
+from api.resources.liveness import LivenessResource
 from api.resources.tenant import (
     TenantListResource,
     TenantResource,
@@ -26,6 +27,7 @@ def register_extensions(app):
 
 
 def register_resources(app):
+    api.add_resource(LivenessResource, "/")
     api.add_resource(TenantListResource, "/tenants")
     api.add_resource(TenantResource, "/tenants/<uuid:tenant_id>")
     api.add_resource(TenantAccessKeyListResource, "/tenants/<uuid:tenant_id>/keys")
