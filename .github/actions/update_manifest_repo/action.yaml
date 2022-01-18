@@ -40,7 +40,15 @@ inputs:
   verifier_image_buildtime:
     required: false
     type: string
-
+  innkeeper_image_tag:
+    required: false
+    type: string
+  innkeeper_image_version:
+    required: false
+    type: string
+  innkeeper_image_buildtime:
+    required: false
+    type: string
 runs:
   using: "composite"
   steps:
@@ -82,6 +90,15 @@ runs:
         yq eval '.verifier.image.tag = "${{ inputs.verifier_image_tag }}"' -i values-${{ inputs.target }}.yaml
         yq eval '.verifier.image.version = "${{ inputs.verifier_image_version }}"' -i values-${{ inputs.target }}.yaml
         yq eval '.verifier.image.buildtime = "${{ inputs.verifier_image_buildtime }}"' -i values-${{ inputs.target }}.yaml
+
+    - name: Update innkeeper image
+      shell: bash
+      if: inputs.innkeeper_image_tag != null
+      run: |
+        cd ./${{ inputs.repository_checkout_path }}/${{ inputs.charts_path }}
+        yq eval '.innkeeper.image.tag = "${{ inputs.innkeeper_image_tag }}"' -i values-${{ inputs.target }}.yaml
+        yq eval '.innkeeper.image.version = "${{ inputs.innkeeper_image_version }}"' -i values-${{ inputs.target }}.yaml
+        yq eval '.innkeeper.image.buildtime = "${{ inputs.innkeeper_image_buildtime }}"' -i values-${{ inputs.target }}.yaml
 
     - name: Push config changes
       shell: bash

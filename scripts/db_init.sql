@@ -1,12 +1,28 @@
-CREATE USER tractionuser CREATEDB;
-CREATE USER holderuser PASSWORD 'holderPass'; 
+CREATE USER tractionuser PASSWORD 'tractionPass';
+CREATE USER holderuser PASSWORD 'holderPass';
 CREATE USER verifieruser PASSWORD 'verifierPass';
-
+CREATE USER issueruser PASSWORD 'issuerPass';
+CREATE USER innkeeperuser PASSWORD 'innkeeperPass';
 CREATE DATABASE traction;
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 \connect traction
-
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE SCHEMA IF NOT EXISTS holder AUTHORIZATION holderuser;
 CREATE SCHEMA IF NOT EXISTS verifier AUTHORIZATION verifieruser;
-
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA holder TO holderuser;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA verifier TO verifieruser;
+CREATE SCHEMA IF NOT EXISTS issuer AUTHORIZATION issueruser;
+CREATE SCHEMA IF NOT EXISTS innkeeper AUTHORIZATION innkeeperuser;
+CREATE SCHEMA IF NOT EXISTS traction AUTHORIZATION tractionuser;
+GRANT USAGE ON SCHEMA holder TO tractionuser;
+GRANT USAGE ON SCHEMA verifier TO tractionuser;
+GRANT USAGE ON SCHEMA issuer TO tractionuser;
+ALTER DEFAULT PRIVILEGES FOR USER holderuser IN SCHEMA holder GRANT SELECT ON TABLES TO tractionuser;
+ALTER DEFAULT PRIVILEGES FOR USER verifieruser IN SCHEMA verifier GRANT SELECT ON TABLES TO tractionuser;
+ALTER DEFAULT PRIVILEGES FOR USER issueruser IN SCHEMA issuer GRANT SELECT ON TABLES TO tractionuser;
+GRANT USAGE ON SCHEMA innkeeper TO holderuser;
+GRANT USAGE ON SCHEMA innkeeper TO verifieruser;
+GRANT USAGE ON SCHEMA innkeeper TO issueruser;
+GRANT USAGE ON SCHEMA innkeeper TO tractionuser;
+ALTER DEFAULT PRIVILEGES FOR USER innkeeperuser IN SCHEMA innkeeper GRANT SELECT ON TABLES TO holderuser;
+ALTER DEFAULT PRIVILEGES FOR USER innkeeperuser IN SCHEMA innkeeper GRANT SELECT ON TABLES TO verifieruser;
+ALTER DEFAULT PRIVILEGES FOR USER innkeeperuser IN SCHEMA innkeeper GRANT SELECT ON TABLES TO issueruser;
+ALTER DEFAULT PRIVILEGES FOR USER innkeeperuser IN SCHEMA innkeeper GRANT SELECT ON TABLES TO tractionuser;
