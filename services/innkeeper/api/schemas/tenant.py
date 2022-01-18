@@ -1,6 +1,6 @@
 from marshmallow import Schema, fields, validate
 
-from src.schemas.pagination import PaginationSchema
+from api.schemas.pagination import PaginationSchema
 
 
 class TenantSchema(Schema):

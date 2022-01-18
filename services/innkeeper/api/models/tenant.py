@@ -1,7 +1,7 @@
-from src.extensions import db
+from extensions import db
 from sqlalchemy import asc, desc
 from sqlalchemy.dialects.postgresql import UUID
-from src.config import Config
+from config import Config
 
 
 class Tenant(db.Model):

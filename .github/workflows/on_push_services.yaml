@@ -60,6 +60,32 @@ jobs:
       image_version: ${{ steps.builder.outputs.image_version }}
       buildtime: ${{ steps.builder.outputs.buildtime }}
 
+  build_innkeeper:
+    name: 'Build Innkeeper Service'
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2  
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            src:
+              - './services/innkeeper/**'          
+      - name: Build service
+        if: steps.changes.outputs.src == 'true'
+        uses: ./.github/actions/build_service
+        id: builder
+        with:
+          context: './services/innkeeper'
+          image_name: ${{ github.repository_owner}}/traction-innkeeper
+          registry: ghcr.io
+          registry_username: ${{ github.actor}}          
+          registry_password: ${{ secrets.GITHUB_TOKEN }}
+    outputs:
+      image_tag: ${{ steps.builder.outputs.image_tag }}
+      image_version: ${{ steps.builder.outputs.image_version }}
+      buildtime: ${{ steps.builder.outputs.buildtime }}
+
   update_manifest:
     name: Update manifests
     runs-on: ubuntu-20.04

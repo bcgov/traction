@@ -1,6 +1,6 @@
 from marshmallow import Schema, fields
 
-from src.schemas.pagination import PaginationSchema
+from api.schemas.pagination import PaginationSchema
 
 
 class AccessKeySchema(Schema):

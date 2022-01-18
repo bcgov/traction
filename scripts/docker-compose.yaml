@@ -12,12 +12,14 @@ services:
       - POSTGRESQL_DB=${VERIFIER_PSQL_DB}
       - POSTGRESQL_USER=${VERIFIER_PSQL_USER}
       - POSTGRESQL_PASSWORD=${VERIFIER_PSQL_PASS}
+      - POSTGRESQL_SCHEMA=${VERIFIER_PSQL_SCHEMA}
     ports:
       - ${VERIFIER_SERVICE_PORT}:5000
     extra_hosts:
      - host.docker.internal:host-gateway
     volumes:
      - ../services/verifier:/app:rw
+
   holder:
     build:
       context: ../services/holder
@@ -30,18 +32,44 @@ services:
       - POSTGRESQL_DB=${HOLDER_PSQL_DB}
       - POSTGRESQL_USER=${HOLDER_PSQL_USER}
       - POSTGRESQL_PASSWORD=${HOLDER_PSQL_PASS}
+      - POSTGRESQL_SCHEMA=${HOLDER_PSQL_SCHEMA}
     ports:
       - ${HOLDER_SERVICE_PORT}:5000
     extra_hosts:
      - host.docker.internal:host-gateway
     volumes:
     - ../services/holder:/app:rw
+
+  innkeeper:
+    build:
+      context: ../services/innkeeper
+      dockerfile: Dockerfile
+    depends_on:
+      - traction-agent
+    environment:
+      - POSTGRESQL_HOST=${POSTGRESQL_HOST}
+      - POSTGRESQL_PORT=${POSTGRESQL_PORT}      
+      - POSTGRESQL_DB=${INNKEEPER_PSQL_DB}
+      - POSTGRESQL_USER=${INNKEEPER_PSQL_USER}
+      - POSTGRESQL_PASSWORD=${INNKEEPER_PSQL_PASS}
+      - POSTGRESQL_SCHEMA=${INNKEEPER_PSQL_SCHEMA}
+      - INNKEEPER_ADMIN_KEY=${INNKEEPER_ADMIN_KEY}
+      - ACAPY_ADMIN_URL=${ACAPY_ADMIN_URL}
+      - ACAPY_ADMIN_URL_API_KEY=${ACAPY_ADMIN_URL_API_KEY}
+    ports:
+      - ${INNKEEPER_SERVICE_PORT}:5000
+    extra_hosts:
+     - host.docker.internal:host-gateway
+    volumes:
+    - ../services/innkeeper:/app:rw
+
   traction-agent:
     image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.2
     depends_on:
+      endorser-agent:
+        condition: service_started
       traction-db:
         condition: service_healthy
-      endorser-agent:
     ports:
       - ${ACAPY_ADMIN_PORT}:${ACAPY_ADMIN_PORT}
       - ${ACAPY_HTTP_PORT}:${ACAPY_HTTP_PORT}
@@ -77,6 +105,7 @@ services:
       - "./acapy-static-args.yml:/home/indy/acapy-static-args.yml"
     extra_hosts:
      - host.docker.internal:host-gateway
+
   traction-db:
     image: "postgres:11.14-alpine"
     environment:
@@ -85,7 +114,12 @@ services:
       - ${POSTGRESQL_PORT}:5432
     volumes:
       - traction-wallet:/var/lib/postgresql/data
-
+      - ./db_init.sql:/docker-entrypoint-initdb.d/1-init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   endorser-agent:
     image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.2

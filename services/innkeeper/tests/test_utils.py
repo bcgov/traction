@@ -1,4 +1,4 @@
-from src.utils import hash_password, check_password
+from api.utils import hash_password, check_password
 
 PASSWORD = "password"
 

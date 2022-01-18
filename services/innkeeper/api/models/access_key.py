@@ -1,7 +1,7 @@
-from src.extensions import db
+from extensions import db
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import desc
-from src.config import Config
+from config import Config
 
 
 class AccessKey(db.Model):

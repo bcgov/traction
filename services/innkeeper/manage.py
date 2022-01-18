@@ -1,7 +1,7 @@
 import click
 from flask.cli import with_appcontext
 from config import Config
-from src.utils import check_password, hash_password
+from api.utils import check_password, hash_password
 
 
 @click.group()
@@ -13,8 +13,8 @@ def cli():
 @with_appcontext
 def init():
     """Create a new admin access key"""
-    from src.extensions import db
-    from src.models import AccessKey
+    from extensions import db
+    from api.models import AccessKey
 
     access_key = AccessKey.get_by_is_admin(True)
     if not access_key:

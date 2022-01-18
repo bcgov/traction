@@ -3,7 +3,7 @@ from flask import Flask
 
 from config import Config
 from extensions import db, migrate, api
-from src.resources.tenant import (
+from api.resources.tenant import (
     TenantListResource,
     TenantResource,
     TenantAccessKeyListResource,
@@ -26,12 +26,7 @@ def register_extensions(app):
 
 
 def register_resources(app):
-    api.init_app(app)
     api.add_resource(TenantListResource, "/tenants")
     api.add_resource(TenantResource, "/tenants/<uuid:tenant_id>")
     api.add_resource(TenantAccessKeyListResource, "/tenants/<uuid:tenant_id>/keys")
-
-
-if __name__ == "__main__":
-    app = create_app()
-    app.run()
+    api.init_app(app)

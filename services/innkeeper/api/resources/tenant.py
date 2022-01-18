@@ -9,10 +9,10 @@ from marshmallow import ValidationError
 from webargs import fields
 from webargs.flaskparser import use_kwargs
 
-from src.models import Tenant, AccessKey
-from src.schemas.access_key import AccessKeyCreatedSchema, AccessKeyPaginationSchema
-from src.schemas.tenant import TenantSchema, TenantPaginationSchema, TenantCreatedSchema
-from src.utils import hash_password
+from api.models import Tenant, AccessKey
+from api.schemas.access_key import AccessKeyCreatedSchema, AccessKeyPaginationSchema
+from api.schemas.tenant import TenantSchema, TenantPaginationSchema, TenantCreatedSchema
+from api.utils import hash_password
 
 from flask import current_app
 

@@ -1,0 +1,6 @@
+Dockerfile
+__pycache__/
+.tox/
+.coverage
+tests/
+venv/
