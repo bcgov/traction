@@ -112,4 +112,7 @@ jobs:
           yq eval '.verifier.image.tag = "${{ needs.build_verifier.outputs.image_tag }}"' -i ./charts-repo/charts/traction/values-pr.yaml
           yq eval '.verifier.image.version = "${{ needs.build_verifier.outputs.image_version }}"' -i ./charts-repo/charts/traction/values-pr.yaml
           yq eval '.verifier.image.buildtime = "${{ needs.build_verifier.outputs.buildtime }}"' -i ./charts-repo/charts/traction/values-pr.yaml
+          yq eval '.innkeeper.image.tag = "${{ needs.build_innkeeper.outputs.image_tag }}"' -i ./charts-repo/charts/traction/values-pr.yaml
+          yq eval '.innkeeper.image.version = "${{ needs.build_innkeeper.outputs.image_version }}"' -i ./charts-repo/charts/traction/values-pr.yaml
+          yq eval '.innkeeper.image.buildtime = "${{ needs.build_innkeeper.outputs.buildtime }}"' -i ./charts-repo/charts/traction/values-pr.yaml
           helm upgrade -f ./charts-repo/charts/traction/values.yaml -f ./charts-repo/charts/traction/values-pr.yaml pr-${{ github.event.number }}-traction ./charts-repo/charts/traction --install --wait

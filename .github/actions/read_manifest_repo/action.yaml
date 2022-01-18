@@ -43,6 +43,15 @@ outputs:
   verifier_image_buildtime:
     description: "Verifier Image Buildtime"
     value: ${{ steps.values.outputs.verifier_image_buildtime }}
+  innkeeper_image_tag:
+    description: "Innkeeper Image Tag"
+    value: ${{ steps.values.outputs.innkeeper_image_tag }}
+  innkeeper_image_version:
+    description: "Innkeeper Image Version"
+    value: ${{ steps.values.outputs.innkeeper_image_version }}
+  innkeeper_image_buildtime:
+    description: "Innkeeper Image Buildtime"
+    value: ${{ steps.values.outputs.innkeeper_image_buildtime }}
 
 runs:
   using: "composite"
@@ -90,6 +99,21 @@ runs:
       uses: mikefarah/yq@master
       with:
         cmd: yq eval '.verifier.image.buildtime' './${{ inputs.repository_checkout_path }}/${{ inputs.charts_path }}/values-${{ inputs.target }}.yaml'      
+    
+    - id: innkeeper_image_tag
+      uses: mikefarah/yq@master
+      with:
+        cmd: yq eval '.innkeeper.image.tag' './${{ inputs.repository_checkout_path }}/${{ inputs.charts_path }}/values-${{ inputs.target }}.yaml'      
+
+    - id: innkeeper_image_version
+      uses: mikefarah/yq@master
+      with:
+        cmd: yq eval '.innkeeper.image.version' './${{ inputs.repository_checkout_path }}/${{ inputs.charts_path }}/values-${{ inputs.target }}.yaml'      
+
+    - id: innkeeper_image_buildtime
+      uses: mikefarah/yq@master
+      with:
+        cmd: yq eval '.innkeeper.image.buildtime' './${{ inputs.repository_checkout_path }}/${{ inputs.charts_path }}/values-${{ inputs.target }}.yaml'      
 
     - id: values
       name: Set output values 
@@ -102,3 +126,6 @@ runs:
         echo "::set-output name=verifier_image_tag::${{ steps.verifier_image_tag.outputs.result }}"
         echo "::set-output name=verifier_image_version::${{ steps.verifier_image_version.outputs.result }}"
         echo "::set-output name=verifier_image_buildtime::${{ steps.verifier_image_buildtime.outputs.result }}"
+        echo "::set-output name=innkeeper_image_tag::${{ steps.innkeeper_image_tag.outputs.result }}"
+        echo "::set-output name=innkeeper_image_version::${{ steps.innkeeper_image_version.outputs.result }}"
+        echo "::set-output name=innkeeper_image_buildtime::${{ steps.innkeeper_image_buildtime.outputs.result }}"

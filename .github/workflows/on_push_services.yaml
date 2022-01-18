@@ -117,6 +117,9 @@ jobs:
           verifier_image_tag: ${{ needs.build_verifier.outputs.image_tag }}
           verifier_image_version: ${{ needs.build_verifier.outputs.image_version }}
           verifier_image_buildtime: ${{ needs.build_verifier.outputs.buildtime }}
+          innkeeper_image_tag: ${{ needs.build_innkeeper.outputs.image_tag }}
+          innkeeper_image_version: ${{ needs.build_innkeeper.outputs.image_version }}
+          innkeeper_image_buildtime: ${{ needs.build_innkeeper.outputs.buildtime }}
 
 
 

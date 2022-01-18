@@ -87,4 +87,7 @@ jobs:
           verifier_image_tag: ${{ steps.read_repo.outputs.verifier_image_tag }}
           verifier_image_version: ${{ steps.read_repo.outputs.verifier_image_version }}
           verifier_image_buildtime: ${{ steps.read_repo.outputs.verifier_image_buildtime }}
+          innkeeper_image_tag: ${{ steps.read_repo.outputs.innkeeper_image_tag }}
+          innkeeper_image_version: ${{ steps.read_repo.outputs.innkeeper_image_version }}
+          innkeeper_image_buildtime: ${{ steps.read_repo.outputs.innkeeper_image_buildtime }}
 

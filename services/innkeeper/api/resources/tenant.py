@@ -65,7 +65,11 @@ class TenantListResource(Resource):
 
             # create a tenant in acapy - move to service
             url = f"{current_app.config['ACAPY_ADMIN_URL']}/multitenancy/wallet"
-            headers = {"accept": "application/json", "Content-Type": "application/json"}
+            headers = {
+                "accept": "application/json",
+                "Content-Type": "application/json",
+                "X-API-Key": current_app.config["ACAPY_ADMIN_URL_API_KEY"]
+            }
             data = {
                 "label": tenant.name,
                 "wallet_key": str(uuid.uuid4()),
