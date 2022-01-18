@@ -41,6 +41,7 @@ services:
     depends_on:
       traction-db:
         condition: service_healthy
+      endorser-agent:
     ports:
       - ${ACAPY_ADMIN_PORT}:${ACAPY_ADMIN_PORT}
       - ${ACAPY_HTTP_PORT}:${ACAPY_HTTP_PORT}
@@ -84,11 +85,42 @@ services:
       - ${POSTGRESQL_PORT}:5432
     volumes:
       - traction-wallet:/var/lib/postgresql/data
-      - ./db_init.sql:/docker-entrypoint-initdb.d/1-init.sql
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+
+
+  endorser-agent:
+    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.2
+    ports:
+      - ${ACAPY_ENDORSER_ADMIN_PORT}:${ACAPY_ENDORSER_ADMIN_PORT}
+      - ${ACAPY_ENDORSER_HTTP_PORT}:${ACAPY_ENDORSER_HTTP_PORT}
+    entrypoint: /bin/bash
+    command: [
+        "-c",
+        "sleep 5;
+        aca-py start \
+        --auto-provision
+        --arg-file endorser-acapy-args.yml \
+        --inbound-transport http '0.0.0.0' ${ACAPY_ENDORSER_HTTP_PORT} \
+        --webhook-url http://verifier:5000/log \
+        --webhook-url http://holder:5000/log \
+        --genesis-url '${ACAPY_GENESIS_URL}' \
+        --endpoint ${ACAPY_ENDORSER_ENDPOINT} \
+        --wallet-name '${ACAPY_WALLET_DATABASE}' \
+        --wallet-key '${ACAPY_WALLET_ENCRYPTION_KEY}' \
+        --wallet-name endorser-wallet  \
+        --seed '${ACAPY_ENDORSER_SEED}' \
+        --admin '0.0.0.0' ${ACAPY_ENDORSER_ADMIN_PORT} \
+        --label '${AGENT_NAME}' \
+        ${ACAPY_ADMIN_CONFIG} \
+        ${ACAPY_READ_ONLY_MODE} \
+        ${ACAPY_TAILS_BASE_URL} \       
+        ${ACAPY_TAILS_UPLOAD_URL} \   
+        "
+    ]
+    volumes:
+      - "./endorser-acapy-args.yml:/home/indy/endorser-acapy-args.yml"
+    extra_hosts:
+     - host.docker.internal:host-gateway
+
 volumes:
   traction-wallet:
+  endorser-wallet:
