@@ -39,7 +39,8 @@ services:
   traction-agent:
     image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.2
     depends_on:
-      - traction-db
+      traction-db:
+        condition: service_healthy
     ports:
       - ${ACAPY_ADMIN_PORT}:${ACAPY_ADMIN_PORT}
       - ${ACAPY_HTTP_PORT}:${ACAPY_HTTP_PORT}
@@ -62,7 +63,9 @@ services:
         --wallet-storage-creds '{\"account\":\"${POSTGRESQL_USER}\",\"password\":\"${POSTGRESQL_PASSWORD}\",\"admin_account\":\"${POSTGRESQL_USER}\",\"admin_password\":\"${POSTGRESQL_PASSWORD}\"}' \
         --wallet-name traction-wallet  \
         --admin '0.0.0.0' ${ACAPY_ADMIN_PORT} \
+        --emit-new-didcomm-prefix \
         --label '${AGENT_NAME}' \
+        --jwt-secret '${JWT_SECRET}' \
         ${ACAPY_ADMIN_CONFIG} \
         ${ACAPY_READ_ONLY_MODE} \
         ${ACAPY_TAILS_BASE_URL} \       
@@ -74,13 +77,18 @@ services:
     extra_hosts:
      - host.docker.internal:host-gateway
   traction-db:
-    image: "postgres:12-alpine"
+    image: "postgres:11.14-alpine"
     environment:
-      - POSTGRES_USER=${POSTGRESQL_USER}
       - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
     ports:
       - ${POSTGRESQL_PORT}:5432
     volumes:
       - traction-wallet:/var/lib/postgresql/data
+      - ./db_init.sql:/docker-entrypoint-initdb.d/1-init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 volumes:
   traction-wallet:
