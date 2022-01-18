@@ -10,7 +10,7 @@ from webargs import fields
 from webargs.flaskparser import use_kwargs
 
 from src.models import Tenant, AccessKey
-from src.schemas.access_key import AccessKeyPaginationSchema
+from src.schemas.access_key import AccessKeyCreatedSchema, AccessKeyPaginationSchema
 from src.schemas.tenant import TenantSchema, TenantPaginationSchema, TenantCreatedSchema
 from src.utils import hash_password
 
@@ -21,6 +21,7 @@ resource_new_schema = TenantCreatedSchema()
 resource_list_schema = TenantSchema(many=True)
 resource_pagination_schema = TenantPaginationSchema()
 
+access_key_new_schema = AccessKeyCreatedSchema()
 access_key_pagination_schema = AccessKeyPaginationSchema()
 
 
@@ -119,3 +120,24 @@ class TenantAccessKeyListResource(Resource):
         )
 
         return access_key_pagination_schema.dump(paginated_recipes), HTTPStatus.OK
+
+    def post(self, tenant_id):
+
+        tenant = Tenant.get_by_id(tenant_id)
+        if tenant is None:
+            return {"message": "Tenant not found"}, HTTPStatus.NOT_FOUND
+
+        # generate and add a new access key for this tenant
+        tenant_password = str(uuid.uuid4())
+        tenant_access_key = AccessKey(
+            password=hash_password(tenant_password),
+            is_active=tenant.is_active,
+            tenant_id=tenant.id,
+        )
+        tenant_access_key.save()
+
+        # for the return, we want to show the unencrypted password...
+        return (
+            access_key_new_schema.dump({"access_key": tenant_password}),
+            HTTPStatus.OK,
+        )

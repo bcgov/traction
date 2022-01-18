@@ -8,8 +8,6 @@ class AccessKeySchema(Schema):
         ordered = True
 
     id = fields.UUID(dump_only=True)
-    password = fields.String()
-    permissions = fields.Raw()
     is_admin = fields.Boolean(dump_only=True)
     is_active = fields.Boolean(dump_only=True)
 
@@ -21,3 +19,7 @@ class AccessKeySchema(Schema):
 
 class AccessKeyPaginationSchema(PaginationSchema):
     data = fields.Nested(AccessKeySchema, attribute="items", many=True)
+
+
+class AccessKeyCreatedSchema(Schema):
+    access_key = fields.String()

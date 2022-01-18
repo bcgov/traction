@@ -15,7 +15,6 @@ class AccessKey(db.Model):
     )
 
     password = db.Column(db.String(200))
-    permissions = db.Column(db.JSON(none_as_null=True))
     is_admin = db.Column(db.Boolean(), default=False)
     is_active = db.Column(db.Boolean(), default=False)
 

@@ -1,9 +1,8 @@
 from flask import Flask
-from flask_migrate import Migrate
-from flask_restful import Api
+
 
 from config import Config
-from extensions import db
+from extensions import db, migrate, api
 from src.resources.tenant import (
     TenantListResource,
     TenantResource,
@@ -23,11 +22,11 @@ def create_app():
 
 def register_extensions(app):
     db.init_app(app)
-    Migrate(app, db)
+    migrate.init_app(app, db)
 
 
 def register_resources(app):
-    api = Api(app)
+    api.init_app(app)
     api.add_resource(TenantListResource, "/tenants")
     api.add_resource(TenantResource, "/tenants/<uuid:tenant_id>")
     api.add_resource(TenantAccessKeyListResource, "/tenants/<uuid:tenant_id>/keys")

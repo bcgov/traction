@@ -53,8 +53,7 @@ def upgrade():
             primary_key=True,
             server_default=sa.text("public.gen_random_uuid()"),
         ),
-        sa.Column("password", sa.String(length=200), nullable=True),
-        sa.Column("permissions", sa.JSON(none_as_null=True), nullable=True),
+        sa.Column("password", sa.String(length=256), nullable=True),
         sa.Column("is_admin", sa.Boolean(), nullable=True),
         sa.Column("is_active", sa.Boolean(), nullable=True),
         sa.Column(
