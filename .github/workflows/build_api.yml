@@ -1,0 +1,24 @@
+name: Install/upgrade PR Instance
+on:
+  workflow_dispatch:
+
+jobs:
+
+  build_api:
+    name: 'Build Traction API'
+    runs-on: ubuntu-20.04
+    steps:      
+      - uses: actions/checkout@v2        
+      - name: Build service
+        uses: ./.github/actions/build_service
+        id: builder
+        with:
+          context: './services/traction'
+          image_name: ${{ github.repository_owner}}/traction-api
+          registry: ghcr.io
+          registry_username: ${{ github.repository_owner}}          
+          registry_password: ${{ secrets.GITHUB_TOKEN }}
+    outputs:
+      image_tag: ${{ steps.builder.outputs.image_tag }}
+      image_version: ${{ steps.builder.outputs.image_version }}
+      buildtime: ${{ steps.builder.outputs.buildtime }}
