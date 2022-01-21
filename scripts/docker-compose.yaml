@@ -1,7 +1,6 @@
 version: "3.9"
 services:
-
-  traction_backend:
+  traction-api:
     build:
       context: ../services/traction
       dockerfile: Dockerfile
@@ -11,10 +10,11 @@ services:
       - POSTGRESQL_HOST=${POSTGRESQL_HOST}
       - POSTGRESQL_PORT=${POSTGRESQL_PORT}      
       - POSTGRESQL_DB=${TRACTION_PSQL_DB}
-      - POSTGRESQL_USER=${TRACTION_PSQL_USER}
-      - POSTGRESQL_PASSWORD=${TRACTION_PSQL_PASS}
-      - POSTGRESQL_SCHEMA=${TRACTION_PSQL_SCHEMA}
-      - INNKEEPER_ADMIN_KEY=${INNKEEPER_ADMIN_KEY}
+      - TRACTION_DB_ADMIN=${TRACTION_PSQL_ADMIN}
+      - TRACTION_DB_ADMIN_PWD=${TRACTION_PSQL_ADMIN_PWD}
+      - TRACTION_DB_USER=${TRACTION_PSQL_USER}
+      - TRACTION_DB_USER_PWD=${TRACTION_PSQL_USER_PWD}
+      - TRACTION_API_ADMIN_KEY=${TRACTION_API_ADMIN_KEY}
       - ACAPY_ADMIN_URL=${ACAPY_ADMIN_URL}
       - ACAPY_ADMIN_URL_API_KEY=${ACAPY_ADMIN_URL_API_KEY}
     ports:
@@ -42,8 +42,7 @@ services:
         --auto-provision
         --arg-file acapy-static-args.yml \
         --inbound-transport http '0.0.0.0' ${ACAPY_HTTP_PORT} \
-        --webhook-url http://verifier:5000/log \
-        --webhook-url http://holder:5000/log \
+        --webhook-url http://traction-api:5000/log \
         --genesis-url '${ACAPY_GENESIS_URL}' \
         --endpoint ${ACAPY_ENDPOINT} \
         --wallet-name '${ACAPY_WALLET_DATABASE}' \
@@ -68,7 +67,7 @@ services:
      - host.docker.internal:host-gateway
 
   traction-db:
-    image: "postgres:11.14-alpine"
+    image: "postgres:12"
     environment:
       - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
     ports:

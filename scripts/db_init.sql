@@ -1,28 +1,12 @@
-CREATE USER tractionuser PASSWORD 'tractionPass';
-CREATE USER holderuser PASSWORD 'holderPass';
-CREATE USER verifieruser PASSWORD 'verifierPass';
-CREATE USER issueruser PASSWORD 'issuerPass';
-CREATE USER innkeeperuser PASSWORD 'innkeeperPass';
 CREATE DATABASE traction;
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
+CREATE USER tractionadminuser PASSWORD 'tractionadminPass';
+CREATE USER tractionuser PASSWORD 'tractionPass';
+ALTER DATABASE traction OWNER TO tractionadminuser;
 \connect traction
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
-CREATE SCHEMA IF NOT EXISTS holder AUTHORIZATION holderuser;
-CREATE SCHEMA IF NOT EXISTS verifier AUTHORIZATION verifieruser;
-CREATE SCHEMA IF NOT EXISTS issuer AUTHORIZATION issueruser;
-CREATE SCHEMA IF NOT EXISTS innkeeper AUTHORIZATION innkeeperuser;
-CREATE SCHEMA IF NOT EXISTS traction AUTHORIZATION tractionuser;
-GRANT USAGE ON SCHEMA holder TO tractionuser;
-GRANT USAGE ON SCHEMA verifier TO tractionuser;
-GRANT USAGE ON SCHEMA issuer TO tractionuser;
-ALTER DEFAULT PRIVILEGES FOR USER holderuser IN SCHEMA holder GRANT SELECT ON TABLES TO tractionuser;
-ALTER DEFAULT PRIVILEGES FOR USER verifieruser IN SCHEMA verifier GRANT SELECT ON TABLES TO tractionuser;
-ALTER DEFAULT PRIVILEGES FOR USER issueruser IN SCHEMA issuer GRANT SELECT ON TABLES TO tractionuser;
-GRANT USAGE ON SCHEMA innkeeper TO holderuser;
-GRANT USAGE ON SCHEMA innkeeper TO verifieruser;
-GRANT USAGE ON SCHEMA innkeeper TO issueruser;
-GRANT USAGE ON SCHEMA innkeeper TO tractionuser;
-ALTER DEFAULT PRIVILEGES FOR USER innkeeperuser IN SCHEMA innkeeper GRANT SELECT ON TABLES TO holderuser;
-ALTER DEFAULT PRIVILEGES FOR USER innkeeperuser IN SCHEMA innkeeper GRANT SELECT ON TABLES TO verifieruser;
-ALTER DEFAULT PRIVILEGES FOR USER innkeeperuser IN SCHEMA innkeeper GRANT SELECT ON TABLES TO issueruser;
-ALTER DEFAULT PRIVILEGES FOR USER innkeeperuser IN SCHEMA innkeeper GRANT SELECT ON TABLES TO tractionuser;
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+GRANT USAGE ON SCHEMA public TO tractionadminuser;
+GRANT USAGE ON SCHEMA public TO tractionuser;
+GRANT ALL ON SCHEMA public TO tractionadminuser;
+ALTER DEFAULT PRIVILEGES FOR USER tractionadminuser IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO tractionuser;
+

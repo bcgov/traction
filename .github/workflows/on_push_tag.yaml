@@ -81,13 +81,7 @@ jobs:
           repository_key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
           repository: ${{ secrets.MANIFEST_REPO }}
           release_version: ${{ needs.init.outputs.version }}
-          holder_image_tag: ${{ steps.read_repo.outputs.holder_image_tag }}
-          holder_image_version: ${{ steps.read_repo.outputs.holder_image_version }}
-          holder_image_buildtime: ${{ steps.read_repo.outputs.holder_image_buildtime }}
-          verifier_image_tag: ${{ steps.read_repo.outputs.verifier_image_tag }}
-          verifier_image_version: ${{ steps.read_repo.outputs.verifier_image_version }}
-          verifier_image_buildtime: ${{ steps.read_repo.outputs.verifier_image_buildtime }}
-          innkeeper_image_tag: ${{ steps.read_repo.outputs.innkeeper_image_tag }}
-          innkeeper_image_version: ${{ steps.read_repo.outputs.innkeeper_image_version }}
-          innkeeper_image_buildtime: ${{ steps.read_repo.outputs.innkeeper_image_buildtime }}
+          api_image_tag: ${{ steps.read_repo.outputs.api_image_tag }}
+          api_image_version: ${{ steps.read_repo.outputs.api_image_version }}
+          api_image_buildtime: ${{ steps.read_repo.outputs.api_image_buildtime }}
 

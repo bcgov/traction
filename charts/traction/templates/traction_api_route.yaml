@@ -1,0 +1,22 @@
+{{- if .Values.traction_api.openshift.route.enabled -}}
+{{- $fullName := include "traction_api.fullname" . -}}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "traction_api.fullname" . }}
+  annotations:
+    haproxy.router.openshift.io/timeout: {{ .Values.traction_api.openshift.route.timeout }}
+  labels:
+    {{- include "traction_api.labels" . | nindent 4 }}
+spec:
+  host: {{ include "traction_api.host" . | quote }}
+  path: {{ .Values.traction_api.openshift.route.path }}
+  to:
+    kind: Service
+    name: {{ $fullName }}
+    weight: 100
+  port:
+    targetPort: {{ .Values.traction_api.openshift.route.targetPort }}
+  wildcardPolicy: {{ .Values.traction_api.openshift.route.wildcardPolicy }}
+{{ include "traction_api.openshift.route.tls" . | indent 2}}
+{{- end }}
