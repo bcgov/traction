@@ -1,4 +1,3 @@
-import os
 from config import Config
 from sqlmodel import create_engine, SQLModel, Session
 

@@ -1,5 +1,4 @@
 import requests
-from typing import Optional
 from http import HTTPStatus
 
 from fastapi import Depends, APIRouter, HTTPException

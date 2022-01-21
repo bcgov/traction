@@ -1,8 +1,9 @@
 from datetime import datetime
 from uuid import UUID, uuid4
 from sqlalchemy.dialects.postgresql import UUID as SA_UUID
-from sqlalchemy import UniqueConstraint, Column, String, DateTime, text
+from sqlalchemy import UniqueConstraint, Column, DateTime, text
 from sqlmodel import SQLModel, Field, Session
+
 
 # shared between pydantic and SQLAlchemy models
 class TenantBase(SQLModel):
