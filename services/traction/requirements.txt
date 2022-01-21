@@ -1,3 +1,14 @@
 uvicorn[standard]
 gunicorn
 fastapi
+sqlmodel
+alembic==1.7.5
+click==8.0.3
+greenlet==1.1.2
+itsdangerous==2.0.1
+Jinja2==3.0.3
+Mako==1.1.6
+MarkupSafe==2.0.1
+psycopg2==2.9.2
+SQLAlchemy==1.4.27
+Werkzeug==2.0.2
