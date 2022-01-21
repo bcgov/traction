@@ -14,6 +14,7 @@ from config import Config
 
 router = APIRouter()
 
+
 @router.get("/all", response_model=list[Tenant])
 def get_all_tenants(session: Session = Depends(get_session)):
     result = session.execute(select(Tenant))
@@ -21,12 +22,14 @@ def get_all_tenants(session: Session = Depends(get_session)):
     return tenants
 
 
-@router.post("/",response_model=Tenant)
-def create_new_tenant(newTenant: TenantCreate, session: Session = Depends(get_session)):    
+@router.post("/", response_model=Tenant)
+def create_new_tenant(newTenant: TenantCreate, session: Session = Depends(get_session)):
     tenant = Tenant(name=newTenant.name)
-    #Check unique name
+    # Check unique name
     if Tenant.get_by_name(db=session, name=tenant.name):
-        raise HTTPException(status_code=HTTPStatus.CONFLICT, detail="name already in use")
+        raise HTTPException(
+            status_code=HTTPStatus.CONFLICT, detail="name already in use"
+        )
 
     # Call ACAPY
     url = f"{Config.ACAPY_ADMIN_URL}/multitenancy/wallet"
@@ -36,12 +39,12 @@ def create_new_tenant(newTenant: TenantCreate, session: Session = Depends(get_se
         "wallet_name": str(tenant.wallet_id),
     }
     response = requests.post(url=url, headers=au.get_acapy_headers(), json=data)
-    
+
     if response.ok:
         session.add(tenant)
         session.commit()
         session.refresh(tenant)
-    else :
+    else:
         return {
             "message": "Error creating tenant",
             "errors": response.text,
