@@ -8,7 +8,7 @@ from sqlmodel import SQLModel, Field, Session
 # shared between pydantic and SQLAlchemy models
 class TenantBase(SQLModel):
     name: str
-    wallet_id: UUID = Field(default_factory=uuid4)
+    wallet_id: UUID
     created_at: datetime = Field(default_factory=datetime.now)
     # sqlmodel.Field() doesn't have auto-update columns yet.
     updated_at: datetime = Field(

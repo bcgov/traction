@@ -1,4 +1,4 @@
-import requests
+import requests, uuid
 from http import HTTPStatus
 
 from fastapi import Depends, APIRouter, HTTPException
@@ -24,6 +24,7 @@ def get_all_tenants(session: Session = Depends(get_session)):
 @router.post("/", response_model=Tenant)
 def create_new_tenant(newTenant: TenantCreate, session: Session = Depends(get_session)):
     tenant = Tenant(name=newTenant.name)
+    print(tenant)
     # Check unique name
     if Tenant.get_by_name(db=session, name=tenant.name):
         raise HTTPException(
@@ -34,12 +35,17 @@ def create_new_tenant(newTenant: TenantCreate, session: Session = Depends(get_se
     url = f"{Config.ACAPY_ADMIN_URL}/multitenancy/wallet"
     data = {
         "label": newTenant.name,
-        "wallet_key": str(tenant.wallet_id),
-        "wallet_name": str(tenant.wallet_id),
+        "wallet_key": str(uuid.uuid4()),
+        "wallet_name": str(uuid.uuid4()),
     }
+    print(data)
     response = requests.post(url=url, headers=au.get_acapy_headers(), json=data)
-
+    print(response.content)
     if response.ok:
+        r_json = response.json()
+        # save acapy generated wallet_id
+        tenant.wallet_id = r_json["wallet_id"]
+
         session.add(tenant)
         session.commit()
         session.refresh(tenant)
