@@ -1,6 +1,7 @@
 from sqlalchemy import asc, desc
 from uuid import UUID
-from sqlalchemy import UniqueConstraint, Column, String, DateTime
+from sqlalchemy.dialects.postgresql import UUID as SA_UUID
+from sqlalchemy import UniqueConstraint, Column, String, DateTime, text
 from datetime import datetime
 
 from sqlmodel import SQLModel,Field
@@ -20,7 +21,10 @@ class TenantBase(SQLModel):
 
 # SQLAlchemy Models, to be saved in DB
 class Tenant(TenantBase, table=True):
-    id : int = Field(default=None, primary_key=True)
+    id : UUID = Field(sa_column=Column(SA_UUID(as_uuid=True),
+        server_default=text("public.gen_random_uuid()"),
+        primary_key=True,
+    ))
     is_active: bool
 
 # Pydantic Models, for everything else
