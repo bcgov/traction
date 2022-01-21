@@ -12,3 +12,4 @@ MarkupSafe==2.0.1
 psycopg2==2.9.2
 SQLAlchemy==1.4.27
 Werkzeug==2.0.2
+requests

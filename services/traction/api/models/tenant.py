@@ -22,6 +22,8 @@ class TenantBase(SQLModel):
 
 # SQLAlchemy Models, to be saved in DB
 class Tenant(TenantBase, table=True):
+    __table_args__ = (UniqueConstraint("name"),)
+
     id : UUID = Field(sa_column=Column(SA_UUID(as_uuid=True),
         server_default=text("public.gen_random_uuid()"),
         primary_key=True,
