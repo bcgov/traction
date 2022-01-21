@@ -1,11 +1,8 @@
-from ssl import create_default_context
-from sqlalchemy import asc, desc
+from datetime import datetime
 from uuid import UUID, uuid4
 from sqlalchemy.dialects.postgresql import UUID as SA_UUID
 from sqlalchemy import UniqueConstraint, Column, String, DateTime, text
-from datetime import datetime
-
-from sqlmodel import SQLModel,Field
+from sqlmodel import SQLModel,Field, Session
 
 #shared between pydantic and SQLAlchemy models
 class TenantBase(SQLModel):
@@ -29,6 +26,13 @@ class Tenant(TenantBase, table=True):
         primary_key=True,
     ))
     is_active: bool = Field(default=True)
+
+
+    @classmethod
+    def get_by_name(cls, db: Session, name: str):
+        return db.query(cls).filter_by(name=name).first()
+        
+
 
 # Pydantic Models, for everything else? not sure how to hide items, would prefer
 #class TenantCreate(TenantBase):
