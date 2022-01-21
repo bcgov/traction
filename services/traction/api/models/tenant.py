@@ -1,8 +1,6 @@
-from turtle import update
-from extensions import db
 from sqlalchemy import asc, desc
-from sqlalchemy.dialects.postgresql import UUID
-from config import Config
+from uuid import UUID
+from sqlalchemy import UniqueConstraint, Column, String, DateTime
 from datetime import datetime
 
 from sqlmodel import SQLModel,Field
@@ -11,8 +9,14 @@ from sqlmodel import SQLModel,Field
 class TenantBase(SQLModel):
     name: str
     wallet_id: UUID
-    created_at: datetime = Field(default_factory=db.func.now())
-    updated_at: datetime = Field(default_factory=db.func.now(), update=db.func.now())
+    created_at: datetime = Field(default_factory=datetime.now())
+    #sqlmodel.Field() doesn't have auto-update columns yet.
+    updated_at: datetime = Field(sa_column=Column(
+        DateTime(),
+        nullable=False,
+        default=datetime.now(),
+        onupdate=datetime.now()
+    ))
 
 # SQLAlchemy Models, to be saved in DB
 class Tenant(TenantBase, table=True):
