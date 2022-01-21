@@ -1,0 +1,11 @@
+global:
+  fullnameOverride: "pr-00-traction"
+  ingressSuffix: -tools.apps.silver.devops.gov.bc.ca
+postgresql:
+  fullnameOverride: 'pr-00-traction'
+traction_api:
+  image:
+    tag: "ghcr.io/bcgov/traction-api:sha-0bd01da"
+    version: 'sha-0bd01da'
+    buildtime: '2022-01-20T22:37:11.102Z'
+    pullPolicy: IfNotPresent

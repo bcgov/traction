@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "traction_api.fullname" . }}
+  labels:
+    {{- include "traction_api.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "traction_api.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/traction_api_configmap.yaml") . | sha256sum }} 
+    {{- with .Values.traction_api.podAnnotations -}}  
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "traction_api.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.traction_api.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "traction_api.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.traction_api.podSecurityContext | nindent 8 }}
+      containers:
+        - name: traction-api
+          securityContext:
+            {{- toYaml .Values.traction_api.securityContext | nindent 12 }}
+          image: "{{ .Values.traction_api.image.tag }}"
+          imagePullPolicy: {{ .Values.traction_api.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 60
+            periodSeconds: 10  
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 60
+            periodSeconds: 30   
+          env:
+            - name: TRACTION_ADMIN_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "traction_api.secret.name" . }}
+                  key: api_admin_key
+            - name: ACAPY_ADMIN_URL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "acapy.api.secret.name" . }}
+                  key: adminurl
+            - name: ACAPY_ADMIN_URL
+              value: {{ include "acapy.internal.admin.url" . }}
+            - name: POSTGRESQL_HOST
+              value: {{ include "global.postgresql.fullname" . }}
+            - name: POSTGRESQL_PORT
+              value: {{ .Values.postgresql.service.port | quote }}
+            - name: POSTGRESQL_DB
+              value: {{ .Values.postgresql.postgresqlDatabase }}
+            - name: POSTGRESQL_ADMIN_USER
+              value: {{ .Values.traction_api.db.admin }}
+            - name: POSTGRESQL_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "traction_api.secret.name" . }}
+                  key: admin_pwd
+            - name: POSTGRESQL_USER
+              value: {{ .Values.traction_api.db.user }}
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "traction_api.secret.name" . }}
+                  key: user_pwd
+            {{- include "traction_api.configmap.env.vars" . | nindent 10}}
+          resources:
+            {{- toYaml .Values.traction_api.resources | nindent 12 }}
+      {{- with .Values.traction_api.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.traction_api.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.traction_api.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
