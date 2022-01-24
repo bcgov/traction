@@ -27,7 +27,6 @@ async def create_new_tenant(
     newTenant: TenantCreate, session: AsyncSession = Depends(get_session)
 ):
     tenant = Tenant(name=newTenant.name)
-    print(tenant)
     # Check unique name
     if await Tenant.get_by_name(db=session, name=tenant.name):
         raise HTTPException(
@@ -41,22 +40,18 @@ async def create_new_tenant(
         "wallet_key": str(uuid.uuid4()),
         "wallet_name": str(uuid.uuid4()),
     }
-    print(data)
     response = requests.post(url=url, headers=au.get_acapy_headers(), json=data)
-    print(response.content)
     if response.ok:
         r_json = response.json()
         # save acapy generated wallet_id
         tenant.wallet_id = r_json["wallet_id"]
-        print(tenant)
         session.add(tenant)
-        session.commit()
-        session.refresh(tenant)
+        await session.commit()
+        await session.refresh(tenant)
     else:
         return {
             "message": "Error creating tenant",
             "errors": response.text,
         }, HTTPStatus.BAD_REQUEST
 
-    print("returning" + tenant)
     return tenant
