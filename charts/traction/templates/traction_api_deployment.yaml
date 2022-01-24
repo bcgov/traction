@@ -48,7 +48,7 @@ spec:
             initialDelaySeconds: 60
             periodSeconds: 30   
           env:
-            - name: TRACTION_ADMIN_API_KEY
+            - name: TRACTION_API_ADMIN_KEY
               valueFrom:
                 secretKeyRef:
                   name: {{ template "traction_api.secret.name" . }}
@@ -66,16 +66,16 @@ spec:
               value: {{ .Values.postgresql.service.port | quote }}
             - name: POSTGRESQL_DB
               value: {{ .Values.postgresql.postgresqlDatabase }}
-            - name: POSTGRESQL_ADMIN_USER
+            - name: TRACTION_DB_ADMIN
               value: {{ .Values.traction_api.db.admin }}
-            - name: POSTGRESQL_ADMIN_PASSWORD
+            - name: TRACTION_DB_ADMIN_PWD
               valueFrom:
                 secretKeyRef:
                   name: {{ template "traction_api.secret.name" . }}
                   key: admin_pwd
-            - name: POSTGRESQL_USER
+            - name: TRACTION_DB_USER
               value: {{ .Values.traction_api.db.user }}
-            - name: POSTGRESQL_PASSWORD
+            - name: TRACTION_DB_USER_PWD
               valueFrom:
                 secretKeyRef:
                   name: {{ template "traction_api.secret.name" . }}

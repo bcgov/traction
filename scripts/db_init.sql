@@ -9,4 +9,6 @@ GRANT USAGE ON SCHEMA public TO tractionadminuser;
 GRANT USAGE ON SCHEMA public TO tractionuser;
 GRANT ALL ON SCHEMA public TO tractionadminuser;
 ALTER DEFAULT PRIVILEGES FOR USER tractionadminuser IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO tractionuser;
+ALTER DEFAULT PRIVILEGES FOR USER tractionadminuser IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO tractionuser;
+ALTER DEFAULT PRIVILEGES FOR USER tractionadminuser IN SCHEMA public GRANT EXECUTE ON FUNCTIONS TO tractionuser;
 
