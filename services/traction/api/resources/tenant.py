@@ -15,7 +15,7 @@ from config import Config
 router = APIRouter()
 
 
-@router.get("/all", response_model=list[Tenant])
+@router.get("/", response_model=list[Tenant])
 def get_all_tenants(session: Session = Depends(get_session)):
     result = session.execute(select(Tenant))
     tenants = result.scalars().all()
