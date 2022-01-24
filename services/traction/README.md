@@ -9,9 +9,10 @@ tox -e lint
 tox -e test
 ```
 
-how to generate new alembic revision
+how to generate new alembic revision, from /scripts folder
 
-```docker-compose exec scripts_traciton-api_1 alembic --revision --autogenerate -m "<MIGRATION COMMENT HERE>"
+```
+docker-compose exec traction-api alembic revision --autogenerate -m "<MIGRATION COMMENT HERE>"
 
 ```
 
