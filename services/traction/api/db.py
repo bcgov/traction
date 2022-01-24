@@ -1,14 +1,16 @@
 from config import Config
-from sqlmodel import create_engine, SQLModel, Session
 
-engine = create_engine(Config.SQLALCHEMY_DATABASE_URI, echo=True)
-admin_engine = create_engine(Config.SQLALCHEMY_DATABASE_ADMIN_URI, echo=True)
-
-
-def init_db():
-    SQLModel.metadata.create_all(admin_engine)
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import sessionmaker
 
 
-def get_session():
-    with Session(engine) as session:
+engine = create_async_engine(Config.SQLALCHEMY_DATABASE_URI, echo=True, future=True)
+admin_engine = create_async_engine(
+    Config.SQLALCHEMY_DATABASE_ADMIN_URI, echo=True, future=True
+)
+
+
+async def get_session() -> AsyncSession:
+    async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+    async with async_session() as session:
         yield session
