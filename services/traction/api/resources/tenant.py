@@ -1,8 +1,12 @@
 import requests
 import uuid
+from enum import Enum
 from http import HTTPStatus
+import json
+from typing import Optional
 
 from fastapi import Depends, APIRouter, HTTPException
+from pydantic import BaseModel
 from sqlalchemy import select
 from sqlmodel import Session
 
@@ -15,11 +19,26 @@ from config import Config
 router = APIRouter()
 
 
+class TenantWallet(BaseModel):
+    created_at: str
+    key_management_mode: str
+    settings: dict
+    state: Optional[str] = None
+    updated_at: str
+    wallet_id: str
+
+
 @router.get("/", response_model=list[Tenant])
 def get_all_tenants(session: Session = Depends(get_session)):
     result = session.execute(select(Tenant))
     tenants = result.scalars().all()
     return tenants
+
+
+@router.get("/{wallet_id}", response_model=TenantWallet)
+async def get_tenant(wallet_id: str):
+    result = await au.acapy_agency_GET("multitenancy/wallet/" + wallet_id)
+    return result
 
 
 @router.post("/", response_model=Tenant)

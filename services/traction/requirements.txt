@@ -1,3 +1,4 @@
+aiohttp~=3.7.4
 alembic==1.7.5
 anyio==3.5.0
 asgiref==3.4.1
@@ -24,6 +25,7 @@ SQLAlchemy==1.4.27
 sqlalchemy2-stubs==0.0.2a19
 sqlmodel==0.0.6
 starlette==0.17.1
+starlette-context==0.3.3
 typing_extensions==4.0.1
 urllib3==1.26.8
 uvicorn==0.17.0
