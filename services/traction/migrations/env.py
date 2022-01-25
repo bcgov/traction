@@ -74,7 +74,9 @@ async def run_migrations_online():
     configuration["sqlalchemy.url"] = app_config.SQLALCHEMY_DATABASE_ADMIN_URI
     connectable = AsyncEngine(
         engine_from_config(
-            configuration, prefix="sqlalchemy.", poolclass=pool.NullPool,
+            configuration,
+            prefix="sqlalchemy.",
+            poolclass=pool.NullPool,
             future=True,
         )
     )

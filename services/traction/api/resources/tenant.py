@@ -1,8 +1,6 @@
 import requests
 import uuid
-from enum import Enum
 from http import HTTPStatus
-import json
 from typing import Optional
 
 from fastapi import Depends, APIRouter, HTTPException

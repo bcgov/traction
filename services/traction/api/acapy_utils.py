@@ -1,10 +1,6 @@
 from aiohttp import (
-    web,
     ClientSession,
-    ClientRequest,
     ClientResponse,
-    ClientError,
-    ClientTimeout,
 )
 import json
 from starlette_context import context
@@ -27,11 +23,12 @@ def get_acapy_headers(headers=None, tenant=False) -> dict:
         headers["Authorization"] = "Bearer " + context.data.get("TENANT_WALLET_TOKEN")
     return headers
 
+
 def is_tenant() -> bool:
     """
     Check if running in aca-py tenant mode.
     """
-    return (context.data.get("TENANT_WALLET_TOKEN") is not None)
+    return context.data.get("TENANT_WALLET_TOKEN") is not None
 
 
 async def acapy_admin_request(
@@ -56,11 +53,15 @@ async def acapy_admin_request(
     """
     params = {k: v for (k, v) in (params or {}).items() if v is not None}
     url = f"{Config.ACAPY_ADMIN_URL}/{path}"
-    
+
     # TODO where should this live, and how do we want to handle HTTP sessions?
     client_session: ClientSession = ClientSession()
     async with client_session.request(
-        method, url, json=data, params=params, headers=get_acapy_headers(headers, tenant)
+        method,
+        url,
+        json=data,
+        params=params,
+        headers=get_acapy_headers(headers, tenant),
     ) as resp:
         resp_text = await resp.text()
         try:
@@ -77,6 +78,7 @@ async def acapy_admin_request(
                 raise Exception(f"Error decoding JSON: {resp_text}") from e
         return resp_text
 
+
 async def acapy_agency_GET(
     path, text=False, params=None, headers=None
 ) -> ClientResponse:
@@ -90,6 +92,7 @@ async def acapy_agency_GET(
         "GET", path, data=None, text=text, params=params, headers=headers, tenant=False
     )
     return response
+
 
 async def acapy_agency_POST(
     path, data=None, text=False, params=None, headers=None
@@ -105,6 +108,7 @@ async def acapy_agency_POST(
     )
     return response
 
+
 async def acapy_agency_PUT(
     path, data=None, text=False, params=None, headers=None
 ) -> ClientResponse:
@@ -119,9 +123,8 @@ async def acapy_agency_PUT(
     )
     return response
 
-async def acapy_GET(
-    path, text=False, params=None, headers=None
-) -> ClientResponse:
+
+async def acapy_GET(path, text=False, params=None, headers=None) -> ClientResponse:
     """
     Call an Aca-Py tenant endpoint using GET method.
     """
@@ -132,6 +135,7 @@ async def acapy_GET(
         "GET", path, data=None, text=text, params=params, headers=headers, tenant=True
     )
     return response
+
 
 async def acapy_POST(
     path, data=None, text=False, params=None, headers=None
@@ -147,9 +151,8 @@ async def acapy_POST(
     )
     return response
 
-async def acapy_PATCH(
-    path, text=False, params=None, headers=None
-) -> ClientResponse:
+
+async def acapy_PATCH(path, text=False, params=None, headers=None) -> ClientResponse:
     """
     Call an Aca-Py tenant endpoint using PATCH method.
     """
@@ -160,6 +163,7 @@ async def acapy_PATCH(
         "PATCH", path, data=None, text=text, params=params, headers=headers, tenant=True
     )
     return response
+
 
 async def acapy_PUT(
     path, data=None, text=False, params=None, headers=None
@@ -175,7 +179,7 @@ async def acapy_PUT(
     )
     return response
 
+
 # TODO in case we need them, we have implemented these specific utility functions previously:
 # async def admin_GET_FILE(self, path, params=None, headers=None) -> bytes:
 # async def admin_PUT_FILE(self, files, url, params=None, headers=None) -> bytes:
-

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from starlette.middleware import Middleware
-from starlette_context import context, plugins
+from starlette_context import plugins
 from starlette_context.middleware import RawContextMiddleware
 
 from api.resources.ledger import router as ledger_router
@@ -12,10 +12,7 @@ from api.models import tenant  # noqa F401
 middleware = [
     Middleware(
         RawContextMiddleware,
-        plugins=(
-            plugins.RequestIdPlugin(),
-            plugins.CorrelationIdPlugin()
-        )
+        plugins=(plugins.RequestIdPlugin(), plugins.CorrelationIdPlugin()),
     )
 ]
 
