@@ -19,8 +19,12 @@ def get_acapy_headers(headers=None, tenant=False) -> dict:
         headers["Content-Type"] = "application/json"
     if Config.ACAPY_ADMIN_URL_API_KEY:
         headers["X-API-Key"] = Config.ACAPY_ADMIN_URL_API_KEY
-    if tenant and context.data.get("TENANT_WALLET_TOKEN"):
-        headers["Authorization"] = "Bearer " + context.data.get("TENANT_WALLET_TOKEN")
+    try:
+        if tenant and context.get("TENANT_WALLET_TOKEN"):
+            headers["Authorization"] = "Bearer " + context.get("TENANT_WALLET_TOKEN")
+    except Exeption as e:
+        # TODO bit of a hack, throws an exception if the middlewares are called in teh wrong order
+        pass
     return headers
 
 
@@ -28,7 +32,11 @@ def is_tenant() -> bool:
     """
     Check if running in aca-py tenant mode.
     """
-    return context.data.get("TENANT_WALLET_TOKEN") is not None
+    try:
+        return context.get("TENANT_WALLET_TOKEN") is not None
+    except:
+        # TODO bit of a hack, throws an exception if the middlewares are called in teh wrong order
+        return False
 
 
 async def acapy_admin_request(
@@ -55,28 +63,29 @@ async def acapy_admin_request(
     url = f"{Config.ACAPY_ADMIN_URL}/{path}"
 
     # TODO where should this live, and how do we want to handle HTTP sessions?
-    client_session: ClientSession = ClientSession()
-    async with client_session.request(
-        method,
-        url,
-        json=data,
-        params=params,
-        headers=get_acapy_headers(headers, tenant),
-    ) as resp:
-        resp_text = await resp.text()
-        try:
-            resp.raise_for_status()
-        except Exception as e:
-            # try to retrieve and print text on error
-            raise Exception(f"Error: {resp_text}") from e
-        if not resp_text and not text:
-            return None
-        if not text:
+    async with ClientSession() as client_session:
+        headers = get_acapy_headers(headers, tenant)
+        async with client_session.request(
+            method,
+            url,
+            json=data,
+            params=params,
+            headers=headers,
+        ) as resp:
+            resp_text = await resp.text()
             try:
-                return json.loads(resp_text)
-            except json.JSONDecodeError as e:
-                raise Exception(f"Error decoding JSON: {resp_text}") from e
-        return resp_text
+                resp.raise_for_status()
+            except Exception as e:
+                # try to retrieve and print text on error
+                raise Exception(f"Error: {resp_text}") from e
+            if not resp_text and not text:
+                return None
+            if not text:
+                try:
+                    return json.loads(resp_text)
+                except json.JSONDecodeError as e:
+                    raise Exception(f"Error decoding JSON: {resp_text}") from e
+            return resp_text
 
 
 async def acapy_agency_GET(

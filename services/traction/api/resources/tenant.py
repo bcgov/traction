@@ -57,6 +57,8 @@ async def create_new_tenant(
         "wallet_key": str(uuid.uuid4()),
         "wallet_name": str(uuid.uuid4()),
     }
+    # TODO hack for now
+    data["wallet_key"] = data["wallet_name"]
     response = requests.post(url=url, headers=au.get_acapy_headers(), json=data)
     if response.ok:
         r_json = response.json()

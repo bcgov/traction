@@ -25,5 +25,5 @@ async def get_did_endpoint(did: str, endpoint_type: Optional[DIDEndpointType] = 
     params = {"did": did}
     if endpoint_type:
         params["endpoint_type"] = endpoint_type.value
-    endpoint = await au.acapy_GET("/ledger/did-endpoint", params=params)
+    endpoint = await au.acapy_GET("ledger/did-endpoint", params=params)
     return endpoint
