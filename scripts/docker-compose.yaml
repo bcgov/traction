@@ -6,7 +6,12 @@ services:
       context: ../services/traction
       dockerfile: Dockerfile
     depends_on:
-      - traction-agent
+      endorser-agent:
+        condition: service_started
+      traction-agent:
+        condition: service_started
+      traction-db:
+        condition: service_healthy
     environment:
       - POSTGRESQL_HOST=${POSTGRESQL_HOST}
       - POSTGRESQL_PORT=${POSTGRESQL_PORT}
@@ -18,6 +23,7 @@ services:
       - TRACTION_API_ADMIN_KEY=${TRACTION_API_ADMIN_KEY}
       - ACAPY_ADMIN_URL=${ACAPY_ADMIN_URL}
       - ACAPY_ADMIN_URL_API_KEY=${ACAPY_ADMIN_URL_API_KEY}
+      - ENVIRONMENT=production
     ports:
       - ${TRACTION_SERVICE_PORT}:5000
     extra_hosts:
