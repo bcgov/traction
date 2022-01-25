@@ -5,8 +5,6 @@ services:
     build:
       context: ../services/traction
       dockerfile: Dockerfile
-    # https://github.com/benoitc/gunicorn/issues/2339#issuecomment-651270632 for development use uvicorn
-    entrypoint: bash -c "alembic upgrade head && uvicorn api.main:app --reload --host 0.0.0.0 --port 5000 --log-level info"
     depends_on:
       - traction-agent
     environment:
