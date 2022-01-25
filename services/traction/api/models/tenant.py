@@ -1,8 +1,12 @@
 from datetime import datetime
 from uuid import UUID
+
 from sqlalchemy.dialects.postgresql import UUID as SA_UUID
 from sqlalchemy import UniqueConstraint, Column, DateTime, text
-from sqlmodel import SQLModel, Field, Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+
+from sqlmodel import SQLModel, Field
 
 
 # shared between pydantic and SQLAlchemy models
@@ -32,8 +36,10 @@ class Tenant(TenantBase, table=True):
     is_active: bool = Field(default=True)
 
     @classmethod
-    def get_by_name(cls, db: Session, name: str):
-        return db.query(cls).filter_by(name=name).first()
+    async def get_by_name(cls, db: AsyncSession, name: str):
+        q = select(cls).where(cls.name == name)
+        result = await db.execute(q)
+        return result.scalars().first()
 
 
 # Pydantic Models, for everything else? not sure how to hide items, would prefer

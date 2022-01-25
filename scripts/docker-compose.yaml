@@ -4,11 +4,13 @@ services:
     build:
       context: ../services/traction
       dockerfile: Dockerfile
+    # https://github.com/benoitc/gunicorn/issues/2339#issuecomment-651270632 for development use uvicorn
+    entrypoint: bash -c "alembic upgrade head && uvicorn api.main:app --reload --host 0.0.0.0 --port 5000 --log-level info"
     depends_on:
       - traction-agent
     environment:
       - POSTGRESQL_HOST=${POSTGRESQL_HOST}
-      - POSTGRESQL_PORT=${POSTGRESQL_PORT}      
+      - POSTGRESQL_PORT=${POSTGRESQL_PORT}
       - POSTGRESQL_DB=${TRACTION_PSQL_DB}
       - TRACTION_DB_ADMIN=${TRACTION_PSQL_ADMIN}
       - TRACTION_DB_ADMIN_PWD=${TRACTION_PSQL_ADMIN_PWD}
@@ -20,9 +22,9 @@ services:
     ports:
       - ${TRACTION_SERVICE_PORT}:5000
     extra_hosts:
-     - host.docker.internal:host-gateway
+      - host.docker.internal:host-gateway
     volumes:
-    - ../services/traction:/app:rw
+      - ../services/traction:/app:rw
 
   traction-agent:
     image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.2
@@ -57,14 +59,14 @@ services:
         --jwt-secret '${JWT_SECRET}' \
         ${ACAPY_ADMIN_CONFIG} \
         ${ACAPY_READ_ONLY_MODE} \
-        ${ACAPY_TAILS_BASE_URL} \       
-        ${ACAPY_TAILS_UPLOAD_URL} \   
-        "
-    ]
+        ${ACAPY_TAILS_BASE_URL} \
+        ${ACAPY_TAILS_UPLOAD_URL} \
+        ",
+      ]
     volumes:
       - "./acapy-static-args.yml:/home/indy/acapy-static-args.yml"
     extra_hosts:
-     - host.docker.internal:host-gateway
+      - host.docker.internal:host-gateway
 
   traction-db:
     image: "postgres:12"
@@ -106,14 +108,14 @@ services:
         --label '${AGENT_NAME}' \
         ${ACAPY_ADMIN_CONFIG} \
         ${ACAPY_READ_ONLY_MODE} \
-        ${ACAPY_TAILS_BASE_URL} \       
-        ${ACAPY_TAILS_UPLOAD_URL} \   
-        "
-    ]
+        ${ACAPY_TAILS_BASE_URL} \
+        ${ACAPY_TAILS_UPLOAD_URL} \
+        ",
+      ]
     volumes:
       - "./endorser-acapy-args.yml:/home/indy/endorser-acapy-args.yml"
     extra_hosts:
-     - host.docker.internal:host-gateway
+      - host.docker.internal:host-gateway
 
 volumes:
   traction-wallet:

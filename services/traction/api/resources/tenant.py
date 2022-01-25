@@ -8,7 +8,7 @@ from typing import Optional
 from fastapi import Depends, APIRouter, HTTPException
 from pydantic import BaseModel
 from sqlalchemy import select
-from sqlmodel import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.db import get_session
 from api.models.tenant import Tenant, TenantCreate
@@ -29,8 +29,8 @@ class TenantWallet(BaseModel):
 
 
 @router.get("/", response_model=list[Tenant])
-def get_all_tenants(session: Session = Depends(get_session)):
-    result = session.execute(select(Tenant))
+async def get_all_tenants(session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(Tenant))
     tenants = result.scalars().all()
     return tenants
 
@@ -42,11 +42,12 @@ async def get_tenant(wallet_id: str):
 
 
 @router.post("/", response_model=Tenant)
-def create_new_tenant(newTenant: TenantCreate, session: Session = Depends(get_session)):
+async def create_new_tenant(
+    newTenant: TenantCreate, session: AsyncSession = Depends(get_session)
+):
     tenant = Tenant(name=newTenant.name)
-    print(tenant)
     # Check unique name
-    if Tenant.get_by_name(db=session, name=tenant.name):
+    if await Tenant.get_by_name(db=session, name=tenant.name):
         raise HTTPException(
             status_code=HTTPStatus.CONFLICT, detail="name already in use"
         )
@@ -58,17 +59,14 @@ def create_new_tenant(newTenant: TenantCreate, session: Session = Depends(get_se
         "wallet_key": str(uuid.uuid4()),
         "wallet_name": str(uuid.uuid4()),
     }
-    print(data)
     response = requests.post(url=url, headers=au.get_acapy_headers(), json=data)
-    print(response.content)
     if response.ok:
         r_json = response.json()
         # save acapy generated wallet_id
         tenant.wallet_id = r_json["wallet_id"]
-
         session.add(tenant)
-        session.commit()
-        session.refresh(tenant)
+        await session.commit()
+        await session.refresh(tenant)
     else:
         return {
             "message": "Error creating tenant",
