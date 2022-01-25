@@ -1,6 +1,7 @@
 version: "3.9"
 services:
   traction-api:
+    profiles: ["traction"]
     build:
       context: ../services/traction
       dockerfile: Dockerfile
