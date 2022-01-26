@@ -9,11 +9,11 @@ from alembic import context
 sys.path = ["", ".."] + sys.path[1:]  # TODO: Fix it
 
 from api.core.config import settings  # noqa
-from api.db.base import Base  # noqa
+from api.db.models import TractionSQLModel  # noqa
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.SQLALCHEMY_DATABASE_ADMIN_URI)
-target_metadata = Base.metadata
+target_metadata = TractionSQLModel.metadata
 
 fileConfig(config.config_file_name)
 
@@ -36,6 +36,7 @@ def run_migrations_offline():
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        compare_type=True,
     )
 
     with context.begin_transaction():
