@@ -1,13 +1,17 @@
 version: "3.9"
 services:
   traction-api:
+    profiles: ["traction"]
     build:
       context: ../services/traction
       dockerfile: Dockerfile
-    # https://github.com/benoitc/gunicorn/issues/2339#issuecomment-651270632 for development use uvicorn
-    entrypoint: bash -c "alembic upgrade head && uvicorn api.main:app --reload --host 0.0.0.0 --port 5000 --log-level info"
     depends_on:
-      - traction-agent
+      endorser-agent:
+        condition: service_started
+      traction-agent:
+        condition: service_started
+      traction-db:
+        condition: service_healthy
     environment:
       - POSTGRESQL_HOST=${POSTGRESQL_HOST}
       - POSTGRESQL_PORT=${POSTGRESQL_PORT}
@@ -19,6 +23,7 @@ services:
       - TRACTION_API_ADMIN_KEY=${TRACTION_API_ADMIN_KEY}
       - ACAPY_ADMIN_URL=${ACAPY_ADMIN_URL}
       - ACAPY_ADMIN_URL_API_KEY=${ACAPY_ADMIN_URL_API_KEY}
+      - ENVIRONMENT=production
     ports:
       - ${TRACTION_SERVICE_PORT}:5000
     extra_hosts:
