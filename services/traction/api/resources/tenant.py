@@ -1,7 +1,6 @@
 import requests
 import uuid
 from http import HTTPStatus
-from typing import Optional
 
 from fastapi import Depends, APIRouter, HTTPException
 from pydantic import BaseModel
@@ -21,7 +20,7 @@ class TenantWallet(BaseModel):
     created_at: str
     key_management_mode: str
     settings: dict
-    state: Optional[str] = None
+    state: str | None = None
     updated_at: str
     wallet_id: str
 

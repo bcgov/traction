@@ -22,7 +22,7 @@ def get_acapy_headers(headers=None, tenant=False) -> dict:
     try:
         if tenant and context.get("TENANT_WALLET_TOKEN"):
             headers["Authorization"] = "Bearer " + context.get("TENANT_WALLET_TOKEN")
-    except Exeption as e:
+    except Exception:
         # TODO bit of a hack, throws an exception if the middlewares are called in teh wrong order
         pass
     return headers
@@ -34,7 +34,7 @@ def is_tenant() -> bool:
     """
     try:
         return context.get("TENANT_WALLET_TOKEN") is not None
-    except:
+    except Exception:
         # TODO bit of a hack, throws an exception if the middlewares are called in teh wrong order
         return False
 
