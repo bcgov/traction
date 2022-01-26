@@ -13,7 +13,7 @@ from starlette.requests import Request
 from starlette.responses import Response
 
 from api import acapy_utils as au
-from config import Config
+from api.core.config import settings
 
 
 class TenantToken(BaseModel):
@@ -40,7 +40,7 @@ class JWTTFetchingMiddleware(BaseHTTPMiddleware):
         if auth_header and auth_header.startswith("Bearer "):
             token = auth_header.replace("Bearer ", "")
             payload = jwt.decode(
-                token, Config.JWT_SECRET_KEY, algorithms=[Config.JWT_ALGORITHM]
+                token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
             )
             wallet_token: str = payload.get("key")
 
@@ -79,6 +79,6 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
         expire = datetime.utcnow() + timedelta(minutes=15)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(
-        to_encode, Config.JWT_SECRET_KEY, algorithm=Config.JWT_ALGORITHM
+        to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM
     )
     return encoded_jwt

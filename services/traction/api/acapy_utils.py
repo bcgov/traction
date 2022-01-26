@@ -5,7 +5,7 @@ from aiohttp import (
 import json
 from starlette_context import context
 
-from config import Config
+from api.core.config import settings
 
 
 def get_acapy_headers(headers=None, tenant=False) -> dict:
@@ -17,8 +17,8 @@ def get_acapy_headers(headers=None, tenant=False) -> dict:
         headers["accept"] = "application/json"
     if not headers.get("Content-Type"):
         headers["Content-Type"] = "application/json"
-    if Config.ACAPY_ADMIN_URL_API_KEY:
-        headers["X-API-Key"] = Config.ACAPY_ADMIN_URL_API_KEY
+    if settings.ACAPY_ADMIN_URL_API_KEY:
+        headers["X-API-Key"] = settings.ACAPY_ADMIN_URL_API_KEY
     try:
         if tenant and context.get("TENANT_WALLET_TOKEN"):
             headers["Authorization"] = "Bearer " + context.get("TENANT_WALLET_TOKEN")
@@ -60,7 +60,7 @@ async def acapy_admin_request(
         aiohttp response object
     """
     params = {k: v for (k, v) in (params or {}).items() if v is not None}
-    url = f"{Config.ACAPY_ADMIN_URL}/{path}"
+    url = f"{settings.ACAPY_ADMIN_URL}/{path}"
 
     # TODO where should this live, and how do we want to handle HTTP sessions?
     async with ClientSession() as client_session:

@@ -1,22 +1,28 @@
+import os
+import time
 from datetime import timedelta
 
-from fastapi import Depends, FastAPI, HTTPException, status
+import uvicorn
+from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette.middleware import Middleware
+from starlette.responses import JSONResponse
 from starlette_context import plugins
 from starlette_context.middleware import RawContextMiddleware
 
-from api.resources.connections import router as connections_router
-from api.resources.ledger import router as ledger_router
-from api.resources.tenant import router as tenant_router
+from api.db.errors import DoesNotExist, AlreadyExists
+from api.endpoints.routes.api import api_router
 from api.tenant_security import (
     TenantToken,
     authenticate_tenant,
     create_access_token,
     JWTTFetchingMiddleware,
 )
-from config import Config
+from api.core.config import settings
 
+
+os.environ["TZ"] = settings.TIMEZONE
+time.tzset()
 
 middleware = [
     Middleware(
@@ -26,16 +32,40 @@ middleware = [
     Middleware(JWTTFetchingMiddleware),
 ]
 
-app = FastAPI(middleware=middleware)
 
-app.include_router(connections_router, prefix="/connections")
-app.include_router(ledger_router, prefix="/ledger")
-app.include_router(tenant_router, prefix="/tenant")
+def get_application() -> FastAPI:
+    application = FastAPI(
+        title=settings.TITLE,
+        description=settings.DESCRIPTION,
+        debug=settings.DEBUG,
+        middleware=middleware,
+    )
+    application.include_router(api_router, prefix=settings.API_V1_STR)
+    return application
 
 
-@app.get("/")
-async def hello_world():
-    return {"hello": "world"}
+app = get_application()
+
+
+@app.exception_handler(DoesNotExist)
+async def does_not_exist_exception_handler(request: Request, exc: DoesNotExist):
+    return JSONResponse(
+        status_code=status.HTTP_404_NOT_FOUND,
+        content={"message": str(exc)},
+    )
+
+
+@app.exception_handler(AlreadyExists)
+async def already_exists_exception_handler(request: Request, exc: AlreadyExists):
+    return JSONResponse(
+        status_code=status.HTTP_409_CONFLICT,
+        content={"message": str(exc)},
+    )
+
+
+@app.get("/", tags=["liveness"])
+def main():
+    return {"status": "ok"}
 
 
 @app.post("/token", response_model=TenantToken)
@@ -47,9 +77,14 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
             detail="Incorrect wallet_id or wallet_key",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token_expires = timedelta(minutes=Config.JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": tenant["wallet_id"], "key": tenant["wallet_token"]},
         expires_delta=access_token_expires,
     )
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+if __name__ == "__main__":
+    print("main.....")
+    uvicorn.run(app, host="0.0.0.0", port=8080)
