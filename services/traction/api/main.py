@@ -6,6 +6,7 @@ from starlette.middleware import Middleware
 from starlette_context import plugins
 from starlette_context.middleware import RawContextMiddleware
 
+from api.resources.connections import router as connections_router
 from api.resources.ledger import router as ledger_router
 from api.resources.tenant import router as tenant_router
 from api.tenant_security import (
@@ -27,6 +28,7 @@ middleware = [
 
 app = FastAPI(middleware=middleware)
 
+app.include_router(connections_router, prefix="/connections")
 app.include_router(ledger_router, prefix="/ledger")
 app.include_router(tenant_router, prefix="/tenant")
 

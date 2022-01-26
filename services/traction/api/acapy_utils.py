@@ -189,6 +189,19 @@ async def acapy_PUT(
     return response
 
 
+async def acapy_DELETE(path, text=False, headers=None) -> ClientResponse:
+    """
+    Call an Aca-Py tenant endpoint using DELETE method.
+    """
+
+    if not is_tenant():
+        raise Exception("Error can't call tenant admin when accessing as an innkeeper")
+    response = await acapy_admin_request(
+        "DELETE", path, data=None, text=text, params=None, headers=headers, tenant=True
+    )
+    return response
+
+
 # TODO in case we need them, we have implemented these specific utility functions previously:
 # async def admin_GET_FILE(self, path, params=None, headers=None) -> bytes:
 # async def admin_PUT_FILE(self, files, url, params=None, headers=None) -> bytes:

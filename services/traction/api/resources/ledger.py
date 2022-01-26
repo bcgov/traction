@@ -27,9 +27,9 @@ class DIDEndpointType(str, Enum):
 async def get_did_endpoint(
     did: str,
     endpoint_type: Optional[DIDEndpointType] = None,
+    # note we don't need the token here but we need to make sure it gets set
     _token: str = Depends(oauth2_scheme),
 ):
-    # note we don't need the token here but we want to make sure it gets set
     params = {"did": did}
     if endpoint_type:
         params["endpoint_type"] = endpoint_type.value
