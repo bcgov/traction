@@ -60,6 +60,7 @@ class Connection(BaseModel):
     their_role: str | None = None
     updated_at: str
 
+
 class Invitation(BaseModel):
     connection_id: str
     invitation: dict
@@ -98,7 +99,9 @@ async def create_invitation(
     _token: str = Depends(oauth2_scheme),
 ):
     params = {"alias": alias}
-    invitation = await au.acapy_POST("connections/create-invitation", data={}, params=params)
+    invitation = await au.acapy_POST(
+        "connections/create-invitation", data={}, params=params
+    )
     return invitation
 
 
@@ -112,4 +115,3 @@ async def receive_invitation(
     params = {"alias": alias}
     connection = await au.acapy_POST("connections/receive-invitation", data=payload, params=params)
     return connection
-

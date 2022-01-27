@@ -207,11 +207,11 @@ postgresql:
 
   resources:
     limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
       cpu: 100m
       memory: 384Mi
-    requests:
-      cpu: 50m
-      memory: 256Mi
 
 traction_api:
   image:
@@ -224,6 +224,7 @@ traction_api:
     ledger:
       browserUrlOverride: ""
       genesisUrlOverride: ""
+    gunicornWorkers: 4
   db:
     admin: tractionadminuser
     user: tractionuser
@@ -273,11 +274,11 @@ traction_api:
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
     # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
     limits:
-      cpu: 100m
-      memory: 384Mi
+      cpu: 500m
+      memory: 1G
     requests:
-      cpu: 50m
-      memory: 256Mi
+      cpu: 200m
+      memory: 512Mi
 
   nodeSelector: {}
 
