@@ -113,5 +113,7 @@ async def receive_invitation(
     _token: str = Depends(oauth2_scheme),
 ):
     params = {"alias": alias}
-    connection = await au.acapy_POST("connections/receive-invitation", data=payload, params=params)
+    connection = await au.acapy_POST(
+        "connections/receive-invitation", data=payload, params=params
+    )
     return connection
