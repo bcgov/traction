@@ -28,7 +28,7 @@ async def create_new_tenant(
             "wallet_name": wallet_name,
             "wallet_type": "indy",
             "wallet_dispatch_type": "both",
-            "wallet_webhook_urls": [settings.TRACTION_TENANT_WEBHOOK_URL,],
+            "wallet_webhook_urls": [settings.TRACTION_TENANT_WEBHOOK_URL, ],
         }
         response = requests.post(url=url, headers=au.get_acapy_headers(), json=data)
         if response.ok:
