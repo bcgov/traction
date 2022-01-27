@@ -224,7 +224,7 @@ traction_api:
     ledger:
       browserUrlOverride: ""
       genesisUrlOverride: ""
-    gunicorn_workers: 4
+    gunicornWorkers: 4
   db:
     admin: tractionadminuser
     user: tractionuser
