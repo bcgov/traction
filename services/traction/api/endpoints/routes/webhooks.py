@@ -1,8 +1,11 @@
 from enum import Enum
 from typing import Optional
+import logging
 
 from fastapi import APIRouter, Header
 
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -30,7 +33,7 @@ class WebhookTopicType(str, Enum):
 @router.post("/topic/{topic}/", response_model=dict)
 async def process_webhook(topic: WebhookTopicType, payload: dict):
     """Called by aca-py agent."""
-    print(">>> Called webhook for innkeeper:", topic)
+    logger.warn(f">>> Called webhook for innkeeper: {topic}")
 
 
 @router.post("/tenant/topic/{topic}/", response_model=dict)
@@ -38,4 +41,4 @@ async def process_tenant_webhook(
     topic: str, payload: dict, x_wallet_id: Optional[str] = Header(None)
 ):
     """Called by aca-py agent."""
-    print(">>> Called webhook for tenant:", x_wallet_id, topic)
+    logger.warn(f">>> Called webhook for tenant: {x_wallet_id} {topic}")

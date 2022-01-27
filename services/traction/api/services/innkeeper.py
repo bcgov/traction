@@ -27,7 +27,7 @@ async def create_new_tenant(
             "wallet_key": wallet_key,
             "wallet_name": wallet_name,
             "wallet_type": "indy",
-            "wallet_dispatch_type": "both",
+            "wallet_dispatch_type": "default",
             "wallet_webhook_urls": [
                 settings.TRACTION_TENANT_WEBHOOK_URL,
             ],
