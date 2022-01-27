@@ -23,6 +23,7 @@ services:
       - ACAPY_ADMIN_URL=${ACAPY_ADMIN_URL}
       - ACAPY_ADMIN_URL_API_KEY=${ACAPY_ADMIN_URL_API_KEY}
       - ENVIRONMENT=production
+      - WEB_CONCURRENCY=${GUNICORN_WORKERS}
     ports:
       - ${TRACTION_SERVICE_PORT}:5000
     extra_hosts:

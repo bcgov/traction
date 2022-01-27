@@ -224,6 +224,7 @@ traction_api:
     ledger:
       browserUrlOverride: ""
       genesisUrlOverride: ""
+    gunicorn_workers: 4
   db:
     admin: tractionadminuser
     user: tractionuser
@@ -273,11 +274,11 @@ traction_api:
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
     # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
     limits:
-      cpu: 100m
-      memory: 384Mi
+      cpu: 500m
+      memory: 1G
     requests:
-      cpu: 50m
-      memory: 256Mi
+      cpu: 250m
+      memory: 512Mi
 
   nodeSelector: {}
 
