@@ -58,6 +58,11 @@ class GlobalConfig(BaseSettings):
     # Api V1 prefix
     API_V1_STR = "/v1"
 
+    # openssl rand -hex 32
+    JWT_SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
+    JWT_ALGORITHM = "HS256"
+    JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 300
+
     class Config:
         case_sensitive = True
 
