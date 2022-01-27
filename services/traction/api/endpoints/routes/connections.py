@@ -38,9 +38,9 @@ class ConnectionRoleType(str, Enum):
 
 
 class Connection(BaseModel):
-    endpoint: str
+    endpoint: str | None = None
     accept: str
-    alias: str
+    alias: str | None = None
     connection_id: str
     connection_protocol: str
     created_at: str
@@ -48,17 +48,22 @@ class Connection(BaseModel):
     inbound_connection_id: str | None = None
     invitation_key: str
     invitation_mode: str
-    invitation_msg_id: str
-    my_did: str
-    request_id: str
+    invitation_msg_id: str | None = None
+    my_did: str | None = None
+    request_id: str | None = None
     rfc23_state: str
-    routing_state: str
+    routing_state: str | None = None
     state: str
     their_did: str | None = None
     their_label: str | None = None
     their_public_did: str | None = None
     their_role: str | None = None
     updated_at: str
+
+class Invitation(BaseModel):
+    connection_id: str
+    invitation: dict
+    invitation_url: str
 
 
 @router.get("/", response_model=list[Connection])
@@ -84,3 +89,15 @@ async def get_connections(
     }
     connections = await au.acapy_GET("connections", params=params)
     return connections["results"]
+
+
+@router.post("/create-invitation", response_model=Invitation)
+async def create_connection(
+    alias: str | None = None,
+    # note we don't need the token here but we need to make sure it gets set
+    _token: str = Depends(oauth2_scheme),
+):
+    params = {"alias": alias}
+    invitation = await au.acapy_POST("connections/create-invitation", data={}, params=params)
+    return invitation
+
