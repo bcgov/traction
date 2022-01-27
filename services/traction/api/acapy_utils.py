@@ -23,7 +23,8 @@ def get_acapy_headers(headers=None, tenant=False) -> dict:
         if tenant and context.get("TENANT_WALLET_TOKEN"):
             headers["Authorization"] = "Bearer " + context.get("TENANT_WALLET_TOKEN")
     except Exception:
-        # TODO bit of a hack, throws an exception if the middlewares are called in teh wrong order
+        # TODO bit of a hack,
+        #  throws an exception if the middlewares are called in teh wrong order
         pass
     return headers
 
@@ -35,7 +36,8 @@ def is_tenant() -> bool:
     try:
         return context.get("TENANT_WALLET_TOKEN") is not None
     except Exception:
-        # TODO bit of a hack, throws an exception if the middlewares are called in teh wrong order
+        # TODO bit of a hack,
+        #  throws an exception if the middlewares are called in teh wrong order
         return False
 
 
@@ -202,6 +204,7 @@ async def acapy_DELETE(path, text=False, headers=None) -> ClientResponse:
     return response
 
 
-# TODO in case we need them, we have implemented these specific utility functions previously:
+# TODO in case we need them,
+#  we have implemented these specific utility functions previously:
 # async def admin_GET_FILE(self, path, params=None, headers=None) -> bytes:
 # async def admin_PUT_FILE(self, files, url, params=None, headers=None) -> bytes:

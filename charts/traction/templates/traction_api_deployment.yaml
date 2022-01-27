@@ -80,6 +80,8 @@ spec:
                 secretKeyRef:
                   name: {{ template "traction_api.secret.name" . }}
                   key: user_pwd
+            - name: WEB_CONCURRENCY
+              value: {{ .Values.traction_api.config.gunicornWorkers | quote }}
             {{- include "traction_api.configmap.env.vars" . | nindent 10}}
           resources:
             {{- toYaml .Values.traction_api.resources | nindent 12 }}
