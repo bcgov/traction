@@ -207,11 +207,11 @@ postgresql:
 
   resources:
     limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
       cpu: 100m
       memory: 384Mi
-    requests:
-      cpu: 50m
-      memory: 256Mi
 
 traction_api:
   image:
@@ -277,7 +277,7 @@ traction_api:
       cpu: 500m
       memory: 1G
     requests:
-      cpu: 250m
+      cpu: 200m
       memory: 512Mi
 
   nodeSelector: {}
