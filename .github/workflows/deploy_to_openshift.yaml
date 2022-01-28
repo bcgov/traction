@@ -26,6 +26,12 @@ jobs:
           repository:  ${{ secrets.MANIFEST_REPO }}
           path: gitops
 
+      - name: Upload charts
+        uses: actions/upload-artifact@v2
+        with:
+          name: charts
+          path: gitops
+
   deploy_manifest:
     name: Deploy Manifests
     environment: ${{ github.event.inputs.deploy_env }}
@@ -36,6 +42,11 @@ jobs:
     
     steps:  
       - uses: actions/checkout@v2  
+
+      - name: Download charts
+        uses: actions/download-artifact@v2
+        with:
+          name: charts
 
       - name: Authenticate and set context
         uses: redhat-actions/oc-login@v1
