@@ -1,0 +1,50 @@
+name: Deploy Manifests
+description: Deploy Manifest Repository to Openshift
+inputs:
+  repository_key:
+    required: true
+    type: string
+  repository:
+    required: true
+    type: string
+  repository_checkout_path:
+    required: true
+    type: string
+    default: manifests-repo
+  charts_path:
+    required: true
+    type: string
+    default: charts/traction
+  target:
+    required: true
+    type: string
+    default: 'dev'
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v2  
+    
+    - name: Check out manifest repo
+      uses: actions/checkout@v2
+      with:
+        ssh-key: ${{ inputs.repository_key }}
+        repository: ${{ inputs.repository }}
+        path: ${{ inputs.repository_checkout_path }}
+
+    - name: Set up charts
+      shell: bash
+      run: |
+        cd ./${{ inputs.repository_checkout_path }}
+
+    - name: Authenticate and set context
+      uses: redhat-actions/oc-login@v1
+      with:
+        openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+        openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+        certificate_authority_data: ${{ secrets.OPENSHIFT_CA_CRT }}
+        namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
+    
+    - name: Run Helm Charts
+      run: |
+        cd ./${{ inputs.repository_checkout_path }}
+        helm upgrade -f ./charts/traction/values.yaml -f ./charts/traction/values-${{ inputs.target }}.yaml bc0192-${{ inputs.target }}-traction ./charts/traction --install --wait
