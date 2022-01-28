@@ -1,0 +1,8 @@
+global:
+  ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
+traction_api:
+  image:
+    tag: "ghcr.io/bcgov/traction-api:sha-2aa3709"
+    version: 'sha-2aa3709'
+    buildtime: "2022-01-28T18:19:10.574Z"
+    pullPolicy: Always

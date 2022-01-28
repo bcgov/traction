@@ -32,6 +32,7 @@ jobs:
 
   deploy:
     name: Deploy PR
+    environment: tools
     runs-on: ubuntu-20.04
     needs: 
       - build_api
