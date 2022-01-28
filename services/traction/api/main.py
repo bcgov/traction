@@ -67,7 +67,7 @@ async def already_exists_exception_handler(request: Request, exc: AlreadyExists)
 
 @app.get("/", tags=["liveness"])
 def main():
-    return {"status": "ok!"}
+    return {"status": "ok"}
 
 
 @app.post("/token", response_model=TenantToken)
