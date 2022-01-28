@@ -1,10 +1,7 @@
-from tests import client
-
-
-def test_main():
+def test_main(client):
     assert True
 
 
-def test_hello_world():
+def test_hello_world(client):
     resp = client.get("/")
     assert resp.ok
