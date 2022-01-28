@@ -27,8 +27,9 @@ jobs:
       image_version: ${{ steps.builder.outputs.image_version }}
       buildtime: ${{ steps.builder.outputs.buildtime }}
 
-  update_manifest:
-    name: Update manifests
+  deploy:
+    name: Deploy Dev
+    environment: development
     runs-on: ubuntu-20.04
     needs: 
       - build_api
@@ -37,23 +38,17 @@ jobs:
     steps:  
       - uses: actions/checkout@v2  
 
-      - name: Read Production Release values
-        id: read_repo
-        uses: ./.github/actions/read_manifest_repo
+      - name: Authenticate and set context
+        uses: redhat-actions/oc-login@v1
         with:
-          target: prod
-          repository_key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
-          repository: ${{ secrets.MANIFEST_REPO }} 
-
-      - name: Update repo
-        uses: ./.github/actions/update_manifest_repo
-        with:
-          repository_key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
-          repository: ${{ secrets.MANIFEST_REPO }}
-          release_version: ${{ steps.read_repo.outputs.release_version }}
-          api_image_tag: ${{ needs.build_api.outputs.image_tag }}
-          api_image_version: ${{ needs.build_api.outputs.image_version }}
-          api_image_buildtime: ${{ needs.build_api.outputs.buildtime }}
-
-
-
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          certificate_authority_data: ${{ secrets.OPENSHIFT_CA_CRT }}
+          namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
+      
+      - name: Run Dev Helm 
+        run: |
+          yq eval '.traction_api.image.tag = "${{ needs.build_api.outputs.image_tag }}"' -i ./charts/traction/values-development.yaml
+          yq eval '.traction_api.image.version = "${{ needs.build_api.outputs.image_version }}"' -i ./charts/traction/values-development.yaml
+          yq eval '.traction_api.image.buildtime = "${{ needs.build_api.outputs.buildtime }}"' -i ./charts/traction/values-development.yaml
+          helm upgrade -f ./charts/traction/values.yaml -f ./charts/traction/values-development.yaml traction ./charts/traction --install --wait

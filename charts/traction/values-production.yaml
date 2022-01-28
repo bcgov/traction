@@ -1,0 +1,5 @@
+traction_api:
+  image:
+    tag: "ghcr.io/bcgov/traction-api:sha-0bd01da"
+    version: 'sha-0bd01da'
+    buildtime: '2022-01-03T21:46:11.855Z'
