@@ -1,0 +1,35 @@
+name: Read Config Map
+on:
+  workflow_dispatch:
+
+jobs:
+
+  read_config:
+    name: read configuration
+    environment: development
+    runs-on: ubuntu-20.04
+    env:
+      IMAGE_BUILDTIME: ''    
+    steps:  
+      - uses: actions/checkout@v2  
+
+      - name: Authenticate and set context
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          certificate_authority_data: ${{ secrets.OPENSHIFT_CA_CRT }}
+          namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
+      
+      - name: OC
+        run: |
+          oc get configmap/traction-api -o 'jsonpath={ .data}' | jq .IMAGE_BUILDTIME
+          echo "IMAGE_BUILDTIME=$(oc get configmap/traction-api -o 'jsonpath={ .data}' | jq .IMAGE_BUILDTIME)" >> $GITHUB_ENV
+
+
+      - name: print outputs
+        run: |
+          echo "IMAGE_BUILDTIME: ${{ env.IMAGE_BUILDTIME }}"
+
+    outputs:
+      image_buildtime: ${{ env.IMAGE_BUILDTIME }}
