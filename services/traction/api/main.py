@@ -88,5 +88,5 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 
 
 if __name__ == "__main__":
-    print("main.....")
+    print("main.")
     uvicorn.run(app, host="0.0.0.0", port=8080)
