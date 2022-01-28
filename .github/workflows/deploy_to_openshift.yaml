@@ -11,8 +11,6 @@ jobs:
   deploy_manifest:
     name: Deploy Manifests
     runs-on: ubuntu-20.04
-    needs: 
-    if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) }}
     
     steps:  
       - uses: actions/checkout@v2  
