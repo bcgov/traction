@@ -15,9 +15,23 @@ jobs:
     steps:  
       - uses: actions/checkout@v2  
 
-      - name: Deploy charts
-        uses: ./.github/actions/deploy_manifest_repo
+      - name: Check out manifest repo
+        uses: actions/checkout@v2
         with:
-          repository_key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
-          repository: ${{ secrets.MANIFEST_REPO }}
-          target: ${{ github.event.inputs.target }}
+          ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
+          repository:  ${{ secrets.MANIFEST_REPO }}
+          path: gitops
+
+      - name: Authenticate and set context
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          certificate_authority_data: ${{ secrets.OPENSHIFT_CA_CRT }}
+          namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
+      
+      - name: Run Helm Charts
+        shell: bash
+        run: |
+          cd ./gitops
+          helm upgrade -f ./charts/traction/values.yaml -f ./charts/traction/values-${{ github.event.inputs.target }}.yaml bc0192-${{ github.event.inputs.target }}-traction ./charts/traction --install --wait    
