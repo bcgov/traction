@@ -52,6 +52,12 @@ class GlobalConfig(BaseSettings):
     )
 
     TRACTION_API_ADMIN_KEY: str = os.environ.get("TRACTION_API_ADMIN_KEY", "change-me")
+    TRACTION_WEBHOOK_URL: str = os.environ.get(
+        "TRACTION_WEBHOOK_URL", "http://traction-api:5000/webhook"
+    )
+    TRACTION_TENANT_WEBHOOK_URL: str = os.environ.get(
+        "TRACTION_TENANT_WEBHOOK_URL", "http://traction-api:5000/webhook/tenant"
+    )
 
     DB_ECHO_LOG: bool = False
 

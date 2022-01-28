@@ -24,6 +24,8 @@ services:
       - ACAPY_ADMIN_URL_API_KEY=${ACAPY_ADMIN_URL_API_KEY}
       - ENVIRONMENT=production
       - WEB_CONCURRENCY=${GUNICORN_WORKERS}
+      - TRACTION_WEBHOOK_URL=${TRACTION_WEBHOOK_URL}
+      - TRACTION_TENANT_WEBHOOK_URL=${TRACTION_TENANT_WEBHOOK_URL}
     ports:
       - ${TRACTION_SERVICE_PORT}:5000
     extra_hosts:
@@ -49,7 +51,7 @@ services:
         --auto-provision
         --arg-file acapy-static-args.yml \
         --inbound-transport http '0.0.0.0' ${ACAPY_HTTP_PORT} \
-        --webhook-url http://traction-api:5000/log \
+        --webhook-url '${TRACTION_WEBHOOK_URL}' \
         --genesis-url '${ACAPY_GENESIS_URL}' \
         --endpoint ${ACAPY_ENDPOINT} \
         --wallet-name '${ACAPY_WALLET_DATABASE}' \
@@ -101,8 +103,6 @@ services:
         --auto-provision
         --arg-file endorser-acapy-args.yml \
         --inbound-transport http '0.0.0.0' ${ACAPY_ENDORSER_HTTP_PORT} \
-        --webhook-url http://verifier:5000/log \
-        --webhook-url http://holder:5000/log \
         --genesis-url '${ACAPY_GENESIS_URL}' \
         --endpoint ${ACAPY_ENDORSER_ENDPOINT} \
         --wallet-name '${ACAPY_WALLET_DATABASE}' \

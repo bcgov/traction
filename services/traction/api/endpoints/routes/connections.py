@@ -93,7 +93,7 @@ async def get_connections(
 
 
 @router.post("/create-invitation", response_model=Invitation)
-async def create_connection(
+async def create_invitation(
     alias: str | None = None,
     # note we don't need the token here but we need to make sure it gets set
     _token: str = Depends(oauth2_scheme),
@@ -103,3 +103,17 @@ async def create_connection(
         "connections/create-invitation", data={}, params=params
     )
     return invitation
+
+
+@router.post("/receive-invitation", response_model=Connection)
+async def receive_invitation(
+    payload: dict,
+    alias: str | None = None,
+    # note we don't need the token here but we need to make sure it gets set
+    _token: str = Depends(oauth2_scheme),
+):
+    params = {"alias": alias}
+    connection = await au.acapy_POST(
+        "connections/receive-invitation", data=payload, params=params
+    )
+    return connection
