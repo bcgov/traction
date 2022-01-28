@@ -36,12 +36,12 @@ jobs:
         if: ${{ fromJSON(env.CI_IS_TEST) }}
         run: |
           echo "PROMOTE_TO=test" >> $GITHUB_ENV
-          echo "PROMOTE_FROM=dev" >> $GITHUB_ENV
+          echo "PROMOTE_FROM=development" >> $GITHUB_ENV
 
       - name: set cd config (prod)
         if: ${{ fromJSON(env.CI_IS_PROD) }}
         run: |
-          echo "PROMOTE_TO=prod" >> $GITHUB_ENV
+          echo "PROMOTE_TO=production" >> $GITHUB_ENV
           echo "PROMOTE_FROM=test" >> $GITHUB_ENV
 
       - name: print outputs
@@ -56,32 +56,68 @@ jobs:
       promote_to: ${{ env.PROMOTE_TO }}
       version: ${{ env.CI_VERSION }}
 
-  update_config:
-    name: Update manifests
-    runs-on: ubuntu-20.04
+  read_config:
+    name: Read Image Configuration
     needs: 
       - init
+    environment: ${{ needs.init.outputs.promote_from }}
+    runs-on: ubuntu-20.04
+    env:
+      IMAGE_BUILDTIME: ''
+      IMAGE_TAG: ''
+      IMAGE_VERSION: ''   
+    steps:  
+      - uses: actions/checkout@v2  
+
+      - name: Authenticate and set context
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          certificate_authority_data: ${{ secrets.OPENSHIFT_CA_CRT }}
+          namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
+      
+      - name: OC
+        run: |
+          echo "IMAGE_BUILDTIME=$(oc get configmap/traction-api -o 'jsonpath={ .data}' | jq .IMAGE_BUILDTIME)" >> $GITHUB_ENV
+          echo "IMAGE_TAG=$(oc get configmap/traction-api -o 'jsonpath={ .data}' | jq .IMAGE_TAG)" >> $GITHUB_ENV
+          echo "IMAGE_VERSION=$(oc get configmap/traction-api -o 'jsonpath={ .data}' | jq .IMAGE_VERSION)" >> $GITHUB_ENV
+
+
+      - name: print outputs
+        run: |
+          echo "IMAGE_BUILDTIME: ${{ env.IMAGE_BUILDTIME }}"
+          echo "IMAGE_TAG: ${{ env.IMAGE_TAG }}"
+          echo "IMAGE_VERSION: ${{ env.IMAGE_VERSION }}"
+
+    outputs:
+      buildtime: ${{ env.IMAGE_BUILDTIME }}
+      image_tag: ${{ env.IMAGE_TAG }}
+      image_version: ${{ env.IMAGE_VERSION }}
+
+  deploy:
+    name: Deploy Tag
+    needs: 
+      - init
+      - read_config
+    environment: ${{ needs.init.outputs.promote_to }}
+    runs-on: ubuntu-20.04
     if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) }}
+    
+    steps:  
+      - uses: actions/checkout@v2  
 
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Read repo
-        id: read_repo
-        uses: ./.github/actions/read_manifest_repo
+      - name: Authenticate and set context
+        uses: redhat-actions/oc-login@v1
         with:
-          target: ${{ needs.init.outputs.promote_from }}
-          repository_key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
-          repository: ${{ secrets.MANIFEST_REPO }} 
-
-      - name: Update repo
-        uses: ./.github/actions/update_manifest_repo
-        with:
-          target: ${{ needs.init.outputs.promote_to }}
-          repository_key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
-          repository: ${{ secrets.MANIFEST_REPO }}
-          release_version: ${{ needs.init.outputs.version }}
-          api_image_tag: ${{ steps.read_repo.outputs.api_image_tag }}
-          api_image_version: ${{ steps.read_repo.outputs.api_image_version }}
-          api_image_buildtime: ${{ steps.read_repo.outputs.api_image_buildtime }}
-
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          certificate_authority_data: ${{ secrets.OPENSHIFT_CA_CRT }}
+          namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
+      
+      - name: Run Helm 
+        run: |
+          yq eval '.traction_api.image.tag = "${{ needs.read_config.outputs.image_tag }}"' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml
+          yq eval '.traction_api.image.version = "${{ needs.read_config.outputs.image_version }}"' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml
+          yq eval '.traction_api.image.buildtime = "${{ needs.read_config.outputs.buildtime }}"' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml
+          helm upgrade -f ./charts/traction/values.yaml -f ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml traction ./charts/traction --install --wait
