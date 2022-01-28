@@ -1,0 +1,25 @@
+name: Deploy
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Target environment for deployment: dev, test, prod'
+        required: true
+        default: 'dev'
+jobs:
+
+  deploy_manifest:
+    name: Deploy Manifests
+    runs-on: ubuntu-20.04
+    needs: 
+    if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) }}
+    
+    steps:  
+      - uses: actions/checkout@v2  
+
+      - name: Deploy charts
+        uses: ./.github/actions/deploy_manifest_repo
+        with:
+          repository_key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
+          repository: ${{ secrets.MANIFEST_REPO }}
+          target: ${{ github.event.inputs.target }}
