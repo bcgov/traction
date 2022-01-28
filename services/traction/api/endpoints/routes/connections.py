@@ -67,6 +67,10 @@ class Invitation(BaseModel):
     invitation_url: str
 
 
+class BasicMessage(BaseModel):
+    content: str
+
+
 @router.get("/", response_model=list[Connection])
 async def get_connections(
     alias: Optional[str] = None,
@@ -117,3 +121,22 @@ async def receive_invitation(
         "connections/receive-invitation", data=payload, params=params
     )
     return connection
+
+
+@router.post("/send-message", response_model=dict)
+async def send_message(
+    payload: BasicMessage,
+    connection_id: str | None = None,
+    alias: str | None = None,
+    # note we don't need the token here but we need to make sure it gets set
+    _token: str = Depends(oauth2_scheme),
+):
+    if not connection_id:
+        lookup_params = {"alias": alias}
+        connections = await au.acapy_GET("connections", params=lookup_params)
+        connection_id = connections["results"][0]["connection_id"]
+    message = {"content": payload.content}
+    response = await au.acapy_POST(
+        f"connections/{connection_id}/send-message", data=message
+    )
+    return response
