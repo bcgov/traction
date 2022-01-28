@@ -2,8 +2,12 @@ name: Deploy
 on:
   workflow_dispatch:
     inputs:
-      target:
-        description: 'Target environment for deployment: dev, test, prod'
+      namespace:
+        description: 'Target environment/namespace for deployment: dev, test, prod, tools'
+        required: true
+        default: 'dev'
+      config:
+        description: 'Configuration for deployment: dev, test, prod, pr'
         required: true
         default: 'dev'
 jobs:
@@ -28,10 +32,10 @@ jobs:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           certificate_authority_data: ${{ secrets.OPENSHIFT_CA_CRT }}
-          namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
+          namespace: bc0192-${{ github.event.inputs.namespace }}
       
       - name: Run Helm Charts
         shell: bash
         run: |
           cd ./gitops
-          helm upgrade -f ./charts/traction/values.yaml -f ./charts/traction/values-${{ github.event.inputs.target }}.yaml bc0192-${{ github.event.inputs.target }}-traction ./charts/traction --install --wait    
+          helm upgrade -f ./charts/traction/values.yaml -f ./charts/traction/values-${{ github.event.inputs.config }}.yaml bc0192-traction-${{ github.event.inputs.config }} ./charts/traction --install --wait    
