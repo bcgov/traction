@@ -82,6 +82,10 @@ spec:
                   key: user_pwd
             - name: WEB_CONCURRENCY
               value: {{ .Values.traction_api.config.gunicornWorkers | quote }}
+            - name: TRACTION_WEBHOOK_URL
+              value: http://{{ include "traction_api.fullname" . }}:{{ .Values.traction_api.service.port }}/webhook
+            - name: TRACTION_TENANT_WEBHOOK_URL
+              value: http://{{ include "traction_api.fullname" . }}:{{ .Values.traction_api.service.port }}/webhook/tenant
             {{- include "traction_api.configmap.env.vars" . | nindent 10}}
           resources:
             {{- toYaml .Values.traction_api.resources | nindent 12 }}

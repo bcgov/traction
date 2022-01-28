@@ -41,7 +41,6 @@ spec:
            --arg-file acapy-static-args.yml \
            --inbound-transport http '0.0.0.0' {{ .Values.acapy.service.httpPort }} \
            --webhook-url http://{{ include "traction_api.fullname" . }}:{{ .Values.traction_api.service.port }}/webhook  \
-           --webhook-url http://{{ include "traction_api.fullname" . }}:{{ .Values.traction_api.service.port }}/webhook/tenant  \
            --genesis-url '{{ include "traction_api.genesisUrl" . }}' \
            --endpoint https://{{ include "acapy.host" . }} \
            --wallet-storage-type 'postgres_storage' \
