@@ -12,10 +12,7 @@ from starlette_context.middleware import RawContextMiddleware
 
 from api.db.errors import DoesNotExist, AlreadyExists
 from api.endpoints.routes.api import api_router
-from api.endpoints.routes.webhooks import (
-    router as webhook_router,
-    TokenCheckingMiddleware,
-)
+from api.endpoints.routes.webhooks import get_webhookapp
 from api.tenant_security import (
     TenantToken,
     authenticate_tenant,
@@ -36,10 +33,6 @@ middleware = [
     Middleware(JWTTFetchingMiddleware),
 ]
 
-webhook_middleware = [
-    Middleware(TokenCheckingMiddleware),
-]
-
 
 def get_application() -> FastAPI:
     application = FastAPI(
@@ -49,17 +42,6 @@ def get_application() -> FastAPI:
         middleware=middleware,
     )
     application.include_router(api_router, prefix=settings.API_V1_STR)
-    return application
-
-
-def get_webhookapp() -> FastAPI:
-    application = FastAPI(
-        title="WebHooks",
-        description="Endpoints for Aca-Py WebHooks",
-        debug=settings.DEBUG,
-        middleware=webhook_middleware,
-    )
-    application.include_router(webhook_router, prefix="")
     return application
 
 
