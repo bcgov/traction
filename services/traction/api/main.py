@@ -1,37 +1,19 @@
 import os
 import time
-from datetime import timedelta
 
 import uvicorn
-from fastapi import Depends, FastAPI, HTTPException, Request, status
-from fastapi.security import OAuth2PasswordRequestForm
-from starlette.middleware import Middleware
+from fastapi import FastAPI, Request, status
 from starlette.responses import JSONResponse
-from starlette_context import plugins
-from starlette_context.middleware import RawContextMiddleware
 
 from api.db.errors import DoesNotExist, AlreadyExists
 from api.endpoints.routes.api import api_router
 from api.endpoints.routes.webhooks import get_webhookapp
-from api.tenant_security import (
-    TenantToken,
-    authenticate_tenant,
-    create_access_token,
-    JWTTFetchingMiddleware,
-)
 from api.core.config import settings
+from api.tenant_main import get_tenantapp
 
 
 os.environ["TZ"] = settings.TIMEZONE
 time.tzset()
-
-middleware = [
-    Middleware(
-        RawContextMiddleware,
-        plugins=(plugins.RequestIdPlugin(), plugins.CorrelationIdPlugin()),
-    ),
-    Middleware(JWTTFetchingMiddleware),
-]
 
 
 def get_application() -> FastAPI:
@@ -39,7 +21,7 @@ def get_application() -> FastAPI:
         title=settings.TITLE,
         description=settings.DESCRIPTION,
         debug=settings.DEBUG,
-        middleware=middleware,
+        middleware=None,
     )
     application.include_router(api_router, prefix=settings.API_V1_STR)
     return application
@@ -48,6 +30,8 @@ def get_application() -> FastAPI:
 app = get_application()
 webhook_app = get_webhookapp()
 app.mount("/webhook", webhook_app)
+tenant_app = get_tenantapp()
+app.mount("/tenant", tenant_app)
 
 
 @app.exception_handler(DoesNotExist)
@@ -69,23 +53,6 @@ async def already_exists_exception_handler(request: Request, exc: AlreadyExists)
 @app.get("/", tags=["liveness"])
 def main():
     return {"status": "ok", "health": "ok"}
-
-
-@app.post("/token", response_model=TenantToken)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    tenant = await authenticate_tenant(form_data.username, form_data.password)
-    if not tenant:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect wallet_id or wallet_key",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    access_token_expires = timedelta(minutes=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": tenant["wallet_id"], "key": tenant["wallet_token"]},
-        expires_delta=access_token_expires,
-    )
-    return {"access_token": access_token, "token_type": "bearer"}
 
 
 if __name__ == "__main__":
