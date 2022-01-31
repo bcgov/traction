@@ -48,6 +48,8 @@ spec:
             initialDelaySeconds: 60
             periodSeconds: 30   
           env:
+            - name: TRACTION_API_ADMIN_USER
+              value: {{ .Values.traction_api.api.adminuser }}
             - name: TRACTION_API_ADMIN_KEY
               valueFrom:
                 secretKeyRef:

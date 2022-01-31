@@ -1,14 +1,10 @@
 from enum import Enum
 from typing import Optional
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from pydantic import BaseModel
 
 from api import acapy_utils as au
-from api.tenant_security import (
-    oauth2_scheme,
-)
-
 
 router = APIRouter()
 
@@ -27,8 +23,6 @@ class DIDEndpointType(str, Enum):
 async def get_did_endpoint(
     did: str,
     endpoint_type: Optional[DIDEndpointType] = None,
-    # note we don't need the token here but we need to make sure it gets set
-    _token: str = Depends(oauth2_scheme),
 ):
     params = {"did": did}
     if endpoint_type:

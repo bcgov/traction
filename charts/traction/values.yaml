@@ -228,6 +228,8 @@ traction_api:
   db:
     admin: tractionadminuser
     user: tractionuser
+  api:
+    adminuser: innkeeper
 
   serviceAccount:
     # -- Specifies whether a service account should be created
