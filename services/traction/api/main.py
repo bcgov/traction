@@ -6,9 +6,9 @@ from fastapi import FastAPI, Request, status
 from starlette.responses import JSONResponse
 
 from api.db.errors import DoesNotExist, AlreadyExists
-from api.endpoints.routes.api import api_router
 from api.endpoints.routes.webhooks import get_webhookapp
 from api.core.config import settings
+from api.innkeeper_main import get_innkeeperapp
 from api.tenant_main import get_tenantapp
 
 
@@ -23,15 +23,18 @@ def get_application() -> FastAPI:
         debug=settings.DEBUG,
         middleware=None,
     )
-    application.include_router(api_router, prefix=settings.API_V1_STR)
     return application
 
 
 app = get_application()
 webhook_app = get_webhookapp()
 app.mount("/webhook", webhook_app)
+
 tenant_app = get_tenantapp()
 app.mount("/tenant", tenant_app)
+
+innkeeper_app = get_innkeeperapp()
+app.mount("/innkeeper", innkeeper_app)
 
 
 @app.exception_handler(DoesNotExist)

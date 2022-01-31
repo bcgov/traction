@@ -18,8 +18,12 @@ class GlobalConfig(BaseSettings):
     TITLE: str = "Traction"
     DESCRIPTION: str = "A digital wallet solution for organizations"
 
-    TENANT_TITLE: str = "Traction"
-    TENANT_DESCRIPTION: str = "A digital wallet solution for organizations"
+    # sub-app titles/descriptions
+    TENANT_TITLE: str = "Traction Tenant"
+    TENANT_DESCRIPTION: str = "Endpoints for Tenants of Traction"
+
+    INNKEEPER_TITLE: str = "Traction Innkeeper"
+    INNKEEPER_DESCRIPTION: str = "Endpoints for Innkeeper of Traction"
 
     ENVIRONMENT: EnvironmentEnum
     DEBUG: bool = False
@@ -54,7 +58,11 @@ class GlobalConfig(BaseSettings):
         "ACAPY_ADMIN_URL_API_KEY", "change-me"
     )
 
+    TRACTION_API_ADMIN_USER: str = os.environ.get(
+        "TRACTION_API_ADMIN_USER", "innkeeper"
+    )
     TRACTION_API_ADMIN_KEY: str = os.environ.get("TRACTION_API_ADMIN_KEY", "change-me")
+
     TRACTION_WEBHOOK_URL: str = os.environ.get(
         "TRACTION_WEBHOOK_URL", "http://traction-api:5000/webhook"
     )

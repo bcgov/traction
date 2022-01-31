@@ -1,9 +1,4 @@
-from datetime import datetime, timedelta
-from typing import Optional
-
-from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
-from pydantic import BaseModel
 from starlette_context import context
 from starlette.middleware.base import (
     BaseHTTPMiddleware,
@@ -14,19 +9,6 @@ from starlette.responses import Response
 
 from api import acapy_utils as au
 from api.core.config import settings
-
-
-class TenantToken(BaseModel):
-    access_token: str
-    token_type: str
-
-
-class TenantTokenData(BaseModel):
-    wallet_id: Optional[str] = None
-    bearer_token: Optional[str] = None
-
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 class JWTTFetchingMiddleware(BaseHTTPMiddleware):
@@ -69,16 +51,3 @@ async def authenticate_tenant(username: str, password: str):
         return tenant
     except Exception:
         return None
-
-
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(
-        to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM
-    )
-    return encoded_jwt

@@ -1,14 +1,10 @@
 from enum import Enum
 from typing import Optional
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from pydantic import BaseModel
 
 from api import acapy_utils as au
-from api.tenant_security import (
-    oauth2_scheme,
-)
-
 
 router = APIRouter()
 
@@ -80,8 +76,6 @@ async def get_connections(
     connection_state: Optional[ConnectionStateType] = None,
     their_did: Optional[str] = None,
     their_role: Optional[ConnectionRoleType] = None,
-    # note we don't need the token here but we need to make sure it gets set
-    _token: str = Depends(oauth2_scheme),
 ):
     params = {
         "alias": alias,
@@ -99,8 +93,6 @@ async def get_connections(
 @router.post("/create-invitation", response_model=Invitation)
 async def create_invitation(
     alias: str | None = None,
-    # note we don't need the token here but we need to make sure it gets set
-    _token: str = Depends(oauth2_scheme),
 ):
     params = {"alias": alias}
     invitation = await au.acapy_POST(
@@ -113,8 +105,6 @@ async def create_invitation(
 async def receive_invitation(
     payload: dict,
     alias: str | None = None,
-    # note we don't need the token here but we need to make sure it gets set
-    _token: str = Depends(oauth2_scheme),
 ):
     params = {"alias": alias}
     connection = await au.acapy_POST(
@@ -128,8 +118,6 @@ async def send_message(
     payload: BasicMessage,
     connection_id: str | None = None,
     alias: str | None = None,
-    # note we don't need the token here but we need to make sure it gets set
-    _token: str = Depends(oauth2_scheme),
 ):
     if not connection_id:
         lookup_params = {"alias": alias}
