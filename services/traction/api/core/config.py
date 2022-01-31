@@ -18,6 +18,9 @@ class GlobalConfig(BaseSettings):
     TITLE: str = "Traction"
     DESCRIPTION: str = "A digital wallet solution for organizations"
 
+    TENANT_TITLE: str = "Traction"
+    TENANT_DESCRIPTION: str = "A digital wallet solution for organizations"
+
     ENVIRONMENT: EnvironmentEnum
     DEBUG: bool = False
     TESTING: bool = False
