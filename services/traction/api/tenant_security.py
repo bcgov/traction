@@ -26,7 +26,7 @@ class TenantTokenData(BaseModel):
     bearer_token: Optional[str] = None
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="tenant/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 class JWTTFetchingMiddleware(BaseHTTPMiddleware):
