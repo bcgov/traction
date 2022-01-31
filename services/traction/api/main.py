@@ -42,11 +42,23 @@ def get_application() -> FastAPI:
         middleware=middleware,
     )
     application.include_router(api_router, prefix=settings.API_V1_STR)
-    application.include_router(webhook_router, prefix="/webhook")
+    return application
+
+
+def get_webhookapp() -> FastAPI:
+    application = FastAPI(
+        title="WebHooks",
+        description="Endpoints for Aca-Py WebHooks",
+        debug=settings.DEBUG,
+        middleware=None,
+    )
+    application.include_router(webhook_router, prefix="")
     return application
 
 
 app = get_application()
+webhook_app = get_webhookapp()
+app.mount("/webhook", webhook_app)
 
 
 @app.exception_handler(DoesNotExist)
