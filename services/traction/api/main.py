@@ -12,7 +12,7 @@ from starlette_context.middleware import RawContextMiddleware
 
 from api.db.errors import DoesNotExist, AlreadyExists
 from api.endpoints.routes.api import api_router
-from api.endpoints.routes.webhooks import router as webhook_router
+from api.endpoints.routes.webhooks import get_webhookapp
 from api.tenant_security import (
     TenantToken,
     authenticate_tenant,
@@ -42,11 +42,12 @@ def get_application() -> FastAPI:
         middleware=middleware,
     )
     application.include_router(api_router, prefix=settings.API_V1_STR)
-    application.include_router(webhook_router, prefix="/webhook")
     return application
 
 
 app = get_application()
+webhook_app = get_webhookapp()
+app.mount("/webhook", webhook_app)
 
 
 @app.exception_handler(DoesNotExist)
