@@ -3,6 +3,14 @@ from typing import Optional
 import logging
 
 from fastapi import APIRouter, Header
+from starlette.middleware.base import (
+    BaseHTTPMiddleware,
+    RequestResponseEndpoint,
+)
+from starlette.requests import Request
+from starlette.responses import Response
+
+from api.core.config import settings
 
 
 logger = logging.getLogger(__name__)
@@ -28,6 +36,24 @@ class WebhookTopicType(str, Enum):
     revocation_registry = "revocation-registry"
     revocation_notification = "revocation-notification"
     problem_report = "problem-report"
+
+
+class TokenCheckingMiddleware(BaseHTTPMiddleware):
+    """Middleware to check for webhook API token."""
+
+    async def dispatch(
+        self, request: Request, call_next: RequestResponseEndpoint
+    ) -> Response:
+        # check the webhook api token, if set
+        if 0 < len(settings.ACAPY_WEBHOOK_URL_API_KEY):
+            auth_header = request.headers.get("x-api-key")
+            if (not auth_header):
+                raise Exception("No WebHook API token supplied")
+            if not auth_header == settings.ACAPY_WEBHOOK_URL_API_KEY:
+                raise Exception("Invalid WebHook API token supplied")
+
+        response = await call_next(request)
+        return response
 
 
 @router.post("/topic/{topic}/", response_model=dict)
