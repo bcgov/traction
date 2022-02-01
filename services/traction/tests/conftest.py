@@ -2,15 +2,11 @@ import py
 import pytest
 import pytest_asyncio
 
-from api.main import app
-from fastapi.testclient import TestClient
-from sqlalchemy.orm import Session
-
-
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import sessionmaker
 
-from api.db.session import engine, async_session
+from api.main import app
+from api.db.session import engine
+from fastapi.testclient import TestClient
 
 
 @pytest_asyncio.fixture
