@@ -69,6 +69,7 @@ class GlobalConfig(BaseSettings):
     TRACTION_TENANT_WEBHOOK_URL: str = os.environ.get(
         "TRACTION_TENANT_WEBHOOK_URL", "http://traction-api:5000/webhook/tenant"
     )
+    ACAPY_WEBHOOK_URL_API_KEY_NAME = "x-api-key"
     ACAPY_WEBHOOK_URL_API_KEY: str = os.environ.get("ACAPY_WEBHOOK_URL_API_KEY", "")
 
     DB_ECHO_LOG: bool = False
