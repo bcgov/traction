@@ -48,6 +48,28 @@ spec:
             initialDelaySeconds: 60
             periodSeconds: 30   
           env:
+            - name: POSTGRESQL_HOST
+              value: {{ include "global.postgresql.fullname" . }}
+            - name: POSTGRESQL_PORT
+              value: {{ .Values.postgresql.service.port | quote }}
+            - name: POSTGRESQL_DB
+              value: {{ .Values.postgresql.postgresqlDatabase }}
+            - name: SHOWCASE_DB_ADMIN
+              value: {{ .Values.showcase.db.admin }}
+            - name: SHOWCASE_DB_ADMIN_PWD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "showcase.secret.name" . }}
+                  key: admin_pwd
+            - name: SHOWCASE_DB_USER
+              value: {{ .Values.showcase.db.user }}
+            - name: SHOWCASE_DB_USER_PWD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "showcase.secret.name" . }}
+                  key: user_pwd
+            - name: TRACTION_ENDPOINT
+              value: {{ .Values.showcase.traction_api.endpoint }}
             - name: WEB_CONCURRENCY
               value: {{ .Values.showcase.config.gunicornWorkers | quote }}
             {{- include "showcase.configmap.env.vars" . | nindent 10}}

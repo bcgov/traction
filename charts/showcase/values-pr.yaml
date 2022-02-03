@@ -1,9 +1,14 @@
 global:
   fullnameOverride: "pr-00-showcase"
   ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
+postgresql:
+  fullnameOverride: 'pr-00-showcase'
 showcase:
   image:
-    tag: "ghcr.io/bcgov/traction-showcase:sha-1a21896"
-    version: 'sha-1a21896'
+    tag: "ghcr.io/bcgov/traction-showcase:sha-aa006f2"
+    version: 'sha-aa006f2'
     buildtime: '2022-01-20T22:37:11.102Z'
     pullPolicy: Always
+  traction_api:
+    endpoint: http://pr-00-traction-api:5000
+    

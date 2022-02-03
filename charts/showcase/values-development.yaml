@@ -2,7 +2,7 @@ global:
   ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
 showcase:
   image:
-    tag: "ghcr.io/bcgov/traction-showcase:sha-2aa3709"
-    version: 'sha-2aa3709'
+    tag: "ghcr.io/bcgov/traction-showcase:sha-aa006f2"
+    version: 'sha-aa006f2'
     buildtime: "2022-01-28T18:19:10.574Z"
     pullPolicy: Always

@@ -19,18 +19,23 @@ global:
     # -- If true, the Postgres chart is deployed
     deployPostgres: true
 
-  # -- The used ledger. Will be used for default values.
-  ledger: bcovrin-test
 
 showcase:
   image:
-    tag: "ghcr.io/bcgov/traction-showcase:sha-0bd01da"
-    version: 'sha-0bd01da'
+    tag: "ghcr.io/bcgov/traction-showcase:sha-aa006f2"
+    version: 'sha-aa006f2'
     buildtime: '2022-01-20T22:37:11.102Z'
     pullPolicy: IfNotPresent
 
   config:
     gunicornWorkers: 2
+
+  db:
+    admin: showcaseadminuser
+    user: showcaseuser
+
+  traction_api:
+    endpoint: http://traction-api:5000
 
   serviceAccount:
     # -- Specifies whether a service account should be created
@@ -88,3 +93,96 @@ showcase:
   tolerations: []
 
   affinity: {}
+
+postgresql:
+  # when overriding global.fullnameOverride, you must override this to match.
+  fullnameOverride: "showcase"
+
+  image:
+    tag: 12
+
+  # --  PostgreSQL service configuration
+  service:
+    port: 5432
+
+  existingSecret: '{{ template "postgresql.secret.name" . }}'
+
+  # -- PostgreSQL Database to create.
+  postgresqlDatabase: showcase
+
+  extraEnv:
+    - name: ADMIN_PWD
+      valueFrom:
+        secretKeyRef:
+          key: admin_pwd
+          name: '{{ template "showcase.secret.name" . }}'
+    - name: USER_PWD
+      valueFrom:
+        secretKeyRef:
+          key: user_pwd
+          name: '{{ template "showcase.secret.name" . }}'
+
+  lifecycleHooks:
+    postStart:
+      exec:
+        command:
+          - '/bin/bash'
+          - '-c'
+          - |
+            sleep 30;
+            USER_LOG=/dev/shm/01_user.log
+            if [ -s "$USER_LOG" ]; then
+              echo "$USER_LOG exists with data."
+            else
+              echo "$USER_LOG does not exist or has no data."
+              user_sql=$(cat <<-EOF
+                CREATE USER showcaseadminuser PASSWORD '$ADMIN_PWD';
+                CREATE USER showcaseuser PASSWORD '$USER_PWD';
+                ALTER DATABASE showcase OWNER TO showcaseadminuser;
+            EOF
+            )
+            echo $user_sql > /dev/shm/01_user.sql
+            echo $user_sql | psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$HOSTNAME" -o /dev/shm/01_user.log
+            fi
+
+            SCHEMA_LOG=/dev/shm/02_schema.log
+            if [ -s "$SCHEMA_LOG" ]; then
+              echo "$SCHEMA_LOG exists with data."
+            else
+              echo "$SCHEMA_LOG does not exist or has no data."
+              schema_sql=$(cat <<-EOF
+                CREATE EXTENSION IF NOT EXISTS pgcrypto;
+                REVOKE ALL ON SCHEMA public FROM PUBLIC;
+                GRANT USAGE ON SCHEMA public TO showcaseadminuser;
+                GRANT USAGE ON SCHEMA public TO showcaseuser;
+                GRANT ALL ON SCHEMA public TO showcaseadminuser;
+                ALTER DEFAULT PRIVILEGES FOR USER showcaseadminuser IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO showcaseuser;
+                ALTER DEFAULT PRIVILEGES FOR USER showcaseadminuser IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO showcaseuser;
+                ALTER DEFAULT PRIVILEGES FOR USER showcaseadminuser IN SCHEMA public GRANT EXECUTE ON FUNCTIONS TO showcaseuser;
+            EOF
+            )
+            echo $schema_sql > /dev/shm/02_schema.sql
+            echo $schema_sql | psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$HOSTNAME/$POSTGRES_DB" -o /dev/shm/02_schema.log
+            fi
+
+  # --  Persistent Volume Storage configuration. ref: https://kubernetes.io/docs/user-guide/persistent-volumes
+  persistence:
+    enabled: true
+    size: 1Gi
+    storageClass: netapp-file-standard
+
+  # -- add securityContext (fsGroup, runAsUser). These need to be false for Openshift 4
+  securityContext:
+    enabled: false
+
+  containerSecurityContext:
+    enabled: false
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
