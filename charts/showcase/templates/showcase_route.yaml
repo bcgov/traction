@@ -1,0 +1,22 @@
+{{- if .Values.showcase.openshift.route.enabled -}}
+{{- $fullName := include "showcase.fullname" . -}}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "showcase.fullname" . }}
+  annotations:
+    haproxy.router.openshift.io/timeout: {{ .Values.showcase.openshift.route.timeout }}
+  labels:
+    {{- include "showcase.labels" . | nindent 4 }}
+spec:
+  host: {{ include "showcase.host" . | quote }}
+  path: {{ .Values.showcase.openshift.route.path }}
+  to:
+    kind: Service
+    name: {{ $fullName }}
+    weight: 100
+  port:
+    targetPort: {{ .Values.showcase.openshift.route.targetPort }}
+  wildcardPolicy: {{ .Values.showcase.openshift.route.wildcardPolicy }}
+{{ include "showcase.openshift.route.tls" . | indent 2}}
+{{- end }}
