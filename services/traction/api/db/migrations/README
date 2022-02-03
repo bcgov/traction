@@ -1,1 +1,5 @@
+# Traction database models and migration scripts
+
 Generic single-database configuration with an async dbapi.
+
+See the [README in the traction root folder]("../../README.md") for a description of how to update the database models/migration scripts.

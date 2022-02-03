@@ -5,6 +5,7 @@ from api.db.models.base import BaseSchema
 
 class CheckInRequest(BaseSchema):
     name: str
+    webhook_url: str
 
 
 class CheckInResponse(BaseSchema):
@@ -12,3 +13,4 @@ class CheckInResponse(BaseSchema):
     name: str
     wallet_id: UUID
     wallet_key: UUID
+    webhook_url: str
