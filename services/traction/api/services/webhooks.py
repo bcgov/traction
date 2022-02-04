@@ -110,4 +110,4 @@ async def call_tenant_lob_app(webhook: TenantWebhook):
                 resp_text = str(e)
                 resp_status = 500
                 resp_state = "ERROR"
-            return (resp_satte, resp_status, resp_text)
+            return (resp_state, resp_status, resp_text)
