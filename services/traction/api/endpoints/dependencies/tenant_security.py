@@ -1,3 +1,6 @@
+import logging
+import uuid
+
 from jose import jwt
 from starlette_context import context
 from starlette.middleware.base import (
@@ -9,6 +12,9 @@ from starlette.responses import Response
 
 from api import acapy_utils as au
 from api.core.config import settings
+
+
+logger = logging.getLogger(__name__)
 
 
 class JWTTFetchingMiddleware(BaseHTTPMiddleware):
@@ -25,9 +31,11 @@ class JWTTFetchingMiddleware(BaseHTTPMiddleware):
                 token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
             )
             wallet_token: str = payload.get("key")
+            wallet_id: str = payload.get("sub")
 
             # pass this via starlette context
             context["TENANT_WALLET_TOKEN"] = wallet_token
+            context["TENANT_WALLET_ID"] = uuid.UUID(wallet_id)
 
         response = await call_next(request)
         return response
@@ -46,6 +54,7 @@ async def authenticate_tenant(username: str, password: str):
 
         # pass this via starlette context
         context["TENANT_WALLET_TOKEN"] = jwt_token
+        context["TENANT_WALLET_ID"] = uuid.UUID(wallet_id)
         tenant = {"wallet_id": wallet_id, "wallet_token": jwt_token}
 
         return tenant
