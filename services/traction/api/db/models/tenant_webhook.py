@@ -10,7 +10,6 @@ class TenantWebhookBase(BaseModel):
     wallet_id: uuid.UUID = Field(nullable=False)
     msg_id: uuid.UUID = Field(nullable=False)
     webhook_url: str = Field(nullable=False, default=False)
-    connection_id: uuid.UUID = Field(nullable=False)
     payload: str = Field(nullable=False, default=False)
     # if the hook fails, record the response and the state as Failed
     state: str = Field(nullable=False, default=False)

@@ -30,7 +30,6 @@ def upgrade():
         sa.Column("sequence", sa.Integer(), nullable=False),
         sa.Column("wallet_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("webhook_url", sa.String(), nullable=False),
-        sa.Column("connection_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("payload", sa.String(), nullable=False),
         sa.Column("state", sa.String(), nullable=False),
         sa.Column("response_code", sa.Integer(), nullable=True),
