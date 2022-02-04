@@ -84,6 +84,6 @@ jobs:
           yq eval '.postgresql.fullnameOverride = "pr-${{ github.event.number }}-showcase"' -i ./charts/showcase/values-pr.yaml
           yq eval '.showcase.image.tag = "${{ needs.build_showcase.outputs.image_tag }}"' -i ./charts/showcase/values-pr.yaml
           yq eval '.showcase.image.version = "${{ needs.build_showcase.outputs.image_version }}"' -i ./charts/showcase/values-pr.yaml
-          yq eval '.showcase.traction_api.endpoint = "http://pr-${{ github.event.number }}-traction-api:5000"' -i ./charts/showcase/values-pr.yaml
+          yq eval '.showcase.traction_api.endpoint = "https://pr-${{ github.event.number }}-traction-api-dev.apps.silver.devops.gov.bc.ca"' -i ./charts/showcase/values-pr.yaml
+          yq eval '.showcase.traction_api.secret.name = "pr-${{ github.event.number }}-traction-api"' -i ./charts/showcase/values-pr.yaml
           helm upgrade -f ./charts/showcase/values.yaml -f ./charts/showcase/values-pr.yaml pr-${{ github.event.number }}-showcase ./charts/showcase --install --wait
-

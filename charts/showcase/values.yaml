@@ -19,7 +19,6 @@ global:
     # -- If true, the Postgres chart is deployed
     deployPostgres: true
 
-
 showcase:
   image:
     tag: "ghcr.io/bcgov/traction-showcase:sha-aa006f2"
@@ -35,7 +34,13 @@ showcase:
     user: showcaseuser
 
   traction_api:
-    endpoint: http://traction-api:5000
+    # this is the public endpoint
+    endpoint: https://traction-api-prod.apps.silver.devops.gov.bc.ca
+    # this must match the value in the matching traction deployment, see traction/charts/values.yaml
+    adminuser: innkeeper
+    secret:
+      # this will be traction-api, or pr-##-traction-api
+      name: traction-api
 
   serviceAccount:
     # -- Specifies whether a service account should be created

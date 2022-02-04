@@ -49,6 +49,10 @@ class GlobalConfig(BaseSettings):
     TRACTION_ENDPOINT: str = os.environ.get(
         "TRACTION_ENDPOINT", "http://localhost:5100"
     )
+    TRACTION_API_ADMIN_USER: str = os.environ.get(
+        "TRACTION_API_ADMIN_USER", "innkeeper"
+    )
+    TRACTION_API_ADMIN_KEY: str = os.environ.get("TRACTION_API_ADMIN_KEY", "change-me")
 
     class Config:
         case_sensitive = True

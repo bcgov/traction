@@ -6,3 +6,5 @@ showcase:
     version: 'sha-aa006f2'
     buildtime: "2022-01-28T18:19:10.574Z"
     pullPolicy: Always
+  traction_api:
+    endpoint: https://traction-api-dev.apps.silver.devops.gov.bc.ca
