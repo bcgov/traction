@@ -10,7 +10,7 @@ from api.endpoints.routes.webhooks import get_webhookapp
 from api.core.config import settings
 from api.innkeeper_main import get_innkeeperapp
 from api.tenant_main import get_tenantapp
-
+from acapy_wrapper.acapy_wrapper_main import get_acapy_wrapper_app
 
 os.environ["TZ"] = settings.TIMEZONE
 time.tzset()
@@ -35,6 +35,9 @@ app.mount("/tenant", tenant_app)
 
 innkeeper_app = get_innkeeperapp()
 app.mount("/innkeeper", innkeeper_app)
+
+acapy_wrapper_app = get_acapy_wrapper_app()
+app.mount("/tenant_acapy", acapy_wrapper_app)
 
 
 @app.exception_handler(DoesNotExist)
