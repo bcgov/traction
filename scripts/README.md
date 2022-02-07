@@ -44,4 +44,16 @@ docker-compose down traction-agent -v --remove-orphans
 ```
 
 
- 
+ #### start with showcase app
+ This will start up traction (database, agent, endorser and api) and a showcase app (with its own database).
+
+ ```sh
+ docker-compose -f docker-compose.yml -f docker-compose.showcase.yml up
+ ```
+
+##### teardown
+
+```sh
+docker-compose -f docker-compose.showcase.yml -f docker-compose.yml down -v --remove-orphans
+```
+
