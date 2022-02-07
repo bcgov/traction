@@ -1,0 +1,7 @@
+Dockerfile
+__pycache__/
+.idea/
+.tox/
+.coverage
+tests/
+venv/

@@ -1,0 +1,10 @@
+global:
+  ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
+showcase:
+  image:
+    tag: "ghcr.io/bcgov/traction-showcase:sha-aa006f2"
+    version: 'sha-aa006f2'
+    buildtime: "2022-01-28T18:19:10.574Z"
+    pullPolicy: Always
+  traction_api:
+    endpoint: https://traction-api-dev.apps.silver.devops.gov.bc.ca
