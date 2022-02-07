@@ -1,6 +1,6 @@
 global:
   fullnameOverride: "pr-00-traction"
-  ingressSuffix: -tools.apps.silver.devops.gov.bc.ca
+  ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
 postgresql:
   fullnameOverride: 'pr-00-traction'
 traction_api:
