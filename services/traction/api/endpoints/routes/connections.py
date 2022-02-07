@@ -107,13 +107,14 @@ async def get_connection_with_alias(alias: str):
 
 @router.post("/create-invitation", response_model=Invitation)
 async def create_invitation(
-    alias: str | None = None,
+    alias: str,
     invitation_type: ConnectionProtocolType = ConnectionProtocolType.DIDExchange,
 ):
     existing_connection = await get_connection_with_alias(alias)
     if existing_connection:
         raise HTTPException(
-            status_code=500, detail=f"Error alias {alias} already in use"
+            status_code=500,
+            detail=f"Error alias {alias} already in use: {existing_connection}",
         )
     if invitation_type == ConnectionProtocolType.DIDExchange:
         data = {
@@ -138,7 +139,7 @@ async def create_invitation(
 @router.post("/receive-invitation", response_model=Connection)
 async def receive_invitation(
     payload: dict,
-    alias: str | None = None,
+    alias: str,
 ):
     existing_connection = await get_connection_with_alias(alias)
     if existing_connection:

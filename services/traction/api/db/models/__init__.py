@@ -2,5 +2,6 @@
 
 from api.db.models.base import TractionSQLModel  # noqa: F401
 from api.db.models.tenant import Tenant  # noqa: F401
+from api.db.models.tenant_webhook import TenantWebhook  # noqa: F401
 
-__all__ = ["TractionSQLModel", "Tenant"]
+__all__ = ["TractionSQLModel", "Tenant", "TenantWebhook"]

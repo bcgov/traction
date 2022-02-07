@@ -50,6 +50,7 @@ async def create_new_tenant(
                 name=out_tenant.name,
                 wallet_id=out_tenant.wallet_id,
                 wallet_key=wallet_key,
+                webhook_url=out_tenant.webhook_url,
             )
         else:
             # what to return or throw here?
