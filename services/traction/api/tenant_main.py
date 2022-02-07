@@ -12,6 +12,7 @@ from api.endpoints.dependencies.tenant_security import (
     authenticate_tenant,
 )
 
+
 middleware = [
     Middleware(
         RawContextMiddleware,
