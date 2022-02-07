@@ -20,7 +20,6 @@ from fastapi import (  # noqa: F401
 from acapy_wrapper.models.extra_models import TokenModel  # noqa: F401
 from acapy_wrapper.models.conn_record import ConnRecord
 from acapy_wrapper.models.didx_request import DIDXRequest
-from acapy_wrapper.security_api import get_token_AuthorizationHeader
 
 from api import acapy_utils as au
 
@@ -45,18 +44,8 @@ async def didexchange_conn_id_accept_invitation_post(
         regex=r"^[A-Za-z0-9\.\-\+]+:\/\/([A-Za-z0-9][.A-Za-z0-9-_]+[A-Za-z0-9])+(:[1-9][0-9]*)?(\/[^?&amp;#]+)?$",
     ),
     my_label: str = Query(None, description="Label for connection request"),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> ConnRecord:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -81,18 +70,8 @@ async def didexchange_conn_id_accept_request_post(
         description="My URL endpoint",
         regex=r"^[A-Za-z0-9\.\-\+]+:\/\/([A-Za-z0-9][.A-Za-z0-9-_]+[A-Za-z0-9])+(:[1-9][0-9]*)?(\/[^?&amp;#]+)?$",
     ),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> ConnRecord:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -125,18 +104,8 @@ async def didexchange_create_request_post(
     use_public_did: bool = Query(
         None, description="Use public DID for this connection"
     ),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> ConnRecord:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -165,16 +134,6 @@ async def didexchange_receive_request_post(
         regex=r"^[A-Za-z0-9\.\-\+]+:\/\/([A-Za-z0-9][.A-Za-z0-9-_]+[A-Za-z0-9])+(:[1-9][0-9]*)?(\/[^?&amp;#]+)?$",
     ),
     body: DIDXRequest = Body(None, description=""),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> ConnRecord:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text

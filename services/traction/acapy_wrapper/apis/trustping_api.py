@@ -20,7 +20,6 @@ from fastapi import (  # noqa: F401
 from acapy_wrapper.models.extra_models import TokenModel  # noqa: F401
 from acapy_wrapper.models.ping_request import PingRequest
 from acapy_wrapper.models.ping_request_response import PingRequestResponse
-from acapy_wrapper.security_api import get_token_AuthorizationHeader
 
 from api import acapy_utils as au
 
@@ -40,16 +39,6 @@ async def connections_conn_id_send_ping_post(
     request: Request,
     conn_id: str = Path(None, description="Connection identifier"),
     body: PingRequest = Body(None, description=""),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> PingRequestResponse:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text

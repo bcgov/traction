@@ -29,7 +29,6 @@ from acapy_wrapper.models.mediation_deny import MediationDeny
 from acapy_wrapper.models.mediation_grant import MediationGrant
 from acapy_wrapper.models.mediation_list import MediationList
 from acapy_wrapper.models.mediation_record import MediationRecord
-from acapy_wrapper.security_api import get_token_AuthorizationHeader
 
 from api import acapy_utils as au
 
@@ -47,18 +46,8 @@ router = APIRouter()
 )
 async def mediation_default_mediator_delete(
     request: Request,
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> MediationRecord:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -72,18 +61,8 @@ async def mediation_default_mediator_delete(
 )
 async def mediation_default_mediator_get(
     request: Request,
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> MediationRecord:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -102,18 +81,8 @@ async def mediation_keylists_get(
         "server",
         description="Filer on role, &#39;client&#39; for keys         mediated by other agents, &#39;server&#39; for keys         mediated by this agent",
     ),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> Keylist:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -131,18 +100,8 @@ async def mediation_keylists_mediation_id_send_keylist_query_post(
     paginate_limit: int = Query(-1, description="limit number of results"),
     paginate_offset: int = Query(0, description="offset to use in pagination"),
     body: KeylistQueryFilterRequest = Body(None, description=""),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> KeylistQuery:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -158,18 +117,8 @@ async def mediation_keylists_mediation_id_send_keylist_update_post(
     request: Request,
     mediation_id: str = Path(None, description="Mediation record identifier"),
     body: KeylistUpdateRequest = Body(None, description=""),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> KeylistUpdate:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -184,18 +133,8 @@ async def mediation_keylists_mediation_id_send_keylist_update_post(
 async def mediation_mediation_id_default_mediator_put(
     request: Request,
     mediation_id: str = Path(None, description="Mediation record identifier"),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> MediationRecord:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -211,18 +150,8 @@ async def mediation_request_conn_id_post(
     request: Request,
     conn_id: str = Path(None, description="Connection identifier"),
     body: MediationCreateRequest = Body(None, description=""),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> MediationRecord:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -244,18 +173,8 @@ async def mediation_requests_get(
         None, description="List of recipient rules for mediation"
     ),
     state: str = Query(None, description="Mediation state (optional)"),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> MediationList:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -270,18 +189,8 @@ async def mediation_requests_get(
 async def mediation_requests_mediation_id_delete(
     request: Request,
     mediation_id: str = Path(None, description="Mediation record identifier"),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> MediationRecord:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -297,18 +206,8 @@ async def mediation_requests_mediation_id_deny_post(
     request: Request,
     mediation_id: str = Path(None, description="Mediation record identifier"),
     body: AdminMediationDeny = Body(None, description=""),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> MediationDeny:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -323,18 +222,8 @@ async def mediation_requests_mediation_id_deny_post(
 async def mediation_requests_mediation_id_get(
     request: Request,
     mediation_id: str = Path(None, description="Mediation record identifier"),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> MediationRecord:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -349,16 +238,6 @@ async def mediation_requests_mediation_id_get(
 async def mediation_requests_mediation_id_grant_post(
     request: Request,
     mediation_id: str = Path(None, description="Mediation record identifier"),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> MediationGrant:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text

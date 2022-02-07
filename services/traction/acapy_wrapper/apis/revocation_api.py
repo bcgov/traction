@@ -33,7 +33,6 @@ from acapy_wrapper.models.txn_or_publish_revocations_result import (
     TxnOrPublishRevocationsResult,
 )
 from acapy_wrapper.models.txn_or_rev_reg_result import TxnOrRevRegResult
-from acapy_wrapper.security_api import get_token_AuthorizationHeader
 
 from api import acapy_utils as au
 
@@ -56,18 +55,8 @@ async def revocation_active_registry_cred_def_id_get(
         description="Credential definition identifier",
         regex=r"^([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}):3:CL:(([1-9][0-9]*)|([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}:2:.+:[0-9.]+)):(.+)?$",
     ),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> RevRegResult:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -82,18 +71,8 @@ async def revocation_active_registry_cred_def_id_get(
 async def revocation_clear_pending_revocations_post(
     request: Request,
     body: ClearPendingRevocationsRequest = Body(None, description=""),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> PublishRevocations:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -108,18 +87,8 @@ async def revocation_clear_pending_revocations_post(
 async def revocation_create_registry_post(
     request: Request,
     body: RevRegCreateRequest = Body(None, description=""),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> RevRegResult:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -146,18 +115,8 @@ async def revocation_credential_record_get(
         description="Revocation registry identifier",
         regex=r"^([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}):4:([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}):3:CL:(([1-9][0-9]*)|([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}:2:.+:[0-9.]+))(:.+)?:CL_ACCUM:(.+$)",
     ),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> CredRevRecordResult:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -172,18 +131,8 @@ async def revocation_credential_record_get(
 async def revocation_publish_revocations_post(
     request: Request,
     body: PublishRevocations = Body(None, description=""),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> TxnOrPublishRevocationsResult:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -203,18 +152,8 @@ async def revocation_registries_created_get(
         regex=r"^([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}):3:CL:(([1-9][0-9]*)|([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}:2:.+:[0-9.]+)):(.+)?$",
     ),
     state: str = Query(None, description="Revocation registry state"),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> RevRegsCreated:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -237,18 +176,8 @@ async def revocation_registry_rev_reg_id_definition_post(
     create_transaction_for_endorser: bool = Query(
         None, description="Create Transaction For Endorser&#39;s signature"
     ),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> TxnOrRevRegResult:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -271,18 +200,8 @@ async def revocation_registry_rev_reg_id_entry_post(
     create_transaction_for_endorser: bool = Query(
         None, description="Create Transaction For Endorser&#39;s signature"
     ),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> RevRegResult:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -301,18 +220,8 @@ async def revocation_registry_rev_reg_id_get(
         description="Revocation Registry identifier",
         regex=r"^([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}):4:([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}):3:CL:(([1-9][0-9]*)|([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}:2:.+:[0-9.]+))(:.+)?:CL_ACCUM:(.+$)",
     ),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> RevRegResult:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -331,18 +240,8 @@ async def revocation_registry_rev_reg_id_issued_get(
         description="Revocation Registry identifier",
         regex=r"^([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}):4:([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}):3:CL:(([1-9][0-9]*)|([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}:2:.+:[0-9.]+))(:.+)?:CL_ACCUM:(.+$)",
     ),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> RevRegIssuedResult:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -362,18 +261,8 @@ async def revocation_registry_rev_reg_id_patch(
         regex=r"^([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}):4:([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}):3:CL:(([1-9][0-9]*)|([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}:2:.+:[0-9.]+))(:.+)?:CL_ACCUM:(.+$)",
     ),
     body: RevRegUpdateTailsFileUri = Body(None, description=""),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> RevRegResult:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -393,18 +282,8 @@ async def revocation_registry_rev_reg_id_set_state_patch(
         regex=r"^([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}):4:([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}):3:CL:(([1-9][0-9]*)|([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}:2:.+:[0-9.]+))(:.+)?:CL_ACCUM:(.+$)",
     ),
     state: str = Query(None, description="Revocation registry state to set"),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> RevRegResult:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -419,11 +298,9 @@ async def revocation_registry_rev_reg_id_set_state_patch(
 )
 async def revocation_registry_rev_reg_id_tails_file_get(
     rev_reg_id: str = Path(None, description="Revocation Registry identifier", regex=r"^([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}):4:([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}):3:CL:(([1-9][0-9]*)|([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}:2:.+:[0-9.]+))(:.+)?:CL_ACCUM:(.+$)"),
-    token_AuthorizationHeader: TokenModel = Security(
-        get_token_AuthorizationHeader
-    ),
 ) -> file:
-    ...
+    resp_text = await au.acapy_admin_request_from_request(request)
+    return resp_text
 """
 
 
@@ -442,18 +319,8 @@ async def revocation_registry_rev_reg_id_tails_file_put(
         description="Revocation Registry identifier",
         regex=r"^([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}):4:([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}):3:CL:(([1-9][0-9]*)|([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}:2:.+:[0-9.]+))(:.+)?:CL_ACCUM:(.+$)",
     ),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> dict:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -468,16 +335,6 @@ async def revocation_registry_rev_reg_id_tails_file_put(
 async def revocation_revoke_post(
     request: Request,
     body: RevokeRequest = Body(None, description=""),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> dict:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text

@@ -22,7 +22,6 @@ from acapy_wrapper.models.conn_record import ConnRecord
 from acapy_wrapper.models.invitation_create_request import InvitationCreateRequest
 from acapy_wrapper.models.invitation_message import InvitationMessage
 from acapy_wrapper.models.invitation_record import InvitationRecord
-from acapy_wrapper.security_api import get_token_AuthorizationHeader
 
 from api import acapy_utils as au
 
@@ -47,18 +46,8 @@ async def out_of_band_create_invitation_post(
         None, description="Create invitation for multiple use (default false)"
     ),
     body: InvitationCreateRequest = Body(None, description=""),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> InvitationRecord:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -85,16 +74,6 @@ async def out_of_band_receive_invitation_post(
         None, description="Use an existing connection, if possible"
     ),
     body: InvitationMessage = Body(None, description=""),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> ConnRecord:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text

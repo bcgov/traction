@@ -23,7 +23,6 @@ from acapy_wrapper.models.endorser_info import EndorserInfo
 from acapy_wrapper.models.transaction_jobs import TransactionJobs
 from acapy_wrapper.models.transaction_list import TransactionList
 from acapy_wrapper.models.transaction_record import TransactionRecord
-from acapy_wrapper.security_api import get_token_AuthorizationHeader
 
 from api import acapy_utils as au
 
@@ -42,18 +41,8 @@ router = APIRouter()
 async def transaction_tran_id_resend_post(
     request: Request,
     tran_id: str = Path(None, description="Transaction identifier"),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> TransactionRecord:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -70,18 +59,8 @@ async def transactions_conn_id_set_endorser_info_post(
     conn_id: str = Path(None, description="Connection identifier"),
     endorser_did: str = Query(None, description="Endorser DID"),
     endorser_name: str = Query(None, description="Endorser Name"),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> EndorserInfo:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -97,18 +76,8 @@ async def transactions_conn_id_set_endorser_role_post(
     request: Request,
     conn_id: str = Path(None, description="Connection identifier"),
     transaction_my_job: str = Query(None, description="Transaction related jobs"),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> TransactionJobs:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -127,18 +96,8 @@ async def transactions_create_request_post(
         None, description="Endorser will write the transaction after endorsing it"
     ),
     body: Date = Body(None, description=""),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> TransactionRecord:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -152,18 +111,8 @@ async def transactions_create_request_post(
 )
 async def transactions_get(
     request: Request,
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> TransactionList:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -178,18 +127,8 @@ async def transactions_get(
 async def transactions_tran_id_cancel_post(
     request: Request,
     tran_id: str = Path(None, description="Transaction identifier"),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> TransactionRecord:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -204,18 +143,8 @@ async def transactions_tran_id_cancel_post(
 async def transactions_tran_id_endorse_post(
     request: Request,
     tran_id: str = Path(None, description="Transaction identifier"),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> TransactionRecord:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -230,18 +159,8 @@ async def transactions_tran_id_endorse_post(
 async def transactions_tran_id_get(
     request: Request,
     tran_id: str = Path(None, description="Transaction identifier"),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> TransactionRecord:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -256,18 +175,8 @@ async def transactions_tran_id_get(
 async def transactions_tran_id_refuse_post(
     request: Request,
     tran_id: str = Path(None, description="Transaction identifier"),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> TransactionRecord:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -282,16 +191,6 @@ async def transactions_tran_id_refuse_post(
 async def transactions_tran_id_write_post(
     request: Request,
     tran_id: str = Path(None, description="Transaction identifier"),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> TransactionRecord:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text

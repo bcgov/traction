@@ -30,7 +30,6 @@ from acapy_wrapper.models.create_invitation_request import CreateInvitationReque
 from acapy_wrapper.models.endpoints_result import EndpointsResult
 from acapy_wrapper.models.invitation_result import InvitationResult
 from acapy_wrapper.models.receive_invitation_request import ReceiveInvitationRequest
-from acapy_wrapper.security_api import get_token_AuthorizationHeader
 
 from api import acapy_utils as au
 
@@ -60,23 +59,8 @@ async def connections_conn_id_accept_invitation_post(
         regex=r"^[A-Za-z0-9\.\-\+]+:\/\/([A-Za-z0-9][.A-Za-z0-9-_]+[A-Za-z0-9])+(:[1-9][0-9]*)?(\/[^?&amp;#]+)?$",
     ),
     my_label: str = Query(None, description="Label for connection"),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> ConnRecord:
-    body = None
-    try:
-        body = await request.json()
-    except:
-        pass
-    path = request.url.path.replace("/tenant_acapy/", "")
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        path,
-        data=body,
-        text=False,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -96,23 +80,8 @@ async def connections_conn_id_accept_request_post(
         description="My URL endpoint",
         regex=r"^[A-Za-z0-9\.\-\+]+:\/\/([A-Za-z0-9][.A-Za-z0-9-_]+[A-Za-z0-9])+(:[1-9][0-9]*)?(\/[^?&amp;#]+)?$",
     ),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> ConnRecord:
-    body = None
-    try:
-        body = await request.json()
-    except:
-        pass
-    path = request.url.path.replace("/tenant_acapy/", "")
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        path,
-        data=body,
-        text=False,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -127,23 +96,8 @@ async def connections_conn_id_accept_request_post(
 async def connections_conn_id_delete(
     request: Request,
     conn_id: str = Path(None, description="Connection identifier"),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> dict:
-    body = None
-    try:
-        body = await request.json()
-    except:
-        pass
-    path = request.url.path.replace("/tenant_acapy/", "")
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        path,
-        data=body,
-        text=False,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -158,23 +112,8 @@ async def connections_conn_id_delete(
 async def connections_conn_id_endpoints_get(
     request: Request,
     conn_id: str = Path(None, description="Connection identifier"),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> EndpointsResult:
-    body = None
-    try:
-        body = await request.json()
-    except:
-        pass
-    path = request.url.path.replace("/tenant_acapy/", "")
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        path,
-        data=body,
-        text=False,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -190,23 +129,8 @@ async def connections_conn_id_establish_inbound_ref_id_post(
     request: Request,
     conn_id: str = Path(None, description="Connection identifier"),
     ref_id: str = Path(None, description="Inbound connection identifier"),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> dict:
-    body = None
-    try:
-        body = await request.json()
-    except:
-        pass
-    path = request.url.path.replace("/tenant_acapy/", "")
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        path,
-        data=body,
-        text=False,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -221,23 +145,8 @@ async def connections_conn_id_establish_inbound_ref_id_post(
 async def connections_conn_id_get(
     request: Request,
     conn_id: str = Path(None, description="Connection identifier"),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> ConnRecord:
-    body = None
-    try:
-        body = await request.json()
-    except:
-        pass
-    path = request.url.path.replace("/tenant_acapy/", "")
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        path,
-        data=body,
-        text=False,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -253,23 +162,8 @@ async def connections_conn_id_metadata_get(
     request: Request,
     conn_id: str = Path(None, description="Connection identifier"),
     key: str = Query(None, description="Key to retrieve."),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> ConnectionMetadata:
-    body = None
-    try:
-        body = await request.json()
-    except:
-        pass
-    path = request.url.path.replace("/tenant_acapy/", "")
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        path,
-        data=body,
-        text=False,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -285,23 +179,8 @@ async def connections_conn_id_metadata_post(
     request: Request,
     conn_id: str = Path(None, description="Connection identifier"),
     body: ConnectionMetadataSetRequest = Body(None, description=""),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> ConnectionMetadata:
-    body = None
-    try:
-        body = await request.json()
-    except:
-        pass
-    path = request.url.path.replace("/tenant_acapy/", "")
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        path,
-        data=body,
-        text=False,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -326,23 +205,8 @@ async def connections_create_invitation_post(
         None, description="Create invitation from public DID (default false)"
     ),
     body: CreateInvitationRequest = Body(None, description=""),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> InvitationResult:
-    body = None
-    try:
-        body = await request.json()
-    except:
-        pass
-    path = request.url.path.replace("/tenant_acapy/", "")
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        path,
-        data=body,
-        text=False,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -357,23 +221,8 @@ async def connections_create_invitation_post(
 async def connections_create_static_post(
     request: Request,
     body: ConnectionStaticRequest = Body(None, description=""),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> ConnectionStaticResult:
-    body = None
-    try:
-        body = await request.json()
-    except:
-        pass
-    path = request.url.path.replace("/tenant_acapy/", "")
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        path,
-        data=body,
-        text=False,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -406,23 +255,8 @@ async def connections_get(
         regex=r"^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$",
     ),
     their_role: str = Query(None, description="Their role in the connection protocol"),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> ConnectionList:
-    body = None
-    try:
-        body = await request.json()
-    except:
-        pass
-    path = request.url.path.replace("/tenant_acapy/", "")
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        path,
-        data=body,
-        text=False,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -446,21 +280,6 @@ async def connections_receive_invitation_post(
         regex=r"[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
     ),
     body: ReceiveInvitationRequest = Body(None, description=""),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> ConnRecord:
-    body = None
-    try:
-        body = await request.json()
-    except:
-        pass
-    path = request.url.path.replace("/tenant_acapy/", "")
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        path,
-        data=body,
-        text=False,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text

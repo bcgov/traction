@@ -24,7 +24,6 @@ from acapy_wrapper.models.get_nym_role_response import GetNymRoleResponse
 from acapy_wrapper.models.register_ledger_nym_response import RegisterLedgerNymResponse
 from acapy_wrapper.models.taa_accept import TAAAccept
 from acapy_wrapper.models.taa_result import TAAResult
-from acapy_wrapper.security_api import get_token_AuthorizationHeader
 
 from api import acapy_utils as au
 
@@ -50,18 +49,8 @@ async def ledger_did_endpoint_get(
     endpoint_type: str = Query(
         None, description="Endpoint type of interest (default &#39;Endpoint&#39;)"
     ),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> GetDIDEndpointResponse:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -80,18 +69,8 @@ async def ledger_did_verkey_get(
         description="DID of interest",
         regex=r"^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$",
     ),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> GetDIDVerkeyResponse:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -110,18 +89,8 @@ async def ledger_get_nym_role_get(
         description="DID of interest",
         regex=r"^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$",
     ),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> GetNymRoleResponse:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -147,18 +116,8 @@ async def ledger_register_nym_post(
     ),
     alias: str = Query(None, description="Alias"),
     role: str = Query(None, description="Role"),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> RegisterLedgerNymResponse:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -172,18 +131,8 @@ async def ledger_register_nym_post(
 )
 async def ledger_rotate_public_did_keypair_patch(
     request: Request,
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> dict:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -198,18 +147,8 @@ async def ledger_rotate_public_did_keypair_patch(
 async def ledger_taa_accept_post(
     request: Request,
     body: TAAAccept = Body(None, description=""),
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> dict:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
 
@@ -223,16 +162,6 @@ async def ledger_taa_accept_post(
 )
 async def ledger_taa_get(
     request: Request,
-    token_AuthorizationHeader: TokenModel = Security(get_token_AuthorizationHeader),
 ) -> TAAResult:
-    body = await request.body()
-    resp_text = await au.acapy_admin_request(
-        request.method,
-        request.url.path,
-        data=body,
-        text=True,
-        params=request.query_params,
-        headers=None,
-        tenant=True,
-    )
+    resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
