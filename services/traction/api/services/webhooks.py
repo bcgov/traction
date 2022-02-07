@@ -29,9 +29,11 @@ async def post_tenant_webhook(
         msg_id=uuid.uuid4(),
         webhook_url=tenant.webhook_url,
         payload=json.dumps(payload),
-        state="NEW",
+        state="PROCESSING",
         sequence=1,
     )
+    if not tenant.webhook_url or 0 == len(tenant.webhook_url):
+        in_webhook.state = "NOT_POSTED"
     out_webhook = await _wh_repo.create(in_webhook)
 
     if not tenant.webhook_url or 0 == len(tenant.webhook_url):
@@ -44,6 +46,7 @@ async def post_tenant_webhook(
 
     try:
         (state, status, response) = await call_tenant_lob_app(out_webhook)
+        logger.warn(f"Webhook call retuens with: {state} {status} {response}")
         in_upd_webhook.state = state
         in_upd_webhook.response_code = status  # TODO
         in_upd_webhook.response = response
@@ -95,13 +98,20 @@ async def call_tenant_lob_app(webhook: TenantWebhook):
     headers = get_tenant_headers(webhook_api_key)
 
     async with ClientSession() as client_session:
-        async with client_session.request(
-            "POST",
-            webhook_url,
-            json=webhook.payload,
-            headers=headers,
-        ) as resp:
-            resp_text = await resp.text()
+        logger.warn(f"Calling LOB {webhook_url} with {webhook_api_key} {webhook.payload}")
+        resp_text = None
+        try:
+            resp = await client_session.request(
+                "POST",
+                webhook_url,
+                json=webhook.payload,
+                headers=headers,
+            )
+            logger.warn("Post-processing LOB request")
+            try:
+                resp_text = await resp.text()
+            except Exception:
+                pass
             try:
                 resp.raise_for_status()
                 resp_status = resp.status
@@ -110,4 +120,10 @@ async def call_tenant_lob_app(webhook: TenantWebhook):
                 resp_text = str(e)
                 resp_status = 500
                 resp_state = "ERROR"
-            return (resp_state, resp_status, resp_text)
+        except Exception:
+            logger.exception("Error calling LOB webhook")
+            resp_text = str(e)
+            resp_status = 500
+            resp_state = "ERROR"
+
+        return (resp_state, resp_status, resp_text)
