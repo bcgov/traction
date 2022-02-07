@@ -98,7 +98,9 @@ async def call_tenant_lob_app(webhook: TenantWebhook):
     headers = get_tenant_headers(webhook_api_key)
 
     async with ClientSession() as client_session:
-        logger.warn(f"Calling LOB {webhook_url} with {webhook_api_key} {webhook.payload}")
+        logger.warn(
+            f"Calling LOB {webhook_url} with {webhook_api_key} {webhook.payload}"
+        )
         resp_text = None
         try:
             resp = await client_session.request(
@@ -120,7 +122,7 @@ async def call_tenant_lob_app(webhook: TenantWebhook):
                 resp_text = str(e)
                 resp_status = 500
                 resp_state = "ERROR"
-        except Exception:
+        except Exception as e:
             logger.exception("Error calling LOB webhook")
             resp_text = str(e)
             resp_status = 500
