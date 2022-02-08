@@ -13,7 +13,7 @@ pp = pprint.PrettyPrinter()
 pytestmark = pytest.mark.asyncio
 
 
-async def test_tenants_get_all(
+async def test_tenants_get_all_subapp(
     innkeeper_client: AsyncClient, db_session: AsyncSession
 ) -> None:
     # ARRANGE
@@ -31,3 +31,43 @@ async def test_tenants_get_all(
     resp_content = json.loads(resp.content)
     pp.pprint(resp_content)
     assert len(resp_content) == 1
+
+
+async def test_tenants_get_all_main(
+    test_client: AsyncClient, db_session: AsyncSession
+) -> None:
+    # ARRANGE
+    create_checkin_body = CheckInRequestFactory.build()
+    resp = await test_client.post(
+        "/innkeeper/v1/check-in", json=create_checkin_body.dict()
+    )
+    assert resp.status_code == 201, resp.content
+
+    # ACT
+    resp = await test_client.get("/innkeeper/v1/tenants")
+    assert resp.status_code == 200, resp.content
+
+    # ASSERT
+    resp_content = json.loads(resp.content)
+    pp.pprint(resp_content)
+    assert len(resp_content) == 1
+
+
+# async def test_tenants_get_all_dup(
+#     test_client: AsyncClient, db_session: AsyncSession
+# ) -> None:
+#     # ARRANGE
+#     create_checkin_body = CheckInRequestFactory.build()
+#     resp = await test_client.post(
+#         "/innkeeper/v1/check-in", json=create_checkin_body.dict()
+#     )
+#     assert resp.status_code == 201, resp.content
+
+#     # ACT
+#     resp = await test_client.get("/innkeeper/v1/tenants")
+#     assert resp.status_code == 200, resp.content
+
+#     # ASSERT
+#     resp_content = json.loads(resp.content)
+#     pp.pprint(resp_content)
+#     assert len(resp_content) == 1
