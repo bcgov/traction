@@ -47,12 +47,18 @@ class GlobalConfig(BaseSettings):
     # fmt: on
 
     TRACTION_ENDPOINT: str = os.environ.get(
-        "TRACTION_ENDPOINT", "http://localhost:5100"
+        "TRACTION_ENDPOINT", "http://host.docker.internal:5100"
     )
     TRACTION_API_ADMIN_USER: str = os.environ.get(
         "TRACTION_API_ADMIN_USER", "innkeeper"
     )
     TRACTION_API_ADMIN_KEY: str = os.environ.get("TRACTION_API_ADMIN_KEY", "change-me")
+
+    SHOWCASE_ENDPOINT: str = os.environ.get(
+        "SHOWCASE_ENDPOINT", "http://host.docker.internal:5200"
+    )
+
+    DB_ECHO_LOG: bool = False
 
     class Config:
         case_sensitive = True

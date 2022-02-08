@@ -7,11 +7,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
 
 from api.db.errors import DoesNotExist
-from api.db.models.base import BaseModel
+from api.db.models.base import BaseTable
 
-IN_SCHEMA = TypeVar("IN_SCHEMA", bound=BaseModel)
-UPD_SCHEMA = TypeVar("UPD_SCHEMA", bound=BaseModel)
-SCHEMA = TypeVar("SCHEMA", bound=BaseModel)
+IN_SCHEMA = TypeVar("IN_SCHEMA", bound=BaseTable)
+UPD_SCHEMA = TypeVar("UPD_SCHEMA", bound=BaseTable)
+SCHEMA = TypeVar("SCHEMA", bound=BaseTable)
 TABLE = TypeVar("TABLE")
 
 

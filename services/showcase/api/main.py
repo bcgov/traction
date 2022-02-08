@@ -6,6 +6,9 @@ from fastapi import FastAPI
 
 from api.core.config import settings
 
+from api.endpoints.routes.sandbox import router as sandbox_router
+from api.endpoints.routes.webhooks import router as webhooks_router
+
 os.environ["TZ"] = settings.TIMEZONE
 time.tzset()
 
@@ -21,6 +24,8 @@ def get_application() -> FastAPI:
 
 
 app = get_application()
+app.include_router(sandbox_router, tags=["sandbox"])
+app.include_router(webhooks_router, tags=["webhooks"])
 
 
 @app.get("/")
@@ -30,4 +35,4 @@ async def root():
 
 if __name__ == "__main__":
     print("main.")
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    uvicorn.run(app, host="0.0.0.0", port=5200)

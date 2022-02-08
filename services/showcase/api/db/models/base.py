@@ -2,24 +2,23 @@ import uuid
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel
+import pydantic
 from sqlmodel import Field, SQLModel
 from sqlalchemy import Column, func, text
 from sqlalchemy.dialects.postgresql import UUID, TIMESTAMP
 
 
-class BaseSchema(BaseModel):
-    class Config(BaseModel.Config):
+class BaseSchema(pydantic.BaseModel):
+    class Config(pydantic.BaseModel.Config):
         orm_mode = True
+        read_with_orm_mode = True
 
 
 class BaseModel(SQLModel, BaseSchema):
-    pass
-
-
-class TractionSQLModel(SQLModel):
     __mapper_args__ = {"eager_defaults": True}
 
+
+class BaseTable(BaseModel):
     # the following are marked optional because they are generated on the server
     # these will be included in each class where we set table=true (our table classes)
     id: Optional[uuid.UUID] = Field(
