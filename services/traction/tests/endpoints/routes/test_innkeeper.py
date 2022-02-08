@@ -3,7 +3,8 @@ import json
 import asyncio
 
 import pprint
-from tests.db.tenant_factory import CheckInRequestFactory
+from tests.db.tenant_factory import CheckInRequestFactory, TenantFactory
+from api.db.repositories.tenants import TenantsRepository
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.testclient import TestClient
 
@@ -13,35 +14,14 @@ pp = pprint.PrettyPrinter()
 pytestmark = pytest.mark.asyncio
 
 
-async def test_tenants_get_all_subapp(
-    innkeeper_client: AsyncClient, db_session: AsyncSession
-) -> None:
-    # ARRANGE
-    print(hex(id(asyncio.get_event_loop())))
-
-    create_checkin_body = CheckInRequestFactory.build()
-    resp = await innkeeper_client.post("/v1/check-in", json=create_checkin_body.dict())
-    assert resp.status_code == 201, resp.content
-
-    # ACT
-    resp = await innkeeper_client.get("/v1/tenants")
-    assert resp.status_code == 200, resp.content
-
-    # ASSERT
-    resp_content = json.loads(resp.content)
-    pp.pprint(resp_content)
-    assert len(resp_content) == 1
-
-
-async def test_tenants_get_all_main(
+async def test_tenants_get_all(
     test_client: AsyncClient, db_session: AsyncSession
 ) -> None:
     # ARRANGE
-    create_checkin_body = CheckInRequestFactory.build()
-    resp = await test_client.post(
-        "/innkeeper/v1/check-in", json=create_checkin_body.dict()
-    )
-    assert resp.status_code == 201, resp.content
+    _repo = TenantsRepository(db_session=db_session)
+    test_tenant = TenantFactory.build()
+    pre_count = len(await _repo.find())
+    await _repo.create(test_tenant)
 
     # ACT
     resp = await test_client.get("/innkeeper/v1/tenants")
@@ -50,24 +30,79 @@ async def test_tenants_get_all_main(
     # ASSERT
     resp_content = json.loads(resp.content)
     pp.pprint(resp_content)
-    assert len(resp_content) == 1
+    assert len(resp_content) == pre_count + 1, len(resp_content)
 
 
-# async def test_tenants_get_all_dup(
-#     test_client: AsyncClient, db_session: AsyncSession
-# ) -> None:
-#     # ARRANGE
-#     create_checkin_body = CheckInRequestFactory.build()
-#     resp = await test_client.post(
-#         "/innkeeper/v1/check-in", json=create_checkin_body.dict()
-#     )
-#     assert resp.status_code == 201, resp.content
+async def test_tenants_get_all_6(
+    test_client: AsyncClient, db_session: AsyncSession
+) -> None:
+    # ARRANGE
+    _repo = TenantsRepository(db_session=db_session)
+    test_tenant = TenantFactory.build()
+    pre_count = len(await _repo.find())
+    await _repo.create(test_tenant)
 
-#     # ACT
-#     resp = await test_client.get("/innkeeper/v1/tenants")
-#     assert resp.status_code == 200, resp.content
+    # ACT
+    resp = await test_client.get("/innkeeper/v1/tenants")
+    assert resp.status_code == 200, resp.content
 
-#     # ASSERT
-#     resp_content = json.loads(resp.content)
-#     pp.pprint(resp_content)
-#     assert len(resp_content) == 1
+    # ASSERT
+    resp_content = json.loads(resp.content)
+    pp.pprint(resp_content)
+    assert len(resp_content) == pre_count + 1, len(resp_content)
+
+
+async def test_tenants_get_all_4(
+    test_client: AsyncClient, db_session: AsyncSession
+) -> None:
+    # ARRANGE
+    _repo = TenantsRepository(db_session=db_session)
+    test_tenant = TenantFactory.build()
+    pre_count = len(await _repo.find())
+    await _repo.create(test_tenant)
+
+    # ACT
+    resp = await test_client.get("/innkeeper/v1/tenants")
+    assert resp.status_code == 200, resp.content
+
+    # ASSERT
+    resp_content = json.loads(resp.content)
+    pp.pprint(resp_content)
+    assert len(resp_content) == pre_count + 1, len(resp_content)
+
+
+async def test_tenants_get_all_3(
+    test_client: AsyncClient, db_session: AsyncSession
+) -> None:
+    # ARRANGE
+    _repo = TenantsRepository(db_session=db_session)
+    test_tenant = TenantFactory.build()
+    pre_count = len(await _repo.find())
+    await _repo.create(test_tenant)
+
+    # ACT
+    resp = await test_client.get("/innkeeper/v1/tenants")
+    assert resp.status_code == 200, resp.content
+
+    # ASSERT
+    resp_content = json.loads(resp.content)
+    pp.pprint(resp_content)
+    assert len(resp_content) == pre_count + 1, len(resp_content)
+
+
+async def test_tenants_get_all_2(
+    test_client: AsyncClient, db_session: AsyncSession
+) -> None:
+    # ARRANGE
+    _repo = TenantsRepository(db_session=db_session)
+    test_tenant = TenantFactory.build()
+    pre_count = len(await _repo.find())
+    await _repo.create(test_tenant)
+
+    # ACT
+    resp = await test_client.get("/innkeeper/v1/tenants")
+    assert resp.status_code == 200, resp.content
+
+    # ASSERT
+    resp_content = json.loads(resp.content)
+    assert len(resp_content) == pre_count + 1, len(resp_content)

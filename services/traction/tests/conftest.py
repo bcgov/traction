@@ -20,7 +20,7 @@ def event_loop(request) -> Generator:
     loop.close()
 
 
-@pytest_asyncio.fixture()
+@pytest_asyncio.fixture(scope="session")
 async def db_session() -> AsyncSession:
     async with engine.begin() as connection:
         # await connection.run_sync(BaseModel.metadata.drop_all)
@@ -31,15 +31,16 @@ async def db_session() -> AsyncSession:
             await session.rollback()
 
 
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def override_get_db(db_session: AsyncSession) -> Callable:
     async def _override_get_db():
+        ##transaction roll per test here.
         yield db_session
 
     return _override_get_db
 
 
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def test_app(override_get_db: Callable) -> FastAPI:
     from api.endpoints.dependencies.db import get_db
     from api.main import app, innkeeper_app, tenant_app, webhook_app, acapy_wrapper_app
@@ -56,21 +57,4 @@ def test_app(override_get_db: Callable) -> FastAPI:
 @pytest_asyncio.fixture()
 async def test_client(test_app: FastAPI) -> AsyncGenerator:
     async with AsyncClient(app=test_app, base_url="http://test") as ac:
-        yield ac
-
-
-### innkeeper app
-@pytest.fixture()
-def innkeeper_test_app(override_get_db: Callable) -> FastAPI:
-    from api.endpoints.dependencies.db import get_db
-    from api.innkeeper_main import get_innkeeperapp
-
-    innkeeper_app = get_innkeeperapp()
-    innkeeper_app.dependency_overrides[get_db] = override_get_db
-    return innkeeper_app
-
-
-@pytest_asyncio.fixture()
-async def innkeeper_client(innkeeper_test_app: FastAPI) -> AsyncGenerator:
-    async with AsyncClient(app=innkeeper_test_app, base_url="http://test") as ac:
         yield ac
