@@ -57,3 +57,8 @@ docker-compose down traction-agent -v --remove-orphans
 docker-compose -f docker-compose.showcase.yml -f docker-compose.yml down -v --remove-orphans
 ```
 
+##### run backend tests
+```sh
+docker-compose up
+docker exec scripts_traction-api_1 pytest --asyncio-mode=strict
+```
