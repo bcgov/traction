@@ -5,6 +5,7 @@ from tests.db.tenant_factory import CheckInRequestFactory
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.testclient import TestClient
 
+from httpx import AsyncClient
 
 pp = pprint.PrettyPrinter()
 
@@ -13,8 +14,8 @@ pp = pprint.PrettyPrinter()
 async def test_tenants_get_all(innkeeper_client: TestClient) -> None:
     # ARRANGE
     create_checkin_body = CheckInRequestFactory.build()
-    resp = innkeeper_client.post("/v1/check-in", json=create_checkin_body.dict())
-    assert resp.ok, resp.__dict__
+    resp = await innkeeper_client.post("/v1/check-in", json=create_checkin_body.dict())
+    assert resp.ok
 
     # ACT
     resp = innkeeper_client.get("/v1/tenants")
