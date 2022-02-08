@@ -3,6 +3,7 @@ from aiohttp import (
     ClientResponse,
 )
 import json
+from fastapi import Request
 from starlette_context import context
 
 from api.core.config import settings
@@ -39,6 +40,27 @@ def is_tenant() -> bool:
         # TODO bit of a hack,
         #  throws an exception if the middlewares are called in teh wrong order
         return False
+
+
+async def acapy_admin_request_from_request(
+    request: Request,
+) -> dict:
+    body = None
+    try:
+        body = await request.json()
+    except Exception:
+        pass
+    path = request.url.path.replace("/tenant_acapy/", "")
+    resp_text = await acapy_admin_request(
+        request.method,
+        path,
+        data=body,
+        text=False,
+        params=request.query_params,
+        headers=None,
+        tenant=True,
+    )
+    return resp_text
 
 
 async def acapy_admin_request(

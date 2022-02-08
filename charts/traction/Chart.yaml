@@ -4,8 +4,8 @@ description: The Traction service allows organizations to verify, hold, and issu
 type: application
 version: 0.0.4
 appVersion: 0.0.1
-home: "https://github.com/hyperledger-labs/business-partner-agent-chart"
-sources: ["https://github.com/hyperledger-labs/business-partner-agent-chart"]
+home: "https://github.com/bcgov/traction"
+sources: ["https://github.com/bcgov/traction"]
 engine: gotpl
 maintainers:
   - email: tools@usingtechnolo.gy

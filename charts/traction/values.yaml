@@ -228,6 +228,8 @@ traction_api:
   db:
     admin: tractionadminuser
     user: tractionuser
+  # this value and the name of the secret storing the admin key are used in the charts/showcase/values.yaml
+  # keep these in sync if you make changes and are deploying both traction and showcase
   api:
     adminuser: innkeeper
 

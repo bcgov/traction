@@ -1,12 +1,16 @@
 from enum import Enum
 from typing import Optional
 import logging
+import uuid
 
 from fastapi import APIRouter, Depends, FastAPI, Header, HTTPException, Security
 from fastapi.security.api_key import APIKeyHeader, APIKey
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.status import HTTP_403_FORBIDDEN
 
 from api.core.config import settings
+from api.endpoints.dependencies.db import get_db
+from api.services.webhooks import post_tenant_webhook
 
 
 logger = logging.getLogger(__name__)
@@ -75,7 +79,12 @@ async def process_tenant_webhook(
     payload: dict,
     api_key: APIKey = Depends(get_api_key),
     x_wallet_id: Optional[str] = Header(None),
+    db: AsyncSession = Depends(get_db),
 ):
     """Called by aca-py agent."""
-    logger.warn(f">>> Called webhook for tenant: {x_wallet_id} {topic}")
+    wallet_id = uuid.UUID(str(x_wallet_id))
+    logger.warn(
+        f">>> Called webhook for tenant: {topic} {x_wallet_id} {wallet_id} {payload}"
+    )
+    await post_tenant_webhook(topic, payload, wallet_id, db)
     return {}

@@ -1,0 +1,46 @@
+version: "3.9"
+services:
+  traction-showcase:
+    build:
+      context: ../services/showcase
+      dockerfile: Dockerfile
+    depends_on:
+      showcase-db:
+        condition: service_healthy
+    environment:
+      - POSTGRESQL_HOST=showcase-db
+      - POSTGRESQL_PORT=5432
+      - POSTGRESQL_DB=${SHOWCASE_PSQL_DB}
+      - SHOWCASE_DB_ADMIN=${SHOWCASE_PSQL_ADMIN}
+      - SHOWCASE_DB_ADMIN_PWD=${SHOWCASE_PSQL_ADMIN_PWD}
+      - SHOWCASE_DB_USER=${SHOWCASE_PSQL_USER}
+      - SHOWCASE_DB_USER_PWD=${SHOWCASE_PSQL_USER_PWD}
+      - TRACTION_ENDPOINT=${TRACTION_ENDPOINT}
+      - TRACTION_API_ADMIN_USER=${TRACTION_API_ADMIN_USER}
+      - TRACTION_API_ADMIN_KEY=${TRACTION_API_ADMIN_KEY}
+      - ENVIRONMENT=production
+      - WEB_CONCURRENCY=${GUNICORN_WORKERS}
+    ports:
+      - ${SHOWCASE_SERVICE_PORT}:5000
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    volumes:
+      - ../services/showcase:/app:rw
+
+  showcase-db:
+    image: "postgres:12"
+    environment:
+      - POSTGRES_PASSWORD=${SHOWCASE_POSTGRESQL_PASSWORD}
+    ports:
+      - ${SHOWCASE_POSTGRESQL_PORT}:5432
+    volumes:
+      - traction-showcase:/var/lib/postgresql/data
+      - ./db_init.showcase.sql:/docker-entrypoint-initdb.d/1-init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  traction-showcase:

@@ -11,7 +11,7 @@ jobs:
 
   uninstall:
     name: Uninstall PR
-    environment: tools
+    environment: development
     runs-on: ubuntu-20.04
     steps:  
       - uses: actions/checkout@v2  
@@ -32,10 +32,12 @@ jobs:
       
       - name: Uninstall via Helm 
         run: |
+          helm uninstall pr-${{ github.event.number }}-showcase
           helm uninstall pr-${{ github.event.number }}-traction
       
       - name: Remove Openshift Objects 
         run: |
+          oc delete secret,pvc --selector "app.kubernetes.io/instance"=pr-${{ github.event.number }}-showcase
           oc delete secret,pvc --selector "app.kubernetes.io/instance"=pr-${{ github.event.number }}-traction
 
 

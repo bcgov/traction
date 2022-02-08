@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "showcase.fullname" . }}
+  labels:
+    {{- include "showcase.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "showcase.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/showcase_configmap.yaml") . | sha256sum }} 
+    {{- with .Values.showcase.podAnnotations -}}  
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "showcase.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.showcase.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "showcase.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.showcase.podSecurityContext | nindent 8 }}
+      containers:
+        - name: traction-api
+          securityContext:
+            {{- toYaml .Values.showcase.securityContext | nindent 12 }}
+          image: "{{ .Values.showcase.image.tag }}"
+          imagePullPolicy: {{ .Values.showcase.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 60
+            periodSeconds: 10  
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 60
+            periodSeconds: 30   
+          env:
+            - name: POSTGRESQL_HOST
+              value: {{ include "global.postgresql.fullname" . }}
+            - name: POSTGRESQL_PORT
+              value: {{ .Values.postgresql.service.port | quote }}
+            - name: POSTGRESQL_DB
+              value: {{ .Values.postgresql.postgresqlDatabase }}
+            - name: SHOWCASE_DB_ADMIN
+              value: {{ .Values.showcase.db.admin }}
+            - name: SHOWCASE_DB_ADMIN_PWD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "showcase.secret.name" . }}
+                  key: admin_pwd
+            - name: SHOWCASE_DB_USER
+              value: {{ .Values.showcase.db.user }}
+            - name: SHOWCASE_DB_USER_PWD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "showcase.secret.name" . }}
+                  key: user_pwd
+            - name: TRACTION_ENDPOINT
+              value: {{ .Values.showcase.traction_api.endpoint }}
+            - name: TRACTION_API_ADMIN_USER
+              value: {{ .Values.showcase.traction_api.adminuser }}
+            - name: TRACTION_API_ADMIN_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.showcase.traction_api.secret.name }}
+                  key: api_admin_key
+            - name: WEB_CONCURRENCY
+              value: {{ .Values.showcase.config.gunicornWorkers | quote }}
+            {{- include "showcase.configmap.env.vars" . | nindent 10}}
+          resources:
+            {{- toYaml .Values.showcase.resources | nindent 12 }}
+      {{- with .Values.showcase.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.showcase.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.showcase.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

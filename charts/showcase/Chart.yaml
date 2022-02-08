@@ -1,0 +1,22 @@
+apiVersion: v2
+name: traction-showcase
+description: The Traction showcase demonstrates how to use Traction in your application.
+type: application
+version: 0.0.1
+appVersion: 0.0.1
+home: "https://github.com/bcgov/traction"
+sources: ["https://github.com/bcgov/traction"]
+engine: gotpl
+maintainers:
+  - email: tools@usingtechnolo.gy
+    name: usingtechnology
+    url: https://github.com/usingtechnology
+  - email: jason.syrotuck@nttdata.com
+    name: Jsyro
+    url: https://github.com/Jsyro
+dependencies:
+  - name: postgresql
+    version: 10.16.2
+    repository: https://charts.bitnami.com/bitnami/
+    condition: persistence.deployPostgres
+  

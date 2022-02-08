@@ -12,8 +12,8 @@ services:
       traction-db:
         condition: service_healthy
     environment:
-      - POSTGRESQL_HOST=${POSTGRESQL_HOST}
-      - POSTGRESQL_PORT=${POSTGRESQL_PORT}
+      - POSTGRESQL_HOST=traction-db
+      - POSTGRESQL_PORT=5432
       - POSTGRESQL_DB=${TRACTION_PSQL_DB}
       - TRACTION_DB_ADMIN=${TRACTION_PSQL_ADMIN}
       - TRACTION_DB_ADMIN_PWD=${TRACTION_PSQL_ADMIN_PWD}
