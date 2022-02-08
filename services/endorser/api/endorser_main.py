@@ -53,6 +53,6 @@ async def login_for_traction_api_admin(
 
 
 async def authenticate_innkeeper(username: str, password: str):
-    if s.TRACTION_API_ADMIN_USER == username and s.TRACTION_API_ADMIN_KEY == password:
+    if s.ENDORSER_API_ADMIN_USER == username and s.ENDORSER_API_ADMIN_KEY == password:
         return True
     return False

@@ -38,11 +38,11 @@ class GlobalConfig(BaseSettings):
     # application connection is async
     # fmt: off
     SQLALCHEMY_DATABASE_URI: PostgresDsn = (
-        f"postgresql+asyncpg://{ENDORSER_PSQL_USER}:{ENDORSER_PSQL_PASS}@{ENDORSER_PSQL_HOST}:{ENDORSER_PSQL_PORT}/{PSQL_DB}"  # noqa: E501
+        f"postgresql+asyncpg://{PSQL_USER}:{PSQL_PASS}@{PSQL_HOST}:{PSQL_PORT}/{PSQL_DB}"  # noqa: E501
     )
     # migrations connection uses owner role and is synchronous
     SQLALCHEMY_DATABASE_ADMIN_URI: PostgresDsn = (
-        f"postgresql://{ENDORSER_PSQL_ADMIN_USER}:{ENDORSER_PSQL_ADMIN_PASS}@{ENDORSER_PSQL_HOST}:{ENDORSER_PSQL_PORT}/{ENDORSER_PSQL_DB}"  # noqa: E501
+        f"postgresql://{PSQL_ADMIN_USER}:{PSQL_ADMIN_PASS}@{PSQL_HOST}:{PSQL_PORT}/{PSQL_DB}"  # noqa: E501
     )
     # fmt: on
 
