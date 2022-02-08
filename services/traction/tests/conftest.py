@@ -1,55 +1,59 @@
-import pytest_asyncio
 import pytest
+import asyncio
 
-from api.core.config import settings
-
-from api.main import app, innkeeper_app
-from api.endpoints.dependencies.db import get_db
-from api.db.session import engine
-from fastapi.testclient import TestClient
-
-from sqlalchemy.ext.asyncio import AsyncSession, AsyncEngine
-from sqlalchemy.orm import sessionmaker
+from fastapi import FastAPI
+from typing import Generator, Callable
+import pytest_asyncio
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
-TestingSessionLocal = sessionmaker(class_=AsyncSession, autocommit=False, bind=engine)
+from api.db.session import engine, async_session
+from api.db.models.base import BaseModel
+
+from typing import AsyncGenerator
+from httpx import AsyncClient
+
+# tests/conftest.py
 
 
-async def override_get_db():
-    try:
-        db = TestingSessionLocal()
-        yield db
-    finally:
-        await db.close()
+@pytest.fixture(scope="session")
+def event_loop(request) -> Generator:
+    """Create an instance of the default event loop for each test case."""
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+    yield loop
+    loop.close()
 
 
-@pytest.fixture
-async def client() -> TestClient:
-    app.dependency_overrides[get_db] = override_get_db
+@pytest_asyncio.fixture()
+async def db_session() -> AsyncSession:
+    async with engine.begin() as connection:
+        # await connection.run_sync(BaseModel.metadata.drop_all)
+        # await connection.run_sync(BaseModel.metadata.create_all)
+        async with async_session(bind=connection) as session:
+            yield session
+            await session.flush()
+            await session.rollback()
 
-    client = TestClient(app)
-    return client
+
+@pytest.fixture()
+def override_get_db(db_session: AsyncSession) -> Callable:
+    async def _override_get_db():
+        yield db_session
+
+    return _override_get_db
 
 
-@pytest.fixture
-async def innkeeper_client() -> TestClient:
+@pytest.fixture()
+def innkeeper_test_app(override_get_db: Callable) -> FastAPI:
+    from api.endpoints.dependencies.db import get_db
+    from api.innkeeper_main import get_innkeeperapp
 
-    ## TODO: turn off router level security here..
-    # dependency_overrides[OAuth2PasswordBearer] = None
+    innkeeper_app = get_innkeeperapp()
     innkeeper_app.dependency_overrides[get_db] = override_get_db
-
-    print(innkeeper_app.__dict__)
-    client = TestClient(innkeeper_app)
-    return client
+    return innkeeper_app
 
 
-# @pytest_asyncio.fixture
-# async def test_session(client) -> AsyncSession:
-#     try:
-#         conn = await engine.connect()
-#         txn = await conn.begin()
-#         sess = AsyncSession(bind=conn)
-#         yield sess
-#     finally:
-#         await txn.rollback()
-#         await conn.close()
+@pytest_asyncio.fixture()
+async def innkeeper_client(innkeeper_test_app: FastAPI) -> AsyncGenerator:
+    async with AsyncClient(app=innkeeper_test_app, base_url="http://test") as ac:
+        yield ac

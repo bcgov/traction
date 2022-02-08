@@ -1,4 +1,5 @@
 import logging
+import asyncio
 from typing import List
 from uuid import UUID
 
@@ -27,6 +28,7 @@ logger = logging.getLogger(__name__)
 async def check_in_tenant(
     payload: CheckInRequest, db: AsyncSession = Depends(get_db)
 ) -> CheckInResponse:
+    print(hex(id(asyncio.get_event_loop())))
     item = await create_new_tenant(payload=payload, db=db)
     return item
 
