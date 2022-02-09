@@ -2,8 +2,7 @@ import os
 import time
 
 import uvicorn
-from fastapi import FastAPI, Request, status
-from starlette.responses import JSONResponse
+from fastapi import FastAPI
 
 # from api.db.errors import DoesNotExist, AlreadyExists
 from api.endpoints.routes.webhooks import get_webhookapp

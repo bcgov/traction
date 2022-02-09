@@ -46,21 +46,23 @@ class GlobalConfig(BaseSettings):
     )
     # fmt: on
 
-    ACAPY_ADMIN_URL: str = os.environ.get("ENDORSER_ACAPY_ADMIN_URL", "http://localhost:9031")
+    ACAPY_ADMIN_URL: str = os.environ.get(
+        "ENDORSER_ACAPY_ADMIN_URL", "http://localhost:9031"
+    )
     ACAPY_ADMIN_URL_API_KEY: str = os.environ.get(
         "ENDORSER_ACAPY_ADMIN_URL_API_KEY", "change-me"
     )
 
-    ENDORSER_API_ADMIN_USER: str = os.environ.get(
-        "ENDORSER_API_ADMIN_USER", "endorser"
-    )
+    ENDORSER_API_ADMIN_USER: str = os.environ.get("ENDORSER_API_ADMIN_USER", "endorser")
     ENDORSER_API_ADMIN_KEY: str = os.environ.get("ENDORSER_API_ADMIN_KEY", "change-me")
 
     ENDORSER_WEBHOOK_URL: str = os.environ.get(
         "ENDORSER_WEBHOOK_URL", "http://endorser-api:5000/webhook"
     )
     ACAPY_WEBHOOK_URL_API_KEY_NAME = "x-api-key"
-    ACAPY_WEBHOOK_URL_API_KEY: str = os.environ.get("ENDORSER_ACAPY_WEBHOOK_URL_API_KEY", "")
+    ACAPY_WEBHOOK_URL_API_KEY: str = os.environ.get(
+        "ENDORSER_ACAPY_WEBHOOK_URL_API_KEY", ""
+    )
 
     DB_ECHO_LOG: bool = False
 

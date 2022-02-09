@@ -1,11 +1,8 @@
 from enum import Enum
-from typing import Optional
 import logging
-import uuid
 
-from fastapi import APIRouter, Depends, FastAPI, Header, HTTPException, Security
+from fastapi import APIRouter, Depends, FastAPI, HTTPException, Security
 from fastapi.security.api_key import APIKeyHeader, APIKey
-from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.status import HTTP_403_FORBIDDEN
 
 from api.core.config import settings
