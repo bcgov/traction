@@ -1,8 +1,5 @@
 global:
-  fullnameOverride: "pr-00-endorser"
-  ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
-postgresql:
-  fullnameOverride: 'pr-00-endorser'
+  ingressSuffix: -tools.apps.silver.devops.gov.bc.ca
 endorser_api:
   image:
     tag: "ghcr.io/bcgov/endorser-api:sha-1a21896"
