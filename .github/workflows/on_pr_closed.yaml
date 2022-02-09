@@ -34,11 +34,13 @@ jobs:
         run: |
           helm uninstall pr-${{ github.event.number }}-showcase
           helm uninstall pr-${{ github.event.number }}-traction
+          helm uninstall pr-${{ github.event.number }}-endorser
       
       - name: Remove Openshift Objects 
         run: |
           oc delete secret,pvc --selector "app.kubernetes.io/instance"=pr-${{ github.event.number }}-showcase
           oc delete secret,pvc --selector "app.kubernetes.io/instance"=pr-${{ github.event.number }}-traction
+          oc delete secret,pvc --selector "app.kubernetes.io/instance"=pr-${{ github.event.number }}-endorser
 
 
 

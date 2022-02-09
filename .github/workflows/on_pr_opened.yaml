@@ -74,6 +74,7 @@ jobs:
     runs-on: ubuntu-20.04
     needs: 
       - build_api
+      - build_endorser
       - build_showcase
     if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) }}
 
@@ -101,9 +102,9 @@ jobs:
         run: |
           yq eval '.global.fullnameOverride = "pr-${{ github.event.number }}-endorser"' -i ./charts/endorser/values-pr.yaml
           yq eval '.postgresql.fullnameOverride = "pr-${{ github.event.number }}-endorser"' -i ./charts/endorser/values-pr.yaml
-          yq eval '.endorser_api.image.tag = "${{ needs.build_api.outputs.image_tag }}"' -i ./charts/endorser/values-pr.yaml
-          yq eval '.endorser_api.image.version = "${{ needs.build_api.outputs.image_version }}"' -i ./charts/endorser/values-pr.yaml
-          yq eval '.endorser_api.image.buildtime = "${{ needs.build_api.outputs.buildtime }}"' -i ./charts/endorser/values-pr.yaml
+          yq eval '.endorser_api.image.tag = "${{ needs.build_endorser.outputs.image_tag }}"' -i ./charts/endorser/values-pr.yaml
+          yq eval '.endorser_api.image.version = "${{ needs.build_endorser.outputs.image_version }}"' -i ./charts/endorser/values-pr.yaml
+          yq eval '.endorser_api.image.buildtime = "${{ needs.build_endorser.outputs.buildtime }}"' -i ./charts/endorser/values-pr.yaml
           helm upgrade -f ./charts/endorser/values.yaml -f ./charts/endorser/values-pr.yaml pr-${{ github.event.number }}-endorser ./charts/endorser --install --wait
 
       - name: Run Showcase PR Helm
