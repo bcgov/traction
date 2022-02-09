@@ -1,7 +1,8 @@
-# def test_main(client):
-#     assert True
+import pytest
+
+pytestmark = pytest.mark.asyncio
 
 
-# def test_hello_world(client):
-#     resp = client.get("/")
-#     assert resp.ok
+async def test_hello_world(test_client):
+    resp = await test_client.get("/")
+    assert resp.status_code == 200

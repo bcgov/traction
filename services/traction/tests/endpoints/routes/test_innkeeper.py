@@ -1,16 +1,12 @@
 import pytest
 import json
-import asyncio
 
-import pprint
-from tests.db.tenant_factory import CheckInRequestFactory, TenantFactory
+from tests.db.tenant_factory import TenantCreateFactory
 from api.db.repositories.tenants import TenantsRepository
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi.testclient import TestClient
 
 from httpx import AsyncClient
 
-pp = pprint.PrettyPrinter()
 pytestmark = pytest.mark.asyncio
 
 
@@ -19,7 +15,7 @@ async def test_tenants_get_all(
 ) -> None:
     # ARRANGE
     _repo = TenantsRepository(db_session=db_session)
-    test_tenant = TenantFactory.build()
+    test_tenant = TenantCreateFactory.build()
     pre_count = len(await _repo.find())
     await _repo.create(test_tenant)
 
@@ -29,7 +25,6 @@ async def test_tenants_get_all(
 
     # ASSERT
     resp_content = json.loads(resp.content)
-    pp.pprint(resp_content)
     assert len(resp_content) == pre_count + 1, len(resp_content)
 
 
@@ -38,7 +33,7 @@ async def test_tenants_get_all_6(
 ) -> None:
     # ARRANGE
     _repo = TenantsRepository(db_session=db_session)
-    test_tenant = TenantFactory.build()
+    test_tenant = TenantCreateFactory.build()
     pre_count = len(await _repo.find())
     await _repo.create(test_tenant)
 
@@ -48,7 +43,6 @@ async def test_tenants_get_all_6(
 
     # ASSERT
     resp_content = json.loads(resp.content)
-    pp.pprint(resp_content)
     assert len(resp_content) == pre_count + 1, len(resp_content)
 
 
@@ -57,8 +51,7 @@ async def test_tenants_get_all_4(
 ) -> None:
     # ARRANGE
     _repo = TenantsRepository(db_session=db_session)
-    test_tenant = TenantFactory.build()
-    pre_count = len(await _repo.find())
+    test_tenant = TenantCreateFactory.build()
     await _repo.create(test_tenant)
 
     # ACT
@@ -67,8 +60,7 @@ async def test_tenants_get_all_4(
 
     # ASSERT
     resp_content = json.loads(resp.content)
-    pp.pprint(resp_content)
-    assert len(resp_content) == pre_count + 1, len(resp_content)
+    assert len(resp_content) == 1, len(resp_content)
 
 
 async def test_tenants_get_all_3(
@@ -76,8 +68,7 @@ async def test_tenants_get_all_3(
 ) -> None:
     # ARRANGE
     _repo = TenantsRepository(db_session=db_session)
-    test_tenant = TenantFactory.build()
-    pre_count = len(await _repo.find())
+    test_tenant = TenantCreateFactory.build()
     await _repo.create(test_tenant)
 
     # ACT
@@ -86,8 +77,7 @@ async def test_tenants_get_all_3(
 
     # ASSERT
     resp_content = json.loads(resp.content)
-    pp.pprint(resp_content)
-    assert len(resp_content) == pre_count + 1, len(resp_content)
+    assert len(resp_content) == 1, len(resp_content)
 
 
 async def test_tenants_get_all_2(
@@ -95,8 +85,7 @@ async def test_tenants_get_all_2(
 ) -> None:
     # ARRANGE
     _repo = TenantsRepository(db_session=db_session)
-    test_tenant = TenantFactory.build()
-    pre_count = len(await _repo.find())
+    test_tenant = TenantCreateFactory.build()
     await _repo.create(test_tenant)
 
     # ACT
@@ -105,4 +94,4 @@ async def test_tenants_get_all_2(
 
     # ASSERT
     resp_content = json.loads(resp.content)
-    assert len(resp_content) == pre_count + 1, len(resp_content)
+    assert len(resp_content) == 1, len(resp_content)

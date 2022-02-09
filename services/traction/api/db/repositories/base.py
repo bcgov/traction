@@ -32,8 +32,7 @@ class BaseRepository(
         ...
 
     async def create(self, in_schema: IN_SCHEMA) -> SCHEMA:
-        # don't force id, let ORM/DB set it.
-        entry = self._table(**in_schema.dict())
+        entry = self._table(id=uuid4(), **in_schema.dict())
         self._db_session.add(entry)
         await self._db_session.commit()
         return self._schema.from_orm(entry)

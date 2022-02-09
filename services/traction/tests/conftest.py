@@ -20,7 +20,7 @@ def event_loop(request) -> Generator:
     loop.close()
 
 
-@pytest_asyncio.fixture(scope="session")
+@pytest_asyncio.fixture()
 async def db_session() -> AsyncSession:
     async with engine.begin() as connection:
         # await connection.run_sync(BaseModel.metadata.drop_all)
@@ -31,7 +31,7 @@ async def db_session() -> AsyncSession:
             await session.rollback()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def override_get_db(db_session: AsyncSession) -> Callable:
     async def _override_get_db():
         ##transaction roll per test here.
@@ -40,7 +40,7 @@ def override_get_db(db_session: AsyncSession) -> Callable:
     return _override_get_db
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def test_app(override_get_db: Callable) -> FastAPI:
     from api.endpoints.dependencies.db import get_db
     from api.main import app, innkeeper_app, tenant_app, webhook_app, acapy_wrapper_app
