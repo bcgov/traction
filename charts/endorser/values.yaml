@@ -1,0 +1,290 @@
+# Default values for helm-chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  nameOverride: ""
+  # global.fullnameOverride and postgresql.fullnameOverride must be changed (and match!!!) if deploying multiple instances to the same namespace
+  # the postgresql chart creates secrets and pvcs related to the fullname and will be identical without the override.
+  # use the global.fullnameOverride to install a different named helm instance and will affect naming of all objects and routes for that chart.
+  # for pull requests, can set to something like pr-NN-traction.
+  fullnameOverride: "endorser"
+
+  # -- Domain suffix to be used for default hostpaths in ingress
+  # override in different environments, or for each app
+  # --set global.ingressSuffix
+  ingressSuffix: -prod.apps.silver.devops.gov.bc.ca
+
+  persistence:
+    # -- If true, the Postgres chart is deployed
+    deployPostgres: true
+
+  # -- The used ledger. Will be used for default values.
+  ledger: bcovrin-test
+
+acapy:
+  image:
+    repository: bcgovimages/aries-cloudagent
+    pullPolicy: IfNotPresent
+    # --  Overrides the image tag whose default is the chart appVersion.
+    tag: py36-1.16-1_0.7.2
+
+  # The agent seed, 32 characters. Will be generated if not defined here
+  agentSeed: ""
+
+  # if true then use --admin-insecure-mode, else we set --admin-api-key
+  adminInsecureMode: false
+
+  labelOverride: ""
+
+  readOnlyMode: false
+
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: ""
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+
+  securityContext:
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1001
+
+  service:
+    type: ClusterIP
+    adminPort: 8031
+    httpPort: 8030
+
+  openshift:
+    route:
+      enabled: true
+      path: "/"
+      targetPort: http
+      timeout: 2m
+      tls:
+        enabled: true
+        insecureEdgeTerminationPolicy: None
+        termination: edge
+      wildcardPolicy: None
+
+  tails:
+    # -- Set to true to enable revocation (external tails server required)
+    enabled: false
+
+    # -- Override the otherwise ledger-specifically generated base URL of the external tails server
+    baseUrlOverride: ""
+
+    # -- Override the otherwise ledger-specifically generated upload URL of the external tails server
+    uploadUrlOverride: ""
+
+  resources:
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  staticArgs:
+    autoAcceptInvites: true
+    autoAcceptRequests: true
+    autoRespondMessages: true
+    autoRespondCredentialProposal: true
+    autoRespondCredentialOffer: true
+    autoRespondCredentialRequest: true
+    autoRespondPresentationProposal: true
+    autoRespondPresentationRequest: true
+    autoStoreCredential: true
+    autoVerifyPresentation: true
+    autoPingConnection: true
+    autoProvision: true
+    monitorPing: true
+    publicInvites: true
+    logLevel: info
+    multitenant: true
+    multitenantAdmin: true
+
+postgresql:
+  # when overriding global.fullnameOverride, you must override this to match.
+  fullnameOverride: "endorser"
+
+  image:
+    tag: 12
+
+  # --  PostgreSQL service configuration
+  service:
+    port: 5432
+
+  existingSecret: '{{ template "postgresql.secret.name" . }}'
+
+  # -- PostgreSQL Database to create.
+  postgresqlDatabase: endorser
+
+  extraEnv:
+    - name: ADMIN_PWD
+      valueFrom:
+        secretKeyRef:
+          key: admin_pwd
+          name: '{{ template "endorser_api.secret.name" . }}'
+    - name: USER_PWD
+      valueFrom:
+        secretKeyRef:
+          key: user_pwd
+          name: '{{ template "endorser_api.secret.name" . }}'
+
+  lifecycleHooks:
+    postStart:
+      exec:
+        command:
+          - '/bin/bash'
+          - '-c'
+          - |
+            sleep 30;
+            USER_LOG=/dev/shm/01_user.log
+            if [ -s "$USER_LOG" ]; then
+              echo "$USER_LOG exists with data."
+            else
+              echo "$USER_LOG does not exist or has no data."
+              user_sql=$(cat <<-EOF
+                CREATE USER endorseradminuser PASSWORD '$ADMIN_PWD';
+                CREATE USER endorseruser PASSWORD '$USER_PWD';
+                ALTER DATABASE endorser OWNER TO endorseradminuser;
+            EOF
+            )
+            echo $user_sql > /dev/shm/01_user.sql
+            echo $user_sql | psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$HOSTNAME" -o /dev/shm/01_user.log
+            fi
+
+            SCHEMA_LOG=/dev/shm/02_schema.log
+            if [ -s "$SCHEMA_LOG" ]; then
+              echo "$SCHEMA_LOG exists with data."
+            else
+              echo "$SCHEMA_LOG does not exist or has no data."
+              schema_sql=$(cat <<-EOF
+                CREATE EXTENSION IF NOT EXISTS pgcrypto;
+                REVOKE ALL ON SCHEMA public FROM PUBLIC;
+                GRANT USAGE ON SCHEMA public TO endorseradminuser;
+                GRANT USAGE ON SCHEMA public TO endorseruser;
+                GRANT ALL ON SCHEMA public TO endorseradminuser;
+                ALTER DEFAULT PRIVILEGES FOR USER endorseradminuser IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO endorseruser;
+                ALTER DEFAULT PRIVILEGES FOR USER endorseradminuser IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO endorseruser;
+                ALTER DEFAULT PRIVILEGES FOR USER endorseradminuser IN SCHEMA public GRANT EXECUTE ON FUNCTIONS TO endorseruser;
+            EOF
+            )
+            echo $schema_sql > /dev/shm/02_schema.sql
+            echo $schema_sql | psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$HOSTNAME/$POSTGRES_DB" -o /dev/shm/02_schema.log
+            fi
+
+  # --  Persistent Volume Storage configuration. ref: https://kubernetes.io/docs/user-guide/persistent-volumes
+  persistence:
+    enabled: true
+    size: 1Gi
+    storageClass: netapp-file-standard
+
+  # -- add securityContext (fsGroup, runAsUser). These need to be false for Openshift 4
+  securityContext:
+    enabled: false
+
+  containerSecurityContext:
+    enabled: false
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 384Mi
+
+endorser_api:
+  image:
+    tag: "ghcr.io/bcgov/endorser-api:sha-0bd01da"
+    version: 'sha-0bd01da'
+    buildtime: '2022-01-20T22:37:11.102Z'
+    pullPolicy: IfNotPresent
+
+  config:
+    ledger:
+      browserUrlOverride: ""
+      genesisUrlOverride: ""
+    gunicornWorkers: 4
+  db:
+    admin: endorseradminuser
+    user: endorseruser
+  # this value and the name of the secret storing the admin key are used in the charts/showcase/values.yaml
+  api:
+    adminuser: endorser
+
+  serviceAccount:
+    # -- Specifies whether a service account should be created
+    create: false
+    # -- Annotations to add to the service account
+    annotations: {}
+    # -- The name of the service account to use. If not set and create is true, a name is generated using the fullname template
+    name: ""
+
+  imagePullSecrets: []
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  service:
+    type: ClusterIP
+    port: 5000
+
+  openshift:
+    route:
+      enabled: true
+      path: "/"
+      targetPort: http
+      timeout: 2m
+      tls:
+        enabled: true
+        insecureEdgeTerminationPolicy: None
+        termination: edge
+      wildcardPolicy: None
+
+  resources:
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    limits:
+      cpu: 500m
+      memory: 1G
+    requests:
+      cpu: 200m
+      memory: 512Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
