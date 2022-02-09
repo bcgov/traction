@@ -2,17 +2,18 @@ import uuid
 from datetime import datetime
 from typing import Optional
 
-from sqlmodel import Field
+from sqlmodel import Field, Relationship
 
 from api.db.models.base import BaseModel, BaseTable
 
 
 class StudentBase(BaseModel):
     name: str = Field(index=True, nullable=False)
+    sandbox_id: Optional[uuid.UUID] = Field(default=None, foreign_key="sandbox.id")
 
 
 class Student(StudentBase, BaseTable, table=True):
-    pass
+    sandbox: Optional["Sandbox"] = Relationship(back_populates="students")  # noqa: F821
 
 
 class StudentCreate(StudentBase):

@@ -1,6 +1,6 @@
 import abc
 from typing import Generic, TypeVar, Type, List
-from uuid import uuid4, UUID
+from uuid import UUID
 
 from pydantic import parse_obj_as
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -32,7 +32,7 @@ class BaseRepository(
         ...
 
     async def create(self, in_schema: IN_SCHEMA) -> SCHEMA:
-        entry = self._table(id=uuid4(), **in_schema.dict())
+        entry = self._table(**in_schema.dict())
         self._db_session.add(entry)
         await self._db_session.commit()
         return self._schema.from_orm(entry)

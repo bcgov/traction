@@ -6,14 +6,14 @@ from aiohttp import ClientSession
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from api.core.config import settings
+from api.db.models.related import SandboxReadPopulated
 from api.db.models.sandbox import (
     SandboxCreate,
-    SandboxReadWithTenants,
     Sandbox,
-    TenantCreate,
 )
-from api.db.repositories.sandboxes import SandboxesRepository
-from api.db.repositories.tenants import TenantsRepository
+from api.db.models.student import StudentCreate
+from api.db.models.tenant import TenantCreate
+from api.db.repositories import SandboxRepository, StudentRepository, TenantRepository
 
 
 class CheckInResponse(pydantic.BaseModel):
@@ -35,6 +35,7 @@ async def get_token():
         "grant_type": "",
         "scope": "",
     }
+    # TODO: error handling calling Traction
     async with ClientSession() as client_session:
         async with await client_session.post(
             url=f"{settings.TRACTION_ENDPOINT}/innkeeper/token",
@@ -57,6 +58,7 @@ async def create_traction_tenant(name: str) -> CheckInResponse:
         "name": name,
         "webhook_url": f"{settings.SHOWCASE_ENDPOINT}/webhook",
     }
+    # TODO: error handling calling Traction
     async with ClientSession() as client_session:
         async with await client_session.post(
             url=f"{settings.TRACTION_ENDPOINT}/innkeeper/v1/check-in",
@@ -69,10 +71,11 @@ async def create_traction_tenant(name: str) -> CheckInResponse:
 
 async def create_new_sandbox(
     payload: SandboxCreate, db: AsyncSession
-) -> SandboxReadWithTenants:
+) -> SandboxReadPopulated:
     # create a sandbox
-    sandbox_repo = SandboxesRepository(db_session=db)
-    tenants_repo = TenantsRepository(db_session=db)
+    sandbox_repo = SandboxRepository(db_session=db)
+    tenants_repo = TenantRepository(db_session=db)
+    student_repo = StudentRepository(db_session=db)
     sandbox = await sandbox_repo.create(payload)
 
     # create tenants
@@ -80,10 +83,17 @@ async def create_new_sandbox(
     await create_new_tenant(sandbox, tenants_repo, "Faber")
     await create_new_tenant(sandbox, tenants_repo, "Acme")
 
-    return await sandbox_repo.get_by_id(sandbox.id)
+    # build data set for this sandbox
+    student = StudentCreate(
+        name="Alice",
+        sandbox_id=sandbox.id,
+    )
+    await student_repo.create(student)
+
+    return await sandbox_repo.get_by_id_populated(sandbox.id)
 
 
-async def create_new_tenant(sandbox: Sandbox, repo: TenantsRepository, name: str):
+async def create_new_tenant(sandbox: Sandbox, repo: TenantRepository, name: str):
     # create tenant in traction, then we use their wallet id and key
     traction_tenant = await create_traction_tenant(
         f"{name.lower()}-{str(sandbox.id)[0:7]}"
@@ -96,4 +106,4 @@ async def create_new_tenant(sandbox: Sandbox, repo: TenantsRepository, name: str
         webhook_url=traction_tenant.webhook_url,
         sandbox_id=sandbox.id,
     )
-    await repo.create(tenant)
+    return await repo.create(tenant)

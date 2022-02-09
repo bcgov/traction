@@ -11,12 +11,12 @@ from api.db.models.sandbox import (
     SandboxUpdate,
     Sandbox,
     SandboxRead,
-    SandboxReadWithTenants,
 )
+from api.db.models.related import SandboxReadPopulated
 from api.db.repositories.base import BaseRepository
 
 
-class SandboxesRepository(
+class SandboxRepository(
     BaseRepository[SandboxCreate, SandboxUpdate, SandboxRead, Sandbox]
 ):
     @property
@@ -35,27 +35,27 @@ class SandboxesRepository(
     def _table(self) -> Type[Sandbox]:
         return Sandbox
 
-    async def get_by_id(self, entry_id: UUID) -> SandboxReadWithTenants:
+    async def get_by_id_populated(self, entry_id: UUID) -> SandboxReadPopulated:
         q = (
             select(self._table)
             .where(self._table.id == entry_id)
-            .options(selectinload(Sandbox.tenants))
+            .options(selectinload(Sandbox.tenants), selectinload(Sandbox.students))
         )
         result = await self._db_session.execute(q)
         item = result.scalars().one_or_none()
         if not item:
             raise DoesNotExist(f"{self._table.__name__}<id:{entry_id}> does not exist")
-        return SandboxReadWithTenants.from_orm(item)
+        return SandboxReadPopulated.from_orm(item)
 
-    async def find(
+    async def find_populated(
         self, offset: int = 0, limit: int = 100
-    ) -> List[SandboxReadWithTenants]:
+    ) -> List[SandboxReadPopulated]:
         q = (
             select(self._table)
             .offset(offset)
             .limit(limit)
-            .options(selectinload(Sandbox.tenants))
+            .options(selectinload(Sandbox.tenants), selectinload(Sandbox.students))
         )
         result = await self._db_session.execute(q)
         items = result.scalars().all()
-        return parse_obj_as(List[SandboxReadWithTenants], items)
+        return parse_obj_as(List[SandboxReadPopulated], items)

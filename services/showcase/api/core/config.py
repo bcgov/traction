@@ -58,6 +58,9 @@ class GlobalConfig(BaseSettings):
         "SHOWCASE_ENDPOINT", "http://host.docker.internal:5200"
     )
 
+    # Api V1 prefix
+    API_V1_STR = "/v1"
+
     DB_ECHO_LOG: bool = False
 
     class Config:

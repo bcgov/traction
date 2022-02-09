@@ -23,9 +23,21 @@ def get_application() -> FastAPI:
     return application
 
 
+def get_api() -> FastAPI:
+    api = FastAPI(
+        title=settings.TITLE,
+        description=settings.DESCRIPTION,
+        debug=settings.DEBUG,
+        middleware=None,
+    )
+    # mount api routers here...
+    api.include_router(sandbox_router, prefix=settings.API_V1_STR, tags=["sandbox"])
+    api.include_router(webhooks_router, prefix=settings.API_V1_STR, tags=["webhooks"])
+    return api
+
+
 app = get_application()
-app.include_router(sandbox_router, tags=["sandbox"])
-app.include_router(webhooks_router, tags=["webhooks"])
+app.mount("/api", get_api())
 
 
 @app.get("/")

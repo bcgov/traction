@@ -6,19 +6,17 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from api.db.errors import DoesNotExist
-from api.db.models.sandbox import (
+from api.db.models.tenant import (
     TenantCreate,
     TenantUpdate,
     Tenant,
-    TenantReadWithSandbox,
     TenantRead,
 )
+from api.db.models.related import TenantReadWithSandbox
 from api.db.repositories.base import BaseRepository
 
 
-class TenantsRepository(
-    BaseRepository[TenantCreate, TenantUpdate, TenantReadWithSandbox, Tenant]
-):
+class TenantRepository(BaseRepository[TenantCreate, TenantUpdate, TenantRead, Tenant]):
     @property
     def _in_schema(self) -> Type[TenantCreate]:
         return TenantCreate
@@ -35,7 +33,7 @@ class TenantsRepository(
     def _table(self) -> Type[Tenant]:
         return Tenant
 
-    async def get_by_id(self, entry_id: UUID) -> TenantReadWithSandbox:
+    async def get_by_id_with_sandbox(self, entry_id: UUID) -> TenantReadWithSandbox:
         q = (
             select(self._table)
             .where(self._table.id == entry_id)
