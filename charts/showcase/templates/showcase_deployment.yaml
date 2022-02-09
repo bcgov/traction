@@ -26,7 +26,7 @@ spec:
       securityContext:
         {{- toYaml .Values.showcase.podSecurityContext | nindent 8 }}
       containers:
-        - name: traction-api
+        - name: traction-showcase
           securityContext:
             {{- toYaml .Values.showcase.securityContext | nindent 12 }}
           image: "{{ .Values.showcase.image.tag }}"
