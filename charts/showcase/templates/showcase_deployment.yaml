@@ -26,7 +26,7 @@ spec:
       securityContext:
         {{- toYaml .Values.showcase.podSecurityContext | nindent 8 }}
       containers:
-        - name: traction-api
+        - name: traction-showcase
           securityContext:
             {{- toYaml .Values.showcase.securityContext | nindent 12 }}
           image: "{{ .Values.showcase.image.tag }}"
@@ -68,6 +68,8 @@ spec:
                 secretKeyRef:
                   name: {{ template "showcase.secret.name" . }}
                   key: user_pwd
+            - name: SHOWCASE_ENDPOINT
+              value: https://{{ include "showcase.host" . }}
             - name: TRACTION_ENDPOINT
               value: {{ .Values.showcase.traction_api.endpoint }}
             - name: TRACTION_API_ADMIN_USER
