@@ -1,6 +1,3 @@
-import asyncio
-
-
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from starlette.middleware import Middleware
@@ -35,8 +32,8 @@ def get_innkeeperapp() -> FastAPI:
     application.include_router(
         innkeeper_router,
         prefix=s.API_V1_STR,
-        ## TODO: HOW TO OVERRIDE IN TEST..
-        # dependencies=[Depends(OAuth2PasswordBearer(tokenUrl="token"))],
+        # TODO: HOW TO OVERRIDE IN TEST..
+        dependencies=[Depends(OAuth2PasswordBearer(tokenUrl="token"))],
         tags=["innkeeper"],
     )
     return application
