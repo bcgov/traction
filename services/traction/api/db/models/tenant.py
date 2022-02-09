@@ -11,7 +11,7 @@ class TenantBase(BaseModel):
     name: str = Field(index=True, nullable=False)
     wallet_id: uuid.UUID = Field(nullable=False)
     is_active: bool = Field(nullable=False, default=False)
-    webhook_url: str = Field(nullable=True, default=False)
+    webhook_url: Optional[str] = Field(nullable=True, default=None)
 
 
 class Tenant(TenantBase, TractionSQLModel, table=True):

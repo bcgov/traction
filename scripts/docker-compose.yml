@@ -11,6 +11,7 @@ services:
         condition: service_started
       traction-db:
         condition: service_healthy
+    entrypoint: bash -c "alembic upgrade head && uvicorn api.main:app --reload --host 0.0.0.0 --port 5000 --log-level info"
     environment:
       - POSTGRESQL_HOST=${POSTGRESQL_HOST}
       - POSTGRESQL_PORT=${POSTGRESQL_PORT}
