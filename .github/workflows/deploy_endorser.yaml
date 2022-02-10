@@ -20,6 +20,7 @@ jobs:
   build_endorser:
     name: 'Build Endorser API'
     runs-on: ubuntu-20.04
+    if: github.repository_owner == 'bcgov'
     steps:      
       - uses: actions/checkout@v2    
         with:
@@ -45,6 +46,7 @@ jobs:
     name: Deploy Endorser
     environment: ${{ github.event.inputs.deploy_env }}
     runs-on: ubuntu-20.04
+    if: github.repository_owner == 'bcgov'
     needs: 
       - build_endorser
     if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) }}

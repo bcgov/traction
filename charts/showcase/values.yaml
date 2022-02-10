@@ -87,11 +87,11 @@ showcase:
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
     # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
     limits:
-      cpu: 200m
-      memory: 512Mi
+      cpu: 600m
+      memory: 2600Mi
     requests:
-      cpu: 100m
-      memory: 256Mi
+      cpu: 300m
+      memory: 1300Mi
 
   nodeSelector: {}
 
@@ -185,9 +185,9 @@ postgresql:
 
   resources:
     limits:
-      cpu: 200m
-      memory: 512Mi
+      cpu: 600m
+      memory: 2600Mi
     requests:
-      cpu: 100m
-      memory: 256Mi
+      cpu: 300m
+      memory: 1300Mi
 

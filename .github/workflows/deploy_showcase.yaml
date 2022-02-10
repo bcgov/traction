@@ -15,6 +15,7 @@ jobs:
   build_showcase:
     name: 'Build Traction Showcase'
     runs-on: ubuntu-20.04
+    if: github.repository_owner == 'bcgov'
     steps:      
       - uses: actions/checkout@v2    
         with:
@@ -39,6 +40,7 @@ jobs:
     name: Deploy Showcase
     environment: ${{ github.event.inputs.deploy_env }}
     runs-on: ubuntu-20.04
+    if: github.repository_owner == 'bcgov'
     needs: 
       - build_showcase
     if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) }}

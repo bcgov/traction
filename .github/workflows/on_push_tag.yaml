@@ -8,6 +8,7 @@ jobs:
   init:
     name: Set promotion values
     runs-on: ubuntu-20.04
+    if: github.repository_owner == 'bcgov'
     env:
       CI_IS_TEST: false
       CI_IS_PROD: false
@@ -62,6 +63,7 @@ jobs:
       - init
     environment: ${{ needs.init.outputs.promote_from }}
     runs-on: ubuntu-20.04
+    if: github.repository_owner == 'bcgov'
     env:
       IMAGE_BUILDTIME: ''
       IMAGE_TAG: ''
@@ -102,7 +104,7 @@ jobs:
       - read_config
     environment: ${{ needs.init.outputs.promote_to }}
     runs-on: ubuntu-20.04
-    if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) }}
+    if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) && (github.repository_owner == 'bcgov')}}
     
     steps:  
       - uses: actions/checkout@v2  
