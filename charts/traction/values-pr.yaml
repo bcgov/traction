@@ -24,6 +24,8 @@ traction_api:
     version: 'sha-1a21896'
     buildtime: '2022-01-20T22:37:11.102Z'
     pullPolicy: Always
+  config:
+    gunicornWorkers: 1
   resources:
     limits:
       cpu: 200m
