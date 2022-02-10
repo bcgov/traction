@@ -40,7 +40,7 @@ def get_api() -> FastAPI:
 app = get_application()
 app.mount("/api", get_api())
 
-from fastapi.staticfiles import StaticFiles
+# Frontend Serving
 
 class SPAStaticFiles(StaticFiles):
     async def get_response(self, path: str, scope):
@@ -49,11 +49,7 @@ class SPAStaticFiles(StaticFiles):
             response = await super().get_response('.', scope)
         return response
 
-app.mount('/static', SPAStaticFiles(directory='dist', html=True), name='whatever')
-
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+app.mount('/', SPAStaticFiles(directory='dist', html=True), name='whatever')
 
 if __name__ == "__main__":
     print("main.")

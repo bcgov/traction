@@ -4,10 +4,10 @@ services:
     build:
       context: ../services/showcase
       dockerfile: Dockerfile
-    depends_on:
-      showcase-db:
-        condition: service_healthy
-    entrypoint: bash -c "alembic upgrade head && uvicorn api.main:app --reload --host 0.0.0.0 --port 5000 --log-level info"
+    # depends_on:
+    #   showcase-db:
+    #     condition: service_healthy
+    entrypoint: bash -c "uvicorn api.main:app --reload --host 0.0.0.0 --port 5000 --log-level info"
     environment:
       - POSTGRESQL_HOST=showcase-db
       - POSTGRESQL_PORT=5432
@@ -29,20 +29,20 @@ services:
     volumes:
       - ../services/showcase:/app:rw
 
-  showcase-db:
-    image: "postgres:12"
-    environment:
-      - POSTGRES_PASSWORD=${SHOWCASE_POSTGRESQL_PASSWORD}
-    ports:
-      - ${SHOWCASE_POSTGRESQL_PORT}:5432
-    volumes:
-      - traction-showcase:/var/lib/postgresql/data
-      - ./db_init.showcase.sql:/docker-entrypoint-initdb.d/1-init.sql
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+  # showcase-db:
+  #   image: "postgres:12"
+  #   environment:
+  #     - POSTGRES_PASSWORD=${SHOWCASE_POSTGRESQL_PASSWORD}
+  #   ports:
+  #     - ${SHOWCASE_POSTGRESQL_PORT}:5432
+  #   volumes:
+  #     - traction-showcase:/var/lib/postgresql/data
+  #     - ./db_init.showcase.sql:/docker-entrypoint-initdb.d/1-init.sql
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U postgres"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
 
 volumes:
   traction-showcase:
