@@ -14,3 +14,9 @@ jobs:
       - run:  env
       - run: echo "use github object"
       - run: echo "github.repository_owner = ${{ github.repository_owner }}"
+  
+  echo:
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'bcgov'
+    steps:
+     - run: echo "github.repository_owner = ${{ github.repository_owner }}"
