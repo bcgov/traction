@@ -9,6 +9,7 @@
 
 
 import json
+import logging
 import atexit
 import mimetypes
 from multiprocessing.pool import ThreadPool
@@ -19,6 +20,7 @@ import typing
 from urllib.parse import quote
 from urllib3.fields import RequestField
 
+from api.acapy_utils import get_acapy_headers
 
 from acapy_client import rest
 from acapy_client.configuration import Configuration
@@ -37,6 +39,9 @@ from acapy_client.model_utils import (
     none_type,
     validate_and_convert_types,
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 class ApiClient(object):
@@ -219,7 +224,6 @@ class ApiClient(object):
         return_data = response_data
 
         if not _preload_content:
-            return return_data
             return return_data
 
         # deserialize response data
@@ -482,6 +486,11 @@ class ApiClient(object):
         _request_timeout=None,
     ):
         """Makes the HTTP request using RESTClient."""
+
+        # Aca-py customization - add required headers
+        headers = get_acapy_headers(headers)
+        logger.warn(f"Calling api with headers: {headers}")
+
         if method == "GET":
             return self.rest_client.GET(
                 url,

@@ -1,12 +1,27 @@
 from enum import Enum
+import json
+import logging
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from api import acapy_utils as au
+from api.core.config import settings
+
+from acapy_client.api_client import ApiClient
+from acapy_client.api.connection_api import ConnectionApi
+from acapy_client.configuration import Configuration
+from acapy_client.model.conn_record import ConnRecord
+
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+configuration = Configuration(host=settings.ACAPY_ADMIN_URL)
+api_client = ApiClient(configuration=configuration)
+connection_api = ConnectionApi(api_client=api_client)  # noqa: E501
 
 
 class ConnectionProtocolType(str, Enum):
@@ -78,16 +93,35 @@ async def get_connections(
     their_role: Optional[ConnectionRoleType] = None,
 ):
     params = {
-        "alias": alias,
-        "connection_protocol": connection_protocol,
-        "invitation_key": invitation_key,
-        "my_did": my_did,
-        "connection_state": connection_state,
-        "their_did": their_did,
-        "their_role": their_role,
+        "_preload_content": False,
     }
-    connections = await au.acapy_GET("connections", params=params)
-    return connections["results"]
+    if alias:
+        params["alias"] = alias
+    if connection_protocol:
+        params["connection_protocol"] = connection_protocol
+    if invitation_key:
+        params["invitation_key"] = invitation_key
+    if my_did:
+        params["my_did"] = my_did
+    if connection_state:
+        params["state"] = connection_state
+    if their_did:
+        params["their_did"] = their_did
+    if their_role:
+        params["their_role"] = their_role
+
+    # connections = await au.acapy_GET("connections", params=params)
+    # note this is a synchronous call (if we make it async we lose the context, which contains our tenant Bearer token)
+    resp = connection_api.connections_get(**params)
+
+    # if we set `"_preload_content": True` then the result is deserialized into an array of ConnRecord,
+    #  ... which can't be serialized as a response, so we need to convert to our exposed Connection class
+    # if we set `"_preload_content": False` then we get the bare HTTP response and re have to deserialize ourselves
+    resp_text = resp.data
+    result = json.loads(resp_text)
+    logger.warn(f"Returns: {result}")
+
+    return result["results"]
 
 
 async def get_connection_with_alias(alias: str):
