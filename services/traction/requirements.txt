@@ -20,11 +20,13 @@ MarkupSafe==2.0.1
 passlib==1.7.4
 psycopg2-binary==2.9.2
 pydantic==1.9.0
+python_dateutil>=2.5.3
 python-dotenv==0.19.2
 python-jose[cryptography]==3.3.0
 python-multipart==0.0.5
 PyYAML==6.0
 requests==2.27.1
+setuptools >= 21.0.0
 sniffio==1.2.0
 SQLAlchemy==1.4.27
 sqlalchemy2-stubs==0.0.2a19
