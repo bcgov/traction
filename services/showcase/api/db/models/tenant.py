@@ -40,4 +40,3 @@ class TenantRead(TenantBase):
     # TODO: remove these from READ!
     wallet_id: uuid.UUID
     wallet_key: uuid.UUID
-
