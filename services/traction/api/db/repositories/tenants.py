@@ -3,11 +3,11 @@ from uuid import UUID
 from sqlalchemy import select
 
 from api.db.errors import DoesNotExist
-from api.db.models.tenant import TenantCreate, TenantUpdate, Tenant
+from api.db.models.tenant import TenantCreate, TenantUpdate, TenantRead, Tenant
 from api.db.repositories.base import BaseRepository
 
 
-class TenantsRepository(BaseRepository[TenantCreate, TenantUpdate, Tenant, Tenant]):
+class TenantsRepository(BaseRepository[TenantCreate, TenantUpdate, TenantRead, Tenant]):
     @property
     def _in_schema(self) -> Type[TenantCreate]:
         return TenantCreate
@@ -17,14 +17,14 @@ class TenantsRepository(BaseRepository[TenantCreate, TenantUpdate, Tenant, Tenan
         return TenantUpdate
 
     @property
-    def _schema(self) -> Type[Tenant]:
-        return Tenant
+    def _schema(self) -> Type[TenantRead]:
+        return TenantRead
 
     @property
     def _table(self) -> Type[Tenant]:
         return Tenant
 
-    async def get_by_name(self, name: str) -> Type[Tenant]:
+    async def get_by_name(self, name: str) -> Type[TenantRead]:
         q = select(self._table).where(self._table.name == name)
         result = await self._db_session.execute(q)
         tenant = result.scalar_one_or_none()
@@ -32,7 +32,7 @@ class TenantsRepository(BaseRepository[TenantCreate, TenantUpdate, Tenant, Tenan
             return None
         return self._schema.from_orm(tenant)
 
-    async def get_by_wallet_id(self, wallet_id: UUID) -> Type[Tenant]:
+    async def get_by_wallet_id(self, wallet_id: UUID) -> Type[TenantRead]:
         q = select(self._table).where(self._table.wallet_id == wallet_id)
         result = await self._db_session.execute(q)
         tenant = result.scalar_one_or_none()
