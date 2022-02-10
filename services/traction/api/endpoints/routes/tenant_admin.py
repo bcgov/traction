@@ -31,6 +31,20 @@ async def get_tenant(db: AsyncSession = Depends(get_db)) -> TenantRead:
     return item
 
 
+@router.get("/tenant/issuer", status_code=status.HTTP_200_OK, response_model=TenantRead)
+async def get_tenant_issuer(db: AsyncSession = Depends(get_db)) -> TenantRead:
+    # this should take some query params, sorting and paging params...
+    wallet_id = context.get("TENANT_WALLET_ID")
+    if not wallet_id:
+        raise HTTPException(
+            status_code=403,
+            detail="Error not authenticated",
+        )
+    repo = TenantsRepository(db_session=db)
+    item = await repo.get_by_wallet_id(wallet_id)
+    return item
+
+
 @router.get(
     "/webhooks", status_code=status.HTTP_200_OK, response_model=List[TenantWebhookRead]
 )

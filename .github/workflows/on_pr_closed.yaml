@@ -4,7 +4,8 @@ on:
     branches:
       - develop
     paths:
-      - 'services/**'
+      - 'services/showcase/**'
+      - 'services/traction/**'
     types:
       - closed
 jobs:

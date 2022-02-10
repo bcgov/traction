@@ -20,7 +20,7 @@ jobs:
           context: './services/traction'
           image_name: ${{ github.repository_owner}}/traction-api
           registry: ghcr.io
-          registry_username: ${{ github.repository_owner}}          
+          registry_username: ${{ github.repository_owner}}
           registry_password: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       image_tag: ${{ steps.builder.outputs.image_tag }}
@@ -34,7 +34,7 @@ jobs:
     needs: 
       - build_api
     if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) }}
-    
+
     steps:  
       - uses: actions/checkout@v2  
 
@@ -45,7 +45,7 @@ jobs:
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           certificate_authority_data: ${{ secrets.OPENSHIFT_CA_CRT }}
           namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
-      
+
       - name: Run Dev Helm 
         run: |
           yq eval '.traction_api.image.tag = "${{ needs.build_api.outputs.image_tag }}"' -i ./charts/traction/values-development.yaml

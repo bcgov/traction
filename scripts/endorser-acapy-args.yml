@@ -1,13 +1,6 @@
 auto-accept-invites: true
 auto-accept-requests: true
 auto-respond-messages: true
-auto-respond-credential-proposal: true
-auto-respond-credential-offer: true
-auto-respond-credential-request: true
-auto-respond-presentation-proposal: true
-auto-respond-presentation-request: true
-auto-store-credential: true
-auto-verify-presentation: true
 auto-ping-connection: true
 auto-provision: true
 monitor-ping: true
@@ -25,4 +18,3 @@ endorser-protocol-role: endorser
 auto-endorse-transactions: true
 #auto-write-transactions: <for author>
 #auto-create-revocation-transactions: <for author>
-
