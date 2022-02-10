@@ -32,7 +32,7 @@ app.mount("/endorser", endorser_app)
 
 @app.get("/", tags=["liveness"])
 def main():
-    return {"status": "good", "health": "good"}
+    return {"status": "ok", "health": "ok"}
 
 
 if __name__ == "__main__":
