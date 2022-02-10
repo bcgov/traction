@@ -11,6 +11,7 @@ jobs:
   build_api:
     name: 'Build Traction API'
     runs-on: ubuntu-20.04
+    if: github.repository_owner == 'bcgov'
     steps:      
       - uses: actions/checkout@v2        
       - name: Build service
@@ -31,6 +32,7 @@ jobs:
     name: Deploy Dev
     environment: development
     runs-on: ubuntu-20.04
+    if: github.repository_owner == 'bcgov'
     needs: 
       - build_api
     if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) }}
