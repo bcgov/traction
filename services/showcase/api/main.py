@@ -3,6 +3,7 @@ import time
 
 import uvicorn
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 from api.core.config import settings
 
@@ -39,11 +40,16 @@ def get_api() -> FastAPI:
 app = get_application()
 app.mount("/api", get_api())
 
+# Frontend Serving
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World!"}
+class SPAStaticFiles(StaticFiles):
+    async def get_response(self, path: str, scope):
+        response = await super().get_response(path, scope)
+        if response.status_code == 404:
+            response = await super().get_response('.', scope)
+        return response
 
+app.mount('/', SPAStaticFiles(directory='frontend/dist', html=True), name='dist')
 
 if __name__ == "__main__":
     print("main.")
