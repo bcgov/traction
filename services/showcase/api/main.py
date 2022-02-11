@@ -42,12 +42,14 @@ app.mount("/api", get_api())
 
 # Frontend Serving
 
+
 class SPAStaticFiles(StaticFiles):
     async def get_response(self, path: str, scope):
         response = await super().get_response(path, scope)
         if response.status_code == 404:
             response = await super().get_response('.', scope)
         return response
+
 
 app.mount('/', SPAStaticFiles(directory='frontend/dist', html=True), name='dist')
 
