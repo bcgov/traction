@@ -13,6 +13,7 @@ from acapy_client.api_client import ApiClient
 from acapy_client.api.connection_api import ConnectionApi
 from acapy_client.configuration import Configuration
 from acapy_client.model.conn_record import ConnRecord
+from acapy_client.model.connection_list import ConnectionList
 
 
 logger = logging.getLogger(__name__)
@@ -21,7 +22,7 @@ router = APIRouter()
 
 configuration = Configuration(host=settings.ACAPY_ADMIN_URL)
 api_client = ApiClient(configuration=configuration)
-connection_api = ConnectionApi(api_client=api_client)  # noqa: E501
+connection_api = ConnectionApi(api_client=api_client)
 
 
 class ConnectionProtocolType(str, Enum):
@@ -91,9 +92,10 @@ async def get_connections(
     connection_state: Optional[ConnectionStateType] = None,
     their_did: Optional[str] = None,
     their_role: Optional[ConnectionRoleType] = None,
+    preload_content: bool = True,
 ):
     params = {
-        "_preload_content": False,
+        "_preload_content": preload_content,
     }
     if alias:
         params["alias"] = alias
@@ -114,14 +116,44 @@ async def get_connections(
     # note this is a synchronous call (if we make it async we lose the context, which contains our tenant Bearer token)
     resp = connection_api.connections_get(**params)
 
-    # if we set `"_preload_content": True` then the result is deserialized into an array of ConnRecord,
-    #  ... which can't be serialized as a response, so we need to convert to our exposed Connection class
-    # if we set `"_preload_content": False` then we get the bare HTTP response and re have to deserialize ourselves
-    resp_text = resp.data
-    result = json.loads(resp_text)
-    logger.warn(f"Returns: {result}")
+    if preload_content:
+        # if we set `"_preload_content": True` (the default) then the result is deserialized into an array of ConnRecord,
+        #  ... which can't be serialized as a response, so we need to convert to our exposed Connection class
+        conn_list: ConnectionList = resp
+        conns: list[ConnRecord] = conn_list.get("results")
+        connections = []
+        for conn in conns:
+            connections.append({
+                "accept": conn.get("accept"),
+                "alias": conn.get("alias"),
+                "connection_id": conn.get("connection_id"),
+                "connection_protocol": conn.get("connection_protocol"),
+                "created_at": conn.get("created_at"),
+                "error_msg": conn.get("error_msg"),
+                "inbound_connection_id": conn.get("inbound_connection_id"),
+                "invitation_key": conn.get("invitation_key"),
+                "invitation_mode": conn.get("invitation_mode"),
+                "invitation_msg_id": conn.get("invitation_msg_id"),
+                "my_did": conn.get("my_did"),
+                "request_id": conn.get("request_id"),
+                "rfc23_state": conn.get("rfc23_state"),
+                "routing_state": conn.get("routing_state"),
+                "state": conn.get("state"),
+                "their_did": conn.get("their_did"),
+                "their_label": conn.get("their_label"),
+                "their_public_did": conn.get("their_public_did"),
+                "their_role": conn.get("their_role"),
+                "updated_at": conn.get("updated_at"),
+            })
 
-    return result["results"]
+    else:
+        # if we set `"_preload_content": False` then we get the bare HTTP response and re have to deserialize ourselves
+        resp_text = resp.data
+        result = json.loads(resp_text)
+        logger.warn(f"Returns: {result}")
+        connections = result["results"]
+
+    return connections
 
 
 async def get_connection_with_alias(alias: str):
