@@ -33,10 +33,13 @@ class TenantRepository(BaseRepository[TenantCreate, TenantUpdate, TenantRead, Te
     def _table(self) -> Type[Tenant]:
         return Tenant
 
-    async def get_by_id_with_sandbox(self, entry_id: UUID) -> TenantReadWithSandbox:
+    async def get_by_id_with_sandbox(
+        self, sandbox_id: UUID, entry_id: UUID
+    ) -> TenantReadWithSandbox:
         q = (
             select(self._table)
             .where(self._table.id == entry_id)
+            .where(self._table.sandbox_id == sandbox_id)
             .options(selectinload(Tenant.sandbox))
         )
         result = await self._db_session.execute(q)

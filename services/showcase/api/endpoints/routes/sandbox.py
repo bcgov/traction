@@ -1,5 +1,6 @@
 import logging
 from typing import List
+from uuid import UUID
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,8 +12,18 @@ from api.endpoints.dependencies.db import get_db
 from api.db.repositories.sandbox import SandboxRepository
 from api.services.sandbox import create_new_sandbox
 
+from api.endpoints.routes.student import router as students_router
+from api.endpoints.routes.tenant import router as tenants_router
+
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+router.include_router(
+    students_router, tags=["students"], prefix="/sandboxes/{sandbox_id}"
+)
+router.include_router(
+    tenants_router, tags=["tenants"], prefix="/sandboxes/{sandbox_id}"
+)
 
 
 @router.post(
@@ -38,3 +49,17 @@ async def get_sandboxes(
     repo = SandboxRepository(db_session=db)
     items = await repo.find_populated()
     return items
+
+
+@router.get(
+    "/sandboxes/{sandbox_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=SandboxReadPopulated,
+)
+async def get_sandbox(
+    sandbox_id: UUID,
+    db: AsyncSession = Depends(get_db),
+) -> SandboxReadPopulated:
+    repo = SandboxRepository(db_session=db)
+    item = await repo.get_by_id_populated(sandbox_id)
+    return item

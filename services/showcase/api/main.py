@@ -9,6 +9,7 @@ from api.core.config import settings
 
 from api.endpoints.routes.sandbox import router as sandbox_router
 from api.endpoints.routes.webhooks import router as webhooks_router
+from api.core.exception_handlers import add_exception_handlers
 
 os.environ["TZ"] = settings.TIMEZONE
 time.tzset()
@@ -38,7 +39,8 @@ def get_api() -> FastAPI:
 
 
 app = get_application()
-app.mount("/api", get_api())
+api = get_api()
+app.mount("/api", api)
 
 # Frontend Serving
 
@@ -52,6 +54,9 @@ class SPAStaticFiles(StaticFiles):
 
 
 app.mount("/", SPAStaticFiles(directory="dist", html=True), name="dist")
+
+add_exception_handlers(app)
+add_exception_handlers(api)
 
 if __name__ == "__main__":
     print("main.")

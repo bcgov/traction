@@ -1,0 +1,19 @@
+from api.core.config import settings
+
+# ROOT
+R = settings.TRACTION_ENDPOINT
+
+# SUB APP ROOTS
+R_INN = f"{R}/innkeeper"
+R_INN_V1 = f"{R_INN}/v1"
+
+R_TNT = f"{R}/tenant"
+R_TNT_V1 = f"{R_TNT}/v1"
+
+# INNKEEPER
+INNKEEPER_TOKEN = f"{R_INN}/token"
+INNKEEPER_CHECKIN = f"{R_INN_V1}/check-in"
+
+# TENANT
+TENANT_TOKEN = f"{R_TNT}/token"
+TENANT_CREATE_INVITATION = f"{R_TNT_V1}/connections/create-invitation"
