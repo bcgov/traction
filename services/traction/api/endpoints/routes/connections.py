@@ -6,23 +6,31 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from api import acapy_utils as au
-from api.core.config import settings
+from api.api_client_utils import get_api_client
 
-from acapy_client.api_client import ApiClient
+from acapy_client.api.basicmessage_api import BasicmessageApi
 from acapy_client.api.connection_api import ConnectionApi
-from acapy_client.configuration import Configuration
+from acapy_client.api.out_of_band_api import OutOfBandApi
 from acapy_client.model.conn_record import ConnRecord
 from acapy_client.model.connection_list import ConnectionList
+from acapy_client.model.invitation_create_request import InvitationCreateRequest
+from acapy_client.model.invitation_message import InvitationMessage
+from acapy_client.model.invitation_record import InvitationRecord
+from acapy_client.model.invitation_result import InvitationResult
+from acapy_client.model.receive_invitation_request import ReceiveInvitationRequest
+from acapy_client.model.send_message import SendMessage
+from acapy_client.model_utils import model_to_dict
 
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-configuration = Configuration(host=settings.ACAPY_ADMIN_URL)
-api_client = ApiClient(configuration=configuration)
-connection_api = ConnectionApi(api_client=api_client)
+
+# TODO not sure if these should be global or per-request
+basicmessage_api = BasicmessageApi(api_client=get_api_client())
+connection_api = ConnectionApi(api_client=get_api_client())
+out_of_band_api = OutOfBandApi(api_client=get_api_client())
 
 
 class ConnectionProtocolType(str, Enum):
@@ -83,6 +91,47 @@ class BasicMessage(BaseModel):
     content: str
 
 
+def conn_record_to_connection(conn: ConnRecord) -> Connection:
+    return Connection(
+        accept=conn.get("accept"),
+        alias=conn.get("alias"),
+        connection_id=conn.connection_id,
+        connection_protocol=conn.connection_protocol,
+        created_at=conn.created_at,
+        error_msg=conn.get("error_msg"),
+        inbound_connection_id=conn.get("inbound_connection_id"),
+        invitation_key=conn.get("invitation_key"),
+        invitation_mode=conn.get("invitation_mode"),
+        invitation_msg_id=conn.get("invitation_msg_id"),
+        my_did=conn.get("my_did"),
+        request_id=conn.get("request_id"),
+        rfc23_state=conn.get("rfc23_state"),
+        routing_state=conn.get("routing_state"),
+        state=conn.state,
+        their_did=conn.get("their_did"),
+        their_label=conn.get("their_label"),
+        their_public_did=conn.get("their_public_did"),
+        their_role=conn.get("their_role"),
+        updated_at=conn.updated_at,
+    )
+
+
+def inv_record_to_invitation(inv: InvitationRecord, connection_id: str) -> Invitation:
+    return Invitation(
+        connection_id=connection_id,
+        invitation=inv.invitation,
+        invitation_url=inv.invitation_url,
+    )
+
+
+def inv_result_to_invitation(inv: InvitationResult) -> Invitation:
+    return Invitation(
+        connection_id=inv.connection_id,
+        invitation=model_to_dict(inv.invitation),
+        invitation_url=inv.invitation_url,
+    )
+
+
 @router.get("/", response_model=list[Connection])
 async def get_connections(
     alias: Optional[str] = None,
@@ -94,6 +143,7 @@ async def get_connections(
     their_role: Optional[ConnectionRoleType] = None,
     preload_content: bool = True,
 ):
+    # "preload_content" is just a demo ...
     params = {
         "_preload_content": preload_content,
     }
@@ -113,41 +163,23 @@ async def get_connections(
         params["their_role"] = their_role
 
     # connections = await au.acapy_GET("connections", params=params)
-    # note this is a synchronous call (if we make it async we lose the context, which contains our tenant Bearer token)
+    # note this is a synchronous call (if we make it async we lose the context,
+    # ... which contains our tenant Bearer token)
     resp = connection_api.connections_get(**params)
 
     if preload_content:
-        # if we set `"_preload_content": True` (the default) then the result is deserialized into an array of ConnRecord,
-        #  ... which can't be serialized as a response, so we need to convert to our exposed Connection class
+        # if we set `"_preload_content": True` then the result is deserialized into
+        # an array of ConnRecord, which can't be serialized as a response, so
+        # we need to convert to our exposed Connection class
         conn_list: ConnectionList = resp
         conns: list[ConnRecord] = conn_list.get("results")
         connections = []
         for conn in conns:
-            connections.append({
-                "accept": conn.get("accept"),
-                "alias": conn.get("alias"),
-                "connection_id": conn.get("connection_id"),
-                "connection_protocol": conn.get("connection_protocol"),
-                "created_at": conn.get("created_at"),
-                "error_msg": conn.get("error_msg"),
-                "inbound_connection_id": conn.get("inbound_connection_id"),
-                "invitation_key": conn.get("invitation_key"),
-                "invitation_mode": conn.get("invitation_mode"),
-                "invitation_msg_id": conn.get("invitation_msg_id"),
-                "my_did": conn.get("my_did"),
-                "request_id": conn.get("request_id"),
-                "rfc23_state": conn.get("rfc23_state"),
-                "routing_state": conn.get("routing_state"),
-                "state": conn.get("state"),
-                "their_did": conn.get("their_did"),
-                "their_label": conn.get("their_label"),
-                "their_public_did": conn.get("their_public_did"),
-                "their_role": conn.get("their_role"),
-                "updated_at": conn.get("updated_at"),
-            })
+            connections.append(conn_record_to_connection(conn))
 
     else:
-        # if we set `"_preload_content": False` then we get the bare HTTP response and re have to deserialize ourselves
+        # if we set `"_preload_content": False` then we get the bare HTTP response
+        # ... and we have to deserialize ourselves
         resp_text = resp.data
         result = json.loads(resp_text)
         logger.warn(f"Returns: {result}")
@@ -160,15 +192,15 @@ async def get_connection_with_alias(alias: str):
     params = {
         "alias": alias,
     }
-    connections = await au.acapy_GET("connections", params=params)
-    if 0 == len(connections["results"]):
+    connections = connection_api.connections_get(**params)
+    if 0 == len(connections.get("results")):
         return None
-    if 1 < len(connections["results"]):
+    if 1 < len(connections.get("results")):
         raise HTTPException(
             status_code=500,
             detail=f"Error multiple connections found with alias {alias}",
         )
-    return connections["results"][0]
+    return conn_record_to_connection(connections.get("results")[0])
 
 
 @router.post("/create-invitation", response_model=Invitation)
@@ -189,16 +221,16 @@ async def create_invitation(
                 "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/didexchange/1.0",
             ],
         }
-        invitation = await au.acapy_POST(
-            "out-of-band/create-invitation", data=data, params=None
+        inv = out_of_band_api.out_of_band_create_invitation_post(
+            body=InvitationCreateRequest(**data)
         )
         connection = await get_connection_with_alias(alias)
-        invitation["connection_id"] = connection["connection_id"]
+        invitation = inv_record_to_invitation(inv, connection.connection_id)
     else:
         params = {"alias": alias}
-        invitation = await au.acapy_POST(
-            "connections/create-invitation", data={}, params=params
-        )
+        inv = connection_api.connections_create_invitation_post(**params)
+        invitation = inv_result_to_invitation(inv)
+
     return invitation
 
 
@@ -213,16 +245,13 @@ async def receive_invitation(
             status_code=500, detail=f"Error alias {alias} already in use"
         )
     if "/out-of-band/" in payload.get("@type", ""):
-        params = {"alias": alias}
-        connection = await au.acapy_POST(
-            "out-of-band/receive-invitation", data=payload, params=params
-        )
+        params = {"alias": alias, "body": InvitationMessage(**payload)}
+        connection = out_of_band_api.out_of_band_receive_invitation_post(**params)
     else:
-        params = {"alias": alias}
-        connection = await au.acapy_POST(
-            "connections/receive-invitation", data=payload, params=params
-        )
-    return connection
+        params = {"alias": alias, "body": ReceiveInvitationRequest(**payload)}
+        connection = connection_api.connections_receive_invitation_post(**params)
+
+    return conn_record_to_connection(connection)
 
 
 @router.post("/send-message", response_model=dict)
@@ -237,9 +266,10 @@ async def send_message(
             raise HTTPException(
                 status_code=404, detail=f"Error alias {alias} does not exist"
             )
-        connection_id = existing_connection["connection_id"]
+        connection_id = existing_connection.connection_id
     message = {"content": payload.content}
-    response = await au.acapy_POST(
-        f"connections/{connection_id}/send-message", data=message
+    data = {"body": SendMessage(**message)}
+    response = basicmessage_api.connections_conn_id_send_message_post(
+        connection_id, **data
     )
     return response
