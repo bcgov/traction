@@ -51,7 +51,7 @@ class SPAStaticFiles(StaticFiles):
         return response
 
 
-app.mount("/", SPAStaticFiles(directory="frontend/dist", html=True), name="dist")
+app.mount("/", SPAStaticFiles(directory="dist", html=True), name="dist")
 
 if __name__ == "__main__":
     print("main.")
