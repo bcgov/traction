@@ -56,7 +56,7 @@ async def create_traction_tenant(name: str) -> CheckInResponse:
     # name and webhook_url
     data = {
         "name": name,
-        "webhook_url": f"{settings.SHOWCASE_ENDPOINT}/webhook",
+        "webhook_url": f"{settings.SHOWCASE_ENDPOINT}/api/v1/webhook",
     }
     # TODO: error handling calling Traction
     async with ClientSession() as client_session:

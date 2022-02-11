@@ -35,3 +35,8 @@ class TenantRead(TenantBase):
     updated_at: datetime
     webhook_url: Optional[str] = None
     name: str
+    # including these for now
+    # only to simplify testing
+    # TODO: remove these from READ!
+    wallet_id: uuid.UUID
+    wallet_key: uuid.UUID

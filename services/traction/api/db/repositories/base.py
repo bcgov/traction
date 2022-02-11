@@ -1,17 +1,17 @@
 import abc
 from typing import Generic, TypeVar, Type, List
-from uuid import uuid4, UUID
+from uuid import UUID
 
 from pydantic import parse_obj_as
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
 
 from api.db.errors import DoesNotExist
-from api.db.models.base import BaseModel
+from api.db.models.base import BaseTable
 
-IN_SCHEMA = TypeVar("IN_SCHEMA", bound=BaseModel)
-UPD_SCHEMA = TypeVar("UPD_SCHEMA", bound=BaseModel)
-SCHEMA = TypeVar("SCHEMA", bound=BaseModel)
+IN_SCHEMA = TypeVar("IN_SCHEMA", bound=BaseTable)
+UPD_SCHEMA = TypeVar("UPD_SCHEMA", bound=BaseTable)
+SCHEMA = TypeVar("SCHEMA", bound=BaseTable)
 TABLE = TypeVar("TABLE")
 
 
@@ -32,7 +32,7 @@ class BaseRepository(
         ...
 
     async def create(self, in_schema: IN_SCHEMA) -> SCHEMA:
-        entry = self._table(id=uuid4(), **in_schema.dict())
+        entry = self._table(**in_schema.dict())
         self._db_session.add(entry)
         await self._db_session.commit()
         return self._schema.from_orm(entry)
