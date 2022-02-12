@@ -48,6 +48,21 @@ class TenantRepository(BaseRepository[TenantCreate, TenantUpdate, TenantRead, Te
             raise DoesNotExist(f"{self._table.__name__}<id:{entry_id}> does not exist")
         return TenantReadWithSandbox.from_orm(item)
 
+    async def get_by_name_with_sandbox(
+        self, sandbox_id: UUID, name: str
+    ) -> TenantReadWithSandbox:
+        q = (
+            select(self._table)
+            .where(self._table.name == name)
+            .where(self._table.sandbox_id == sandbox_id)
+            .options(selectinload(Tenant.sandbox))
+        )
+        result = await self._db_session.execute(q)
+        item = result.scalars().one_or_none()
+        if not item:
+            raise DoesNotExist(f"{self._table.__name__}<name:{name}> does not exist")
+        return TenantReadWithSandbox.from_orm(item)
+
     async def get_in_sandbox(self, sandbox_id: UUID) -> List[TenantReadWithSandbox]:
         q = (
             select(self._table)

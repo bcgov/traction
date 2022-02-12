@@ -7,7 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from api.db.models.sandbox import SandboxCreate
-from api.db.models.related import SandboxReadPopulated
+from api.db.models.related import SandboxReadPopulated, OutOfBandReadPopulated
+from api.db.repositories.out_of_band import OutOfBandRepository
 from api.endpoints.dependencies.db import get_db
 from api.db.repositories.sandbox import SandboxRepository
 from api.services.sandbox import create_new_sandbox
@@ -63,3 +64,17 @@ async def get_sandbox(
     repo = SandboxRepository(db_session=db)
     item = await repo.get_by_id_populated(sandbox_id)
     return item
+
+
+@router.get(
+    "/sandboxes/{sandbox_id}/out-of-band-msgs",
+    status_code=status.HTTP_200_OK,
+    response_model=List[OutOfBandReadPopulated],
+)
+async def get_out_of_band_messages(
+    sandbox_id: UUID,
+    db: AsyncSession = Depends(get_db),
+) -> OutOfBandReadPopulated:
+    repo = OutOfBandRepository(db_session=db)
+    items = await repo.get_in_sandbox(sandbox_id)
+    return items

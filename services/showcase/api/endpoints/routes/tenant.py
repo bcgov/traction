@@ -9,11 +9,7 @@ from starlette import status
 from api.db.models.related import TenantReadWithSandbox
 from api.endpoints.dependencies.db import get_db
 from api.db.repositories.tenant import TenantRepository
-from api.services.sandbox import (
-    InviteStudentRequest,
-    InviteStudentResponse,
-    create_invitation_for_student,
-)
+from api.services import sandbox
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -50,16 +46,16 @@ async def get_tenant(
 
 
 @router.post(
-    "/tenants/{tenant_id}/create-invitation",
+    "/tenants/{tenant_id}/create-invitation/student",
     status_code=status.HTTP_200_OK,
-    response_model=InviteStudentResponse,
+    response_model=sandbox.InviteStudentResponse,
 )
-async def create_invitation(
+async def create_invitation_for_student(
     sandbox_id: UUID,
     tenant_id: UUID,
-    payload: InviteStudentRequest,
+    payload: sandbox.InviteStudentRequest,
     db: AsyncSession = Depends(get_db),
-) -> InviteStudentResponse:
-    return await create_invitation_for_student(
+) -> sandbox.InviteStudentResponse:
+    return await sandbox.create_invitation_for_student(
         sandbox_id=sandbox_id, tenant_id=tenant_id, payload=payload, db=db
     )

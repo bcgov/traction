@@ -16,4 +16,5 @@ INNKEEPER_CHECKIN = f"{R_INN_V1}/check-in"
 
 # TENANT
 TENANT_TOKEN = f"{R_TNT}/token"
+TENANT_GET_CONNECTIONS = f"{R_TNT_V1}/connections"
 TENANT_CREATE_INVITATION = f"{R_TNT_V1}/connections/create-invitation"
