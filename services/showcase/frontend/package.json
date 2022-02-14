@@ -12,6 +12,7 @@
     "@bcgov/bc-sans": "^1.0.1",
     "axios": "^0.25.0",
     "core-js": "^3.6.5",
+    "moment": "^2.29.1",
     "nprogress": "^0.2.0",
     "vue": "^2.6.11",
     "vue-router": "^3.5.3",

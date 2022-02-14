@@ -41,11 +41,14 @@
       >
         {{ appTitle }}
       </h1>
+      <v-spacer />
+      <p class="session-text" v-if="currentSandbox">Current Sandbox Session: <strong>{{ currentSandbox.tag }}</strong></p>
     </v-toolbar>
   </header>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import PrintLogo from '@/assets/images/bc_logo_print.svg';
 
 export default {
@@ -56,11 +59,12 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('sandbox', ['currentSandbox']),
     appTitle() {
       return this.$route && this.$route.meta && this.$route.meta.title
         ? this.$route.meta.title
         : process.env.VUE_APP_TITLE;
-    }
+    },
   },
 };
 </script>
@@ -91,6 +95,12 @@ export default {
     @media #{map-get($display-breakpoints, 'sm-and-down')} {
       font-size: 1rem !important;
     }
+  }
+  p.session-text {
+    font-family: inherit !important;
+    color: #ffffff;
+    margin-bottom: 0;
+    font-size: .8em;
   }
 }
 </style>

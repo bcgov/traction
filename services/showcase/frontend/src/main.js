@@ -5,6 +5,7 @@ import App from './App.vue';
 import NProgress from 'nprogress';
 import Vue from 'vue';
 
+import '@/filters';
 import getRouter from '@/router';
 import store from '@/store';
 import vuetify from './plugins/vuetify';
