@@ -40,6 +40,16 @@ class InviteStudentResponse(pydantic.BaseModel):
     invitation: dict
 
 
+class AcceptInvitationRequest(pydantic.BaseModel):
+    sender_id: uuid.UUID
+    invitation: dict
+
+
+class AcceptInvitationResponse(pydantic.BaseModel):
+    sender_id: uuid.UUID
+    connection_id: uuid.UUID
+
+
 async def create_new_sandbox(
     payload: SandboxCreate, db: AsyncSession
 ) -> SandboxReadPopulated:
@@ -64,6 +74,27 @@ async def create_new_sandbox(
     return await sandbox_repo.get_by_id_populated(sandbox.id)
 
 
+async def get_sandbox(sandbox_id, db) -> Sandbox:
+    sandbox = await db.get(Sandbox, sandbox_id)
+    if not sandbox:
+        raise DoesNotExist(f"{Sandbox.__name__}<id:{sandbox_id}> does not exist")
+    return sandbox
+
+
+async def get_tenant(sandbox, tenant_id, db):
+    # we want data that should not be in TenantRead (private wallet information)
+    tenant_q = (
+        select(Tenant)
+        .where(Tenant.id == tenant_id)
+        .where(Tenant.sandbox_id == sandbox.id)
+    )
+    tenant_rec = await db.execute(tenant_q)
+    tenant = tenant_rec.scalars().one_or_none()
+    if not tenant:
+        raise DoesNotExist(f"{Tenant.__name__}<id:{tenant_id}> does not exist")
+    return tenant
+
+
 async def create_new_tenant(sandbox: Sandbox, repo: TenantRepository, name: str):
     # create tenant in traction, then we use their wallet id and key
     resp = await traction.create_tenant(name=f"{name.lower()}-{str(sandbox.id)[0:7]}")
@@ -86,20 +117,9 @@ async def create_invitation_for_student(
     payload: InviteStudentRequest,
     db: AsyncSession,
 ) -> InviteStudentResponse:
-    sandbox = await db.get(Sandbox, sandbox_id)
-    if not sandbox:
-        raise DoesNotExist(f"{Tenant.__name__}<id:{tenant_id}> does not exist")
+    sandbox = await get_sandbox(sandbox_id, db)
 
-    # we want data that should not be in TenantRead (private wallet information)
-    tenant_q = (
-        select(Tenant)
-        .where(Tenant.id == tenant_id)
-        .where(Tenant.sandbox_id == sandbox_id)
-    )
-    tenant_rec = await db.execute(tenant_q)
-    tenant = tenant_rec.scalars().one_or_none()
-    if not tenant:
-        raise DoesNotExist(f"{Tenant.__name__}<id:{tenant_id}> does not exist")
+    tenant = await get_tenant(sandbox, tenant_id, db)
 
     # check payload, check student exists
     student_repo = StudentRepository(db_session=db)
@@ -146,4 +166,44 @@ async def create_invitation_for_student(
         student_id=student.id,
         connection_id=uuid.UUID(resp["connection_id"]),
         invitation=resp["invitation"],
+    )
+
+
+async def accept_invitation(
+    sandbox_id: uuid.UUID,
+    tenant_id: uuid.UUID,
+    payload: AcceptInvitationRequest,
+    db: AsyncSession,
+) -> AcceptInvitationResponse:
+    sandbox = await get_sandbox(sandbox_id, db)
+
+    recipient = await get_tenant(sandbox, tenant_id, db)
+
+    # for showcase demo, we know the tenant is in our db
+    # in the real world, then sender will be completely external
+    sender = await get_tenant(sandbox, payload.sender_id, db)
+
+    # do a quick check for existing connection with this alias...
+    check_resp = await traction.get_connections(
+        recipient.wallet_id, recipient.wallet_key, sender.name
+    )
+    if len(check_resp) > 0:
+        detail = f"{recipient.name} has an existing connection with {sender.name}."
+        if check_resp[0]["state"] == "invitation":
+            detail = f"{recipient.name} has created and invitation for {sender.name}."
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=detail,
+        )
+
+    resp = await traction.accept_invitation(
+        recipient.wallet_id, recipient.wallet_key, sender.name, payload.invitation
+    )
+
+    # the sender and recipient should start getting webhook updates about
+    # changes in connection state...
+
+    return AcceptInvitationResponse(
+        sender_id=sender.id,
+        connection_id=uuid.UUID(resp["connection_id"]),
     )

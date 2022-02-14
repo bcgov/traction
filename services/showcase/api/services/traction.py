@@ -106,3 +106,21 @@ async def create_invitation(
         ) as response:
             resp = await response.json()
             return resp
+
+
+async def accept_invitation(
+    wallet_id: UUID, wallet_key: UUID, alias: str, invitation: dict
+):
+    # call Traction to accept an invitation...
+    auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
+    query_params = urllib.parse.urlencode({"alias": alias})
+    url = f"{t_urls.TENANT_RECEIVE_INVITATION}?{query_params}"
+    # TODO: error handling calling Traction
+    async with ClientSession() as client_session:
+        async with await client_session.post(
+            url=url,
+            json=invitation,
+            headers=auth_headers,
+        ) as response:
+            resp = await response.json()
+            return resp

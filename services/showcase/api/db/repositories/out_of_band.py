@@ -2,7 +2,7 @@ from typing import Type, List
 from uuid import UUID
 
 from pydantic import parse_obj_as
-from sqlalchemy import select
+from sqlalchemy import select, or_
 from sqlalchemy.orm import selectinload
 
 from api.db.models.out_of_band import (
@@ -63,3 +63,18 @@ class OutOfBandRepository(
         result = await self._db_session.execute(q)
         items = result.scalars().all()
         return parse_obj_as(List[OutOfBandRead], items)
+
+    async def get_for_tenant(self, tenant_id: UUID) -> List[OutOfBandReadPopulated]:
+        q = (
+            select(self._table)
+            .where(
+                or_(
+                    self._table.recipient_id == tenant_id,
+                    self._table.sender_id == tenant_id,
+                )
+            )
+            .order_by(OutOfBand.created_at.desc())
+        )
+        result = await self._db_session.execute(q)
+        items = result.scalars().all()
+        return parse_obj_as(List[OutOfBandReadPopulated], items)
