@@ -1,5 +1,6 @@
 .idea
 venv
+node_modules
 __pycache__
 .tox
 .pytest_cache

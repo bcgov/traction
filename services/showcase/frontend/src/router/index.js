@@ -26,7 +26,7 @@ export default function getRouter(basePath = '/') {
       {
         path: '/innkeeper',
         name: 'Innkeeper',
-        component: () => import(/* webpackChunkName: "inkeeper" */ '@/views/Innkeeper.vue'),
+        component: () => import(/* webpackChunkName: "innkeeper" */ '@/views/Innkeeper.vue'),
       },
       {
         path: '/faber',

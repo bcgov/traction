@@ -6,7 +6,7 @@
           <router-link :to="{ name: 'Home' }">Home</router-link>
         </li>
         <li>
-          <router-link :to="{ name: 'Innkeeper' }">Inkeeper</router-link>
+          <router-link :to="{ name: 'Innkeeper' }">Innkeeper</router-link>
         </li>
         <li>
           <router-link :to="{ name: 'Faber' }">Faber</router-link>
