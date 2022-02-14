@@ -1,5 +1,6 @@
 <template>
   <v-app>
+    <BaseNotificationContainer />
     <BCGovHeader />
     <BCGovNavBar />
 

@@ -1,16 +1,20 @@
 <template>
   <v-container>
-    <h1 class="my-6 text-center">Welcome to Vuetify</h1>
-    <HelloWorld />
+    <h1 class="my-6">Innkeeper</h1>
+    <p>Set up and manage your current "Sandbox" session for the Showcase application</p>
+    <Sandboxes />
+    <SandboxCreate />
   </v-container>
 </template>
 
 <script>
-import HelloWorld from '@/components/HelloWorld.vue';
+import Sandboxes from '@/components/innkeeper/Sandboxes.vue';
+import SandboxCreate from '@/components/innkeeper/SandboxCreate.vue';
 export default {
-  name: 'Home',
+  name: 'Innkeeper',
   components: {
-    HelloWorld
+    Sandboxes,
+    SandboxCreate
   }
 };
 </script>

@@ -41,8 +41,6 @@
       >
         {{ appTitle }}
       </h1>
-      <v-spacer />
-      <BaseAuthButton />
     </v-toolbar>
   </header>
 </template>
