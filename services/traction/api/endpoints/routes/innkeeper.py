@@ -50,7 +50,7 @@ async def get_tenant(tenant_id: UUID, db: AsyncSession = Depends(get_db)) -> Ten
 
 
 @router.post(
-    "/tenants/{tenant_id}/issuer",
+    "/tenants/issuer/{tenant_id}",
     status_code=status.HTTP_200_OK,
     response_model=TenantRead,
 )
@@ -61,3 +61,31 @@ async def make_tenant_issuer(
     repo = TenantsRepository(db_session=db)
     item = await repo.get_by_id(tenant_id)
     return item
+
+
+@router.get(
+    "/tenants/issuer/{tenant_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=TenantRead,
+)
+async def get_tenant_issuer(
+    tenant_id: UUID, db: AsyncSession = Depends(get_db)
+) -> TenantRead:
+    # TODO return status of tenant "issuer"
+    repo = TenantsRepository(db_session=db)
+    item = await repo.get_by_id(tenant_id)
+    return item
+
+
+@router.get(
+    "/tenants/issuer",
+    status_code=status.HTTP_200_OK,
+    response_model=List[TenantRead],
+)
+async def get_tenant_issuers(
+    tenant_id: UUID, db: AsyncSession = Depends(get_db)
+) -> TenantRead:
+    # TODO return status of tenant "issuers"
+    repo = TenantsRepository(db_session=db)
+    items = await repo.find()
+    return items
