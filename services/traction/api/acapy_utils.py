@@ -3,10 +3,14 @@ from aiohttp import (
     ClientResponse,
 )
 import json
+import logging
 from fastapi import Request
 from starlette_context import context
 
 from api.core.config import settings
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_acapy_headers(headers=None, tenant=False) -> dict:
@@ -21,11 +25,14 @@ def get_acapy_headers(headers=None, tenant=False) -> dict:
     if settings.ACAPY_ADMIN_URL_API_KEY:
         headers["X-API-Key"] = settings.ACAPY_ADMIN_URL_API_KEY
     try:
-        if tenant and context.get("TENANT_WALLET_TOKEN"):
+        if context.get("TENANT_WALLET_TOKEN"):
+            logger.warn("Adding tenant bearer token")
             headers["Authorization"] = "Bearer " + context.get("TENANT_WALLET_TOKEN")
+        else:
+            logger.warn("NOT adding tenant bearer token")
     except Exception:
         # TODO bit of a hack,
-        #  throws an exception if the middlewares are called in teh wrong order
+        #  throws an exception if the middlewares are called in the wrong order
         pass
     return headers
 
