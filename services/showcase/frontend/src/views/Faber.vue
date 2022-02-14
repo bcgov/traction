@@ -1,16 +1,16 @@
 <template>
   <v-container>
-    <h1 class="my-6 text-center">Welcome to Vuetify</h1>
-    <HelloWorld />
+    <h1 class="my-6 text-center">Faber</h1>
+    <Students />
   </v-container>
 </template>
 
 <script>
-import HelloWorld from '@/components/HelloWorld.vue';
+import Students from '@/components/faber/Students.vue';
 export default {
-  name: 'Home',
+  name: 'Faber',
   components: {
-    HelloWorld
+    Students
   }
 };
 </script>
