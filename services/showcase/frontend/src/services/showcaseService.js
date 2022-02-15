@@ -20,4 +20,14 @@ export default {
   createSandbox(tag) {
     return appAxios().post(`${ApiRoutes.SANDBOXES}`, { tag: tag });
   },
+
+  /**
+   * @function createInvitation
+   * Create a invitation
+   * @param {string} tag A label for the sandbox
+   * @returns {Promise} An axios response
+   */
+  createInvitation(sandboxId, tenantId, studentId) {
+    return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/tenants/${tenantId}/create-invitation/student`, { student_id: studentId });
+  },
 };
