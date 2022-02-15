@@ -68,7 +68,14 @@ export default {
     async invite(id) {
       this.loadingInvitation = true;
       try {
-        const response = await showcaseService.createSandbox(id);
+        const faberTenant = this.currentSandbox.tenants.find(
+          ({ name }) => name === 'Faber'
+        );
+        const response = await showcaseService.createInvitation(
+          this.currentSandbox.id,
+          faberTenant.id,
+          id
+        );
         this.invitation = response.data;
       } catch (error) {
         alert('error creating invitation (TBD');
