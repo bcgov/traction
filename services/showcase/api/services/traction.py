@@ -12,6 +12,7 @@ from api.services import traction_urls as t_urls
 
 logger = logging.getLogger(__name__)
 
+
 async def get_auth_headers(
     wallet_id: Optional[UUID] = None, wallet_key: Optional[UUID] = None
 ):
@@ -46,8 +47,8 @@ async def get_auth_headers(
                     "Authorization": f"Bearer {token}",
                 }
             except ContentTypeError:
+                logger.exception("Error getting token", exc_info=True)
                 text = await response.text()
-                logger.error(text)
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail=text,
@@ -72,8 +73,8 @@ async def create_tenant(name: str):
                 resp = await response.json()
                 return resp
             except ContentTypeError:
+                logger.exception("Error creating tenant", exc_info=True)
                 text = await response.text()
-                logger.error(text)
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail=text,
@@ -106,8 +107,8 @@ async def get_connections(
                 resp = await response.json()
                 return resp
             except ContentTypeError:
+                logger.exception("Error getting connections list", exc_info=True)
                 text = await response.text()
-                logger.error(text)
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail=text,
@@ -138,8 +139,8 @@ async def create_invitation(
                 resp = await response.json()
                 return resp
             except ContentTypeError:
+                logger.exception("Error creating invitation", exc_info=True)
                 text = await response.text()
-                logger.error(text)
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail=text,
@@ -164,8 +165,8 @@ async def accept_invitation(
                 resp = await response.json()
                 return resp
             except ContentTypeError:
+                logger.exception("Error accepting invitation", exc_info=True)
                 text = await response.text()
-                logger.error(text)
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail=text,
