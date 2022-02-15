@@ -6,14 +6,15 @@ COPY frontend .
 RUN npm install && npm run build
 
 FROM python:3.10
-
-WORKDIR /app
-
-COPY --from=VUE /frontend/dist ./dist
+WORKDIR /traction/app
+COPY docker-entrypoint.sh docker-entrypoint.sh
+COPY alembic.ini alembic.ini
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
+COPY api ./api
 
-COPY . .
+# vue app goes outside of the app (allows hotloading of app)
+COPY --from=VUE /frontend/dist /traction/static
 
 EXPOSE 5000
 ENTRYPOINT ["./docker-entrypoint.sh"]

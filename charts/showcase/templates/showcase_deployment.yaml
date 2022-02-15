@@ -70,6 +70,8 @@ spec:
                   key: user_pwd
             - name: SHOWCASE_ENDPOINT
               value: https://{{ include "showcase.host" . }}
+            - name: SHOWCASE_STATIC_FILES
+              value: {{ .Values.showcase.config.staticFilesPath }}
             - name: TRACTION_ENDPOINT
               value: {{ .Values.showcase.traction_api.endpoint }}
             - name: TRACTION_API_ADMIN_USER

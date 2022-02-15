@@ -1,5 +1,7 @@
+import logging
 import os
 import time
+from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI
@@ -13,6 +15,9 @@ from api.core.exception_handlers import add_exception_handlers
 
 os.environ["TZ"] = settings.TIMEZONE
 time.tzset()
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def get_application() -> FastAPI:
@@ -53,7 +58,13 @@ class SPAStaticFiles(StaticFiles):
         return response
 
 
-app.mount("/", SPAStaticFiles(directory="dist", html=True), name="dist")
+static_files = Path(settings.SHOWCASE_STATIC_FILES).resolve()
+
+app.mount(
+    "/",
+    SPAStaticFiles(directory=static_files, html=True, check_dir=True),
+    name="dist",
+)
 
 add_exception_handlers(app)
 add_exception_handlers(api)
