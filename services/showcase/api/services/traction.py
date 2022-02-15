@@ -44,7 +44,7 @@ async def get_auth_headers(
                     "Authorization": f"Bearer {token}",
                 }
             except ContentTypeError:
-                text = await resp.text()
+                text = await response.text()
                 print(text)
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -70,7 +70,7 @@ async def create_tenant(name: str):
                 resp = await response.json()
                 return resp
             except ContentTypeError:
-                text = await resp.text()
+                text = await response.text()
                 print(text)
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -102,7 +102,7 @@ async def get_connections(
                 resp = await response.json()
                 return resp
             except ContentTypeError:
-                text = await resp.text()
+                text = await response.text()
                 print(text)
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -134,7 +134,7 @@ async def create_invitation(
                 resp = await response.json()
                 return resp
             except ContentTypeError:
-                text = await resp.text()
+                text = await response.text()
                 print(text)
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -160,7 +160,7 @@ async def accept_invitation(
                 resp = await response.json()
                 return resp
             except ContentTypeError:
-                text = await resp.text()
+                text = await response.text()
                 print(text)
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
