@@ -4,7 +4,11 @@ from datetime import datetime
 
 from sqlmodel import Field
 
-from api.db.models.base import BaseModel, TractionSQLModel
+from api.db.models.base import BaseModel, BaseTable
+
+
+class TenantWorkflowTypeType(str, Enum):
+    issuer = "issuer"
 
 
 class TenantWorkflowStateType(str, Enum):
@@ -16,14 +20,14 @@ class TenantWorkflowStateType(str, Enum):
 
 class TenantWorkflowBase(BaseModel):
     wallet_id: uuid.UUID = Field(nullable=False)
-    workflow_state: str = Field(nullable=False, default=False)
-    workflow_state_msg: str = Field(nullable=False, default=False)
-    wallet_bearer_token: str = Field(nullable=True, default=False)
+    workflow_type: str = Field(nullable=False)
+    workflow_state: str = Field(nullable=False)
+    workflow_state_msg: str = Field(nullable=True, default=None)
+    wallet_bearer_token: str = Field(nullable=True, default=None)
 
 
-class TenantWorkflow(TenantWorkflowBase, TractionSQLModel, table=True):
+class TenantWorkflow(TenantWorkflowBase, BaseTable, table=True):
     # This is the class that represents the table
-    # all fields from TractionSQLModel and TenantBase are inherited
     pass
 
 
@@ -47,6 +51,6 @@ class TenantWorkflowUpdate(BaseModel):
     # This does NOT inherit from TenantWorkflowBase,
     # so no need to worry about accidentally updating id or other fields
     id: uuid.UUID
-    workflow_state: str = Field(nullable=False, default=False)
-    workflow_state_msg: str = Field(nullable=False, default=False)
-    wallet_bearer_token: str = Field(nullable=True, default=False)
+    workflow_state: str = Field(nullable=False)
+    workflow_state_msg: str = Field(nullable=True, default=None)
+    wallet_bearer_token: str = Field(nullable=True, default=None)

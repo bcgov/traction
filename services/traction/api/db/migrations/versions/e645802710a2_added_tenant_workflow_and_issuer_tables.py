@@ -28,9 +28,10 @@ def upgrade():
             nullable=False,
         ),
         sa.Column("wallet_id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("workflow_type", sa.String(), nullable=False),
         sa.Column("workflow_state", sa.String(), nullable=False),
-        sa.Column("workflow_state_msg", sa.Integer(), nullable=True),
-        sa.Column("wallet_bearer_token", sa.Integer(), nullable=True),
+        sa.Column("workflow_state_msg", sa.String(), nullable=True),
+        sa.Column("wallet_bearer_token", sa.String(), nullable=True),
         sa.Column(
             "created_at",
             postgresql.TIMESTAMP(),
@@ -54,7 +55,9 @@ def upgrade():
             server_default=sa.text("gen_random_uuid()"),
             nullable=False,
         ),
+        sa.Column("tenant_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("wallet_id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("workflow_id", postgresql.UUID(as_uuid=True), nullable=True),
         sa.Column(
             "endorser_connection_id", postgresql.UUID(as_uuid=True), nullable=True
         ),

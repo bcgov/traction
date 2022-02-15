@@ -3,22 +3,22 @@ from datetime import datetime
 
 from sqlmodel import Field
 
-from api.db.models.base import BaseModel, TractionSQLModel
+from api.db.models.base import BaseModel, BaseTable
 
 
 class TenantIssuerBase(BaseModel):
+    tenant_id: uuid.UUID = Field(nullable=False)
     wallet_id: uuid.UUID = Field(nullable=False)
     # workflow_id will be null until the tenant kcks it off
-    workflow_id: uuid.UUID = Field(nullable=True, default=False)
-    endorser_connection_id: uuid.UUID = Field(nullable=True, default=False)
-    endorser_connection_state: str = Field(nullable=True, default=False)
-    public_did: str = Field(nullable=True, default=False)
-    public_did_state: str = Field(nullable=True, default=False)
+    workflow_id: uuid.UUID = Field(nullable=True, default=None)
+    endorser_connection_id: uuid.UUID = Field(nullable=True, default=None)
+    endorser_connection_state: str = Field(nullable=True, default=None)
+    public_did: str = Field(nullable=True, default=None)
+    public_did_state: str = Field(nullable=True, default=None)
 
 
-class TenantIssuer(TenantIssuerBase, TractionSQLModel, table=True):
+class TenantIssuer(TenantIssuerBase, BaseTable, table=True):
     # This is the class that represents the table
-    # all fields from TractionSQLModel and TenantBase are inherited
     pass
 
 
@@ -42,7 +42,8 @@ class TenantIssuerUpdate(BaseModel):
     # This does NOT inherit from TenantIssuerBase,
     # so no need to worry about accidentally updating id or other fields
     id: uuid.UUID
-    endorser_connection_id: uuid.UUID = Field(nullable=False)
-    endorser_connection_state: str = Field(nullable=False, default=False)
-    public_did: str = Field(nullable=False, default=False)
-    public_did_state: str = Field(nullable=False, default=False)
+    workflow_id: uuid.UUID = Field(nullable=True, default=None)
+    endorser_connection_id: uuid.UUID = Field(nullable=True, default=None)
+    endorser_connection_state: str = Field(nullable=True, default=None)
+    public_did: str = Field(nullable=True, default=None)
+    public_did_state: str = Field(nullable=True, default=None)

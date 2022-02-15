@@ -33,6 +33,16 @@ class TenantIssuersRepository(
     def _table(self) -> Type[TenantIssuer]:
         return TenantIssuer
 
+    async def get_by_tenant_id(self, tenant_id: UUID) -> Type[TenantIssuerRead]:
+        q = select(self._table).where(self._table.tenant_id == tenant_id)
+        result = await self._db_session.execute(q)
+        tenant_issuer = result.scalar_one_or_none()
+        if not tenant_issuer:
+            raise DoesNotExist(
+                f"{self._table.__name__}<tenant_id:{tenant_id}> does not exist"
+            )
+        return self._schema.from_orm(tenant_issuer)
+
     async def get_by_wallet_id(self, wallet_id: UUID) -> Type[TenantIssuerRead]:
         q = select(self._table).where(self._table.wallet_id == wallet_id)
         result = await self._db_session.execute(q)
