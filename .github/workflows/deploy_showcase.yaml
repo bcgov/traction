@@ -60,5 +60,4 @@ jobs:
           yq eval '.showcase.image.tag = "${{ needs.build_showcase.outputs.image_tag }}"' -i ./charts/showcase/values-${{ github.event.inputs.deploy_env }}.yaml
           yq eval '.showcase.image.version = "${{ needs.build_showcase.outputs.image_version }}"' -i ./charts/showcase/values-${{ github.event.inputs.deploy_env }}.yaml
           yq eval '.showcase.image.buildtime = "${{ needs.build_showcase.outputs.buildtime }}"' -i ./charts/showcase/values-${{ github.event.inputs.deploy_env }}.yaml
-          yq eval '.showcase.traction_api.endpoint = "${{ secrets.TRACTION_ENDPOINT }}"' -i ./charts/showcase/values-${{ github.event.inputs.deploy_env }}.yaml
           helm upgrade -f ./charts/showcase/values.yaml -f ./charts/showcase/values-${{ github.event.inputs.deploy_env }}.yaml showcase ./charts/showcase --install --wait
