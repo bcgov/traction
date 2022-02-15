@@ -11,7 +11,12 @@ from api.db.errors import DoesNotExist
 from api.db.models.tenant import TenantRead
 from api.db.models.tenant_issuer import TenantIssuerRead, TenantIssuerUpdate
 from api.db.models.tenant_webhook import TenantWebhookRead
-from api.db.models.tenant_workflow import TenantWorkflowRead, TenantWorkflowCreate, TenantWorkflowTypeType, TenantWorkflowStateType
+from api.db.models.tenant_workflow import (
+    TenantWorkflowRead,
+    TenantWorkflowCreate,
+    TenantWorkflowTypeType,
+    TenantWorkflowStateType,
+)
 from api.endpoints.dependencies.db import get_db
 from api.db.repositories.tenants import TenantsRepository
 from api.db.repositories.tenant_issuers import TenantIssuersRepository
@@ -42,7 +47,9 @@ async def get_tenant(db: AsyncSession = Depends(get_db)) -> TenantRead:
     return item
 
 
-@router.get("/tenant/issuer", status_code=status.HTTP_200_OK, response_model=TenantIssuerData)
+@router.get(
+    "/tenant/issuer", status_code=status.HTTP_200_OK, response_model=TenantIssuerData
+)
 async def get_tenant_issuer(db: AsyncSession = Depends(get_db)) -> TenantIssuerData:
     # this should take some query params, sorting and paging params...
     wallet_id = context.get("TENANT_WALLET_ID")
@@ -94,7 +101,7 @@ async def make_tenant_issuer(db: AsyncSession = Depends(get_db)) -> TenantIssuer
             wallet_id=wallet_id,
             workflow_type=TenantWorkflowTypeType.issuer,
             workflow_state=TenantWorkflowStateType.pending,
-            wallet_bearer_token=context.get("TENANT_WALLET_TOKEN")
+            wallet_bearer_token=context.get("TENANT_WALLET_TOKEN"),
         )
         tenant_workflow = await workflow_repo.create(new_workflow)
         update_issuer = TenantIssuerUpdate(

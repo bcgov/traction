@@ -59,7 +59,7 @@ async def get_tenant(tenant_id: UUID, db: AsyncSession = Depends(get_db)) -> Ten
     response_model=List[TenantIssuerRead],
 )
 async def get_tenant_issuers(
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ) -> List[TenantIssuerRead]:
     # TODO return status of tenant "issuers"
     issuer_repo = TenantIssuersRepository(db_session=db)
