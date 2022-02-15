@@ -21,7 +21,7 @@
     </div>
 
     <v-skeleton-loader
-      v-if="invitation"
+      v-if="invitation || loadingInvitation"
       :loading="loadingInvitation"
       type="card"
       max-width="600"
