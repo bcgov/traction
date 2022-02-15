@@ -108,7 +108,7 @@ async def get_connections(
                 return resp
             except ContentTypeError:
                 logger.exception(
-                    f"Error getting connections list {t_urls.TENANT_GET_CONNECTIONS} {url} {settings.TRACTION_ENDPOINT}",
+                    f"Error getting connections list {t_urls.TENANT_GET_CONNECTIONS} {url} {settings.TRACTION_ENDPOINT}",  # noqa: E501
                     exc_info=True,
                 )
                 text = await response.text()
