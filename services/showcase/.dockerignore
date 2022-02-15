@@ -2,10 +2,8 @@ Dockerfile
 .idea/
 .tox/
 .coverage/
-.DS_Store/
 .gitignore
-__pycache__/
 tests/
 venv/
-frontend/dist/
-frontend/node_modules/
+**/__pycache__
+**/.DS_Store
