@@ -2,10 +2,9 @@ import os
 import time
 
 import uvicorn
-from fastapi import FastAPI, Request, status
-from starlette.responses import JSONResponse
+from fastapi import FastAPI
 
-from api.db.errors import DoesNotExist, AlreadyExists
+from api.core.exception_handlers import add_exception_handlers
 from api.endpoints.routes.webhooks import get_webhookapp
 from api.core.config import settings
 from api.innkeeper_main import get_innkeeperapp
@@ -39,21 +38,11 @@ app.mount("/innkeeper", innkeeper_app)
 acapy_wrapper_app = get_acapy_wrapper_app()
 app.mount("/tenant_acapy", acapy_wrapper_app)
 
-
-@app.exception_handler(DoesNotExist)
-async def does_not_exist_exception_handler(request: Request, exc: DoesNotExist):
-    return JSONResponse(
-        status_code=status.HTTP_404_NOT_FOUND,
-        content={"message": str(exc)},
-    )
-
-
-@app.exception_handler(AlreadyExists)
-async def already_exists_exception_handler(request: Request, exc: AlreadyExists):
-    return JSONResponse(
-        status_code=status.HTTP_409_CONFLICT,
-        content={"message": str(exc)},
-    )
+add_exception_handlers(app)
+add_exception_handlers(webhook_app)
+add_exception_handlers(tenant_app)
+add_exception_handlers(innkeeper_app)
+add_exception_handlers(acapy_wrapper_app)
 
 
 @app.get("/", tags=["liveness"])
