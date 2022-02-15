@@ -12,12 +12,12 @@ export default {
   },
 
   /**
-   * @function generateSandbox
+   * @function createSandbox
    * Create a new sandbox session
    * @param {string} tag A label for the sandbox
    * @returns {Promise} An axios response
    */
-  generateApiKey(tag) {
+  createSandbox(tag) {
     return appAxios().post(`${ApiRoutes.SANDBOXES}`, { tag: tag });
   },
 };
