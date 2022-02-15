@@ -15,6 +15,7 @@ jobs:
   build_showcase:
     name: 'Build Traction Showcase'
     runs-on: ubuntu-20.04
+    if: github.repository_owner == 'bcgov'
     steps:      
       - uses: actions/checkout@v2    
         with:
@@ -41,7 +42,7 @@ jobs:
     runs-on: ubuntu-20.04
     needs: 
       - build_showcase
-    if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) }}
+    if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) && (github.repository_owner == 'bcgov') }}
     
     steps:  
       - uses: actions/checkout@v2  
@@ -59,5 +60,4 @@ jobs:
           yq eval '.showcase.image.tag = "${{ needs.build_showcase.outputs.image_tag }}"' -i ./charts/showcase/values-${{ github.event.inputs.deploy_env }}.yaml
           yq eval '.showcase.image.version = "${{ needs.build_showcase.outputs.image_version }}"' -i ./charts/showcase/values-${{ github.event.inputs.deploy_env }}.yaml
           yq eval '.showcase.image.buildtime = "${{ needs.build_showcase.outputs.buildtime }}"' -i ./charts/showcase/values-${{ github.event.inputs.deploy_env }}.yaml
-          yq eval '.showcase.traction_api.endpoint = "${{ secrets.TRACTION_ENDPOINT }}"' -i ./charts/showcase/values-${{ github.event.inputs.deploy_env }}.yaml
           helm upgrade -f ./charts/showcase/values.yaml -f ./charts/showcase/values-${{ github.event.inputs.deploy_env }}.yaml showcase ./charts/showcase --install --wait

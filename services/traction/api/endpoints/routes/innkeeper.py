@@ -49,3 +49,17 @@ async def get_tenant(tenant_id: UUID, db: AsyncSession = Depends(get_db)) -> Ten
     repo = TenantsRepository(db_session=db)
     item = await repo.get_by_id(tenant_id)
     return item
+
+
+@router.post(
+    "/tenants/{tenant_id}/issuer",
+    status_code=status.HTTP_200_OK,
+    response_model=TenantRead,
+)
+async def make_tenant_issuer(
+    tenant_id: UUID, db: AsyncSession = Depends(get_db)
+) -> TenantRead:
+    # TODO kick off the process of promoting this tenant to "issuer"
+    repo = TenantsRepository(db_session=db)
+    item = await repo.get_by_id(tenant_id)
+    return item

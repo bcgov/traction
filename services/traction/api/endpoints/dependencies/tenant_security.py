@@ -10,11 +10,18 @@ from starlette.middleware.base import (
 from starlette.requests import Request
 from starlette.responses import Response
 
-from api import acapy_utils as au
+from acapy_client.api.multitenancy_api import MultitenancyApi
+from acapy_client.model.create_wallet_token_request import CreateWalletTokenRequest
+
+from api.api_client_utils import get_api_client
+
 from api.core.config import settings
 
 
 logger = logging.getLogger(__name__)
+
+# TODO not sure if these should be global or per-request
+multitenancy_api = MultitenancyApi(api_client=get_api_client())
 
 
 class JWTTFetchingMiddleware(BaseHTTPMiddleware):
@@ -45,12 +52,13 @@ async def authenticate_tenant(username: str, password: str):
     """Fetch the wallet bearer token (returns None if not found)."""
     wallet_id = username
     wallet_key = password
-    body = {"wallet_key": wallet_key}
+    data = {"wallet_key": wallet_key}
     try:
-        results = await au.acapy_admin_request(
-            "POST", f"multitenancy/wallet/{wallet_id}/token", data=body, tenant=False
+        token_request = CreateWalletTokenRequest(**data)
+        token_response = multitenancy_api.multitenancy_wallet_wallet_id_token_post(
+            wallet_id, **{"body": token_request}
         )
-        jwt_token = results["token"]
+        jwt_token = token_response.token
 
         # pass this via starlette context
         context["TENANT_WALLET_TOKEN"] = jwt_token

@@ -1,0 +1,8 @@
+global:
+  ingressSuffix: -tools.apps.silver.devops.gov.bc.ca
+endorser_api:
+  image:
+    tag: "ghcr.io/bcgov/endorser-api:sha-1a21896"
+    version: 'sha-1a21896'
+    buildtime: '2022-01-20T22:37:11.102Z'
+    pullPolicy: Always

@@ -6,6 +6,7 @@ from sqlalchemy import select
 from api.db.models.tenant_webhook import (
     TenantWebhookCreate,
     TenantWebhookUpdate,
+    TenantWebhookRead,
     TenantWebhook,
 )
 from api.db.repositories.base import BaseRepository
@@ -13,7 +14,7 @@ from api.db.repositories.base import BaseRepository
 
 class TenantWebhooksRepository(
     BaseRepository[
-        TenantWebhookCreate, TenantWebhookUpdate, TenantWebhook, TenantWebhook
+        TenantWebhookCreate, TenantWebhookUpdate, TenantWebhookRead, TenantWebhook
     ]
 ):
     @property
@@ -25,8 +26,8 @@ class TenantWebhooksRepository(
         return TenantWebhookUpdate
 
     @property
-    def _schema(self) -> Type[TenantWebhook]:
-        return TenantWebhook
+    def _schema(self) -> Type[TenantWebhookRead]:
+        return TenantWebhookRead
 
     @property
     def _table(self) -> Type[TenantWebhook]:
@@ -34,7 +35,7 @@ class TenantWebhooksRepository(
 
     async def find_by_wallet_id(
         self, wallet_id: UUID, offset: int = 0, limit: int = 100
-    ) -> List[TenantWebhook]:
+    ) -> List[TenantWebhookRead]:
         # not sure how to make this into a generic search function
         q = (
             select(self._table)
@@ -44,4 +45,4 @@ class TenantWebhooksRepository(
         )
         result = await self._db_session.execute(q)
         items = result.scalars().all()
-        return parse_obj_as(List[TenantWebhook], items)
+        return parse_obj_as(List[TenantWebhookRead], items)

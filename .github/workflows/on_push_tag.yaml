@@ -4,10 +4,39 @@ on:
     tags:
       - 'v*'
 
-jobs:    
+jobs: 
+  empty:
+    name: Empty job for forked repo
+    runs-on: ubuntu-20.04
+    if: github.repository_owner == 'bcgov'
+    env:
+      CI_IS_TEST: false
+      CI_IS_PROD: false
+      CI_VERSION: ''
+      CI_PRERELEASE: ''
+      PROMOTE_TO: 'test'
+      PROMOTE_FROM: 'dev'
+    steps:
+      - name: Parse semver string
+        continue-on-error: true
+        id: semver_parser 
+        uses: booxmedialtd/ws-action-parse-semver@v1
+        with:
+          input_string: ${{ github.ref }}
+          version_extractor_regex: '\/v(.*)$'   
+
+      - name: set version tag
+        if: ${{ steps.semver_parser.outputs.fullversion != null }}
+        run: |
+          echo "CI_VERSION=${{ steps.semver_parser.outputs.fullversion }}" >> $GITHUB_ENV
+          echo "CI_IS_PROD=${{ steps.semver_parser.outputs.prerelease == null }}" >> $GITHUB_ENV
+          echo "CI_IS_TEST=${{ steps.semver_parser.outputs.prerelease != null }}" >> $GITHUB_ENV
+          echo "CI_PRERELEASE=${{ steps.semver_parser.outputs.prerelease }}" >> $GITHUB_ENV
+
   init:
     name: Set promotion values
     runs-on: ubuntu-20.04
+    if: github.repository_owner == 'bcgov'
     env:
       CI_IS_TEST: false
       CI_IS_PROD: false
@@ -62,6 +91,7 @@ jobs:
       - init
     environment: ${{ needs.init.outputs.promote_from }}
     runs-on: ubuntu-20.04
+    if: github.repository_owner == 'bcgov'
     env:
       IMAGE_BUILDTIME: ''
       IMAGE_TAG: ''
@@ -102,7 +132,7 @@ jobs:
       - read_config
     environment: ${{ needs.init.outputs.promote_to }}
     runs-on: ubuntu-20.04
-    if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) }}
+    if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) && (github.repository_owner == 'bcgov') }}
     
     steps:  
       - uses: actions/checkout@v2  

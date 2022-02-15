@@ -1,13 +1,20 @@
 import uuid
-import requests
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from acapy_client.api.multitenancy_api import MultitenancyApi
+from acapy_client.model.create_wallet_request import CreateWalletRequest
+
+from api.api_client_utils import get_api_client
 
 from api.core.config import settings
 from api.db.errors import AlreadyExists
 from api.db.models.tenant import TenantCreate
 from api.db.repositories.tenants import TenantsRepository
 from api.endpoints.models.innkeeper import CheckInRequest, CheckInResponse
-from api import acapy_utils as au
+
+
+# TODO not sure if these should be global or per-request
+multitenancy_api = MultitenancyApi(api_client=get_api_client())
 
 
 async def create_new_tenant(
@@ -19,7 +26,6 @@ async def create_new_tenant(
         raise AlreadyExists(f"Tenant already exists with name '{existing.name}'")
     else:
         # Call ACAPY
-        url = f"{settings.ACAPY_ADMIN_URL}/multitenancy/wallet"
         wallet_key = str(uuid.uuid4())
         wallet_name = str(uuid.uuid4())
         data = {
@@ -32,11 +38,13 @@ async def create_new_tenant(
                 settings.TRACTION_TENANT_WEBHOOK_URL,
             ],
         }
-        response = requests.post(url=url, headers=au.get_acapy_headers(), json=data)
-        if response.ok:
-            r_json = response.json()
+        wallet_request = CreateWalletRequest(**data)
+        wallet_response = multitenancy_api.multitenancy_wallet_post(
+            **{"body": wallet_request}
+        )
+        if wallet_response:
             # save acapy generated wallet_id
-            wallet_id = r_json["wallet_id"]
+            wallet_id = wallet_response.wallet_id
 
             in_tenant = TenantCreate(
                 **payload.dict(),

@@ -1,0 +1,22 @@
+{{- if .Values.endorser_api.openshift.route.enabled -}}
+{{- $fullName := include "endorser_api.fullname" . -}}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "endorser_api.fullname" . }}
+  annotations:
+    haproxy.router.openshift.io/timeout: {{ .Values.endorser_api.openshift.route.timeout }}
+  labels:
+    {{- include "endorser_api.labels" . | nindent 4 }}
+spec:
+  host: {{ include "endorser_api.host" . | quote }}
+  path: {{ .Values.endorser_api.openshift.route.path }}
+  to:
+    kind: Service
+    name: {{ $fullName }}
+    weight: 100
+  port:
+    targetPort: {{ .Values.endorser_api.openshift.route.targetPort }}
+  wildcardPolicy: {{ .Values.endorser_api.openshift.route.wildcardPolicy }}
+{{ include "endorser_api.openshift.route.tls" . | indent 2}}
+{{- end }}

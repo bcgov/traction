@@ -1,5 +1,13 @@
 global:
   ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
+postgresql:
+  resources:
+    limits:
+      cpu: 400m
+      memory: 1600Mi
+    requests:
+      cpu: 200m
+      memory: 820Mi
 showcase:
   image:
     tag: "ghcr.io/bcgov/traction-showcase:sha-aa006f2"
@@ -8,3 +16,10 @@ showcase:
     pullPolicy: Always
   traction_api:
     endpoint: https://traction-api-dev.apps.silver.devops.gov.bc.ca
+  resources:
+    limits:
+      cpu: 400m
+      memory: 1600Mi
+    requests:
+      cpu: 200m
+      memory: 820Mi

@@ -1,0 +1,138 @@
+{{- $acapyLabel := include "acapy.label" . -}}
+{{- $globalName := include "global.name"  . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "acapy.fullname" . }}
+  labels:
+    {{- include "acapy.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "acapy.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/acapy_configmap.yaml") . | sha256sum }}
+    {{- with .Values.acapy.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "acapy.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.acapy.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.acapy.podSecurityContext | nindent 8 }}
+      containers:
+        - name: acapy
+          securityContext:
+            {{- toYaml .Values.acapy.securityContext | nindent 12 }}
+          image: "{{ .Values.acapy.image.repository }}:{{ .Values.acapy.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.acapy.image.pullPolicy }}
+          args: [
+           "-c",
+           "{{ include "acapy.registerLedger" . }} \
+           sleep 30; \
+           aca-py start \
+           --auto-provision \
+           --arg-file acapy-static-args.yml \
+           --inbound-transport http '0.0.0.0' {{ .Values.acapy.service.httpPort }} \
+           --webhook-url 'http://{{ include "endorser_api.fullname" . }}:{{ .Values.endorser_api.service.port }}/webhook#${WEBHOOK_API_KEY}'  \
+           --genesis-url '{{ include "endorser_api.genesisUrl" . }}' \
+           --endpoint https://{{ include "acapy.host" . }} \
+           --wallet-storage-type 'postgres_storage' \
+           --wallet-name 'mywallet' \
+           --wallet-key '123' \
+           --wallet-storage-config '{\"url\":\"{{ include "global.postgresql.fullname" . }}:{{ .Values.postgresql.service.port }}\",\"max_connections\":5}' \
+           --wallet-storage-creds '{\"account\":\"{{ .Values.postgresql.postgresqlUsername }}\",\"password\":\"$(POSTGRES_PASSWORD)\",\"admin_account\":\"{{ .Values.postgresql.postgresqlUsername }}\",\"admin_password\":\"$(POSTGRES_PASSWORD)\"}' \
+           --seed \"$(WALLET_SEED)\" \
+           --admin '0.0.0.0' {{ .Values.acapy.service.adminPort }} \
+           --emit-new-didcomm-prefix \
+           --label {{ $acapyLabel }} \
+           --jwt-secret \"$(JWT_SECRET)\" \
+           {{- if .Values.acapy.adminInsecureMode }}
+           --admin-insecure-mode \
+           {{ else }}
+           --admin-api-key \"$(ADMIN_API_KEY)\" \
+           {{- end }}
+           {{- if .Values.acapy.readOnlyMode }}
+           --read-only-ledger \
+           {{- end }}
+           "
+          ]
+          command:
+          - /bin/bash
+          ports:
+            - name: http
+              containerPort: 8030
+              protocol: TCP
+            - name: admin
+              containerPort: 8031
+              protocol: TCP
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "postgresql.secret.name" . }}
+                  key: postgresql-password
+            - name: WALLET_SEED
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "acapy.fullname" . }}
+                  key: seed
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "acapy.api.secret.name" . }}
+                  key: jwt
+            - name: WEBHOOK_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "acapy.api.secret.name" . }}
+                  key: webhookapi
+            - name: ADMIN_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "acapy.api.secret.name" . }}
+                  key: adminurl
+          livenessProbe:
+            httpGet:
+              path: /status/live
+              port: 8031
+            initialDelaySeconds: 90
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /status/ready
+              port: 8031
+            initialDelaySeconds: 60
+            periodSeconds: 10    
+          volumeMounts:
+          - name: config
+            mountPath: "/home/indy/acapy-static-args.yml"
+            subPath: "acapy-static-args.yml"
+            readOnly: true
+          resources:
+            {{- toYaml .Values.acapy.resources | nindent 12 }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "acapy.fullname" . }}
+            items:
+            - key: "acapy-static-args.yaml"
+              path: "acapy-static-args.yml"
+      {{- with .Values.acapy.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.acapy.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.acapy.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

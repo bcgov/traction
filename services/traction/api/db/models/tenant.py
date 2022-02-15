@@ -4,26 +4,27 @@ from typing import Optional
 
 from sqlmodel import Field
 
-from api.db.models.base import BaseModel, TractionSQLModel
+from api.db.models.base import BaseModel, BaseTable
 
 
 class TenantBase(BaseModel):
     name: str = Field(index=True, nullable=False)
     wallet_id: uuid.UUID = Field(nullable=False)
     is_active: bool = Field(nullable=False, default=False)
-    webhook_url: str = Field(nullable=True, default=False)
+    webhook_url: Optional[str] = Field(nullable=True, default=None)
 
 
-class Tenant(TenantBase, TractionSQLModel, table=True):
+class Tenant(TenantBase, BaseTable, table=True):
     # This is the class that represents the table
-    # all fields from TractionSQLModel and TenantBase are inherited
+    # this will have id, created_at, updated_at from BaseTable
+    # and fields from TenantBase
+    # this should fully represent the table
     pass
 
 
 class TenantCreate(TenantBase):
     # This is the class that represents interface for creating a tenant
     # we must set all the required fields,
-    # but do not need to set optional (and shouldn't)
     pass
 
 
