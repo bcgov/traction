@@ -2,7 +2,9 @@ import urllib
 from typing import Optional
 from uuid import UUID
 
-from aiohttp import ClientSession
+from aiohttp import ClientSession, ContentTypeError
+from starlette import status
+from starlette.exceptions import HTTPException
 
 from api.core.config import settings
 from api.services import traction_urls as t_urls
@@ -33,13 +35,21 @@ async def get_auth_headers(
             data=data,
             headers=headers,
         ) as response:
-            resp = await response.json()
-            token = resp["access_token"]
-            return {
-                "accept": "application/json",
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {token}",
-            }
+            try:
+                resp = await response.json()
+                token = resp["access_token"]
+                return {
+                    "accept": "application/json",
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {token}",
+                }
+            except ContentTypeError:
+                text = await resp.text()
+                print(text)
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=text,
+                )
 
 
 async def create_tenant(name: str):
@@ -56,8 +66,16 @@ async def create_tenant(name: str):
             json=data,
             headers=auth_headers,
         ) as response:
-            resp = await response.json()
-            return resp
+            try:
+                resp = await response.json()
+                return resp
+            except ContentTypeError:
+                text = await resp.text()
+                print(text)
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=text,
+                )
 
 
 async def get_connections(
@@ -80,8 +98,16 @@ async def get_connections(
             json=data,
             headers=auth_headers,
         ) as response:
-            resp = await response.json()
-            return resp
+            try:
+                resp = await response.json()
+                return resp
+            except ContentTypeError:
+                text = await resp.text()
+                print(text)
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=text,
+                )
 
 
 async def create_invitation(
@@ -104,8 +130,16 @@ async def create_invitation(
             json=data,
             headers=auth_headers,
         ) as response:
-            resp = await response.json()
-            return resp
+            try:
+                resp = await response.json()
+                return resp
+            except ContentTypeError:
+                text = await resp.text()
+                print(text)
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=text,
+                )
 
 
 async def accept_invitation(
@@ -122,5 +156,13 @@ async def accept_invitation(
             json=invitation,
             headers=auth_headers,
         ) as response:
-            resp = await response.json()
-            return resp
+            try:
+                resp = await response.json()
+                return resp
+            except ContentTypeError:
+                text = await resp.text()
+                print(text)
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=text,
+                )
