@@ -28,6 +28,7 @@ showcase:
 
   config:
     gunicornWorkers: 2
+    staticFilesPath: "/traction/static"
 
   db:
     admin: showcaseadminuser

@@ -7,7 +7,6 @@ services:
     depends_on:
       showcase-db:
         condition: service_healthy
-    entrypoint: bash -c "alembic upgrade head && uvicorn api.main:app --reload --host 0.0.0.0 --port 5000 --log-level info"
     environment:
       - POSTGRESQL_HOST=showcase-db
       - POSTGRESQL_PORT=5432
@@ -17,6 +16,7 @@ services:
       - SHOWCASE_DB_USER=${SHOWCASE_PSQL_USER}
       - SHOWCASE_DB_USER_PWD=${SHOWCASE_PSQL_USER_PWD}
       - SHOWCASE_ENDPOINT=${SHOWCASE_ENDPOINT}
+      - SHOWCASE_STATIC_FILES=${SHOWCASE_STATIC_FILES}
       - TRACTION_ENDPOINT=${TRACTION_ENDPOINT}
       - TRACTION_API_ADMIN_USER=${TRACTION_API_ADMIN_USER}
       - TRACTION_API_ADMIN_KEY=${TRACTION_API_ADMIN_KEY}
@@ -27,7 +27,7 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
     volumes:
-      - ../services/showcase:/app:rw
+      - ../services/showcase:/traction/app:rw
 
   showcase-db:
     image: "postgres:12"

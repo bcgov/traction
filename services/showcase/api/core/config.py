@@ -58,6 +58,10 @@ class GlobalConfig(BaseSettings):
         "SHOWCASE_ENDPOINT", "http://host.docker.internal:5200"
     )
 
+    SHOWCASE_STATIC_FILES: str = os.environ.get(
+        "SHOWCASE_STATIC_FILES", "/traction/static"
+    )
+
     # Api V1 prefix
     API_V1_STR = "/v1"
 
@@ -72,6 +76,7 @@ class LocalConfig(GlobalConfig):
 
     DEBUG: bool = True
     ENVIRONMENT: EnvironmentEnum = EnvironmentEnum.LOCAL
+    SHOWCASE_STATIC_FILES = "../frontend/dist"
 
 
 class ProdConfig(GlobalConfig):
