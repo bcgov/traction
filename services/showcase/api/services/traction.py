@@ -107,7 +107,10 @@ async def get_connections(
                 resp = await response.json()
                 return resp
             except ContentTypeError:
-                logger.exception("Error getting connections list", exc_info=True)
+                logger.exception(
+                    f"Error getting connections list {t_urls.TENANT_GET_CONNECTIONS} {url} {settings.TRACTION_ENDPOINT}",
+                    exc_info=True,
+                )
                 text = await response.text()
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
