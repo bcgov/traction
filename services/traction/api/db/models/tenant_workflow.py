@@ -1,21 +1,9 @@
-from enum import Enum
 import uuid
 from datetime import datetime
 
 from sqlmodel import Field
 
 from api.db.models.base import BaseModel, BaseTable
-
-
-class TenantWorkflowTypeType(str, Enum):
-    issuer = "issuer"
-
-
-class TenantWorkflowStateType(str, Enum):
-    pending = "pending"
-    active = "active"
-    completed = "completed"
-    error = "error"
 
 
 class TenantWorkflowBase(BaseModel):

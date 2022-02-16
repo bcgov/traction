@@ -14,14 +14,17 @@ from api.db.models.tenant_webhook import TenantWebhookRead
 from api.db.models.tenant_workflow import (
     TenantWorkflowRead,
     TenantWorkflowCreate,
-    TenantWorkflowTypeType,
-    TenantWorkflowStateType,
 )
-from api.endpoints.dependencies.db import get_db
 from api.db.repositories.tenants import TenantsRepository
 from api.db.repositories.tenant_issuers import TenantIssuersRepository
 from api.db.repositories.tenant_webhooks import TenantWebhooksRepository
 from api.db.repositories.tenant_workflows import TenantWorkflowsRepository
+from api.endpoints.dependencies.db import get_db
+from api.endpoints.models.tenant_workflow import (
+    TenantWorkflowTypeType,
+    TenantWorkflowStateType,
+)
+from api.services.tenant_workflows import create_workflow
 
 
 router = APIRouter()
@@ -90,20 +93,15 @@ async def make_tenant_issuer(db: AsyncSession = Depends(get_db)) -> TenantIssuer
     workflow_repo = TenantWorkflowsRepository(db_session=db)
     tenant_workflow = None
     if tenant_issuer.workflow_id:
-        try:
-            tenant_workflow = await workflow_repo.get_by_id(tenant_issuer.workflow_id)
-        except DoesNotExist:
-            pass
+        tenant_workflow = await workflow_repo.get_by_id(tenant_issuer.workflow_id)
 
-    if not tenant_workflow:
+    else:
         # create workflow and update issuer record
-        new_workflow = TenantWorkflowCreate(
-            wallet_id=wallet_id,
-            workflow_type=TenantWorkflowTypeType.issuer,
-            workflow_state=TenantWorkflowStateType.pending,
-            wallet_bearer_token=context.get("TENANT_WALLET_TOKEN"),
+        tenant_workflow = await create_workflow(
+            wallet_id,
+            TenantWorkflowTypeType.issuer,
+            db,
         )
-        tenant_workflow = await workflow_repo.create(new_workflow)
         update_issuer = TenantIssuerUpdate(
             id=tenant_issuer.id,
             workflow_id=tenant_workflow.id,
