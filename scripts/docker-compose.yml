@@ -38,7 +38,7 @@ services:
       - ../services/traction:/app:rw
 
   traction-agent:
-    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.2
+    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.3
     depends_on:
       endorser-agent:
         condition: service_started
@@ -133,7 +133,7 @@ services:
       - ../services/endorser:/app:rw
 
   endorser-agent:
-    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.2
+    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.3
     depends_on:
       endorser-db:
         condition: service_healthy
