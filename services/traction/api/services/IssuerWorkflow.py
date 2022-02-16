@@ -53,6 +53,7 @@ class IssuerWorkflow:
 
         # if workflow is "pending" then we need to start it
         if self.tenant_workflow.workflow_state == TenantWorkflowStateType.pending:
+            # first step is to initiate the connection to the Endorser
             pass
 
         # if workflow is "active" we need to check what state we are at,
