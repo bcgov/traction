@@ -49,7 +49,11 @@ class TenantWorkflowsRepository(
         return parse_obj_as(List[TenantWorkflowRead], items)
 
     async def find_by_wallet_id_and_type(
-        self, wallet_id: UUID, wf_type: TenantWorkflowTypeType, offset: int = 0, limit: int = 100
+        self,
+        wallet_id: UUID,
+        wf_type: TenantWorkflowTypeType,
+        offset: int = 0,
+        limit: int = 100,
     ) -> List[TenantWorkflowRead]:
         # not sure how to make this into a generic search function
         q = (

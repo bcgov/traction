@@ -13,7 +13,6 @@ from api.db.models.tenant_issuer import TenantIssuerRead, TenantIssuerUpdate
 from api.db.models.tenant_webhook import TenantWebhookRead
 from api.db.models.tenant_workflow import (
     TenantWorkflowRead,
-    TenantWorkflowCreate,
 )
 from api.db.repositories.tenants import TenantsRepository
 from api.db.repositories.tenant_issuers import TenantIssuersRepository
@@ -22,7 +21,6 @@ from api.db.repositories.tenant_workflows import TenantWorkflowsRepository
 from api.endpoints.dependencies.db import get_db
 from api.endpoints.models.tenant_workflow import (
     TenantWorkflowTypeType,
-    TenantWorkflowStateType,
 )
 from api.services.tenant_workflows import create_workflow
 

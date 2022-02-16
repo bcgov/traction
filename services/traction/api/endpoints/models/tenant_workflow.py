@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class TenantWorkflowTypeType(str, Enum):
-    issuer = "issuer"
+    issuer = "api.services.IssuerWorkflow"
 
 
 class TenantWorkflowStateType(str, Enum):
