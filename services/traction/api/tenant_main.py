@@ -3,6 +3,7 @@ from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from starlette.middleware import Middleware
 from starlette_context import plugins
 from starlette_context.middleware import RawContextMiddleware
+from api.endpoints.dependencies.oauth_wrapper import check_oauth
 
 from api.endpoints.routes.tenant_api import tenant_router
 from api.endpoints.dependencies.jwt_security import AccessToken, create_access_token
@@ -37,7 +38,7 @@ def get_tenantapp() -> FastAPI:
     application.include_router(
         tenant_router,
         prefix=settings.API_V1_STR,
-        dependencies=[Depends(OAuth2PasswordBearer(tokenUrl="token"))],
+        dependencies=[Depends(check_oauth(tokenUrl="token"))],
     )
     return application
 

@@ -82,6 +82,9 @@ class GlobalConfig(BaseSettings):
     JWT_ALGORITHM = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 300
 
+    #
+    ENDPOINT_SECURITY_ENABLED = True
+
     class Config:
         case_sensitive = True
 
@@ -98,6 +101,8 @@ class ProdConfig(GlobalConfig):
 
     DEBUG: bool = False
     ENVIRONMENT: EnvironmentEnum = EnvironmentEnum.PRODUCTION
+    # Force True if prod config
+    ENDPOINT_SECURITY_ENABLED = True
 
 
 class FactoryConfig:

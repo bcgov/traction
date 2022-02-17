@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from typing import Generator, Callable
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncSession
+from api.core.config import settings as s
 
 from api.db.session import engine, async_session
 
@@ -42,8 +43,13 @@ def override_get_db(db_session: AsyncSession) -> Callable:
 
 @pytest.fixture()
 def test_app(override_get_db: Callable) -> FastAPI:
+    ##Disable Security before app is loaded
+    # TODO will need to override again so we can test auth itself
+    s.ENDPOINT_SECURITY_ENABLED = False
+
     from api.endpoints.dependencies.db import get_db
     from api.main import app, innkeeper_app, tenant_app, webhook_app, acapy_wrapper_app
+    from api.endpoints.routes.innkeeper import router as innkeeper_router
 
     # override sub-app get_db
     innkeeper_app.dependency_overrides[get_db] = override_get_db
