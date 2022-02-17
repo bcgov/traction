@@ -160,6 +160,7 @@ class DidExchangeApi(object):
             params_map={
                 "all": [
                     "their_public_did",
+                    "alias",
                     "mediation_id",
                     "my_endpoint",
                     "my_label",
@@ -191,6 +192,7 @@ class DidExchangeApi(object):
                 "allowed_values": {},
                 "openapi_types": {
                     "their_public_did": (str,),
+                    "alias": (str,),
                     "mediation_id": (str,),
                     "my_endpoint": (str,),
                     "my_label": (str,),
@@ -198,6 +200,7 @@ class DidExchangeApi(object):
                 },
                 "attribute_map": {
                     "their_public_did": "their_public_did",
+                    "alias": "alias",
                     "mediation_id": "mediation_id",
                     "my_endpoint": "my_endpoint",
                     "my_label": "my_label",
@@ -205,6 +208,7 @@ class DidExchangeApi(object):
                 },
                 "location_map": {
                     "their_public_did": "query",
+                    "alias": "query",
                     "mediation_id": "query",
                     "my_endpoint": "query",
                     "my_label": "query",
@@ -417,6 +421,7 @@ class DidExchangeApi(object):
             their_public_did (str): Qualified public DID to which to request connection
 
         Keyword Args:
+            alias (atr): Alias to apply to this connection [optional]
             mediation_id (str): Identifier for active mediation record to be used. [optional]
             my_endpoint (str): My URL endpoint. [optional]
             my_label (str): Label for connection request. [optional]

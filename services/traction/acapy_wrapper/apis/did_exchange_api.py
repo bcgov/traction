@@ -90,6 +90,10 @@ async def didexchange_create_request_post(
         description="Qualified public DID to which to request connection",
         regex=r"^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$|^did:([a-zA-Z0-9_]+):([a-zA-Z0-9_.%-]+(:[a-zA-Z0-9_.%-]+)*)((;[a-zA-Z0-9_.:%-]+&#x3D;[a-zA-Z0-9_.:%-]*)*)(\\/[^#?]*)?([?][^#]*)?(\#.*)?$$",
     ),
+    alias: str = Query(
+        None,
+        description="Alias to be used for connection",
+    ),
     mediation_id: str = Query(
         None,
         description="Identifier for active mediation record to be used",

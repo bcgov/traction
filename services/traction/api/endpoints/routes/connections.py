@@ -10,6 +10,7 @@ from api.api_client_utils import get_api_client
 
 from acapy_client.api.basicmessage_api import BasicmessageApi
 from acapy_client.api.connection_api import ConnectionApi
+from acapy_client.api.did_exchange_api import DidExchangeApi
 from acapy_client.api.out_of_band_api import OutOfBandApi
 from acapy_client.model.conn_record import ConnRecord
 from acapy_client.model.connection_list import ConnectionList
@@ -30,6 +31,7 @@ router = APIRouter()
 # TODO not sure if these should be global or per-request
 basicmessage_api = BasicmessageApi(api_client=get_api_client())
 connection_api = ConnectionApi(api_client=get_api_client())
+did_exchange_api = DidExchangeApi(api_client=get_api_client())
 out_of_band_api = OutOfBandApi(api_client=get_api_client())
 
 
@@ -66,7 +68,7 @@ class Connection(BaseModel):
     created_at: str
     error_msg: str | None = None
     inbound_connection_id: str | None = None
-    invitation_key: str
+    invitation_key: str | None = None
     invitation_mode: str
     invitation_msg_id: str | None = None
     my_did: str | None = None
@@ -236,15 +238,21 @@ async def create_invitation(
 
 @router.post("/receive-invitation", response_model=Connection)
 async def receive_invitation(
-    payload: dict,
     alias: str,
+    payload: dict | None = None,
+    their_public_did: str | None = None,
 ):
     existing_connection = await get_connection_with_alias(alias)
     if existing_connection:
         raise HTTPException(
             status_code=500, detail=f"Error alias {alias} already in use"
         )
-    if "/out-of-band/" in payload.get("@type", ""):
+    if their_public_did:
+        params = {"alias": alias}
+        connection = did_exchange_api.didexchange_create_request_post(
+            their_public_did, **params
+        )
+    elif "/out-of-band/" in payload.get("@type", ""):
         params = {"alias": alias, "body": InvitationMessage(**payload)}
         connection = out_of_band_api.out_of_band_receive_invitation_post(**params)
     else:
