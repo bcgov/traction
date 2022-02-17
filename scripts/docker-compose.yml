@@ -30,6 +30,7 @@ services:
       - TRACTION_TENANT_WEBHOOK_URL=${TRACTION_TENANT_WEBHOOK_URL}
       - ACAPY_WEBHOOK_URL_API_KEY=${ACAPY_WEBHOOK_URL_API_KEY}
       - ACAPY_ENDORSER_PUBLIC_DID=${ACAPY_ENDORSER_PUBLIC_DID}
+      - ENDORSER_CONNECTION_ALIAS=${ENDORSER_CONNECTION_ALIAS}
     ports:
       - ${TRACTION_SERVICE_PORT}:5000
     extra_hosts:
@@ -74,7 +75,7 @@ services:
         ${ACAPY_TAILS_UPLOAD_URL} \
         --endorser-protocol-role author \
         --endorser-public-did ${ACAPY_ENDORSER_PUBLIC_DID} \
-        --endorser-alias endorser \
+        --endorser-alias ${ENDORSER_CONNECTION_ALIAS} \
         --auto-request-endorsement \
         --auto-write-transactions \
         --auto-create-revocation-transactions \

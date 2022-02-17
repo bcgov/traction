@@ -100,11 +100,8 @@ async def make_tenant_issuer(db: AsyncSession = Depends(get_db)) -> TenantIssuer
             TenantWorkflowTypeType.issuer,
             db,
         )
-        update_issuer = TenantIssuerUpdate(
-            id=tenant_issuer.id,
-            workflow_id=tenant_workflow.id,
-        )
-        tenant_issuer = await issuer_repo.update(update_issuer)
+        # get updated issuer info (should have workflow id and connection_id)
+        tenant_issuer = await issuer_repo.get_by_wallet_id(wallet_id)
 
     issuer = TenantIssuerData(
         issuer=tenant_issuer,
