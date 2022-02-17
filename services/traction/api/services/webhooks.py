@@ -5,13 +5,15 @@ import uuid
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.db.models.tenant_webhook import (
-    TenantWebhookCreate,
-    TenantWebhookUpdate,
-    TenantWebhook,
+from api.db.models import TenantWebhook
+from api.db.models.tenant_webhook_msg import (
+    TenantWebhookMsgCreate,
+    TenantWebhookMsgUpdate,
+    TenantWebhookMsg,
 )
-from api.db.repositories.tenants import TenantsRepository
 from api.db.repositories.tenant_webhooks import TenantWebhooksRepository
+from api.db.repositories.tenants import TenantsRepository
+from api.db.repositories.tenant_webhook_msgs import TenantWebhookMsgsRepository
 
 
 logger = logging.getLogger(__name__)
@@ -23,23 +25,26 @@ async def post_tenant_webhook(
     # save webhook record to the DB
     _t_repo = TenantsRepository(db_session=db)
     tenant = await _t_repo.get_by_wallet_id(wallet_id)
+
     _wh_repo = TenantWebhooksRepository(db_session=db)
-    in_webhook = TenantWebhookCreate(
-        wallet_id=wallet_id,
+    webhook = await _wh_repo.get_by_tenant_id(tenant.id)
+
+    _msg_repo = TenantWebhookMsgsRepository(db_session=db)
+    in_webhook = TenantWebhookMsgCreate(
+        tenant_id=tenant.id,
         msg_id=uuid.uuid4(),
-        webhook_url=tenant.webhook_url,
         payload=json.dumps(payload),
         state="PROCESSING",
         sequence=1,
     )
-    if not tenant.webhook_url or 0 == len(tenant.webhook_url):
+    if not webhook:
         in_webhook.state = "NOT_POSTED"
-    out_webhook = await _wh_repo.create(in_webhook)
+    out_webhook = await _msg_repo.create(in_webhook)
 
-    if not tenant.webhook_url or 0 == len(tenant.webhook_url):
+    if not webhook:
         return
 
-    in_upd_webhook = TenantWebhookUpdate(
+    in_upd_webhook = TenantWebhookMsgUpdate(
         id=out_webhook.id,
     )
     in_q_webhook = None
@@ -57,7 +62,7 @@ async def post_tenant_webhook(
         in_upd_webhook.response = str(e)
 
         # TODO spin up a thread to retry
-        in_q_webhook = TenantWebhookCreate(
+        in_q_webhook = TenantWebhookMsgCreate(
             wallet_id=out_webhook.wallet_id,
             msg_id=out_webhook.msg_id,
             webhook_url=out_webhook.webhook_url,
@@ -66,9 +71,9 @@ async def post_tenant_webhook(
             sequence=out_webhook.sequence + 1,
         )
     try:
-        _ = await _wh_repo.update(in_upd_webhook)
+        _ = await _msg_repo.update(in_upd_webhook)
         if in_q_webhook:
-            _ = await _wh_repo.create(in_q_webhook)
+            _ = await _msg_repo.create(in_q_webhook)
     except Exception:
         # log the error saying that we can't log the error
         logger.exception("Failed to update webhook status")
@@ -85,28 +90,24 @@ def get_tenant_headers(webhook_api_key: str) -> dict:
     return headers
 
 
-async def call_tenant_lob_app(webhook: TenantWebhook):
+async def call_tenant_lob_app(webhook_msg: TenantWebhookMsg, webhook: TenantWebhook):
     # call the tenant LOB webhook url
 
-    webhook_parts = webhook.webhook_url.split("#")
-    if 1 == len(webhook_parts):
-        webhook_url = webhook.webhook_url
-        webhook_api_key = None
-    else:
-        webhook_url = webhook_parts[0]
-        webhook_api_key = webhook_parts[1]
+    webhook_url = webhook.webhook_url
+    webhook_api_key = webhook.webhook_key
+
     headers = get_tenant_headers(webhook_api_key)
 
     async with ClientSession() as client_session:
         logger.warn(
-            f"Calling LOB {webhook_url} with {webhook_api_key} {webhook.payload}"
+            f"Calling LOB {webhook_url} with {webhook_api_key} {webhook_msg.payload}"
         )
         resp_text = None
         try:
             resp = await client_session.request(
                 "POST",
                 webhook_url,
-                json=webhook.payload,
+                json=webhook_msg.payload,
                 headers=headers,
             )
             logger.warn("Post-processing LOB request")

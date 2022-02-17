@@ -14,4 +14,4 @@ class CheckInResponse(BaseSchema):
     name: str
     wallet_id: UUID
     wallet_key: UUID
-    webhook_url: Optional[str]
+    webhook_url: Optional[str] = None
