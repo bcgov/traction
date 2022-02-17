@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette.middleware import Middleware
@@ -5,14 +7,16 @@ from starlette_context import plugins
 from starlette_context.middleware import RawContextMiddleware
 from api.endpoints.dependencies.oauth_wrapper import check_oauth
 
+from api.core.config import settings
 from api.endpoints.routes.tenant_api import tenant_router
 from api.endpoints.dependencies.jwt_security import AccessToken, create_access_token
-from api.core.config import settings
 from api.endpoints.dependencies.tenant_security import (
     JWTTFetchingMiddleware,
     authenticate_tenant,
 )
 
+
+logger = logging.getLogger(__name__)
 
 middleware = [
     Middleware(

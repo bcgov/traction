@@ -6,6 +6,9 @@ from typing import Optional
 
 from pydantic import BaseSettings, PostgresDsn
 
+from api.core.event_bus import EventBus
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -82,9 +85,9 @@ class GlobalConfig(BaseSettings):
     JWT_ALGORITHM = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 300
 
-    #
-    ENDPOINT_SECURITY_ENABLED = True
+    EVENT_BUS: EventBus = EventBus()
 
+    ENDPOINT_SECURITY_ENABLED = True
     class Config:
         case_sensitive = True
 
