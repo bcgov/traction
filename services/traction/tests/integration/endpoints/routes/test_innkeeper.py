@@ -1,7 +1,7 @@
 import pytest
 import json
 
-from tests.db.tenant_factory import TenantCreateFactory
+from tests.integration.db.tenant_factory import TenantCreateFactory
 from api.db.repositories.tenants import TenantsRepository
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,6 +10,7 @@ from httpx import AsyncClient
 pytestmark = pytest.mark.asyncio
 
 
+@pytest.mark.integtest
 async def test_tenants_get_all(
     test_client: AsyncClient, db_session: AsyncSession
 ) -> None:
