@@ -92,6 +92,9 @@ async def acapy_admin_request(
     """
     params = {k: v for (k, v) in (params or {}).items() if v is not None}
     url = f"{settings.ACAPY_ADMIN_URL}/{path}"
+    if path.startswith("/"):
+        # in the wrapper standalone case, the path already starts with /
+        url = f"{settings.ACAPY_ADMIN_URL}{path}"
 
     # TODO where should this live, and how do we want to handle HTTP sessions?
     async with ClientSession() as client_session:
