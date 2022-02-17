@@ -9,7 +9,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.status import HTTP_403_FORBIDDEN
 
 from api.core.config import settings
+from api.core.profile import Profile
 from api.endpoints.dependencies.db import get_db
+from api.endpoints.models.webhooks import WEBHOOK_EVENT_PREFIX
 from api.services.webhooks import post_tenant_webhook
 
 
@@ -83,8 +85,14 @@ async def process_tenant_webhook(
 ):
     """Called by aca-py agent."""
     wallet_id = uuid.UUID(str(x_wallet_id))
-    logger.warn(
-        f">>> Called webhook for tenant: {topic} {x_wallet_id} {wallet_id} {payload}"
-    )
+
+    # emit an event for any interested listeners
+    profile = Profile(wallet_id)
+    event_topic = WEBHOOK_EVENT_PREFIX + topic
+    logger.warn(f">>> calling notify() with {event_topic}")
+    await profile.notify(event_topic, {"topic": topic, "payload": payload})
+
+    # TODO move this to an event handler?
     await post_tenant_webhook(topic, payload, wallet_id, db)
+
     return {}
