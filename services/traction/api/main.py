@@ -1,15 +1,22 @@
+import logging
 import os
 import time
 
 import uvicorn
 from fastapi import FastAPI
 
+from api.core.config import settings
+from api.core.event_bus import Event
+from api.core.profile import Profile
 from api.core.exception_handlers import add_exception_handlers
 from api.endpoints.routes.webhooks import get_webhookapp
-from api.core.config import settings
+from api.endpoints.models.webhooks import WEBHOOK_LISTENER_PATTERN
 from api.innkeeper_main import get_innkeeperapp
 from api.tenant_main import get_tenantapp
 from acapy_wrapper.acapy_wrapper_main import get_acapy_wrapper_app
+
+
+logger = logging.getLogger(__name__)
 
 os.environ["TZ"] = settings.TIMEZONE
 time.tzset()
@@ -43,6 +50,24 @@ add_exception_handlers(webhook_app)
 add_exception_handlers(tenant_app)
 add_exception_handlers(innkeeper_app)
 add_exception_handlers(acapy_wrapper_app)
+
+
+@app.on_event("startup")
+async def on_tenant_startup():
+    """Register any events we need to respond to."""
+    logger.warn(f">>> app subscribing to {WEBHOOK_LISTENER_PATTERN}")
+    settings.EVENT_BUS.subscribe(WEBHOOK_LISTENER_PATTERN, test_handle_webhooks)
+
+
+@app.on_event("shutdown")
+def on_tenant_shutdown():
+    """TODO no-op for now."""
+    logger.warn(">>> Sutting down app ...")
+    pass
+
+
+async def test_handle_webhooks(profile: Profile, event: Event):
+    logger.warn(f">>> Received notification for {profile} {event}")
 
 
 @app.get("/", tags=["liveness"])

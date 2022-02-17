@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, Depends, FastAPI
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -5,15 +7,17 @@ from starlette.middleware import Middleware
 from starlette_context import plugins
 from starlette_context.middleware import RawContextMiddleware
 
+from api.core.config import settings
 from api.endpoints.dependencies.db import get_db
 from api.endpoints.routes.tenant_api import tenant_router
 from api.endpoints.dependencies.jwt_security import AccessToken
-from api.core.config import settings
 from api.endpoints.dependencies.tenant_security import (
     JWTTFetchingMiddleware,
     get_tenant_access_token,
 )
 
+
+logger = logging.getLogger(__name__)
 
 middleware = [
     Middleware(
