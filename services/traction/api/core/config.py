@@ -88,6 +88,7 @@ class GlobalConfig(BaseSettings):
     EVENT_BUS: EventBus = EventBus()
 
     ENDPOINT_SECURITY_ENABLED = True
+
     class Config:
         case_sensitive = True
 
