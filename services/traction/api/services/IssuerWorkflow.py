@@ -3,10 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.core.config import settings
 from api.db.repositories.tenant_issuers import TenantIssuersRepository
 from api.db.repositories.tenant_workflows import TenantWorkflowsRepository
-from api.db.models.tenant_issuer import (
-    TenantIssuerRead,
-    TenantIssuerUpdate,
-)
+from api.db.models.tenant_issuer import TenantIssuerUpdate
 from api.db.models.tenant_workflow import (
     TenantWorkflowRead,
     TenantWorkflowUpdate,
@@ -85,10 +82,9 @@ class IssuerWorkflow:
             )
             tenant_issuer = await self.issuer_repo.update(update_issuer)
 
-
         # if workflow is "active" we need to check what state we are at,
         # ... and initiate the next step (if applicable)
-        # called on receipt of a webhook, so we need to put the proper tenant "in context"
+        # called on receipt of webhook, so need to put the proper tenant "in context"
         elif self.tenant_workflow.workflow_state == TenantWorkflowStateType.active:
             pass
 

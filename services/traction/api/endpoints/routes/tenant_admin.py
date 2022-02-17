@@ -9,7 +9,7 @@ from starlette_context import context
 
 from api.db.errors import DoesNotExist
 from api.db.models.tenant import TenantRead
-from api.db.models.tenant_issuer import TenantIssuerRead, TenantIssuerUpdate
+from api.db.models.tenant_issuer import TenantIssuerRead
 from api.db.models.tenant_webhook import TenantWebhookRead
 from api.db.models.tenant_workflow import (
     TenantWorkflowRead,
