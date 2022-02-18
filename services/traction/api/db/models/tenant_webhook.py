@@ -1,41 +1,44 @@
 import uuid
 from datetime import datetime
+from typing import Optional
 
+from sqlalchemy import Column, JSON
 from sqlmodel import Field
 
 from api.db.models.base import BaseModel, BaseTable
 
 
+class TenantWebhookConfig(BaseModel):
+    acapy: bool = Field(default=False)
+
+
 class TenantWebhookBase(BaseModel):
-    wallet_id: uuid.UUID = Field(nullable=False)
-    msg_id: uuid.UUID = Field(nullable=False)
     webhook_url: str = Field(nullable=False)
-    payload: str = Field(nullable=False)
-    # if the hook fails, record the response and the state as Failed
-    state: str = Field(nullable=False)
-    response_code: int = Field(nullable=True, default=None)
-    response: str = Field(nullable=True, default=None)
-    # if we re-send, create a new record and increment the sequence no
-    sequence: int = Field(nullable=False, default=1)
+    config: dict = Field(default={}, sa_column=Column(JSON))
 
 
 class TenantWebhook(TenantWebhookBase, BaseTable, table=True):
     # This is the class that represents the table
-    pass
+    webhook_key: str = Field(nullable=True)
+    tenant_id: Optional[uuid.UUID] = Field(default=None, foreign_key="tenant.id")
 
 
 class TenantWebhookCreate(TenantWebhookBase):
-    pass
+    webhook_key: Optional[str] = None
+    config: Optional[TenantWebhookConfig] = None
+    tenant_id: Optional[uuid.UUID] = None
 
 
 class TenantWebhookRead(TenantWebhookBase):
     id: uuid.UUID
     created_at: datetime
     updated_at: datetime
+    config: Optional[TenantWebhookConfig] = None
+    tenant_id: uuid.UUID
 
 
 class TenantWebhookUpdate(BaseModel):
     id: uuid.UUID
-    state: str = Field(nullable=False, default=False)
-    response_code: int = Field(nullable=True, default=False)
-    response: str = Field(nullable=True, default=False)
+    webhook_url: str
+    webhook_key: Optional[str] = None
+    config: Optional[TenantWebhookConfig] = None

@@ -10,18 +10,19 @@
 """
 
 
-from fastapi import APIRouter, Depends, FastAPI, HTTPException, status
+from fastapi import APIRouter, Depends, FastAPI
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.middleware import Middleware
 from starlette_context import plugins
 from starlette_context.middleware import RawContextMiddleware
 
-from api.endpoints.routes.tenant_api import tenant_router
-from api.endpoints.dependencies.jwt_security import AccessToken, create_access_token
+from api.endpoints.dependencies.db import get_db
+from api.endpoints.dependencies.jwt_security import AccessToken
 from api.core.config import settings
 from api.endpoints.dependencies.tenant_security import (
     JWTTFetchingMiddleware,
-    authenticate_tenant,
+    get_tenant_access_token,
 )
 
 from acapy_wrapper.apis.action_menu_api import router as ActionMenuApiRouter
@@ -195,15 +196,7 @@ def get_acapy_wrapper_app() -> FastAPI:
 
 @router.post("/token", response_model=AccessToken)
 async def login_for_tenant_access_token(
-    form_data: OAuth2PasswordRequestForm = Depends(),
+    form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)
 ):
-    tenant = await authenticate_tenant(form_data.username, form_data.password)
-    if not tenant:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect wallet_id or wallet_key",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    return create_access_token(
-        data={"sub": tenant["wallet_id"], "key": tenant["wallet_token"]}
-    )
+    access_token = await get_tenant_access_token(form_data, db)
+    return access_token

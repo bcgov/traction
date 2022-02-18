@@ -11,7 +11,6 @@ class TenantBase(BaseModel):
     name: str = Field(index=True, nullable=False)
     wallet_id: uuid.UUID = Field(nullable=False)
     is_active: bool = Field(nullable=False, default=False)
-    webhook_url: Optional[str] = Field(nullable=True, default=None)
 
 
 class Tenant(TenantBase, BaseTable, table=True):
@@ -34,7 +33,6 @@ class TenantRead(TenantBase):
     id: uuid.UUID
     created_at: datetime
     updated_at: datetime
-    webhook_url: Optional[str] = None
 
 
 class TenantUpdate(BaseModel):
@@ -43,4 +41,3 @@ class TenantUpdate(BaseModel):
     # so no need to worry about accidentally updating id or other fields
     name: Optional[str] = None
     is_active: Optional[bool] = None
-    webhook_url: Optional[str] = None

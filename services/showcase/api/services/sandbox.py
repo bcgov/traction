@@ -15,7 +15,7 @@ from api.db.models.sandbox import (
     Sandbox,
 )
 from api.db.models.student import StudentCreate
-from api.db.models.tenant import TenantCreate, Tenant
+from api.db.models.tenant import TenantCreate, Tenant, TenantUpdate
 from api.db.repositories import SandboxRepository, StudentRepository, TenantRepository
 from api.db.repositories.out_of_band import OutOfBandRepository
 
@@ -48,6 +48,12 @@ class AcceptInvitationRequest(pydantic.BaseModel):
 class AcceptInvitationResponse(pydantic.BaseModel):
     sender_id: uuid.UUID
     connection_id: uuid.UUID
+
+
+class TenantWebhookRead(pydantic.BaseModel):
+    id: uuid.UUID
+    config: dict
+    webhook_url: str
 
 
 async def create_new_sandbox(
@@ -101,14 +107,24 @@ async def create_new_tenant(sandbox: Sandbox, repo: TenantRepository, name: str)
     traction_tenant = CheckInResponse(**resp)
 
     # create tenants in db
-    tenant = TenantCreate(
+    new_tenant = TenantCreate(
         name=name.capitalize(),
         wallet_id=traction_tenant.wallet_id,
         wallet_key=traction_tenant.wallet_key,
         webhook_url=traction_tenant.webhook_url,
         sandbox_id=sandbox.id,
     )
-    return await repo.create(tenant)
+    tenant = await repo.create(new_tenant)
+
+    resp = await traction.create_tenant_webhook(tenant)
+    read = TenantWebhookRead(**resp)
+    upd_tenant = TenantUpdate(
+        webhook_url=read.webhook_url,
+        id=tenant.id,
+        name=tenant.name,
+        sandbox_id=tenant.sandbox_id,
+    )
+    return await repo.update(upd_tenant)
 
 
 async def create_invitation_for_student(
