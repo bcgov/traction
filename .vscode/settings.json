@@ -1,4 +1,5 @@
 {
+  "git.alwaysSignOff": true,
   "python.testing.pytestArgs": [
     "."
   ],
