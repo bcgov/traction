@@ -7,6 +7,7 @@ from starlette.status import HTTP_403_FORBIDDEN
 
 from api.core.config import settings
 import api.acapy_utils as au
+from api.endpoints.models.webhooks import WebhookTopicType
 
 
 logger = logging.getLogger(__name__)
@@ -40,26 +41,6 @@ def get_webhookapp() -> FastAPI:
     return application
 
 
-class WebhookTopicType(str, Enum):
-    ping = "ping"
-    connections = "connections"
-    oob_invitation = "oob-invitation"
-    connection_reuse = "connection-reuse"
-    connection_reuse_accepted = "connection-reuse-accepted"
-    basicmessages = "basicmessages"
-    issue_credential = "issue-credential"
-    issue_credential_v2_0 = "issue-credential-v2-0"
-    issue_credential_v2_0_indy = "issue-credential-v2-0-indy"
-    issue_credential_v2_0_ld_proof = "issue-credential-v2-0-ld-proof"
-    issuer_cred_rev = "issuer-cred-rev"
-    present_proof = "present-proof"
-    present_proof_v2_0 = "present-proof-v2-0"
-    endorse_transaction = "endorse-transaction"
-    revocation_registry = "revocation-registry"
-    revocation_notification = "revocation-notification"
-    problem_report = "problem-report"
-
-
 @router.post("/topic/{topic}/", response_model=dict)
 async def process_webhook(
     topic: WebhookTopicType, payload: dict, api_key: APIKey = Depends(get_api_key)
@@ -73,7 +54,7 @@ async def process_webhook(
 
 async def setup_endorser_connection(payload: dict):
     """Set endorser role on any connections we receive."""
-    if payload["state"] == "request":
+    if payload["state"] == "active" or payload["state"] == "completed":
         params = {"transaction_my_job": "TRANSACTION_ENDORSER"}
         connection_id = payload["connection_id"]
         await au.acapy_POST(f"transactions/{connection_id}/set-endorser-role", params=params)

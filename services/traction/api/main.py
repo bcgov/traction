@@ -6,8 +6,6 @@ import uvicorn
 from fastapi import FastAPI
 
 from api.core.config import settings
-from api.core.event_bus import Event
-from api.core.profile import Profile
 from api.core.exception_handlers import add_exception_handlers
 from api.endpoints.routes.webhooks import get_webhookapp
 from api.services.tenant_workflows import subscribe_workflow_events

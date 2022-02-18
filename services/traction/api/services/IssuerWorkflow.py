@@ -31,7 +31,6 @@ from acapy_client.api.endorse_transaction_api import EndorseTransactionApi
 from acapy_client.api.ledger_api import LedgerApi
 from acapy_client.api.wallet_api import WalletApi
 from acapy_client.model.did_create import DIDCreate
-from acapy_client.model.did_result import DIDResult
 
 
 logger = logging.getLogger(__name__)

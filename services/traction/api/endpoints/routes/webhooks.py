@@ -6,6 +6,9 @@ from fastapi import APIRouter, Depends, FastAPI, Header, HTTPException, Security
 from fastapi.security.api_key import APIKeyHeader, APIKey
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.status import HTTP_403_FORBIDDEN
+from starlette.middleware import Middleware
+from starlette_context import plugins
+from starlette_context.middleware import RawContextMiddleware
 
 from api.core.config import settings
 from api.core.profile import Profile
@@ -14,12 +17,23 @@ from api.endpoints.models.webhooks import (
     WEBHOOK_EVENT_PREFIX,
     WebhookTopicType,
 )
-from api.services.webhooks import post_tenant_webhook
+# from api.services.webhooks import post_tenant_webhook
+from api.endpoints.dependencies.tenant_security import (
+    JWTTFetchingMiddleware,
+)
 
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+middleware = [
+    Middleware(
+        RawContextMiddleware,
+        plugins=(plugins.RequestIdPlugin(), plugins.CorrelationIdPlugin()),
+    ),
+    Middleware(JWTTFetchingMiddleware),
+]
 
 api_key_header = APIKeyHeader(
     name=settings.ACAPY_WEBHOOK_URL_API_KEY_NAME, auto_error=False
@@ -42,7 +56,7 @@ def get_webhookapp() -> FastAPI:
         title="WebHooks",
         description="Endpoints for Aca-Py WebHooks",
         debug=settings.DEBUG,
-        middleware=None,
+        middleware=middleware,
     )
     application.include_router(router, prefix="")
     return application

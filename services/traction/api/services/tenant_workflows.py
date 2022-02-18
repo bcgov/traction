@@ -20,7 +20,6 @@ from api.endpoints.models.tenant_workflow import (
     TenantWorkflowStateType,
 )
 from api.endpoints.models.webhooks import (
-    WEBHOOK_PING_LISTENER_PATTERN,
     WEBHOOK_CONNECTIONS_LISTENER_PATTERN,
     WEBHOOK_ENDORSE_LISTENER_PATTERN,
 )
@@ -112,7 +111,6 @@ async def handle_connection_events(profile: Profile, event: Event):
 
     # find related workflow
     issuer_repo = TenantIssuersRepository(db_session=profile.db)
-    workflow_repo = TenantWorkflowsRepository(db_session=profile.db)
     try:
         tenant_issuer = await issuer_repo.get_by_wallet_and_endorser_connection_id(
             profile.wallet_id,

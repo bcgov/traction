@@ -65,6 +65,7 @@ class TenantIssuersRepository(
         tenant_issuer = result.scalar_one_or_none()
         if not tenant_issuer:
             raise DoesNotExist(
-                f"{self._table.__name__}<wallet_id:{wallet_id}><endorser_connection_id:{endorser_connection_id}> does not exist"
+                (f"{self._table.__name__}<wallet_id:{wallet_id}>"
+                 f"<endorser_connection_id:{endorser_connection_id}> does not exist")
             )
         return self._schema.from_orm(tenant_issuer)
