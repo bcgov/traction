@@ -7,7 +7,6 @@ from starlette.status import HTTP_403_FORBIDDEN
 
 from api.core.config import settings
 import api.acapy_utils as au
-from api.endpoints.models.webhooks import WebhookTopicType
 
 
 logger = logging.getLogger(__name__)
@@ -17,6 +16,26 @@ router = APIRouter()
 api_key_header = APIKeyHeader(
     name=settings.ACAPY_WEBHOOK_URL_API_KEY_NAME, auto_error=False
 )
+
+
+class WebhookTopicType(str, Enum):
+    ping = "ping"
+    connections = "connections"
+    oob_invitation = "oob-invitation"
+    connection_reuse = "connection-reuse"
+    connection_reuse_accepted = "connection-reuse-accepted"
+    basicmessages = "basicmessages"
+    issue_credential = "issue-credential"
+    issue_credential_v2_0 = "issue-credential-v2-0"
+    issue_credential_v2_0_indy = "issue-credential-v2-0-indy"
+    issue_credential_v2_0_ld_proof = "issue-credential-v2-0-ld-proof"
+    issuer_cred_rev = "issuer-cred-rev"
+    present_proof = "present-proof"
+    present_proof_v2_0 = "present-proof-v2-0"
+    endorse_transaction = "endorse-transaction"
+    revocation_registry = "revocation-registry"
+    revocation_notification = "revocation-notification"
+    problem_report = "problem-report"
 
 
 async def get_api_key(
