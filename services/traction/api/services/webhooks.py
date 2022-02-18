@@ -3,20 +3,34 @@ import json
 import logging
 import uuid
 
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.db.errors import DoesNotExist
 from api.db.models import TenantWebhook
 from api.db.models.tenant_webhook_msg import (
     TenantWebhookMsgCreate,
     TenantWebhookMsgUpdate,
     TenantWebhookMsg,
 )
-from api.db.repositories.tenant_webhooks import TenantWebhooksRepository
 from api.db.repositories.tenants import TenantsRepository
 from api.db.repositories.tenant_webhook_msgs import TenantWebhookMsgsRepository
 
 
 logger = logging.getLogger(__name__)
+
+
+async def get_tenant_webhook(tenant_id, db):
+    # we want data that should not be in TenantWebhookRead
+    # (private wallet key information)
+    _q = select(TenantWebhook).where(TenantWebhook.tenant_id == tenant_id)
+    _rec = await db.execute(_q)
+    item = _rec.scalars().one_or_none()
+    if not item:
+        raise DoesNotExist(
+            f"{TenantWebhook.__name__}<tenant_id:{tenant_id}> does not exist"
+        )
+    return item
 
 
 async def post_tenant_webhook(
@@ -26,11 +40,10 @@ async def post_tenant_webhook(
     _t_repo = TenantsRepository(db_session=db)
     tenant = await _t_repo.get_by_wallet_id(wallet_id)
 
-    _wh_repo = TenantWebhooksRepository(db_session=db)
-    webhook = await _wh_repo.get_by_tenant_id(tenant.id)
+    webhook = await get_tenant_webhook(tenant.id, db)
 
     _msg_repo = TenantWebhookMsgsRepository(db_session=db)
-    in_webhook = TenantWebhookMsgCreate(
+    in_webhook_msg = TenantWebhookMsgCreate(
         tenant_id=tenant.id,
         msg_id=uuid.uuid4(),
         payload=json.dumps(payload),
@@ -38,20 +51,20 @@ async def post_tenant_webhook(
         sequence=1,
     )
     if not webhook:
-        in_webhook.state = "NOT_POSTED"
-    out_webhook = await _msg_repo.create(in_webhook)
+        in_webhook_msg.state = "NOT_POSTED"
+    out_webhook_msg = await _msg_repo.create(in_webhook_msg)
 
     if not webhook:
         return
 
     in_upd_webhook = TenantWebhookMsgUpdate(
-        id=out_webhook.id,
+        id=out_webhook_msg.id,
     )
     in_q_webhook = None
 
     try:
-        (state, status, response) = await call_tenant_lob_app(out_webhook)
-        logger.warn(f"Webhook call retuens with: {state} {status} {response}")
+        (state, status, response) = await call_tenant_lob_app(out_webhook_msg, webhook)
+        logger.warn(f"Webhook call returns with: {state} {status} {response}")
         in_upd_webhook.state = state
         in_upd_webhook.response_code = status  # TODO
         in_upd_webhook.response = response
@@ -63,12 +76,11 @@ async def post_tenant_webhook(
 
         # TODO spin up a thread to retry
         in_q_webhook = TenantWebhookMsgCreate(
-            wallet_id=out_webhook.wallet_id,
-            msg_id=out_webhook.msg_id,
-            webhook_url=out_webhook.webhook_url,
-            payload=out_webhook.payload,
+            tenant_id=tenant.id,
+            msg_id=out_webhook_msg.msg_id,
+            payload=out_webhook_msg.payload,
             state="RETRY",
-            sequence=out_webhook.sequence + 1,
+            sequence=out_webhook_msg.sequence + 1,
         )
     try:
         _ = await _msg_repo.update(in_upd_webhook)

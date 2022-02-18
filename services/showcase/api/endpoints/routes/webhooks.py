@@ -1,11 +1,11 @@
 import logging
 import uuid
-from select import select
 
 from fastapi import APIRouter, Depends, Security, HTTPException
 from fastapi.openapi.models import APIKey
 from fastapi.security import APIKeyHeader
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from starlette import status
 
 from api.core.config import settings
@@ -36,13 +36,7 @@ api_key_header = APIKeyHeader(
 async def get_api_key(
     api_key_header: str = Security(api_key_header),
 ):
-    if api_key_header == settings.ACAPY_WEBHOOK_URL_API_KEY:
-        return api_key_header
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Could not validate credentials",
-        )
+    return api_key_header
 
 
 @router.post("/webhook/{tenant_id}", status_code=status.HTTP_200_OK)
@@ -55,7 +49,7 @@ async def receive_webhook(
     # we expect a key in the header, so we should match see if that matches
     # in production LOB, we would not be using the wallet_key
     # it is just simpler to do so in this application.
-    if not check_password(tenant.wallet_key, api_key):
+    if not check_password(str(tenant.wallet_key), api_key):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate webhook key",
