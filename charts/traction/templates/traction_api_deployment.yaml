@@ -93,9 +93,9 @@ spec:
               value: 'http://{{ include "traction_api.fullname" . }}:{{ .Values.traction_api.service.port }}/webhook#${WEBHOOK_API_KEY}'
             - name: TRACTION_TENANT_WEBHOOK_URL
               value: 'http://{{ include "traction_api.fullname" . }}:{{ .Values.traction_api.service.port }}/webhook/tenant#${WEBHOOK_API_KEY}'
-            {{- include "traction_api.configmap.env.vars" . | nindent 10}}
             - name: ACAPY_GENESIS_URL
               value: {{ include "traction_api.genesisUrl" . }}
+            {{- include "traction_api.configmap.env.vars" . | nindent 10}}
           resources:
             {{- toYaml .Values.traction_api.resources | nindent 12 }}
       {{- with .Values.traction_api.nodeSelector }}
