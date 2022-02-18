@@ -8,6 +8,8 @@ from starlette import status
 from starlette.exceptions import HTTPException
 
 from api.core.config import settings
+from api.core.utils import hash_password
+from api.db.models import Tenant
 from api.services import traction_urls as t_urls
 
 logger = logging.getLogger(__name__)
@@ -57,11 +59,8 @@ async def get_auth_headers(
 
 async def create_tenant(name: str):
     auth_headers = await get_auth_headers()
-    # name and webhook_url
-    data = {
-        "name": name,
-        "webhook_url": f"{settings.SHOWCASE_ENDPOINT}/api/v1/webhook",
-    }
+    # name, we will set the webhook url with security afterward.
+    data = {"name": name}
     # TODO: error handling calling Traction
     async with ClientSession() as client_session:
         async with await client_session.post(
@@ -74,6 +73,37 @@ async def create_tenant(name: str):
                 return resp
             except ContentTypeError:
                 logger.exception("Error creating tenant", exc_info=True)
+                text = await response.text()
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=text,
+                )
+
+
+async def create_tenant_webhook(tenant: Tenant):
+    # here we connect as the tenant, passing in their traction credentials.
+    auth_headers = await get_auth_headers(tenant.wallet_id, tenant.wallet_key)
+    # set the webhook up with security
+    # in a real LOB, do not use your wallet_key, configure it in a vault or env secret.
+    # must simpler in the showcase to do this...
+    hashed_wallet_key = hash_password(str(tenant.wallet_key))
+    data = {
+        "webhook_url": f"{settings.SHOWCASE_ENDPOINT}/api/v1/webhook/{tenant.id}",
+        "webhook_key": hashed_wallet_key,
+        "config": {"acapy": True},
+    }
+    # TODO: error handling calling Traction
+    async with ClientSession() as client_session:
+        async with await client_session.post(
+            url=t_urls.TENANT_ADMIN_WEBHOOK,
+            json=data,
+            headers=auth_headers,
+        ) as response:
+            try:
+                resp = await response.json()
+                return resp
+            except ContentTypeError:
+                logger.exception("Error creating tenant webhook", exc_info=True)
                 text = await response.text()
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

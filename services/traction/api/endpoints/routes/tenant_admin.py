@@ -161,6 +161,7 @@ async def create_tenant_webhook(
         )
     except DoesNotExist:
         # let's add it
+        payload.tenant_id = tenant_id
         webhook = await repo.create(payload)
         return webhook
 

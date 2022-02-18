@@ -26,6 +26,7 @@ class TenantCreate(TenantBase):
 
 class TenantUpdate(TenantBase):
     id: uuid.UUID
+    name: Optional[str] = None
     webhook_url: Optional[str] = None
 
 

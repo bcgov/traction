@@ -26,6 +26,7 @@ class TenantWebhook(TenantWebhookBase, BaseTable, table=True):
 class TenantWebhookCreate(TenantWebhookBase):
     webhook_key: Optional[str] = None
     config: Optional[TenantWebhookConfig] = None
+    tenant_id: Optional[uuid.UUID] = None
 
 
 class TenantWebhookRead(TenantWebhookBase):

@@ -45,7 +45,7 @@ class BaseRepository(
         )
         await self._db_session.execute(stmt)
         await self._db_session.commit()
-        return self.get_by_id(upd_schema.id)
+        return await self.get_by_id(upd_schema.id)
 
     async def get_by_id(self, entry_id: UUID) -> SCHEMA:
         entry = await self._db_session.get(self._table, entry_id)
