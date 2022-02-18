@@ -61,6 +61,7 @@ acapy:
     type: ClusterIP
     adminPort: 8031
     httpPort: 8030
+    endorserAlias: endorser
 
   openshift:
     route:
