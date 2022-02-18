@@ -6,6 +6,7 @@ from fastapi.security.api_key import APIKeyHeader, APIKey
 from starlette.status import HTTP_403_FORBIDDEN
 
 from api.core.config import settings
+import api.acapy_utils as au
 
 
 logger = logging.getLogger(__name__)
@@ -65,4 +66,14 @@ async def process_webhook(
 ):
     """Called by aca-py agent."""
     logger.warn(f">>> Called webhook for endorser: {topic}")
+    if topic == "connections":
+        await setup_endorser_connection(payload)
     return {}
+
+
+async def setup_endorser_connection(payload: dict):
+    """Set endorser role on any connections we receive."""
+    if payload["state"] == "request":
+        params = {"transaction_my_job": "TRANSACTION_ENDORSER"}
+        connection_id = payload["connection_id"]
+        await au.acapy_POST(f"transactions/{connection_id}/set-endorser-role", params=params)

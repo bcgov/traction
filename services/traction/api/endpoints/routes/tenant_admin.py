@@ -48,9 +48,7 @@ async def get_tenant(db: AsyncSession = Depends(get_db)) -> TenantRead:
     return item
 
 
-@router.get(
-    "/tenant/issuer", status_code=status.HTTP_200_OK, response_model=TenantIssuerData
-)
+@router.get("/issuer", status_code=status.HTTP_200_OK, response_model=TenantIssuerData)
 async def get_tenant_issuer(db: AsyncSession = Depends(get_db)) -> TenantIssuerData:
     # this should take some query params, sorting and paging params...
     wallet_id = context.get("TENANT_WALLET_ID")
@@ -75,9 +73,7 @@ async def get_tenant_issuer(db: AsyncSession = Depends(get_db)) -> TenantIssuerD
     return issuer
 
 
-@router.post(
-    "/tenant/issuer", status_code=status.HTTP_200_OK, response_model=TenantIssuerData
-)
+@router.post("/issuer", status_code=status.HTTP_200_OK, response_model=TenantIssuerData)
 async def make_tenant_issuer(db: AsyncSession = Depends(get_db)) -> TenantIssuerData:
     # this should kick off the process of upgrading a tenant to be an "issuer"
     wallet_id = context.get("TENANT_WALLET_ID")

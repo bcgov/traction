@@ -26,10 +26,9 @@ def get_acapy_headers(headers=None, tenant=False) -> dict:
         headers["X-API-Key"] = settings.ACAPY_ADMIN_URL_API_KEY
     try:
         if context.get("TENANT_WALLET_TOKEN"):
-            logger.warn("Adding tenant bearer token")
             headers["Authorization"] = "Bearer " + context.get("TENANT_WALLET_TOKEN")
         else:
-            logger.warn("NOT adding tenant bearer token")
+            pass
     except Exception:
         # TODO bit of a hack,
         #  throws an exception if the middlewares are called in the wrong order

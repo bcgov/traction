@@ -1,5 +1,8 @@
+import logging
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.api_client_utils import get_api_client
 from api.core.config import settings
 from api.db.repositories.tenant_issuers import TenantIssuersRepository
 from api.db.repositories.tenant_workflows import TenantWorkflowsRepository
@@ -8,12 +11,34 @@ from api.db.models.tenant_workflow import (
     TenantWorkflowRead,
     TenantWorkflowUpdate,
 )
+from api.endpoints.models.connections import (
+    ConnectionStateType,
+)
+from api.endpoints.models.tenant_issuer import (
+    PublicDIDStateType,
+)
 from api.endpoints.models.tenant_workflow import (
     TenantWorkflowStateType,
+)
+from api.endpoints.models.webhooks import (
+    WebhookTopicType,
 )
 from api.services.connections import (
     receive_invitation,
 )
+
+from acapy_client.api.endorse_transaction_api import EndorseTransactionApi
+from acapy_client.api.ledger_api import LedgerApi
+from acapy_client.api.wallet_api import WalletApi
+from acapy_client.model.did_create import DIDCreate
+from acapy_client.model.did_result import DIDResult
+
+
+logger = logging.getLogger(__name__)
+
+endorse_api = EndorseTransactionApi(api_client=get_api_client())
+ledger_api = LedgerApi(api_client=get_api_client())
+wallet_api = WalletApi(api_client=get_api_client())
 
 
 class IssuerWorkflow:
@@ -86,7 +111,71 @@ class IssuerWorkflow:
         # ... and initiate the next step (if applicable)
         # called on receipt of webhook, so need to put the proper tenant "in context"
         elif self.tenant_workflow.workflow_state == TenantWorkflowStateType.active:
-            pass
+            logger.warn(
+                f">>> run_step() called for active workflow with {webhook_message}"
+            )
+            webhook_topic = webhook_message["topic"]
+            if webhook_topic == WebhookTopicType.connections:
+                # check if we need to update the connection state in our issuer record
+                connection_state = webhook_message["payload"]["state"]
+                connection_id = webhook_message["payload"]["connection_id"]
+                if not connection_state == tenant_issuer.endorser_connection_state:
+                    update_issuer = TenantIssuerUpdate(
+                        id=tenant_issuer.id,
+                        workflow_id=tenant_issuer.workflow_id,
+                        endorser_connection_id=tenant_issuer.endorser_connection_id,
+                        endorser_connection_state=connection_state,
+                    )
+                    tenant_issuer = await self.issuer_repo.update(update_issuer)
+
+                if (
+                    connection_state == ConnectionStateType.active
+                    or connection_state == ConnectionStateType.completed
+                ):
+                    # attach some meta-data to the connection
+                    # TODO verify response from each call ...
+                    data = {"transaction_my_job": "TRANSACTION_AUTHOR"}
+                    endorse_api.transactions_conn_id_set_endorser_role_post(
+                        connection_id, **data
+                    )
+                    endorser_alias = settings.ENDORSER_CONNECTION_ALIAS
+                    endorser_public_did = settings.ACAPY_ENDORSER_PUBLIC_DID
+                    data = {"endorser_name": endorser_alias}
+                    endorse_api.transactions_conn_id_set_endorser_info_post(
+                        connection_id, endorser_public_did, **data
+                    )
+
+                    # onto the next phase!  create our DID and make it public
+                    data = {"body": DIDCreate()}
+                    did_result = wallet_api.wallet_did_create_post(**data)
+                    update_issuer = TenantIssuerUpdate(
+                        id=tenant_issuer.id,
+                        workflow_id=tenant_issuer.workflow_id,
+                        endorser_connection_id=tenant_issuer.endorser_connection_id,
+                        endorser_connection_state=tenant_issuer.endorser_connection_state,
+                        public_did=did_result.result.did,
+                        public_did_state=PublicDIDStateType.private,
+                    )
+                    tenant_issuer = await self.issuer_repo.update(update_issuer)
+
+                    # post to the ledger (this will be an endorser operation)
+                    # (just ignore the response for now)
+                    ledger_api.ledger_register_nym_post(
+                        did_result.result.did,
+                        did_result.result.verkey,
+                    )
+                    update_issuer = TenantIssuerUpdate(
+                        id=tenant_issuer.id,
+                        workflow_id=tenant_issuer.workflow_id,
+                        endorser_connection_id=tenant_issuer.endorser_connection_id,
+                        endorser_connection_state=tenant_issuer.endorser_connection_state,
+                        public_did=tenant_issuer.public_did,
+                        public_did_state=PublicDIDStateType.requested,
+                    )
+                    tenant_issuer = await self.issuer_repo.update(update_issuer)
+
+            else:
+                logger.warn(f">>> ignoring topic for now: {webhook_topic}")
 
         # if workflow is "completed" or "error" then we are done
         else:
