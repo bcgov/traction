@@ -80,6 +80,8 @@ class GlobalConfig(BaseSettings):
         "ENDORSER_CONNECTION_ALIAS", "endorser"
     )
 
+    ACAPY_GENESIS_URL: str = os.environ.get("ACAPY_GENESIS_URL")
+
     DB_ECHO_LOG: bool = False
 
     # Api V1 prefix

@@ -1,4 +1,5 @@
 import logging
+import requests
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -159,19 +160,51 @@ class IssuerWorkflow:
 
                     # post to the ledger (this will be an endorser operation)
                     # (just ignore the response for now)
-                    ledger_api.ledger_register_nym_post(
-                        did_result.result.did,
-                        did_result.result.verkey,
-                    )
-                    update_issuer = TenantIssuerUpdate(
-                        id=tenant_issuer.id,
-                        workflow_id=tenant_issuer.workflow_id,
-                        endorser_connection_id=tenant_issuer.endorser_connection_id,
-                        endorser_connection_state=tenant_issuer.endorser_connection_state,
-                        public_did=tenant_issuer.public_did,
-                        public_did_state=PublicDIDStateType.requested,
-                    )
-                    tenant_issuer = await self.issuer_repo.update(update_issuer)
+                    try:
+                        data = {"alias": tenant_issuer.tenant_id}
+                        ledger_api.ledger_register_nym_post(
+                            did_result.result.did,
+                            did_result.result.verkey,
+                            **data,
+                        )
+                        update_issuer = TenantIssuerUpdate(
+                            id=tenant_issuer.id,
+                            workflow_id=tenant_issuer.workflow_id,
+                            endorser_connection_id=tenant_issuer.endorser_connection_id,
+                            endorser_connection_state=tenant_issuer.endorser_connection_state,
+                            public_did=tenant_issuer.public_did,
+                            public_did_state=PublicDIDStateType.requested,
+                        )
+                        tenant_issuer = await self.issuer_repo.update(update_issuer)
+                    except Exception:
+                        # TODO this is a hack (for now) - aca-py 0.7.3 doesn't support
+                        # the endorser protocol for this transacion, it will be in the
+                        # next release (0.7.4 or whatever)
+                        genesis_url = settings.ACAPY_GENESIS_URL
+                        did_registration_url = genesis_url.replace("genesis", "register")
+                        data = {
+                            "did": did_result.result.did,
+                            "verkey": did_result.result.verkey,
+                            "alias": str(tenant_issuer.tenant_id),
+                        }
+                        response = requests.post(did_registration_url, json=data)
+
+                        # now make it public
+                        did_result = wallet_api.wallet_did_public_post(did_result.result.did)
+
+                        update_issuer = TenantIssuerUpdate(
+                            id=tenant_issuer.id,
+                            workflow_id=tenant_issuer.workflow_id,
+                            endorser_connection_id=tenant_issuer.endorser_connection_id,
+                            endorser_connection_state=tenant_issuer.endorser_connection_state,
+                            public_did=tenant_issuer.public_did,
+                            public_did_state=PublicDIDStateType.public,
+                        )
+                        tenant_issuer = await self.issuer_repo.update(update_issuer)
+
+            if webhook_topic == WebhookTopicType.endorse_transaction:
+                # TODO once we need to handle endorsements
+                pass
 
             else:
                 logger.warn(f">>> ignoring topic for now: {webhook_topic}")
