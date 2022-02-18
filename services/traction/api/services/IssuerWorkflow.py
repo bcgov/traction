@@ -148,11 +148,12 @@ class IssuerWorkflow:
                     # onto the next phase!  create our DID and make it public
                     data = {"body": DIDCreate()}
                     did_result = wallet_api.wallet_did_create_post(**data)
+                    connection_state = tenant_issuer.endorser_connection_state
                     update_issuer = TenantIssuerUpdate(
                         id=tenant_issuer.id,
                         workflow_id=tenant_issuer.workflow_id,
                         endorser_connection_id=tenant_issuer.endorser_connection_id,
-                        endorser_connection_state=tenant_issuer.endorser_connection_state,
+                        endorser_connection_state=connection_state,
                         public_did=did_result.result.did,
                         public_did_state=PublicDIDStateType.private,
                     )
@@ -167,11 +168,12 @@ class IssuerWorkflow:
                             did_result.result.verkey,
                             **data,
                         )
+                        connection_state = tenant_issuer.endorser_connection_state
                         update_issuer = TenantIssuerUpdate(
                             id=tenant_issuer.id,
                             workflow_id=tenant_issuer.workflow_id,
                             endorser_connection_id=tenant_issuer.endorser_connection_id,
-                            endorser_connection_state=tenant_issuer.endorser_connection_state,
+                            endorser_connection_state=connection_state,
                             public_did=tenant_issuer.public_did,
                             public_did_state=PublicDIDStateType.requested,
                         )
@@ -181,28 +183,43 @@ class IssuerWorkflow:
                         # the endorser protocol for this transacion, it will be in the
                         # next release (0.7.4 or whatever)
                         genesis_url = settings.ACAPY_GENESIS_URL
-                        did_registration_url = genesis_url.replace("genesis", "register")
+                        did_registration_url = genesis_url.replace(
+                            "genesis", "register"
+                        )
                         data = {
                             "did": did_result.result.did,
                             "verkey": did_result.result.verkey,
                             "alias": str(tenant_issuer.tenant_id),
                         }
-                        response = requests.post(did_registration_url, json=data)
+                        requests.post(did_registration_url, json=data)
 
                         # now make it public
-                        did_result = wallet_api.wallet_did_public_post(did_result.result.did)
+                        did_result = wallet_api.wallet_did_public_post(
+                            did_result.result.did
+                        )
 
+                        connection_state = tenant_issuer.endorser_connection_state
                         update_issuer = TenantIssuerUpdate(
                             id=tenant_issuer.id,
                             workflow_id=tenant_issuer.workflow_id,
                             endorser_connection_id=tenant_issuer.endorser_connection_id,
-                            endorser_connection_state=tenant_issuer.endorser_connection_state,
+                            endorser_connection_state=connection_state,
                             public_did=tenant_issuer.public_did,
                             public_did_state=PublicDIDStateType.public,
                         )
                         tenant_issuer = await self.issuer_repo.update(update_issuer)
 
-            if webhook_topic == WebhookTopicType.endorse_transaction:
+                        # finish off our workflow
+                        update_workflow = TenantWorkflowUpdate(
+                            id=self.tenant_workflow.id,
+                            workflow_state=TenantWorkflowStateType.completed,
+                            wallet_bearer_token=None,
+                        )
+                        self._tenant_workflow = await self.workflow_repo.update(
+                            update_workflow
+                        )
+
+            elif webhook_topic == WebhookTopicType.endorse_transaction:
                 # TODO once we need to handle endorsements
                 pass
 

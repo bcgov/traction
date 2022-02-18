@@ -107,8 +107,6 @@ async def next_workflow_step(
 
 
 async def handle_connection_events(profile: Profile, event: Event):
-    logger.warn(f">>> connection event {profile} {event}")
-
     # find related workflow
     issuer_repo = TenantIssuersRepository(db_session=profile.db)
     try:
