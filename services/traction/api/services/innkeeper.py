@@ -9,6 +9,8 @@ from api.api_client_utils import get_api_client
 from api.core.config import settings
 from api.db.errors import AlreadyExists
 from api.db.models.tenant import TenantCreate
+from api.db.models.tenant_webhook import TenantWebhookCreate
+from api.db.repositories.tenant_webhooks import TenantWebhooksRepository
 from api.db.repositories.tenants import TenantsRepository
 from api.endpoints.models.innkeeper import CheckInRequest, CheckInResponse
 
@@ -52,13 +54,22 @@ async def create_new_tenant(
                 wallet_id=wallet_id,
             )
             out_tenant = await _repo.create(in_tenant)
+            webhook_url = None
+
+            if payload.webhook_url:
+                _wh_repo = TenantWebhooksRepository(db_session=db)
+                wh = TenantWebhookCreate(
+                    webhook_url=payload.webhook_url, tenant_id=out_tenant.id
+                )
+                out_wh = await _wh_repo.create(wh)
+                webhook_url = out_wh.webhook_url
 
             return CheckInResponse(
                 id=out_tenant.id,
                 name=out_tenant.name,
                 wallet_id=out_tenant.wallet_id,
                 wallet_key=wallet_key,
-                webhook_url=out_tenant.webhook_url,
+                webhook_url=webhook_url,
             )
         else:
             # what to return or throw here?

@@ -16,7 +16,6 @@ from api.core.exception_handlers import add_exception_handlers
 os.environ["TZ"] = settings.TIMEZONE
 time.tzset()
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 

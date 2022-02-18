@@ -7,6 +7,7 @@ services:
     depends_on:
       showcase-db:
         condition: service_healthy
+    entrypoint: bash -c "alembic upgrade head && uvicorn api.main:app --reload --host 0.0.0.0 --port 5000 --log-level info"
     environment:
       - POSTGRESQL_HOST=showcase-db
       - POSTGRESQL_PORT=5432

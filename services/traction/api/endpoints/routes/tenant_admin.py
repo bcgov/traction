@@ -10,7 +10,12 @@ from starlette_context import context
 from api.db.errors import DoesNotExist
 from api.db.models.tenant import TenantRead
 from api.db.models.tenant_issuer import TenantIssuerRead, TenantIssuerUpdate
-from api.db.models.tenant_webhook import TenantWebhookRead
+from api.db.models.tenant_webhook import (
+    TenantWebhookRead,
+    TenantWebhookUpdate,
+    TenantWebhookCreate,
+)
+from api.db.models.tenant_webhook_msg import TenantWebhookMsgRead
 from api.db.models.tenant_workflow import (
     TenantWorkflowRead,
     TenantWorkflowCreate,
@@ -21,11 +26,21 @@ from api.endpoints.dependencies.db import get_db
 from api.db.repositories.tenants import TenantsRepository
 from api.db.repositories.tenant_issuers import TenantIssuersRepository
 from api.db.repositories.tenant_webhooks import TenantWebhooksRepository
+from api.db.repositories.tenant_webhook_msgs import TenantWebhookMsgsRepository
 from api.db.repositories.tenant_workflows import TenantWorkflowsRepository
-
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+
+def get_from_context(name: str):
+    result = context.get(name)
+    if not result:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Error not authenticated",
+        )
+    return result
 
 
 class TenantIssuerData(BaseModel):
@@ -36,12 +51,7 @@ class TenantIssuerData(BaseModel):
 @router.get("/tenant", status_code=status.HTTP_200_OK, response_model=TenantRead)
 async def get_tenant(db: AsyncSession = Depends(get_db)) -> TenantRead:
     # this should take some query params, sorting and paging params...
-    wallet_id = context.get("TENANT_WALLET_ID")
-    if not wallet_id:
-        raise HTTPException(
-            status_code=403,
-            detail="Error not authenticated",
-        )
+    wallet_id = get_from_context("TENANT_WALLET_ID")
     repo = TenantsRepository(db_session=db)
     item = await repo.get_by_wallet_id(wallet_id)
     return item
@@ -52,12 +62,7 @@ async def get_tenant(db: AsyncSession = Depends(get_db)) -> TenantRead:
 )
 async def get_tenant_issuer(db: AsyncSession = Depends(get_db)) -> TenantIssuerData:
     # this should take some query params, sorting and paging params...
-    wallet_id = context.get("TENANT_WALLET_ID")
-    if not wallet_id:
-        raise HTTPException(
-            status_code=403,
-            detail="Error not authenticated",
-        )
+    wallet_id = get_from_context("TENANT_WALLET_ID")
     issuer_repo = TenantIssuersRepository(db_session=db)
     tenant_issuer = await issuer_repo.get_by_wallet_id(wallet_id)
     tenant_workflow = None
@@ -79,12 +84,7 @@ async def get_tenant_issuer(db: AsyncSession = Depends(get_db)) -> TenantIssuerD
 )
 async def make_tenant_issuer(db: AsyncSession = Depends(get_db)) -> TenantIssuerData:
     # this should kick off the process of upgrading a tenant to be an "issuer"
-    wallet_id = context.get("TENANT_WALLET_ID")
-    if not wallet_id:
-        raise HTTPException(
-            status_code=403,
-            detail="Error not authenticated",
-        )
+    wallet_id = get_from_context("TENANT_WALLET_ID")
     issuer_repo = TenantIssuersRepository(db_session=db)
     tenant_issuer = await issuer_repo.get_by_wallet_id(wallet_id)
     workflow_repo = TenantWorkflowsRepository(db_session=db)
@@ -119,18 +119,68 @@ async def make_tenant_issuer(db: AsyncSession = Depends(get_db)) -> TenantIssuer
 
 
 @router.get(
-    "/webhooks", status_code=status.HTTP_200_OK, response_model=List[TenantWebhookRead]
+    "/webhook/msgs",
+    status_code=status.HTTP_200_OK,
+    response_model=List[TenantWebhookMsgRead],
 )
-async def get_tenant_webhooks(
+async def get_tenant_webhook_messages(
     db: AsyncSession = Depends(get_db),
-) -> List[TenantWebhookRead]:
-    # this should take some query params, sorting and paging params...
-    wallet_id = context.get("TENANT_WALLET_ID")
-    if not wallet_id:
-        raise HTTPException(
-            status_code=403,
-            detail="Error not authenticated",
-        )
-    repo = TenantWebhooksRepository(db_session=db)
-    items = await repo.find_by_wallet_id(wallet_id)
+) -> List[TenantWebhookMsgRead]:
+    tenant_id = get_from_context("TENANT_ID")
+    repo = TenantWebhookMsgsRepository(db_session=db)
+    items = await repo.find_by_tenant_id(tenant_id)
     return items
+
+
+@router.get(
+    "/webhook", status_code=status.HTTP_200_OK, response_model=TenantWebhookRead
+)
+async def get_tenant_webhook(
+    db: AsyncSession = Depends(get_db),
+) -> TenantWebhookRead:
+    tenant_id = get_from_context("TENANT_ID")
+    repo = TenantWebhooksRepository(db_session=db)
+    item = await repo.get_by_tenant_id(tenant_id)
+    return item
+
+
+@router.post(
+    "/webhook", status_code=status.HTTP_201_CREATED, response_model=TenantWebhookRead
+)
+async def create_tenant_webhook(
+    payload: TenantWebhookCreate,
+    db: AsyncSession = Depends(get_db),
+) -> TenantWebhookRead:
+    tenant_id = get_from_context("TENANT_ID")
+    repo = TenantWebhooksRepository(db_session=db)
+    try:
+        await repo.get_by_tenant_id(tenant_id)
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Tenant has a webhook, cannot create new webhook.",
+        )
+    except DoesNotExist:
+        # let's add it
+        payload.tenant_id = tenant_id
+        webhook = await repo.create(payload)
+        return webhook
+
+
+@router.put(
+    "/webhook", status_code=status.HTTP_200_OK, response_model=TenantWebhookRead
+)
+async def update_tenant_webhook(
+    payload: TenantWebhookUpdate,
+    db: AsyncSession = Depends(get_db),
+) -> TenantWebhookRead:
+    tenant_id = get_from_context("TENANT_ID")
+    repo = TenantWebhooksRepository(db_session=db)
+    current = await repo.get_by_tenant_id(tenant_id)
+    if current.id == payload.id:
+        item = await repo.update(payload)
+        return item
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Webhook does not belong to this tenant",
+        )

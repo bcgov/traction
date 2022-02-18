@@ -1,7 +1,11 @@
 import logging
 import uuid
 
+from fastapi.security import OAuth2PasswordRequestForm
 from jose import jwt
+from sqlalchemy.ext.asyncio import AsyncSession
+from starlette import status
+from starlette.exceptions import HTTPException
 from starlette_context import context
 from starlette.middleware.base import (
     BaseHTTPMiddleware,
@@ -16,7 +20,9 @@ from acapy_client.model.create_wallet_token_request import CreateWalletTokenRequ
 from api.api_client_utils import get_api_client
 
 from api.core.config import settings
-
+from api.db.errors import DoesNotExist
+from api.db.repositories.tenants import TenantsRepository
+from api.endpoints.dependencies.jwt_security import create_access_token
 
 logger = logging.getLogger(__name__)
 
@@ -39,16 +45,18 @@ class JWTTFetchingMiddleware(BaseHTTPMiddleware):
             )
             wallet_token: str = payload.get("key")
             wallet_id: str = payload.get("sub")
+            tenant_id: str = payload.get("t_id")
 
             # pass this via starlette context
             context["TENANT_WALLET_TOKEN"] = wallet_token
             context["TENANT_WALLET_ID"] = uuid.UUID(wallet_id)
+            context["TENANT_ID"] = uuid.UUID(tenant_id)
 
         response = await call_next(request)
         return response
 
 
-async def authenticate_tenant(username: str, password: str):
+async def authenticate_tenant(username: str, password: str, db: AsyncSession):
     """Fetch the wallet bearer token (returns None if not found)."""
     wallet_id = username
     wallet_key = password
@@ -59,12 +67,44 @@ async def authenticate_tenant(username: str, password: str):
             wallet_id, **{"body": token_request}
         )
         jwt_token = token_response.token
+        try:
+            # fetch the tenant, we can confirm the id is valid in traction too...
+            tenant_repo = TenantsRepository(db)
+            tnt = await tenant_repo.get_by_wallet_id(uuid.UUID(wallet_id))
+            # TODO: should we check if tenant is active?
 
-        # pass this via starlette context
-        context["TENANT_WALLET_TOKEN"] = jwt_token
-        context["TENANT_WALLET_ID"] = uuid.UUID(wallet_id)
-        tenant = {"wallet_id": wallet_id, "wallet_token": jwt_token}
+            # pass this via starlette context
+            context["TENANT_WALLET_TOKEN"] = jwt_token
+            context["TENANT_WALLET_ID"] = uuid.UUID(wallet_id)
+            context["TENANT_ID"] = tnt.id
+            tenant = {
+                "tenant_id": str(tnt.id),
+                "wallet_id": wallet_id,
+                "wallet_token": jwt_token,
+            }
 
-        return tenant
+            return tenant
+        except DoesNotExist:
+            return None
+
     except Exception:
         return None
+
+
+async def get_tenant_access_token(
+    form_data: OAuth2PasswordRequestForm, db: AsyncSession
+):
+    tenant = await authenticate_tenant(form_data.username, form_data.password, db)
+    if not tenant:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect wallet_id or wallet_key",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return create_access_token(
+        data={
+            "sub": tenant["wallet_id"],
+            "key": tenant["wallet_token"],
+            "t_id": tenant["tenant_id"],
+        }
+    )

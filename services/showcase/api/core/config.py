@@ -53,6 +53,7 @@ class GlobalConfig(BaseSettings):
         "TRACTION_API_ADMIN_USER", "innkeeper"
     )
     TRACTION_API_ADMIN_KEY: str = os.environ.get("TRACTION_API_ADMIN_KEY", "change-me")
+    TRACTION_WEBHOOK_URL_API_KEY_NAME = "x-api-key"
 
     SHOWCASE_ENDPOINT: str = os.environ.get(
         "SHOWCASE_ENDPOINT", "http://host.docker.internal:5200"
