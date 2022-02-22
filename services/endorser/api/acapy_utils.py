@@ -20,26 +20,7 @@ def get_acapy_headers(headers=None, tenant=False) -> dict:
         headers["Content-Type"] = "application/json"
     if settings.ACAPY_ADMIN_URL_API_KEY:
         headers["X-API-Key"] = settings.ACAPY_ADMIN_URL_API_KEY
-    try:
-        if tenant and context.get("TENANT_WALLET_TOKEN"):
-            headers["Authorization"] = "Bearer " + context.get("TENANT_WALLET_TOKEN")
-    except Exception:
-        # TODO bit of a hack,
-        #  throws an exception if the middlewares are called in teh wrong order
-        pass
     return headers
-
-
-def is_tenant() -> bool:
-    """
-    Check if running in aca-py tenant mode.
-    """
-    try:
-        return context.get("TENANT_WALLET_TOKEN") is not None
-    except Exception:
-        # TODO bit of a hack,
-        #  throws an exception if the middlewares are called in teh wrong order
-        return False
 
 
 async def acapy_admin_request_from_request(
@@ -112,58 +93,11 @@ async def acapy_admin_request(
             return resp_text
 
 
-async def acapy_agency_GET(
-    path, text=False, params=None, headers=None
-) -> ClientResponse:
-    """
-    Call an Aca-Py agency endpoint using GET method.
-    """
-
-    if is_tenant():
-        raise Exception("Error can't call agency admin when accessing as a tenant")
-    response = await acapy_admin_request(
-        "GET", path, data=None, text=text, params=params, headers=headers, tenant=False
-    )
-    return response
-
-
-async def acapy_agency_POST(
-    path, data=None, text=False, params=None, headers=None
-) -> ClientResponse:
-    """
-    Call an Aca-Py agency endpoint using POST method.
-    """
-
-    if is_tenant():
-        raise Exception("Error can't call agency admin when accessing as a tenant")
-    response = await acapy_admin_request(
-        "POST", path, data=data, text=text, params=params, headers=headers, tenant=False
-    )
-    return response
-
-
-async def acapy_agency_PUT(
-    path, data=None, text=False, params=None, headers=None
-) -> ClientResponse:
-    """
-    Call an Aca-Py agency endpoint using PUT method.
-    """
-
-    if is_tenant():
-        raise Exception("Error can't call agency admin when accessing as a tenant")
-    response = await acapy_admin_request(
-        "PUT", path, data=data, text=text, params=params, headers=headers, tenant=False
-    )
-    return response
-
-
 async def acapy_GET(path, text=False, params=None, headers=None) -> ClientResponse:
     """
     Call an Aca-Py tenant endpoint using GET method.
     """
 
-    if not is_tenant():
-        raise Exception("Error can't call tenant admin when accessing as an innkeeper")
     response = await acapy_admin_request(
         "GET", path, data=None, text=text, params=params, headers=headers, tenant=True
     )
@@ -177,8 +111,6 @@ async def acapy_POST(
     Call an Aca-Py tenant endpoint using POST method.
     """
 
-    if not is_tenant():
-        raise Exception("Error can't call tenant admin when accessing as an innkeeper")
     response = await acapy_admin_request(
         "POST", path, data=data, text=text, params=params, headers=headers, tenant=True
     )
@@ -190,8 +122,6 @@ async def acapy_PATCH(path, text=False, params=None, headers=None) -> ClientResp
     Call an Aca-Py tenant endpoint using PATCH method.
     """
 
-    if not is_tenant():
-        raise Exception("Error can't call tenant admin when accessing as an innkeeper")
     response = await acapy_admin_request(
         "PATCH", path, data=None, text=text, params=params, headers=headers, tenant=True
     )
@@ -205,8 +135,6 @@ async def acapy_PUT(
     Call an Aca-Py tenant endpoint using PUT method.
     """
 
-    if not is_tenant():
-        raise Exception("Error can't call tenant admin when accessing as an innkeeper")
     response = await acapy_admin_request(
         "PUT", path, data=data, text=text, params=params, headers=headers, tenant=True
     )
@@ -218,8 +146,6 @@ async def acapy_DELETE(path, text=False, headers=None) -> ClientResponse:
     Call an Aca-Py tenant endpoint using DELETE method.
     """
 
-    if not is_tenant():
-        raise Exception("Error can't call tenant admin when accessing as an innkeeper")
     response = await acapy_admin_request(
         "DELETE", path, data=None, text=text, params=None, headers=headers, tenant=True
     )
