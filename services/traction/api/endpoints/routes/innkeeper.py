@@ -54,21 +54,21 @@ async def get_tenant(tenant_id: UUID, db: AsyncSession = Depends(get_db)) -> Ten
 
 
 @router.get(
-    "/tenants/issuers",
+    "/issuers",
     status_code=status.HTTP_200_OK,
     response_model=List[TenantIssuerRead],
 )
 async def get_tenant_issuers(
     db: AsyncSession = Depends(get_db),
 ) -> List[TenantIssuerRead]:
-    # TODO return status of tenant "issuers"
+    # return status of tenant "issuers"
     issuer_repo = TenantIssuersRepository(db_session=db)
     tenant_issuers = await issuer_repo.find()
     return tenant_issuers
 
 
 @router.get(
-    "/tenants/issuers/{tenant_id}",
+    "/issuers/{tenant_id}",
     status_code=status.HTTP_200_OK,
     response_model=TenantIssuerRead,
 )
@@ -82,7 +82,7 @@ async def get_tenant_issuer(
 
 
 @router.post(
-    "/tenants/issuers/{tenant_id}",
+    "/issuers/{tenant_id}",
     status_code=status.HTTP_200_OK,
     response_model=TenantIssuerRead,
 )

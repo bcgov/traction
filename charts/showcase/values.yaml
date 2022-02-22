@@ -191,4 +191,3 @@ postgresql:
     requests:
       cpu: 300m
       memory: 1300Mi
-

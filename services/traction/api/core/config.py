@@ -75,6 +75,13 @@ class GlobalConfig(BaseSettings):
     ACAPY_WEBHOOK_URL_API_KEY_NAME = "x-api-key"
     ACAPY_WEBHOOK_URL_API_KEY: str = os.environ.get("ACAPY_WEBHOOK_URL_API_KEY", "")
 
+    ACAPY_ENDORSER_PUBLIC_DID: str = os.environ.get("ACAPY_ENDORSER_PUBLIC_DID")
+    ENDORSER_CONNECTION_ALIAS: str = os.environ.get(
+        "ENDORSER_CONNECTION_ALIAS", "endorser"
+    )
+
+    ACAPY_GENESIS_URL: str = os.environ.get("ACAPY_GENESIS_URL")
+
     DB_ECHO_LOG: bool = False
 
     # Api V1 prefix

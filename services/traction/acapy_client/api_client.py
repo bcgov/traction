@@ -489,7 +489,6 @@ class ApiClient(object):
 
         # Aca-py customization - add required headers
         headers = get_acapy_headers(headers)
-        logger.warn(f"Calling api with headers: {headers}")
 
         if method == "GET":
             return self.rest_client.GET(

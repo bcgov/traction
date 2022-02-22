@@ -30,6 +30,11 @@ async def create_new_tenant(
         # Call ACAPY
         wallet_key = str(uuid.uuid4())
         wallet_name = str(uuid.uuid4())
+        webhook_url = settings.TRACTION_TENANT_WEBHOOK_URL
+        if settings.ACAPY_WEBHOOK_URL_API_KEY and 0 < len(
+            settings.ACAPY_WEBHOOK_URL_API_KEY
+        ):
+            webhook_url = f"{webhook_url}#{settings.ACAPY_WEBHOOK_URL_API_KEY}"
         data = {
             "label": payload.name,
             "wallet_key": wallet_key,
@@ -37,7 +42,7 @@ async def create_new_tenant(
             "wallet_type": "indy",
             "wallet_dispatch_type": "default",
             "wallet_webhook_urls": [
-                settings.TRACTION_TENANT_WEBHOOK_URL,
+                webhook_url,
             ],
         }
         wallet_request = CreateWalletRequest(**data)

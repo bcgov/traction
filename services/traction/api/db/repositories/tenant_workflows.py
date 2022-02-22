@@ -3,6 +3,7 @@ from uuid import UUID
 from pydantic import parse_obj_as
 from sqlalchemy import select
 
+from api.endpoints.models.tenant_workflow import TenantWorkflowTypeType
 from api.db.models.tenant_workflow import (
     TenantWorkflowCreate,
     TenantWorkflowUpdate,
@@ -40,6 +41,25 @@ class TenantWorkflowsRepository(
         q = (
             select(self._table)
             .where(self._table.wallet_id == wallet_id)
+            .offset(offset)
+            .limit(limit)
+        )
+        result = await self._db_session.execute(q)
+        items = result.scalars().all()
+        return parse_obj_as(List[TenantWorkflowRead], items)
+
+    async def find_by_wallet_id_and_type(
+        self,
+        wallet_id: UUID,
+        wf_type: TenantWorkflowTypeType,
+        offset: int = 0,
+        limit: int = 100,
+    ) -> List[TenantWorkflowRead]:
+        # not sure how to make this into a generic search function
+        q = (
+            select(self._table)
+            .where(self._table.wallet_id == wallet_id)
+            .where(self._table.workflow_type == wf_type)
             .offset(offset)
             .limit(limit)
         )

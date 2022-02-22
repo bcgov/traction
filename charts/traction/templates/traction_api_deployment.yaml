@@ -11,8 +11,8 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/traction_api_configmap.yaml") . | sha256sum }} 
-    {{- with .Values.traction_api.podAnnotations -}}  
+        checksum/config: {{ include (print $.Template.BasePath "/traction_api_configmap.yaml") . | sha256sum }}
+    {{- with .Values.traction_api.podAnnotations -}}
         {{- toYaml . | nindent 8 }}
     {{- end }}
       labels:
@@ -84,15 +84,19 @@ spec:
                   key: user_pwd
             - name: WEB_CONCURRENCY
               value: {{ .Values.traction_api.config.gunicornWorkers | quote }}
-            - name: WEBHOOK_API_KEY
+            - name: ACAPY_WEBHOOK_URL_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: {{ template "acapy.api.secret.name" . }}
                   key: webhookapi
             - name: TRACTION_WEBHOOK_URL
-              value: 'http://{{ include "traction_api.fullname" . }}:{{ .Values.traction_api.service.port }}/webhook#${WEBHOOK_API_KEY}'
+              value: 'http://{{ include "traction_api.fullname" . }}:{{ .Values.traction_api.service.port }}/webhook#${ACAPY_WEBHOOK_URL_API_KEY}'
             - name: TRACTION_TENANT_WEBHOOK_URL
-              value: 'http://{{ include "traction_api.fullname" . }}:{{ .Values.traction_api.service.port }}/webhook/tenant#${WEBHOOK_API_KEY}'
+              value: 'http://{{ include "traction_api.fullname" . }}:{{ .Values.traction_api.service.port }}/webhook/tenant'
+            - name: ACAPY_GENESIS_URL
+              value: {{ include "traction_api.genesisUrl" . }}
+            - name: ACAPY_ENDORSER_PUBLIC_DID
+              value: {{ .Values.acapy.service.endorserPublicDID }}
             {{- include "traction_api.configmap.env.vars" . | nindent 10}}
           resources:
             {{- toYaml .Values.traction_api.resources | nindent 12 }}
