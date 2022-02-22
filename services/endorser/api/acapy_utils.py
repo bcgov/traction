@@ -4,7 +4,6 @@ from aiohttp import (
 )
 import json
 from fastapi import Request
-from starlette_context import context
 
 from api.core.config import settings
 
