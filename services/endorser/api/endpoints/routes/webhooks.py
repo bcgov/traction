@@ -76,4 +76,6 @@ async def setup_endorser_connection(payload: dict):
     if payload["state"] == "active" or payload["state"] == "completed":
         params = {"transaction_my_job": "TRANSACTION_ENDORSER"}
         connection_id = payload["connection_id"]
-        await au.acapy_POST(f"transactions/{connection_id}/set-endorser-role", params=params)
+        await au.acapy_POST(
+            f"transactions/{connection_id}/set-endorser-role", params=params
+        )
