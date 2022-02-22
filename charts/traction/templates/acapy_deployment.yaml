@@ -54,7 +54,7 @@ spec:
            --label {{ $acapyLabel }} \
            --jwt-secret \"$(JWT_SECRET)\" \
            --endorser-protocol-role author \
-           --endorser-public-did {{ .Values.service.endorserPublicDID }} \
+           --endorser-public-did {{ .Values.acapy.service.endorserPublicDID }} \
            --endorser-alias {{ .Values.acapy.service.endorserAlias }} \
            --auto-request-endorsement \
            --auto-write-transactions \

@@ -96,7 +96,7 @@ spec:
             - name: ACAPY_GENESIS_URL
               value: {{ include "traction_api.genesisUrl" . }}
             - name: ACAPY_ENDORSER_PUBLIC_DID
-              value: {{ .Values.service.endorserPublicDID }}
+              value: {{ .Values.acapy.service.endorserPublicDID }}
             {{- include "traction_api.configmap.env.vars" . | nindent 10}}
           resources:
             {{- toYaml .Values.traction_api.resources | nindent 12 }}

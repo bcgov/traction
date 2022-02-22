@@ -62,7 +62,7 @@ acapy:
     adminPort: 8031
     httpPort: 8030
     endorserAlias: endorser
-    endorserPublicDID: '{{ template "traction_api.endorser.publicdid" . }}'
+    endorserPublicDID: AKaFAVGCZoDMZrydWtjUev
 
   openshift:
     route:
