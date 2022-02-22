@@ -10,6 +10,7 @@ from starlette_context import context
 from api.db.errors import DoesNotExist
 from api.db.models.tenant import TenantRead
 from api.db.models.tenant_issuer import TenantIssuerRead
+from api.db.models.tenant_schema import TenantSchemaRead
 from api.db.models.tenant_webhook import (
     TenantWebhookRead,
     TenantWebhookUpdate,
@@ -21,6 +22,7 @@ from api.db.models.tenant_workflow import (
 )
 from api.db.repositories.tenants import TenantsRepository
 from api.db.repositories.tenant_issuers import TenantIssuersRepository
+from api.db.repositories.tenant_schemas import TenantSchemasRepository
 from api.db.repositories.tenant_webhooks import TenantWebhooksRepository
 from api.db.repositories.tenant_webhook_msgs import TenantWebhookMsgsRepository
 from api.db.repositories.tenant_workflows import TenantWorkflowsRepository
@@ -46,6 +48,11 @@ def get_from_context(name: str):
 
 class TenantIssuerData(BaseModel):
     issuer: TenantIssuerRead | None = None
+    workflow: TenantWorkflowRead | None = None
+
+
+class TenantSchemaData(BaseModel):
+    schema_data: TenantSchemaRead | None = None
     workflow: TenantWorkflowRead | None = None
 
 
@@ -105,6 +112,49 @@ async def make_tenant_issuer(db: AsyncSession = Depends(get_db)) -> TenantIssuer
     )
 
     return issuer
+
+
+@router.get(
+    "/schema", status_code=status.HTTP_200_OK, response_model=List[TenantSchemaData]
+)
+async def get_tenant_schemas(
+    db: AsyncSession = Depends(get_db),
+) -> List[TenantSchemaData]:
+    # this should take some query params, sorting and paging params...
+    wallet_id = get_from_context("TENANT_WALLET_ID")
+    schema_repo = TenantSchemasRepository(db_session=db)
+    workflow_repo = TenantWorkflowsRepository(db_session=db)
+    tenant_schemas = await schema_repo.find_by_wallet_id(wallet_id)
+    schemas = []
+    for tenant_schema in tenant_schemas:
+        tenant_workflow = None
+        if tenant_schema.workflow_id:
+            try:
+                tenant_workflow = await workflow_repo.get_by_id(
+                    tenant_schema.workflow_id
+                )
+            except DoesNotExist:
+                pass
+        schema = TenantSchemaData(
+            schema_data=tenant_schema,
+            workflow=tenant_workflow,
+        )
+        schemas.append(schema)
+    return schemas
+
+
+@router.post("/schema", status_code=status.HTTP_200_OK, response_model=TenantSchemaData)
+async def get_tenant_schemas(
+    schema: dict | None = None,
+    schema_id: str | None = None,
+    cred_def_tag: str | None = None,
+    db: AsyncSession = Depends(get_db),
+) -> List[TenantSchemaData]:
+    schema = TenantSchemaData(
+        schema_data=None,
+        workflow=None,
+    )
+    return schema
 
 
 @router.get(
