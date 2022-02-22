@@ -84,13 +84,13 @@ spec:
                   key: user_pwd
             - name: WEB_CONCURRENCY
               value: {{ .Values.endorser_api.config.gunicornWorkers | quote }}
-            - name: WEBHOOK_API_KEY
+            - name: ACAPY_WEBHOOK_URL_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: {{ template "acapy.api.secret.name" . }}
                   key: webhookapi
             - name: ENDORSER_WEBHOOK_URL
-              value: 'http://{{ include "endorser_api.fullname" . }}:{{ .Values.endorser_api.service.port }}/webhook#${WEBHOOK_API_KEY}'
+              value: 'http://{{ include "endorser_api.fullname" . }}:{{ .Values.endorser_api.service.port }}/webhook#${ACAPY_WEBHOOK_URL_API_KEY}'
             {{- include "endorser_api.configmap.env.vars" . | nindent 10}}
           resources:
             {{- toYaml .Values.endorser_api.resources | nindent 12 }}

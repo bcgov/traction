@@ -84,15 +84,15 @@ spec:
                   key: user_pwd
             - name: WEB_CONCURRENCY
               value: {{ .Values.traction_api.config.gunicornWorkers | quote }}
-            - name: WEBHOOK_API_KEY
+            - name: ACAPY_WEBHOOK_URL_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: {{ template "acapy.api.secret.name" . }}
                   key: webhookapi
             - name: TRACTION_WEBHOOK_URL
-              value: 'http://{{ include "traction_api.fullname" . }}:{{ .Values.traction_api.service.port }}/webhook#${WEBHOOK_API_KEY}'
+              value: 'http://{{ include "traction_api.fullname" . }}:{{ .Values.traction_api.service.port }}/webhook#${ACAPY_WEBHOOK_URL_API_KEY}'
             - name: TRACTION_TENANT_WEBHOOK_URL
-              value: 'http://{{ include "traction_api.fullname" . }}:{{ .Values.traction_api.service.port }}/webhook/tenant#${WEBHOOK_API_KEY}'
+              value: 'http://{{ include "traction_api.fullname" . }}:{{ .Values.traction_api.service.port }}/webhook/tenant#${ACAPY_WEBHOOK_URL_API_KEY}'
             - name: ACAPY_GENESIS_URL
               value: {{ include "traction_api.genesisUrl" . }}
             - name: ACAPY_ENDORSER_PUBLIC_DID
