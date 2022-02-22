@@ -54,7 +54,7 @@ spec:
            --label {{ $acapyLabel }} \
            --jwt-secret \"$(JWT_SECRET)\" \
            --endorser-protocol-role author \
-           --endorser-public-did $(ACAPY_ENDORSER_PUBLIC_DID) \
+           --endorser-public-did {{ .Values.service.endorserPublicDID }} \
            --endorser-alias {{ .Values.acapy.service.endorserAlias }} \
            --auto-request-endorsement \
            --auto-write-transactions \
@@ -108,11 +108,6 @@ spec:
                 secretKeyRef:
                   name: {{ template "acapy.api.secret.name" . }}
                   key: adminurl
-            - name: ACAPY_ENDORSER_PUBLIC_DID
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "acapy.api.secret.name" . }}
-                  key: endorserpublicdid
           livenessProbe:
             httpGet:
               path: /status/live

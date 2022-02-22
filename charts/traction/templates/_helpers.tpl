@@ -106,6 +106,14 @@ generate genesisfileurl
 
 
 {{/*
+generate endorserpublicdid
+*/}}
+{{- define "traction_api.endorser.publicdid" -}}
+{{- $endorserPublicDID := "AKaFAVGCZoDMZrydWtjUev" -}}
+{{- end }}
+
+
+{{/*
 Common acapy labels
 */}}
 {{- define "acapy.labels" -}}
