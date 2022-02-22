@@ -141,6 +141,7 @@ services:
         --auto-provision
         --arg-file endorser-acapy-args.yml \
         --inbound-transport http '0.0.0.0' ${ACAPY_ENDORSER_HTTP_PORT} \
+        --webhook-url '${ENDORSER_WEBHOOK_URL}' \
         --genesis-url '${ACAPY_GENESIS_URL}' \
         --endpoint ${ACAPY_ENDORSER_ENDPOINT} \
         --wallet-name '${ACAPY_WALLET_DATABASE}' \
@@ -154,6 +155,8 @@ services:
         --label '${ENDORSER_AGENT_NAME}' \
         ${ACAPY_ADMIN_CONFIG} \
         ${ACAPY_READ_ONLY_MODE} \
+        --endorser-protocol-role endorser \
+        --auto-endorse-transactions \
         ",
       ]
     volumes:

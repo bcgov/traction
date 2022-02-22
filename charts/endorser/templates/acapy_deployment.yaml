@@ -53,6 +53,8 @@ spec:
            --emit-new-didcomm-prefix \
            --label {{ $acapyLabel }} \
            --jwt-secret \"$(JWT_SECRET)\" \
+           --endorser-protocol-role endorser \
+           --auto-endorse-transactions \
            {{- if .Values.acapy.adminInsecureMode }}
            --admin-insecure-mode \
            {{ else }}
