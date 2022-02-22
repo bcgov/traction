@@ -92,7 +92,7 @@ spec:
             - name: TRACTION_WEBHOOK_URL
               value: 'http://{{ include "traction_api.fullname" . }}:{{ .Values.traction_api.service.port }}/webhook#${ACAPY_WEBHOOK_URL_API_KEY}'
             - name: TRACTION_TENANT_WEBHOOK_URL
-              value: 'http://{{ include "traction_api.fullname" . }}:{{ .Values.traction_api.service.port }}/webhook/tenant#${ACAPY_WEBHOOK_URL_API_KEY}'
+              value: 'http://{{ include "traction_api.fullname" . }}:{{ .Values.traction_api.service.port }}/webhook/tenant'
             - name: ACAPY_GENESIS_URL
               value: {{ include "traction_api.genesisUrl" . }}
             - name: ACAPY_ENDORSER_PUBLIC_DID
