@@ -30,4 +30,15 @@ export default {
   createInvitation(sandboxId, tenantId, studentId) {
     return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/tenants/${tenantId}/create-invitation/student`, { student_id: studentId });
   },
+
+  /**
+ * @function getOutOfBandMessages
+ * Get out of band messages for the tenant
+ * @param {string} sandboxId The identifier for the sandbox
+ * @param {string} tenantId The identifier for the tenant
+ * @returns {Promise} An axios response
+ */
+  getOutOfBandMessages(sandboxId, tenantId) {
+    return appAxios().get(`${ApiRoutes.SANDBOXES}/${sandboxId}/tenants/${tenantId}/out-of-band-msgs`);
+  },
 };

@@ -12,7 +12,9 @@
             {{ item.created_at | formatDateLong }}
           </template>
           <template #[`item.actions`]="{ item }">
-            <v-btn small color="primary" @click="SET_CURRENT(item)">Use</v-btn>
+            <v-btn small color="primary" @click="selectSandbox(item.id)">
+              Use
+            </v-btn>
           </template>
         </v-data-table>
         <v-btn
@@ -62,7 +64,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'Sandboxes',
@@ -90,8 +92,11 @@ export default {
     ...mapGetters('sandbox', ['sandboxes', 'currentSandbox']),
   },
   methods: {
-    ...mapActions('sandbox', ['createSandbox', 'getSandboxes']),
-    ...mapMutations('sandbox', ['SET_CURRENT']),
+    ...mapActions('sandbox', [
+      'createSandbox',
+      'getSandboxes',
+      'selectSandbox',
+    ]),
     async create() {
       this.loading = true;
       await this.createSandbox(this.newTag);

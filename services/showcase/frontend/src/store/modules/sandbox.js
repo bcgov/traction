@@ -1,4 +1,5 @@
 import { showcaseService } from '@/services';
+import { Tenants } from '@/utils/constants';
 
 // The store module to hold the current showcase app "sandbox session"
 export default {
@@ -39,8 +40,7 @@ export default {
         // Get the forms based on the user's permissions
         const response = await showcaseService.getSandboxes();
         commit('SET_SANDBOXES', response.data);
-        // await showcaseService.getSandboxes();
-        // commit('SET_SANDBOXES', (JSON.parse(`[
+        // const sandboxFixture = (JSON.parse(`[
         //   {
         //     "tag": "string",
         //     "id": "cf66569c-541f-4954-aaf1-91bcc9d07b87",
@@ -88,12 +88,21 @@ export default {
         //       }
         //     ]
         //   }
-        // ]`)));
+        // ]`));
+        // commit('SET_SANDBOXES', sandboxFixture);
       } catch (error) {
         dispatch('notifications/addNotification', {
           message: 'An error occurred while fetching the current sandboxes.',
           consoleError: `Error getting sandboxes: ${error}`,
         }, { root: true });
+      }
+    },
+    // Select a specific sandbox to use for the current session
+    async selectSandbox({ commit, state }, id) {
+      const toSelect = state.sandboxes.find(s => s.id = id);
+      if (toSelect) {
+        commit('SET_CURRENT', toSelect);
+        commit('alice/SET_TENANT', toSelect.tenants.find(t => t.name = Tenants.ALICE), { root: true });
       }
     },
   }

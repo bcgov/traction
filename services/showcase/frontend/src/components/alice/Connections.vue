@@ -1,15 +1,16 @@
 <template>
-  <div>
-    <h2>Active Invitations</h2>
-    {{ currentSandbox }}
-  </div>
+  <v-card>
+    <v-card-title> My Active Connections and Credentials</v-card-title>
+
+    <v-card-text>TBD</v-card-text>
+  </v-card>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
 
 export default {
-  name: 'Invitations',
+  name: 'AliceConnections',
   data() {
     return {
       loading: false,

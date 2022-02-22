@@ -1,17 +1,30 @@
 <template>
   <v-container>
-    <h1 class="my-6 text-center">Alice's Profile</h1>
-    <Invitations />
+    <v-row class="mt-4">
+      <v-col md="3">
+        <User />
+      </v-col>
+      <v-col md="6">
+        <Connections />
+      </v-col>
+      <v-col md="3">
+        <Messages />
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
 <script>
-import Invitations from '@/components/alice/Invitations.vue';
+import Connections from '@/components/alice/Connections.vue';
+import Messages from '@/components/alice/Messages.vue';
+import User from '@/components/alice/User.vue';
 
 export default {
   name: 'Alice',
   components: {
-    Invitations
-  }
+    Connections,
+    Messages,
+    User,
+  },
 };
 </script>
