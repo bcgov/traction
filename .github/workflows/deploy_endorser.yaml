@@ -52,6 +52,8 @@ jobs:
     
     steps:  
       - uses: actions/checkout@v2  
+        with:
+          ref: ${{ github.event.inputs.ref }}    
 
       - name: Authenticate and set context
         uses: redhat-actions/oc-login@v1
