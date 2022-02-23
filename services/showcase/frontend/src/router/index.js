@@ -34,6 +34,11 @@ export default function getRouter(basePath = '/') {
         component: () => import(/* webpackChunkName: "faber" */ '@/views/Faber.vue'),
       },
       {
+        path: '/alice',
+        name: 'Alice',
+        component: () => import(/* webpackChunkName: "alice" */ '@/views/Alice.vue'),
+      },
+      {
         path: '/404',
         alias: '*',
         name: 'NotFound',

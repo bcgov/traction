@@ -1,5 +1,4 @@
 import logging
-import urllib
 from typing import Optional
 from uuid import UUID
 
@@ -119,17 +118,15 @@ async def get_connections(
     auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
     # no body...
     data = {}
-    url = f"{t_urls.TENANT_GET_CONNECTIONS}"
+    query_params = {}
     if alias:
-        query_params = urllib.parse.urlencode({"alias": alias})
-        url = f"{t_urls.TENANT_GET_CONNECTIONS}?{query_params}"
+        query_params = {"alias": alias}
 
-    logger.info(t_urls.TENANT_GET_CONNECTIONS)
-    logger.info(url)
     # TODO: error handling calling Traction
     async with ClientSession() as client_session:
         async with await client_session.get(
-            url=url,
+            url=t_urls.TENANT_GET_CONNECTIONS,
+            params=query_params,
             json=data,
             headers=auth_headers,
         ) as response:
@@ -138,7 +135,7 @@ async def get_connections(
                 return resp
             except ContentTypeError:
                 logger.exception(
-                    f"Error getting connections list {t_urls.TENANT_GET_CONNECTIONS} {url} {settings.TRACTION_ENDPOINT}",  # noqa: E501
+                    "Error getting connections list",
                     exc_info=True,
                 )
                 text = await response.text()
@@ -157,14 +154,12 @@ async def create_invitation(
     auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
     # no body...
     data = {}
-    query_params = urllib.parse.urlencode(
-        {"alias": alias, "invitation_type": "didexchange/1.0"}
-    )
-    url = f"{t_urls.TENANT_CREATE_INVITATION}?{query_params}"
+    query_params = {"alias": alias, "invitation_type": "didexchange/1.0"}
     # TODO: error handling calling Traction
     async with ClientSession() as client_session:
         async with await client_session.post(
-            url=url,
+            url=t_urls.TENANT_CREATE_INVITATION,
+            params=query_params,
             json=data,
             headers=auth_headers,
         ) as response:
@@ -185,12 +180,12 @@ async def accept_invitation(
 ):
     # call Traction to accept an invitation...
     auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
-    query_params = urllib.parse.urlencode({"alias": alias})
-    url = f"{t_urls.TENANT_RECEIVE_INVITATION}?{query_params}"
+    query_params = {"alias": alias}
     # TODO: error handling calling Traction
     async with ClientSession() as client_session:
         async with await client_session.post(
-            url=url,
+            url=t_urls.TENANT_RECEIVE_INVITATION,
+            params=query_params,
             json=invitation,
             headers=auth_headers,
         ) as response:

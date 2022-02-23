@@ -11,6 +11,9 @@
         <li>
           <router-link :to="{ name: 'Faber' }">Faber</router-link>
         </li>
+        <li>
+          <router-link :to="{ name: 'Alice' }">Alice</router-link>
+        </li>
       </ul>
     </div>
   </nav>
