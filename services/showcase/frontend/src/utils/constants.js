@@ -37,3 +37,10 @@ export const Regex = Object.freeze({
   // From ajv-format
   EMAIL: '^[a-zA-Z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$'
 });
+
+/** Our showcase tenants */
+export const Tenants = Object.freeze({
+  ALICE: 'Alice',
+  ACME: 'Acme',
+  FABER: 'Faber'
+});
