@@ -3,12 +3,14 @@ import { ApiRoutes } from '@/utils/constants';
 
 export default {
   /**
-   * @function getSandboxes
-   * Get the current sandboxes in this instance of the showcase app
+   * @function acceptInvitation
+   * Accept an invitation
+   * @param {string} sandboxId The identifier for the sandbox
+   * @param {string} tenantId The identifier for the tenant
    * @returns {Promise} An axios response
    */
-  getSandboxes() {
-    return appAxios().get(`${ApiRoutes.SANDBOXES}`);
+  acceptInvitation(sandboxId, tenantId, senderId, message) {
+    return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/tenants/${tenantId}/accept-invitation`, { sender_id: senderId, invitation: message });
   },
 
   /**
@@ -24,7 +26,8 @@ export default {
   /**
    * @function createInvitation
    * Create a invitation
-   * @param {string} tag A label for the sandbox
+   * @param {string} sandboxId The identifier for the sandbox
+   * @param {string} tenantId The identifier for the tenant
    * @returns {Promise} An axios response
    */
   createInvitation(sandboxId, tenantId, studentId) {
@@ -40,5 +43,14 @@ export default {
  */
   getOutOfBandMessages(sandboxId, tenantId) {
     return appAxios().get(`${ApiRoutes.SANDBOXES}/${sandboxId}/tenants/${tenantId}/out-of-band-msgs`);
+  },
+
+  /**
+ * @function getSandboxes
+ * Get the current sandboxes in this instance of the showcase app
+ * @returns {Promise} An axios response
+ */
+  getSandboxes() {
+    return appAxios().get(`${ApiRoutes.SANDBOXES}`);
   },
 };
