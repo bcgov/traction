@@ -5,6 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.api_client_utils import get_api_client
 from api.core.config import settings
+from api.core.profile import Profile
+from api.db.errors import DoesNotExist
 from api.db.repositories.tenant_issuers import TenantIssuersRepository
 from api.db.repositories.tenant_workflows import TenantWorkflowsRepository
 from api.db.models.tenant_issuer import TenantIssuerUpdate
@@ -43,6 +45,30 @@ wallet_api = WalletApi(api_client=get_api_client())
 
 class IssuerWorkflow:
     """Workflow to setup a tenant's Issuer configuration."""
+
+    @classmethod
+    async def find_workflow_id(
+        cls, profile: Profile, webhook_message: dict
+    ):
+        # find related workflow
+        issuer_repo = TenantIssuersRepository(db_session=profile.db)
+        if webhook_message["topic"] == "connections":
+            try:
+                tenant_issuer = (
+                    await issuer_repo.get_by_wallet_and_endorser_connection_id(
+                        profile.wallet_id,
+                        webhook_message["payload"]["connection_id"],
+                    )
+                )
+                return tenant_issuer.workflow_id
+            except DoesNotExist:
+                # no related workflow so ignore, for now ...
+                return None
+        elif webhook_message["topic"] == "endorse_transaction":
+            # TODO when we need to handle the DID publishing
+            return None
+        else:
+            return None
 
     def __init__(self, db: AsyncSession, tenant_workflow: TenantWorkflowRead):
         """
@@ -84,10 +110,10 @@ class IssuerWorkflow:
         # if workflow is "pending" then we need to start it
         # called direct from the tenant admin api so the tenant is "in context"
         if self.tenant_workflow.workflow_state == TenantWorkflowStateType.pending:
-            # update the workflow status as "active"
+            # update the workflow status as "in_progress"
             update_workflow = TenantWorkflowUpdate(
                 id=self.tenant_workflow.id,
-                workflow_state=TenantWorkflowStateType.active,
+                workflow_state=TenantWorkflowStateType.in_progress,
                 wallet_bearer_token=self.tenant_workflow.wallet_bearer_token,
             )
             self._tenant_workflow = await self.workflow_repo.update(update_workflow)
@@ -107,12 +133,12 @@ class IssuerWorkflow:
             )
             tenant_issuer = await self.issuer_repo.update(update_issuer)
 
-        # if workflow is "active" we need to check what state we are at,
+        # if workflow is "in_progress" we need to check what state we are at,
         # ... and initiate the next step (if applicable)
         # called on receipt of webhook, so need to put the proper tenant "in context"
-        elif self.tenant_workflow.workflow_state == TenantWorkflowStateType.active:
+        elif self.tenant_workflow.workflow_state == TenantWorkflowStateType.in_progress:
             logger.warn(
-                f">>> run_step() called for active workflow with {webhook_message}"
+                f">>> run_step() called for in_progress workflow with {webhook_message}"
             )
             webhook_topic = webhook_message["topic"]
             if webhook_topic == WebhookTopicType.connections:

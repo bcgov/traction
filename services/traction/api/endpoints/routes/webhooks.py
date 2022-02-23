@@ -89,6 +89,9 @@ async def process_tenant_webhook(
     await profile.notify(event_topic, {"topic": topic, "payload": payload})
 
     # TODO move this to an event handler?
-    await post_tenant_webhook(topic, payload, wallet_id, db)
+    try:
+        await post_tenant_webhook(topic, payload, wallet_id, db)
+    except Exception:
+        logger.exception("Error posting webhook to tenant LOB app")
 
     return {}

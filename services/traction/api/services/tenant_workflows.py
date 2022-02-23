@@ -9,7 +9,6 @@ from api.core.config import settings
 from api.core.event_bus import Event
 from api.core.profile import Profile
 from api.db.errors import DoesNotExist
-from api.db.repositories.tenant_issuers import TenantIssuersRepository
 from api.db.repositories.tenant_workflows import TenantWorkflowsRepository
 from api.db.models.tenant_workflow import (
     TenantWorkflowRead,
@@ -23,6 +22,8 @@ from api.endpoints.models.webhooks import (
     WEBHOOK_CONNECTIONS_LISTENER_PATTERN,
     WEBHOOK_ENDORSE_LISTENER_PATTERN,
 )
+from api.services.IssuerWorkflow import IssuerWorkflow
+from api.services.SchemaWorkflow import SchemaWorkflow
 
 
 logger = logging.getLogger(__name__)
@@ -106,18 +107,18 @@ async def next_workflow_step(
     return tenant_workflow
 
 
-async def handle_connection_events(profile: Profile, event: Event):
+async def handle_issuer_worklflow_events(profile: Profile, event: Event):
     # find related workflow
-    issuer_repo = TenantIssuersRepository(db_session=profile.db)
+    logger.warn(f">>> find issuer workflow for {profile} {event}")
     try:
-        tenant_issuer = await issuer_repo.get_by_wallet_and_endorser_connection_id(
-            profile.wallet_id,
-            event.payload["payload"]["connection_id"],
+        workflow_id = await IssuerWorkflow.find_workflow_id(
+            profile, event.payload
         )
-        if tenant_issuer.workflow_id:
+        logger.warn(f"    ... {workflow_id}")
+        if workflow_id:
             await next_workflow_step(
                 profile.db,
-                workflow_id=tenant_issuer.workflow_id,
+                workflow_id=workflow_id,
                 webhook_message=event.payload,
             )
         else:
@@ -127,15 +128,34 @@ async def handle_connection_events(profile: Profile, event: Event):
         return
 
 
-async def handle_endorse_events(profile: Profile, event: Event):
-    logger.warn(f">>> endorse event {profile} {event}")
-    pass
+async def handle_schema_worklflow_events(profile: Profile, event: Event):
+    # find related workflow
+    logger.warn(f">>> find schema workflow for {profile} {event}")
+    try:
+        workflow_id = await SchemaWorkflow.find_workflow_id(
+            profile, event.payload
+        )
+        logger.warn(f"    ... {workflow_id}")
+        if workflow_id:
+            await next_workflow_step(
+                profile.db,
+                workflow_id=workflow_id,
+                webhook_message=event.payload,
+            )
+        else:
+            return
+    except DoesNotExist:
+        # no related workflow so ignore, for now ...
+        return
 
 
 def subscribe_workflow_events():
     settings.EVENT_BUS.subscribe(
-        WEBHOOK_CONNECTIONS_LISTENER_PATTERN, handle_connection_events
+        WEBHOOK_CONNECTIONS_LISTENER_PATTERN, handle_issuer_worklflow_events
     )
     settings.EVENT_BUS.subscribe(
-        WEBHOOK_ENDORSE_LISTENER_PATTERN, handle_endorse_events
+        WEBHOOK_ENDORSE_LISTENER_PATTERN, handle_issuer_worklflow_events
+    )
+    settings.EVENT_BUS.subscribe(
+        WEBHOOK_ENDORSE_LISTENER_PATTERN, handle_schema_worklflow_events
     )

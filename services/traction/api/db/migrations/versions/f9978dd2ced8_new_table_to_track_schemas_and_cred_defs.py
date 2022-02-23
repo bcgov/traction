@@ -30,7 +30,13 @@ def upgrade():
         sa.Column("wallet_id", pg.UUID(as_uuid=True), nullable=False),
         sa.Column("workflow_id", pg.UUID(as_uuid=True), nullable=True),
         sa.Column("schema_id", sa.String(), nullable=True),
+        sa.Column("schema_name", sa.String(), nullable=True),
+        sa.Column("schema_version", sa.String(), nullable=True),
+        sa.Column("schema_attrs", sa.String(), nullable=True),
+        sa.Column("schema_txn_id", pg.UUID(as_uuid=True), nullable=True),
         sa.Column("schema_state", sa.String(), nullable=True),
+        sa.Column("cred_def_tag", sa.String(), nullable=True),
+        sa.Column("cred_def_txn_id", pg.UUID(as_uuid=True), nullable=True),
         sa.Column("cred_def_id", sa.String(), nullable=True),
         sa.Column("cred_def_state", sa.String(), nullable=True),
         sa.Column(

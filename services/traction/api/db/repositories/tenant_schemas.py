@@ -61,3 +61,27 @@ class TenantSchemasRepository(
         result = await self._db_session.execute(q)
         items = result.scalars().all()
         return parse_obj_as(List[TenantSchemaRead], items)
+
+    async def get_by_workflow_id(self, workflow_id: UUID) -> Type[TenantSchemaRead]:
+        q = select(self._table).where(self._table.workflow_id == workflow_id)
+        result = await self._db_session.execute(q)
+        tenant_schema = result.scalar_one_or_none()
+        if not tenant_schema:
+            raise DoesNotExist(
+                f"{self._table.__name__}<workflow_id:{workflow_id}> does not exist"
+            )
+        return self._schema.from_orm(tenant_schema)
+
+    async def get_by_transaction_id(self, txn_id: UUID) -> Type[TenantSchemaRead]:
+        q = select(self._table).where(self._table.schema_txn_id == txn_id)
+        result = await self._db_session.execute(q)
+        tenant_schema = result.scalar_one_or_none()
+        if not tenant_schema:
+            q = select(self._table).where(self._table.cred_def_txn_id == txn_id)
+            result = await self._db_session.execute(q)
+            tenant_schema = result.scalar_one_or_none()
+            if not tenant_schema:
+                raise DoesNotExist(
+                    f"{self._table.__name__}<transaction_id:{txn_id}> does not exist"
+                )
+        return self._schema.from_orm(tenant_schema)

@@ -12,7 +12,13 @@ class TenantSchemaBase(BaseModel):
     # workflow_id will be null until the tenant kcks it off
     workflow_id: uuid.UUID = Field(nullable=True, default=None)
     schema_id: str = Field(nullable=True, default=None)
+    schema_name: str = Field(nullable=True, default=None)
+    schema_version: str = Field(nullable=True, default=None)
+    schema_attrs: str = Field(nullable=True, default=None)
+    schema_txn_id: uuid.UUID = Field(nullable=True, default=None)
     schema_state: str = Field(nullable=True, default=None)
+    cred_def_tag: str = Field(nullable=True, default=None)
+    cred_def_txn_id: uuid.UUID = Field(nullable=True, default=None)
     cred_def_id: str = Field(nullable=True, default=None)
     cred_def_state: str = Field(nullable=True, default=None)
 
@@ -44,6 +50,8 @@ class TenantSchemaUpdate(BaseModel):
     id: uuid.UUID
     workflow_id: uuid.UUID = Field(nullable=True, default=None)
     schema_id: str = Field(nullable=True, default=None)
+    schema_txn_id: uuid.UUID = Field(nullable=True, default=None)
     schema_state: str = Field(nullable=True, default=None)
+    cred_def_txn_id: uuid.UUID = Field(nullable=True, default=None)
     cred_def_id: str = Field(nullable=True, default=None)
     cred_def_state: str = Field(nullable=True, default=None)

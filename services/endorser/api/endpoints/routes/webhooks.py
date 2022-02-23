@@ -32,7 +32,7 @@ class WebhookTopicType(str, Enum):
     issuer_cred_rev = "issuer-cred-rev"
     present_proof = "present-proof"
     present_proof_v2_0 = "present-proof-v2-0"
-    endorse_transaction = "endorse-transaction"
+    endorse_transaction = "endorse_transaction"
     revocation_registry = "revocation-registry"
     revocation_notification = "revocation-notification"
     problem_report = "problem-report"
@@ -73,6 +73,7 @@ async def process_webhook(
 
 async def setup_endorser_connection(payload: dict):
     """Set endorser role on any connections we receive."""
+    logger.warn(f">>> Setting meta-data for connection: {payload}")
     if payload["state"] == "active" or payload["state"] == "completed":
         params = {"transaction_my_job": "TRANSACTION_ENDORSER"}
         connection_id = payload["connection_id"]
