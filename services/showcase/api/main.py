@@ -47,6 +47,8 @@ app = get_application()
 api = get_api()
 app.mount("/api", api)
 
+# Frontend Serving
+
 
 class SPAStaticFiles(StaticFiles):
     async def get_response(self, path: str, scope):
