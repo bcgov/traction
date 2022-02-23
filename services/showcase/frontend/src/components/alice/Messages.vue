@@ -7,7 +7,7 @@
 
     <v-card-text>
       <v-skeleton-loader :loading="loading" type="list-item-two-line">
-        <div v-if="ofbMessages">
+        <div v-if="ofbMessages && ofbMessages.length">
           <ul>
             <li v-for="msg in ofbMessages" :key="msg.id" class="mb-4">
               <!-- Message Details -->
