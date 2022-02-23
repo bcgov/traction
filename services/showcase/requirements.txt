@@ -10,6 +10,7 @@ MarkupSafe==2.0.1
 passlib==1.7.4
 psycopg2-binary==2.9.2
 pydantic==1.9.0
+pydantic-factories==1.2.5
 SQLAlchemy==1.4.27
 sqlalchemy2-stubs==0.0.2a19
 sqlmodel==0.0.6

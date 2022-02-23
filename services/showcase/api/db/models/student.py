@@ -3,7 +3,8 @@ from datetime import datetime
 from typing import Optional
 
 from sqlmodel import Field, Relationship
-
+from pydantic_factories import ModelFactory, Use
+from faker import Faker
 from api.db.models.base import BaseModel, BaseTable
 
 
@@ -28,3 +29,12 @@ class StudentRead(StudentBase):
 
 class StudentUpdate(StudentBase):
     name: Optional[str] = None
+
+
+### FACTORIES
+
+
+class StudentCreateFactory(ModelFactory):
+    __model__ = StudentCreate
+
+    name = Use(lambda: Faker().first_name() + "_")

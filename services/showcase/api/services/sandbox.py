@@ -14,7 +14,7 @@ from api.db.models.sandbox import (
     SandboxCreate,
     Sandbox,
 )
-from api.db.models.student import StudentCreate
+from api.db.models.student import StudentCreate, StudentCreateFactory
 from api.db.models.tenant import TenantCreate, Tenant, TenantUpdate
 from api.db.repositories import SandboxRepository, StudentRepository, TenantRepository
 from api.db.repositories.out_of_band import OutOfBandRepository
@@ -76,6 +76,11 @@ async def create_new_sandbox(
         sandbox_id=sandbox.id,
     )
     await student_repo.create(student)
+
+    # make 5 random students
+    rand_students = StudentCreateFactory.batch(5, sandbox_id=sandbox.id)
+    for s in rand_students:
+        await student_repo.create(s)
 
     return await sandbox_repo.get_by_id_populated(sandbox.id)
 
