@@ -144,7 +144,7 @@ async def get_tenant_schemas(
 
 
 @router.post("/schema", status_code=status.HTTP_200_OK, response_model=TenantSchemaData)
-async def get_tenant_schemas(
+async def create_tenant_schema(
     schema: dict | None = None,
     schema_id: str | None = None,
     cred_def_tag: str | None = None,
