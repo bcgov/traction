@@ -69,7 +69,7 @@ spec:
                   name: {{ template "showcase.secret.name" . }}
                   key: user_pwd
             - name: SHOWCASE_ENDPOINT
-              value: http://{{ include "showcase.fullname" . }}:5000
+              value: https://{{ include "showcase.host" . }}
             - name: SHOWCASE_STATIC_FILES
               value: {{ .Values.showcase.config.staticFilesPath }}
             - name: TRACTION_ENDPOINT
