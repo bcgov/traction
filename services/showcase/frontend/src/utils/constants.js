@@ -4,7 +4,7 @@
 
 /** API Route paths */
 export const ApiRoutes = Object.freeze({
-  BASEPATH: '/api/v1',
+  BASEPATH: 'http://localhost:5200/api/v1/',
   SANDBOXES: '/sandboxes',
   WEBHOOK: '/webhook'
 });
