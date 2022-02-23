@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <h1 class="my-6 text-center">Faber</h1>
+    <h1 class="my-6 text-center">Faber University</h1>
     <Students />
   </v-container>
 </template>
