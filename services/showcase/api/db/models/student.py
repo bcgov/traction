@@ -31,7 +31,7 @@ class StudentUpdate(StudentBase):
     name: Optional[str] = None
 
 
-### FACTORIES
+# FACTORIES
 
 
 class StudentCreateFactory(ModelFactory):
