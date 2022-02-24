@@ -44,9 +44,6 @@ api_key_header = APIKeyHeader(
 async def get_api_key(
     api_key_header: str = Security(api_key_header),
 ):
-    logger.warn(
-        f"Received: {api_key_header}; Configured: {settings.ACAPY_WEBHOOK_URL_API_KEY}"
-    )
     if api_key_header == settings.ACAPY_WEBHOOK_URL_API_KEY:
         return api_key_header
     else:
@@ -92,6 +89,9 @@ async def process_tenant_webhook(
     await profile.notify(event_topic, {"topic": topic, "payload": payload})
 
     # TODO move this to an event handler?
-    await post_tenant_webhook(topic, payload, wallet_id, db)
+    try:
+        await post_tenant_webhook(topic, payload, wallet_id, db)
+    except Exception:
+        logger.exception("Error posting webhook to tenant LOB app")
 
     return {}

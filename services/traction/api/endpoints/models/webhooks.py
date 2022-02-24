@@ -16,15 +16,15 @@ class WebhookTopicType(str, Enum):
     issuer_cred_rev = "issuer-cred-rev"
     present_proof = "present-proof"
     present_proof_v2_0 = "present-proof-v2-0"
-    endorse_transaction = "endorse-transaction"
+    endorse_transaction = "endorse_transaction"
     revocation_registry = "revocation-registry"
     revocation_notification = "revocation-notification"
     problem_report = "problem-report"
 
 
-# the event id will be "traction::WEBHOOK::<topic>::<potentially some other id>"
+# the event id will be "acapy::WEBHOOK::<topic>::<potentially some other id>"
 # ... and the event payload should contain the webhook payload
-WEBHOOK_EVENT_PREFIX = "traction::WEBHOOK::"
+WEBHOOK_EVENT_PREFIX = "acapy::WEBHOOK::"
 WEBHOOK_LISTENER_PATTERN = re.compile(f"^{WEBHOOK_EVENT_PREFIX}(.*)?$")
 WEBHOOK_PING_LISTENER_PATTERN = re.compile(
     f"^{WEBHOOK_EVENT_PREFIX}{WebhookTopicType.ping}(.*)?$"

@@ -40,7 +40,11 @@ async def post_tenant_webhook(
     _t_repo = TenantsRepository(db_session=db)
     tenant = await _t_repo.get_by_wallet_id(wallet_id)
 
-    webhook = await get_tenant_webhook(tenant.id, db)
+    try:
+        webhook = await get_tenant_webhook(tenant.id, db)
+    except DoesNotExist:
+        # no tenant webhook configured
+        return
 
     _msg_repo = TenantWebhookMsgsRepository(db_session=db)
     in_webhook_msg = TenantWebhookMsgCreate(
