@@ -1,5 +1,6 @@
 import logging
 import requests
+import time
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -8,12 +9,8 @@ from api.core.config import settings
 from api.core.profile import Profile
 from api.db.errors import DoesNotExist
 from api.db.repositories.tenant_issuers import TenantIssuersRepository
-from api.db.repositories.tenant_workflows import TenantWorkflowsRepository
 from api.db.models.tenant_issuer import TenantIssuerUpdate
-from api.db.models.tenant_workflow import (
-    TenantWorkflowRead,
-    TenantWorkflowUpdate,
-)
+from api.db.models.tenant_workflow import TenantWorkflowRead
 from api.endpoints.models.connections import (
     ConnectionStateType,
 )
@@ -29,7 +26,10 @@ from api.endpoints.models.webhooks import (
 from api.services.connections import (
     receive_invitation,
 )
+from api.services.base import BaseWorkflow
 
+
+from acapy_client.api.connection_api import ConnectionApi
 from acapy_client.api.endorse_transaction_api import EndorseTransactionApi
 from acapy_client.api.ledger_api import LedgerApi
 from acapy_client.api.wallet_api import WalletApi
@@ -38,12 +38,13 @@ from acapy_client.model.did_create import DIDCreate
 
 logger = logging.getLogger(__name__)
 
+connection_api = ConnectionApi(api_client=get_api_client())
 endorse_api = EndorseTransactionApi(api_client=get_api_client())
 ledger_api = LedgerApi(api_client=get_api_client())
 wallet_api = WalletApi(api_client=get_api_client())
 
 
-class IssuerWorkflow:
+class IssuerWorkflow(BaseWorkflow):
     """Workflow to setup a tenant's Issuer configuration."""
 
     @classmethod
@@ -75,30 +76,13 @@ class IssuerWorkflow:
         Args:
             session: The Askar profile session instance to use
         """
-        self._db = db
-        self._tenant_workflow = tenant_workflow
+        super(IssuerWorkflow, self).__init__(db, tenant_workflow)
         self._issuer_repo = TenantIssuersRepository(db_session=db)
-        self._workflow_repo = TenantWorkflowsRepository(db_session=db)
-
-    @property
-    def db(self) -> AsyncSession:
-        """Accessor for db session instance."""
-        return self._db
-
-    @property
-    def tenant_workflow(self) -> TenantWorkflowRead:
-        """Accessor for tenant_workflow instance."""
-        return self._tenant_workflow
 
     @property
     def issuer_repo(self) -> TenantIssuersRepository:
         """Accessor for issuer_repo instance."""
         return self._issuer_repo
-
-    @property
-    def workflow_repo(self) -> TenantWorkflowsRepository:
-        """Accessor for workflow_repo instance."""
-        return self._workflow_repo
 
     async def run_step(self, webhook_message: dict = None) -> TenantWorkflowRead:
         tenant_issuer = await self.issuer_repo.get_by_wallet_id(
@@ -107,16 +91,13 @@ class IssuerWorkflow:
 
         # if workflow is "pending" then we need to start it
         # called direct from the tenant admin api so the tenant is "in context"
+        logger.debug(f">>> start workflow run_step() with: {self.tenant_workflow}")
         if self.tenant_workflow.workflow_state == TenantWorkflowStateType.pending:
             # update the workflow status as "in_progress"
-            update_workflow = TenantWorkflowUpdate(
-                id=self.tenant_workflow.id,
-                workflow_state=TenantWorkflowStateType.in_progress,
-                wallet_bearer_token=self.tenant_workflow.wallet_bearer_token,
-            )
-            self._tenant_workflow = await self.workflow_repo.update(update_workflow)
+            await self.start_workflow()
 
             # first step is to initiate the connection to the Endorser
+            logger.debug(">>> initiate connection to endorser ...")
             endorser_alias = settings.ENDORSER_CONNECTION_ALIAS
             endorser_public_did = settings.ACAPY_ENDORSER_PUBLIC_DID
             connection = receive_invitation(
@@ -136,6 +117,7 @@ class IssuerWorkflow:
         # called on receipt of webhook, so need to put the proper tenant "in context"
         elif self.tenant_workflow.workflow_state == TenantWorkflowStateType.in_progress:
             webhook_topic = webhook_message["topic"]
+            logger.debug(f">>> run in_progress workflow for topic: {webhook_topic}")
             if webhook_topic == WebhookTopicType.connections:
                 # check if we need to update the connection state in our issuer record
                 connection_state = webhook_message["payload"]["state"]
@@ -153,18 +135,33 @@ class IssuerWorkflow:
                     connection_state == ConnectionStateType.active
                     or connection_state == ConnectionStateType.completed
                 ):
-                    # attach some meta-data to the connection
-                    # TODO verify response from each call ...
-                    data = {"transaction_my_job": "TRANSACTION_AUTHOR"}
-                    endorse_api.transactions_conn_id_set_endorser_role_post(
-                        connection_id, **data
+                    logger.debug(f">>> checking for metadata on connection: {connection_id}")
+                    conn_meta_data = connection_api.connections_conn_id_metadata_get(
+                        connection_id
                     )
-                    endorser_alias = settings.ENDORSER_CONNECTION_ALIAS
-                    endorser_public_did = settings.ACAPY_ENDORSER_PUBLIC_DID
-                    data = {"endorser_name": endorser_alias}
-                    endorse_api.transactions_conn_id_set_endorser_info_post(
-                        connection_id, endorser_public_did, **data
-                    )
+                    add_meta_data = True
+                    if "transaction-jobs" in conn_meta_data.results:
+                        if "transaction_my_job" in conn_meta_data.results["transaction-jobs"]:
+                            add_meta_data = False
+
+                    if add_meta_data:
+                        logger.debug(f">>> adding metadata to endorser connection: {connection_id}")
+                        # TODO hack - short pause here to prevent race condition with endorser
+                        # (runs into an issue if both update endorser role at the same time)
+                        time.sleep(1)
+
+                        # attach some meta-data to the connection
+                        # TODO verify response from each call ...
+                        data = {"transaction_my_job": "TRANSACTION_AUTHOR"}
+                        endorse_api.transactions_conn_id_set_endorser_role_post(
+                            connection_id, **data
+                        )
+                        endorser_alias = settings.ENDORSER_CONNECTION_ALIAS
+                        endorser_public_did = settings.ACAPY_ENDORSER_PUBLIC_DID
+                        data = {"endorser_name": endorser_alias}
+                        endorse_api.transactions_conn_id_set_endorser_info_post(
+                            connection_id, endorser_public_did, **data
+                        )
 
                     # onto the next phase!  create our DID and make it public
                     data = {"body": DIDCreate()}
@@ -231,14 +228,7 @@ class IssuerWorkflow:
                         tenant_issuer = await self.issuer_repo.update(update_issuer)
 
                         # finish off our workflow
-                        update_workflow = TenantWorkflowUpdate(
-                            id=self.tenant_workflow.id,
-                            workflow_state=TenantWorkflowStateType.completed,
-                            wallet_bearer_token=None,
-                        )
-                        self._tenant_workflow = await self.workflow_repo.update(
-                            update_workflow
-                        )
+                        await self.complete_workflow()
 
             elif webhook_topic == WebhookTopicType.endorse_transaction:
                 # TODO once we need to handle endorsements

@@ -8,18 +8,15 @@ from api.core.config import settings
 from api.core.profile import Profile
 from api.db.errors import DoesNotExist
 from api.db.repositories.tenant_schemas import TenantSchemasRepository
-from api.db.repositories.tenant_workflows import TenantWorkflowsRepository
 from api.db.models.tenant_schema import TenantSchemaUpdate
-from api.db.models.tenant_workflow import (
-    TenantWorkflowRead,
-    TenantWorkflowUpdate,
-)
+from api.db.models.tenant_workflow import TenantWorkflowRead
 from api.endpoints.models.tenant_workflow import (
     TenantWorkflowStateType,
 )
 from api.endpoints.models.webhooks import (
     WebhookTopicType,
 )
+from api.services.base import BaseWorkflow
 
 from acapy_client.api.endorse_transaction_api import EndorseTransactionApi
 from acapy_client.api.schema_api import SchemaApi
@@ -37,7 +34,7 @@ schema_api = SchemaApi(api_client=get_api_client())
 cred_def_api = CredentialDefinitionApi(api_client=get_api_client())
 
 
-class SchemaWorkflow:
+class SchemaWorkflow(BaseWorkflow):
     """Workflow to create a schema and/or cred def for a tenant Issuer."""
 
     @classmethod
@@ -60,30 +57,13 @@ class SchemaWorkflow:
         """
         Initialize a new `SchemaWorkflow` instance.
         """
-        self._db = db
-        self._tenant_workflow = tenant_workflow
+        super(SchemaWorkflow, self).__init__(db, tenant_workflow)
         self._schema_repo = TenantSchemasRepository(db_session=db)
-        self._workflow_repo = TenantWorkflowsRepository(db_session=db)
-
-    @property
-    def db(self) -> AsyncSession:
-        """Accessor for db session instance."""
-        return self._db
-
-    @property
-    def tenant_workflow(self) -> TenantWorkflowRead:
-        """Accessor for tenant_workflow instance."""
-        return self._tenant_workflow
 
     @property
     def schema_repo(self) -> TenantSchemasRepository:
         """Accessor for schema_repo instance."""
         return self._schema_repo
-
-    @property
-    def workflow_repo(self) -> TenantWorkflowsRepository:
-        """Accessor for workflow_repo instance."""
-        return self._workflow_repo
 
     async def run_step(self, webhook_message: dict = None) -> TenantWorkflowRead:
         tenant_schema = await self.schema_repo.get_by_workflow_id(
@@ -94,12 +74,7 @@ class SchemaWorkflow:
         # called direct from the tenant admin api so the tenant is "in context"
         if self.tenant_workflow.workflow_state == TenantWorkflowStateType.pending:
             # update the workflow status as "in_progress"
-            update_workflow = TenantWorkflowUpdate(
-                id=self.tenant_workflow.id,
-                workflow_state=TenantWorkflowStateType.in_progress,
-                wallet_bearer_token=self.tenant_workflow.wallet_bearer_token,
-            )
-            self._tenant_workflow = await self.workflow_repo.update(update_workflow)
+            await self.start_workflow()
 
             # first step is to initiate creation of the schema or cred def
             if tenant_schema.schema_state == TenantWorkflowStateType.pending:
@@ -228,14 +203,7 @@ class SchemaWorkflow:
 
                     if workflow_completed:
                         # finish off our workflow
-                        update_workflow = TenantWorkflowUpdate(
-                            id=self.tenant_workflow.id,
-                            workflow_state=TenantWorkflowStateType.completed,
-                            wallet_bearer_token=None,
-                        )
-                        self._tenant_workflow = await self.workflow_repo.update(
-                            update_workflow
-                        )
+                        await self.complete_workflow()
 
             else:
                 logger.warn(f">>> ignoring topic for now: {webhook_topic}")

@@ -67,11 +67,19 @@ async def create_workflow(
     return tenant_workflow
 
 
-def instantiate_workflow_class(db: AsyncSession, tenant_workflow: TenantWorkflowRead):
+def instantiate_workflow_class(workflow_type: TenantWorkflowTypeType):
     """Create an instance of a workflow class."""
-    workflow_type = tenant_workflow.workflow_type
     module_name, class_name = workflow_type.rsplit(".", 1)
     WorkflowClass = getattr(importlib.import_module(module_name), class_name)
+    return WorkflowClass
+
+
+def instantiate_workflow_class_instance(
+    db: AsyncSession, tenant_workflow: TenantWorkflowRead
+):
+    """Create an instance of a workflow class."""
+    workflow_type = tenant_workflow.workflow_type
+    WorkflowClass = instantiate_workflow_class(workflow_type)
     instance = WorkflowClass(db, tenant_workflow)
     return instance
 
@@ -99,7 +107,7 @@ async def next_workflow_step(
     ):
         context["TENANT_WALLET_TOKEN"] = tenant_workflow.wallet_bearer_token
 
-    workflow = instantiate_workflow_class(db, tenant_workflow)
+    workflow = instantiate_workflow_class_instance(db, tenant_workflow)
 
     # ping workflow to execute next step
     tenant_workflow = await workflow.run_step(webhook_message=webhook_message)
