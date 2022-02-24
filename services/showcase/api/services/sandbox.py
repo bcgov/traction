@@ -80,6 +80,8 @@ async def create_new_sandbox(
     # make 5 random students
     rand_students = StudentCreateFactory.batch(5, sandbox_id=sandbox.id)
     for s in rand_students:
+        if s.name == "Alice":
+            continue
         await student_repo.create(s)
 
     return await sandbox_repo.get_by_id_populated(sandbox.id)

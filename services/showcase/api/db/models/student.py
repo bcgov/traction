@@ -37,4 +37,4 @@ class StudentUpdate(StudentBase):
 class StudentCreateFactory(ModelFactory):
     __model__ = StudentCreate
 
-    name = Use(lambda: Faker().first_name() + "_")
+    name = Use(Faker().first_name)
