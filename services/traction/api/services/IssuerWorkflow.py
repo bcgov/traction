@@ -47,9 +47,7 @@ class IssuerWorkflow:
     """Workflow to setup a tenant's Issuer configuration."""
 
     @classmethod
-    async def find_workflow_id(
-        cls, profile: Profile, webhook_message: dict
-    ):
+    async def find_workflow_id(cls, profile: Profile, webhook_message: dict):
         # find related workflow
         issuer_repo = TenantIssuersRepository(db_session=profile.db)
         if webhook_message["topic"] == "connections":
