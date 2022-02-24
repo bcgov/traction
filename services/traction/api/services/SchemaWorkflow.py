@@ -4,6 +4,7 @@ import logging
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.api_client_utils import get_api_client
+from api.core.config import settings
 from api.core.profile import Profile
 from api.db.errors import DoesNotExist
 from api.db.repositories.tenant_schemas import TenantSchemasRepository
@@ -88,12 +89,10 @@ class SchemaWorkflow:
         tenant_schema = await self.schema_repo.get_by_workflow_id(
             self.tenant_workflow.id
         )
-        logger.warn(f">>> schema at start of workflow: {tenant_schema}")
 
         # if workflow is "pending" then we need to start it
         # called direct from the tenant admin api so the tenant is "in context"
         if self.tenant_workflow.workflow_state == TenantWorkflowStateType.pending:
-            logger.warn(">>> Initiating workflow ...")
             # update the workflow status as "in_progress"
             update_workflow = TenantWorkflowUpdate(
                 id=self.tenant_workflow.id,
@@ -101,10 +100,8 @@ class SchemaWorkflow:
                 wallet_bearer_token=self.tenant_workflow.wallet_bearer_token,
             )
             self._tenant_workflow = await self.workflow_repo.update(update_workflow)
-            logger.warn(f">>> Started workflow: {self.tenant_workflow}")
 
             # first step is to initiate creation of the schema or cred def
-            logger.warn(f">>> Check for create schema ... {tenant_schema}")
             if tenant_schema.schema_state == TenantWorkflowStateType.pending:
                 schema_request = SchemaSendRequest(
                     schema_name=tenant_schema.schema_name,
@@ -119,6 +116,7 @@ class SchemaWorkflow:
                 update_schema = TenantSchemaUpdate(
                     id=tenant_schema.id,
                     workflow_id=self.tenant_workflow.id,
+                    schema_id=tenant_schema.schema_id,
                     schema_txn_id=schema_response.txn["transaction_id"],
                     schema_state=TenantWorkflowStateType.in_progress,
                     cred_def_state=tenant_schema.cred_def_state,
@@ -141,7 +139,7 @@ class SchemaWorkflow:
                     schema_txn_id=tenant_schema.schema_txn_id,
                     schema_id=tenant_schema.schema_id,
                     schema_state=tenant_schema.schema_state,
-                    cred_def_txn_id=schema_response.txn["transaction_id"],
+                    cred_def_txn_id=cred_def_response.txn["transaction_id"],
                     cred_def_state=TenantWorkflowStateType.in_progress,
                 )
                 tenant_schema = await self.schema_repo.update(update_schema)
@@ -150,9 +148,6 @@ class SchemaWorkflow:
         # ... and initiate the next step (if applicable)
         # called on receipt of webhook, so need to put the proper tenant "in context"
         elif self.tenant_workflow.workflow_state == TenantWorkflowStateType.in_progress:
-            logger.warn(
-                f">>> run_step() called for in_progress workflow with {webhook_message}"
-            )
             workflow_completed = False
             webhook_topic = webhook_message["topic"]
             if webhook_topic == WebhookTopicType.endorse_transaction:
@@ -205,6 +200,18 @@ class SchemaWorkflow:
                             workflow_completed = True
 
                     elif txn_id == str(tenant_schema.cred_def_txn_id):
+                        # derive the cred_def_id
+                        endorser_public_did = settings.ACAPY_ENDORSER_PUBLIC_DID
+                        signature_json = webhook_message["payload"][
+                            "signature_response"
+                        ][0]["signature"][endorser_public_did]
+                        signature = json.loads(signature_json)
+                        public_did = signature["identifier"]
+                        sig_type = signature["operation"]["signature_type"]
+                        schema_ref = signature["operation"]["ref"]
+                        tag = signature["operation"]["tag"]
+                        cred_def_id = f"{public_did}:3:{sig_type}:{schema_ref}:{tag}"
+
                         # mark cred def completed
                         update_schema = TenantSchemaUpdate(
                             id=tenant_schema.id,
@@ -213,7 +220,7 @@ class SchemaWorkflow:
                             schema_id=tenant_schema.schema_id,
                             schema_state=TenantWorkflowStateType.completed,
                             cred_def_txn_id=tenant_schema.cred_def_txn_id,
-                            cred_def_id="TODO",
+                            cred_def_id=cred_def_id,
                             cred_def_state=TenantWorkflowStateType.completed,
                         )
                         tenant_schema = await self.schema_repo.update(update_schema)

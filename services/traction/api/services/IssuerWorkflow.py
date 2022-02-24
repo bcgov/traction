@@ -135,9 +135,6 @@ class IssuerWorkflow:
         # ... and initiate the next step (if applicable)
         # called on receipt of webhook, so need to put the proper tenant "in context"
         elif self.tenant_workflow.workflow_state == TenantWorkflowStateType.in_progress:
-            logger.warn(
-                f">>> run_step() called for in_progress workflow with {webhook_message}"
-            )
             webhook_topic = webhook_message["topic"]
             if webhook_topic == WebhookTopicType.connections:
                 # check if we need to update the connection state in our issuer record

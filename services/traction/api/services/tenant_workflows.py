@@ -109,10 +109,8 @@ async def next_workflow_step(
 
 async def handle_issuer_worklflow_events(profile: Profile, event: Event):
     # find related workflow
-    logger.warn(f">>> find issuer workflow for {profile} {event}")
     try:
         workflow_id = await IssuerWorkflow.find_workflow_id(profile, event.payload)
-        logger.warn(f"    ... {workflow_id}")
         if workflow_id:
             await next_workflow_step(
                 profile.db,
@@ -128,10 +126,8 @@ async def handle_issuer_worklflow_events(profile: Profile, event: Event):
 
 async def handle_schema_worklflow_events(profile: Profile, event: Event):
     # find related workflow
-    logger.warn(f">>> find schema workflow for {profile} {event}")
     try:
         workflow_id = await SchemaWorkflow.find_workflow_id(profile, event.payload)
-        logger.warn(f"    ... {workflow_id}")
         if workflow_id:
             await next_workflow_step(
                 profile.db,
