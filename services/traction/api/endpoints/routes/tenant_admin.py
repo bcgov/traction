@@ -37,7 +37,8 @@ from api.endpoints.models.tenant_workflow import (
     TenantWorkflowTypeType,
     TenantWorkflowStateType,
 )
-from api.services.tenant_workflows import create_workflow, next_workflow_step
+from api.services.tenant_workflows import create_workflow
+from api.services.base import BaseWorkflow
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -250,7 +251,9 @@ async def create_tenant_schema(
         logger.warn(f">>> Updated tenant_schema: {tenant_schema}")
 
         # start workflow
-        tenant_workflow = await next_workflow_step(db, tenant_workflow=tenant_workflow)
+        tenant_workflow = await BaseWorkflow.next_workflow_step(
+            db, tenant_workflow=tenant_workflow
+        )
         logger.warn(f">>> Updated tenant_workflow: {tenant_workflow}")
 
         # get updated issuer info (should have workflow id etc.)
