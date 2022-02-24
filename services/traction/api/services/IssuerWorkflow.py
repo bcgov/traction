@@ -135,19 +135,26 @@ class IssuerWorkflow(BaseWorkflow):
                     connection_state == ConnectionStateType.active
                     or connection_state == ConnectionStateType.completed
                 ):
-                    logger.debug(f">>> checking for metadata on connection: {connection_id}")
+                    logger.debug(
+                        f">>> checking for metadata on connection: {connection_id}"
+                    )
                     conn_meta_data = connection_api.connections_conn_id_metadata_get(
                         connection_id
                     )
                     add_meta_data = True
                     if "transaction-jobs" in conn_meta_data.results:
-                        if "transaction_my_job" in conn_meta_data.results["transaction-jobs"]:
+                        if (
+                            "transaction_my_job"
+                            in conn_meta_data.results["transaction-jobs"]
+                        ):
                             add_meta_data = False
 
                     if add_meta_data:
-                        logger.debug(f">>> adding metadata to endorser connection: {connection_id}")
-                        # TODO hack - short pause here to prevent race condition with endorser
-                        # (runs into an issue if both update endorser role at the same time)
+                        logger.debug(
+                            f">>> add metadata to endorser connection: {connection_id}"
+                        )
+                        # TODO - pause here to prevent race condition with endorser
+                        # (error if both update endorser role at the same time)
                         time.sleep(1)
 
                         # attach some meta-data to the connection
