@@ -18,7 +18,6 @@ from api.endpoints.models.webhooks import (
     WebhookTopicType,
 )
 
-from api.services.webhooks import post_tenant_webhook
 from api.endpoints.dependencies.tenant_security import (
     JWTTFetchingMiddleware,
 )
@@ -90,8 +89,5 @@ async def process_tenant_webhook(
     profile = Profile(wallet_id, db)
     event_topic = WEBHOOK_EVENT_PREFIX + topic
     await profile.notify(event_topic, {"topic": topic, "payload": payload})
-
-    # TODO move this to an event handler?
-    await post_tenant_webhook(topic, payload, wallet_id, db)
 
     return {}

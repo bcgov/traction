@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from api.core.config import settings
 from api.core.exception_handlers import add_exception_handlers
 from api.endpoints.routes.webhooks import get_webhookapp
+from api.services.tenant_webhook_publisher import subscribe_all_events
 from api.services.tenant_workflows import subscribe_workflow_events
 from api.innkeeper_main import get_innkeeperapp
 from api.tenant_main import get_tenantapp
@@ -55,6 +56,7 @@ async def on_tenant_startup():
     """Register any events we need to respond to."""
     logger.warn(">>> Starting up app ...")
     subscribe_workflow_events()
+    subscribe_all_events()
 
 
 @app.on_event("shutdown")
