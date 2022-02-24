@@ -32,7 +32,7 @@ class WebhookTopicType(str, Enum):
     issuer_cred_rev = "issuer-cred-rev"
     present_proof = "present-proof"
     present_proof_v2_0 = "present-proof-v2-0"
-    endorse_transaction = "endorse-transaction"
+    endorse_transaction = "endorse_transaction"
     revocation_registry = "revocation-registry"
     revocation_notification = "revocation-notification"
     problem_report = "problem-report"
@@ -65,7 +65,7 @@ async def process_webhook(
     topic: WebhookTopicType, payload: dict, api_key: APIKey = Depends(get_api_key)
 ):
     """Called by aca-py agent."""
-    logger.warn(f">>> Called webhook for endorser: {topic}")
+    logger.debug(f">>> Called webhook for endorser: {topic}")
     if topic == "connections":
         await setup_endorser_connection(payload)
     return {}
@@ -74,8 +74,19 @@ async def process_webhook(
 async def setup_endorser_connection(payload: dict):
     """Set endorser role on any connections we receive."""
     if payload["state"] == "active" or payload["state"] == "completed":
-        params = {"transaction_my_job": "TRANSACTION_ENDORSER"}
+        # confirm if we have already set the role on this connection
         connection_id = payload["connection_id"]
+        logger.debug(f">>> check for metadata on connection: {connection_id}")
+        conn_meta_data = await au.acapy_GET(
+            f"connections/{connection_id}/metadata"
+        )
+        if "transaction-jobs" in conn_meta_data["results"]:
+            if "transaction_my_job" in conn_meta_data["results"]["transaction-jobs"]:
+                return
+
+        # set our endorser role
+        logger.debug(f">>> Setting meta-data for connection: {payload}")
+        params = {"transaction_my_job": "TRANSACTION_ENDORSER"}
         await au.acapy_POST(
             f"transactions/{connection_id}/set-endorser-role", params=params
         )
