@@ -22,16 +22,17 @@ class CredentialRoleType(str, Enum):
 class CredentialStateType(str, Enum):
     # issuer states
     pending = "pending"
-    proposal_received = "proposal-received"
-    offer_sent = "offer-sent"
-    request_received = "request-received"
-    credential_issued = "credential-issued"
+    proposal_received = "proposal_received"
+    offer_sent = "offer_sent"
+    request_received = "request_received"
+    credential_issued = "credential_issued"
     # holder states
-    proposal_sent = "proposal-sent"
-    offer_received = "offer-received"
-    request_sent = "request-sent"
-    credential_received = "credential-received"
+    proposal_sent = "proposal_sent"
+    offer_received = "offer_received"
+    request_sent = "request_sent"
+    credential_received = "credential_received"
     # common states
+    credential_acked = "credential_acked"
     done = "done"
     abandoned = "abandoned"
     error = "error"

@@ -9,7 +9,7 @@ class WebhookTopicType(str, Enum):
     connection_reuse = "connection-reuse"
     connection_reuse_accepted = "connection-reuse-accepted"
     basicmessages = "basicmessages"
-    issue_credential = "issue-credential"
+    issue_credential = "issue_credential"
     issue_credential_v2_0 = "issue-credential-v2-0"
     issue_credential_v2_0_indy = "issue-credential-v2-0-indy"
     issue_credential_v2_0_ld_proof = "issue-credential-v2-0-ld-proof"

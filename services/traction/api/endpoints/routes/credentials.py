@@ -142,6 +142,15 @@ async def issue_credential(
     return issue
 
 
+@router.post("/accept", response_model=IssueCredentialData)
+async def accept_credential(
+    cred_issue_id: str,
+    db: AsyncSession = Depends(get_db),
+):
+    # TODO holder has to accept a credential offer
+    pass
+
+
 @router.get("/", response_model=List[dict])
 async def get_credentials(db: AsyncSession = Depends(get_db)):
     return []

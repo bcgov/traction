@@ -7,11 +7,13 @@ from fastapi.security.api_key import APIKeyHeader, APIKey
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.status import HTTP_403_FORBIDDEN
 from starlette.middleware import Middleware
+from starlette_context import context
 from starlette_context import plugins
 from starlette_context.middleware import RawContextMiddleware
 
 from api.core.config import settings
 from api.core.profile import Profile
+from api.db.repositories.tenants import TenantsRepository
 from api.endpoints.dependencies.db import get_db
 from api.endpoints.models.webhooks import (
     WEBHOOK_EVENT_PREFIX,
@@ -82,10 +84,17 @@ async def process_tenant_webhook(
 ):
     """Called by aca-py agent."""
     wallet_id = uuid.UUID(str(x_wallet_id))
+    context["TENANT_WALLET_ID"] = wallet_id
+    tenant_repo = TenantsRepository(db)
+    tnt = await tenant_repo.get_by_wallet_id(wallet_id)
+    context["TENANT_ID"] = tnt.id
 
     # emit an event for any interested listeners
     profile = Profile(wallet_id, db)
     event_topic = WEBHOOK_EVENT_PREFIX + topic
+    logger.warn(
+        f">>> sending notification for received hook {event_topic} {topic} {payload}"
+    )
     await profile.notify(event_topic, {"topic": topic, "payload": payload})
 
     # TODO move this to an event handler?

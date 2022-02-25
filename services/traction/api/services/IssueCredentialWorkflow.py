@@ -49,6 +49,7 @@ class IssueCredentialWorkflow(BaseWorkflow):
     @classmethod
     async def handle_worklflow_events(cls, profile: Profile, event: Event):
         # find related workflow
+        logger.warn(f">>> handling event: {event}")
         try:
             workflow_id = await cls.find_workflow_id(profile, event.payload)
             if workflow_id:
@@ -67,15 +68,17 @@ class IssueCredentialWorkflow(BaseWorkflow):
     async def find_workflow_id(cls, profile: Profile, webhook_message: dict):
         # find related workflow
         issue_repo = IssueCredentialsRepository(db_session=profile.db)
-        if webhook_message["topic"].startswith("issue-credential"):
+        if webhook_message["topic"] == WebhookTopicType.issue_credential:
             try:
                 # look up issue_cred based on the cred exchange id
                 cred_exch_id = webhook_message["payload"]["credential_exchange_id"]
                 issue_cred = await issue_repo.get_by_cred_exch_id(cred_exch_id)
+                logger.warn(f">>> found corresponding cred issue: {issue_cred}")
                 return issue_cred.workflow_id
             except DoesNotExist:
                 # no related workflow, check if we (holder) are receiving an offer
                 cred_state = webhook_message["payload"]["state"]
+                logger.warn(f">>> check for cred issue event for: {cred_state}")
                 if cred_state == CredentialStateType.offer_received:
                     wallet_id = get_from_context("TENANT_WALLET_ID")
                     tenant_id = get_from_context("TENANT_ID")
@@ -92,6 +95,7 @@ class IssueCredentialWorkflow(BaseWorkflow):
                         issue_state=cred_state,
                     )
                     issue_cred = await issue_repo.create(issue_cred)
+                    logger.warn(f">>> created new cred issue: {issue_cred}")
 
                     # return None - we want the tenant to accept the credential offer
                     return None
@@ -131,7 +135,10 @@ class IssueCredentialWorkflow(BaseWorkflow):
             if webhook_topic == WebhookTopicType.issue_credential:
                 # check for state of "credential_acked"
                 webhook_state = webhook_message["payload"]["state"]
-                if webhook_state == CredentialStateType.done:
+                if (
+                    webhook_state == CredentialStateType.done
+                    or webhook_state == CredentialStateType.credential_acked
+                ):
                     issue_cred = self.complete_credential(issue_cred)
 
                     # finish off our workflow
@@ -167,7 +174,7 @@ class IssueCredentialWorkflow(BaseWorkflow):
             cred_def_id=issue_cred.cred_def_id,
             credential_preview=cred_preview,
             comment="TBD comment goes here",
-            auto_issue=True,
+            auto_issue=False,
             auto_remove=False,
         )
         data = {"body": cred_offer}
