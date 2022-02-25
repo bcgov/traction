@@ -43,11 +43,11 @@ class AttributePreview(BaseSchema):
     value: str
 
     def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True)
 
 
 class CredentialPreview(BaseSchema):
     attributes: list[AttributePreview]
 
     def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True)

@@ -1,8 +1,8 @@
 auto-accept-invites: true
 auto-accept-requests: true
 auto-respond-messages: true
-auto-respond-credential-proposal: true
-auto-respond-credential-offer: true
+auto-respond-credential-proposal: false
+auto-respond-credential-offer: false
 auto-respond-credential-request: true
 auto-respond-presentation-proposal: true
 auto-respond-presentation-request: true

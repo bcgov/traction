@@ -82,17 +82,21 @@ class IssueCredentialWorkflow(BaseWorkflow):
                 if cred_state == CredentialStateType.offer_received:
                     wallet_id = get_from_context("TENANT_WALLET_ID")
                     tenant_id = get_from_context("TENANT_ID")
-                    connection_id = webhook_message["payload"]["connection_id"]
+                    payload = webhook_message["payload"]
+                    connection_id = payload["connection_id"]
+                    cred_def_id = payload["credential_definition_id"]
+                    cred_exch_id = payload["credential_exchange_id"]
                     issue_cred = IssueCredentialCreate(
                         tenant_id=tenant_id,
                         wallet_id=wallet_id,
                         connection_id=connection_id,
                         cred_type=CredentialType.anoncreds,
                         cred_protocol=IssueCredentialProtocolType.v10,
-                        cred_def_id="TODO",
-                        credential=json.dumps(webhook_message["payload"]),
+                        cred_def_id=cred_def_id,
+                        credential=json.dumps(payload["credential_proposal_dict"]),
                         issue_role=CredentialRoleType.holder,
                         issue_state=cred_state,
+                        cred_exch_id=cred_exch_id,
                     )
                     issue_cred = await issue_repo.create(issue_cred)
                     logger.warn(f">>> created new cred issue: {issue_cred}")
@@ -125,28 +129,40 @@ class IssueCredentialWorkflow(BaseWorkflow):
             # update the workflow status as "in_progress"
             await self.start_workflow()
 
-            issue_cred = await self.issue_credential(issue_cred)
+            if issue_cred.issue_role == CredentialRoleType.issuer:
+                issue_cred = await self.issuer_issue_credential(issue_cred)
+
+            elif issue_cred.issue_role == CredentialRoleType.holder:
+                issue_cred = await self.holder_request_credential(issue_cred)
+
+            else:
+                # ignore for now
+                pass
 
         # if workflow is "in_progress" we need to check what state we are at,
         # ... and initiate the next step (if applicable)
         # called on receipt of webhook, so need to put the proper tenant "in context"
         elif self.tenant_workflow.workflow_state == TenantWorkflowStateType.in_progress:
             webhook_topic = webhook_message["topic"]
+            logger.debug(f">>> checking for webhook_topic: {webhook_topic}")
             if webhook_topic == WebhookTopicType.issue_credential:
                 # check for state of "credential_acked"
                 webhook_state = webhook_message["payload"]["state"]
+                logger.debug(f">>> checking for webhook_state: {webhook_state}")
                 if (
                     webhook_state == CredentialStateType.done
                     or webhook_state == CredentialStateType.credential_acked
                 ):
-                    issue_cred = self.complete_credential(issue_cred)
+                    issue_cred = await self.complete_credential(issue_cred)
 
                     # finish off our workflow
                     await self.complete_workflow()
 
                 else:
                     # just update our status
-                    issue_cred = self.update_credential_status(issue_cred)
+                    issue_cred = await self.update_credential_state(
+                        issue_cred, webhook_state
+                    )
 
             else:
                 logger.warn(f">>> ignoring topic for now: {webhook_topic}")
@@ -157,7 +173,7 @@ class IssueCredentialWorkflow(BaseWorkflow):
 
         return self.tenant_workflow
 
-    async def issue_credential(
+    async def issuer_issue_credential(
         self, issue_cred: IssueCredentialRead
     ) -> IssueCredentialRead:
         cred_attrs = []
@@ -174,12 +190,11 @@ class IssueCredentialWorkflow(BaseWorkflow):
             cred_def_id=issue_cred.cred_def_id,
             credential_preview=cred_preview,
             comment="TBD comment goes here",
-            auto_issue=False,
+            auto_issue=True,
             auto_remove=False,
         )
         data = {"body": cred_offer}
         cred_response = issue_cred_v10_api.issue_credential_send_offer_post(**data)
-        # we get back either "schema_response.sent" or "schema_response.txn"
 
         # add the transaction id to our tenant schema setup
         update_issue = IssueCredentialUpdate(
@@ -191,14 +206,34 @@ class IssueCredentialWorkflow(BaseWorkflow):
         issue_cred = await self.issue_repo.update(update_issue)
         return issue_cred
 
-    async def update_credential_status(
+    async def holder_request_credential(
         self, issue_cred: IssueCredentialRead
     ) -> IssueCredentialRead:
+        cred_response = (
+            issue_cred_v10_api.issue_credential_records_cred_ex_id_send_request_post(
+                str(issue_cred.cred_exch_id)
+            )
+        )
+
+        # add the transaction id to our tenant schema setup
         update_issue = IssueCredentialUpdate(
             id=issue_cred.id,
             workflow_id=self.tenant_workflow.id,
-            issue_state=issue_cred.state,
-            cred_exch_id=issue_cred.credential_exchange_id,
+            issue_state=cred_response.state,
+            cred_exch_id=cred_response.credential_exchange_id,
+        )
+        issue_cred = await self.issue_repo.update(update_issue)
+        return issue_cred
+
+    async def update_credential_state(
+        self, issue_cred: IssueCredentialRead, state: str
+    ) -> IssueCredentialRead:
+        logger.debug(f">>> updating state to {state}")
+        update_issue = IssueCredentialUpdate(
+            id=issue_cred.id,
+            workflow_id=self.tenant_workflow.id,
+            issue_state=state,
+            cred_exch_id=issue_cred.cred_exch_id,
         )
         issue_cred = await self.issue_repo.update(update_issue)
         return issue_cred
@@ -209,8 +244,8 @@ class IssueCredentialWorkflow(BaseWorkflow):
         update_issue = IssueCredentialUpdate(
             id=issue_cred.id,
             workflow_id=self.tenant_workflow.id,
-            issue_state=issue_cred.state,
-            cred_exch_id=issue_cred.credential_exchange_id,
+            issue_state=issue_cred.issue_state,
+            cred_exch_id=issue_cred.cred_exch_id,
         )
         issue_cred = await self.issue_repo.update(update_issue)
         return issue_cred
