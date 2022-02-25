@@ -14,6 +14,7 @@ from api.core.utils import check_password
 from api.db.errors import DoesNotExist
 from api.db.models import Tenant
 from api.endpoints.dependencies.db import get_db
+from api.services.webhooks import handle_webhook
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -40,7 +41,7 @@ async def get_api_key(
     return api_key_header
 
 
-@router.post("/webhook/{tenant_id}", status_code=status.HTTP_200_OK)
+@router.post("/webhook/{tenant_id}", status_code=status.HTTP_202_ACCEPTED)
 async def receive_webhook(
     tenant_id: uuid.UUID,
     request: Request,
@@ -50,10 +51,10 @@ async def receive_webhook(
     tenant = await get_tenant(tenant_id, db)
     try:
         # request.json() is supposed to be json, but returns str :(
-        payload = json.loads(await request.json())
+        event_data = json.loads(await request.json())
     except Exception:
         # could not parse json
-        payload = await request.body()
+        event_data = await request.body()
 
     # we expect a key in the header, so we should match see if that matches
     # in production LOB, we would not be using the wallet_key
@@ -64,4 +65,4 @@ async def receive_webhook(
             detail="Could not validate webhook key",
         )
 
-    return {"message": f"got webhook for {tenant.name}", "payload": payload}
+    await handle_webhook(tenant, event_data["topic"], event_data["payload"], db)

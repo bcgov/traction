@@ -8,7 +8,6 @@ from sqlalchemy import select
 from api.core.config import settings
 from api.core.event_bus import Event
 from api.core.profile import Profile
-from api.db.errors import DoesNotExist
 from api.db.models import TenantWebhook
 from api.db.models.tenant import TenantRead
 from api.db.models.tenant_webhook_msg import (
@@ -20,6 +19,7 @@ from api.db.repositories.tenant_webhook_msgs import TenantWebhookMsgsRepository
 from api.db.repositories.tenants import TenantsRepository
 from api.endpoints.models.webhooks import (
     WEBHOOK_LISTENER_PATTERN,
+    TRACTION_EVENT_LISTENER_PATTERN,
 )
 
 
@@ -31,12 +31,7 @@ async def get_tenant_webhook(tenant_id, db):
     # (private wallet key information)
     _q = select(TenantWebhook).where(TenantWebhook.tenant_id == tenant_id)
     _rec = await db.execute(_q)
-    item = _rec.scalars().one_or_none()
-    if not item:
-        raise DoesNotExist(
-            f"{TenantWebhook.__name__}<tenant_id:{tenant_id}> does not exist"
-        )
-    return item
+    return _rec.scalars().one_or_none()
 
 
 def get_tenant_headers(webhook_api_key: str) -> dict:
@@ -157,7 +152,11 @@ def should_publish_event(webhook: TenantWebhook, event: Event):
         return False
 
     # ok, is this event type in webhook config?
-    if webhook.config["acapy"]:
+    if bool(WEBHOOK_LISTENER_PATTERN.match(event.topic)):
+        return webhook.config["acapy"]
+
+    if bool(TRACTION_EVENT_LISTENER_PATTERN.match(event.topic)):
+        # no filters or config yet...
         return True
 
     return False
@@ -179,3 +178,4 @@ def subscribe_all_events():
     # subscribe to everything
     # we then check the tenant webhook config to see if the event is to be published.
     settings.EVENT_BUS.subscribe(WEBHOOK_LISTENER_PATTERN, handle_tenant_events)
+    settings.EVENT_BUS.subscribe(TRACTION_EVENT_LISTENER_PATTERN, handle_tenant_events)

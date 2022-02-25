@@ -1,6 +1,7 @@
 import logging
 import os
 import time
+from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI
@@ -14,6 +15,11 @@ from api.innkeeper_main import get_innkeeperapp
 from api.tenant_main import get_tenantapp
 from acapy_wrapper.acapy_wrapper_main import get_acapy_wrapper_app
 
+
+# setup loggers
+# TODO: set config via env parameters...
+logging_file_path = (Path(__file__).parent / "logging.conf").resolve()
+logging.config.fileConfig(logging_file_path, disable_existing_loggers=False)
 
 logger = logging.getLogger(__name__)
 
