@@ -63,9 +63,7 @@ class GlobalConfig(BaseSettings):
         "SHOWCASE_STATIC_FILES", "/traction/static"
     )
 
-    SHOWCASE_CORS_URLS: str = os.environ.get(
-        "SHOWCASE_CORS_URLS", ""
-    )
+    SHOWCASE_CORS_URLS: str = os.environ.get("SHOWCASE_CORS_URLS", "")
 
     # Api V1 prefix
     API_V1_STR = "/v1"

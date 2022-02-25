@@ -49,7 +49,7 @@ app.mount("/api", api)
 
 # Frontend Serving
 
-origins = settings.SHOWCASE_CORS_URLS.split()
+origins = settings.SHOWCASE_CORS_URLS.split(",")
 
 if origins:
     app.add_middleware(
