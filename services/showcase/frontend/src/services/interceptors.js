@@ -9,7 +9,7 @@ import { ApiRoutes } from '@/utils/constants';
  */
 export function appAxios(timeout = 10000) {
   const axiosOptions = { timeout: timeout };
-  axiosOptions.baseURL = ApiRoutes.BASEPATH;
+  axiosOptions.baseURL = `${process.env.VUE_APP_BASE_API}${ApiRoutes.BASEPATH}`;
 
 
   // Put auth header here if we make this app secured
