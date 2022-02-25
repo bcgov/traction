@@ -8,7 +8,7 @@ from api.core.config import settings
 from api.core.event_bus import Event
 from api.core.profile import Profile
 from api.db.errors import DoesNotExist
-from api.db.repositories.issue_credential import IssueCredentialsRepository
+from api.db.repositories.issue_credentials import IssueCredentialsRepository
 from api.db.models.issue_credential import IssueCredentialUpdate, IssueCredentialRead
 from api.db.models.tenant_workflow import TenantWorkflowRead
 from api.endpoints.models.tenant_workflow import (
@@ -29,7 +29,7 @@ schema_api = SchemaApi(api_client=get_api_client())
 cred_def_api = CredentialDefinitionApi(api_client=get_api_client())
 
 
-class IssueCredentialflow(BaseWorkflow):
+class IssueCredentialWorkflow(BaseWorkflow):
     """Workflow to issue a credential."""
 
     @classmethod
@@ -55,7 +55,7 @@ class IssueCredentialflow(BaseWorkflow):
         issue_repo = IssueCredentialsRepository(db_session=profile.db)
         if webhook_message["topic"].startswith("issue-credential"):
             try:
-                # look up tenant_schema based on the cred exchange id
+                # look up issue_cred based on the cred exchange id
                 cred_exch_id = webhook_message["payload"]["credential_exchange_id"]
                 issue_cred = await issue_repo.get_by_cred_exch_id(cred_exch_id)
                 return issue_cred.workflow_id
@@ -67,9 +67,9 @@ class IssueCredentialflow(BaseWorkflow):
 
     def __init__(self, db: AsyncSession, tenant_workflow: TenantWorkflowRead):
         """
-        Initialize a new `SchemaWorkflow` instance.
+        Initialize a new `IssueCredentialWorkflow` instance.
         """
-        super(SchemaWorkflow, self).__init__(db, tenant_workflow)
+        super(IssueCredentialWorkflow, self).__init__(db, tenant_workflow)
         self._issue_repo = IssueCredentialsRepository(db_session=db)
 
     @property
@@ -88,12 +88,7 @@ class IssueCredentialflow(BaseWorkflow):
             # update the workflow status as "in_progress"
             await self.start_workflow()
 
-            # first step is to initiate creation of the schema or cred def
-            if tenant_schema.schema_state == TenantWorkflowStateType.pending:
-                tenant_schema = await self.initiate_schema(tenant_schema)
-
-            elif tenant_schema.cred_def_state == TenantWorkflowStateType.pending:
-                tenant_schema = await self.initiate_cred_def(tenant_schema)
+            issue_cred = await self.issue_credential(issue_cred)
 
         # if workflow is "in_progress" we need to check what state we are at,
         # ... and initiate the next step (if applicable)
@@ -101,9 +96,10 @@ class IssueCredentialflow(BaseWorkflow):
         elif self.tenant_workflow.workflow_state == TenantWorkflowStateType.in_progress:
             workflow_completed = False
             webhook_topic = webhook_message["topic"]
-            if webhook_topic == WebhookTopicType.endorse_transaction:
-                # check for transaction state of "transaction_acked"
+            if webhook_topic == WebhookTopicType.issue_credential:
+                # check for state of "credential_acked"
                 webhook_state = webhook_message["payload"]["state"]
+                """
                 txn_id = webhook_message["payload"]["transaction_id"]
                 if webhook_state == "transaction_acked":
                     if txn_id == str(tenant_schema.schema_txn_id):
@@ -133,10 +129,10 @@ class IssueCredentialflow(BaseWorkflow):
                             tenant_schema, signature_json
                         )
                         workflow_completed = True
-
-                    if workflow_completed:
-                        # finish off our workflow
-                        await self.complete_workflow()
+                """
+                if workflow_completed:
+                    # finish off our workflow
+                    await self.complete_workflow()
 
             else:
                 logger.warn(f">>> ignoring topic for now: {webhook_topic}")
@@ -147,9 +143,10 @@ class IssueCredentialflow(BaseWorkflow):
 
         return self.tenant_workflow
 
-    async def initiate_schema(
-        self, tenant_schema: TenantSchemaRead
-    ) -> TenantSchemaRead:
+    async def issue_credential(
+        self, issue_cred: IssueCredentialRead
+    ) -> IssueCredentialRead:
+        """
         schema_request = SchemaSendRequest(
             schema_name=tenant_schema.schema_name,
             schema_version=tenant_schema.schema_version,
@@ -169,11 +166,13 @@ class IssueCredentialflow(BaseWorkflow):
             cred_def_state=tenant_schema.cred_def_state,
         )
         tenant_schema = await self.schema_repo.update(update_schema)
-        return tenant_schema
+        """
+        return issue_cred
 
-    async def complete_schema(
-        self, tenant_schema: TenantSchemaRead, schema_id: str
-    ) -> TenantSchemaRead:
+    async def complete_credential(
+        self, issue_cred: IssueCredentialRead
+    ) -> IssueCredentialRead:
+        """
         update_schema = TenantSchemaUpdate(
             id=tenant_schema.id,
             workflow_id=tenant_schema.workflow_id,
@@ -183,52 +182,5 @@ class IssueCredentialflow(BaseWorkflow):
             cred_def_state=tenant_schema.cred_def_state,
         )
         tenant_schema = await self.schema_repo.update(update_schema)
-        return tenant_schema
-
-    async def initiate_cred_def(
-        self, tenant_schema: TenantSchemaRead
-    ) -> TenantSchemaRead:
-        cred_def_request = CredentialDefinitionSendRequest(
-            schema_id=tenant_schema.schema_id,
-            tag=tenant_schema.cred_def_tag,
-        )
-        data = {"body": cred_def_request}
-        cred_def_response = cred_def_api.credential_definitions_post(**data)
-        # we get back either "cred_def_response.sent" or "cred_def_response.txn"
-
-        # add the transaction id to our tenant schema setup
-        update_schema = TenantSchemaUpdate(
-            id=tenant_schema.id,
-            workflow_id=self.tenant_workflow.id,
-            schema_txn_id=tenant_schema.schema_txn_id,
-            schema_id=tenant_schema.schema_id,
-            schema_state=tenant_schema.schema_state,
-            cred_def_txn_id=cred_def_response.txn["transaction_id"],
-            cred_def_state=TenantWorkflowStateType.in_progress,
-        )
-        tenant_schema = await self.schema_repo.update(update_schema)
-        return tenant_schema
-
-    async def complete_cred_def(
-        self, tenant_schema: TenantSchemaRead, signature_json: str
-    ) -> TenantSchemaRead:
-        signature = json.loads(signature_json)
-        public_did = signature["identifier"]
-        sig_type = signature["operation"]["signature_type"]
-        schema_ref = signature["operation"]["ref"]
-        tag = signature["operation"]["tag"]
-        cred_def_id = f"{public_did}:3:{sig_type}:{schema_ref}:{tag}"
-
-        # mark cred def completed
-        update_schema = TenantSchemaUpdate(
-            id=tenant_schema.id,
-            workflow_id=tenant_schema.workflow_id,
-            schema_txn_id=tenant_schema.schema_txn_id,
-            schema_id=tenant_schema.schema_id,
-            schema_state=TenantWorkflowStateType.completed,
-            cred_def_txn_id=tenant_schema.cred_def_txn_id,
-            cred_def_id=cred_def_id,
-            cred_def_state=TenantWorkflowStateType.completed,
-        )
-        tenant_schema = await self.schema_repo.update(update_schema)
-        return tenant_schema
+        """
+        return issue_cred

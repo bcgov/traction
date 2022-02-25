@@ -12,7 +12,6 @@ class IssueCredentialBase(BaseModel):
     connection_id: uuid.UUID = Field(nullable=False)
     cred_type: str = Field(nullable=False)
     cred_protocol: str = Field(nullable=False)
-    schema_id: str = Field(nullable=True, default=None)
     cred_def_id: str = Field(nullable=True, default=None)
     credential: str = Field(nullable=False)
     issue_state: str = Field(nullable=False)

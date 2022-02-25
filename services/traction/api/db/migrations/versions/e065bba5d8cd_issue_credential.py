@@ -31,7 +31,6 @@ def upgrade():
         sa.Column("connection_id", pg.UUID(as_uuid=True), nullable=False),
         sa.Column("cred_type", sa.String(), nullable=False),
         sa.Column("cred_protocol", sa.String(), nullable=False),
-        sa.Column("schema_id", sa.String(), nullable=True),
         sa.Column("cred_def_id", sa.String(), nullable=True),
         sa.Column("credential", sa.String(), nullable=False),
         sa.Column("issue_state", sa.String(), nullable=False),

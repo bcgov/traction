@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import List
 
@@ -9,19 +10,29 @@ from starlette_context import context
 
 from api.db.errors import DoesNotExist
 from api.db.models.issue_credential import (
+    IssueCredentialCreate,
     IssueCredentialRead,
+    IssueCredentialUpdate,
 )
 from api.db.models.tenant_workflow import (
     TenantWorkflowRead,
 )
 from api.db.repositories.issue_credentials import IssueCredentialsRepository
 from api.db.repositories.tenant_workflows import TenantWorkflowsRepository
+from api.services.connections import (
+    get_connection_with_alias,
+)
 
 from api.endpoints.dependencies.db import get_db
 from api.endpoints.models.credentials import (
     IssueCredentialProtocolType,
     CredentialType,
 )
+from api.endpoints.models.tenant_workflow import (
+    TenantWorkflowTypeType,
+)
+from api.services.tenant_workflows import create_workflow
+from api.services.base import BaseWorkflow
 
 
 router = APIRouter()
@@ -76,7 +87,67 @@ async def issue_credential(
     alias: str | None = None,
     db: AsyncSession = Depends(get_db),
 ):
-    return None
+    if not connection_id:
+        existing_connection = get_connection_with_alias(alias)
+        if not existing_connection:
+            raise HTTPException(
+                status_code=404, detail=f"Error alias {alias} does not exist"
+            )
+        connection_id = existing_connection.connection_id
+
+    if cred_protocol == IssueCredentialProtocolType.v20:
+        raise NotImplementedError()  # TODO
+    if cred_type == CredentialType.json_ld:
+        raise NotImplementedError()  # TODO
+
+    wallet_id = get_from_context("TENANT_WALLET_ID")
+    tenant_id = get_from_context("TENANT_ID")
+    issue_repo = IssueCredentialsRepository(db_session=db)
+
+    issue_cred = IssueCredentialCreate(
+        tenant_id=tenant_id,
+        wallet_id=wallet_id,
+        connection_id=connection_id,
+        cred_type=cred_type,
+        cred_protocol=cred_protocol,
+        cred_def_id=cred_def_id,
+        credential=json.dumps(credential),
+        issue_state="TODO",
+    )
+    issue_cred = await issue_repo.create(issue_cred)
+
+    tenant_workflow = await create_workflow(
+        wallet_id,
+        TenantWorkflowTypeType.issue_cred,
+        db,
+        error_if_wf_exists=False,
+        start_workflow=False,
+    )
+    logger.debug(f">>> Created tenant_workflow: {tenant_workflow}")
+    issue_update = IssueCredentialUpdate(
+        id=issue_cred.id,
+        workflow_id=tenant_workflow.id,
+        issue_state=issue_cred.issue_state,
+    )
+    issue_cred = await issue_repo.update(issue_update)
+    logger.debug(f">>> Updated issue_cred: {issue_cred}")
+
+    # start workflow
+    tenant_workflow = await BaseWorkflow.next_workflow_step(
+        db, tenant_workflow=tenant_workflow
+    )
+    logger.debug(f">>> Updated tenant_workflow: {tenant_workflow}")
+
+    # get updated issuer info (should have workflow id etc.)
+    issue_cred = await issue_repo.get_by_id(issue_cred.id)
+    logger.debug(f">>> Updated (final) issue_cred: {issue_cred}")
+
+    issue = IssueCredentialData(
+        credential=issue_cred,
+        workflow=tenant_workflow,
+    )
+
+    return issue
 
 
 @router.get("/", response_model=List[dict])
