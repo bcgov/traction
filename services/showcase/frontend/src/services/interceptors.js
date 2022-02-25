@@ -7,7 +7,7 @@ import { ApiRoutes } from '@/utils/constants';
  * @param {integer} [timeout=10000] Number of milliseconds before timing out the request
  * @returns {object} An axios instance
  */
-export function appAxios(timeout = 10000) {
+export function appAxios(timeout = 60000) {
   const axiosOptions = { timeout: timeout };
   axiosOptions.baseURL = `${process.env.VUE_APP_BASE_API}${ApiRoutes.BASEPATH}`;
 
