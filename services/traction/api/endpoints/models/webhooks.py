@@ -38,3 +38,6 @@ WEBHOOK_BASICMESSAGES_LISTENER_PATTERN = re.compile(
 WEBHOOK_ENDORSE_LISTENER_PATTERN = re.compile(
     f"^{WEBHOOK_EVENT_PREFIX}{WebhookTopicType.endorse_transaction}(.*)?$"
 )
+WEBHOOK_ISSUE_LISTENER_PATTERN = re.compile(
+    f"^{WEBHOOK_EVENT_PREFIX}{WebhookTopicType.issue_credential}(.*)?$"
+)
