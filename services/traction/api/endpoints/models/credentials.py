@@ -1,6 +1,7 @@
 from enum import Enum
+import json
 
-from pydantic import BaseModel
+from api.db.models.base import BaseSchema
 
 
 class IssueCredentialProtocolType(str, Enum):
@@ -13,37 +14,39 @@ class CredentialType(str, Enum):
     json_ld = "json_ld"
 
 
+class CredentialRoleType(str, Enum):
+    issuer = "issuer"
+    holder = "holder"
+
+
 class CredentialStateType(str, Enum):
-    start = "start"
-    init = "init"
-    invitation = "invitation"
-    request = "request"
-    response = "response"
-    active = "active"
-    completed = "completed"
+    # issuer states
+    pending = "pending"
+    proposal_received = "proposal-received"
+    offer_sent = "offer-sent"
+    request_received = "request-received"
+    credential_issued = "credential-issued"
+    # holder states
+    proposal_sent = "proposal-sent"
+    offer_received = "offer-received"
+    request_sent = "request-sent"
+    credential_received = "credential-received"
+    # common states
+    done = "done"
     abandoned = "abandoned"
     error = "error"
 
 
-class Credential(BaseModel):
-    endpoint: str | None = None
-    accept: str
-    alias: str | None = None
-    connection_id: str
-    connection_protocol: str
-    created_at: str
-    error_msg: str | None = None
-    inbound_connection_id: str | None = None
-    invitation_key: str | None = None
-    invitation_mode: str
-    invitation_msg_id: str | None = None
-    my_did: str | None = None
-    request_id: str | None = None
-    rfc23_state: str
-    routing_state: str | None = None
-    state: str
-    their_did: str | None = None
-    their_label: str | None = None
-    their_public_did: str | None = None
-    their_role: str | None = None
-    updated_at: str
+class AttributePreview(BaseSchema):
+    name: str
+    value: str
+
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+
+
+class CredentialPreview(BaseSchema):
+    attributes: list[AttributePreview]
+
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)

@@ -1,12 +1,9 @@
-import json
 import logging
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette import status
-from starlette_context import context
 
 from api.db.errors import DoesNotExist
 from api.db.models.issue_credential import (
@@ -24,9 +21,13 @@ from api.services.connections import (
 )
 
 from api.endpoints.dependencies.db import get_db
+from api.endpoints.dependencies.tenant_security import get_from_context
 from api.endpoints.models.credentials import (
     IssueCredentialProtocolType,
     CredentialType,
+    CredentialStateType,
+    CredentialRoleType,
+    CredentialPreview,
 )
 from api.endpoints.models.tenant_workflow import (
     TenantWorkflowTypeType,
@@ -37,16 +38,6 @@ from api.services.base import BaseWorkflow
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
-
-
-def get_from_context(name: str):
-    result = context.get(name)
-    if not result:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Error not authenticated",
-        )
-    return result
 
 
 class IssueCredentialData(BaseModel):
@@ -81,7 +72,7 @@ async def get_issue_credentials(db: AsyncSession = Depends(get_db)):
 async def issue_credential(
     cred_protocol: IssueCredentialProtocolType,
     cred_type: CredentialType,
-    credential: dict,
+    credential: CredentialPreview,
     cred_def_id: str | None = None,
     connection_id: str | None = None,
     alias: str | None = None,
@@ -111,8 +102,9 @@ async def issue_credential(
         cred_type=cred_type,
         cred_protocol=cred_protocol,
         cred_def_id=cred_def_id,
-        credential=json.dumps(credential),
-        issue_state="TODO",
+        credential=credential.toJSON(),
+        issue_role=CredentialRoleType.issuer,
+        issue_state=CredentialStateType.pending,
     )
     issue_cred = await issue_repo.create(issue_cred)
 

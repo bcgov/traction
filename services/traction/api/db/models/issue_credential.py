@@ -14,6 +14,7 @@ class IssueCredentialBase(BaseModel):
     cred_protocol: str = Field(nullable=False)
     cred_def_id: str = Field(nullable=True, default=None)
     credential: str = Field(nullable=False)
+    issue_role: str = Field(nullable=False)
     issue_state: str = Field(nullable=False)
     # workflow_id will be null until the tenant kcks it off
     workflow_id: uuid.UUID = Field(nullable=True, default=None)

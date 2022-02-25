@@ -6,7 +6,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
-from starlette_context import context
 
 from api.db.errors import DoesNotExist
 from api.db.models.tenant import TenantRead
@@ -31,6 +30,8 @@ from api.db.repositories.tenant_schemas import TenantSchemasRepository
 from api.db.repositories.tenant_webhooks import TenantWebhooksRepository
 from api.db.repositories.tenant_webhook_msgs import TenantWebhookMsgsRepository
 from api.db.repositories.tenant_workflows import TenantWorkflowsRepository
+
+from api.endpoints.dependencies.tenant_security import get_from_context
 from api.endpoints.dependencies.db import get_db
 from api.endpoints.models.tenant_schema import TenantSchemaRequest
 from api.endpoints.models.tenant_workflow import (
@@ -42,16 +43,6 @@ from api.services.base import BaseWorkflow
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
-
-
-def get_from_context(name: str):
-    result = context.get(name)
-    if not result:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Error not authenticated",
-        )
-    return result
 
 
 class TenantIssuerData(BaseModel):

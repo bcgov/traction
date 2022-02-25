@@ -33,6 +33,7 @@ def upgrade():
         sa.Column("cred_protocol", sa.String(), nullable=False),
         sa.Column("cred_def_id", sa.String(), nullable=True),
         sa.Column("credential", sa.String(), nullable=False),
+        sa.Column("issue_role", sa.String(), nullable=False),
         sa.Column("issue_state", sa.String(), nullable=False),
         sa.Column("workflow_id", pg.UUID(as_uuid=True), nullable=True),
         sa.Column("cred_exch_id", pg.UUID(as_uuid=True), nullable=True),
