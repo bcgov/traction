@@ -32,6 +32,7 @@ from api.endpoints.models.credentials import (
 )
 from api.endpoints.models.tenant_workflow import (
     TenantWorkflowTypeType,
+    TenantWorkflowStateType,
 )
 from api.services.tenant_workflows import create_workflow
 from api.services.base import BaseWorkflow
@@ -52,6 +53,7 @@ class IssueCredentialData(BaseModel):
 
 @router.get("/issuer/issue", response_model=List[IssueCredentialData])
 async def get_issuer_issue_credentials(
+    state: TenantWorkflowStateType | None = None,
     db: AsyncSession = Depends(get_db),
 ) -> List[IssueCredentialData]:
     # this should take some query params, sorting and paging params...
@@ -69,18 +71,22 @@ async def get_issuer_issue_credentials(
                 tenant_workflow = await workflow_repo.get_by_id(issue_cred.workflow_id)
             except DoesNotExist:
                 pass
-        issue = IssueCredentialData(
-            credential=issue_cred,
-            workflow=tenant_workflow,
-        )
-        issues.append(issue)
+        if (
+            (not state)
+            or (not tenant_workflow and state == TenantWorkflowStateType.pending)
+            or (tenant_workflow and state == tenant_workflow.workflow_state)
+        ):
+            issue = IssueCredentialData(
+                credential=issue_cred,
+                workflow=tenant_workflow,
+            )
+            issues.append(issue)
     return issues
 
 
 @router.post("/issuer/issue", response_model=IssueCredentialData)
 async def issue_credential(
     cred_protocol: IssueCredentialProtocolType,
-    cred_type: CredentialType,
     credential: CredentialPreview,
     cred_def_id: str | None = None,
     connection_id: str | None = None,
@@ -97,8 +103,7 @@ async def issue_credential(
 
     if cred_protocol == IssueCredentialProtocolType.v20:
         raise NotImplementedError()  # TODO
-    if cred_type == CredentialType.json_ld:
-        raise NotImplementedError()  # TODO
+    cred_type = CredentialType.anoncreds
 
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
@@ -153,6 +158,7 @@ async def issue_credential(
 
 @router.get("/holder/offer", response_model=List[IssueCredentialData])
 async def get_holder_offer_credentials(
+    state: TenantWorkflowStateType | None = None,
     db: AsyncSession = Depends(get_db),
 ) -> List[IssueCredentialData]:
     # this should take some query params, sorting and paging params...
@@ -170,11 +176,16 @@ async def get_holder_offer_credentials(
                 tenant_workflow = await workflow_repo.get_by_id(issue_cred.workflow_id)
             except DoesNotExist:
                 pass
-        issue = IssueCredentialData(
-            credential=issue_cred,
-            workflow=tenant_workflow,
-        )
-        issues.append(issue)
+        if (
+            (not state)
+            or (not tenant_workflow and state == TenantWorkflowStateType.pending)
+            or (tenant_workflow and state == tenant_workflow.workflow_state)
+        ):
+            issue = IssueCredentialData(
+                credential=issue_cred,
+                workflow=tenant_workflow,
+            )
+            issues.append(issue)
     return issues
 
 
