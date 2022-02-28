@@ -1,6 +1,7 @@
 import uuid
 from datetime import datetime
 from typing import Optional
+from sqlalchemy import UniqueConstraint
 
 from sqlmodel import Field, Relationship
 from pydantic_factories import ModelFactory, Use
@@ -10,11 +11,16 @@ from api.db.models.base import BaseModel, BaseTable
 
 class StudentBase(BaseModel):
     name: str = Field(index=True, nullable=False)
-    sandbox_id: Optional[uuid.UUID] = Field(default=None, foreign_key="sandbox.id")
+    sandbox_id: uuid.UUID = None
 
 
 class Student(StudentBase, BaseTable, table=True):
+    __table_args__ = (UniqueConstraint("name", "sandbox_id"),)
+
     sandbox: Optional["Sandbox"] = Relationship(back_populates="students")  # noqa: F821
+
+    # optional else, required on save
+    sandbox_id: uuid.UUID = Field(foreign_key="sandbox.id")
 
 
 class StudentCreate(StudentBase):
