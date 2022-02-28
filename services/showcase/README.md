@@ -1,6 +1,6 @@
 # Showcase Application
 
-## Archetechture
+## Architecture
 
 The Traction Showcase App is a front end implementing (at this time) the "Alice, Faber, Acme" demo use case to show example Line Of Business applicaiton useage of Traction.
 
