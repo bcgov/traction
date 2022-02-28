@@ -1,7 +1,8 @@
+import json
 import logging
 import uuid
 
-from fastapi import APIRouter, Depends, Security, HTTPException
+from fastapi import APIRouter, Depends, Security, HTTPException, Request
 from fastapi.openapi.models import APIKey
 from fastapi.security import APIKeyHeader
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,6 +14,7 @@ from api.core.utils import check_password
 from api.db.errors import DoesNotExist
 from api.db.models import Tenant
 from api.endpoints.dependencies.db import get_db
+from api.services.webhooks import handle_webhook
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -39,13 +41,21 @@ async def get_api_key(
     return api_key_header
 
 
-@router.post("/webhook/{tenant_id}", status_code=status.HTTP_200_OK)
+@router.post("/webhook/{tenant_id}", status_code=status.HTTP_202_ACCEPTED)
 async def receive_webhook(
     tenant_id: uuid.UUID,
+    request: Request,
     api_key: APIKey = Depends(get_api_key),
     db: AsyncSession = Depends(get_db),
 ):
     tenant = await get_tenant(tenant_id, db)
+    try:
+        # request.json() is supposed to be json, but returns str :(
+        event_data = json.loads(await request.json())
+    except Exception:
+        # could not parse json
+        event_data = await request.body()
+
     # we expect a key in the header, so we should match see if that matches
     # in production LOB, we would not be using the wallet_key
     # it is just simpler to do so in this application.
@@ -55,4 +65,4 @@ async def receive_webhook(
             detail="Could not validate webhook key",
         )
 
-    return {"message": f"got webhook for {tenant.name}"}
+    await handle_webhook(tenant, event_data["topic"], event_data["payload"], db)
