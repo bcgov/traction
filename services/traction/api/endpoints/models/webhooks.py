@@ -45,6 +45,7 @@ WEBHOOK_ISSUE_LISTENER_PATTERN = re.compile(
 
 class TenantEventTopicType(str, Enum):
     issuer = "issuer"
+    schema = "schema"
 
 
 # the event id will be "traction::EVENT::<topic>::<potentially some other id>"
@@ -54,4 +55,7 @@ TRACTION_EVENT_PREFIX = "traction::EVENT::"
 TRACTION_EVENT_LISTENER_PATTERN = re.compile(f"^{TRACTION_EVENT_PREFIX}(.*)?$")
 TRACTION_ISSUER_LISTENER_PATTERN = re.compile(
     f"^{TRACTION_EVENT_PREFIX}{TenantEventTopicType.issuer}(.*)?$"
+)
+TRACTION_SCHEMA_LISTENER_PATTERN = re.compile(
+    f"^{TRACTION_EVENT_PREFIX}{TenantEventTopicType.schema}(.*)?$"
 )

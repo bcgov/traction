@@ -39,7 +39,7 @@ class SchemaWorkflow(BaseWorkflow):
     """Workflow to create a schema and/or cred def for a tenant Issuer."""
 
     @classmethod
-    async def handle_worklflow_events(cls, profile: Profile, event: Event):
+    async def handle_workflow_events(cls, profile: Profile, event: Event):
         # find related workflow
         try:
             workflow_id = await cls.find_workflow_id(profile, event.payload)
@@ -143,6 +143,9 @@ class SchemaWorkflow(BaseWorkflow):
                     if workflow_completed:
                         # finish off our workflow
                         await self.complete_workflow()
+                        await self.workflow_notifier.schema_workflow_completed(
+                            tenant_schema
+                        )
 
             else:
                 logger.warn(f">>> ignoring topic for now: {webhook_topic}")

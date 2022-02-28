@@ -47,7 +47,7 @@ class IssueCredentialWorkflow(BaseWorkflow):
     """Workflow to issue a credential."""
 
     @classmethod
-    async def handle_worklflow_events(cls, profile: Profile, event: Event):
+    async def handle_workflow_events(cls, profile: Profile, event: Event):
         # find related workflow
         logger.warn(f">>> handling event: {event}")
         try:
