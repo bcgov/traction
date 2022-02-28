@@ -11,6 +11,9 @@ class TenantBase(BaseModel):
     name: str = Field(nullable=False)
     webhook_url: Optional[str] = Field(nullable=True)
     sandbox_id: Optional[uuid.UUID] = Field(default=None, foreign_key="sandbox.id")
+    issuer_enabled: bool = Field(nullable=False, default=False)
+    issuer_schema_success: bool = Field(nullable=False, default=False)
+    issuer_cred_def_success: bool = Field(nullable=False, default=False)
 
 
 class Tenant(TenantBase, BaseTable, table=True):

@@ -95,3 +95,17 @@ async def accept_invitation(
     return await sandbox.accept_invitation(
         sandbox_id=sandbox_id, tenant_id=tenant_id, payload=payload, db=db
     )
+
+
+@router.post(
+    "/tenants/{tenant_id}/make-issuer",
+    status_code=status.HTTP_200_OK,
+)
+async def promote_to_issuer(
+    sandbox_id: UUID,
+    tenant_id: UUID,
+    db: AsyncSession = Depends(get_db),
+):
+    return await sandbox.promote_tenant_to_issuer(
+        sandbox_id=sandbox_id, tenant_id=tenant_id, db=db
+    )
