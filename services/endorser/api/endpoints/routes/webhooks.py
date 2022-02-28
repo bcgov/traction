@@ -77,9 +77,7 @@ async def setup_endorser_connection(payload: dict):
         # confirm if we have already set the role on this connection
         connection_id = payload["connection_id"]
         logger.debug(f">>> check for metadata on connection: {connection_id}")
-        conn_meta_data = await au.acapy_GET(
-            f"connections/{connection_id}/metadata"
-        )
+        conn_meta_data = await au.acapy_GET(f"connections/{connection_id}/metadata")
         if "transaction-jobs" in conn_meta_data["results"]:
             if "transaction_my_job" in conn_meta_data["results"]["transaction-jobs"]:
                 return

@@ -20,7 +20,6 @@ from api.endpoints.models.webhooks import (
     WebhookTopicType,
 )
 
-from api.services.webhooks import post_tenant_webhook
 from api.endpoints.dependencies.tenant_security import (
     JWTTFetchingMiddleware,
 )
@@ -96,11 +95,5 @@ async def process_tenant_webhook(
         f">>> sending notification for received hook {event_topic} {topic} {payload}"
     )
     await profile.notify(event_topic, {"topic": topic, "payload": payload})
-
-    # TODO move this to an event handler?
-    try:
-        await post_tenant_webhook(topic, payload, wallet_id, db)
-    except Exception:
-        logger.exception("Error posting webhook to tenant LOB app")
 
     return {}

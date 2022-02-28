@@ -41,3 +41,17 @@ WEBHOOK_ENDORSE_LISTENER_PATTERN = re.compile(
 WEBHOOK_ISSUE_LISTENER_PATTERN = re.compile(
     f"^{WEBHOOK_EVENT_PREFIX}{WebhookTopicType.issue_credential}(.*)?$"
 )
+
+
+class TenantEventTopicType(str, Enum):
+    issuer = "issuer"
+
+
+# the event id will be "traction::EVENT::<topic>::<potentially some other id>"
+# this is for handling and publishing non-acapy events to tenants via webhooks
+#
+TRACTION_EVENT_PREFIX = "traction::EVENT::"
+TRACTION_EVENT_LISTENER_PATTERN = re.compile(f"^{TRACTION_EVENT_PREFIX}(.*)?$")
+TRACTION_ISSUER_LISTENER_PATTERN = re.compile(
+    f"^{TRACTION_EVENT_PREFIX}{TenantEventTopicType.issuer}(.*)?$"
+)
