@@ -6,7 +6,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
-from starlette_context import context
 
 from api.db.errors import DoesNotExist
 from api.db.models.tenant import TenantRead
@@ -31,6 +30,8 @@ from api.db.repositories.tenant_schemas import TenantSchemasRepository
 from api.db.repositories.tenant_webhooks import TenantWebhooksRepository
 from api.db.repositories.tenant_webhook_msgs import TenantWebhookMsgsRepository
 from api.db.repositories.tenant_workflows import TenantWorkflowsRepository
+
+from api.endpoints.dependencies.tenant_security import get_from_context
 from api.endpoints.dependencies.db import get_db
 from api.endpoints.models.tenant_schema import TenantSchemaRequest
 from api.endpoints.models.tenant_workflow import (
@@ -42,16 +43,6 @@ from api.services.base import BaseWorkflow
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
-
-
-def get_from_context(name: str):
-    result = context.get(name)
-    if not result:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Error not authenticated",
-        )
-    return result
 
 
 class TenantIssuerData(BaseModel):
@@ -205,7 +196,7 @@ async def create_tenant_schema(
             raise Exception(
                 "Need to provide either schema_id or schema name/version/attributes."
             )
-    logger.warn(f">>> Existing tenant_schema: {tenant_schema}")
+    logger.debug(f">>> Existing tenant_schema: {tenant_schema}")
     if not tenant_schema:
         tenant_schema = TenantSchemaCreate(
             tenant_id=tenant_id,
@@ -224,7 +215,7 @@ async def create_tenant_schema(
             cred_def_state=TenantWorkflowStateType.pending if cred_def_tag else None,
         )
         tenant_schema = await schema_repo.create(tenant_schema)
-        logger.warn(f">>> Created new tenant_schema: {tenant_schema}")
+        logger.debug(f">>> Created new tenant_schema: {tenant_schema}")
     workflow_repo = TenantWorkflowsRepository(db_session=db)
     tenant_workflow = None
     if tenant_schema.workflow_id:
@@ -239,7 +230,7 @@ async def create_tenant_schema(
             error_if_wf_exists=False,
             start_workflow=False,
         )
-        logger.warn(f">>> Created tenant_workflow: {tenant_workflow}")
+        logger.debug(f">>> Created tenant_workflow: {tenant_workflow}")
         schema_update = TenantSchemaUpdate(
             id=tenant_schema.id,
             workflow_id=tenant_workflow.id,
@@ -248,17 +239,17 @@ async def create_tenant_schema(
             cred_def_state=tenant_schema.cred_def_state,
         )
         tenant_schema = await schema_repo.update(schema_update)
-        logger.warn(f">>> Updated tenant_schema: {tenant_schema}")
+        logger.debug(f">>> Updated tenant_schema: {tenant_schema}")
 
         # start workflow
         tenant_workflow = await BaseWorkflow.next_workflow_step(
             db, tenant_workflow=tenant_workflow
         )
-        logger.warn(f">>> Updated tenant_workflow: {tenant_workflow}")
+        logger.debug(f">>> Updated tenant_workflow: {tenant_workflow}")
 
         # get updated issuer info (should have workflow id etc.)
         tenant_schema = await schema_repo.get_by_id(tenant_schema.id)
-        logger.warn(f">>> Updated (final) tenant_schema: {tenant_schema}")
+        logger.debug(f">>> Updated (final) tenant_schema: {tenant_schema}")
 
     schema = TenantSchemaData(
         schema_data=tenant_schema,
