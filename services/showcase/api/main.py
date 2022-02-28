@@ -6,6 +6,7 @@ from pathlib import Path
 import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 
 from api.core.config import settings
 
@@ -51,6 +52,17 @@ api = get_api()
 app.mount("/api", api)
 
 # Frontend Serving
+
+origins = settings.SHOWCASE_CORS_URLS.split(",")
+
+if origins:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 
 class SPAStaticFiles(StaticFiles):
