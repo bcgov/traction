@@ -248,7 +248,6 @@ async def promote_tenant_to_issuer(
 
     # have tenant register itself as issuer
     resp = await traction.tenant_admin_issuer(tenant.wallet_id, tenant.wallet_key, {})
-    logging.error(resp.status_code)
     if resp.status_code:
         tenant.issuer_enabled = True
         db.add(tenant)
