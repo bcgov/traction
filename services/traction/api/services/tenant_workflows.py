@@ -71,14 +71,14 @@ async def create_workflow(
 
 def subscribe_workflow_events():
     settings.EVENT_BUS.subscribe(
-        WEBHOOK_CONNECTIONS_LISTENER_PATTERN, IssuerWorkflow.handle_worklflow_events
+        WEBHOOK_CONNECTIONS_LISTENER_PATTERN, IssuerWorkflow.handle_workflow_events
     )
     settings.EVENT_BUS.subscribe(
-        WEBHOOK_ENDORSE_LISTENER_PATTERN, IssuerWorkflow.handle_worklflow_events
+        WEBHOOK_ENDORSE_LISTENER_PATTERN, IssuerWorkflow.handle_workflow_events
     )
     settings.EVENT_BUS.subscribe(
-        WEBHOOK_ENDORSE_LISTENER_PATTERN, SchemaWorkflow.handle_worklflow_events
+        WEBHOOK_ENDORSE_LISTENER_PATTERN, SchemaWorkflow.handle_workflow_events
     )
     settings.EVENT_BUS.subscribe(
-        WEBHOOK_ISSUE_LISTENER_PATTERN, IssueCredentialWorkflow.handle_worklflow_events
+        WEBHOOK_ISSUE_LISTENER_PATTERN, IssueCredentialWorkflow.handle_workflow_events
     )

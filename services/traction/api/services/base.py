@@ -17,7 +17,7 @@ from api.endpoints.models.tenant_workflow import (
     TenantWorkflowTypeType,
     TenantWorkflowStateType,
 )
-
+from api.services.tenant_workflow_notifier import TenantWorkflowNotifier
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ class BaseWorkflow:
     """Base class for workflows."""
 
     @classmethod
-    async def handle_worklflow_events(cls, profile: Profile, event: Event):
+    async def handle_workflow_events(cls, profile: Profile, event: Event):
         raise NotImplementedError()
 
     @classmethod
@@ -89,6 +89,7 @@ class BaseWorkflow:
         self._db = db
         self._tenant_workflow = tenant_workflow
         self._workflow_repo = TenantWorkflowsRepository(db_session=db)
+        self._workflow_notifier = TenantWorkflowNotifier(db=db)
 
     @property
     def db(self) -> AsyncSession:
@@ -104,6 +105,11 @@ class BaseWorkflow:
     def workflow_repo(self) -> TenantWorkflowsRepository:
         """Accessor for workflow_repo instance."""
         return self._workflow_repo
+
+    @property
+    def workflow_notifier(self) -> TenantWorkflowNotifier:
+        """Accessor for workflow_notifier instance."""
+        return self._workflow_notifier
 
     async def run_step(self, webhook_message: dict = None) -> TenantWorkflowRead:
         raise NotImplementedError()

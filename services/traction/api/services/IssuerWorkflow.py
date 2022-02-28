@@ -23,8 +23,6 @@ from api.endpoints.models.tenant_workflow import (
 )
 from api.endpoints.models.webhooks import (
     WebhookTopicType,
-    TenantEventTopicType,
-    TRACTION_EVENT_PREFIX,
 )
 from api.services.connections import (
     receive_invitation,
@@ -51,7 +49,7 @@ class IssuerWorkflow(BaseWorkflow):
     """Workflow to setup a tenant's Issuer configuration."""
 
     @classmethod
-    async def handle_worklflow_events(cls, profile: Profile, event: Event):
+    async def handle_workflow_events(cls, profile: Profile, event: Event):
         # find related workflow
         try:
             workflow_id = await cls.find_workflow_id(profile, event.payload)
@@ -157,25 +155,17 @@ class IssuerWorkflow(BaseWorkflow):
                         )
                     except Exception:
                         # TODO this is a hack (for now) - aca-py 0.7.3 doesn't support
-                        # the endorser protocol for this transacion, it will be in the
+                        # the endorser protocol for this transaction, it will be in the
                         # next release (0.7.4 or whatever)
                         tenant_issuer = await self.create_public_did(
                             tenant_issuer, did_result
                         )
 
                         # finish off our workflow
-                        logger.info("issuer workflow complete")
-                        # emit an event for any interested listeners
-                        profile = Profile(tenant_issuer.wallet_id, self.db)
-                        topic = TenantEventTopicType.issuer
-                        event_topic = TRACTION_EVENT_PREFIX + topic
-                        logger.info(f"profile.notify {event_topic}")
-                        payload = {"status": "completed"}
-                        await profile.notify(
-                            event_topic, {"topic": topic, "payload": payload}
-                        )
-
                         await self.complete_workflow()
+                        await self.workflow_notifier.issuer_workflow_completed(
+                            tenant_issuer
+                        )
 
             elif webhook_topic == WebhookTopicType.endorse_transaction:
                 # TODO once we need to handle endorsements

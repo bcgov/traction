@@ -37,9 +37,7 @@ async def get_tenant_webhook(tenant_id, db):
 def get_tenant_headers(webhook_api_key: str) -> dict:
     """Return HTTP headers required for tenant lob webhook call."""
 
-    headers = {}
-    headers["accept"] = "application/json"
-    headers["Content-Type"] = "application/json"
+    headers = {"accept": "application/json", "Content-Type": "application/json"}
     if webhook_api_key:
         headers["X-API-Key"] = webhook_api_key
     return headers
@@ -54,7 +52,7 @@ async def call_tenant_lob_app(webhook_msg: TenantWebhookMsg, webhook: TenantWebh
     headers = get_tenant_headers(webhook_api_key)
 
     async with ClientSession() as client_session:
-        logger.warn(
+        logger.debug(
             f"Calling LOB {webhook_url} with {webhook_api_key} {webhook_msg.payload}"
         )
         resp_text = None
@@ -65,7 +63,7 @@ async def call_tenant_lob_app(webhook_msg: TenantWebhookMsg, webhook: TenantWebh
                 json=webhook_msg.payload,
                 headers=headers,
             )
-            logger.warn("Post-processing LOB request")
+            logger.debug("Post-processing LOB request")
             try:
                 resp_text = await resp.text()
             except Exception:
@@ -115,7 +113,7 @@ async def publish_event(
 
     try:
         (state, status, response) = await call_tenant_lob_app(out_webhook_msg, webhook)
-        logger.warn(f"Webhook call returns with: {state} {status} {response}")
+        logger.debug(f"Webhook call returns with: {state} {status} {response}")
         in_upd_webhook.state = state
         in_upd_webhook.response_code = status  # TODO
         in_upd_webhook.response = response
