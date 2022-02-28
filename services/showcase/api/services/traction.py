@@ -235,7 +235,7 @@ async def tenant_admin_issuer(wallet_id: UUID, wallet_key: UUID, tenant_id: UUID
                 resp = await response.json()
                 return resp
             except ContentTypeError:
-                logger.exception("Error accepting invitation", exc_info=True)
+                logger.exception("Error registering self as issuer", exc_info=True)
                 text = await response.text()
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

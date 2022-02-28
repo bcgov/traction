@@ -56,6 +56,10 @@ class TenantWebhookRead(pydantic.BaseModel):
     webhook_url: str
 
 
+class PromoteTenantToIssuerResponse(pydantic.BaseModel):
+    success: str
+
+
 async def create_new_sandbox(
     payload: SandboxCreate, db: AsyncSession
 ) -> SandboxReadPopulated:
@@ -242,7 +246,7 @@ async def promote_tenant_to_issuer(
     sandbox_id: uuid.UUID,
     tenant_id: uuid.UUID,
     db: AsyncSession,
-) -> AcceptInvitationResponse:
+) -> PromoteTenantToIssuerResponse:
     sandbox = await get_sandbox(sandbox_id, db)
     tenant = await get_tenant(sandbox, tenant_id, db)
 
@@ -252,3 +256,5 @@ async def promote_tenant_to_issuer(
         tenant.issuer_enabled = True
         db.add(tenant)
         db.commit()
+
+    return PromoteTenantToIssuerResponse(success="true")
