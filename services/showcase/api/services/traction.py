@@ -214,7 +214,7 @@ async def innkeeper_make_issuer(tenant_id: UUID):
                 resp = await response.json()
                 return resp
             except ContentTypeError:
-                logger.exception("Error accepting invitation", exc_info=True)
+                logger.exception("Error registering tenant as issuer", exc_info=True)
                 text = await response.text()
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
