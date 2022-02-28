@@ -6,6 +6,7 @@ from pathlib import Path
 import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 
 from api.core.config import settings
 
@@ -15,6 +16,10 @@ from api.core.exception_handlers import add_exception_handlers
 
 os.environ["TZ"] = settings.TIMEZONE
 time.tzset()
+
+# setup loggers
+logging_file_path = (Path(__file__).parent / "logging.conf").resolve()
+logging.config.fileConfig(logging_file_path, disable_existing_loggers=False)
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +52,17 @@ api = get_api()
 app.mount("/api", api)
 
 # Frontend Serving
+
+origins = settings.SHOWCASE_CORS_URLS.split(",")
+
+if origins:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 
 class SPAStaticFiles(StaticFiles):

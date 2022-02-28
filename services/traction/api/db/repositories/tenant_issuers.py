@@ -53,6 +53,16 @@ class TenantIssuersRepository(
             )
         return self._schema.from_orm(tenant_issuer)
 
+    async def get_by_workflow_id(self, workflow_id: UUID) -> Type[TenantIssuerRead]:
+        q = select(self._table).where(self._table.workflow_id == workflow_id)
+        result = await self._db_session.execute(q)
+        tenant_issuer = result.scalar_one_or_none()
+        if not tenant_issuer:
+            raise DoesNotExist(
+                f"{self._table.__name__}<workflow_id:{workflow_id}> does not exist"
+            )
+        return self._schema.from_orm(tenant_issuer)
+
     async def get_by_wallet_and_endorser_connection_id(
         self, wallet_id: UUID, endorser_connection_id: UUID
     ) -> Type[TenantIssuerRead]:

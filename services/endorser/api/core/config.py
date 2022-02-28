@@ -60,9 +60,7 @@ class GlobalConfig(BaseSettings):
         "ENDORSER_WEBHOOK_URL", "http://endorser-api:5000/webhook"
     )
     ACAPY_WEBHOOK_URL_API_KEY_NAME = "x-api-key"
-    ACAPY_WEBHOOK_URL_API_KEY: str = os.environ.get(
-        "ACAPY_WEBHOOK_URL_API_KEY", ""
-    )
+    ACAPY_WEBHOOK_URL_API_KEY: str = os.environ.get("ACAPY_WEBHOOK_URL_API_KEY", "")
 
     DB_ECHO_LOG: bool = False
 

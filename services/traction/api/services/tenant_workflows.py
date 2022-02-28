@@ -1,4 +1,3 @@
-import importlib
 import logging
 from uuid import UUID
 
@@ -6,10 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette_context import context
 
 from api.core.config import settings
-from api.core.event_bus import Event
-from api.core.profile import Profile
 from api.db.errors import DoesNotExist
-from api.db.repositories.tenant_issuers import TenantIssuersRepository
 from api.db.repositories.tenant_workflows import TenantWorkflowsRepository
 from api.db.models.tenant_workflow import (
     TenantWorkflowRead,
@@ -22,7 +18,12 @@ from api.endpoints.models.tenant_workflow import (
 from api.endpoints.models.webhooks import (
     WEBHOOK_CONNECTIONS_LISTENER_PATTERN,
     WEBHOOK_ENDORSE_LISTENER_PATTERN,
+    WEBHOOK_ISSUE_LISTENER_PATTERN,
 )
+from api.services.base import BaseWorkflow
+from api.services.IssuerWorkflow import IssuerWorkflow
+from api.services.SchemaWorkflow import SchemaWorkflow
+from api.services.IssueCredentialWorkflow import IssueCredentialWorkflow
 
 
 logger = logging.getLogger(__name__)
@@ -61,81 +62,23 @@ async def create_workflow(
     tenant_workflow = await workflow_repo.create(new_workflow)
 
     if start_workflow:
-        tenant_workflow = await next_workflow_step(db, tenant_workflow=tenant_workflow)
-
-    return tenant_workflow
-
-
-def instantiate_workflow_class(db: AsyncSession, tenant_workflow: TenantWorkflowRead):
-    """Create an instance of a workflow class."""
-    workflow_type = tenant_workflow.workflow_type
-    module_name, class_name = workflow_type.rsplit(".", 1)
-    WorkflowClass = getattr(importlib.import_module(module_name), class_name)
-    instance = WorkflowClass(db, tenant_workflow)
-    return instance
-
-
-async def next_workflow_step(
-    db: AsyncSession,
-    workflow_id: UUID = None,
-    tenant_workflow: TenantWorkflowRead = None,
-    webhook_message: dict = None,
-) -> TenantWorkflowRead:
-    """Poke the workflow to run the next step."""
-    workflow_repo = TenantWorkflowsRepository(db_session=db)
-
-    if not tenant_workflow:
-        if workflow_id:
-            tenant_workflow = await workflow_repo.get_by_id(workflow_id)
-
-    if not tenant_workflow:
-        raise DoesNotExist(f"Workflow not found for {workflow_id}")
-
-    # check if our tenant is in context
-    context_bearer_token = (context.get("TENANT_WALLET_TOKEN"),)
-    if (not context_bearer_token) or (
-        not context_bearer_token == tenant_workflow.wallet_bearer_token
-    ):
-        context["TENANT_WALLET_TOKEN"] = tenant_workflow.wallet_bearer_token
-
-    workflow = instantiate_workflow_class(db, tenant_workflow)
-
-    # ping workflow to execute next step
-    tenant_workflow = await workflow.run_step(webhook_message=webhook_message)
-
-    return tenant_workflow
-
-
-async def handle_connection_events(profile: Profile, event: Event):
-    # find related workflow
-    issuer_repo = TenantIssuersRepository(db_session=profile.db)
-    try:
-        tenant_issuer = await issuer_repo.get_by_wallet_and_endorser_connection_id(
-            profile.wallet_id,
-            event.payload["payload"]["connection_id"],
+        tenant_workflow = await BaseWorkflow.next_workflow_step(
+            db, tenant_workflow=tenant_workflow
         )
-        if tenant_issuer.workflow_id:
-            await next_workflow_step(
-                profile.db,
-                workflow_id=tenant_issuer.workflow_id,
-                webhook_message=event.payload,
-            )
-        else:
-            return
-    except DoesNotExist:
-        # no related workflow so ignore, for now ...
-        return
 
-
-async def handle_endorse_events(profile: Profile, event: Event):
-    logger.warn(f">>> endorse event {profile} {event}")
-    pass
+    return tenant_workflow
 
 
 def subscribe_workflow_events():
     settings.EVENT_BUS.subscribe(
-        WEBHOOK_CONNECTIONS_LISTENER_PATTERN, handle_connection_events
+        WEBHOOK_CONNECTIONS_LISTENER_PATTERN, IssuerWorkflow.handle_worklflow_events
     )
     settings.EVENT_BUS.subscribe(
-        WEBHOOK_ENDORSE_LISTENER_PATTERN, handle_endorse_events
+        WEBHOOK_ENDORSE_LISTENER_PATTERN, IssuerWorkflow.handle_worklflow_events
+    )
+    settings.EVENT_BUS.subscribe(
+        WEBHOOK_ENDORSE_LISTENER_PATTERN, SchemaWorkflow.handle_worklflow_events
+    )
+    settings.EVENT_BUS.subscribe(
+        WEBHOOK_ISSUE_LISTENER_PATTERN, IssueCredentialWorkflow.handle_worklflow_events
     )
