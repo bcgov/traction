@@ -65,4 +65,7 @@ async def receive_webhook(
             detail="Could not validate webhook key",
         )
 
-    await handle_webhook(tenant, event_data["topic"], event_data["payload"], db)
+    topic = event_data["topic"]
+    handled = await handle_webhook(tenant, topic, event_data["payload"], db)
+
+    return {"topic": topic, "handled": handled}
