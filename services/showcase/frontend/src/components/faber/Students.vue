@@ -1,18 +1,65 @@
 <template>
-  <div>
-    <h2>Students</h2>
+  <div class="students-list">
+    <p>Add</p>
+    <h2 class="my-4">Registered Student List</h2>
     <div v-if="currentSandbox">
       <!-- table header -->
       <v-data-table
         :headers="headers"
         item-key="id"
         :items="currentSandbox.students"
+        disable-sort="true"
+        disable-pagination
+        hide-default-footer
       >
-        <template #[`item.created_at`]="{ item }">
-          {{ item.created_at | formatDateLong }}
-        </template>
         <template #[`item.actions`]="{ item }">
-          <v-btn color="primary" @click="invite(item.id)">Invite</v-btn>
+          <!-- Invite user -->
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <v-btn
+                @click="invite(item.id)"
+                large
+                icon
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>person_add</v-icon>
+              </v-btn>
+            </template>
+            <span>Send an Invitation</span>
+          </v-tooltip>
+
+          <!-- Issue Credential -->
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <v-btn
+                @click="invite(item.id)"
+                large
+                icon
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>generating_tokens</v-icon>
+              </v-btn>
+            </template>
+            <span>Issue a Credential</span>
+          </v-tooltip>
+
+          <!-- View details -->
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <v-btn
+                @click="invite(item.id)"
+                large
+                icon
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>visibility</v-icon>
+              </v-btn>
+            </template>
+            <span>View Student Details</span>
+          </v-tooltip>
         </template>
       </v-data-table>
     </div>
@@ -46,11 +93,9 @@ export default {
   data() {
     return {
       headers: [
-        { text: 'name', align: 'start', value: 'name' },
-        { text: 'Id', align: 'start', value: 'id' },
-        { text: 'Created', align: 'start', value: 'created_at' },
+        { text: 'Student', align: 'start', value: 'name' },
         {
-          text: 'Actions',
+          text: '',
           align: 'end',
           value: 'actions',
           filterable: false,
@@ -88,5 +133,29 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
+.students-list {
+  .v-data-table {
+    table {
+      border: 1px solid #173840;
+    }
+    padding: 0 5em;
+    background-color: transparent !important;
+    thead {
+      background-color: #173840;
+      tr th {
+        color: white !important;
+      }
+      tr {
+        border: 1px solid red !important;
+      }
+    }
+  }
+}
+tbody {
+  tr:hover {
+    background-color: transparent !important;
+  }
+}
 </style>
+
