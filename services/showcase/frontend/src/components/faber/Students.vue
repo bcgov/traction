@@ -1,5 +1,6 @@
 <template>
   <div class="students-list">
+    {{ tenant }}
     <v-row>
       <v-col cols="6">
         <div v-if="tenant.issuer_enabled">
