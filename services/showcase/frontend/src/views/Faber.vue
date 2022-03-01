@@ -9,17 +9,27 @@
       </v-row>
     </v-parallax>
     <v-container>
-      <Students />
+      <div v-if="currentSandbox">
+        <Students />
+      </div>
+      <div v-else>
+        No sandbox session set, please go to Innkeeper tab to set that up
+      </div>
     </v-container>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 import Students from '@/components/faber/Students.vue';
 export default {
   name: 'Faber',
   components: {
     Students,
+  },
+  computed: {
+    ...mapGetters('sandbox', ['currentSandbox']),
   },
 };
 </script>
@@ -27,11 +37,13 @@ export default {
 <style lang="scss" scoped>
 .students {
   height: 100%;
-  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif !important;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande',
+    'Lucida Sans', Arial, sans-serif !important;
   background-color: rgb(218, 207, 198) !important;
 }
 .faber-header {
-  h1, h4 {
+  h1,
+  h4 {
     background-color: rgba(218, 207, 198, 0.4);
     padding: 2px;
     padding: 2px;

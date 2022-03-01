@@ -1,71 +1,66 @@
 <template>
   <div class="students-list">
-    <p>Add</p>
+    <v-row>
+      <v-col cols="6"><v-icon color="success">check_circle</v-icon> Faber University is an Issuer</v-col>
+      <v-col cols="6" class="text-right">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <span v-bind="attrs" v-on="on">
+              <v-icon>group</v-icon> office-admin-001
+            </span>
+          </template>
+          <span>Not really logged in anywhere, just for show</span>
+        </v-tooltip>
+      </v-col>
+    </v-row>
     <h2 class="my-4">Registered Student List</h2>
-    <div v-if="currentSandbox">
-      <!-- table header -->
-      <v-data-table
-        :headers="headers"
-        item-key="id"
-        :items="currentSandbox.students"
-        disable-sort="true"
-        disable-pagination
-        hide-default-footer
-      >
-        <template #[`item.actions`]="{ item }">
-          <!-- Invite user -->
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <v-btn
-                @click="invite(item.id)"
-                large
-                icon
-                v-bind="attrs"
-                v-on="on"
-              >
-                <v-icon>person_add</v-icon>
-              </v-btn>
-            </template>
-            <span>Send an Invitation</span>
-          </v-tooltip>
+    <!-- table header -->
+    <v-data-table
+      :headers="headers"
+      item-key="id"
+      :items="currentSandbox.students"
+      disable-sort
+      disable-pagination
+      hide-default-footer
+    >
+      <template #[`item.actions`]="{ item }">
+        <!-- Invite user -->
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-btn @click="invite(item.id)" large icon v-bind="attrs" v-on="on">
+              <v-icon>person_add</v-icon>
+            </v-btn>
+          </template>
+          <span>Send an Invitation</span>
+        </v-tooltip>
 
-          <!-- Issue Credential -->
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <v-btn
-                @click="invite(item.id)"
-                large
-                icon
-                v-bind="attrs"
-                v-on="on"
-              >
-                <v-icon>generating_tokens</v-icon>
-              </v-btn>
-            </template>
-            <span>Issue a Credential</span>
-          </v-tooltip>
+        <!-- Issue Credential -->
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-btn @click="invite(item.id)" large icon v-bind="attrs" v-on="on">
+              <v-icon>generating_tokens</v-icon>
+            </v-btn>
+          </template>
+          <span>Issue a Credential</span>
+        </v-tooltip>
 
-          <!-- View details -->
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <v-btn
-                @click="invite(item.id)"
-                large
-                icon
-                v-bind="attrs"
-                v-on="on"
-              >
-                <v-icon>visibility</v-icon>
-              </v-btn>
-            </template>
-            <span>View Student Details</span>
-          </v-tooltip>
-        </template>
-      </v-data-table>
-    </div>
-    <div v-else>
-      No sandbox session set, please go to Innkeeper tab to set that up
-    </div>
+        <!-- View details -->
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              @click="showStudentDetails(item)"
+              large
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>visibility</v-icon>
+            </v-btn>
+          </template>
+          <span>View Student Details</span>
+        </v-tooltip>
+      </template> </v-data-table
+    >=
 
     <v-skeleton-loader
       v-if="invitation || loadingInvitation"
@@ -81,6 +76,26 @@
         </v-card-text>
       </v-card>
     </v-skeleton-loader>
+
+    <!-- Dialog to show raw json -->
+    <v-dialog v-model="studentDialog" width="800">
+      <v-card>
+        <v-card-title class="text-h5 grey lighten-2">
+          Student Details
+        </v-card-title>
+
+        <v-card-text>
+          <pre>{{ JSON.stringify(selectedStudent, 0, 2) }}</pre>
+        </v-card-text>
+
+        <v-divider></v-divider>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="studentDialog = false"> Close </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -104,12 +119,18 @@ export default {
       ],
       invitation: null,
       loadingInvitation: false,
+      selectedStudent: {},
+      studentDialog: false,
     };
   },
   computed: {
-    ...mapGetters('sandbox', ['sandboxes', 'currentSandbox']),
+    ...mapGetters('sandbox', ['currentSandbox']),
   },
   methods: {
+    showStudentDetails(student) {
+      this.selectedStudent = student;
+      this.studentDialog = true;
+    },
     async invite(id) {
       this.loadingInvitation = true;
       try {
