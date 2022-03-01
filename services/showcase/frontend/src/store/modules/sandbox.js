@@ -1,5 +1,6 @@
 import { showcaseService } from '@/services';
 import { Tenants } from '@/utils/constants';
+import { NotificationTypes } from '@/utils/constants';
 
 // The store module to hold the current showcase app "sandbox session"
 export default {
@@ -50,7 +51,13 @@ export default {
     // Promote a tenant in the sandbox to an issuer
     async makeIssuer({ dispatch }, item) {
       try {
-        alert('Make issuer ' + JSON.stringify(item));
+        const response = await showcaseService.makeIssuer(item.sandboxId, item.tenantId);
+        if (response) {
+          dispatch('notifications/addNotification', {
+            message: 'The request to make Faber University an Issuer was recieved.',
+            type: NotificationTypes.SUCCESS
+          }, { root: true });
+        }
       }
       catch (error) {
         dispatch('notifications/addNotification', {

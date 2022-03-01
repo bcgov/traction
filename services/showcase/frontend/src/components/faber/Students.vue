@@ -8,7 +8,10 @@
         </div>
         <div v-else>
           <v-icon color="error">error_outline</v-icon> Faber University has not
-          been set as an Issuer
+          met the criteria to be an Issuer yet
+          <v-btn large icon @click="makeFaberIssuer()">
+            <v-icon>forward_to_inbox</v-icon>
+          </v-btn>
         </div>
       </v-col>
       <v-col cols="6" class="text-right">
@@ -125,7 +128,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import { showcaseService } from '@/services';
 
 export default {
@@ -153,6 +156,13 @@ export default {
     ...mapGetters('sandbox', ['currentSandbox']),
   },
   methods: {
+    ...mapActions('sandbox', ['makeIssuer']),
+    async makeFaberIssuer() {
+      await this.makeIssuer({
+        tenantId: this.tenant.id,
+        sandboxId: this.currentSandbox.id,
+      });
+    },
     showStudentDetails(student) {
       this.selectedStudent = student;
       this.studentDialog = true;

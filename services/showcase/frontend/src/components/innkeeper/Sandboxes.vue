@@ -128,7 +128,6 @@ export default {
     ...mapActions('sandbox', [
       'createSandbox',
       'getSandboxes',
-      'makeIssuer',
       'selectSandbox',
     ]),
     async create() {
