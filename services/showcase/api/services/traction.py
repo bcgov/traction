@@ -223,7 +223,6 @@ async def innkeeper_make_issuer(tenant_id: UUID):
 
 
 async def tenant_admin_issuer(wallet_id: UUID, wallet_key: UUID, tenant_id: UUID):
-    # call Traction to accept an invitation...
     auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
     # TODO: error handling calling Traction
     async with ClientSession() as client_session:
@@ -236,6 +235,98 @@ async def tenant_admin_issuer(wallet_id: UUID, wallet_key: UUID, tenant_id: UUID
                 return resp
             except ContentTypeError:
                 logger.exception("Error registering self as issuer", exc_info=True)
+                text = await response.text()
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=text,
+                )
+
+
+async def tenant_create_schema(
+    wallet_id: UUID,
+    wallet_key: UUID,
+    schema: dict = None,
+    schema_id: str = None,
+    cred_def_tag: str = None,
+):
+    auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
+    data = schema
+    params = {}
+    if schema_id is not None:
+        params["schema_id"] = schema_id
+    if cred_def_tag is not None:
+        params["cred_def_tag"] = cred_def_tag
+    async with ClientSession() as client_session:
+        async with await client_session.post(
+            url=t_urls.TENANT_CREATE_SCHEMA,
+            headers=auth_headers,
+            params=params,
+            json=data,
+        ) as response:
+            try:
+                resp = await response.json()
+                return resp
+            except ContentTypeError:
+                logger.exception(
+                    "Error creating schema/credential definition", exc_info=True
+                )
+                text = await response.text()
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=text,
+                )
+
+
+async def tenant_issue_credential(
+    wallet_id: UUID,
+    wallet_key: UUID,
+    connection_id: str,
+    alias: str,
+    cred_def_id: str,
+    attributes: list = [],
+):
+    auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
+    data = {"attributes": attributes}
+    params = {
+        "cred_protocol": "v1.0",
+        "cred_def_id": cred_def_id,
+        "connection_id": connection_id,
+        "alias": alias,
+    }
+    async with ClientSession() as client_session:
+        async with await client_session.post(
+            url=t_urls.TENANT_CREDENTIAL_ISSUE,
+            headers=auth_headers,
+            params=params,
+            json=data,
+        ) as response:
+            try:
+                resp = await response.json()
+                return resp
+            except ContentTypeError:
+                logger.exception("Error issuing credential", exc_info=True)
+                text = await response.text()
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=text,
+                )
+
+
+async def tenant_get_issue_credentials(
+    wallet_id: UUID,
+    wallet_key: UUID,
+):
+    auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
+    async with ClientSession() as client_session:
+        async with await client_session.get(
+            url=t_urls.TENANT_CREDENTIAL_ISSUE,
+            headers=auth_headers,
+        ) as response:
+            try:
+                resp = await response.json()
+                return resp
+            except ContentTypeError:
+                logger.exception("Error getting credentials", exc_info=True)
                 text = await response.text()
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
