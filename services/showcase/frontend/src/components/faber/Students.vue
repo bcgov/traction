@@ -40,7 +40,7 @@
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
-              @click="invite(item.id)"
+              @click="invite(tenant.id)"
               :disabled="item.name != 'Alice'"
               large
               icon
@@ -57,7 +57,7 @@
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
-              @click="invite(item.id)"
+              @click="invite(tenant.id)"
               :disabled="!tenant.issuer_enabled"
               large
               icon
