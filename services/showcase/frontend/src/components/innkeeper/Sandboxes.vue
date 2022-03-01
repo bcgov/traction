@@ -35,14 +35,14 @@
                     Schema Success: {{ tenant.issuer_schema_success }} <br />
                     Cred Def Success: {{ tenant.issuer_cred_def_success }}
                     <br />
-                    <v-btn
+                    <!-- <v-btn
                       small
                       color="primary"
                       @click="makeIssuer(tenant.id, item.id)"
                       :disabled="tenant.issuer_enabled"
                     >
                       Promote To Issuer
-                    </v-btn>
+                    </v-btn> -->
                   </p>
                 </v-col>
               </v-row>
