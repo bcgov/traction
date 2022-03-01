@@ -53,4 +53,15 @@ export default {
   getSandboxes() {
     return appAxios().get(`${ApiRoutes.SANDBOXES}`);
   },
+
+  /**
+ * @function makeIssuer
+ * Make a tenant an issuer
+ * @param {string} sandboxId The identifier for the sandbox
+ * @param {string} tenantId The identifier for the tenant
+ * @returns {Promise} An axios response
+ */
+  makeIssuer(sandboxId, tenantId) {
+    return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/tenants/${tenantId}/make-issuer`);
+  },
 };

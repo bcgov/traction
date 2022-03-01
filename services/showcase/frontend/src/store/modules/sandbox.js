@@ -1,5 +1,6 @@
 import { showcaseService } from '@/services';
 import { Tenants } from '@/utils/constants';
+import { NotificationTypes } from '@/utils/constants';
 
 // The store module to hold the current showcase app "sandbox session"
 export default {
@@ -47,12 +48,31 @@ export default {
         }, { root: true });
       }
     },
+    // Promote a tenant in the sandbox to an issuer
+    async makeIssuer({ dispatch }, item) {
+      try {
+        const response = await showcaseService.makeIssuer(item.sandboxId, item.tenantId);
+        if (response) {
+          dispatch('notifications/addNotification', {
+            message: 'The request to make Faber University an Issuer was recieved.',
+            type: NotificationTypes.SUCCESS
+          }, { root: true });
+        }
+      }
+      catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while promoting this tenant to an issuer.',
+          consoleError: `Error promoting to issuer: ${error}`,
+        }, { root: true });
+      }
+    },
     // Select a specific sandbox to use for the current session
     async selectSandbox({ commit, state }, id) {
       const toSelect = state.sandboxes.find(s => s.id == id);
       if (toSelect) {
         commit('SET_CURRENT', toSelect);
-        commit('alice/SET_TENANT', toSelect.tenants.find(t => t.name = Tenants.ALICE), { root: true });
+        commit('alice/SET_TENANT', toSelect.tenants.find(t => t.name == Tenants.ALICE), { root: true });
+        commit('faber/SET_TENANT', toSelect.tenants.find(t => t.name == Tenants.FABER), { root: true });
       }
     },
   }
