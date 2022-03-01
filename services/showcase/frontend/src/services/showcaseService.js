@@ -62,6 +62,6 @@ export default {
  * @returns {Promise} An axios response
  */
   makeIssuer(sandboxId, tenantId) {
-    return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/tenants/${tenantId}/make-issuer`, { });
+    return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/tenants/${tenantId}/make-issuer`);
   },
 };
