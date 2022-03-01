@@ -94,10 +94,10 @@ async def make_tenant_issuer(
     tenant = await tenant_repo.get_by_id(tenant_id)
     try:
         issuer_repo = TenantIssuersRepository(db_session=db)
-        tenant_issuer = await issuer_repo.get_by_id(tenant_id)
+        tenant_issuer = await issuer_repo.get_by_wallet_id(tenant.wallet_id)
     except DoesNotExist:
         new_issuer = TenantIssuerCreate(
-            tenant_id=tenant_id,
+            tenant_id=tenant.id,
             wallet_id=tenant.wallet_id,
         )
         tenant_issuer = await issuer_repo.create(new_issuer)

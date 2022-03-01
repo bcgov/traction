@@ -56,10 +56,6 @@ class TenantWebhookRead(pydantic.BaseModel):
     webhook_url: str
 
 
-class PromoteTenantToIssuerResponse(pydantic.BaseModel):
-    success: str
-
-
 async def create_new_sandbox(
     payload: SandboxCreate, db: AsyncSession
 ) -> SandboxReadPopulated:
@@ -246,15 +242,11 @@ async def promote_tenant_to_issuer(
     sandbox_id: uuid.UUID,
     tenant_id: uuid.UUID,
     db: AsyncSession,
-) -> PromoteTenantToIssuerResponse:
+):
     sandbox = await get_sandbox(sandbox_id, db)
     tenant = await get_tenant(sandbox, tenant_id, db)
 
     # have tenant register itself as issuer
-    resp = await traction.tenant_admin_issuer(tenant.wallet_id, tenant.wallet_key, {})
-    if resp.status_code:
-        tenant.issuer_enabled = True
-        db.add(tenant)
-        db.commit()
+    await traction.tenant_admin_issuer(tenant.wallet_id, tenant.wallet_key, {})
 
-    return PromoteTenantToIssuerResponse(success="true")
+    return
