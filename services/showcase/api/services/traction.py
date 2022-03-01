@@ -199,3 +199,45 @@ async def accept_invitation(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail=text,
                 )
+
+
+async def innkeeper_make_issuer(tenant_id: UUID):
+    # call Traction to accept an invitation...
+    innkeeper_auth_headers = await get_auth_headers()
+    # TODO: error handling calling Traction
+    async with ClientSession() as client_session:
+        async with await client_session.post(
+            url=t_urls.INNKEEPER_MAKE_ISSUER + f"/{tenant_id}",
+            headers=innkeeper_auth_headers,
+        ) as response:
+            try:
+                resp = await response.json()
+                return resp
+            except ContentTypeError:
+                logger.exception("Error registering tenant as issuer", exc_info=True)
+                text = await response.text()
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=text,
+                )
+
+
+async def tenant_admin_issuer(wallet_id: UUID, wallet_key: UUID, tenant_id: UUID):
+    # call Traction to accept an invitation...
+    auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
+    # TODO: error handling calling Traction
+    async with ClientSession() as client_session:
+        async with await client_session.post(
+            url=t_urls.TENANT_MAKE_ISSUER,
+            headers=auth_headers,
+        ) as response:
+            try:
+                resp = await response.json()
+                return resp
+            except ContentTypeError:
+                logger.exception("Error registering self as issuer", exc_info=True)
+                text = await response.text()
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=text,
+                )

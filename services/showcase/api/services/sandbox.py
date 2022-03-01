@@ -66,9 +66,9 @@ async def create_new_sandbox(
     sandbox = await sandbox_repo.create(payload)
 
     # create tenants
-    await create_new_tenant(sandbox, tenants_repo, "Alice")
-    await create_new_tenant(sandbox, tenants_repo, "Faber")
-    await create_new_tenant(sandbox, tenants_repo, "Acme")
+    await create_new_tenant(sandbox, tenants_repo, "Alice", issuer=False)
+    await create_new_tenant(sandbox, tenants_repo, "Faber", issuer=True)
+    await create_new_tenant(sandbox, tenants_repo, "Acme", issuer=False)
 
     # build data set for this sandbox
     student = StudentCreate(
@@ -94,7 +94,7 @@ async def get_sandbox(sandbox_id, db) -> Sandbox:
     return sandbox
 
 
-async def get_tenant(sandbox, tenant_id, db):
+async def get_tenant(sandbox, tenant_id, db) -> Tenant:
     # we want data that should not be in TenantRead (private wallet information)
     tenant_q = (
         select(Tenant)
@@ -108,7 +108,9 @@ async def get_tenant(sandbox, tenant_id, db):
     return tenant
 
 
-async def create_new_tenant(sandbox: Sandbox, repo: TenantRepository, name: str):
+async def create_new_tenant(
+    sandbox: Sandbox, repo: TenantRepository, name: str, issuer: bool = False
+):
     # create tenant in traction, then we use their wallet id and key
     resp = await traction.create_tenant(name=f"{name.lower()}-{str(sandbox.id)[0:7]}")
     traction_tenant = CheckInResponse(**resp)
@@ -131,6 +133,10 @@ async def create_new_tenant(sandbox: Sandbox, repo: TenantRepository, name: str)
         name=tenant.name,
         sandbox_id=tenant.sandbox_id,
     )
+
+    if issuer:
+        await traction.innkeeper_make_issuer(traction_tenant.id)
+
     return await repo.update(upd_tenant)
 
 
@@ -230,3 +236,17 @@ async def accept_invitation(
         sender_id=sender.id,
         connection_id=uuid.UUID(resp["connection_id"]),
     )
+
+
+async def promote_tenant_to_issuer(
+    sandbox_id: uuid.UUID,
+    tenant_id: uuid.UUID,
+    db: AsyncSession,
+):
+    sandbox = await get_sandbox(sandbox_id, db)
+    tenant = await get_tenant(sandbox, tenant_id, db)
+
+    # have tenant register itself as issuer
+    await traction.tenant_admin_issuer(tenant.wallet_id, tenant.wallet_key, {})
+
+    return
