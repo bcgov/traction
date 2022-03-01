@@ -7,7 +7,12 @@
       </div>
       <div v-else>
         <!-- table header -->
-        <v-data-table :headers="headers" item-key="id" :items="sandboxes">
+        <v-data-table
+          :headers="headers"
+          item-key="id"
+          :items="sandboxes"
+          show-expand
+        >
           <template #[`item.created_at`]="{ item }">
             {{ item.created_at | formatDateLong }}
           </template>
@@ -15,6 +20,33 @@
             <v-btn small color="primary" @click="selectSandbox(item.id)">
               Use
             </v-btn>
+          </template>
+          <template v-slot:expanded-item="{ headers, item }">
+            <td :colspan="headers.length">
+              <h3>Tenants in this sandbox</h3>
+              <v-row>
+                <v-col v-for="tenant in item.tenants" :key="tenant.id">
+                  <p>
+                    <strong>{{ tenant.name }}</strong> <br />
+                    ID: {{ tenant.id }} <br />
+                    Wallet ID: {{ tenant.wallet_id }} <br />
+                    Wallet Key: {{ tenant.wallet_key }} <br />
+                    Issuer: {{ tenant.issuer_enabled }} <br />
+                    Schema Success: {{ tenant.issuer_schema_success }} <br />
+                    Cred Def Success: {{ tenant.issuer_cred_def_success }}
+                    <br />
+                    <v-btn
+                      small
+                      color="primary"
+                      @click="makeIssuer(tenant.id, item.id)"
+                      :disabled="tenant.issuer_enabled"
+                    >
+                      Promote To Issuer
+                    </v-btn>
+                  </p>
+                </v-col>
+              </v-row>
+            </td>
           </template>
         </v-data-table>
         <v-btn
@@ -81,6 +113,7 @@ export default {
           filterable: false,
           sortable: false,
         },
+        { text: '', value: 'data-table-expand' },
       ],
       newTag: '',
       newTagRules: [(v) => !!v || 'Tag is required'],
@@ -95,6 +128,7 @@ export default {
     ...mapActions('sandbox', [
       'createSandbox',
       'getSandboxes',
+      'makeIssuer',
       'selectSandbox',
     ]),
     async create() {
@@ -106,6 +140,12 @@ export default {
     async fetchSandboxList() {
       this.loading = true;
       await this.getSandboxes();
+      this.loading = false;
+    },
+    async setTenantAsIssuer(tenantId, sandboxId) {
+      this.loading = true;
+      await this.makeIssuer({ tenantId: tenantId, sandboxId: sandboxId });
+      await this.fetchSandboxList();
       this.loading = false;
     },
   },

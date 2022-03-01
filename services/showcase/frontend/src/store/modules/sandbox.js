@@ -47,12 +47,25 @@ export default {
         }, { root: true });
       }
     },
+    // Promote a tenant in the sandbox to an issuer
+    async makeIssuer({ dispatch }, item) {
+      try {
+        alert('Make issuer ' + JSON.stringify(item));
+      }
+      catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while promoting this tenant to an issuer.',
+          consoleError: `Error promoting to issuer: ${error}`,
+        }, { root: true });
+      }
+    },
     // Select a specific sandbox to use for the current session
     async selectSandbox({ commit, state }, id) {
       const toSelect = state.sandboxes.find(s => s.id == id);
       if (toSelect) {
         commit('SET_CURRENT', toSelect);
         commit('alice/SET_TENANT', toSelect.tenants.find(t => t.name = Tenants.ALICE), { root: true });
+        commit('faber/SET_TENANT', toSelect.tenants.find(t => t.name = Tenants.FABER), { root: true });
       }
     },
   }

@@ -1,7 +1,16 @@
 <template>
   <div class="students-list">
     <v-row>
-      <v-col cols="6"><v-icon color="success">check_circle</v-icon> Faber University is an Issuer</v-col>
+      <v-col cols="6">
+        <div v-if="tenant.issuer_enabled">
+          <v-icon color="success">check_circle_outline</v-icon> Faber University
+          is an Issuer
+        </div>
+        <div v-else>
+          <v-icon color="error">error_outline</v-icon> Faber University has not
+          been set as an Issuer
+        </div>
+      </v-col>
       <v-col cols="6" class="text-right">
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
@@ -27,7 +36,14 @@
         <!-- Invite user -->
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
-            <v-btn @click="invite(item.id)" large icon v-bind="attrs" v-on="on">
+            <v-btn
+              @click="invite(item.id)"
+              :disabled="item.name != 'Alice'"
+              large
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
               <v-icon>person_add</v-icon>
             </v-btn>
           </template>
@@ -37,7 +53,14 @@
         <!-- Issue Credential -->
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
-            <v-btn @click="invite(item.id)" large icon v-bind="attrs" v-on="on">
+            <v-btn
+              @click="invite(item.id)"
+              :disabled="!tenant.issuer_enabled"
+              large
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
               <v-icon>generating_tokens</v-icon>
             </v-btn>
           </template>
@@ -59,8 +82,8 @@
           </template>
           <span>View Student Details</span>
         </v-tooltip>
-      </template> </v-data-table
-    >=
+      </template>
+    </v-data-table>
 
     <v-skeleton-loader
       v-if="invitation || loadingInvitation"
@@ -92,7 +115,9 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="studentDialog = false"> Close </v-btn>
+          <v-btn color="primary" text @click="studentDialog = false">
+            Close
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -124,6 +149,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('faber', ['tenant']),
     ...mapGetters('sandbox', ['currentSandbox']),
   },
   methods: {
