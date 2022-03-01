@@ -31,6 +31,7 @@ export default {
    * @returns {Promise} An axios response
    */
   createInvitation(sandboxId, tenantId, studentId) {
+    debugger;
     return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/tenants/${tenantId}/create-invitation/student`, { student_id: studentId });
   },
 

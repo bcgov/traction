@@ -1,6 +1,5 @@
 <template>
   <div class="students-list">
-    {{ tenant }}
     <v-row>
       <v-col cols="6">
         <div v-if="tenant.issuer_enabled">
@@ -41,7 +40,7 @@
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
-              @click="invite(tenant.id)"
+              @click="invite(item.id)"
               :disabled="item.name != 'Alice'"
               large
               icon
@@ -58,7 +57,7 @@
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
-              @click="invite(tenant.id)"
+              @click="invite(item.id)"
               :disabled="!tenant.issuer_enabled"
               large
               icon
@@ -171,12 +170,9 @@ export default {
     async invite(id) {
       this.loadingInvitation = true;
       try {
-        const faberTenant = this.currentSandbox.tenants.find(
-          ({ name }) => name === 'Faber'
-        );
         const response = await showcaseService.createInvitation(
           this.currentSandbox.id,
-          faberTenant.id,
+          this.tenant.id,
           id
         );
         this.invitation = response.data;
