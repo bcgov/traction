@@ -1,0 +1,22 @@
+{{- if .Values.acapy.openshift.adminRoute.enabled -}}
+{{- $fullName := include "acapy.fullname" . -}}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "acapy.fullname" . }}-admin
+  annotations:
+    haproxy.router.openshift.io/timeout: {{ .Values.acapy.openshift.adminRoute.timeout }}
+  labels:
+    {{- include "acapy.labels" . | nindent 4 }}
+spec:
+  host: {{ include "acapy.admin.host" . | quote }}
+  path: {{ .Values.acapy.openshift.adminRoute.path }}
+  to:
+    kind: Service
+    name: {{ $fullName }}
+    weight: 100
+  port:
+    targetPort: {{ .Values.acapy.openshift.adminRoute.targetPort }}
+  wildcardPolicy: {{ .Values.acapy.openshift.adminRoute.wildcardPolicy }}
+{{ include "acapy.openshift.adminRoute.tls" . | indent 2}}
+{{- end }}

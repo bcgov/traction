@@ -136,6 +136,13 @@ http://{{- include "acapy.fullname" . }}:{{.Values.acapy.service.adminPort }}
 {{- end }}
 
 {{/*
+generate hosts for acapy admin if not overriden
+*/}}
+{{- define "acapy.admin.host" -}}
+{{- include "acapy.fullname" . }}-admin{{ .Values.global.ingressSuffix -}}
+{{- end }}
+
+{{/*
 Return seed
 */}}
 {{- define "acapy.seed" -}}
@@ -260,6 +267,14 @@ Create environment variables for database configuration.
 tls:
   insecureEdgeTerminationPolicy: {{ .Values.acapy.openshift.route.tls.insecureEdgeTerminationPolicy }}
   termination: {{ .Values.acapy.openshift.route.tls.termination }}
+{{- end -}}
+{{- end -}}
+
+{{- define "acapy.openshift.adminRoute.tls" -}}
+{{- if (.Values.acapy.openshift.adminRoute.tls.enabled) -}}
+tls:
+  insecureEdgeTerminationPolicy: {{ .Values.acapy.openshift.adminRoute.tls.insecureEdgeTerminationPolicy }}
+  termination: {{ .Values.acapy.openshift.adminRoute.tls.termination }}
 {{- end -}}
 {{- end -}}
 
