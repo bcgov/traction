@@ -73,6 +73,16 @@ acapy:
         insecureEdgeTerminationPolicy: None
         termination: edge
       wildcardPolicy: None
+    adminRoute:
+      enabled: true
+      path: "/"
+      targetPort: admin
+      timeout: 2m
+      tls:
+        enabled: true
+        insecureEdgeTerminationPolicy: None
+        termination: edge
+      wildcardPolicy: None
 
   tails:
     # -- Set to true to enable revocation (external tails server required)
