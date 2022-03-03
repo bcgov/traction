@@ -9,8 +9,9 @@
 2. bring up traction
 
 ```sh
- cp .env-example .env.local
- docker-compose up
+cp .env-example .env.local
+docker-compose build
+docker-compose up
 ```
 
 ### stop
@@ -43,13 +44,12 @@ docker-compose up traction-agent
 docker-compose down traction-agent -v --remove-orphans
 ```
 
+#### start with showcase app
+This will start up traction (database, agent, endorser and api) and a showcase app (with its own database).
 
- #### start with showcase app
- This will start up traction (database, agent, endorser and api) and a showcase app (with its own database).
-
- ```sh
- docker-compose -f docker-compose.yml -f docker-compose.showcase.yml up
- ```
+```sh
+docker-compose -f docker-compose.yml -f docker-compose.showcase.yml up
+```
 
 ##### teardown
 
