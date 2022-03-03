@@ -6,69 +6,69 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from api.db.errors import DoesNotExist
-from api.db.models.tenant import (
-    TenantCreate,
-    TenantUpdate,
-    Tenant,
-    TenantRead,
+from api.db.models.line_of_business import (
+    LobCreate,
+    LobUpdate,
+    Lob,
+    LobRead,
 )
-from api.db.models.related import TenantReadWithSandbox
+from api.db.models.related import LobReadWithSandbox
 from api.db.repositories.base import BaseRepository
 
 
-class TenantRepository(BaseRepository[TenantCreate, TenantUpdate, TenantRead, Tenant]):
+class LobRepository(BaseRepository[LobCreate, LobUpdate, LobRead, Lob]):
     @property
-    def _in_schema(self) -> Type[TenantCreate]:
-        return TenantCreate
+    def _in_schema(self) -> Type[LobCreate]:
+        return LobCreate
 
     @property
-    def _upd_schema(self) -> Type[TenantUpdate]:
-        return TenantUpdate
+    def _upd_schema(self) -> Type[LobUpdate]:
+        return LobUpdate
 
     @property
-    def _schema(self) -> Type[TenantRead]:
-        return TenantRead
+    def _schema(self) -> Type[LobRead]:
+        return LobRead
 
     @property
-    def _table(self) -> Type[Tenant]:
-        return Tenant
+    def _table(self) -> Type[Lob]:
+        return Lob
 
     async def get_by_id_with_sandbox(
         self, sandbox_id: UUID, entry_id: UUID
-    ) -> TenantReadWithSandbox:
+    ) -> LobReadWithSandbox:
         q = (
             select(self._table)
             .where(self._table.id == entry_id)
             .where(self._table.sandbox_id == sandbox_id)
-            .options(selectinload(Tenant.sandbox))
+            .options(selectinload(Lob.sandbox))
         )
         result = await self._db_session.execute(q)
         item = result.scalars().one_or_none()
         if not item:
             raise DoesNotExist(f"{self._table.__name__}<id:{entry_id}> does not exist")
-        return TenantReadWithSandbox.from_orm(item)
+        return LobReadWithSandbox.from_orm(item)
 
     async def get_by_name_with_sandbox(
         self, sandbox_id: UUID, name: str
-    ) -> TenantReadWithSandbox:
+    ) -> LobReadWithSandbox:
         q = (
             select(self._table)
             .where(self._table.name == name)
             .where(self._table.sandbox_id == sandbox_id)
-            .options(selectinload(Tenant.sandbox))
+            .options(selectinload(Lob.sandbox))
         )
         result = await self._db_session.execute(q)
         item = result.scalars().one_or_none()
         if not item:
             raise DoesNotExist(f"{self._table.__name__}<name:{name}> does not exist")
-        return TenantReadWithSandbox.from_orm(item)
+        return LobReadWithSandbox.from_orm(item)
 
-    async def get_in_sandbox(self, sandbox_id: UUID) -> List[TenantReadWithSandbox]:
+    async def get_in_sandbox(self, sandbox_id: UUID) -> List[LobReadWithSandbox]:
         q = (
             select(self._table)
             .where(self._table.sandbox_id == sandbox_id)
-            .options(selectinload(Tenant.sandbox))
+            .options(selectinload(Lob.sandbox))
         )
         result = await self._db_session.execute(q)
         items = result.scalars().all()
-        return parse_obj_as(List[TenantReadWithSandbox], items)
+        return parse_obj_as(List[LobReadWithSandbox], items)

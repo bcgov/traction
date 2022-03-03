@@ -71,8 +71,8 @@ export default {
       const toSelect = state.sandboxes.find(s => s.id == id);
       if (toSelect) {
         commit('SET_CURRENT', toSelect);
-        commit('alice/SET_TENANT', toSelect.tenants.find(t => t.name == Tenants.ALICE), { root: true });
-        commit('faber/SET_TENANT', toSelect.tenants.find(t => t.name == Tenants.FABER), { root: true });
+        commit('alice/SET_TENANT', toSelect.lobs.find(t => t.name == Tenants.ALICE), { root: true });
+        commit('faber/SET_TENANT', toSelect.lobs.find(t => t.name == Tenants.FABER), { root: true });
       }
     },
   }

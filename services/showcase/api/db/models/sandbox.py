@@ -12,8 +12,9 @@ class SandboxBase(BaseModel):
 
 
 class Sandbox(SandboxBase, BaseTable, table=True):
-    tenants: List["Tenant"] = Relationship(back_populates="sandbox")  # noqa: F821
+    lobs: List["Lob"] = Relationship(back_populates="sandbox")  # noqa: F821
     students: List["Student"] = Relationship(back_populates="sandbox")  # noqa: F821
+    applicants: List["Applicant"] = Relationship(back_populates="sandbox")  # noqa: F821
 
 
 class SandboxCreate(SandboxBase):

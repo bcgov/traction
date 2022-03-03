@@ -1,5 +1,5 @@
 from api.db.repositories.sandbox import SandboxRepository
 from api.db.repositories.student import StudentRepository
-from api.db.repositories.tenant import TenantRepository
+from api.db.repositories.line_of_business import LobRepository
 
-__all__ = ["SandboxRepository", "StudentRepository", "TenantRepository"]
+__all__ = ["SandboxRepository", "StudentRepository", "LobRepository"]

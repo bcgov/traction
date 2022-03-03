@@ -9,14 +9,13 @@ from faker import Faker
 from api.db.models.base import BaseModel, BaseTable
 
 
-class StudentBase(BaseModel):
+class ApplicantBase(BaseModel):
     name: str = Field(index=True, nullable=False)
     sandbox_id: uuid.UUID = None
 
-    # faber line of business data for student degree credentials
+    # acme line of business data, store results of presentation request
+    # just want their degree and date of degree
     degree: Optional[str] = Field(default=None, nullable=True)
-    age: Optional[int] = Field(default=None, nullable=True)
-    student_id: Optional[str] = Field(default=None, nullable=True)
     date: Optional[datetime] = Field(default=None, nullable=True)
 
     # track invitation information
@@ -24,7 +23,7 @@ class StudentBase(BaseModel):
     invitation_state: Optional[str] = Field(default=None, nullable=True)
     connection_id: Optional[uuid.UUID] = Field(default=None)
 
-    # for matching this student with their traction tenant
+    # for matching this applicant with their traction tenant
     # this would not be in this LOB data at all!!!
     # the entity/person/business that this record represents
     # would be tracking this in their system/data
@@ -32,43 +31,42 @@ class StudentBase(BaseModel):
     alias: Optional[str] = Field(default=None, nullable=True)
 
 
-class Student(StudentBase, BaseTable, table=True):
+class Applicant(ApplicantBase, BaseTable, table=True):
+    __tablename__ = "job_applicant"
     __table_args__ = (UniqueConstraint("name", "sandbox_id"),)
 
-    sandbox: Optional["Sandbox"] = Relationship(back_populates="students")  # noqa: F821
+    sandbox: Optional["Sandbox"] = Relationship(  # noqa: F821
+        back_populates="applicants"
+    )
 
     sandbox_id: uuid.UUID = Field(foreign_key="sandbox.id")
     wallet_id: uuid.UUID = Field(default=None, nullable=True)
 
 
-class StudentCreate(StudentBase):
+class ApplicantCreate(ApplicantBase):
     pass
 
 
-class StudentRead(StudentBase):
+class ApplicantRead(ApplicantBase):
     id: uuid.UUID
     created_at: datetime
     updated_at: datetime
     degree: Optional[str] = None
-    age: Optional[int] = None
-    student_id: Optional[str] = None
     date: Optional[datetime] = None
 
 
-class StudentUpdate(StudentBase):
+class ApplicantUpdate(ApplicantBase):
     name: Optional[str] = None
 
 
 # FACTORIES
 
 
-class StudentCreateFactory(ModelFactory):
-    __model__ = StudentCreate
+class ApplicantCreateFactory(ModelFactory):
+    __model__ = ApplicantCreate
 
     name = Use(Faker().name)
     degree = None
-    age = None
-    student_id = None
     date = None
     wallet_id = None
     alias = None

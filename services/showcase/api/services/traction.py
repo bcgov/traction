@@ -8,7 +8,7 @@ from starlette.exceptions import HTTPException
 
 from api.core.config import settings
 from api.core.utils import hash_password
-from api.db.models import Tenant
+from api.db.models import Lob
 from api.services import traction_urls as t_urls
 
 logger = logging.getLogger(__name__)
@@ -79,7 +79,7 @@ async def create_tenant(name: str):
                 )
 
 
-async def create_tenant_webhook(tenant: Tenant):
+async def create_tenant_webhook(tenant: Lob):
     # here we connect as the tenant, passing in their traction credentials.
     auth_headers = await get_auth_headers(tenant.wallet_id, tenant.wallet_key)
     # set the webhook up with security
