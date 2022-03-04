@@ -78,8 +78,6 @@ jobs:
     needs: 
       - deploy
     if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) && (github.repository_owner == 'bcgov') }}
-    env:
-      TEST_RESULT: ''  
     steps:  
       - uses: actions/checkout@v2  
         with:
@@ -95,18 +93,7 @@ jobs:
 
       - name: Run tests in pod 
         run: |
-          kubectl exec $(oc get pods -o name --selector app.kubernetes.io/instance=${{ github.event.inputs.instance_name }},app.kubernetes.io/name=${{ github.event.inputs.instance_name }}-api) -- pytest -p no:cacheprovider --asyncio-mode=strict -m integtest
-
-      - name: print outputs
-        run: |
-          echo "TEST_RESULT: ${{ env.TEST_RESULT }}"
-          
-      - name: Uninstall via Helm 
-        run: |
-          helm uninstall "${{ github.event.inputs.instance_name }}"
-      
-      - name: Remove Openshift Objects 
-        run: |
-          oc delete secret,pvc --selector "app.kubernetes.io/instance"="${{ github.event.inputs.instance_name }}"
+          kubectl exec $(oc get pods -o name --selector app.kubernetes.io/instance=${{ github.event.inputs.instance_name }},app.kubernetes.io/name=${{ github.event.inputs.instance_name }}-api) -- pytest -p no:cacheprovider --asyncio-mode=strict -m integtest >> test.log
+          ls -al
           
 
