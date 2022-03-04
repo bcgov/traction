@@ -57,7 +57,7 @@
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
-              @click="invite(item.id)"
+              @click="issueDegree(item.id)"
               :disabled="!tenant.public_did"
               large
               icon
@@ -178,6 +178,22 @@ export default {
         this.invitation = response.data;
       } catch (error) {
         alert('error creating invitation (TBD');
+        this.invitation = { error: 'something bad' };
+      } finally {
+        this.loadingInvitation = false;
+      }
+    },
+    async issueDegree(id) {
+      this.loadingInvitation = true;
+      try {
+        const response = await showcaseService.issueDegree(
+          this.currentSandbox.id,
+          this.tenant.id,
+          id
+        );
+        this.invitation = response.data;
+      } catch (error) {
+        alert('error issuing credential (TBD)');
         this.invitation = { error: 'something bad' };
       } finally {
         this.loadingInvitation = false;

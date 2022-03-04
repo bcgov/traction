@@ -312,21 +312,23 @@ async def tenant_issue_credential(
                 )
 
 
-async def tenant_get_issue_credentials(
+async def tenant_accept_cred_offer(
     wallet_id: UUID,
     wallet_key: UUID,
+    cred_issue_id: UUID,
 ):
     auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
     async with ClientSession() as client_session:
-        async with await client_session.get(
-            url=t_urls.TENANT_CREDENTIAL_ISSUE,
+        async with await client_session.post(
+            url=t_urls.TENANT_ACCEPT_CRED_OFFER,
+            params={str(cred_issue_id)},
             headers=auth_headers,
         ) as response:
             try:
                 resp = await response.json()
                 return resp
             except ContentTypeError:
-                logger.exception("Error getting credentials", exc_info=True)
+                logger.exception("Error accepting credential", exc_info=True)
                 text = await response.text()
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
