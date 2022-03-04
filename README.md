@@ -6,7 +6,7 @@ Traction provides a service layer to manage Aries agent instances in a multi-ten
 
 ## Quick start
 
-To run a local instance of traction, opena bash shell and run the following (git, docker and docker-compose are required):
+To run a local instance of traction, open a bash shell and run the following (git, docker and docker-compose are required):
 
 ```bash
 git clone https://github.com/bcgov.traction.git
