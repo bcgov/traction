@@ -1,4 +1,4 @@
-# Running the tractino demo
+# Running the traction demo
 
 ## Running traction using swagger
 
