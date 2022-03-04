@@ -146,11 +146,11 @@ async def issue_degree(
     faber = await lob_repo.get_by_id_with_sandbox(sandbox_id, lob_id)
 
     attrs = [
-        {"name": "student_id", "value": "AS1234567"},
-        {"name": "name", "value": "Alice Smith"},
-        {"name": "date", "value": "2022-02-28"},
-        {"name": "degree", "value": "Maths"},
-        {"name": "age", "value": "24"},
+        {"name": "student_id", "value": student.student_id},
+        {"name": "name", "value": student.name},
+        {"name": "date", "value": student.date.date().strftime("%d-%m-%Y")},
+        {"name": "degree", "value": student.degree},
+        {"name": "age", "value": student.age},
     ]
 
     resp = await traction.tenant_issue_credential(
