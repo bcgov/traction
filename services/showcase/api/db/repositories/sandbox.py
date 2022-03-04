@@ -39,7 +39,11 @@ class SandboxRepository(
         q = (
             select(self._table)
             .where(self._table.id == entry_id)
-            .options(selectinload(Sandbox.tenants), selectinload(Sandbox.students))
+            .options(
+                selectinload(Sandbox.lobs),
+                selectinload(Sandbox.students),
+                selectinload(Sandbox.applicants),
+            )
         )
         result = await self._db_session.execute(q)
         item = result.scalars().one_or_none()
@@ -54,7 +58,11 @@ class SandboxRepository(
             select(self._table)
             .offset(offset)
             .limit(limit)
-            .options(selectinload(Sandbox.tenants), selectinload(Sandbox.students))
+            .options(
+                selectinload(Sandbox.lobs),
+                selectinload(Sandbox.students),
+                selectinload(Sandbox.applicants),
+            )
         )
         result = await self._db_session.execute(q)
         items = result.scalars().all()
