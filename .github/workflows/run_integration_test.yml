@@ -95,7 +95,7 @@ jobs:
 
       - name: Run tests in pod 
         run: |
-          echo "TEST_RESULT=$(kubectl exec $(oc get pods -o name --selector app.kubernetes.io/instance=${{ github.event.inputs.instance_name }},app.kubernetes.io/name=${{ github.event.inputs.instance_name }}-api) -- pytest -p no:cacheprovider --asyncio-mode=strict -m integtest)" >> $GITHUB_ENV
+          kubectl exec $(oc get pods -o name --selector app.kubernetes.io/instance=${{ github.event.inputs.instance_name }},app.kubernetes.io/name=${{ github.event.inputs.instance_name }}-api) -- pytest -p no:cacheprovider --asyncio-mode=strict -m integtest
 
       - name: print outputs
         run: |
