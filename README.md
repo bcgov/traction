@@ -22,7 +22,7 @@ After you authenticate using `innkeeper/change-me` you can create a new tenant u
 
 Open another browser and connect to `http://localhost:5100/tenant/docs`.  Authenticate using the `wallet_id/wallet_key` from the previous step.
 
-See the [use case](TBD) document for more detailed information about traction services.
+See the [use case](./docs/USE-CASE.md) document for more detailed information about traction services.
 
 To run the showcase application, open a second bash shell and run the following:
 
@@ -34,7 +34,7 @@ docker-compose -f docker-compose.showcase.yml up
 
 Open a browser to `http://localhost:5200` to access the showcase application.
 
-See the [use case](TBD) document for more detailed information about how to run the showcase demo.
+See the [use case](./docs/USE-CASE.md) document for more detailed information about how to run the showcase demo.
 
 ## Running traction
 
