@@ -34,6 +34,19 @@ export default {
     return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/create-invitation/student`, { student_id: studentId });
   },
 
+
+  /**
+   * @function issueDegree
+   * Create a invitation
+   * @param {string} sandboxId The identifier for the sandbox
+   * @param {string} lobId The identifier for the line of business
+   * @returns {Promise} An axios response
+   */
+  issueDegree(sandboxId, lobId, studentId) {
+    return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/students/${studentId}/issue-degree`);
+  },
+
+
   /**
  * @function getOutOfBandMessages
  * Get out of band messages for the tenant
