@@ -15,25 +15,27 @@ class OutOfBandBase(BaseModel):
     sender_id: uuid.UUID = None
     recipient_id: uuid.UUID = None
     sandbox_id: uuid.UUID = None
+    action: Optional[str] = Field(nullable=True)
 
 
 class OutOfBand(OutOfBandBase, BaseTable, table=True):
+    __tablename__ = "out_of_band"
 
     # optional else, required on save
-    sender_id: uuid.UUID = Field(foreign_key="tenant.id")
-    recipient_id: uuid.UUID = Field(foreign_key="tenant.id")
+    sender_id: uuid.UUID = Field(foreign_key="line_of_business.id")
+    recipient_id: uuid.UUID = Field(foreign_key="line_of_business.id")
     sandbox_id: uuid.UUID = Field(foreign_key="sandbox.id")
 
     # relationships
-    sender: Optional["Tenant"] = Relationship(  # noqa: F821
+    sender: Optional["Lob"] = Relationship(  # noqa: F821
         sa_relationship_kwargs={
-            "primaryjoin": "OutOfBand.sender_id==Tenant.id",
+            "primaryjoin": "OutOfBand.sender_id==Lob.id",
             "lazy": "joined",
         }
     )
-    recipient: Optional["Tenant"] = Relationship(  # noqa: F821
+    recipient: Optional["Lob"] = Relationship(  # noqa: F821
         sa_relationship_kwargs={
-            "primaryjoin": "OutOfBand.recipient_id==Tenant.id",
+            "primaryjoin": "OutOfBand.recipient_id==Lob.id",
             "lazy": "joined",
         }
     )

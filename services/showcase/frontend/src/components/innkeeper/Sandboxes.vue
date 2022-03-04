@@ -23,23 +23,23 @@
           </template>
           <template v-slot:expanded-item="{ headers, item }">
             <td :colspan="headers.length">
-              <h3>Tenants in this sandbox</h3>
+              <h3>Businesses in this sandbox</h3>
               <v-row>
-                <v-col v-for="tenant in item.tenants" :key="tenant.id">
+                <v-col v-for="lob in item.lobs" :key="lob.id">
                   <p>
-                    <strong>{{ tenant.name }}</strong> <br />
-                    ID: {{ tenant.id }} <br />
-                    Wallet ID: {{ tenant.wallet_id }} <br />
-                    Wallet Key: {{ tenant.wallet_key }} <br />
-                    Issuer: {{ tenant.issuer_enabled }} <br />
-                    Schema Success: {{ tenant.issuer_schema_success }} <br />
-                    Cred Def Success: {{ tenant.issuer_cred_def_success }}
+                    <strong>{{ lob.name }}</strong> <br />
+                    ID: {{ lob.id }} <br />
+                    Wallet ID: {{ lob.wallet_id }} <br />
+                    Wallet Key: {{ lob.wallet_key }} <br />
+                    Traction Issue Enabled: {{ lob.traction_issue_enabled }} <br />
+                    Public DID: {{ lob.public_did }} <br />
+                    Cred. Def ID: {{ lob.cred_def_id }}
                     <br />
                     <!-- <v-btn
                       small
                       color="primary"
-                      @click="makeIssuer(tenant.id, item.id)"
-                      :disabled="tenant.issuer_enabled"
+                      @click="makeIssuer(lob.id, item.id)"
+                      :disabled="!lob.traction_issue_enabled"
                     >
                       Promote To Issuer
                     </v-btn> -->

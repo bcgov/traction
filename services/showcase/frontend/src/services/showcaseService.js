@@ -6,11 +6,11 @@ export default {
    * @function acceptInvitation
    * Accept an invitation
    * @param {string} sandboxId The identifier for the sandbox
-   * @param {string} tenantId The identifier for the tenant
+   * @param {string} lobId The identifier for the line of business
    * @returns {Promise} An axios response
    */
-  acceptInvitation(sandboxId, tenantId, senderId, message) {
-    return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/tenants/${tenantId}/accept-invitation`, { sender_id: senderId, invitation: message });
+  acceptInvitation(sandboxId, lobId, senderId, message) {
+    return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/accept-invitation`, { sender_id: senderId, invitation: message });
   },
 
   /**
@@ -27,22 +27,22 @@ export default {
    * @function createInvitation
    * Create a invitation
    * @param {string} sandboxId The identifier for the sandbox
-   * @param {string} tenantId The identifier for the tenant
+   * @param {string} lobId The identifier for the line of business
    * @returns {Promise} An axios response
    */
-  createInvitation(sandboxId, tenantId, studentId) {
-    return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/tenants/${tenantId}/create-invitation/student`, { student_id: studentId });
+  createInvitation(sandboxId, lobId, studentId) {
+    return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/create-invitation/student`, { student_id: studentId });
   },
 
   /**
  * @function getOutOfBandMessages
  * Get out of band messages for the tenant
  * @param {string} sandboxId The identifier for the sandbox
- * @param {string} tenantId The identifier for the tenant
+ * @param {string} lobId The identifier for the line of business
  * @returns {Promise} An axios response
  */
-  getOutOfBandMessages(sandboxId, tenantId) {
-    return appAxios().get(`${ApiRoutes.SANDBOXES}/${sandboxId}/tenants/${tenantId}/out-of-band-msgs`);
+  getOutOfBandMessages(sandboxId, lobId) {
+    return appAxios().get(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/out-of-band-msgs`);
   },
 
   /**
@@ -58,10 +58,10 @@ export default {
  * @function makeIssuer
  * Make a tenant an issuer
  * @param {string} sandboxId The identifier for the sandbox
- * @param {string} tenantId The identifier for the tenant
+ * @param {string} lobId The identifier for the line of business
  * @returns {Promise} An axios response
  */
-  makeIssuer(sandboxId, tenantId) {
-    return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/tenants/${tenantId}/make-issuer`);
+  makeIssuer(sandboxId, lobId) {
+    return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/make-issuer`);
   },
 };
