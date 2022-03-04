@@ -3,15 +3,40 @@ import random
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.db.models import Tenant
-from api.db.models.tenant import TenantUpdate
-from api.db.repositories import TenantRepository
+from api.db.models import Lob
+from api.db.models.line_of_business import LobUpdate
+from api.db.repositories import LobRepository, StudentRepository
+from api.db.repositories.job_applicant import ApplicantRepository
 from api.services import traction
 
 logger = logging.getLogger(__name__)
 
 
-async def handle_issuer(tenant: Tenant, payload: dict, db: AsyncSession):
+async def handle_connections(lob: Lob, payload: dict, db: AsyncSession):
+    logger.info(f"handle_connections({payload})")
+
+    # if we are handling a connection on behalf of a student or
+    #   applicant (ie they accepted)
+    # we want to track the state of the invitation.
+    if payload["invitation_key"] and payload["invitation_msg_id"]:
+        # student should only get an invitation from Faber
+        if payload["alias"] == "Faber":
+            stu_repo = StudentRepository(db_session=db)
+            student = await stu_repo.get_by_alias_in_sandbox(lob.sandbox_id, lob.name)
+            student.invitation_state = payload["state"]
+            await stu_repo.update(student)
+
+        # applications will get invitation from Acme
+        if payload["alias"] == "Acme":
+            a_repo = ApplicantRepository(db_session=db)
+            appl = await a_repo.get_by_alias_in_sandbox(lob.sandbox_id, lob.name)
+            appl.invitation_state = payload["state"]
+            await a_repo.update(appl)
+
+    return True
+
+
+async def handle_issuer(lob: Lob, payload: dict, db: AsyncSession):
     logger.info(f"handle_issuer({payload})")
     # {
     # 'status': 'completed',
@@ -19,9 +44,9 @@ async def handle_issuer(tenant: Tenant, payload: dict, db: AsyncSession):
     # 'public_did_state': 'public'
     # }
     if payload["status"] == "completed" and payload["public_did_state"] == "public":
-        repo = TenantRepository(db_session=db)
-        tenant.issuer_enabled = True
-        upd = TenantUpdate(**tenant.dict())
+        repo = LobRepository(db_session=db)
+        lob.public_did = payload["public_did"]
+        upd = LobUpdate(**lob.dict())
         await repo.update(upd)
 
         # TODO: remove this, only for one-time demo
@@ -41,8 +66,8 @@ async def handle_issuer(tenant: Tenant, payload: dict, db: AsyncSession):
         }
         tag = f"degree_{version}"
         resp = await traction.tenant_create_schema(
-            wallet_id=tenant.wallet_id,
-            wallet_key=tenant.wallet_key,
+            wallet_id=lob.wallet_id,
+            wallet_key=lob.wallet_key,
             schema=schema,
             cred_def_tag=tag,
         )
@@ -50,7 +75,7 @@ async def handle_issuer(tenant: Tenant, payload: dict, db: AsyncSession):
     return True
 
 
-async def handle_schema(tenant: Tenant, payload: dict, db: AsyncSession):
+async def handle_schema(lob: Lob, payload: dict, db: AsyncSession):
     logger.info(f"handle_schema({payload})")
     # {
     # 'status': 'completed',
@@ -59,50 +84,24 @@ async def handle_schema(tenant: Tenant, payload: dict, db: AsyncSession):
     # 'cred_def_state': 'completed',
     # 'cred_def_tag': 'demo_002'
     # }
-    if payload["status"] == "completed":
-        repo = TenantRepository(db_session=db)
-        tenant.issuer_schema_success = payload["schema_id"] is not None
-        tenant.issuer_cred_def_success = payload["cred_def_state"] == "completed"
-        upd = TenantUpdate(
-            **tenant.dict(),
+    if payload["status"] == "completed" and payload["cred_def_state"] == "completed":
+        repo = LobRepository(db_session=db)
+        lob.cred_def_id = payload["cred_def_id"]
+        upd = LobUpdate(
+            **lob.dict(),
         )
         await repo.update(upd)
 
-        # from here you could now issue a credential
-        # using the above example  (degree schema)
-        # and the cred_def_id...
-        #
-        # conns = await traction.get_connections(
-        #     wallet_id=tenant.wallet_id, wallet_key=tenant.wallet_key, alias="Alice"
-        # )
-        # logger.info(conns)
-        # if conns and len(conns) == 1:
-        #     alice = conns[0]
-        #     logger.info(alice)
-        #     attrs = [
-        #         {"name": "student_id", "value": "AS1234567"},
-        #         {"name": "name", "value": "Alice Smith"},
-        #         {"name": "date", "value": "2022-02-28"},
-        #         {"name": "degree", "value": "Maths"},
-        #         {"name": "age", "value": "24"}
-        #     ]
-        #     credential = await traction.tenant_issue_credential(
-        #         wallet_id=tenant.wallet_id,
-        #         wallet_key=tenant.wallet_key,
-        #         connection_id=alice["connection_id"],
-        #         alias=alice["alias"],
-        #         cred_def_id=payload["cred_def_id"],
-        #         attributes=attrs,
-        #     )
-        # logger.info(credential)
     return True
 
 
-async def handle_webhook(tenant: Tenant, topic: str, payload: dict, db: AsyncSession):
-    logger.info(f"handle_webhook(tenant = {tenant.name}, topic = {topic})")
+async def handle_webhook(lob: Lob, topic: str, payload: dict, db: AsyncSession):
+    logger.info(f"handle_webhook(lob = {lob.name}, topic = {topic})")
+    if "connections" == topic:
+        return await handle_connections(lob, payload, db)
     if "issuer" == topic:
-        return await handle_issuer(tenant, payload, db)
+        return await handle_issuer(lob, payload, db)
     if "schema" == topic:
-        return await handle_schema(tenant, payload, db)
+        return await handle_schema(lob, payload, db)
 
     return False

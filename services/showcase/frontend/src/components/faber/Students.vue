@@ -2,7 +2,7 @@
   <div class="students-list">
     <v-row>
       <v-col cols="6">
-        <div v-if="tenant.issuer_enabled">
+        <div v-if="tenant.public_did">
           <v-icon color="success">check_circle_outline</v-icon> Faber University
           is an Issuer
         </div>
@@ -41,7 +41,7 @@
           <template #activator="{ on, attrs }">
             <v-btn
               @click="invite(item.id)"
-              :disabled="item.name != 'Alice'"
+              :disabled="item.name != 'Alice Smith'"
               large
               icon
               v-bind="attrs"
@@ -58,7 +58,7 @@
           <template #activator="{ on, attrs }">
             <v-btn
               @click="invite(item.id)"
-              :disabled="!tenant.issuer_enabled"
+              :disabled="!tenant.public_did"
               large
               icon
               v-bind="attrs"

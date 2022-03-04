@@ -64,13 +64,13 @@ class OutOfBandRepository(
         items = result.scalars().all()
         return parse_obj_as(List[OutOfBandRead], items)
 
-    async def get_for_tenant(self, tenant_id: UUID) -> List[OutOfBandReadPopulated]:
+    async def get_for_lob(self, lob_id: UUID) -> List[OutOfBandReadPopulated]:
         q = (
             select(self._table)
             .where(
                 or_(
-                    self._table.recipient_id == tenant_id,
-                    self._table.sender_id == tenant_id,
+                    self._table.recipient_id == lob_id,
+                    self._table.sender_id == lob_id,
                 )
             )
             .order_by(OutOfBand.created_at.desc())

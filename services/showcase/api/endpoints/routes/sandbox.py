@@ -14,7 +14,8 @@ from api.db.repositories.sandbox import SandboxRepository
 from api.services.sandbox import create_new_sandbox
 
 from api.endpoints.routes.student import router as students_router
-from api.endpoints.routes.tenant import router as tenants_router
+from api.endpoints.routes.job_applicant import router as applicants_router
+from api.endpoints.routes.line_of_business import router as lobs_router
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -23,7 +24,10 @@ router.include_router(
     students_router, tags=["students"], prefix="/sandboxes/{sandbox_id}"
 )
 router.include_router(
-    tenants_router, tags=["tenants"], prefix="/sandboxes/{sandbox_id}"
+    applicants_router, tags=["applicants"], prefix="/sandboxes/{sandbox_id}"
+)
+router.include_router(
+    lobs_router, tags=["line_of_business"], prefix="/sandboxes/{sandbox_id}"
 )
 
 
