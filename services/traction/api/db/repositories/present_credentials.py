@@ -80,10 +80,12 @@ class PresentCredentialsRepository(
         items = result.scalars().all()
         return parse_obj_as(List[PresentCredentialRead], items)
 
-    async def get_by_workflow_id(self, workflow_id: UUID) -> Type[PresentCredentialRead]:
+    async def get_by_workflow_id(
+        self, workflow_id: UUID
+    ) -> Type[PresentCredentialRead]:
         q = select(self._table).where(self._table.workflow_id == workflow_id)
         result = await self._db_session.execute(q)
-        Present_cred = result.scalar_one_or_none()
+        present_cred = result.scalar_one_or_none()
         if not present_cred:
             raise DoesNotExist(
                 f"{self._table.__name__}<workflow_id:{workflow_id}> does not exist"

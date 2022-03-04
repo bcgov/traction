@@ -5,21 +5,21 @@ from enum import Enum
 class WebhookTopicType(str, Enum):
     ping = "ping"
     connections = "connections"
-    oob_invitation = "oob-invitation"
-    connection_reuse = "connection-reuse"
-    connection_reuse_accepted = "connection-reuse-accepted"
+    oob_invitation = "oob_invitation"
+    connection_reuse = "connection_reuse"
+    connection_reuse_accepted = "connection_reuse_accepted"
     basicmessages = "basicmessages"
     issue_credential = "issue_credential"
-    issue_credential_v2_0 = "issue-credential-v2-0"
-    issue_credential_v2_0_indy = "issue-credential-v2-0-indy"
-    issue_credential_v2_0_ld_proof = "issue-credential-v2-0-ld-proof"
-    issuer_cred_rev = "issuer-cred-rev"
-    present_proof = "present-proof"
-    present_proof_v2_0 = "present-proof-v2-0"
+    issue_credential_v2_0 = "issue_credential_v2_0"
+    issue_credential_v2_0_indy = "issue_credential_v2_0_indy"
+    issue_credential_v2_0_ld_proof = "issue_credential_v2_0_ld_proof"
+    issuer_cred_rev = "issuer_cred_rev"
+    present_proof = "present_proof"
+    present_proof_v2_0 = "present_proof_v2_0"
     endorse_transaction = "endorse_transaction"
-    revocation_registry = "revocation-registry"
-    revocation_notification = "revocation-notification"
-    problem_report = "problem-report"
+    revocation_registry = "revocation_registry"
+    revocation_notification = "revocation_notification"
+    problem_report = "problem_report"
 
 
 # the event id will be "acapy::WEBHOOK::<topic>::<potentially some other id>"
@@ -40,6 +40,9 @@ WEBHOOK_ENDORSE_LISTENER_PATTERN = re.compile(
 )
 WEBHOOK_ISSUE_LISTENER_PATTERN = re.compile(
     f"^{WEBHOOK_EVENT_PREFIX}{WebhookTopicType.issue_credential}(.*)?$"
+)
+WEBHOOK_PRESENT_LISTENER_PATTERN = re.compile(
+    f"^{WEBHOOK_EVENT_PREFIX}{WebhookTopicType.present_proof}(.*)?$"
 )
 
 

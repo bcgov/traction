@@ -10,8 +10,8 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql as pg
 
 # revision identifiers, used by Alembic.
-revision = 'd0cd66b80168'
-down_revision = 'e065bba5d8cd'
+revision = "d0cd66b80168"
+down_revision = "e065bba5d8cd"
 branch_labels = None
 depends_on = None
 
@@ -36,7 +36,7 @@ def upgrade():
         sa.Column("present_state", sa.String(), nullable=False),
         sa.Column("workflow_id", pg.UUID(as_uuid=True), nullable=True),
         sa.Column("pres_exch_id", pg.UUID(as_uuid=True), nullable=True),
-        sa.Column("presentation", sa.String(), nullable=False),
+        sa.Column("presentation", sa.String(), nullable=True),
         sa.Column(
             "created_at",
             pg.TIMESTAMP(),
