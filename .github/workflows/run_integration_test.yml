@@ -93,10 +93,20 @@ jobs:
           certificate_authority_data: ${{ secrets.OPENSHIFT_CA_CRT }}
           namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
 
-      - name: Remove Openshift Objects 
+      - name: Run tests in pod 
         run: |
-          echo "TEST_RESULT=kubectl exec $(oc get pods -o name --selector app.kubernetes.io/instance=${{ github.event.inputs.instance_name }},app.kubernetes.io/name=${{ github.event.inputs.instance_name }}) -- pytest -p no:cacheprovider --asyncio-mode=strict -m integtest" >> $GITHUB_ENV
+          echo "TEST_RESULT=$(kubectl exec $(oc get pods -o name --selector app.kubernetes.io/instance=${{ github.event.inputs.instance_name }},app.kubernetes.io/name=${{ github.event.inputs.instance_name }}) -- pytest -p no:cacheprovider --asyncio-mode=strict -m integtest)" >> $GITHUB_ENV
 
       - name: print outputs
         run: |
           echo "TEST_RESULT: ${{ env.TEST_RESULT }}"
+          
+      - name: Uninstall via Helm 
+        run: |
+          helm uninstall "${{ github.event.inputs.instance_name }}"
+      
+      - name: Remove Openshift Objects 
+        run: |
+          oc delete secret,pvc --selector "app.kubernetes.io/instance"="${{ github.event.inputs.instance_name }}"
+          
+
