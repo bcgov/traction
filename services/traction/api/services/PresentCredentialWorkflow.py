@@ -161,7 +161,7 @@ class PresentCredentialWorkflow(BaseWorkflow):
                     webhook_state == PresentationStateType.presentation_acked
                     or webhook_state == PresentationStateType.verified
                 ):
-                    present_cred.presentation = webhook_message["payload"]
+                    present_cred.presentation = json.dumps(webhook_message["payload"])
                     present_cred = await self.complete_presentation(present_cred)
 
                     # finish off our workflow
@@ -235,14 +235,17 @@ class PresentCredentialWorkflow(BaseWorkflow):
             value = provided_pres["requested_attributes"][attr]
             indy_pres.requested_attributes[attr] = IndyRequestedCredsRequestedAttr(
                 cred_id=value["cred_id"],
-                revealed=value.get("revealed"),
+                revealed=value.get("revealed") if value.get("revealed") else True,
             )
         for pred in provided_pres["requested_predicates"]:
             value = provided_pres["requested_predicates"][pred]
             indy_pres.requested_predicates[pred] = IndyRequestedCredsRequestedPred(
                 cred_id=value["cred_id"],
-                timestamp=value.get("timestamp"),
             )
+            if value.get("timestamp"):
+                indy_pres.requested_predicates[pred]["timestamp"] = value.get(
+                    "timestamp"
+                )
         for attr in provided_pres["self_attested_attributes"]:
             value = provided_pres["self_attested_attributes"][attr]
             indy_pres.requested_predicates[attr] = value
