@@ -5,6 +5,7 @@ class TenantWorkflowTypeType(str, Enum):
     issuer = "api.services.IssuerWorkflow"
     schema = "api.services.SchemaWorkflow"
     issue_cred = "api.services.IssueCredentialWorkflow"
+    present_cred = "api.services.PresentCredentialWorkflow"
 
 
 class TenantWorkflowStateType(str, Enum):

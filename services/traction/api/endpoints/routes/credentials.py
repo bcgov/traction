@@ -12,10 +12,16 @@ from api.db.models.issue_credential import (
     IssueCredentialRead,
     IssueCredentialUpdate,
 )
+from api.db.models.present_credential import (
+    PresentCredentialCreate,
+    PresentCredentialRead,
+    PresentCredentialUpdate,
+)
 from api.db.models.tenant_workflow import (
     TenantWorkflowRead,
 )
 from api.db.repositories.issue_credentials import IssueCredentialsRepository
+from api.db.repositories.present_credentials import PresentCredentialsRepository
 from api.db.repositories.tenant_workflows import TenantWorkflowsRepository
 from api.services.connections import (
     get_connection_with_alias,
@@ -28,7 +34,13 @@ from api.endpoints.models.credentials import (
     CredentialType,
     CredentialStateType,
     CredentialRoleType,
+    PresentCredentialProtocolType,
+    PresentationStateType,
+    PresentationRoleType,
     CredentialPreview,
+    ProofRequest,
+    CredPrecisForProof,
+    CredPresentation,
 )
 from api.endpoints.models.tenant_workflow import (
     TenantWorkflowTypeType,
@@ -38,16 +50,23 @@ from api.services.tenant_workflows import create_workflow
 from api.services.base import BaseWorkflow
 
 from acapy_client.api.credentials_api import CredentialsApi
+from acapy_client.api.present_proof_v1_0_api import PresentProofV10Api
 
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
 creds_api = CredentialsApi(api_client=get_api_client())
+pres_cred_v10_api = PresentProofV10Api(api_client=get_api_client())
 
 
 class IssueCredentialData(BaseModel):
     credential: IssueCredentialRead | None = None
+    workflow: TenantWorkflowRead | None = None
+
+
+class PresentCredentialData(BaseModel):
+    presentation: PresentCredentialRead | None = None
     workflow: TenantWorkflowRead | None = None
 
 
@@ -246,6 +265,125 @@ async def accept_credential(
     return issue
 
 
+@router.get("/holder/request", response_model=List[PresentCredentialData])
+async def get_holder_presentation_requests(
+    state: TenantWorkflowStateType | None = None,
+    db: AsyncSession = Depends(get_db),
+) -> List[PresentCredentialData]:
+    # this should take some query params, sorting and paging params...
+    wallet_id = get_from_context("TENANT_WALLET_ID")
+    present_repo = PresentCredentialsRepository(db_session=db)
+    workflow_repo = TenantWorkflowsRepository(db_session=db)
+    present_creds = await present_repo.find_by_wallet_id_and_role(
+        wallet_id, PresentationRoleType.holder
+    )
+    logger.warn(f">>> queued present_creds: {present_creds}")
+    presentations = []
+    for present_cred in present_creds:
+        tenant_workflow = None
+        if present_cred.workflow_id:
+            try:
+                tenant_workflow = await workflow_repo.get_by_id(
+                    present_cred.workflow_id
+                )
+            except DoesNotExist:
+                pass
+        if (
+            (not state)
+            or (not tenant_workflow and state == TenantWorkflowStateType.pending)
+            or (tenant_workflow and state == tenant_workflow.workflow_state)
+        ):
+            present = PresentCredentialData(
+                presentation=present_cred,
+                workflow=tenant_workflow,
+            )
+            presentations.append(present)
+    return presentations
+
+
+@router.get("/holder/creds-for-request", response_model=List[CredPrecisForProof])
+async def get_holder_creds_for_pres_request(
+    cred_issue_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> List[PresentCredentialData]:
+    present_repo = PresentCredentialsRepository(db_session=db)
+    present_cred = await present_repo.get_by_id(cred_issue_id)
+    creds = pres_cred_v10_api.present_proof_records_pres_ex_id_credentials_get(
+        str(present_cred.pres_exch_id)
+    )
+    cred_precis = []
+    for cred in creds:
+        cred_precis.append(
+            CredPrecisForProof(
+                cred_info=cred.get("cred_info"),
+                interval=cred.get("interval"),
+                presentation_referents=cred.get("presentation_referents"),
+            )
+        )
+    return cred_precis
+
+
+@router.post("/holder/present-credential", response_model=PresentCredentialData)
+async def present_credential(
+    cred_issue_id: str,
+    presentation: CredPresentation,
+    db: AsyncSession = Depends(get_db),
+) -> PresentCredentialData:
+    # holder has to present their credential(s)
+    present_repo = PresentCredentialsRepository(db_session=db)
+    workflow_repo = TenantWorkflowsRepository(db_session=db)
+    present_cred = await present_repo.get_by_id(cred_issue_id)
+    if present_cred.workflow_id:
+        tenant_workflow = None
+        if present_cred.workflow_id:
+            try:
+                tenant_workflow = await workflow_repo.get_by_id(
+                    present_cred.workflow_id
+                )
+            except DoesNotExist:
+                pass
+        present = PresentCredentialData(
+            presentation=present_cred,
+            workflow=tenant_workflow,
+        )
+        return present
+
+    tenant_workflow = await create_workflow(
+        present_cred.wallet_id,
+        TenantWorkflowTypeType.present_cred,
+        db,
+        error_if_wf_exists=False,
+        start_workflow=False,
+    )
+    logger.debug(f">>> Created tenant_workflow: {tenant_workflow}")
+    present_update = PresentCredentialUpdate(
+        id=present_cred.id,
+        workflow_id=tenant_workflow.id,
+        present_state=TenantWorkflowStateType.pending,
+        pres_exch_id=present_cred.pres_exch_id,
+        presentation=presentation.toJSON(),
+    )
+    present_cred = await present_repo.update(present_update)
+    logger.debug(f">>> Updated present_cred: {present_cred}")
+
+    # start workflow
+    tenant_workflow = await BaseWorkflow.next_workflow_step(
+        db, tenant_workflow=tenant_workflow
+    )
+    logger.debug(f">>> Updated tenant_workflow: {tenant_workflow}")
+
+    # get updated issuer info (should have workflow id etc.)
+    present_cred = await present_repo.get_by_id(present_cred.id)
+    logger.debug(f">>> Updated (final) present_cred: {present_cred}")
+
+    present = PresentCredentialData(
+        presentation=present_cred,
+        workflow=tenant_workflow,
+    )
+
+    return present
+
+
 @router.get("/holder/", response_model=List[dict])
 async def get_credentials(db: AsyncSession = Depends(get_db)) -> List[dict]:
     cred_results = creds_api.credentials_get()
@@ -262,3 +400,107 @@ async def get_credentials(db: AsyncSession = Depends(get_db)) -> List[dict]:
         creds.append(credential)
 
     return creds
+
+
+@router.get("/verifier/request", response_model=List[PresentCredentialData])
+async def get_verifier_request_credentials(
+    state: TenantWorkflowStateType | None = None,
+    db: AsyncSession = Depends(get_db),
+) -> List[PresentCredentialData]:
+    # this should take some query params, sorting and paging params...
+    wallet_id = get_from_context("TENANT_WALLET_ID")
+    present_repo = PresentCredentialsRepository(db_session=db)
+    workflow_repo = TenantWorkflowsRepository(db_session=db)
+    present_creds = await present_repo.find_by_wallet_id_and_role(
+        wallet_id, PresentationRoleType.verifier
+    )
+    logger.warn(f">>> queued present_creds: {present_creds}")
+    presentations = []
+    for present_cred in present_creds:
+        tenant_workflow = None
+        if present_cred.workflow_id:
+            try:
+                tenant_workflow = await workflow_repo.get_by_id(
+                    present_cred.workflow_id
+                )
+            except DoesNotExist:
+                pass
+        if (
+            (not state)
+            or (not tenant_workflow and state == TenantWorkflowStateType.pending)
+            or (tenant_workflow and state == tenant_workflow.workflow_state)
+        ):
+            present = PresentCredentialData(
+                presentation=present_cred,
+                workflow=tenant_workflow,
+            )
+            presentations.append(present)
+    return presentations
+
+
+@router.post("/verifier/request", response_model=PresentCredentialData)
+async def request_credentials(
+    pres_protocol: PresentCredentialProtocolType,
+    proof_req: ProofRequest,
+    connection_id: str | None = None,
+    alias: str | None = None,
+    db: AsyncSession = Depends(get_db),
+) -> PresentCredentialData:
+    if not connection_id:
+        existing_connection = get_connection_with_alias(alias)
+        if not existing_connection:
+            raise HTTPException(
+                status_code=404, detail=f"Error alias {alias} does not exist"
+            )
+        connection_id = existing_connection.connection_id
+
+    if pres_protocol == PresentCredentialProtocolType.v20:
+        raise NotImplementedError()  # TODO
+
+    wallet_id = get_from_context("TENANT_WALLET_ID")
+    tenant_id = get_from_context("TENANT_ID")
+    present_repo = PresentCredentialsRepository(db_session=db)
+
+    present_cred = PresentCredentialCreate(
+        tenant_id=tenant_id,
+        wallet_id=wallet_id,
+        connection_id=connection_id,
+        cred_protocol=pres_protocol,
+        present_request=proof_req.toJSON(),
+        present_role=PresentationRoleType.verifier,
+        present_state=PresentationStateType.pending,
+    )
+    present_cred = await present_repo.create(present_cred)
+
+    tenant_workflow = await create_workflow(
+        wallet_id,
+        TenantWorkflowTypeType.present_cred,
+        db,
+        error_if_wf_exists=False,
+        start_workflow=False,
+    )
+    logger.debug(f">>> Created tenant_workflow: {tenant_workflow}")
+    present_update = PresentCredentialUpdate(
+        id=present_cred.id,
+        workflow_id=tenant_workflow.id,
+        present_state=present_cred.present_state,
+    )
+    present_cred = await present_repo.update(present_update)
+    logger.debug(f">>> Updated present_update: {present_update}")
+
+    # start workflow
+    tenant_workflow = await BaseWorkflow.next_workflow_step(
+        db, tenant_workflow=tenant_workflow
+    )
+    logger.debug(f">>> Updated tenant_workflow: {tenant_workflow}")
+
+    # get updated issuer info (should have workflow id etc.)
+    present_cred = await present_repo.get_by_id(present_cred.id)
+    logger.debug(f">>> Updated (final) present_cred: {present_cred}")
+
+    present = PresentCredentialData(
+        presentation=present_cred,
+        workflow=tenant_workflow,
+    )
+
+    return present
