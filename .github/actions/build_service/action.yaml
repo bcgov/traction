@@ -45,6 +45,7 @@ runs:
       shell: bash
       run: |
         echo "cc_coverage = ${{ inputs.cc_coverage }}"
+        echo "cc_coverage = ${{ fromJSON(inputs.cc_coverage) }}"
         echo "cc_test_reporter_id = ${{ inputs.cc_test_reporter_id }}"
    
     - name: Set up Python 3.10
@@ -67,13 +68,13 @@ runs:
 
     - name: Test with tox
       shell: bash      
-      if: inputs.cc_coverage != 'true' 
+      if: ${{ !fromJSON(inputs.cc_coverage) }}
       run: |
         cd ${{ inputs.context }}
         tox -e test
     
     - name: Test with coverage
-      if: inputs.cc_coverage != true  
+      if: ${{ fromJSON(inputs.cc_coverage) }}
       uses: paambaati/codeclimate-action@v3.0.0
       env:
         CC_TEST_REPORTER_ID: ${{ inputs.cc_test_reporter_id }}
