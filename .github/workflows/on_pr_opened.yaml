@@ -27,8 +27,6 @@ jobs:
           registry: ghcr.io
           registry_username: ${{ github.repository_owner}}
           registry_password: ${{ secrets.GITHUB_TOKEN }}
-          cc_coverage: true
-          cc_test_reporter_id: ${{ secrets.CC_TEST_REPORTER_ID }}
     outputs:
       image_tag: ${{ steps.builder.outputs.image_tag }}
       image_version: ${{ steps.builder.outputs.image_version }}

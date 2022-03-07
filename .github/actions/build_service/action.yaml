@@ -40,13 +40,6 @@ runs:
   using: "composite"
   steps:
     - uses: actions/checkout@v2   
-
-    - name: echo
-      shell: bash
-      run: |
-        echo "cc_coverage = ${{ inputs.cc_coverage }}"
-        echo "cc_coverage = ${{ fromJSON(inputs.cc_coverage) }}"
-        echo "cc_test_reporter_id = ${{ inputs.cc_test_reporter_id }}"
    
     - name: Set up Python 3.10
       uses: actions/setup-python@v2
