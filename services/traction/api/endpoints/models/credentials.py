@@ -52,14 +52,14 @@ class PresentationStateType(str, Enum):
     # verifier states
     pending = "pending"
     proposal_received = "proposal_received"
-    request_sent = "request-sent"
-    presentation_received = "presentation-received"
+    request_sent = "request_sent"
+    presentation_received = "presentation_received"
     verified = "verified"
     # holder states
     proposal_sent = "proposal_sent"
-    request_received = "request-received"
-    presentation_sent = "presentation-sent"
-    reject_sent = "reject-sent"
+    request_received = "request_received"
+    presentation_sent = "presentation_sent"
+    reject_sent = "reject_sent"
     # common states
     done = "done"
     abandoned = "abandoned"
@@ -115,3 +115,9 @@ class ProofRequest(BaseSchema):
 
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True)
+
+
+class CredPrecisForProof(BaseSchema):
+    cred_info: dict
+    interval: dict | None = None
+    presentation_referents: list

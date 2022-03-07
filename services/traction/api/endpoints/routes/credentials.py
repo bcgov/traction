@@ -39,6 +39,7 @@ from api.endpoints.models.credentials import (
     PresentationRoleType,
     CredentialPreview,
     ProofRequest,
+    CredPrecisForProof,
 )
 from api.endpoints.models.tenant_workflow import (
     TenantWorkflowTypeType,
@@ -48,12 +49,14 @@ from api.services.tenant_workflows import create_workflow
 from api.services.base import BaseWorkflow
 
 from acapy_client.api.credentials_api import CredentialsApi
+from acapy_client.api.present_proof_v1_0_api import PresentProofV10Api
 
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
 creds_api = CredentialsApi(api_client=get_api_client())
+pres_cred_v10_api = PresentProofV10Api(api_client=get_api_client())
 
 
 class IssueCredentialData(BaseModel):
@@ -273,6 +276,7 @@ async def get_holder_presentation_requests(
     present_creds = await present_repo.find_by_wallet_id_and_role(
         wallet_id, PresentationRoleType.holder
     )
+    logger.warn(f">>> queued present_creds: {present_creds}")
     presentations = []
     for present_cred in present_creds:
         tenant_workflow = None
@@ -289,19 +293,33 @@ async def get_holder_presentation_requests(
             or (tenant_workflow and state == tenant_workflow.workflow_state)
         ):
             present = PresentCredentialData(
-                presentations=present_cred,
+                presentation=present_cred,
                 workflow=tenant_workflow,
             )
             presentations.append(present)
     return presentations
 
 
-@router.get("/holder/creds-for-request", response_model=List[PresentCredentialData])
+@router.get("/holder/creds-for-request", response_model=List[CredPrecisForProof])
 async def get_holder_creds_for_pres_request(
     cred_issue_id: str,
     db: AsyncSession = Depends(get_db),
 ) -> List[PresentCredentialData]:
-    pass
+    present_repo = PresentCredentialsRepository(db_session=db)
+    present_cred = await present_repo.get_by_id(cred_issue_id)
+    creds = pres_cred_v10_api.present_proof_records_pres_ex_id_credentials_get(
+        str(present_cred.pres_exch_id)
+    )
+    cred_precis = []
+    for cred in creds:
+        cred_precis.append(
+            CredPrecisForProof(
+                cred_info=cred.get("cred_info"),
+                interval=cred.get("interval"),
+                presentation_referents=cred.get("presentation_referents"),
+            )
+        )
+    return cred_precis
 
 
 @router.post("/holder/present-credential", response_model=PresentCredentialData)
@@ -342,6 +360,7 @@ async def get_verifier_request_credentials(
     present_creds = await present_repo.find_by_wallet_id_and_role(
         wallet_id, PresentationRoleType.verifier
     )
+    logger.warn(f">>> queued present_creds: {present_creds}")
     presentations = []
     for present_cred in present_creds:
         tenant_workflow = None
@@ -358,21 +377,21 @@ async def get_verifier_request_credentials(
             or (tenant_workflow and state == tenant_workflow.workflow_state)
         ):
             present = PresentCredentialData(
-                presentations=present_cred,
+                presentation=present_cred,
                 workflow=tenant_workflow,
             )
             presentations.append(present)
     return presentations
 
 
-@router.post("/verifier/request", response_model=IssueCredentialData)
+@router.post("/verifier/request", response_model=PresentCredentialData)
 async def request_credentials(
     pres_protocol: PresentCredentialProtocolType,
     proof_req: ProofRequest,
     connection_id: str | None = None,
     alias: str | None = None,
     db: AsyncSession = Depends(get_db),
-) -> IssueCredentialData:
+) -> PresentCredentialData:
     if not connection_id:
         existing_connection = get_connection_with_alias(alias)
         if not existing_connection:

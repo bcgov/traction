@@ -179,13 +179,34 @@ class PresentCredentialWorkflow(BaseWorkflow):
         proof_req = IndyProofRequest(
             requested_attributes={},
             requested_predicates={},
+            name="TBD request name goes here",
+            version="1.0.0",
         )
+        pres_req = json.loads(present_cred.present_request)
+        count = 0
+        for attr in pres_req["requested_attributes"]:
+            count += 1
+            attr_name = f"attr_{count}"
+            req_attr = {"restrictions": attr["restrictions"]}
+            if "name" in attr and attr["name"]:
+                req_attr["name"] = attr["name"]
+            if "names" in attr and attr["names"]:
+                req_attr["names"] = attr["names"]
+            if "non_revoked" in attr and attr["non_revoked"]:
+                req_attr["non_revoked"] = attr["non_revoked"]
+            proof_req.requested_attributes[attr_name] = req_attr
+        count = 0
+        for pred in pres_req["requested_predicates"]:
+            count += 1
+            pred_name = f"pred_{count}"
+            proof_req.requested_predicates[pred_name] = pred
         pres_request = V10PresentationSendRequestRequest(
             connection_id=str(present_cred.connection_id),
             proof_request=proof_req,
             comment="TBD comment goes here",
         )
         data = {"body": pres_request}
+        logger.warn(f">>> posting pres req with: {data}")
         pres_resp = pres_cred_v10_api.present_proof_send_request_post(**data)
 
         # add the transaction id to our tenant schema setup

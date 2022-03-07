@@ -105,6 +105,7 @@ class IndyCredPrecis(ModelNormal):
             ),  # noqa: E501
             "interval": (
                 {str: (bool, date, datetime, dict, float, int, list, str, none_type)},
+                none_type,
             ),  # noqa: E501
             "presentation_referents": ([str],),  # noqa: E501
         }
