@@ -66,7 +66,6 @@ runs:
         tox -e test
     
     - name: Test with coverage
-      shell: bash 
       if: ${{ inputs.cc_coverage }}
       uses: paambaati/codeclimate-action@v2.5.3
       env:
