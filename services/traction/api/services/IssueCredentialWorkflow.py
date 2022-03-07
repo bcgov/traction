@@ -149,6 +149,10 @@ class IssueCredentialWorkflow(BaseWorkflow):
                 # check for state of "credential_acked"
                 webhook_state = webhook_message["payload"]["state"]
                 logger.debug(f">>> checking for webhook_state: {webhook_state}")
+                # update our status
+                issue_cred = await self.update_credential_state(
+                    issue_cred, webhook_state
+                )
                 if (
                     webhook_state == CredentialStateType.done
                     or webhook_state == CredentialStateType.credential_acked
@@ -157,12 +161,6 @@ class IssueCredentialWorkflow(BaseWorkflow):
 
                     # finish off our workflow
                     await self.complete_workflow()
-
-                else:
-                    # just update our status
-                    issue_cred = await self.update_credential_state(
-                        issue_cred, webhook_state
-                    )
 
             else:
                 logger.warn(f">>> ignoring topic for now: {webhook_topic}")

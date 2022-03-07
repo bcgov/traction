@@ -150,23 +150,22 @@ class PresentCredentialWorkflow(BaseWorkflow):
             webhook_topic = webhook_message["topic"]
             logger.debug(f">>> checking for webhook_topic: {webhook_topic}")
             if webhook_topic == WebhookTopicType.present_proof:
-                # check for state of "credential_acked"
+                # check for state of "presentation_acked"
                 webhook_state = webhook_message["payload"]["state"]
                 logger.debug(f">>> checking for webhook_state: {webhook_state}")
+                # update our status
+                present_cred = await self.update_presentation_state(
+                    present_cred, webhook_state
+                )
                 if (
-                    webhook_state == PresentationStateType.presentation_received
+                    webhook_state == PresentationStateType.presentation_acked
                     or webhook_state == PresentationStateType.verified
                 ):
+                    present_cred.presentation = webhook_message["payload"]
                     present_cred = await self.complete_presentation(present_cred)
 
                     # finish off our workflow
                     await self.complete_workflow()
-
-                else:
-                    # just update our status
-                    present_cred = await self.update_presentation_state(
-                        present_cred, webhook_state
-                    )
 
             else:
                 logger.warn(f">>> ignoring topic for now: {webhook_topic}")
@@ -286,6 +285,7 @@ class PresentCredentialWorkflow(BaseWorkflow):
             workflow_id=self.tenant_workflow.id,
             present_state=present_cred.present_state,
             pres_exch_id=present_cred.pres_exch_id,
+            presentation=present_cred.presentation,
         )
         present_cred = await self.present_repo.update(update_present)
         return present_cred

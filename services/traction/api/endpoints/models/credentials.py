@@ -62,6 +62,7 @@ class PresentationStateType(str, Enum):
     presentation_sent = "presentation_sent"
     reject_sent = "reject_sent"
     # common states
+    presentation_acked = "presentation_acked"
     done = "done"
     abandoned = "abandoned"
     error = "error"
