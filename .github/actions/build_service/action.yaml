@@ -60,7 +60,7 @@ runs:
 
     - name: Test with tox
       shell: bash      
-      if: !inputs.cc_coverage
+      if: ${{ !inputs.cc_coverage }}
       run: |
         cd ${{ inputs.context }}
         tox -e test
