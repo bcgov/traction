@@ -60,14 +60,14 @@ runs:
 
     - name: Test with tox
       shell: bash      
-      if: ${{ !inputs.cc_coverage }}
+      if: !inputs.cc_coverage
       run: |
         cd ${{ inputs.context }}
         tox -e test
     
     - name: Test with coverage
-      if: ${{ inputs.cc_coverage }}
-      uses: paambaati/codeclimate-action@v2.5.3
+      if: inputs.cc_coverage
+      uses: paambaati/codeclimate-action@v3.0.0
       env:
         CC_TEST_REPORTER_ID: ${{ inputs.cc_test_reporter_id }}
       with:
