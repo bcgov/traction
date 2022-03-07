@@ -19,7 +19,7 @@ inputs:
   cc_coverage:
     required: false
     type: boolean
-    default: false
+    default: "false"
   cc_test_reporter_id:
     required: false
     type: string
