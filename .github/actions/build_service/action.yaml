@@ -16,6 +16,10 @@ inputs:
     type: string
   registry_password:
     required: true
+  cc_coverage:
+    required: false
+    type: boolean
+    default: false
   cc_test_reporter_id:
     required: false
     type: string
@@ -39,8 +43,10 @@ runs:
 
     - name: echo
       shell: bash
-      run: echo "cc_test_reporter_id = ${{ inputs.cc_test_reporter_id }}"
-    
+      run: |
+        echo "cc_coverage = ${{ inputs.cc_coverage }}"
+        echo "cc_test_reporter_id = ${{ inputs.cc_test_reporter_id }}"
+   
     - name: Set up Python 3.10
       uses: actions/setup-python@v2
       with:
@@ -61,13 +67,13 @@ runs:
 
     - name: Test with tox
       shell: bash      
-      if: ${{ inputs.cc_test_reporter_id }} == ""
+      if: inputs.cc_coverage != 'true' 
       run: |
         cd ${{ inputs.context }}
         tox -e test
     
     - name: Test with coverage
-      if: ${{ inputs.cc_test_reporter_id }} != ""
+      if: inputs.cc_coverage != true  
       uses: paambaati/codeclimate-action@v3.0.0
       env:
         CC_TEST_REPORTER_ID: ${{ inputs.cc_test_reporter_id }}
