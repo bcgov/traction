@@ -1,5 +1,6 @@
 from enum import Enum
 import json
+from typing import Dict
 
 from api.db.models.base import BaseSchema
 
@@ -121,3 +122,28 @@ class CredPrecisForProof(BaseSchema):
     cred_info: dict
     interval: dict | None = None
     presentation_referents: list
+
+
+class PresentationAttribute(BaseSchema):
+    cred_id: str
+    revealed: bool
+
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True)
+
+
+class PresentationPredicate(BaseSchema):
+    cred_id: str
+    timestamp: int | None = None
+
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True)
+
+
+class CredPresentation(BaseSchema):
+    requested_attributes: Dict[str, PresentationAttribute]
+    requested_predicates: Dict[str, PresentationPredicate]
+    self_attested_attributes: dict
+
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True)

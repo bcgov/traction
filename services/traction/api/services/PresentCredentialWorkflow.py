@@ -34,9 +34,13 @@ from acapy_client.model.v10_presentation_send_request_request import (
     V10PresentationSendRequestRequest,
 )
 from acapy_client.model.indy_proof_request import IndyProofRequest
-
-# from acapy_client.model.indy_proof_req_attr_spec import IndyProofReqAttrSpec
-# from acapy_client.model.indy_proof_req_pred_spec import IndyProofReqPredSpec
+from acapy_client.model.indy_pres_spec import IndyPresSpec
+from acapy_client.model.indy_requested_creds_requested_attr import (
+    IndyRequestedCredsRequestedAttr,
+)
+from acapy_client.model.indy_requested_creds_requested_pred import (
+    IndyRequestedCredsRequestedPred,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -222,9 +226,31 @@ class PresentCredentialWorkflow(BaseWorkflow):
     async def holder_present_credential(
         self, present_cred: PresentCredentialRead
     ) -> PresentCredentialRead:
+        indy_pres = IndyPresSpec(
+            requested_attributes={},
+            requested_predicates={},
+            self_attested_attributes={},
+        )
+        provided_pres = json.loads(present_cred.presentation)
+        for attr in provided_pres["requested_attributes"]:
+            value = provided_pres["requested_attributes"][attr]
+            indy_pres.requested_attributes[attr] = IndyRequestedCredsRequestedAttr(
+                cred_id=value["cred_id"],
+                revealed=value.get("revealed"),
+            )
+        for pred in provided_pres["requested_predicates"]:
+            value = provided_pres["requested_predicates"][pred]
+            indy_pres.requested_predicates[pred] = IndyRequestedCredsRequestedPred(
+                cred_id=value["cred_id"],
+                timestamp=value.get("timestamp"),
+            )
+        for attr in provided_pres["self_attested_attributes"]:
+            value = provided_pres["self_attested_attributes"][attr]
+            indy_pres.requested_predicates[attr] = value
+        data = {"body": indy_pres}
         pres_resp = (
             pres_cred_v10_api.present_proof_records_pres_ex_id_send_presentation_post(
-                str(present_cred.pres_exch_id)
+                str(present_cred.pres_exch_id), **data
             )
         )
 
@@ -233,7 +259,8 @@ class PresentCredentialWorkflow(BaseWorkflow):
             id=present_cred.id,
             workflow_id=self.tenant_workflow.id,
             present_state=pres_resp.state,
-            pres_exch_id=pres_resp.presentation_exchange_id,
+            pres_exch_id=present_cred.pres_exch_id,
+            presentation=present_cred.presentation,
         )
         present_cred = await self.present_repo.update(update_present)
         return present_cred
