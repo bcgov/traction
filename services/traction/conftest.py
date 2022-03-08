@@ -47,10 +47,6 @@ def override_get_db(db_session: AsyncSession) -> Callable:
 @pytest.mark.integtest
 @pytest.fixture()
 def test_app(override_get_db: Callable) -> FastAPI:
-    ##Disable Security before app is loaded
-    # TODO will need to override again so we can test auth itself
-    s.ENDPOINT_SECURITY_ENABLED = True
-
     from api.endpoints.dependencies.db import get_db
     from api.main import app, innkeeper_app, tenant_app, webhook_app, acapy_wrapper_app
 

@@ -94,10 +94,6 @@ class GlobalConfig(BaseSettings):
 
     EVENT_BUS: EventBus = EventBus()
 
-    # TODO move this to a TestConfig class that the testing uses.
-    # or remove todo and keep it for local development?
-    ENDPOINT_SECURITY_ENABLED = True
-
     class Config:
         case_sensitive = True
 
@@ -114,8 +110,6 @@ class ProdConfig(GlobalConfig):
 
     DEBUG: bool = False
     ENVIRONMENT: EnvironmentEnum = EnvironmentEnum.PRODUCTION
-    # Force True if prod config
-    ENDPOINT_SECURITY_ENABLED = True
 
 
 class FactoryConfig:
