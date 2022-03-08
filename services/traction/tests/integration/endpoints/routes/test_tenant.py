@@ -1,5 +1,6 @@
 import pytest
 import json
+import time
 
 from httpx import AsyncClient
 from pydantic import parse_obj_as
@@ -74,3 +75,43 @@ async def test_tenants_connect(test_client: AsyncClient) -> None:
     t2_connections = await test_client.get("/tenant/v1/connections/", headers=t2_headers)
     assert t2_connections.status_code == 200, t2_connections.content
     assert 1 == len(json.loads(t2_connections.content)), t2_connections.content
+
+
+@pytest.mark.integtest
+async def test_tenant_issuer(test_client: AsyncClient) -> None:
+    # get a token
+    bearer_token = await innkeeper_auth(test_client)
+    ik_headers = innkeeper_headers(bearer_token)
+
+    # ARRANGE
+    tenant1_name = random_string("tenant1_test_", 12)
+    data = {"name": tenant1_name}
+    resp_tenant1 = await test_client.post(
+        "/innkeeper/v1/check-in", json=data, headers=ik_headers
+    )
+    assert resp_tenant1.status_code == 201, resp_tenant1.content
+    c1_resp = CheckInResponse(**resp_tenant1.json())
+
+    t1_token = await tenant_auth(test_client, c1_resp.wallet_id, c1_resp.wallet_key)
+    t1_headers = tenant_headers(t1_token)
+
+    resp_issuer1 = await test_client.post(f"/innkeeper/v1/issuers/{c1_resp.id}", headers=ik_headers)
+    assert resp_issuer1.status_code == 200, resp_issuer1.content
+
+    resp_issuer1 = await test_client.post("/tenant/v1/admin/issuer", headers=t1_headers)
+    assert resp_issuer1.status_code == 200, resp_issuer1.content
+
+    i = 5
+    completed = False
+    while i > 0 and not completed:
+        # wait for the issuer process to complete
+        resp_issuer1 = await test_client.get("/tenant/v1/admin/issuer", headers=t1_headers)
+        assert resp_issuer1.status_code == 200, resp_issuer1.content
+
+        issuer = json.loads(resp_issuer1.content)
+        completed = (issuer["workflow"]["workflow_state"] == "complete")
+        if not completed:
+            time.sleep(2)
+        i -= 1
+
+    assert completed, issuer["workflow"]["workflow_state"]
