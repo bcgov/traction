@@ -68,13 +68,25 @@ async def test_tenants_connect(test_client: AsyncClient) -> None:
     resp_connection = await test_client.post("/tenant/v1/connections/receive-invitation", params=data, json=invitation["invitation"], headers=t2_headers)
     assert resp_connection.status_code == 200, resp_connection.content
 
-    t1_connections = await test_client.get("/tenant/v1/connections/", headers=t1_headers)
-    assert t1_connections.status_code == 200, t1_connections.content
-    assert 1 == len(json.loads(t1_connections.content)), t1_connections.content
+    i = 5
+    completed = False
+    while 0 < i and not completed:
+        t1_connections_resp = await test_client.get("/tenant/v1/connections/", headers=t1_headers)
+        assert t1_connections_resp.status_code == 200, t1_connections_resp.content
+        t1_connections = json.loads(t1_connections_resp.content)
+        assert 1 == len(t1_connections), t1_connections
 
-    t2_connections = await test_client.get("/tenant/v1/connections/", headers=t2_headers)
-    assert t2_connections.status_code == 200, t2_connections.content
-    assert 1 == len(json.loads(t2_connections.content)), t2_connections.content
+        t2_connections_resp = await test_client.get("/tenant/v1/connections/", headers=t2_headers)
+        assert t2_connections_resp.status_code == 200, t2_connections_resp.content
+        t2_connections = json.loads(t2_connections_resp.content)
+        assert 1 == len(t2_connections), t2_connections
+
+        completed = (t1_connections[0]["state"] == "active" and t2_connections[0]["state"] == "active")
+        if not completed:
+            time.sleep(2)
+        i -= 1
+
+    assert completed, t1_connections[0]["state"] + ":" + t2_connections[0]["state"]
 
 
 @pytest.mark.integtest
