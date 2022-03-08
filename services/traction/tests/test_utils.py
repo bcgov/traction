@@ -30,3 +30,22 @@ def innkeeper_headers(bearer_token: str) -> dict:
         "Authorization": bearer_token,
     }
     return headers
+
+
+async def tenant_auth(test_client: AsyncClient, wallet_id: str, wallet_key: str) -> str:
+    data = {"username": wallet_id, "password": wallet_key}
+    token_resp = await test_client.post("/tenant/token", data=data)
+    assert token_resp.status_code == 200, token_resp.content
+    token_content = json.loads(token_resp.content)
+    bearer_token = "Bearer " + token_content["access_token"]
+
+    return bearer_token
+
+
+def tenant_headers(bearer_token: str) -> dict:
+    headers = {
+        "accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": bearer_token,
+    }
+    return headers

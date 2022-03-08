@@ -10,9 +10,7 @@ pytestmark = pytest.mark.asyncio
 
 
 @pytest.mark.integtest
-async def test_tenants_get_all(
-    test_client: AsyncClient
-) -> None:
+async def test_tenants_get_all(test_client: AsyncClient) -> None:
     # get a token
     bearer_token = await innkeeper_auth(test_client)
     headers = innkeeper_headers(bearer_token)
@@ -25,7 +23,9 @@ async def test_tenants_get_all(
 
     tenant_name = random_string("tenant_test_", 12)
     data = {"name": tenant_name}
-    resp_tenant = await test_client.post("/innkeeper/v1/check-in", json=data, headers=headers)
+    resp_tenant = await test_client.post(
+        "/innkeeper/v1/check-in", json=data, headers=headers
+    )
     assert resp_tenant.status_code == 201, resp_tenant.content
 
     # ACT
@@ -34,4 +34,4 @@ async def test_tenants_get_all(
 
     # ASSERT
     resp_content = json.loads(resp.content)
-    assert (len(resp_content)-existing_len) == 1, len(resp_content)
+    assert (len(resp_content) - existing_len) == 1, len(resp_content)
