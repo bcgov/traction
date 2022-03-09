@@ -89,7 +89,7 @@ async def create_tenant_webhook(tenant: Lob):
     data = {
         "webhook_url": f"{settings.SHOWCASE_ENDPOINT}/api/v1/webhook/{tenant.id}",
         "webhook_key": hashed_wallet_key,
-        "config": {"acapy": True},
+        "config": {"acapy": False},
     }
     # TODO: error handling calling Traction
     async with ClientSession() as client_session:
@@ -321,7 +321,7 @@ async def tenant_accept_cred_offer(
     async with ClientSession() as client_session:
         async with await client_session.post(
             url=t_urls.TENANT_ACCEPT_CRED_OFFER,
-            params={str(cred_issue_id)},
+            params={"cred_issue_id": cred_issue_id},
             headers=auth_headers,
         ) as response:
             try:

@@ -97,14 +97,11 @@ async def handle_schema(lob: Lob, payload: dict, db: AsyncSession):
 
 async def handle_issue_credential(lob: Lob, payload: dict, db: AsyncSession):
     logger.info(f"handle_issue_credential({payload})")
-
-    # AUTO_ACCEPT
-    # TODO modify the webhook payload from traction to include the cred_issue_id
-    # await traction.tenant_accept_cred_offer(
-    #     wallet_id=lob.wallet_id,
-    #     wallet_key=lob.wallet_key,
-    #     cred_issue_id=payload["cred_issue_id"],
-    # )
+    await traction.tenant_accept_cred_offer(
+        wallet_id=lob.wallet_id,
+        wallet_key=lob.wallet_key,
+        cred_issue_id=payload["cred_issue_id"],
+    )
 
     return True
 
@@ -117,6 +114,7 @@ async def handle_webhook(lob: Lob, topic: str, payload: dict, db: AsyncSession):
         return await handle_issuer(lob, payload, db)
     if "schema" == topic:
         return await handle_schema(lob, payload, db)
-    if "issue_credential" == topic:
+    # topic = "issue_credential" is the acapy event, ignore that one
+    if "issue_cred" == topic:
         return await handle_issue_credential(lob, payload, db)
     return False
