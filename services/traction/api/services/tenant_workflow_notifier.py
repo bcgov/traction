@@ -5,7 +5,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.core.profile import Profile
 from api.db.models.tenant_issuer import TenantIssuerRead
 from api.db.models.tenant_schema import TenantSchemaRead
-from api.endpoints.models.webhooks import TenantEventTopicType, TRACTION_EVENT_PREFIX
+from api.endpoints.models.webhooks import (
+    TenantEventTopicType,
+    TRACTION_EVENT_PREFIX,
+)
+from api.db.models.issue_credential import (
+    IssueCredentialRead,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +24,23 @@ class TenantWorkflowNotifier:
     def db(self) -> AsyncSession:
         """Accessor for db session instance."""
         return self._db
+
+    async def issuer_workflow_cred_offer(self, cred_offer: IssueCredentialRead):
+        logger.info("received cred offer")
+        # emit an event for any interested listeners
+        profile = Profile(cred_offer.wallet_id, self.db)
+        topic = TenantEventTopicType.issue_cred
+        event_topic = TRACTION_EVENT_PREFIX + topic
+        logger.info(f"profile.notify {event_topic}")
+
+        # TODO: Webhook payload schema's should become pydantic models?
+        payload = {
+            "status": "offer_received",
+            "credential": cred_offer.json(),
+            "cred_issue_id": str(cred_offer.id),
+        }
+
+        await profile.notify(event_topic, {"topic": topic, "payload": payload})
 
     async def issuer_workflow_completed(self, tenant_issuer: TenantIssuerRead):
         logger.info("issuer workflow complete")
