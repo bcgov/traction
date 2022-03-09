@@ -8,7 +8,7 @@ from httpx import AsyncClient
 
 def random_string(prefix: str, length: int = 10) -> str:
     letters = string.ascii_lowercase
-    return prefix.join(random.choice(letters) for i in range(length))
+    return prefix + "".join(random.choice(letters) for i in range(length))
 
 
 async def innkeeper_auth(test_client: AsyncClient) -> str:

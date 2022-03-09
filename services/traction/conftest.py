@@ -10,7 +10,7 @@ from api.core.config import settings as s
 from api.db.session import engine, async_session
 
 from typing import AsyncGenerator
-from httpx import AsyncClient
+from httpx import AsyncClient, Limits, Timeout
 
 
 @pytest.mark.integtest
@@ -69,5 +69,11 @@ async def test_client(test_app: FastAPI) -> AsyncGenerator:
 @pytest.mark.integtest
 @pytest_asyncio.fixture()
 async def app_client() -> AsyncGenerator:
-    async with AsyncClient(base_url="http://localhost:5000") as ac:
+    limits = Limits(
+        max_connections=1000, max_keepalive_connections=20, keepalive_expiry=5.0
+    )
+    timeout = Timeout(timeout=10)
+    async with AsyncClient(
+        base_url="http://localhost:5000", limits=limits, timeout=timeout
+    ) as ac:
         yield ac

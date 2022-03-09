@@ -56,6 +56,127 @@ async def test_tenant_issuer(app_client: AsyncClient) -> None:
         app_client, ik_headers, tenant_name="tenant1_test_", make_issuer=True
     )
 
+    schema_name = random_string("test_schema_", 8)
+    schema = {
+        "schema_name": schema_name,
+        "schema_version": "1.2.3",
+        "attributes": ["score", "full_name", "test_date"],
+    }
+    cred_def_id = await create_schema_cred_def(
+        app_client,
+        t1_headers,
+        cred_def_tag="test_tag",
+        schema=schema,
+    )
+    assert cred_def_id, "No cred def id returned"
+
+
+@pytest.mark.integtest
+async def test_tenants_issue_credential(app_client: AsyncClient) -> None:
+    # get a token
+    bearer_token = await innkeeper_auth(app_client)
+    ik_headers = innkeeper_headers(bearer_token)
+
+    t1_headers = await create_tenant(
+        app_client, ik_headers, tenant_name="tenant1_test_", make_issuer=True
+    )
+    t2_headers = await create_tenant(
+        app_client, ik_headers, tenant_name="tenant2_test_"
+    )
+
+    schema_name = random_string("test_schema_", 8)
+    schema = {
+        "schema_name": schema_name,
+        "schema_version": "1.2.3",
+        "attributes": ["score", "full_name", "test_date"],
+    }
+    cred_def_id = await create_schema_cred_def(
+        app_client,
+        t1_headers,
+        cred_def_tag="test_tag",
+        schema=schema,
+    )
+    assert cred_def_id, "No cred def id returned"
+
+    await connect_tenants(app_client, t1_headers, "alice", t2_headers, "faber")
+
+    # should be zero credentials for our t2
+    creds_resp = await app_client.get(
+        "/tenant/v1/credentials/holder/", headers=t2_headers
+    )
+    assert creds_resp.status_code == 200, creds_resp.content
+    assert 0 == len(json.loads(creds_resp.content)), creds_resp.content
+
+    # now issue a credential from t1 to t2
+    credential = {
+        "attributes": [
+            {"name": "score", "value": "66"},
+            {"name": "full_name", "value": "Alice Smith"},
+            {"name": "test_date", "value": "April 1, 2022"},
+        ]
+    }
+    params = {
+        "cred_protocol": "v1.0",
+        "cred_def_id": cred_def_id,
+        "alias": "alice",
+    }
+    issue_resp = await app_client.post(
+        "/tenant/v1/credentials/issuer/issue",
+        headers=t1_headers,
+        params=params,
+        json=credential,
+    )
+    assert issue_resp.status_code == 200, issue_resp.content
+    issue_data = json.loads(issue_resp.content)
+    assert issue_data.get("workflow"), "Error no workflow returned"
+    issue_workflow_id = issue_data["workflow"]["id"]
+
+    holder_data = None
+    i = 5
+    while i > 0 and not holder_data:
+        holder_resp = await app_client.get(
+            "/tenant/v1/credentials/holder/offer",
+            headers=t2_headers,
+            params={"state": "pending"},
+        )
+        assert holder_resp.status_code == 200, holder_resp.content
+        if 0 < len(json.loads(holder_resp.content)):
+            holder_data = json.loads(holder_resp.content)[0]
+        else:
+            time.sleep(1)
+            i -= 1
+    assert holder_data, "Error no cred offer received by holder"
+
+    holder_resp = await app_client.post(
+        "/tenant/v1/credentials/holder/accept_offer",
+        headers=t2_headers,
+        params={"cred_issue_id": holder_data["credential"]["id"]},
+    )
+    assert holder_resp.status_code == 200, holder_resp.content
+    holder_data = json.loads(holder_resp.content)
+    assert holder_data.get("workflow"), "Error no workflow returned"
+    holder_workflow_id = holder_data["workflow"]["id"]
+
+    await check_workflow_state(
+        app_client,
+        t1_headers,
+        "/tenant/v1/credentials/issuer/issue",
+        workflow_id=issue_workflow_id,
+    )
+    await check_workflow_state(
+        app_client,
+        t2_headers,
+        "/tenant/v1/credentials/holder/offer",
+        workflow_id=holder_workflow_id,
+    )
+
+    # workflows completed there should be a new credential available
+    creds_resp = await app_client.get(
+        "/tenant/v1/credentials/holder/", headers=t2_headers
+    )
+    assert creds_resp.status_code == 200, creds_resp.content
+    assert 1 == len(json.loads(creds_resp.content)), creds_resp.content
+
 
 async def check_workflow_state(
     app_client: AsyncClient,
@@ -70,9 +191,7 @@ async def check_workflow_state(
     completed = False
     while i > 0 and not completed:
         # wait for the issuer process to complete
-        resp_workflows1 = await app_client.get(
-            workflow_url, headers=t1_headers
-        )
+        resp_workflows1 = await app_client.get(workflow_url, headers=t1_headers)
         assert resp_workflows1.status_code == 200, resp_workflows1.content
 
         workflows = json.loads(resp_workflows1.content)
@@ -137,7 +256,7 @@ async def create_schema_cred_def(
     schema: dict = None,
 ) -> str:
     # make sure our tenant is actually an issuer
-    resp_issuer1 = await app_client.post("/tenant/v1/admin/issuer", headers=t1_headers)
+    resp_issuer1 = await app_client.get("/tenant/v1/admin/issuer", headers=t1_headers)
     assert resp_issuer1.status_code == 200, resp_issuer1.content
     issuer = json.loads(resp_issuer1.content)
     assert issuer.get("workflow")
@@ -145,9 +264,28 @@ async def create_schema_cred_def(
 
     params = {"schema_id": schema_id, "cred_def_tag": cred_def_tag}
     schema_resp = await app_client.post(
-            "/tenant/v1/admin/schema", headers=t1_headers, params=params, data=schema
-        )
+        "/tenant/v1/admin/schema", headers=t1_headers, params=params, json=schema
+    )
     assert schema_resp.status_code == 200, schema_resp.content
+    schema = json.loads(schema_resp.content)
+    workflow_id = schema["workflow"]["id"]
+
+    # pause here, seems to be a timing issue creating cred defs
+    time.sleep(2)
+
+    await check_workflow_state(
+        app_client, t1_headers, "/tenant/v1/admin/schema", workflow_id=workflow_id
+    )
+
+    schema_resp = await app_client.get("/tenant/v1/admin/schema", headers=t1_headers)
+    assert schema_resp.status_code == 200, schema_resp.content
+
+    schemas = json.loads(schema_resp.content)
+    for schema in schemas:
+        if schema.get("workflow") and schema["workflow"]["id"] == workflow_id:
+            return schema["schema_data"]["cred_def_id"]
+
+    assert False, f"Error no schema found for workflow {workflow_id}"
 
 
 async def connect_tenants(
