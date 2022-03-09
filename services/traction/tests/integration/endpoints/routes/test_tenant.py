@@ -1,6 +1,7 @@
 import pytest
 import json
 import time
+from typing import List
 
 from httpx import AsyncClient
 from pydantic import parse_obj_as
@@ -16,6 +17,9 @@ from tests.test_utils import (
 from api.db.models.tenant import TenantRead
 from api.db.models.tenant_issuer import TenantIssuerRead
 from api.endpoints.models.innkeeper import CheckInResponse
+from api.endpoints.models.credentials import (
+    CredPrecisForProof
+)
 
 
 pytestmark = pytest.mark.asyncio
@@ -117,6 +121,90 @@ async def test_tenants_issue_credential(app_client: AsyncClient) -> None:
     }
     await issue_credential(
         app_client, t1_headers, "alice", t2_headers, cred_def_id, credential
+    )
+
+    # should be one credentials for our t2
+    creds_resp = await app_client.get(
+        "/tenant/v1/credentials/holder/", headers=t2_headers
+    )
+    assert creds_resp.status_code == 200, creds_resp.content
+    assert 1 == len(json.loads(creds_resp.content)), creds_resp.content
+
+
+@pytest.mark.integtest
+async def test_tenants_issue_credential_request_proof(app_client: AsyncClient) -> None:
+    # get a token
+    bearer_token = await innkeeper_auth(app_client)
+    ik_headers = innkeeper_headers(bearer_token)
+
+    t1_headers = await create_tenant(
+        app_client, ik_headers, tenant_name="tenant1_test_", make_issuer=True
+    )
+    t2_headers = await create_tenant(
+        app_client, ik_headers, tenant_name="tenant2_test_"
+    )
+
+    schema_name = random_string("test_schema_", 8)
+    schema = {
+        "schema_name": schema_name,
+        "schema_version": "4.5.6",
+        "attributes": ["score", "full_name", "test_date"],
+    }
+    cred_def_id = await create_schema_cred_def(
+        app_client,
+        t1_headers,
+        cred_def_tag="test_tag",
+        schema=schema,
+    )
+    assert cred_def_id, "No cred def id returned"
+
+    await connect_tenants(app_client, t1_headers, "alice", t2_headers, "faber")
+
+    # should be zero credentials for our t2
+    creds_resp = await app_client.get(
+        "/tenant/v1/credentials/holder/", headers=t2_headers
+    )
+    assert creds_resp.status_code == 200, creds_resp.content
+    assert 0 == len(json.loads(creds_resp.content)), creds_resp.content
+
+    # now issue a credential from t1 to t2
+    credential = {
+        "attributes": [
+            {"name": "score", "value": "66"},
+            {"name": "full_name", "value": "Alice Smith"},
+            {"name": "test_date", "value": "April 1, 2022"},
+        ]
+    }
+    await issue_credential(
+        app_client, t1_headers, "alice", t2_headers, cred_def_id, credential
+    )
+
+    # should be one credentials for our t2
+    creds_resp = await app_client.get(
+        "/tenant/v1/credentials/holder/", headers=t2_headers
+    )
+    assert creds_resp.status_code == 200, creds_resp.content
+    assert 1 == len(json.loads(creds_resp.content)), creds_resp.content
+
+    # now request a proof t1 to t2
+    proof_req = {
+        "requested_attributes": [
+            {
+                "name": "full_name",
+                "restrictions": [{"cred_def_id": cred_def_id}],
+            }
+        ],
+        "requested_predicates": [
+            {
+                "name": "score",
+                "p_type": ">",
+                "p_value": 50,
+                "restrictions": [{"cred_def_id": cred_def_id}],
+            }
+        ],
+    }
+    await request_credential_presentation(
+        app_client, t1_headers, "alice", t2_headers, proof_req
     )
 
 
@@ -353,3 +441,100 @@ async def issue_credential(
     )
     assert creds_resp.status_code == 200, creds_resp.content
     assert 1 == len(json.loads(creds_resp.content)), creds_resp.content
+
+
+async def request_credential_presentation(
+    app_client: AsyncClient,
+    t1_headers: dict,
+    t1_alias: str,
+    t2_headers: dict,
+    proof_req: dict,
+    pres_protocol: str = "v1.0",
+):
+    params = {
+        "pres_protocol": pres_protocol,
+        "alias": t1_alias,
+    }
+    pres_resp = await app_client.post(
+        "/tenant/v1/credentials/verifier/request",
+        headers=t1_headers,
+        params=params,
+        json=proof_req,
+    )
+    assert pres_resp.status_code == 200, pres_resp.content
+    pres_data = json.loads(pres_resp.content)
+    assert pres_data.get("workflow"), "Error no workflow returned"
+    pres_req_workflow_id = pres_data["workflow"]["id"]
+
+    holder_data = None
+    i = 5
+    while i > 0 and not holder_data:
+        holder_resp = await app_client.get(
+            "/tenant/v1/credentials/holder/request",
+            headers=t2_headers,
+            params={"state": "pending"},
+        )
+        assert holder_resp.status_code == 200, holder_resp.content
+        if 0 < len(json.loads(holder_resp.content)):
+            holder_data = json.loads(holder_resp.content)[0]
+        else:
+            time.sleep(1)
+            i -= 1
+    assert holder_data, "Error no pres request received by holder"
+    present_request = json.loads(holder_data["presentation"]["present_request"])
+
+    holder_resp = await app_client.get(
+        "/tenant/v1/credentials/holder/creds-for-request",
+        headers=t2_headers,
+        params={"cred_issue_id": holder_data["presentation"]["id"]},
+    )
+    assert holder_resp.status_code == 200, holder_resp.content
+    cred_results = parse_obj_as(List[CredPrecisForProof], holder_resp.json())
+
+    proof_presentation = {
+        "requested_attributes": {},
+        "requested_predicates": {},
+        "self_attested_attributes": {},
+    }
+    for attr_name in present_request["requested_attributes"]:
+        for cred in cred_results:
+            if attr_name in cred.presentation_referents:
+                proof_presentation["requested_attributes"][attr_name] = {
+                    "cred_id": cred.cred_info["referent"],
+                    "revealed": True,
+                }
+                break
+        if attr_name not in proof_presentation["requested_attributes"]:
+            proof_presentation["self_attested_attributes"][attr_name] = "TBD Self-attested"
+    for pred_name in present_request["requested_predicates"]:
+        for cred in cred_results:
+            if pred_name in cred.presentation_referents:
+                proof_presentation["requested_predicates"][pred_name] = {
+                    "cred_id": cred.cred_info["referent"],
+                }
+                break
+
+    # submit proof
+    holder_resp = await app_client.post(
+        "/tenant/v1/credentials/holder/present-credential",
+        headers=t2_headers,
+        params={"cred_issue_id": holder_data["presentation"]["id"]},
+        json=proof_presentation,
+    )
+    assert holder_resp.status_code == 200, holder_resp.content
+    holder_data = json.loads(holder_resp.content)
+    assert holder_data.get("workflow"), "Error no workflow returned"
+    holder_workflow_id = holder_data["workflow"]["id"]
+
+    await check_workflow_state(
+        app_client,
+        t1_headers,
+        "/tenant/v1/credentials/verifier/request",
+        workflow_id=pres_req_workflow_id,
+    )
+    await check_workflow_state(
+        app_client,
+        t2_headers,
+        "/tenant/v1/credentials/holder/request",
+        workflow_id=holder_workflow_id,
+    )

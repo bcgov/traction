@@ -89,6 +89,8 @@ spec:
                 secretKeyRef:
                   name: {{ template "acapy.api.secret.name" . }}
                   key: webhookapi
+            - name: TRACTION_HOST_URL
+              value: 'http://{{ include "traction_api.fullname" . }}:{{ .Values.traction_api.service.port }}'
             - name: TRACTION_WEBHOOK_URL
               value: 'http://{{ include "traction_api.fullname" . }}:{{ .Values.traction_api.service.port }}/webhook#${ACAPY_WEBHOOK_URL_API_KEY}'
             - name: TRACTION_TENANT_WEBHOOK_URL

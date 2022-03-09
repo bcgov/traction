@@ -1,5 +1,6 @@
 import pytest
 import asyncio
+import os
 
 from fastapi import FastAPI
 from typing import Generator, Callable
@@ -73,7 +74,8 @@ async def app_client() -> AsyncGenerator:
         max_connections=1000, max_keepalive_connections=20, keepalive_expiry=5.0
     )
     timeout = Timeout(timeout=10)
+    traction_host_url = os.environ.get("TRACTION_HOST_URL", "http://traction-api:5000")
     async with AsyncClient(
-        base_url="http://localhost:5000", limits=limits, timeout=timeout
+        base_url=traction_host_url, limits=limits, timeout=timeout
     ) as ac:
         yield ac
