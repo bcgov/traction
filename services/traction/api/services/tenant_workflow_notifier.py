@@ -8,12 +8,9 @@ from api.db.models.tenant_schema import TenantSchemaRead
 from api.endpoints.models.webhooks import (
     TenantEventTopicType,
     TRACTION_EVENT_PREFIX,
-    WebhookTopicType,
 )
 from api.db.models.issue_credential import (
-    IssueCredentialUpdate,
     IssueCredentialRead,
-    IssueCredentialCreate,
 )
 
 logger = logging.getLogger(__name__)
