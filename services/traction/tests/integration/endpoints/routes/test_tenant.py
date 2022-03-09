@@ -115,67 +115,9 @@ async def test_tenants_issue_credential(app_client: AsyncClient) -> None:
             {"name": "test_date", "value": "April 1, 2022"},
         ]
     }
-    params = {
-        "cred_protocol": "v1.0",
-        "cred_def_id": cred_def_id,
-        "alias": "alice",
-    }
-    issue_resp = await app_client.post(
-        "/tenant/v1/credentials/issuer/issue",
-        headers=t1_headers,
-        params=params,
-        json=credential,
+    await issue_credential(
+        app_client, t1_headers, "alice", t2_headers, cred_def_id, credential
     )
-    assert issue_resp.status_code == 200, issue_resp.content
-    issue_data = json.loads(issue_resp.content)
-    assert issue_data.get("workflow"), "Error no workflow returned"
-    issue_workflow_id = issue_data["workflow"]["id"]
-
-    holder_data = None
-    i = 5
-    while i > 0 and not holder_data:
-        holder_resp = await app_client.get(
-            "/tenant/v1/credentials/holder/offer",
-            headers=t2_headers,
-            params={"state": "pending"},
-        )
-        assert holder_resp.status_code == 200, holder_resp.content
-        if 0 < len(json.loads(holder_resp.content)):
-            holder_data = json.loads(holder_resp.content)[0]
-        else:
-            time.sleep(1)
-            i -= 1
-    assert holder_data, "Error no cred offer received by holder"
-
-    holder_resp = await app_client.post(
-        "/tenant/v1/credentials/holder/accept_offer",
-        headers=t2_headers,
-        params={"cred_issue_id": holder_data["credential"]["id"]},
-    )
-    assert holder_resp.status_code == 200, holder_resp.content
-    holder_data = json.loads(holder_resp.content)
-    assert holder_data.get("workflow"), "Error no workflow returned"
-    holder_workflow_id = holder_data["workflow"]["id"]
-
-    await check_workflow_state(
-        app_client,
-        t1_headers,
-        "/tenant/v1/credentials/issuer/issue",
-        workflow_id=issue_workflow_id,
-    )
-    await check_workflow_state(
-        app_client,
-        t2_headers,
-        "/tenant/v1/credentials/holder/offer",
-        workflow_id=holder_workflow_id,
-    )
-
-    # workflows completed there should be a new credential available
-    creds_resp = await app_client.get(
-        "/tenant/v1/credentials/holder/", headers=t2_headers
-    )
-    assert creds_resp.status_code == 200, creds_resp.content
-    assert 1 == len(json.loads(creds_resp.content)), creds_resp.content
 
 
 async def check_workflow_state(
@@ -339,3 +281,75 @@ async def connect_tenants(
         i -= 1
 
     assert completed, t1_connections[0]["state"] + ":" + t2_connections[0]["state"]
+
+
+async def issue_credential(
+    app_client: AsyncClient,
+    t1_headers: dict,
+    t1_alias: str,
+    t2_headers: dict,
+    cred_def_id: str,
+    credential: dict,
+    cred_protocol: str = "v1.0",
+):
+    params = {
+        "cred_protocol": cred_protocol,
+        "cred_def_id": cred_def_id,
+        "alias": t1_alias,
+    }
+    issue_resp = await app_client.post(
+        "/tenant/v1/credentials/issuer/issue",
+        headers=t1_headers,
+        params=params,
+        json=credential,
+    )
+    assert issue_resp.status_code == 200, issue_resp.content
+    issue_data = json.loads(issue_resp.content)
+    assert issue_data.get("workflow"), "Error no workflow returned"
+    issue_workflow_id = issue_data["workflow"]["id"]
+
+    holder_data = None
+    i = 5
+    while i > 0 and not holder_data:
+        holder_resp = await app_client.get(
+            "/tenant/v1/credentials/holder/offer",
+            headers=t2_headers,
+            params={"state": "pending"},
+        )
+        assert holder_resp.status_code == 200, holder_resp.content
+        if 0 < len(json.loads(holder_resp.content)):
+            holder_data = json.loads(holder_resp.content)[0]
+        else:
+            time.sleep(1)
+            i -= 1
+    assert holder_data, "Error no cred offer received by holder"
+
+    holder_resp = await app_client.post(
+        "/tenant/v1/credentials/holder/accept_offer",
+        headers=t2_headers,
+        params={"cred_issue_id": holder_data["credential"]["id"]},
+    )
+    assert holder_resp.status_code == 200, holder_resp.content
+    holder_data = json.loads(holder_resp.content)
+    assert holder_data.get("workflow"), "Error no workflow returned"
+    holder_workflow_id = holder_data["workflow"]["id"]
+
+    await check_workflow_state(
+        app_client,
+        t1_headers,
+        "/tenant/v1/credentials/issuer/issue",
+        workflow_id=issue_workflow_id,
+    )
+    await check_workflow_state(
+        app_client,
+        t2_headers,
+        "/tenant/v1/credentials/holder/offer",
+        workflow_id=holder_workflow_id,
+    )
+
+    # workflows completed there should be a new credential available
+    creds_resp = await app_client.get(
+        "/tenant/v1/credentials/holder/", headers=t2_headers
+    )
+    assert creds_resp.status_code == 200, creds_resp.content
+    assert 1 == len(json.loads(creds_resp.content)), creds_resp.content
