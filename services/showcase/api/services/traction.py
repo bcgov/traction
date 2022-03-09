@@ -321,7 +321,7 @@ async def tenant_accept_cred_offer(
     async with ClientSession() as client_session:
         async with await client_session.post(
             url=t_urls.TENANT_ACCEPT_CRED_OFFER,
-            params={str(cred_issue_id)},
+            params={"cred_issue_id": cred_issue_id},
             headers=auth_headers,
         ) as response:
             try:

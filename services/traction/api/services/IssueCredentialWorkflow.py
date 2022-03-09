@@ -19,6 +19,7 @@ from api.endpoints.dependencies.tenant_security import get_from_context
 from api.endpoints.models.tenant_workflow import (
     TenantWorkflowStateType,
 )
+from api.services.tenant_workflow_notifier import TenantWorkflowNotifier
 from api.endpoints.models.credentials import (
     IssueCredentialProtocolType,
     CredentialType,
@@ -101,6 +102,11 @@ class IssueCredentialWorkflow(BaseWorkflow):
                     issue_cred = await issue_repo.create(issue_cred)
                     logger.warn(f">>> created new cred issue: {issue_cred}")
 
+                    # if new, and offer_received, send webhook to tenant
+                    logger.info(f">>> sending webhook with cred offer: {issue_cred}")
+                    await TenantWorkflowNotifier(profile.db).issuer_workflow_cred_offer(
+                        issue_cred
+                    )
                     # return None - we want the tenant to accept the credential offer
                     return None
 

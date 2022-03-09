@@ -46,6 +46,7 @@ WEBHOOK_ISSUE_LISTENER_PATTERN = re.compile(
 class TenantEventTopicType(str, Enum):
     issuer = "issuer"
     schema = "schema"
+    issue_cred = "issue_cred"
 
 
 # the event id will be "traction::EVENT::<topic>::<potentially some other id>"
