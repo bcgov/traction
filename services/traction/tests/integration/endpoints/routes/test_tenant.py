@@ -50,38 +50,56 @@ async def test_tenants_connect(test_client: AsyncClient) -> None:
     t2_token = await tenant_auth(test_client, c2_resp.wallet_id, c2_resp.wallet_key)
     t2_headers = tenant_headers(t2_token)
 
-    t1_connections = await test_client.get("/tenant/v1/connections/", headers=t1_headers)
+    t1_connections = await test_client.get(
+        "/tenant/v1/connections/", headers=t1_headers
+    )
     assert t1_connections.status_code == 200, t1_connections.content
     assert 0 == len(json.loads(t1_connections.content)), t1_connections.content
 
-    t2_connections = await test_client.get("/tenant/v1/connections/", headers=t2_headers)
+    t2_connections = await test_client.get(
+        "/tenant/v1/connections/", headers=t2_headers
+    )
     assert t2_connections.status_code == 200, t2_connections.content
     assert 0 == len(json.loads(t2_connections.content)), t2_connections.content
 
     data = {"alias": "alice", "invitation_type": "didexchange/1.0"}
-    resp_invitation = await test_client.post("/tenant/v1/connections/create-invitation", params=data, headers=t1_headers)
+    resp_invitation = await test_client.post(
+        "/tenant/v1/connections/create-invitation", params=data, headers=t1_headers
+    )
     assert resp_invitation.status_code == 200, resp_invitation.content
 
     invitation = json.loads(resp_invitation.content)
 
     data = {"alias": "faber"}
-    resp_connection = await test_client.post("/tenant/v1/connections/receive-invitation", params=data, json=invitation["invitation"], headers=t2_headers)
+    resp_connection = await test_client.post(
+        "/tenant/v1/connections/receive-invitation",
+        params=data,
+        json=invitation["invitation"],
+        headers=t2_headers,
+    )
     assert resp_connection.status_code == 200, resp_connection.content
 
     i = 5
     completed = False
     while 0 < i and not completed:
-        t1_connections_resp = await test_client.get("/tenant/v1/connections/", headers=t1_headers)
+        t1_connections_resp = await test_client.get(
+            "/tenant/v1/connections/", headers=t1_headers
+        )
         assert t1_connections_resp.status_code == 200, t1_connections_resp.content
         t1_connections = json.loads(t1_connections_resp.content)
         assert 1 == len(t1_connections), t1_connections
 
-        t2_connections_resp = await test_client.get("/tenant/v1/connections/", headers=t2_headers)
+        t2_connections_resp = await test_client.get(
+            "/tenant/v1/connections/", headers=t2_headers
+        )
         assert t2_connections_resp.status_code == 200, t2_connections_resp.content
         t2_connections = json.loads(t2_connections_resp.content)
         assert 1 == len(t2_connections), t2_connections
 
-        completed = (t1_connections[0]["state"] == "active" and t2_connections[0]["state"] == "active")
+        completed = (
+            t1_connections[0]["state"] == "active"
+            and t2_connections[0]["state"] == "active"
+        )
         if not completed:
             time.sleep(2)
         i -= 1
@@ -107,7 +125,9 @@ async def test_tenant_issuer(test_client: AsyncClient) -> None:
     t1_token = await tenant_auth(test_client, c1_resp.wallet_id, c1_resp.wallet_key)
     t1_headers = tenant_headers(t1_token)
 
-    resp_issuer1 = await test_client.post(f"/innkeeper/v1/issuers/{c1_resp.id}", headers=ik_headers)
+    resp_issuer1 = await test_client.post(
+        f"/innkeeper/v1/issuers/{c1_resp.id}", headers=ik_headers
+    )
     assert resp_issuer1.status_code == 200, resp_issuer1.content
 
     resp_issuer1 = await test_client.post("/tenant/v1/admin/issuer", headers=t1_headers)
@@ -117,11 +137,13 @@ async def test_tenant_issuer(test_client: AsyncClient) -> None:
     completed = False
     while i > 0 and not completed:
         # wait for the issuer process to complete
-        resp_issuer1 = await test_client.get("/tenant/v1/admin/issuer", headers=t1_headers)
+        resp_issuer1 = await test_client.get(
+            "/tenant/v1/admin/issuer", headers=t1_headers
+        )
         assert resp_issuer1.status_code == 200, resp_issuer1.content
 
         issuer = json.loads(resp_issuer1.content)
-        completed = (issuer["workflow"]["workflow_state"] == "complete")
+        completed = issuer["workflow"]["workflow_state"] == "completed"
         if not completed:
             time.sleep(2)
         i -= 1

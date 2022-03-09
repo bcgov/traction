@@ -83,6 +83,7 @@ async def process_tenant_webhook(
 ):
     """Called by aca-py agent."""
     try:
+        logger.warn(f"Received webhook for topic: {topic} wallet id: {x_wallet_id}")
         wallet_id = uuid.UUID(str(x_wallet_id))
         context["TENANT_WALLET_ID"] = wallet_id
         tenant_repo = TenantsRepository(db)

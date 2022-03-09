@@ -32,6 +32,7 @@ async def check_in_tenant(
     payload: CheckInRequest, db: AsyncSession = Depends(get_db)
 ) -> CheckInResponse:
     item = await create_new_tenant(payload=payload, db=db)
+    logger.warn(f">>>> Created tenant wallet {item}")
     return item
 
 
