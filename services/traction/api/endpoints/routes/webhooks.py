@@ -94,7 +94,7 @@ async def process_tenant_webhook(
         profile = Profile(wallet_id, db)
         event_topic = WEBHOOK_EVENT_PREFIX + topic
         logger.warn(
-            f">>> sending notification for received hook {event_topic} {topic} {payload}"
+            f">>> sending notification for recvd hook {event_topic} {topic} {payload}"
         )
         await profile.notify(event_topic, {"topic": topic, "payload": payload})
     except Exception:
