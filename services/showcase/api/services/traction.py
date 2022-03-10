@@ -115,8 +115,6 @@ async def tenant_get_credentials(
     wallet_key: UUID,
 ):
     auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
-    # no body...
-    data = {}
     query_params = {}
 
     # TODO: error handling calling Traction
