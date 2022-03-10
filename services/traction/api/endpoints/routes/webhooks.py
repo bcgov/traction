@@ -69,7 +69,7 @@ async def process_webhook(
     topic: WebhookTopicType, payload: dict, api_key: APIKey = Depends(get_api_key)
 ):
     """Called by aca-py agent."""
-    logger.warn(f">>> Called webhook for innkeeper: {topic}")
+    logger.debug(f">>> Called webhook for innkeeper: {topic}")
     return {}
 
 
@@ -82,18 +82,23 @@ async def process_tenant_webhook(
     db: AsyncSession = Depends(get_db),
 ):
     """Called by aca-py agent."""
-    wallet_id = uuid.UUID(str(x_wallet_id))
-    context["TENANT_WALLET_ID"] = wallet_id
-    tenant_repo = TenantsRepository(db)
-    tnt = await tenant_repo.get_by_wallet_id(wallet_id)
-    context["TENANT_ID"] = tnt.id
+    try:
+        logger.debug(f"Received webhook for topic: {topic} wallet id: {x_wallet_id}")
+        wallet_id = uuid.UUID(str(x_wallet_id))
+        context["TENANT_WALLET_ID"] = wallet_id
+        tenant_repo = TenantsRepository(db)
+        tnt = await tenant_repo.get_by_wallet_id(wallet_id)
+        context["TENANT_ID"] = tnt.id
 
-    # emit an event for any interested listeners
-    profile = Profile(wallet_id, db)
-    event_topic = WEBHOOK_EVENT_PREFIX + topic
-    logger.warn(
-        f">>> sending notification for received hook {event_topic} {topic} {payload}"
-    )
-    await profile.notify(event_topic, {"topic": topic, "payload": payload})
+        # emit an event for any interested listeners
+        profile = Profile(wallet_id, db)
+        event_topic = WEBHOOK_EVENT_PREFIX + topic
+        logger.debug(
+            f">>> sending notification for recvd hook {event_topic} {topic} {payload}"
+        )
+        await profile.notify(event_topic, {"topic": topic, "payload": payload})
+    except Exception:
+        # don't propagate errors or else aca-py will just retry :-S
+        logger.exception("Error posting to traction webhook")
 
     return {}
