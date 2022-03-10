@@ -32,7 +32,7 @@ async def db_session() -> AsyncSession:
         async with async_session(bind=connection) as session:
             yield session
             await session.flush()
-            await session.commit()
+            await session.rollback()
 
 
 @pytest.mark.integtest
@@ -71,9 +71,9 @@ async def test_client(test_app: FastAPI) -> AsyncGenerator:
 @pytest_asyncio.fixture()
 async def app_client() -> AsyncGenerator:
     limits = Limits(
-        max_connections=1000, max_keepalive_connections=20, keepalive_expiry=5.0
+        max_connections=1000, max_keepalive_connections=20, keepalive_expiry=10.0
     )
-    timeout = Timeout(timeout=10)
+    timeout = Timeout(20.0, read=10.0)
     traction_host_url = os.environ.get("TRACTION_HOST_URL", "http://traction-api:5000")
     async with AsyncClient(
         base_url=traction_host_url, limits=limits, timeout=timeout
