@@ -281,10 +281,8 @@ class IssueCredentialWorkflow(BaseWorkflow):
             description=error_msg,
         )
         data = {"body": problem_report}
-        problem_response = (
-            issue_cred_v10_api.issue_credential_records_cred_ex_id_problem_report_post(
-                str(issue_cred.cred_exch_id),
-                **data,
-            )
+        issue_cred_v10_api.issue_credential_records_cred_ex_id_problem_report_post(
+            str(issue_cred.cred_exch_id),
+            **data,
         )
         return issue_cred

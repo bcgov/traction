@@ -306,7 +306,8 @@ async def holder_reject_credential(
 
     # start workflow
     tenant_workflow = await BaseWorkflow.next_workflow_step(
-        db, tenant_workflow=tenant_workflow,
+        db,
+        tenant_workflow=tenant_workflow,
         with_error=True,
         with_error_msg="Credential rejected.",
     )
