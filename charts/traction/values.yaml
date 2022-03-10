@@ -118,11 +118,11 @@ acapy:
     autoAcceptInvites: true
     autoAcceptRequests: true
     autoRespondMessages: true
-    autoRespondCredentialProposal: true
-    autoRespondCredentialOffer: true
+    autoRespondCredentialProposal: false
+    autoRespondCredentialOffer: false
     autoRespondCredentialRequest: true
-    autoRespondPresentationProposal: true
-    autoRespondPresentationRequest: true
+    autoRespondPresentationProposal: false
+    autoRespondPresentationRequest: false
     autoStoreCredential: true
     autoVerifyPresentation: true
     autoPingConnection: true
