@@ -99,6 +99,10 @@ spec:
               value: {{ include "traction_api.genesisUrl" . }}
             - name: ACAPY_ENDORSER_PUBLIC_DID
               value: {{ .Values.acapy.service.endorserPublicDID }}
+            - name: DEFAULT_RETRY_ATTEMPTS
+              value: {{ .Values.traction_api.config.defaultRetryAttempts }}
+            - name: DEFAULT_PAUSE_BETWEEN_ATTEMPTS
+              value: {{ .Values.traction_api.config.defaultPauseBetweenAttempts }}
             {{- include "traction_api.configmap.env.vars" . | nindent 10}}
           resources:
             {{- toYaml .Values.traction_api.resources | nindent 12 }}
