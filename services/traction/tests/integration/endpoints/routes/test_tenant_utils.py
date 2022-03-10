@@ -21,7 +21,7 @@ from api.endpoints.models.credentials import CredPrecisForProof
 
 
 default_retry_attempts = int(
-    os.environ.get("DEFAULT_RETRY_ATTEMPTS", "10")
+    os.environ.get("DEFAULT_RETRY_ATTEMPTS", "11")
 )
 default_pause_between_attempts = int(
     os.environ.get("DEFAULT_PAUSE_BETWEEN_ATTEMPTS", "2")
