@@ -1,9 +1,9 @@
 import pytest
 import json
-import time
 from typing import List
+import asyncio
 
-from httpx import AsyncClient
+from httpx import AsyncClient, ReadTimeout
 from pydantic import parse_obj_as
 
 from tests.test_utils import (
@@ -17,9 +17,7 @@ from tests.test_utils import (
 from api.db.models.tenant import TenantRead
 from api.db.models.tenant_issuer import TenantIssuerRead
 from api.endpoints.models.innkeeper import CheckInResponse
-from api.endpoints.models.credentials import (
-    CredPrecisForProof
-)
+from api.endpoints.models.credentials import CredPrecisForProof
 
 
 pytestmark = pytest.mark.asyncio
@@ -220,26 +218,30 @@ async def check_workflow_state(
     i = attempts
     completed = False
     while i > 0 and not completed:
-        # wait for the issuer process to complete
-        resp_workflows1 = await app_client.get(workflow_url, headers=t1_headers)
-        assert resp_workflows1.status_code == 200, resp_workflows1.content
+        try:
+            # wait for the issuer process to complete
+            resp_workflows1 = await app_client.get(workflow_url, headers=t1_headers)
+            assert resp_workflows1.status_code == 200, resp_workflows1.content
 
-        workflows = json.loads(resp_workflows1.content)
-        workflow = None
-        if workflow_id:
-            # assume a list
-            for wf in workflows:
-                if wf.get("workflow") and wf["workflow"]["id"] == workflow_id:
-                    workflow = wf
-                    break
-        else:
-            # assume there is just one
-            workflow = workflows
-        assert workflow, f"Workflow not found for {workflow_id}"
+            workflows = json.loads(resp_workflows1.content)
+            workflow = None
+            if workflow_id:
+                # assume a list
+                for wf in workflows:
+                    if wf.get("workflow") and wf["workflow"]["id"] == workflow_id:
+                        workflow = wf
+                        break
+            else:
+                # assume there is just one
+                workflow = workflows
+            assert workflow, f"Workflow not found for {workflow_id}"
+            completed = workflow["workflow"]["workflow_state"] == expected_state
+        except ReadTimeout:
+            # ignore and retry
+            pass
 
-        completed = workflow["workflow"]["workflow_state"] == expected_state
         if not completed:
-            time.sleep(delay)
+            await asyncio.sleep(delay)
         i -= 1
 
     assert completed, workflow["workflow"]["workflow_state"]
@@ -301,7 +303,7 @@ async def create_schema_cred_def(
     workflow_id = schema["workflow"]["id"]
 
     # pause here, seems to be a timing issue creating cred defs
-    time.sleep(2)
+    await asyncio.sleep(3)
 
     await check_workflow_state(
         app_client, t1_headers, "/tenant/v1/admin/schema", workflow_id=workflow_id
@@ -365,7 +367,7 @@ async def connect_tenants(
             and t2_connections[0]["state"] == "active"
         )
         if not completed:
-            time.sleep(2)
+            await asyncio.sleep(2)
         i -= 1
 
     assert completed, t1_connections[0]["state"] + ":" + t2_connections[0]["state"]
@@ -408,7 +410,7 @@ async def issue_credential(
         if 0 < len(json.loads(holder_resp.content)):
             holder_data = json.loads(holder_resp.content)[0]
         else:
-            time.sleep(1)
+            await asyncio.sleep(1)
             i -= 1
     assert holder_data, "Error no cred offer received by holder"
 
@@ -478,7 +480,7 @@ async def request_credential_presentation(
         if 0 < len(json.loads(holder_resp.content)):
             holder_data = json.loads(holder_resp.content)[0]
         else:
-            time.sleep(1)
+            await asyncio.sleep(1)
             i -= 1
     assert holder_data, "Error no pres request received by holder"
     present_request = json.loads(holder_data["presentation"]["present_request"])
@@ -505,7 +507,9 @@ async def request_credential_presentation(
                 }
                 break
         if attr_name not in proof_presentation["requested_attributes"]:
-            proof_presentation["self_attested_attributes"][attr_name] = "TBD Self-attested"
+            proof_presentation["self_attested_attributes"][
+                attr_name
+            ] = "TBD Self-attested"
     for pred_name in present_request["requested_predicates"]:
         for cred in cred_results:
             if pred_name in cred.presentation_referents:
