@@ -18,8 +18,8 @@ export default {
     SET_OFB_MESSAGES(state, msgs) {
       state.ofbMessages = msgs;
     },
-    SET_LOB_CREDENTIALS(state, msgs) {
-      state.credentials = msgs;
+    SET_LOB_CREDENTIALS(state, creds) {
+      state.credentials = creds;
     },
     SET_TENANT(state, tenant) {
       state.tenant = tenant;
@@ -52,7 +52,7 @@ export default {
       catch (error) {
         dispatch('notifications/addNotification', {
           message: 'An error occurred while fetching the Out of Band Messages.',
-          consoleError: `Error getting credentials: ${error}`,
+          consoleError: `Error getting messages: ${error}`,
         }, { root: true });
       }
     },
@@ -65,7 +65,7 @@ export default {
       catch (error) {
         dispatch('notifications/addNotification', {
           message: 'An error occurred while fetching Credentials.',
-          consoleError: `Error getting messages: ${error}`,
+          consoleError: `Error getting credentials: ${error}`,
         }, { root: true });
       }
     },
