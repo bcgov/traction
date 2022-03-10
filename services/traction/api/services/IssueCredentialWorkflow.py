@@ -37,6 +37,9 @@ from acapy_client.model.credential_preview import CredentialPreview
 from acapy_client.model.v10_credential_free_offer_request import (
     V10CredentialFreeOfferRequest,
 )
+from acapy_client.model.v10_credential_problem_report_request import (
+    V10CredentialProblemReportRequest,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -152,28 +155,45 @@ class IssueCredentialWorkflow(BaseWorkflow):
             webhook_topic = webhook_message["topic"]
             logger.debug(f">>> checking for webhook_topic: {webhook_topic}")
             if webhook_topic == WebhookTopicType.issue_credential:
-                # check for state of "credential_acked"
-                webhook_state = webhook_message["payload"]["state"]
-                logger.debug(f">>> checking for webhook_state: {webhook_state}")
-                # update our status
-                issue_cred = await self.update_credential_state(
-                    issue_cred, webhook_state
-                )
-                if (
-                    webhook_state == CredentialStateType.done
-                    or webhook_state == CredentialStateType.credential_acked
-                ):
-                    issue_cred = await self.complete_credential(issue_cred)
+                if webhook_message["payload"].get("state"):
+                    # check for state of "credential_acked"
+                    webhook_state = webhook_message["payload"]["state"]
+                    logger.debug(f">>> checking for webhook_state: {webhook_state}")
+                    # update our status
+                    issue_cred = await self.update_credential_state(
+                        issue_cred, webhook_state
+                    )
+                    if (
+                        webhook_state == CredentialStateType.done
+                        or webhook_state == CredentialStateType.credential_acked
+                    ):
+                        issue_cred = await self.complete_credential(issue_cred)
 
-                    # finish off our workflow
-                    await self.complete_workflow()
-
+                        # finish off our workflow
+                        await self.complete_workflow()
+                elif webhook_message["payload"].get("error_msg"):
+                    # we got an error so log it and cancel the workflow
+                    error_msg = webhook_message["payload"]["error_msg"]
+                    logger.debug(f">>> cancelling workflow with error_msg: {error_msg}")
+                    await self.run_cancel_step(webhook_message, error_msg)
             else:
                 logger.warn(f">>> ignoring topic for now: {webhook_topic}")
 
         # if workflow is "completed" or "error" then we are done
         else:
             pass
+
+        return self.tenant_workflow
+
+    async def run_cancel_step(
+        self, webhook_message: dict = None, error_msg: str = None
+    ) -> TenantWorkflowRead:
+        # send a problem report with the given error
+        issue_cred = await self.issue_repo.get_by_workflow_id(self.tenant_workflow.id)
+        await self.complete_with_problem_report(issue_cred, webhook_message, error_msg)
+
+        # then cancel te workflow
+        await self.complete_workflow_error(error_msg)
 
         return self.tenant_workflow
 
@@ -252,4 +272,19 @@ class IssueCredentialWorkflow(BaseWorkflow):
             cred_exch_id=issue_cred.cred_exch_id,
         )
         issue_cred = await self.issue_repo.update(update_issue)
+        return issue_cred
+
+    async def complete_with_problem_report(
+        self, issue_cred: IssueCredentialRead, webhook_message: dict, error_msg: str
+    ) -> IssueCredentialRead:
+        problem_report = V10CredentialProblemReportRequest(
+            description=error_msg,
+        )
+        data = {"body": problem_report}
+        problem_response = (
+            issue_cred_v10_api.issue_credential_records_cred_ex_id_problem_report_post(
+                str(issue_cred.cred_exch_id),
+                **data,
+            )
+        )
         return issue_cred
