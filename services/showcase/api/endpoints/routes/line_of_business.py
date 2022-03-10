@@ -1,12 +1,16 @@
 import logging
-from typing import List
+from typing import List, Dict
 from uuid import UUID
+from pydantic import BaseModel
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from api.db.models.related import LobReadWithSandbox, OutOfBandReadPopulated
+from api.db.models.related import (
+    LobReadWithSandbox,
+    OutOfBandReadPopulated,
+)
 from api.db.repositories.out_of_band import OutOfBandRepository
 from api.endpoints.dependencies.db import get_db
 from api.db.repositories.line_of_business import LobRepository
@@ -16,6 +20,12 @@ from api.services import sandbox, traction
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+
+class CredentialsRead(BaseModel):
+    attrs: Dict
+    cred_def_id: str
+    schema_id: str
 
 
 @router.get(
@@ -65,6 +75,24 @@ async def get_out_of_band_messages(
     oob_repo = OutOfBandRepository(db_session=db)
     items = await oob_repo.get_for_lob(lob_id=lob.id)
     return items
+
+
+@router.get(
+    "/lobs/{lob_id}/credentials",
+    status_code=status.HTTP_200_OK,
+    response_model=List[CredentialsRead],
+)
+async def get_credentials(
+    sandbox_id: UUID,
+    lob_id: UUID,
+    db: AsyncSession = Depends(get_db),
+) -> CredentialsRead:
+    # make sure lob is in this sandbox...
+    lob_repo = LobRepository(db_session=db)
+    lob = await lob_repo.get_by_id_with_sandbox(sandbox_id, lob_id)
+    # go get all creds the lob holds
+    creds = await traction.tenant_get_credentials(lob.wallet_id, lob.wallet_key)
+    return creds
 
 
 @router.post(
