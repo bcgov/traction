@@ -237,6 +237,8 @@ traction_api:
       browserUrlOverride: ""
       genesisUrlOverride: ""
     gunicornWorkers: 4
+    defaultRetryAttempts: 20
+    defaultPauseBetweenAttempts: 3
   db:
     admin: tractionadminuser
     user: tractionuser
