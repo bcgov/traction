@@ -89,7 +89,7 @@ async def create_tenant_webhook(tenant: Lob):
     data = {
         "webhook_url": f"{settings.SHOWCASE_ENDPOINT}/api/v1/webhook/{tenant.id}",
         "webhook_key": hashed_wallet_key,
-        "config": {"acapy": False},
+        "config": {"acapy": True},
     }
     # TODO: error handling calling Traction
     async with ClientSession() as client_session:
