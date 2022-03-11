@@ -31,6 +31,8 @@ jobs:
   build_api:
     name: 'Build Traction API'
     runs-on: ubuntu-20.04
+    needs: 
+      - ready
     if: ${{ always() && fromJSON(needs.ready.outputs.build) == true }}
     steps:      
       - uses: actions/checkout@v2        
@@ -51,6 +53,8 @@ jobs:
   build_showcase:
     name: 'Build Traction Showcase'
     runs-on: ubuntu-20.04
+    needs: 
+      - ready
     if: ${{ always() && fromJSON(needs.ready.outputs.build) == true }}
     steps:      
       - uses: actions/checkout@v2        
@@ -73,6 +77,7 @@ jobs:
     environment: development
     runs-on: ubuntu-20.04
     needs: 
+      - ready
       - build_api
       - build_showcase
     if: ${{ always() && (fromJSON(needs.ready.outputs.deploy) == true) && !(contains(needs.*.result, 'failure')) }}
