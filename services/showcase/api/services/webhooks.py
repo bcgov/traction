@@ -4,7 +4,7 @@ import random
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.db.models import Lob
-from api.db.models.line_of_business import LobUpdate, LobRead
+from api.db.models.line_of_business import LobUpdate
 from api.db.repositories import LobRepository, StudentRepository
 from api.db.repositories.job_applicant import ApplicantRepository
 from api.services.websockets import notifier
