@@ -136,7 +136,7 @@ jobs:
         with:
           issue-number: ${{ github.event.number }}
           body: |
-            | Deployment | Resource |: Location :|
+            | Deployment | Resource | Location |
             | --- | --- | --- |
             | Traction | | 
             | | API | https://pr-${{ github.event.number }}-traction-api-dev.apps.silver.devops.gov.bc.ca |
