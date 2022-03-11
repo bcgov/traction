@@ -6,16 +6,32 @@ on:
     paths:
       - 'services/traction/**'
       - 'services/showcase/**'
+      - 'charts/traction/**'
+      - 'charts/showcase/**'
     types:
       - opened
       - synchronize
-
+      - reopened
+      - ready_for_review
+      
 jobs:
 
+  ready:
+    name: 'Install if ready for review'
+    runs-on: ubuntu-latest
+    outputs:
+      deploy: ${{ steps.skipcheck.ready_for_review.true_false }}
+      build: ${{ steps.skipcheck.ready_for_review.bcgov_true_false }}
+    steps:
+      - id: ready_for_review
+        run: |
+          echo "::set-output name=true_false::${{ toJSON(github.event.pull_request.draft != true && github.repository_owner == 'bcgov') }}"
+          echo "::set-output name=bcgov_true_false::${{ toJSON(github.repository_owner == 'bcgov') }}"
+        
   build_api:
     name: 'Build Traction API'
     runs-on: ubuntu-20.04
-    if: github.repository_owner == 'bcgov'
+    if: ${{ always() && fromJSON(needs.ready.outputs.build) == true }}
     steps:      
       - uses: actions/checkout@v2        
       - name: Build service
@@ -35,7 +51,7 @@ jobs:
   build_showcase:
     name: 'Build Traction Showcase'
     runs-on: ubuntu-20.04
-    if: github.repository_owner == 'bcgov'
+    if: ${{ always() && fromJSON(needs.ready.outputs.build) == true }}
     steps:      
       - uses: actions/checkout@v2        
       - name: Build service
@@ -59,7 +75,7 @@ jobs:
     needs: 
       - build_api
       - build_showcase
-    if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) && (github.repository_owner == 'bcgov') }}
+    if: ${{ always() && (fromJSON(needs.ready.outputs.deploy) == true) && !(contains(needs.*.result, 'failure')) }}
 
     steps:  
       - uses: actions/checkout@v2  
