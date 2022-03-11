@@ -23,16 +23,9 @@ export default {
       );
     },
     onNotification(state, notification) {
-      //console.log('onNotification()');
-      //console.log(notification);
-      let msg = {
-        message: `Notification from webhook for topic: ${notification.topic} for ${notification.lob.name}`,
-        type: NotificationTypes.SUCCESS
-      };
-      state.notifications.push({
-        ...msg,
-        id: nextId++
-      });
+      console.log('onNotification()'); // eslint-disable-line no-console
+      console.log(notification); // eslint-disable-line no-console
+      // TODO: this is where the notifications from the ws will end up in this code.
     }
   },
   actions: {
