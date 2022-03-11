@@ -18,20 +18,26 @@ async def handle_connections(lob: Lob, payload: dict, db: AsyncSession):
     # if we are handling a connection on behalf of a student or
     #   applicant (ie they accepted)
     # we want to track the state of the invitation.
-    if payload["invitation_key"] and payload["invitation_msg_id"]:
-        # student should only get an invitation from Faber
-        if payload["alias"] == "Faber":
-            stu_repo = StudentRepository(db_session=db)
-            student = await stu_repo.get_by_alias_in_sandbox(lob.sandbox_id, lob.name)
-            student.invitation_state = payload["state"]
-            await stu_repo.update(student)
+    try:
+        if payload["invitation_key"] and payload["invitation_msg_id"]:
+            # student should only get an invitation from Faber
+            if payload["alias"] == "Faber":
+                stu_repo = StudentRepository(db_session=db)
+                student = await stu_repo.get_by_alias_in_sandbox(
+                    lob.sandbox_id, lob.name
+                )
+                student.invitation_state = payload["state"]
+                await stu_repo.update(student)
 
-        # applications will get invitation from Acme
-        if payload["alias"] == "Acme":
-            a_repo = ApplicantRepository(db_session=db)
-            appl = await a_repo.get_by_alias_in_sandbox(lob.sandbox_id, lob.name)
-            appl.invitation_state = payload["state"]
-            await a_repo.update(appl)
+            # applications will get invitation from Acme
+            if payload["alias"] == "Acme":
+                a_repo = ApplicantRepository(db_session=db)
+                appl = await a_repo.get_by_alias_in_sandbox(lob.sandbox_id, lob.name)
+                appl.invitation_state = payload["state"]
+                await a_repo.update(appl)
+
+    except KeyError:
+        pass
 
     return True
 
