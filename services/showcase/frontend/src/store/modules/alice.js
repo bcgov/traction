@@ -6,15 +6,20 @@ export default {
   namespaced: true,
   state: {
     ofbMessages: [],
+    credentials: [],
     tenant: { a: 1 }
   },
   getters: {
     ofbMessages: state => state.ofbMessages,
+    credentials: state => state.credentials,
     tenant: state => state.tenant
   },
   mutations: {
     SET_OFB_MESSAGES(state, msgs) {
       state.ofbMessages = msgs;
+    },
+    SET_LOB_CREDENTIALS(state, creds) {
+      state.credentials = creds;
     },
     SET_TENANT(state, tenant) {
       state.tenant = tenant;
@@ -48,6 +53,19 @@ export default {
         dispatch('notifications/addNotification', {
           message: 'An error occurred while fetching the Out of Band Messages.',
           consoleError: `Error getting messages: ${error}`,
+        }, { root: true });
+      }
+    },
+    // Query the showcase API for out of band messages for this tenant
+    async getCredentials({ commit, dispatch, state, rootState }) {
+      try {
+        const response = await showcaseService.getCredentials(rootState.sandbox.currentSandbox.id, state.tenant.id);
+        commit('SET_LOB_CREDENTIALS', response.data);
+      }
+      catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while fetching Credentials.',
+          consoleError: `Error getting credentials: ${error}`,
         }, { root: true });
       }
     },

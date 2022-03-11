@@ -1,5 +1,6 @@
 import pytest
 import asyncio
+import os
 
 from fastapi import FastAPI
 from typing import Generator, Callable
@@ -10,7 +11,7 @@ from api.core.config import settings as s
 from api.db.session import engine, async_session
 
 from typing import AsyncGenerator
-from httpx import AsyncClient
+from httpx import AsyncClient, Limits, Timeout
 
 
 @pytest.mark.integtest
@@ -47,10 +48,6 @@ def override_get_db(db_session: AsyncSession) -> Callable:
 @pytest.mark.integtest
 @pytest.fixture()
 def test_app(override_get_db: Callable) -> FastAPI:
-    ##Disable Security before app is loaded
-    # TODO will need to override again so we can test auth itself
-    s.ENDPOINT_SECURITY_ENABLED = True
-
     from api.endpoints.dependencies.db import get_db
     from api.main import app, innkeeper_app, tenant_app, webhook_app, acapy_wrapper_app
 
@@ -66,5 +63,19 @@ def test_app(override_get_db: Callable) -> FastAPI:
 @pytest.mark.integtest
 @pytest_asyncio.fixture()
 async def test_client(test_app: FastAPI) -> AsyncGenerator:
-    async with AsyncClient(app=test_app, base_url="http://test") as ac:
+    async with AsyncClient(app=test_app, base_url="http://localhost:5000") as ac:
+        yield ac
+
+
+@pytest.mark.integtest
+@pytest_asyncio.fixture()
+async def app_client() -> AsyncGenerator:
+    limits = Limits(
+        max_connections=1000, max_keepalive_connections=20, keepalive_expiry=10.0
+    )
+    timeout = Timeout(20.0, read=10.0)
+    traction_host_url = os.environ.get("TRACTION_HOST_URL", "http://traction-api:5000")
+    async with AsyncClient(
+        base_url=traction_host_url, limits=limits, timeout=timeout
+    ) as ac:
         yield ac

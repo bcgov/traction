@@ -89,6 +89,8 @@ spec:
                 secretKeyRef:
                   name: {{ template "acapy.api.secret.name" . }}
                   key: webhookapi
+            - name: TRACTION_HOST_URL
+              value: 'http://{{ include "traction_api.fullname" . }}:{{ .Values.traction_api.service.port }}'
             - name: TRACTION_WEBHOOK_URL
               value: 'http://{{ include "traction_api.fullname" . }}:{{ .Values.traction_api.service.port }}/webhook#${ACAPY_WEBHOOK_URL_API_KEY}'
             - name: TRACTION_TENANT_WEBHOOK_URL
@@ -97,6 +99,10 @@ spec:
               value: {{ include "traction_api.genesisUrl" . }}
             - name: ACAPY_ENDORSER_PUBLIC_DID
               value: {{ .Values.acapy.service.endorserPublicDID }}
+            - name: DEFAULT_RETRY_ATTEMPTS
+              value: {{ .Values.traction_api.config.defaultRetryAttempts | quote }}
+            - name: DEFAULT_PAUSE_BETWEEN_ATTEMPTS
+              value: {{ .Values.traction_api.config.defaultPauseBetweenAttempts | quote }}
             {{- include "traction_api.configmap.env.vars" . | nindent 10}}
           resources:
             {{- toYaml .Values.traction_api.resources | nindent 12 }}

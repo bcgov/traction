@@ -1,13 +1,11 @@
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from starlette.middleware import Middleware
 from starlette_context import plugins
 from starlette_context.middleware import RawContextMiddleware
 
-
 from api.endpoints.routes.innkeeper import router as innkeeper_router
 from api.endpoints.dependencies.jwt_security import AccessToken, create_access_token
-from api.endpoints.dependencies.oauth_wrapper import check_oauth
 from api.core.config import settings as s
 
 
@@ -34,7 +32,7 @@ def get_innkeeperapp() -> FastAPI:
     application.include_router(
         innkeeper_router,
         prefix=s.API_V1_STR,
-        dependencies=[Depends(check_oauth(tokenUrl="token"))],
+        dependencies=[Depends(OAuth2PasswordBearer(tokenUrl="token"))],
         tags=["innkeeper"],
     )
     return application
