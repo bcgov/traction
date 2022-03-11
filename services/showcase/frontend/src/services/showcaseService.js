@@ -68,6 +68,17 @@ export default {
   },
 
   /**
+ * @function getCredentials
+ * Get the current sandboxes in this instance of the showcase app
+ * @param {string} sandboxId The identifier for the sandbox
+ * @param {string} lobId The identifier for the line of business
+ * @returns {Promise} An axios response
+ */
+  getCredentials(sandboxId, lobId) {
+    return appAxios().get(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/credentials`);
+  },
+
+  /**
  * @function makeIssuer
  * Make a tenant an issuer
  * @param {string} sandboxId The identifier for the sandbox
@@ -78,3 +89,4 @@ export default {
     return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/make-issuer`);
   },
 };
+
