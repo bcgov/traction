@@ -122,50 +122,13 @@ class IssuerWorkflow(BaseWorkflow):
         # called on receipt of webhook, so need to put the proper tenant "in context"
         elif self.tenant_workflow.workflow_state == TenantWorkflowStateType.in_progress:
             webhook_topic = webhook_message["topic"]
+            process_public_did = False
+            complete_workflow = False
             logger.debug(f">>> run in_progress workflow for topic: {webhook_topic}")
             if webhook_topic == WebhookTopicType.connections:
-                # check if we need to update the connection state in our issuer record
-                connection_state = webhook_message["payload"]["state"]
-                connection_id = webhook_message["payload"]["connection_id"]
-                if not connection_state == tenant_issuer.endorser_connection_state:
-                    update_issuer = TenantIssuerUpdate(
-                        id=tenant_issuer.id,
-                        workflow_id=tenant_issuer.workflow_id,
-                        endorser_connection_id=tenant_issuer.endorser_connection_id,
-                        endorser_connection_state=connection_state,
-                    )
-                    tenant_issuer = await self.issuer_repo.update(update_issuer)
-
-                if (
-                    connection_state == ConnectionStateType.active
-                    or connection_state == ConnectionStateType.completed
-                ):
-                    self.update_connection_metadata(connection_id)
-
-                    # onto the next phase!  create our DID and make it public
-                    (tenant_issuer, did_result) = await self.create_local_did(
-                        tenant_issuer
-                    )
-
-                    # post to the ledger (this will be an endorser operation)
-                    # (just ignore the response for now)
-                    try:
-                        tenant_issuer = await self.initiate_public_did(
-                            tenant_issuer, did_result
-                        )
-                    except Exception:
-                        # TODO this is a hack (for now) - aca-py 0.7.3 doesn't support
-                        # the endorser protocol for this transaction, it will be in the
-                        # next release (0.7.4 or whatever)
-                        tenant_issuer = await self.create_public_did(
-                            tenant_issuer, did_result
-                        )
-
-                        # finish off our workflow
-                        await self.complete_workflow()
-                        await self.workflow_notifier.issuer_workflow_completed(
-                            tenant_issuer
-                        )
+                (process_public_did, tenant_issuer) = await self.process_connection(
+                    tenant_issuer, webhook_message
+                )
 
             elif webhook_topic == WebhookTopicType.endorse_transaction:
                 # TODO once we need to handle endorsements
@@ -173,6 +136,16 @@ class IssuerWorkflow(BaseWorkflow):
 
             else:
                 logger.warn(f">>> ignoring topic for now: {webhook_topic}")
+
+            if process_public_did:
+                (complete_workflow, tenant_issuer) = await self.initiate_public_did(
+                    tenant_issuer
+                )
+
+            if complete_workflow:
+                # finish off our workflow
+                await self.complete_workflow()
+                await self.workflow_notifier.issuer_workflow_completed(tenant_issuer)
 
         # if workflow is "completed" or "error" then we are done
         else:
@@ -198,6 +171,31 @@ class IssuerWorkflow(BaseWorkflow):
         )
         tenant_issuer = await self.issuer_repo.update(update_issuer)
         return tenant_issuer
+
+    async def process_connection(
+        self, tenant_issuer: TenantIssuerRead, webhook_message: dict
+    ) -> (bool, TenantIssuerRead):
+        # check if we need to update the connection state in our issuer record
+        process_public_did = False
+        connection_state = webhook_message["payload"]["state"]
+        connection_id = webhook_message["payload"]["connection_id"]
+        # only do this on a state change to prevent a double-tap
+        if not connection_state == tenant_issuer.endorser_connection_state:
+            update_issuer = TenantIssuerUpdate(
+                id=tenant_issuer.id,
+                workflow_id=tenant_issuer.workflow_id,
+                endorser_connection_id=tenant_issuer.endorser_connection_id,
+                endorser_connection_state=connection_state,
+            )
+            tenant_issuer = await self.issuer_repo.update(update_issuer)
+
+            if (
+                connection_state == ConnectionStateType.active
+                or connection_state == ConnectionStateType.completed
+            ):
+                self.update_connection_metadata(connection_id)
+                process_public_did = True
+        return process_public_did, tenant_issuer
 
     def update_connection_metadata(self, connection_id: str):
         logger.debug(f">>> checking for metadata on connection: {connection_id}")
@@ -226,6 +224,27 @@ class IssuerWorkflow(BaseWorkflow):
                 connection_id, endorser_public_did, **data
             )
 
+    async def initiate_public_did(
+        self, tenant_issuer: TenantIssuerRead
+    ) -> (bool, TenantIssuerRead):
+        complete_workflow = False
+        # onto the next phase!  create our DID and make it public
+        (tenant_issuer, did_result) = await self.create_local_did(tenant_issuer)
+
+        # post to the ledger (this will be an endorser operation)
+        # (just ignore the response for now)
+        try:
+            tenant_issuer = await self.initiate_public_did_workflow(
+                tenant_issuer, did_result
+            )
+        except Exception:
+            # TODO this is a hack (for now) - aca-py 0.7.3 doesn't
+            # supportthe endorser protocol for this transaction, it
+            # will be in the next release (0.7.4 or whatever)
+            tenant_issuer = await self.create_public_did(tenant_issuer, did_result)
+            complete_workflow = True
+        return complete_workflow, tenant_issuer
+
     async def create_local_did(
         self, tenant_issuer: TenantIssuerRead
     ) -> (TenantIssuerRead, dict):
@@ -243,7 +262,7 @@ class IssuerWorkflow(BaseWorkflow):
         tenant_issuer = await self.issuer_repo.update(update_issuer)
         return (tenant_issuer, did_result)
 
-    async def initiate_public_did(
+    async def initiate_public_did_workflow(
         self, tenant_issuer: TenantIssuerRead, did_result: dict
     ) -> TenantIssuerRead:
         data = {"alias": tenant_issuer.tenant_id}

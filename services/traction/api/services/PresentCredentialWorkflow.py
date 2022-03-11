@@ -41,6 +41,9 @@ from acapy_client.model.indy_requested_creds_requested_attr import (
 from acapy_client.model.indy_requested_creds_requested_pred import (
     IndyRequestedCredsRequestedPred,
 )
+from acapy_client.model.v10_presentation_problem_report_request import (
+    V10PresentationProblemReportRequest,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -150,22 +153,31 @@ class PresentCredentialWorkflow(BaseWorkflow):
             webhook_topic = webhook_message["topic"]
             logger.debug(f">>> checking for webhook_topic: {webhook_topic}")
             if webhook_topic == WebhookTopicType.present_proof:
-                # check for state of "presentation_acked"
-                webhook_state = webhook_message["payload"]["state"]
-                logger.debug(f">>> checking for webhook_state: {webhook_state}")
-                # update our status
-                present_cred = await self.update_presentation_state(
-                    present_cred, webhook_state
-                )
-                if (
-                    webhook_state == PresentationStateType.presentation_acked
-                    or webhook_state == PresentationStateType.verified
-                ):
-                    present_cred.presentation = json.dumps(webhook_message["payload"])
-                    present_cred = await self.complete_presentation(present_cred)
+                if webhook_message["payload"].get("state"):
+                    # check for state of "presentation_acked"
+                    webhook_state = webhook_message["payload"]["state"]
+                    logger.debug(f">>> checking for webhook_state: {webhook_state}")
+                    # update our status
+                    present_cred = await self.update_presentation_state(
+                        present_cred, webhook_state
+                    )
+                    if (
+                        webhook_state == PresentationStateType.presentation_acked
+                        or webhook_state == PresentationStateType.verified
+                    ):
+                        present_cred.presentation = json.dumps(
+                            webhook_message["payload"]
+                        )
+                        present_cred = await self.complete_presentation(present_cred)
 
-                    # finish off our workflow
-                    await self.complete_workflow()
+                        # finish off our workflow
+                        await self.complete_workflow()
+
+                elif webhook_message["payload"].get("error_msg"):
+                    # we got an error so log it and cancel the workflow
+                    error_msg = webhook_message["payload"]["error_msg"]
+                    logger.debug(f">>> cancelling workflow with error_msg: {error_msg}")
+                    await self.run_cancel_step(webhook_message, error_msg)
 
             else:
                 logger.warn(f">>> ignoring topic for now: {webhook_topic}")
@@ -173,6 +185,22 @@ class PresentCredentialWorkflow(BaseWorkflow):
         # if workflow is "completed" or "error" then we are done
         else:
             pass
+
+        return self.tenant_workflow
+
+    async def run_cancel_step(
+        self, webhook_message: dict = None, error_msg: str = None
+    ) -> TenantWorkflowRead:
+        # send a problem report with the given error
+        present_cred = await self.present_repo.get_by_workflow_id(
+            self.tenant_workflow.id
+        )
+        await self.complete_with_problem_report(
+            present_cred, webhook_message, error_msg
+        )
+
+        # then cancel te workflow
+        await self.complete_workflow_error(error_msg)
 
         return self.tenant_workflow
 
@@ -291,4 +319,17 @@ class PresentCredentialWorkflow(BaseWorkflow):
             presentation=present_cred.presentation,
         )
         present_cred = await self.present_repo.update(update_present)
+        return present_cred
+
+    async def complete_with_problem_report(
+        self, present_cred: PresentCredentialRead, webhook_message: dict, error_msg: str
+    ) -> PresentCredentialRead:
+        problem_report = V10PresentationProblemReportRequest(
+            description=error_msg,
+        )
+        data = {"body": problem_report}
+        pres_cred_v10_api.present_proof_records_pres_ex_id_problem_report_post(
+            str(present_cred.pres_exch_id),
+            **data,
+        )
         return present_cred

@@ -171,6 +171,7 @@ class IssueCredentialWorkflow(BaseWorkflow):
 
                         # finish off our workflow
                         await self.complete_workflow()
+
                 elif webhook_message["payload"].get("error_msg"):
                     # we got an error so log it and cancel the workflow
                     error_msg = webhook_message["payload"]["error_msg"]

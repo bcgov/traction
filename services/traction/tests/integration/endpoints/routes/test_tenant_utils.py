@@ -336,9 +336,7 @@ async def request_credential_presentation(
     assert holder_resp.status_code == 200, holder_resp.content
     cred_results = parse_obj_as(List[CredPrecisForProof], holder_resp.json())
 
-    proof_presentation = build_proof_presentation(
-        present_request, cred_results
-    )
+    proof_presentation = build_proof_presentation(present_request, cred_results)
 
     # submit proof
     holder_resp = await app_client.post(
@@ -369,8 +367,8 @@ async def request_credential_presentation(
 
 
 def build_proof_presentation(
-   present_request: dict,
-   cred_results: List[CredPrecisForProof],
+    present_request: dict,
+    cred_results: List[CredPrecisForProof],
 ) -> dict:
     proof_presentation = {
         "requested_attributes": {},
