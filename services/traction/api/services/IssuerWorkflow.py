@@ -126,17 +126,19 @@ class IssuerWorkflow(BaseWorkflow):
             complete_workflow = False
             logger.debug(f">>> run in_progress workflow for topic: {webhook_topic}")
             if webhook_topic == WebhookTopicType.connections:
-                (process_public_did, tenant_issuer) = await self.process_connection(tenant_issuer, webhook_message)
+                (process_public_did, tenant_issuer) = await self.process_connection(
+                    tenant_issuer, webhook_message
+                )
 
             if process_public_did:
-                (complete_workflow, tenant_issuer) = await self.initiate_public_did(tenant_issuer)
+                (complete_workflow, tenant_issuer) = await self.initiate_public_did(
+                    tenant_issuer
+                )
 
             if complete_workflow:
                 # finish off our workflow
                 await self.complete_workflow()
-                await self.workflow_notifier.issuer_workflow_completed(
-                    tenant_issuer
-                )
+                await self.workflow_notifier.issuer_workflow_completed(tenant_issuer)
 
             elif webhook_topic == WebhookTopicType.endorse_transaction:
                 # TODO once we need to handle endorsements
@@ -227,9 +229,7 @@ class IssuerWorkflow(BaseWorkflow):
     ) -> (bool, TenantIssuerRead):
         complete_workflow = False
         # onto the next phase!  create our DID and make it public
-        (tenant_issuer, did_result) = await self.create_local_did(
-            tenant_issuer
-        )
+        (tenant_issuer, did_result) = await self.create_local_did(tenant_issuer)
 
         # post to the ledger (this will be an endorser operation)
         # (just ignore the response for now)
@@ -241,9 +241,7 @@ class IssuerWorkflow(BaseWorkflow):
             # TODO this is a hack (for now) - aca-py 0.7.3 doesn't
             # supportthe endorser protocol for this transaction, it
             # will be in the next release (0.7.4 or whatever)
-            tenant_issuer = await self.create_public_did(
-                tenant_issuer, did_result
-            )
+            tenant_issuer = await self.create_public_did(tenant_issuer, did_result)
             complete_workflow = True
         return complete_workflow, tenant_issuer
 
