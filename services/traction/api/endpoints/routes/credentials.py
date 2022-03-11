@@ -445,7 +445,7 @@ async def holder_present_credential(
 
 
 @router.post("/holder/reject-request", response_model=PresentCredentialData)
-async def holder_reject_presentation_requestl(
+async def holder_reject_presentation_request(
     cred_issue_id: str,
     db: AsyncSession = Depends(get_db),
 ) -> PresentCredentialData:
