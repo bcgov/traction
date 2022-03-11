@@ -57,6 +57,8 @@ class BaseWorkflow:
         workflow_id: UUID = None,
         tenant_workflow: TenantWorkflowRead = None,
         webhook_message: dict = None,
+        with_error: bool = False,
+        with_error_msg: str = None,
     ) -> TenantWorkflowRead:
         """Poke the workflow to run the next step."""
         workflow_repo = TenantWorkflowsRepository(db_session=db)
@@ -77,8 +79,14 @@ class BaseWorkflow:
 
         workflow = instantiate_workflow_class_instance(db, tenant_workflow)
 
-        # ping workflow to execute next step
-        tenant_workflow = await workflow.run_step(webhook_message=webhook_message)
+        if with_error:
+            # ping workflow to execute next step
+            tenant_workflow = await workflow.run_cancel_step(
+                webhook_message=webhook_message, error_msg=with_error_msg
+            )
+        else:
+            # ping workflow to execute next step
+            tenant_workflow = await workflow.run_step(webhook_message=webhook_message)
 
         return tenant_workflow
 
@@ -114,6 +122,11 @@ class BaseWorkflow:
     async def run_step(self, webhook_message: dict = None) -> TenantWorkflowRead:
         raise NotImplementedError()
 
+    async def run_cancel_step(
+        self, webhook_message: dict = None, error_msg: str = None
+    ) -> TenantWorkflowRead:
+        raise NotImplementedError()
+
     async def start_workflow(self):
         # update the workflow status as "in_progress"
         logger.debug(">>> starting workflow ...")
@@ -130,6 +143,17 @@ class BaseWorkflow:
         update_workflow = TenantWorkflowUpdate(
             id=self.tenant_workflow.id,
             workflow_state=TenantWorkflowStateType.completed,
+            wallet_bearer_token=None,
+        )
+        self._tenant_workflow = await self.workflow_repo.update(update_workflow)
+
+    async def complete_workflow_error(self, error_msg: str):
+        # finish off our workflow
+        logger.debug(">>> completing workflow with error ...")
+        update_workflow = TenantWorkflowUpdate(
+            id=self.tenant_workflow.id,
+            workflow_state=TenantWorkflowStateType.error,
+            workflow_state_msg=error_msg,
             wallet_bearer_token=None,
         )
         self._tenant_workflow = await self.workflow_repo.update(update_workflow)

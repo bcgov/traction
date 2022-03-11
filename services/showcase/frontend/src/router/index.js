@@ -39,6 +39,11 @@ export default function getRouter(basePath = '/') {
         component: () => import(/* webpackChunkName: "alice" */ '@/views/Alice.vue'),
       },
       {
+        path: '/acme',
+        name: 'Acme',
+        component: () => import(/* webpackChunkName: "acme" */ '@/views/Acme.vue'),
+      },
+      {
         path: '/404',
         alias: '*',
         name: 'NotFound',
