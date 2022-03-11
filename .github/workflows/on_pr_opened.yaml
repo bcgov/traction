@@ -113,6 +113,7 @@ jobs:
           helm upgrade -f ./charts/showcase/values.yaml -f ./charts/showcase/values-pr.yaml pr-${{ github.event.number }}-showcase ./charts/showcase --install --wait
 
       - uses: peter-evans/create-or-update-comment@v1
+        name: Deployment URLs comment
         with:
           issue-number: ${{ github.event.number }}
           body: |
