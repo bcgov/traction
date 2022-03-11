@@ -130,6 +130,13 @@ class IssuerWorkflow(BaseWorkflow):
                     tenant_issuer, webhook_message
                 )
 
+            elif webhook_topic == WebhookTopicType.endorse_transaction:
+                # TODO once we need to handle endorsements
+                pass
+
+            else:
+                logger.warn(f">>> ignoring topic for now: {webhook_topic}")
+
             if process_public_did:
                 (complete_workflow, tenant_issuer) = await self.initiate_public_did(
                     tenant_issuer
@@ -139,13 +146,6 @@ class IssuerWorkflow(BaseWorkflow):
                 # finish off our workflow
                 await self.complete_workflow()
                 await self.workflow_notifier.issuer_workflow_completed(tenant_issuer)
-
-            elif webhook_topic == WebhookTopicType.endorse_transaction:
-                # TODO once we need to handle endorsements
-                pass
-
-            else:
-                logger.warn(f">>> ignoring topic for now: {webhook_topic}")
 
         # if workflow is "completed" or "error" then we are done
         else:
