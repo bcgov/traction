@@ -24,16 +24,28 @@ export default {
   },
 
   /**
-   * @function createInvitation
-   * Create a invitation
+   * @function createInvitationStudent
+   * Create a invitation for a student
    * @param {string} sandboxId The identifier for the sandbox
    * @param {string} lobId The identifier for the line of business
+   * @param {string} studentId The identifier for the student
    * @returns {Promise} An axios response
    */
-  createInvitation(sandboxId, lobId, studentId) {
+  createInvitationStudent(sandboxId, lobId, studentId) {
     return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/create-invitation/student`, { student_id: studentId });
   },
 
+  /**
+   * @function createInvitationApplicant
+   * Create a invitation for an applicant
+   * @param {string} sandboxId The identifier for the sandbox
+   * @param {string} lobId The identifier for the line of business
+   * @param {string} applicantId The identifier for the applicant
+   * @returns {Promise} An axios response
+   */
+  createInvitationApplicant(sandboxId, lobId, applicantId) {
+    return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/create-invitation/applicant`, { applicant_id: applicantId });
+  },
 
   /**
    * @function issueDegree

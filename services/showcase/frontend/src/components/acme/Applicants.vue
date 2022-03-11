@@ -34,7 +34,7 @@
           </v-list-item>
 
           <v-card-actions>
-            <v-btn outlined rounded text :disabled="!appl.alias">
+            <v-btn outlined rounded text :disabled="!appl.alias" @click.prevent="createInvitation(appl)">
               Invite
             </v-btn>
           </v-card-actions>
@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters } from 'vuex';
+import { mapActions, mapMutations, mapGetters } from 'vuex';
 
 export default {
   name: 'Applicants',
@@ -60,6 +60,7 @@ export default {
   },
   methods: {
     ...mapMutations('acme', ['SET_SELECTED_APPLICANT']),
+    ...mapActions('acme', ['createInvitation']),
   },
 };
 </script>
