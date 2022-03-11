@@ -20,9 +20,7 @@ from api.endpoints.models.innkeeper import CheckInResponse
 from api.endpoints.models.credentials import CredPrecisForProof
 
 
-default_retry_attempts = int(
-    os.environ.get("DEFAULT_RETRY_ATTEMPTS", "11")
-)
+default_retry_attempts = int(os.environ.get("DEFAULT_RETRY_ATTEMPTS", "11"))
 default_pause_between_attempts = int(
     os.environ.get("DEFAULT_PAUSE_BETWEEN_ATTEMPTS", "2")
 )
@@ -211,7 +209,8 @@ async def issue_credential(
     cred_def_id: str,
     credential: dict,
     cred_protocol: str = "v1.0",
-):
+    accept_offer: bool = True,
+) -> (str, str):
     """Issue a credential from issuer (t1) to holder (t2)."""
 
     params = {
@@ -246,6 +245,10 @@ async def issue_credential(
             i -= 1
     assert holder_data, "Error no cred offer received by holder"
 
+    # for exception scenarios, let the caller handle things ...
+    if not accept_offer:
+        return issue_workflow_id, holder_data["credential"]["id"]
+
     holder_resp = await app_client.post(
         "/tenant/v1/credentials/holder/accept_offer",
         headers=t2_headers,
@@ -276,6 +279,8 @@ async def issue_credential(
     assert creds_resp.status_code == 200, creds_resp.content
     assert 1 == len(json.loads(creds_resp.content)), creds_resp.content
 
+    return issue_workflow_id, holder_workflow_id
+
 
 async def request_credential_presentation(
     app_client: AsyncClient,
@@ -284,7 +289,8 @@ async def request_credential_presentation(
     t2_headers: dict,
     proof_req: dict,
     pres_protocol: str = "v1.0",
-):
+    accept_request: bool = True,
+) -> (str, str):
     """Request a presentation from t1 (verifier) to t2 (holder)."""
 
     params = {
@@ -319,6 +325,9 @@ async def request_credential_presentation(
     assert holder_data, "Error no pres request received by holder"
     present_request = json.loads(holder_data["presentation"]["present_request"])
 
+    if not accept_request:
+        return pres_req_workflow_id, holder_data["presentation"]["id"]
+
     holder_resp = await app_client.get(
         "/tenant/v1/credentials/holder/creds-for-request",
         headers=t2_headers,
@@ -327,30 +336,9 @@ async def request_credential_presentation(
     assert holder_resp.status_code == 200, holder_resp.content
     cred_results = parse_obj_as(List[CredPrecisForProof], holder_resp.json())
 
-    proof_presentation = {
-        "requested_attributes": {},
-        "requested_predicates": {},
-        "self_attested_attributes": {},
-    }
-    for attr_name in present_request["requested_attributes"]:
-        for cred in cred_results:
-            if attr_name in cred.presentation_referents:
-                proof_presentation["requested_attributes"][attr_name] = {
-                    "cred_id": cred.cred_info["referent"],
-                    "revealed": True,
-                }
-                break
-        if attr_name not in proof_presentation["requested_attributes"]:
-            proof_presentation["self_attested_attributes"][
-                attr_name
-            ] = "TBD Self-attested"
-    for pred_name in present_request["requested_predicates"]:
-        for cred in cred_results:
-            if pred_name in cred.presentation_referents:
-                proof_presentation["requested_predicates"][pred_name] = {
-                    "cred_id": cred.cred_info["referent"],
-                }
-                break
+    proof_presentation = build_proof_presentation(
+        present_request, cred_results
+    )
 
     # submit proof
     holder_resp = await app_client.post(
@@ -376,3 +364,37 @@ async def request_credential_presentation(
         "/tenant/v1/credentials/holder/request",
         workflow_id=holder_workflow_id,
     )
+
+    return pres_req_workflow_id, holder_workflow_id
+
+
+def build_proof_presentation(
+   present_request: dict,
+   cred_results: List[CredPrecisForProof],
+) -> dict:
+    proof_presentation = {
+        "requested_attributes": {},
+        "requested_predicates": {},
+        "self_attested_attributes": {},
+    }
+    for attr_name in present_request["requested_attributes"]:
+        for cred in cred_results:
+            if attr_name in cred.presentation_referents:
+                proof_presentation["requested_attributes"][attr_name] = {
+                    "cred_id": cred.cred_info["referent"],
+                    "revealed": True,
+                }
+                break
+        if attr_name not in proof_presentation["requested_attributes"]:
+            proof_presentation["self_attested_attributes"][
+                attr_name
+            ] = "TBD Self-attested"
+    for pred_name in present_request["requested_predicates"]:
+        for cred in cred_results:
+            if pred_name in cred.presentation_referents:
+                proof_presentation["requested_predicates"][pred_name] = {
+                    "cred_id": cred.cred_info["referent"],
+                }
+                break
+
+    return proof_presentation

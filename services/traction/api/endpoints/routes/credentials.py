@@ -71,7 +71,7 @@ class PresentCredentialData(BaseModel):
 
 
 @router.get("/issuer/issue", response_model=List[IssueCredentialData])
-async def get_issuer_issue_credentials(
+async def issuer_get_issue_credentials(
     state: TenantWorkflowStateType | None = None,
     db: AsyncSession = Depends(get_db),
 ) -> List[IssueCredentialData]:
@@ -104,7 +104,7 @@ async def get_issuer_issue_credentials(
 
 
 @router.post("/issuer/issue", response_model=IssueCredentialData)
-async def issue_credential(
+async def issuer_issue_credential(
     cred_protocol: IssueCredentialProtocolType,
     credential: CredentialPreview,
     cred_def_id: str | None = None,
@@ -176,7 +176,7 @@ async def issue_credential(
 
 
 @router.get("/holder/offer", response_model=List[IssueCredentialData])
-async def get_holder_offer_credentials(
+async def holder_get_offer_credentials(
     state: TenantWorkflowStateType | None = None,
     db: AsyncSession = Depends(get_db),
 ) -> List[IssueCredentialData]:
@@ -209,7 +209,7 @@ async def get_holder_offer_credentials(
 
 
 @router.post("/holder/accept_offer", response_model=IssueCredentialData)
-async def accept_credential(
+async def holder_accept_credential(
     cred_issue_id: str,
     db: AsyncSession = Depends(get_db),
 ) -> IssueCredentialData:
@@ -265,8 +265,68 @@ async def accept_credential(
     return issue
 
 
+@router.post("/holder/reject_offer", response_model=IssueCredentialData)
+async def holder_reject_credential(
+    cred_issue_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> IssueCredentialData:
+    # holder has to accept a credential offer
+    issue_repo = IssueCredentialsRepository(db_session=db)
+    workflow_repo = TenantWorkflowsRepository(db_session=db)
+    issue_cred = await issue_repo.get_by_id(cred_issue_id)
+    if issue_cred.workflow_id:
+        tenant_workflow = None
+        if issue_cred.workflow_id:
+            try:
+                tenant_workflow = await workflow_repo.get_by_id(issue_cred.workflow_id)
+            except DoesNotExist:
+                pass
+        issue = IssueCredentialData(
+            credential=issue_cred,
+            workflow=tenant_workflow,
+        )
+        return issue
+
+    tenant_workflow = await create_workflow(
+        issue_cred.wallet_id,
+        TenantWorkflowTypeType.issue_cred,
+        db,
+        error_if_wf_exists=False,
+        start_workflow=False,
+    )
+    logger.debug(f">>> Created tenant_workflow: {tenant_workflow}")
+    issue_update = IssueCredentialUpdate(
+        id=issue_cred.id,
+        workflow_id=tenant_workflow.id,
+        cred_exch_id=issue_cred.cred_exch_id,
+        issue_state=issue_cred.issue_state,
+    )
+    issue_cred = await issue_repo.update(issue_update)
+    logger.debug(f">>> Updated issue_cred: {issue_cred}")
+
+    # start workflow
+    tenant_workflow = await BaseWorkflow.next_workflow_step(
+        db,
+        tenant_workflow=tenant_workflow,
+        with_error=True,
+        with_error_msg="Credential rejected.",
+    )
+    logger.debug(f">>> Updated tenant_workflow: {tenant_workflow}")
+
+    # get updated issuer info (should have workflow id etc.)
+    issue_cred = await issue_repo.get_by_id(issue_cred.id)
+    logger.debug(f">>> Updated (final) issue_cred: {issue_cred}")
+
+    issue = IssueCredentialData(
+        credential=issue_cred,
+        workflow=tenant_workflow,
+    )
+
+    return issue
+
+
 @router.get("/holder/request", response_model=List[PresentCredentialData])
-async def get_holder_presentation_requests(
+async def holder_get_presentation_requests(
     state: TenantWorkflowStateType | None = None,
     db: AsyncSession = Depends(get_db),
 ) -> List[PresentCredentialData]:
@@ -302,7 +362,7 @@ async def get_holder_presentation_requests(
 
 
 @router.get("/holder/creds-for-request", response_model=List[CredPrecisForProof])
-async def get_holder_creds_for_pres_request(
+async def holder_get_creds_for_pres_request(
     cred_issue_id: str,
     db: AsyncSession = Depends(get_db),
 ) -> List[PresentCredentialData]:
@@ -324,7 +384,7 @@ async def get_holder_creds_for_pres_request(
 
 
 @router.post("/holder/present-credential", response_model=PresentCredentialData)
-async def present_credential(
+async def holder_present_credential(
     cred_issue_id: str,
     presentation: CredPresentation,
     db: AsyncSession = Depends(get_db),
@@ -385,7 +445,7 @@ async def present_credential(
 
 
 @router.get("/holder/", response_model=List[dict])
-async def get_credentials(db: AsyncSession = Depends(get_db)) -> List[dict]:
+async def holder_get_credentials(db: AsyncSession = Depends(get_db)) -> List[dict]:
     cred_results = creds_api.credentials_get()
     creds = []
     for cred in cred_results.results:
@@ -403,7 +463,7 @@ async def get_credentials(db: AsyncSession = Depends(get_db)) -> List[dict]:
 
 
 @router.get("/verifier/request", response_model=List[PresentCredentialData])
-async def get_verifier_request_credentials(
+async def verifier_get_request_credentials(
     state: TenantWorkflowStateType | None = None,
     db: AsyncSession = Depends(get_db),
 ) -> List[PresentCredentialData]:
@@ -439,7 +499,7 @@ async def get_verifier_request_credentials(
 
 
 @router.post("/verifier/request", response_model=PresentCredentialData)
-async def request_credentials(
+async def verifier_request_credentials(
     pres_protocol: PresentCredentialProtocolType,
     proof_req: ProofRequest,
     connection_id: str | None = None,
