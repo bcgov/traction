@@ -20,8 +20,8 @@ jobs:
     name: 'Install if ready for review'
     runs-on: ubuntu-latest
     outputs:
-      deploy: ${{ steps.skipcheck.ready_for_review.true_false }}
-      build: ${{ steps.skipcheck.ready_for_review.bcgov_true_false }}
+      deploy: ${{ steps.ready_for_review.outputs.true_false }}
+      build: ${{ steps.ready_for_review.outputs.bcgov_true_false }}
     steps:
       - id: ready_for_review
         run: |
@@ -31,9 +31,9 @@ jobs:
   build_api:
     name: 'Build Traction API'
     runs-on: ubuntu-20.04
+    if: ${{ always() && fromJSON(needs.ready.outputs.build) == true }}
     needs: 
       - ready
-    if: ${{ always() && fromJSON(needs.ready.outputs.build) == true }}
     steps:      
       - uses: actions/checkout@v2        
       - name: Build service
@@ -53,9 +53,9 @@ jobs:
   build_showcase:
     name: 'Build Traction Showcase'
     runs-on: ubuntu-20.04
+    if: ${{ always() && fromJSON(needs.ready.outputs.build) == true }}
     needs: 
       - ready
-    if: ${{ always() && fromJSON(needs.ready.outputs.build) == true }}
     steps:      
       - uses: actions/checkout@v2        
       - name: Build service
@@ -112,11 +112,31 @@ jobs:
           yq eval '.showcase.traction_api.secret.name = "pr-${{ github.event.number }}-traction-api"' -i ./charts/showcase/values-pr.yaml
           helm upgrade -f ./charts/showcase/values.yaml -f ./charts/showcase/values-pr.yaml pr-${{ github.event.number }}-showcase ./charts/showcase --install --wait
 
-      - uses: peter-evans/create-or-update-comment@v1
+  
+  deploymenturls:
+    name: Deployment URLs comment
+    runs-on: ubuntu-20.04
+    needs: 
+      - deploy
+    if: ${{ (fromJSON(needs.ready.outputs.deploy) == true) && !(contains(needs.*.result, 'failure')) }}
+    steps:  
+      - uses: actions/checkout@v2 
+      
+      - name: Find Comment
+        uses: peter-evans/find-comment@v1
+        id: fc
+        with:
+          issue-number: ${{ github.event.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: Deployment URLs ready for review. 
+        
+      - name: Create comment
+        if: steps.fc.outputs.comment-id == ''
+        uses: peter-evans/create-or-update-comment@v1
         with:
           issue-number: ${{ github.event.number }}
           body: |
-            | Deployment | Resource |: Location :|
+            | Deployment | Resource | Location |
             | --- | --- | --- |
             | Traction | | 
             | | API | https://pr-${{ github.event.number }}-traction-api-dev.apps.silver.devops.gov.bc.ca |
@@ -127,4 +147,5 @@ jobs:
             | | Swagger | https://pr-${{ github.event.number }}-showcase-app-dev.apps.silver.devops.gov.bc.ca/api/docs |
             | Aca-Py | | |
             | | Admin Swagger | https://pr-${{ github.event.number }}-traction-acapy-admin-dev.apps.silver.devops.gov.bc.ca/api/doc |
-
+            
+            Deployment URLs ready for review.

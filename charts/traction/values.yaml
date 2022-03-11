@@ -32,7 +32,7 @@ acapy:
   # The agent seed, 32 characters. Will be generated if not defined here
   agentSeed: ""
 
-  # if true then use --admin-insecure-mode, else we set --admin-api-key
+  # if true use --admin-insecure-mode, else we set --admin-api-key
   adminInsecureMode: false
 
   labelOverride: ""
