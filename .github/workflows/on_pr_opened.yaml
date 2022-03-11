@@ -31,9 +31,9 @@ jobs:
   build_api:
     name: 'Build Traction API'
     runs-on: ubuntu-20.04
+    if: ${{ always() && fromJSON(needs.ready.outputs.build) == true }}
     needs: 
       - ready
-    if: ${{ always() && fromJSON(needs.ready.outputs.build) == true }}
     steps:      
       - uses: actions/checkout@v2        
       - name: Build service
