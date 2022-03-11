@@ -136,36 +136,37 @@ class IssuerWorkflow(BaseWorkflow):
                     )
                     tenant_issuer = await self.issuer_repo.update(update_issuer)
 
-                if (
-                    connection_state == ConnectionStateType.active
-                    or connection_state == ConnectionStateType.completed
-                ):
-                    self.update_connection_metadata(connection_id)
+                    # only do this on a state change to prevent a double-tap
+                    if (
+                        connection_state == ConnectionStateType.active
+                        or connection_state == ConnectionStateType.completed
+                    ):
+                        self.update_connection_metadata(connection_id)
 
-                    # onto the next phase!  create our DID and make it public
-                    (tenant_issuer, did_result) = await self.create_local_did(
-                        tenant_issuer
-                    )
-
-                    # post to the ledger (this will be an endorser operation)
-                    # (just ignore the response for now)
-                    try:
-                        tenant_issuer = await self.initiate_public_did(
-                            tenant_issuer, did_result
-                        )
-                    except Exception:
-                        # TODO this is a hack (for now) - aca-py 0.7.3 doesn't support
-                        # the endorser protocol for this transaction, it will be in the
-                        # next release (0.7.4 or whatever)
-                        tenant_issuer = await self.create_public_did(
-                            tenant_issuer, did_result
-                        )
-
-                        # finish off our workflow
-                        await self.complete_workflow()
-                        await self.workflow_notifier.issuer_workflow_completed(
+                        # onto the next phase!  create our DID and make it public
+                        (tenant_issuer, did_result) = await self.create_local_did(
                             tenant_issuer
                         )
+
+                        # post to the ledger (this will be an endorser operation)
+                        # (just ignore the response for now)
+                        try:
+                            tenant_issuer = await self.initiate_public_did(
+                                tenant_issuer, did_result
+                            )
+                        except Exception:
+                            # TODO this is a hack (for now) - aca-py 0.7.3 doesn't
+                            # supportthe endorser protocol for this transaction, it
+                            # will be in the next release (0.7.4 or whatever)
+                            tenant_issuer = await self.create_public_did(
+                                tenant_issuer, did_result
+                            )
+
+                            # finish off our workflow
+                            await self.complete_workflow()
+                            await self.workflow_notifier.issuer_workflow_completed(
+                                tenant_issuer
+                            )
 
             elif webhook_topic == WebhookTopicType.endorse_transaction:
                 # TODO once we need to handle endorsements

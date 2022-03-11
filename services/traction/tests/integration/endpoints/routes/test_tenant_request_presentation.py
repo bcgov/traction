@@ -34,7 +34,7 @@ pytestmark = pytest.mark.asyncio
 
 @pytest.mark.integtest
 async def test_tenants_issue_cred_request_proof_reject_request(
-    app_client: AsyncClient
+    app_client: AsyncClient,
 ) -> None:
     # get a token
     bearer_token = await innkeeper_auth(app_client)

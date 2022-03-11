@@ -113,32 +113,42 @@ class SchemaWorkflow(BaseWorkflow):
                 txn_id = webhook_message["payload"]["transaction_id"]
                 if webhook_state == "transaction_acked":
                     if txn_id == str(tenant_schema.schema_txn_id):
-                        # mark schema completed and kick off cred def
-                        tenant_schema = await self.complete_schema(
-                            tenant_schema,
-                            webhook_message["payload"]["meta_data"]["context"][
-                                "schema_id"
-                            ],
-                        )
-
                         if (
-                            tenant_schema.cred_def_state
-                            == TenantWorkflowStateType.pending
+                            not tenant_schema.schema_state
+                            == TenantWorkflowStateType.completed
                         ):
-                            tenant_schema = await self.initiate_cred_def(tenant_schema)
-                        else:
-                            workflow_completed = True
+                            # mark schema completed and kick off cred def
+                            tenant_schema = await self.complete_schema(
+                                tenant_schema,
+                                webhook_message["payload"]["meta_data"]["context"][
+                                    "schema_id"
+                                ],
+                            )
+
+                            if (
+                                tenant_schema.cred_def_state
+                                == TenantWorkflowStateType.pending
+                            ):
+                                tenant_schema = await self.initiate_cred_def(
+                                    tenant_schema
+                                )
+                            else:
+                                workflow_completed = True
 
                     elif txn_id == str(tenant_schema.cred_def_txn_id):
-                        # derive the cred_def_id
-                        endorser_public_did = settings.ACAPY_ENDORSER_PUBLIC_DID
-                        signature_json = webhook_message["payload"][
-                            "signature_response"
-                        ][0]["signature"][endorser_public_did]
-                        tenant_schema = await self.complete_cred_def(
-                            tenant_schema, signature_json
-                        )
-                        workflow_completed = True
+                        if (
+                            not tenant_schema.cred_def_state
+                            == TenantWorkflowStateType.completed
+                        ):
+                            # derive the cred_def_id
+                            endorser_public_did = settings.ACAPY_ENDORSER_PUBLIC_DID
+                            signature_json = webhook_message["payload"][
+                                "signature_response"
+                            ][0]["signature"][endorser_public_did]
+                            tenant_schema = await self.complete_cred_def(
+                                tenant_schema, signature_json
+                            )
+                            workflow_completed = True
 
                     if workflow_completed:
                         # finish off our workflow
