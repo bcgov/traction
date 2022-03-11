@@ -73,6 +73,7 @@ export default {
         commit('SET_CURRENT', toSelect);
         commit('alice/SET_TENANT', toSelect.lobs.find(t => t.name == Tenants.ALICE), { root: true });
         commit('faber/SET_TENANT', toSelect.lobs.find(t => t.name == Tenants.FABER), { root: true });
+        commit('acme/SET_TENANT', toSelect.lobs.find(t => t.name == Tenants.ACME), { root: true });
       }
     },
   }

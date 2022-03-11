@@ -170,7 +170,7 @@ export default {
     async invite(id) {
       this.loadingInvitation = true;
       try {
-        const response = await showcaseService.createInvitation(
+        const response = await showcaseService.createInvitationStudent(
           this.currentSandbox.id,
           this.tenant.id,
           id
