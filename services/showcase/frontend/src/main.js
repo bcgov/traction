@@ -24,7 +24,7 @@ requireComponent.keys().forEach(fileName => {
   Vue.component(componentName, componentConfig.default || componentConfig);
 });
 
-const socketApi = `ws://${window.location.host}/ws`;
+const socketApi = `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}/ws`;
 Vue.use(VueNativeSock, socketApi, {
   store: store,
   format: 'json',
