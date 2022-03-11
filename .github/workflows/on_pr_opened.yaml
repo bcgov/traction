@@ -20,8 +20,8 @@ jobs:
     name: 'Install if ready for review'
     runs-on: ubuntu-latest
     outputs:
-      deploy: ${{ steps.skipcheck.ready_for_review.true_false }}
-      build: ${{ steps.skipcheck.ready_for_review.bcgov_true_false }}
+      deploy: ${{ steps.ready_for_review.true_false }}
+      build: ${{ steps.ready_for_review.bcgov_true_false }}
     steps:
       - id: ready_for_review
         run: |
