@@ -5,7 +5,7 @@ export default {
   namespaced: true,
   state: {
     ofbMessages: [],
-    tenant: { a: 1 }
+    tenant: { }
   },
   getters: {
     ofbMessages: state => state.ofbMessages,

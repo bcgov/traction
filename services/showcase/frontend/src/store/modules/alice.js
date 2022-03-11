@@ -7,7 +7,7 @@ export default {
   state: {
     ofbMessages: [],
     credentials: [],
-    tenant: { a: 1 }
+    tenant: {}
   },
   getters: {
     ofbMessages: state => state.ofbMessages,

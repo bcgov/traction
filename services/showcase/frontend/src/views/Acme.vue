@@ -1,82 +1,39 @@
 <template>
   <div class="acme-portal">
-    <v-toolbar dark flat prominent src="@/assets/images/computer.jpg">
-      <template v-slot:img="{ props }">
-        <v-img
-          v-bind="props"
-          gradient="to top right, rgba(42,80,82,.5), rgba(0,160,144,.8)"
-        ></v-img>
-      </template>
-      <v-app-bar-nav-icon></v-app-bar-nav-icon>
-
-      <v-toolbar-title><v-icon x-large color="black">mdi-alpha-a-box</v-icon> ACME Corporation HR Portal</v-toolbar-title>
-
-      <v-spacer></v-spacer>
-
-      <v-btn icon>
-        <v-icon>mdi-key</v-icon>
-      </v-btn>
-      <v-btn icon>
-        <v-icon>mdi-cube</v-icon>
-      </v-btn>
-      <v-btn icon>
-        <v-icon>mdi-export</v-icon>
-      </v-btn>
-    </v-toolbar>
-
-    <v-container fluid>
+    <Header />
+    <v-container fluid v-if="currentSandbox">
       <v-row>
         <v-col cols="4" lg="2">
-          <v-navigation-drawer permanent class="mx-0">
-            <v-system-bar color="rgba(42,80,82)" />
-            <v-list>
-              <v-list-item>
-                <v-avatar color="rgba(42,80,82)">
-                  <v-icon dark>mdi-account-tie</v-icon>
-                </v-avatar>
-              </v-list-item>
-
-              <v-list-item link>
-                <v-list-item-content>
-                  <v-list-item-title class="text-h6">
-                    HR Manager 1
-                  </v-list-item-title>
-                  <v-list-item-subtitle>
-                    human.res@acmecorp.com
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list>
-            <v-divider></v-divider>
-            <v-list nav>
-              <v-list-item-group v-model="selectedItem" color="primary">
-                <v-list-item v-for="(item, i) in items" :key="i">
-                  <v-list-item-icon>
-                    <v-icon v-text="item.icon"></v-icon>
-                  </v-list-item-icon>
-
-                  <v-list-item-content>
-                    <v-list-item-title v-text="item.text"></v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list-item-group>
-            </v-list>
-          </v-navigation-drawer>
+          <Sidebar />
         </v-col>
-        <v-col cols="8" lg="10">test</v-col>
+        <v-col cols="8" lg="7"> <Applicants /></v-col>
+        <v-col cols="6" lg="3">
+          <SelectedApplicant v-if="selectedApplicant" />
+        </v-col>
       </v-row>
     </v-container>
+    <div v-else>
+      <p class="ma-10">
+        No sandbox session set, please go to Innkeeper tab to set that up
+      </p>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
 
+import Applicants from '@/components/acme/Applicants.vue';
+import Header from '@/components/acme/Header.vue';
+import SelectedApplicant from '@/components/acme/SelectedApplicant.vue';
+import Sidebar from '@/components/acme/Sidebar.vue';
+
 export default {
   name: 'Acme',
-  components: {},
+  components: { Applicants, Header, SelectedApplicant, Sidebar },
   computed: {
     ...mapGetters('sandbox', ['currentSandbox']),
+    ...mapGetters('acme', ['selectedApplicant']),
   },
   data: () => ({
     selectedItem: 1,
@@ -93,14 +50,14 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .acme-portal {
   height: 100%;
   font-family: 'Helvetica' !important;
   background-color: whitesmoke !important;
 
   .v-item--active {
-    color:rgba(0,160,144) !important;
+    color: rgba(0, 160, 144) !important;
   }
 }
 </style>
