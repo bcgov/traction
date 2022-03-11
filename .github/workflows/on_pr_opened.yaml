@@ -20,8 +20,8 @@ jobs:
     name: 'Install if ready for review'
     runs-on: ubuntu-latest
     outputs:
-      deploy: ${{ steps.ready_for_review.true_false }}
-      build: ${{ steps.ready_for_review.bcgov_true_false }}
+      deploy: ${{ steps.ready_for_review.outputs.true_false }}
+      build: ${{ steps.ready_for_review.outputs.bcgov_true_false }}
     steps:
       - id: ready_for_review
         run: |
@@ -53,9 +53,9 @@ jobs:
   build_showcase:
     name: 'Build Traction Showcase'
     runs-on: ubuntu-20.04
+    if: ${{ always() && fromJSON(needs.ready.outputs.build) == true }}
     needs: 
       - ready
-    if: ${{ always() && fromJSON(needs.ready.outputs.build) == true }}
     steps:      
       - uses: actions/checkout@v2        
       - name: Build service
@@ -127,4 +127,3 @@ jobs:
             | | Swagger | https://pr-${{ github.event.number }}-showcase-app-dev.apps.silver.devops.gov.bc.ca/api/docs |
             | Aca-Py | | |
             | | Admin Swagger | https://pr-${{ github.event.number }}-traction-acapy-admin-dev.apps.silver.devops.gov.bc.ca/api/doc |
-
