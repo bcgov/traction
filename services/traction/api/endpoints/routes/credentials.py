@@ -444,6 +444,68 @@ async def holder_present_credential(
     return present
 
 
+@router.post("/holder/reject-request", response_model=PresentCredentialData)
+async def holder_reject_presentation_requestl(
+    cred_issue_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> PresentCredentialData:
+    # holder has to present their credential(s)
+    present_repo = PresentCredentialsRepository(db_session=db)
+    workflow_repo = TenantWorkflowsRepository(db_session=db)
+    present_cred = await present_repo.get_by_id(cred_issue_id)
+    if present_cred.workflow_id:
+        tenant_workflow = None
+        if present_cred.workflow_id:
+            try:
+                tenant_workflow = await workflow_repo.get_by_id(
+                    present_cred.workflow_id
+                )
+            except DoesNotExist:
+                pass
+        present = PresentCredentialData(
+            presentation=present_cred,
+            workflow=tenant_workflow,
+        )
+        return present
+
+    tenant_workflow = await create_workflow(
+        present_cred.wallet_id,
+        TenantWorkflowTypeType.present_cred,
+        db,
+        error_if_wf_exists=False,
+        start_workflow=False,
+    )
+    logger.debug(f">>> Created tenant_workflow: {tenant_workflow}")
+    present_update = PresentCredentialUpdate(
+        id=present_cred.id,
+        workflow_id=tenant_workflow.id,
+        present_state=TenantWorkflowStateType.pending,
+        pres_exch_id=present_cred.pres_exch_id,
+    )
+    present_cred = await present_repo.update(present_update)
+    logger.debug(f">>> Updated present_cred: {present_cred}")
+
+    # start workflow
+    tenant_workflow = await BaseWorkflow.next_workflow_step(
+        db,
+        tenant_workflow=tenant_workflow,
+        with_error=True,
+        with_error_msg="Credential request rejected.",
+    )
+    logger.debug(f">>> Updated tenant_workflow: {tenant_workflow}")
+
+    # get updated issuer info (should have workflow id etc.)
+    present_cred = await present_repo.get_by_id(present_cred.id)
+    logger.debug(f">>> Updated (final) present_cred: {present_cred}")
+
+    present = PresentCredentialData(
+        presentation=present_cred,
+        workflow=tenant_workflow,
+    )
+
+    return present
+
+
 @router.get("/holder/", response_model=List[dict])
 async def holder_get_credentials(db: AsyncSession = Depends(get_db)) -> List[dict]:
     cred_results = creds_api.credentials_get()
