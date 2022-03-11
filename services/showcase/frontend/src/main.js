@@ -4,6 +4,7 @@ import '@bcgov/bc-sans/css/BCSans.css';
 import App from './App.vue';
 import NProgress from 'nprogress';
 import Vue from 'vue';
+import VueNativeSock from 'vue-native-websocket';
 
 import '@/filters';
 import getRouter from '@/router';
@@ -23,11 +24,30 @@ requireComponent.keys().forEach(fileName => {
   Vue.component(componentName, componentConfig.default || componentConfig);
 });
 
+const socketApi = `ws://${window.location.host}/ws`;
+Vue.use(VueNativeSock, socketApi, {
+  store: store,
+  format: 'json',
+  reconnection: true,
+  passToStoreHandler: function (eventName, event) {
+    if (!eventName.startsWith('SOCKET_')) {
+      return;
+    }
+    let message = event;
+    let target = eventName.toUpperCase();
+    if (target === 'SOCKET_ONMESSAGE' && this.format === 'json' && event.data) {
+      message = JSON.parse(event.data);
+      target = 'notifications/onNotification';
+    }
+    this.store.commit(target, message);
+  },
+});
+
 new Vue({
   router: getRouter('/'),
   store,
   vuetify,
-  render: h => h(App)
+  render: h => h(App),
 }).$mount('#app');
 
 NProgress.done();

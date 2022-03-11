@@ -21,6 +21,18 @@ export default {
       state.notifications = state.notifications.filter(
         notification => notification.id !== notificationToRemove.id
       );
+    },
+    onNotification(state, notification) {
+      //console.log('onNotification()');
+      //console.log(notification);
+      let msg = {
+        message: `Notification from webhook for topic: ${notification.topic} for ${notification.lob.name}`,
+        type: NotificationTypes.SUCCESS
+      };
+      state.notifications.push({
+        ...msg,
+        id: nextId++
+      });
     }
   },
   actions: {

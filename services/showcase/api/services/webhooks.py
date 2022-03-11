@@ -4,9 +4,10 @@ import random
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.db.models import Lob
-from api.db.models.line_of_business import LobUpdate
+from api.db.models.line_of_business import LobUpdate, LobRead
 from api.db.repositories import LobRepository, StudentRepository
 from api.db.repositories.job_applicant import ApplicantRepository
+from api.services.websockets import notifier
 from api.services import traction
 
 logger = logging.getLogger(__name__)
@@ -108,6 +109,18 @@ async def handle_issue_credential(lob: Lob, payload: dict, db: AsyncSession):
 
 async def handle_webhook(lob: Lob, topic: str, payload: dict, db: AsyncSession):
     logger.info(f"handle_webhook(lob = {lob.name}, topic = {topic})")
+    # TODO - make proper notifications to FE that are useful...
+    await notifier.push(
+        {
+            "topic": topic,
+            "payload": payload,
+            "lob": {
+                "sandbox_id": str(lob.sandbox_id),
+                "id": str(lob.id),
+                "name": lob.name,
+            },
+        }
+    )
     if "connections" == topic:
         return await handle_connections(lob, payload, db)
     if "issuer" == topic:

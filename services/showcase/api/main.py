@@ -7,12 +7,14 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.websockets import WebSocket, WebSocketDisconnect
 
 from api.core.config import settings
 
 from api.endpoints.routes.sandbox import router as sandbox_router
 from api.endpoints.routes.webhooks import router as webhooks_router
 from api.core.exception_handlers import add_exception_handlers
+from api.services.websockets import notifier
 
 os.environ["TZ"] = settings.TIMEZONE
 time.tzset()
@@ -51,6 +53,20 @@ app = get_application()
 api = get_api()
 app.mount("/api", api)
 
+
+# frontend websockets
+# make sure this is before the static files and cors origins.
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await notifier.connect(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            await websocket.send_text(f"Message text was: {data}")
+    except WebSocketDisconnect:
+        notifier.remove(websocket)
+
+
 # Frontend Serving
 
 origins = settings.SHOWCASE_CORS_URLS.split(",")
@@ -83,6 +99,14 @@ app.mount(
 
 add_exception_handlers(app)
 add_exception_handlers(api)
+
+
+@app.on_event("startup")
+async def startup():
+    logger.debug("@app.on_event(startup)")
+    # Prime the push notification generator
+    await notifier.generator.asend(None)
+
 
 if __name__ == "__main__":
     print("main.")
