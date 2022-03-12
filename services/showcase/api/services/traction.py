@@ -110,6 +110,95 @@ async def create_tenant_webhook(tenant: Lob):
                 )
 
 
+async def tenant_get_credential_offers(
+    wallet_id: UUID,
+    wallet_key: UUID,
+):
+    auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
+    query_params = {}
+
+    # TODO: error handling calling Traction
+    async with ClientSession() as client_session:
+        async with await client_session.get(
+            url=t_urls.TENANT_GET_CRED_OFFERS,
+            params=query_params,
+            headers=auth_headers,
+        ) as response:
+            try:
+                resp = await response.json()
+                return resp
+            except ContentTypeError:
+                logger.exception(
+                    "Error getting credential offers list",
+                    exc_info=True,
+                )
+                text = await response.text()
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=text,
+                )
+
+
+async def tenant_accept_credential_offer(
+    wallet_id: UUID,
+    wallet_key: UUID,
+    cred_issue_id: UUID,
+):
+    auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
+    query_params = {"cred_issue_id": str(cred_issue_id)}
+
+    # TODO: error handling calling Traction
+    async with ClientSession() as client_session:
+        async with await client_session.post(
+            url=t_urls.TENANT_ACCEPT_CRED_OFFER,
+            params=query_params,
+            headers=auth_headers,
+        ) as response:
+            try:
+                resp = await response.json()
+                return resp
+            except ContentTypeError:
+                logger.exception(
+                    "Error accepting credential offer",
+                    exc_info=True,
+                )
+                text = await response.text()
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=text,
+                )
+
+
+async def tenant_reject_credential_offer(
+    wallet_id: UUID,
+    wallet_key: UUID,
+    cred_issue_id: UUID,
+):
+    auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
+    query_params = {"cred_issue_id": str(cred_issue_id)}
+
+    # TODO: error handling calling Traction
+    async with ClientSession() as client_session:
+        async with await client_session.post(
+            url=t_urls.TENANT_REJECT_CRED_OFFER,
+            params=query_params,
+            headers=auth_headers,
+        ) as response:
+            try:
+                resp = await response.json()
+                return resp
+            except ContentTypeError:
+                logger.exception(
+                    "Error rejecting credential offer",
+                    exc_info=True,
+                )
+                text = await response.text()
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=text,
+                )
+
+
 async def tenant_get_credentials(
     wallet_id: UUID,
     wallet_key: UUID,

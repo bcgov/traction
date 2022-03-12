@@ -7,11 +7,13 @@ export default {
   state: {
     ofbMessages: [],
     credentials: [],
+    credentialOffers: [],
     tenant: {}
   },
   getters: {
     ofbMessages: state => state.ofbMessages,
     credentials: state => state.credentials,
+    credentialOffers: state => state.credentialOffers,
     tenant: state => state.tenant
   },
   mutations: {
@@ -20,6 +22,9 @@ export default {
     },
     SET_LOB_CREDENTIALS(state, creds) {
       state.credentials = creds;
+    },
+    SET_LOB_CREDENTIAL_OFFERS(state, cred_offers) {
+      state.credentialOffers = cred_offers;
     },
     SET_TENANT(state, tenant) {
       state.tenant = tenant;
@@ -66,6 +71,40 @@ export default {
         dispatch('notifications/addNotification', {
           message: 'An error occurred while fetching Credentials.',
           consoleError: `Error getting credentials: ${error}`,
+        }, { root: true });
+      }
+    },
+    async getCredentialOffers({ commit, dispatch, state, rootState }) {
+      try {
+        const response = await showcaseService.getCredentialOffers(rootState.sandbox.currentSandbox.id, state.tenant.id);
+        commit('SET_LOB_CREDENTIAL_OFFERS', response.data);
+      }
+      catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while fetching Credential Offers.',
+          consoleError: `Error getting credential offers: ${error}`,
+        }, { root: true });
+      }
+    },
+    async acceptCredentialOffer({ dispatch, state, rootState }, cred_issue_id) {
+      try {
+        await showcaseService.acceptCredentialOffer(rootState.sandbox.currentSandbox.id, state.tenant.id, cred_issue_id);
+      }
+      catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while accepting Credential Offer.',
+          consoleError: `Error getting credential offers: ${error}`,
+        }, { root: true });
+      }
+    },
+    async rejectCredentialOffer({ dispatch, state, rootState }, cred_issue_id) {
+      try {
+        await showcaseService.rejectCredentialOffer(rootState.sandbox.currentSandbox.id, state.tenant.id, cred_issue_id);
+      }
+      catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while reject Credential Offer.',
+          consoleError: `Error getting credential offers: ${error}`,
         }, { root: true });
       }
     },

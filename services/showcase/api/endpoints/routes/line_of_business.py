@@ -28,6 +28,22 @@ class CredentialsRead(BaseModel):
     schema_id: str
 
 
+class Credential(BaseModel):
+    cred_type: str
+    cred_protocol: str
+    cred_def_id: str
+    credential: str
+    issue_state: str
+    issue_role: str
+    created_at: str
+    updated_at: str
+    id: str
+
+
+class CredentialOfferRead(BaseModel):
+    credential: Credential
+
+
 @router.get(
     "/lobs",
     status_code=status.HTTP_200_OK,
@@ -75,6 +91,64 @@ async def get_out_of_band_messages(
     oob_repo = OutOfBandRepository(db_session=db)
     items = await oob_repo.get_for_lob(lob_id=lob.id)
     return items
+
+
+@router.get(
+    "/lobs/{lob_id}/credential-offer",
+    status_code=status.HTTP_200_OK,
+    response_model=List[CredentialOfferRead],
+)
+async def get_credential_offer(
+    sandbox_id: UUID,
+    lob_id: UUID,
+    db: AsyncSession = Depends(get_db),
+) -> CredentialOfferRead:
+    # make sure lob is in this sandbox...
+    lob_repo = LobRepository(db_session=db)
+    lob = await lob_repo.get_by_id_with_sandbox(sandbox_id, lob_id)
+    # go get all creds the lob holds
+    creds = await traction.tenant_get_credential_offers(lob.wallet_id, lob.wallet_key)
+    return creds
+
+
+@router.post(
+    "/lobs/{lob_id}/credential-offer/{cred_issue_id}/accept",
+    status_code=status.HTTP_200_OK,
+)
+async def accept_credential_offer(
+    sandbox_id: UUID,
+    lob_id: UUID,
+    cred_issue_id: UUID,
+    db: AsyncSession = Depends(get_db),
+):
+    # make sure lob is in this sandbox...
+    lob_repo = LobRepository(db_session=db)
+    lob = await lob_repo.get_by_id_with_sandbox(sandbox_id, lob_id)
+    # go get all creds the lob holds
+    creds = await traction.tenant_accept_credential_offer(
+        lob.wallet_id, lob.wallet_key, cred_issue_id
+    )
+    return creds
+
+
+@router.post(
+    "/lobs/{lob_id}/credential-offer/{cred_issue_id}/reject",
+    status_code=status.HTTP_200_OK,
+)
+async def reject_credential_offer(
+    sandbox_id: UUID,
+    lob_id: UUID,
+    cred_issue_id: UUID,
+    db: AsyncSession = Depends(get_db),
+):
+    # make sure lob is in this sandbox...
+    lob_repo = LobRepository(db_session=db)
+    lob = await lob_repo.get_by_id_with_sandbox(sandbox_id, lob_id)
+    # go get all creds the lob holds
+    creds = await traction.tenant_reject_credential_offer(
+        lob.wallet_id, lob.wallet_key, cred_issue_id
+    )
+    return creds
 
 
 @router.get(
