@@ -90,6 +90,45 @@ export default {
     return appAxios().get(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/credentials`);
   },
 
+
+  /**
+ * @function getCredentialOffers
+ * Get the current sandboxes in this instance of the showcase app
+ * @param {string} sandboxId The identifier for the sandbox
+ * @param {string} lobId The identifier for the line of business
+ * @returns {Promise} An axios response
+ */
+  getCredentialOffers(sandboxId, lobId) {
+    return appAxios().get(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/credential-offer`);
+  },
+
+
+  /**
+ * @function acceptCredentialOffer
+ * Get the current sandboxes in this instance of the showcase app
+ * @param {string} sandboxId The identifier for the sandbox
+ * @param {string} lobId The identifier for the line of business
+ * @param {string} cred_issue_id The identifier for the credential offer
+ * @returns {Promise} An axios response
+ */
+  acceptCredentialOffer(sandboxId, lobId, cred_issue_id) {
+    return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/credential-offer/${cred_issue_id}/accept`);
+  },
+
+
+  /**
+ * @function rejectCredentialOffer
+ * Get the current sandboxes in this instance of the showcase app
+ * @param {string} sandboxId The identifier for the sandbox
+ * @param {string} lobId The identifier for the line of business
+ * @param {string} cred_issue_id The identifier for the credential offer
+ * @returns {Promise} An axios response
+ */
+  rejectCredentialOffer(sandboxId, lobId, cred_issue_id) {
+    return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/credential-offer/${cred_issue_id}/reject`);
+  },
+
+
   /**
  * @function makeIssuer
  * Make a tenant an issuer
