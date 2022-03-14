@@ -40,8 +40,13 @@ class Credential(BaseModel):
     id: str
 
 
+class Workflow(BaseModel):
+    workflow_state: str
+
+
 class CredentialOfferRead(BaseModel):
     credential: Credential
+    workflow: Workflow | None
 
 
 @router.get(

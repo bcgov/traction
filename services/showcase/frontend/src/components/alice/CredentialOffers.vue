@@ -2,13 +2,7 @@
   <div>
     <v-card v-if="credentialOffers">
       <v-card-title> Pending Credential Offers</v-card-title>
-      <v-card
-        v-for="co in credentialOffers.filter(
-          (co) => co.credential.issue_state === 'offer_received'
-        )"
-        :key="co.id"
-        class="ma-3"
-      >
+      <v-card v-for="co in pendingCredentialOffers" :key="co.id" class="ma-3">
         <v-card-title class="grey lighten-3 mb-3">{{
           co.credential.cred_def_id
         }}</v-card-title>
@@ -71,6 +65,13 @@ export default {
   },
   computed: {
     ...mapGetters('alice', ['credentialOffers']),
+    pendingCredentialOffers() {
+      return this.credentialOffers.filter(
+        (co) =>
+          co.credential.issue_state === 'offer_received' &&
+          (co.workflow == undefined || co.workflow.workflow_state !== 'error')
+      );
+    },
   },
   methods: {
     ...mapActions('alice', [
