@@ -19,6 +19,7 @@ from api.endpoints.dependencies.tenant_security import get_from_context
 from api.endpoints.models.tenant_workflow import (
     TenantWorkflowStateType,
 )
+from api.services.tenant_workflow_notifier import TenantWorkflowNotifier
 from api.endpoints.models.credentials import (
     PresentCredentialProtocolType,
     PresentationStateType,
@@ -106,6 +107,10 @@ class PresentCredentialWorkflow(BaseWorkflow):
                     present_cred = await present_repo.create(present_cred)
                     logger.warn(f">>> created new present request: {present_cred}")
 
+                    # if new, and offer_received, send webhook to tenant
+                    logger.info(f">>> sending webhook with proof req: {present_cred}")
+                    notifier = TenantWorkflowNotifier(profile.db)
+                    await notifier.verifier_workflow_proof_req(present_cred)
                     # return None - we want the tenant to respond to the request
                     return None
 

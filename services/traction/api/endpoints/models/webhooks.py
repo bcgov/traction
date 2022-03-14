@@ -53,6 +53,7 @@ class TenantEventTopicType(str, Enum):
     issuer = "issuer"
     schema = "schema"
     issue_cred = "issue_cred"
+    present_req = "present_req"
 
 
 # the event id will be "traction::EVENT::<topic>::<potentially some other id>"
