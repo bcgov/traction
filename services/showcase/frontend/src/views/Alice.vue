@@ -23,6 +23,9 @@
           <User />
         </v-col>
         <v-col md="6">
+          <CredentialOffers />
+        </v-col>
+        <v-col md="6">
           <Connections />
         </v-col>
         <v-col md="3">
@@ -44,6 +47,7 @@ import { mapGetters } from 'vuex';
 import Connections from '@/components/alice/Connections.vue';
 import Messages from '@/components/alice/Messages.vue';
 import User from '@/components/alice/User.vue';
+import CredentialOffers from '../components/alice/CredentialOffers.vue';
 
 export default {
   name: 'Alice',
@@ -51,6 +55,7 @@ export default {
     Connections,
     Messages,
     User,
+    CredentialOffers,
   },
   computed: {
     ...mapGetters('sandbox', ['currentSandbox']),
