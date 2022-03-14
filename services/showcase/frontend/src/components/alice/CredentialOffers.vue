@@ -81,14 +81,14 @@ export default {
     ]),
     async accept(cred_offer_id) {
       await this.acceptCredentialOffer(cred_offer_id);
-      await new Promise((r) => setTimeout(r, 2000)).then(() => {
+      await new Promise((r) => setTimeout(r, 1000)).then(() => {
         this.getCredentialOffers();
         this.getCredentials();
       });
     },
     async reject(cred_offer_id) {
       await this.rejectCredentialOffer(cred_offer_id);
-      await new Promise((r) => setTimeout(r, 2000)).then(() => {
+      await new Promise((r) => setTimeout(r, 1000)).then(() => {
         this.getCredentialOffers();
         this.getCredentials();
       });
