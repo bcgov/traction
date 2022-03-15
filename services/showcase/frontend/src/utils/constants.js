@@ -11,26 +11,10 @@ export const ApiRoutes = Object.freeze({
 
 /** Corresponds to vuetify alert classes for notification types */
 export const NotificationTypes = Object.freeze({
-  ERROR: {
-    type: 'error',
-    class: 'alert-error',
-    icon: 'error',
-  },
-  SUCCESS: {
-    type: 'success',
-    class: 'alert-success',
-    icon: 'check_circle',
-  },
-  INFO: {
-    type: 'info',
-    class: 'alert-info',
-    icon: 'info',
-  },
-  WARNING: {
-    type: 'warning',
-    class: 'alert-warning',
-    icon: 'warning',
-  },
+  ERROR: 'error',
+  SUCCESS: 'success',
+  INFO: 'info',
+  WARNING: 'warning',
 });
 
 export const Regex = Object.freeze({

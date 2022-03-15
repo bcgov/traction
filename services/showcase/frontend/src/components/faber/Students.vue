@@ -129,7 +129,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import { showcaseService } from '@/services';
+import { lobService } from '@/services';
 
 export default {
   name: 'Students',
@@ -170,7 +170,7 @@ export default {
     async invite(id) {
       this.loadingInvitation = true;
       try {
-        const response = await showcaseService.createInvitationStudent(
+        const response = await lobService.createInvitationStudent(
           this.currentSandbox.id,
           this.tenant.id,
           id
@@ -186,7 +186,7 @@ export default {
     async issueDegree(id) {
       this.loadingInvitation = true;
       try {
-        const response = await showcaseService.issueDegree(
+        const response = await lobService.issueDegree(
           this.currentSandbox.id,
           this.tenant.id,
           id

@@ -1,4 +1,4 @@
-import { showcaseService } from '@/services';
+import { lobService } from '@/services';
 
 // The store module to hold the "Alice" tenant components
 export default {
@@ -23,7 +23,7 @@ export default {
     // Query the showcase API for out of band messages for this tenant
     async getOfbMessages({ commit, dispatch, state, rootState }) {
       try {
-        const response = await showcaseService.getOutOfBandMessages(rootState.sandbox.currentSandbox.id, state.tenant.id);
+        const response = await lobService.getOutOfBandMessages(rootState.sandbox.currentSandbox.id, state.tenant.id);
         commit('SET_OFB_MESSAGES', response.data);
       }
       catch (error) {

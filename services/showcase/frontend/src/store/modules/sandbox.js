@@ -1,4 +1,4 @@
-import { showcaseService } from '@/services';
+import { lobService, sandboxService } from '@/services';
 import { Tenants } from '@/utils/constants';
 import { NotificationTypes } from '@/utils/constants';
 
@@ -26,7 +26,7 @@ export default {
     // Post a new sandbox
     async createSandbox({ dispatch }, tag) {
       try {
-        await showcaseService.createSandbox(tag);
+        await sandboxService.createSandbox(tag);
       }
       catch (error) {
         dispatch('notifications/addNotification', {
@@ -39,7 +39,7 @@ export default {
     async getSandboxes({ commit, dispatch }) {
       try {
         // Get the forms based on the user's permissions
-        const response = await showcaseService.getSandboxes();
+        const response = await sandboxService.getSandboxes();
         commit('SET_SANDBOXES', response.data);
       } catch (error) {
         dispatch('notifications/addNotification', {
@@ -51,10 +51,10 @@ export default {
     // Promote a tenant in the sandbox to an issuer
     async makeIssuer({ dispatch }, item) {
       try {
-        const response = await showcaseService.makeIssuer(item.sandboxId, item.tenantId);
+        const response = await lobService.makeIssuer(item.sandboxId, item.tenantId);
         if (response) {
           dispatch('notifications/addNotification', {
-            message: 'The request to make Faber University an Issuer was recieved.',
+            message: 'The request to make Faber University an Issuer was recieved. Check back to see once it has processed',
             type: NotificationTypes.SUCCESS
           }, { root: true });
         }
