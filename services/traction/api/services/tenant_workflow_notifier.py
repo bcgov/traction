@@ -87,7 +87,7 @@ class TenantWorkflowNotifier:
 
         # TODO: Webhook payload schema's should become pydantic models?
         payload = {
-            "status": "request_received",
+            "status": present_req.present_state,
             "present_req": present_req.json(),
             "present_req_id": str(present_req.id),
         }
