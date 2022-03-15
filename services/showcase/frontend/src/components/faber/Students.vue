@@ -65,7 +65,7 @@
           <template #activator="{ on, attrs }">
             <v-btn
               @click="invite(item.id)"
-              :disabled="item.name != 'Alice Smith'"
+              :disabled="!item.wallet_id"
               large
               icon
               v-bind="attrs"
@@ -82,7 +82,7 @@
           <template #activator="{ on, attrs }">
             <v-btn
               @click="issueDegree(item.id)"
-              :disabled="!tenant.public_did"
+              :disabled="!tenant.public_did || !item.wallet_id"
               large
               icon
               v-bind="attrs"

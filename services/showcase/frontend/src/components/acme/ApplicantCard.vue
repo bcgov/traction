@@ -46,9 +46,9 @@
         rounded
         text
         :disabled="applicant.invitation_state !== 'completed'"
-        @click.prevent="createInvitation(applicant)"
+        @click.prevent="requestDegree(applicant)"
       >
-        Request Credential
+        Request Degree
       </v-btn>
     </v-card-actions>
   </v-card>
@@ -67,7 +67,7 @@ export default {
   },
   methods: {
     ...mapMutations('acme', ['SET_SELECTED_APPLICANT']),
-    ...mapActions('acme', ['createInvitation']),
+    ...mapActions('acme', ['createInvitation', 'requestDegree']),
   },
 };
 </script>

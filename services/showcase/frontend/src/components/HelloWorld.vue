@@ -3,25 +3,21 @@
     <v-row class="text-center">
       <v-col cols="12">
         <v-img
-          :src="require('../assets/logo.svg')"
+          src="@/assets/images/traction_logo_bcgov.svg"
           class="my-3"
           contain
-          height="200"
+          height="300"
         />
       </v-col>
 
       <v-col class="mb-4">
         <h1 class="text-h3 font-weight-bold mb-3">
-          Welcome to Vuetify
+          Digital Trust Traction Showcase App
         </h1>
 
         <p class="subheading font-weight-regular">
-          For help and collaboration with other Vuetify developers,
-          <br>please join our online
-          <a
-            href="https://community.vuetifyjs.com"
-            target="_blank"
-          >Discord Community</a>
+          The showcase app is a demonstration of how multiple line-of-business applications can integrate with the Traction product.
+          <br>This app is not part of the Traction product
         </p>
       </v-col>
 

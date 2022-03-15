@@ -57,6 +57,24 @@ export default {
         }, { root: true });
       }
     },
+    // Send an presentation request to the applicant
+    async requestDegree({ dispatch, state, rootState }, applicant) {
+      try {
+        const response = await lobService.requestDegree(rootState.sandbox.currentSandbox.id, state.tenant.id, applicant.id);
+        if (response) {
+          dispatch('notifications/addNotification', {
+            message: `Presentation request sent to ${applicant.alias} from ACME`,
+            type: NotificationTypes.SUCCESS
+          }, { root: true });
+        }
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while requesting the degree.',
+          consoleError: `Error requesting degree: ${error}`,
+        }, { root: true });
+      }
+    },
+
     // Re-get the relevant info for the Acme page
     async refreshLob({ commit, dispatch }) {
       commit('SET_SELECTED_APPLICANT', null);
