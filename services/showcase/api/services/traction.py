@@ -2,6 +2,7 @@ import json
 import logging
 from typing import Optional, List
 from uuid import UUID
+from enum import Enum
 
 from aiohttp import ClientSession, ContentTypeError
 from pydantic import parse_obj_as
@@ -15,6 +16,12 @@ from api.db.models.base import BaseSchema
 from api.services import traction_urls as t_urls
 
 logger = logging.getLogger(__name__)
+
+
+class ARIES_PROTOCOL_ROLES(str, Enum):
+    HOLDER = "holder"
+    VERIFIER = "verifier"
+    ISSUER = "issuer"
 
 
 class CredPrecisForProof(BaseSchema):
