@@ -1,17 +1,59 @@
+import json
 import logging
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
 
 from aiohttp import ClientSession, ContentTypeError
+from pydantic import parse_obj_as
 from starlette import status
 from starlette.exceptions import HTTPException
 
 from api.core.config import settings
 from api.core.utils import hash_password
 from api.db.models import Lob
+from api.db.models.base import BaseSchema
 from api.services import traction_urls as t_urls
 
 logger = logging.getLogger(__name__)
+
+
+class CredPrecisForProof(BaseSchema):
+    cred_info: dict
+    interval: dict | None = None
+    presentation_referents: list
+
+
+def build_proof_presentation(
+    present_request: dict,
+    cred_results: List[CredPrecisForProof],
+) -> dict:
+    proof_presentation = {
+        "requested_attributes": {},
+        "requested_predicates": {},
+        "self_attested_attributes": {},
+    }
+
+    for attr_name in present_request["requested_attributes"]:
+        for cred in cred_results:
+            if attr_name in cred.presentation_referents:
+                proof_presentation["requested_attributes"][attr_name] = {
+                    "cred_id": cred.cred_info["referent"],
+                    "revealed": True,
+                }
+                break
+        if attr_name not in proof_presentation["requested_attributes"]:
+            proof_presentation["self_attested_attributes"][
+                attr_name
+            ] = "TBD Self-attested"
+    for pred_name in present_request["requested_predicates"]:
+        for cred in cred_results:
+            if pred_name in cred.presentation_referents:
+                proof_presentation["requested_predicates"][pred_name] = {
+                    "cred_id": cred.cred_info["referent"],
+                }
+                break
+
+    return proof_presentation
 
 
 async def get_auth_headers(
@@ -423,6 +465,142 @@ async def tenant_issue_credential(
                 return resp
             except ContentTypeError:
                 logger.exception("Error issuing credential", exc_info=True)
+                text = await response.text()
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=text,
+                )
+
+
+async def tenant_request_credential_presentation(
+    wallet_id: UUID,
+    wallet_key: UUID,
+    connection_id: str,
+    alias: str,
+    proof_req: dict,
+):
+    auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
+    data = proof_req
+    params = {"pres_protocol": "v1.0", "alias": alias, "connection_id": connection_id}
+    async with ClientSession() as client_session:
+        async with await client_session.post(
+            url=t_urls.TENANT_VERIFIER_REQUEST_CREDENTIALS,
+            headers=auth_headers,
+            params=params,
+            json=data,
+        ) as response:
+            try:
+                resp = await response.json()
+                return resp
+            except ContentTypeError:
+                logger.exception(
+                    "Error sending credential presentation request", exc_info=True
+                )
+                text = await response.text()
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=text,
+                )
+
+
+async def tenant_send_credential(wallet_id: UUID, wallet_key: UUID, present_req: dict):
+    presentation_id = present_req["id"]
+    # find for presentation request
+    resp = await tenant_get_creds_for_request(wallet_id, wallet_key, presentation_id)
+    cred_results = parse_obj_as(List[CredPrecisForProof], resp)
+    present_request = json.loads(present_req["present_request"])
+    proof_presentation = build_proof_presentation(present_request, cred_results)
+
+    # submit proof
+    resp = await tenant_present_credential(
+        wallet_id,
+        wallet_key,
+        presentation_id,
+        proof_presentation,
+    )
+
+    return resp
+
+
+async def tenant_present_credential(
+    wallet_id: UUID, wallet_key: UUID, presentation_id: str, proof_presentation: dict
+):
+    auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
+    data = proof_presentation
+    params = {
+        "cred_issue_id": presentation_id,
+    }
+    async with ClientSession() as client_session:
+        async with await client_session.post(
+            url=t_urls.TENANT_HOLDER_PRESENT_CREDS,
+            headers=auth_headers,
+            params=params,
+            json=data,
+        ) as response:
+            try:
+                resp = await response.json()
+                return resp
+            except ContentTypeError:
+                logger.exception("Error presenting credentials", exc_info=True)
+                text = await response.text()
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=text,
+                )
+
+
+async def tenant_get_cred_requests(
+    wallet_id: UUID,
+    wallet_key: UUID,
+):
+    auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
+    data = {}
+    params = {}
+    async with ClientSession() as client_session:
+        async with await client_session.get(
+            url=t_urls.TENANT_HOLDER_CREDENTIAL_REQUESTS,
+            headers=auth_headers,
+            params=params,
+            json=data,
+        ) as response:
+            try:
+                resp = await response.json()
+                return resp
+            except ContentTypeError:
+                logger.exception(
+                    "Error getting credentials for presentation request", exc_info=True
+                )
+                text = await response.text()
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=text,
+                )
+
+
+async def tenant_get_creds_for_request(
+    wallet_id: UUID,
+    wallet_key: UUID,
+    presentation_id: str,
+):
+    auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
+    data = {}
+    params = {
+        "cred_issue_id": presentation_id,
+    }
+    async with ClientSession() as client_session:
+        async with await client_session.get(
+            url=t_urls.TENANT_HOLDER_CREDENTIALS_FOR_REQ,
+            headers=auth_headers,
+            params=params,
+            json=data,
+        ) as response:
+            try:
+                resp = await response.json()
+                return resp
+            except ContentTypeError:
+                logger.exception(
+                    "Error getting credentials for presentation request", exc_info=True
+                )
                 text = await response.text()
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

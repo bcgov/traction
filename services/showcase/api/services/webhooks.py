@@ -1,5 +1,7 @@
+import json
 import logging
 import random
+from datetime import datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -113,6 +115,54 @@ async def handle_issue_credential(lob: Lob, payload: dict, db: AsyncSession):
     return True
 
 
+async def handle_presentation_request(lob: Lob, payload: dict, db: AsyncSession):
+    logger.info(f"handle_presentation_request({payload})")
+    try:
+        present_req = json.loads(payload["present_req"])
+        if (
+            payload["status"] == "request_received"
+            and present_req["present_role"] == "holder"
+        ):
+            # for now, we are just going to find the credential and respond
+            # it should notify alice that her credential has been requested
+            # and how to proceed.
+            await traction.tenant_send_credential(
+                wallet_id=lob.wallet_id,
+                wallet_key=lob.wallet_key,
+                present_req=present_req,
+            )
+
+    except KeyError:
+        pass
+    return True
+
+
+async def handle_present_proof(lob: Lob, payload: dict, db: AsyncSession):
+    logger.info(f"handle_present_proof({payload})")
+    try:
+        presentation = payload["presentation"]
+        if payload["state"] == "verified" and payload["role"] == "verifier":
+            # for now, we know this is verified degree credential
+            # just want to update the applicant data...
+            a_repo = ApplicantRepository(db_session=db)
+            applicant = await a_repo.get_by_alias_in_sandbox(lob.sandbox_id, "Alice")
+
+            requested_proof = presentation["requested_proof"]
+            revealed_attrs = requested_proof["revealed_attrs"]
+            attr_1 = revealed_attrs["attr_1"]
+            attr_2 = revealed_attrs["attr_2"]
+
+            applicant.degree = attr_1["raw"]
+            applicant.date = datetime.strptime(attr_2["raw"], "%d-%m-%Y")
+            await a_repo.update(applicant)
+
+            # notify frontend?
+
+    except KeyError:
+        pass
+    return True
+
+
 async def handle_webhook(lob: Lob, topic: str, payload: dict, db: AsyncSession):
     logger.info(f"handle_webhook(lob = {lob.name}, topic = {topic})")
     # TODO - make proper notifications to FE that are useful...
@@ -136,4 +186,8 @@ async def handle_webhook(lob: Lob, topic: str, payload: dict, db: AsyncSession):
     # topic = "issue_credential" is the acapy event, ignore that one
     if "issue_cred" == topic:
         return await handle_issue_credential(lob, payload, db)
+    if "present_req" == topic:
+        return await handle_presentation_request(lob, payload, db)
+    if "present_proof" == topic:
+        return await handle_present_proof(lob, payload, db)
     return False
