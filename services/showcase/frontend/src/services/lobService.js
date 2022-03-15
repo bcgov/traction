@@ -101,7 +101,7 @@ export default {
    * @returns {Promise} An axios response
    */
   requestDegree(sandboxId, lobId, applicantId) {
-    return appAxios().get(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/applicants/${applicantId}/request-degree`);
+    return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/applicants/${applicantId}/request-degree`);
   },
   // -------------------------------------------------------------/credentials
 
