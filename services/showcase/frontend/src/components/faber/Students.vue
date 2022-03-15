@@ -27,6 +27,7 @@
         </div>
       </v-col>
       <v-col cols="6" class="text-right">
+        <v-icon class="mr-4">refresh</v-icon>
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <span v-bind="attrs" v-on="on">
