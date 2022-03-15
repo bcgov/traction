@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import Optional, List
 from uuid import UUID
@@ -31,6 +32,7 @@ def build_proof_presentation(
         "requested_predicates": {},
         "self_attested_attributes": {},
     }
+
     for attr_name in present_request["requested_attributes"]:
         for cred in cred_results:
             if attr_name in cred.presentation_referents:
@@ -479,10 +481,7 @@ async def tenant_request_credential_presentation(
 ):
     auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
     data = proof_req
-    params = {
-        "pres_protocol": "v1.0",
-        "alias": alias,
-    }
+    params = {"pres_protocol": "v1.0", "alias": alias, "connection_id": connection_id}
     async with ClientSession() as client_session:
         async with await client_session.post(
             url=t_urls.TENANT_VERIFIER_REQUEST_CREDENTIALS,
@@ -509,8 +508,8 @@ async def tenant_send_credential(wallet_id: UUID, wallet_key: UUID, present_req:
     # find for presentation request
     resp = await tenant_get_creds_for_request(wallet_id, wallet_key, presentation_id)
     cred_results = parse_obj_as(List[CredPrecisForProof], resp)
-
-    proof_presentation = build_proof_presentation(present_req, cred_results)
+    present_request = json.loads(present_req["present_request"])
+    proof_presentation = build_proof_presentation(present_request, cred_results)
 
     # submit proof
     resp = await tenant_present_credential(
