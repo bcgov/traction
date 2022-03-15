@@ -1,5 +1,10 @@
 <template>
-  <v-card class="mx-auto" outlined tile @click="SET_SELECTED_APPLICANT(applicant)">
+  <v-card
+    class="mx-auto"
+    outlined
+    tile
+    @click="SET_SELECTED_APPLICANT(applicant)"
+  >
     <v-system-bar color="rgba(0, 160, 144)" />
     <v-list-item three-line>
       <v-list-item-content>
@@ -34,6 +39,16 @@
         @click.prevent="createInvitation(applicant)"
       >
         Invite
+      </v-btn>
+
+      <v-btn
+        outlined
+        rounded
+        text
+        :disabled="applicant.invitation_state !== 'completed'"
+        @click.prevent="createInvitation(applicant)"
+      >
+        Request Credential
       </v-btn>
     </v-card-actions>
   </v-card>

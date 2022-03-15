@@ -52,7 +52,7 @@ export default {
     ...mapActions('acme', ['refreshLob']),
     async refreshAcme() {
       this.loading = true;
-      this.refreshLob();
+      await this.refreshLob();
       this.loading = false;
     },
   },

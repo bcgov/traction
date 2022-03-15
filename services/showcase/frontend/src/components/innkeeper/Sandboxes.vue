@@ -69,7 +69,7 @@
     </p>
 
     <v-skeleton-loader :loading="loading" type="article">
-      <v-form ref="form" v-model="validNewSandbox">
+      <v-form ref="form" v-model="validNewSandbox" @submit.prevent="create">
         <v-row>
           <v-col>
             <v-text-field
