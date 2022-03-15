@@ -108,5 +108,13 @@ export default {
         }, { root: true });
       }
     },
+
+    // Re-get the relevant info for the Alice page
+    async refreshLob({ dispatch }) {
+      await dispatch('sandbox/refreshCurrentSandbox', {}, { root: true });
+      await dispatch('getOfbMessages');
+      await dispatch('getCredentials');
+      await dispatch('getCredentialOffers');
+    },
   }
 };

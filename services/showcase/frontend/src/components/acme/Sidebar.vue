@@ -55,3 +55,9 @@ export default {
   }),
 };
 </script>
+
+<style lang="scss" scoped>
+.v-item--active {
+  color: rgba(0, 160, 144) !important;
+}
+</style>

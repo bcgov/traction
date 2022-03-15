@@ -76,5 +76,18 @@ export default {
         commit('acme/SET_TENANT', toSelect.lobs.find(t => t.name == Tenants.ACME), { root: true });
       }
     },
+    // Get the currently selected sandbox again
+    async refreshCurrentSandbox({ commit, dispatch, getters }) {
+      try {
+        // Get the forms based on the user's permissions
+        const response = await sandboxService.getSandbox(getters.currentSandbox.id);
+        commit('SET_CURRENT', response.data);
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while getting the sandbox.',
+          consoleError: `Error getting sandbox ${getters.currentSandbox.id}: ${error}`,
+        }, { root: true });
+      }
+    },
   }
 };

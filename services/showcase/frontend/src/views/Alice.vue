@@ -6,6 +6,10 @@
         <h1 class="ml-4">Personal Profile</h1>
         <v-spacer></v-spacer>
 
+        <v-btn icon @click="refreshAlice">
+          <v-icon>refresh</v-icon>
+        </v-btn>
+
         <v-btn icon>
           <v-icon>mdi-magnify</v-icon>
         </v-btn>
@@ -18,29 +22,35 @@
           <v-icon>mdi-dots-vertical</v-icon>
         </v-btn>
       </v-app-bar>
-      <v-row class="mt-4" v-if="currentSandbox">
-        <v-col md="3">
-          <User />
-        </v-col>
-        <v-col md="6">
-          <CredentialOffers class="mb-6" />
-          <Connections />
-        </v-col>
-        <v-col md="3">
-          <Messages />
-        </v-col>
-      </v-row>
-      <v-row v-else>
-        <p class="mt-10">
-          No sandbox session set, please go to Innkeeper tab to set that up
-        </p>
-      </v-row>
+      <v-skeleton-loader
+        :loading="loading"
+        type="list-item-two-line"
+        class="mt-4"
+      >
+        <v-row v-if="currentSandbox" class="mt-4">
+          <v-col md="3">
+            <User />
+          </v-col>
+          <v-col md="6">
+            <CredentialOffers class="mb-6" />
+            <Connections />
+          </v-col>
+          <v-col md="3">
+            <Messages />
+          </v-col>
+        </v-row>
+        <v-row v-else>
+          <p class="mt-10">
+            No sandbox session set, please go to Innkeeper tab to set that up
+          </p>
+        </v-row>
+      </v-skeleton-loader>
     </v-container>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 import Connections from '@/components/alice/Connections.vue';
 import CredentialOffers from '../components/alice/CredentialOffers.vue';
@@ -55,8 +65,21 @@ export default {
     User,
     CredentialOffers,
   },
+  data() {
+    return {
+      loading: false,
+    };
+  },
   computed: {
     ...mapGetters('sandbox', ['currentSandbox']),
+  },
+  methods: {
+    ...mapActions('alice', ['refreshLob']),
+    async refreshAlice() {
+      this.loading = true;
+      await this.refreshLob();
+      this.loading = false;
+    },
   },
 };
 </script>

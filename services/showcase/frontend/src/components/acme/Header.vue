@@ -15,6 +15,9 @@
 
     <v-spacer></v-spacer>
 
+    <v-btn icon @click="$emit('refresh')">
+      <v-icon>mdi-refresh-auto</v-icon>
+    </v-btn>
     <v-btn icon>
       <v-icon>mdi-key</v-icon>
     </v-btn>

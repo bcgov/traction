@@ -1,35 +1,37 @@
-import { lobService } from '@/services';
+import { sandboxService } from '@/services';
 
 // The store module to hold the "Alice" tenant components
 export default {
   namespaced: true,
   state: {
-    ofbMessages: [],
-    tenant: { }
+    students: [],
+    tenant: {}
   },
   getters: {
-    ofbMessages: state => state.ofbMessages,
+    students: state => state.students
+      ? state.students.sort((a, b) => a.name.localeCompare(b.name))
+      : [],
     tenant: state => state.tenant
   },
   mutations: {
-    SET_OFB_MESSAGES(state, msgs) {
-      state.ofbMessages = msgs;
+    SET_STUDENTS(state, students) {
+      state.students = students;
     },
     SET_TENANT(state, tenant) {
       state.tenant = tenant;
     }
   },
   actions: {
-    // Query the showcase API for out of band messages for this tenant
-    async getOfbMessages({ commit, dispatch, state, rootState }) {
+    // Query the showcase API the sandbox's set of students
+    async getStudents({ commit, dispatch, rootState }) {
       try {
-        const response = await lobService.getOutOfBandMessages(rootState.sandbox.currentSandbox.id, state.tenant.id);
-        commit('SET_OFB_MESSAGES', response.data);
+        const response = await sandboxService.getStudents(rootState.sandbox.currentSandbox.id);
+        commit('SET_STUDENTS', response.data);
       }
       catch (error) {
         dispatch('notifications/addNotification', {
-          message: 'An error occurred while fetching the Out of Band Messages.',
-          consoleError: `Error getting messages: ${error}`,
+          message: 'An error occurred while fetching the Student list.',
+          consoleError: `Error getting students: ${error}`,
         }, { root: true });
       }
     },

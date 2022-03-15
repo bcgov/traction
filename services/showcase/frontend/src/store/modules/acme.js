@@ -57,5 +57,11 @@ export default {
         }, { root: true });
       }
     },
+    // Re-get the relevant info for the Acme page
+    async refreshLob({ commit, dispatch }) {
+      commit('SET_SELECTED_APPLICANT', null);
+      await dispatch('sandbox/refreshCurrentSandbox', {}, { root: true });
+      await dispatch('getApplicants');
+    },
   }
 };

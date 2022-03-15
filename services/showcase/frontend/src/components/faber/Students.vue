@@ -9,9 +9,21 @@
         <div v-else>
           <v-icon color="error">error_outline</v-icon> Faber University has not
           met the criteria to be an Issuer yet
-          <v-btn large icon @click="makeFaberIssuer()">
-            <v-icon>forward_to_inbox</v-icon>
-          </v-btn>
+
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <v-btn
+                large
+                icon
+                v-bind="attrs"
+                v-on="on"
+                @click="makeFaberIssuer()"
+              >
+                <v-icon>forward_to_inbox</v-icon>
+              </v-btn>
+            </template>
+            <span>Request Issuer status</span>
+          </v-tooltip>
         </div>
       </v-col>
       <v-col cols="6" class="text-right">
@@ -30,11 +42,23 @@
     <v-data-table
       :headers="headers"
       item-key="id"
-      :items="currentSandbox.students"
+      :items="students"
       disable-sort
       disable-pagination
       hide-default-footer
+      :loading="loadingStudents"
     >
+      <template #[`item.name`]="{ item }">
+        {{ item.name }}
+        <v-tooltip bottom v-if="item.wallet_id">
+          <template v-slot:activator="{ on, attrs }">
+            <span v-bind="attrs" v-on="on">
+              <v-icon color="#173840">mdi-wallet</v-icon>
+            </span>
+          </template>
+          <span>{{ item.name }} has a wallet registered in our system</span>
+        </v-tooltip>
+      </template>
       <template #[`item.actions`]="{ item }">
         <!-- Invite user -->
         <v-tooltip bottom>
@@ -147,15 +171,17 @@ export default {
       ],
       invitation: null,
       loadingInvitation: false,
+      loadingStudents: true,
       selectedStudent: {},
       studentDialog: false,
     };
   },
   computed: {
-    ...mapGetters('faber', ['tenant']),
+    ...mapGetters('faber', ['students', 'tenant']),
     ...mapGetters('sandbox', ['currentSandbox']),
   },
   methods: {
+    ...mapActions('faber', ['getStudents']),
     ...mapActions('sandbox', ['makeIssuer']),
     async makeFaberIssuer() {
       await this.makeIssuer({
@@ -199,6 +225,10 @@ export default {
         this.loadingInvitation = false;
       }
     },
+  },
+  async mounted() {
+    await this.getStudents();
+    this.loadingStudents = false;
   },
 };
 </script>
