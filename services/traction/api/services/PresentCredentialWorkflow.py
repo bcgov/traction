@@ -169,9 +169,12 @@ class PresentCredentialWorkflow(BaseWorkflow):
 
                     if webhook_state == PresentationStateType.verified:
                         # if verified, send webhook to tenant
-                        logger.info(f">>> sending webhook with verified proof: {present_cred}")
-                        notifier = TenantWorkflowNotifier(profile.db)
-                        await notifier.verifier_workflow_proof_req(present_cred)
+                        logger.info(
+                            f">>> sending webhook with verified proof: {present_cred}"
+                        )
+                        await self.workflow_notifier.verifier_workflow_proof_req(
+                            present_cred
+                        )
 
                     if (
                         webhook_state == PresentationStateType.presentation_acked
