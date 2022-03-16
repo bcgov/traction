@@ -12,12 +12,12 @@ postgresql:
       memory: 400Mi
 showcase:
   image:
-    tag: "ghcr.io/bcgov/traction-showcase:sha-aa006f2"
-    version: 'sha-aa006f2'
+    tag: "ghcr.io/bcgov/traction-showcase:sha-87c2eb2"
+    version: 'sha-87c2eb2'
     buildtime: '2022-01-20T22:37:11.102Z'
     pullPolicy: Always
   config:
-    gunicornWorkers: 1
+    gunicornWorkers: 2
   traction_api:
     endpoint: https://pr-00-traction-api-dev.apps.silver.devops.gov.bc.ca
     secret:

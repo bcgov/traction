@@ -20,8 +20,8 @@ postgresql:
       memory: 400Mi
 traction_api:
   image:
-    tag: "ghcr.io/bcgov/traction-api:sha-1a21896"
-    version: 'sha-1a21896'
+    tag: "ghcr.io/bcgov/traction-api:sha-87c2eb2"
+    version: 'sha-87c2eb2'
     buildtime: '2022-01-20T22:37:11.102Z'
     pullPolicy: Always
   config:
