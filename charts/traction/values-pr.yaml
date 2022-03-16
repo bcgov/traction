@@ -25,7 +25,7 @@ traction_api:
     buildtime: '2022-01-20T22:37:11.102Z'
     pullPolicy: Always
   config:
-    gunicornWorkers: 1
+    gunicornWorkers: 2
   resources:
     limits:
       cpu: 200m
