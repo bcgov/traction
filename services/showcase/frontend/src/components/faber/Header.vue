@@ -1,6 +1,5 @@
 <template>
   <v-row>
-    {{ tenant }}
     <v-col cols="6">
       <div v-if="tenant.cred_def_id">
         <v-icon color="success">check_circle_outline</v-icon> Faber University
