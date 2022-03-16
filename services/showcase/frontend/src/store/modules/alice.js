@@ -8,13 +8,15 @@ export default {
     ofbMessages: [],
     credentials: [],
     credentialOffers: [],
-    tenant: {}
+    tenant: {},
+    presentationRequests: []
   },
   getters: {
     ofbMessages: state => state.ofbMessages,
     credentials: state => state.credentials,
     credentialOffers: state => state.credentialOffers,
-    tenant: state => state.tenant
+    tenant: state => state.tenant,
+    presentationRequests: state => state.presentationRequests
   },
   mutations: {
     SET_OFB_MESSAGES(state, msgs) {
@@ -28,6 +30,9 @@ export default {
     },
     SET_TENANT(state, tenant) {
       state.tenant = tenant;
+    },
+    SET_PRESENTATION_REQUESTS(state, presentationRequests) {
+      state.presentationRequests = presentationRequests;
     }
   },
   actions: {
@@ -115,6 +120,18 @@ export default {
       await dispatch('getOfbMessages');
       await dispatch('getCredentials');
       await dispatch('getCredentialOffers');
+    },
+    async getPresentationRequests({ commit, dispatch, state, rootState }) {
+      try {
+        const response = await showcaseService.getPresentationRequests(rootState.sandbox.currentSandbox.id, state.tenant.id);
+        commit('SET_PRESENTATION_REQUESTS', response.data);
+      }
+      catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while getting Presentation Requests.',
+          consoleError: `Error getting presentation requests: ${error}`,
+        }, { root: true });
+      }
     },
   }
 };

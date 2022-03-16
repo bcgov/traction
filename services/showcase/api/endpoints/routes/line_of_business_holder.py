@@ -138,8 +138,6 @@ async def get_presentation_requests(
     lob_repo = LobRepository(db_session=db)
     lob = await lob_repo.get_by_id_with_sandbox(sandbox_id, lob_id)
 
-    creds = await traction.tenant_get_presentation_exchanges(
-        lob.wallet_id, lob.wallet_key, role=traction.ARIES_PROTOCOL_ROLES.HOLDER
-    )
+    pres_exchs = await traction.tenant_get_cred_requests(lob.wallet_id, lob.wallet_key)
 
-    pass
+    return pres_exchs

@@ -22,29 +22,28 @@
           <v-icon>mdi-dots-vertical</v-icon>
         </v-btn>
       </v-app-bar>
-      <v-skeleton-loader
-        :loading="loading"
-        type="list-item-two-line"
-        class="mt-4"
-      >
-        <v-row v-if="currentSandbox" class="mt-4">
-          <v-col md="3">
-            <User />
-          </v-col>
-          <v-col md="6">
-            <CredentialOffers class="mb-6" />
-            <Connections />
-          </v-col>
-          <v-col md="3">
-            <Messages />
-          </v-col>
-        </v-row>
-        <v-row v-else>
-          <p class="mt-10">
-            No sandbox session set, please go to Innkeeper tab to set that up
-          </p>
-        </v-row>
-      </v-skeleton-loader>
+      <v-row class="mt-4" v-if="currentSandbox">
+        <v-col md="3">
+          <User />
+        </v-col>
+        <v-col md="6">
+          <CredentialOffers />
+        </v-col>
+        <v-col md="6">
+          <Connections />
+        </v-col>
+        <v-col md="3">
+          <Messages />
+        </v-col>
+        <v-col md="6">
+          <PresentationRequests />
+        </v-col>
+      </v-row>
+      <v-row v-else>
+        <p class="mt-10">
+          No sandbox session set, please go to Innkeeper tab to set that up
+        </p>
+      </v-row>
     </v-container>
   </div>
 </template>
@@ -56,6 +55,7 @@ import Connections from '@/components/alice/Connections.vue';
 import CredentialOffers from '../components/alice/CredentialOffers.vue';
 import Messages from '@/components/alice/Messages.vue';
 import User from '@/components/alice/User.vue';
+import PresentationRequests from '../components/alice/PresentationRequests.vue';
 
 export default {
   name: 'Alice',
@@ -64,6 +64,7 @@ export default {
     Messages,
     User,
     CredentialOffers,
+    PresentationRequests,
   },
   data() {
     return {

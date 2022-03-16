@@ -479,6 +479,28 @@ async def tenant_issue_credential(
                 )
 
 
+### PRESENTATION EXCHANGES
+async def tenant_get_credential_exchanges(
+    wallet_id: UUID, wallet_key: UUID, present_req: dict
+):
+    presentation_id = present_req["id"]
+    # find for presentation request
+    resp = await tenant_get_creds_for_request(wallet_id, wallet_key, presentation_id)
+    cred_results = parse_obj_as(List[CredPrecisForProof], resp)
+    present_request = json.loads(present_req["present_request"])
+    proof_presentation = build_proof_presentation(present_request, cred_results)
+
+    # submit proof
+    resp = await tenant_present_credential(
+        wallet_id,
+        wallet_key,
+        presentation_id,
+        proof_presentation,
+    )
+
+    return resp
+
+
 async def tenant_request_credential_presentation(
     wallet_id: UUID,
     wallet_key: UUID,
@@ -613,6 +635,9 @@ async def tenant_get_creds_for_request(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail=text,
                 )
+
+
+### CREDENTIAL OFFER
 
 
 async def tenant_accept_cred_offer(

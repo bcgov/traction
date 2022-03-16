@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 @router.post(
-    "/lobs/{lob_id}/applicants/{applicant_id}/request-degree",
+    "/applicants/{applicant_id}/request-degree",
     status_code=status.HTTP_200_OK,
 )
 async def request_degree(
