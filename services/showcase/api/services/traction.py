@@ -30,7 +30,8 @@ class CredPrecisForProof(BaseSchema):
     presentation_referents: list
 
 
-# TODO JS: I think this function should be a feature in Traction (we can make a response for you if you don't care)
+# TODO JS: I think this function should be a feature in Traction
+# (we can make a response for you if you don't care)
 def build_proof_presentation(
     present_request: dict,
     cred_results: List[CredPrecisForProof],
@@ -480,7 +481,7 @@ async def tenant_issue_credential(
                 )
 
 
-### PRESENTATION EXCHANGES
+# PRESENTATION EXCHANGES
 async def tenant_get_credential_exchanges(
     wallet_id: UUID, wallet_key: UUID, present_req: dict
 ):
@@ -663,7 +664,7 @@ async def tenant_cred_request_reject(
                 )
 
 
-### CREDENTIAL OFFER
+# CREDENTIAL OFFER
 
 
 async def tenant_accept_cred_offer(
