@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapGetters, mapMutations } from 'vuex';
 
 import Applicants from '@/components/acme/Applicants.vue';
 import Header from '@/components/acme/Header.vue';
@@ -50,11 +50,15 @@ export default {
   },
   methods: {
     ...mapActions('acme', ['refreshLob']),
+    ...mapMutations('acme', ['SET_SELECTED_APPLICANT']),
     async refreshAcme() {
       this.loading = true;
       await this.refreshLob();
       this.loading = false;
     },
+  },
+  mounted () {
+    this.SET_SELECTED_APPLICANT(null);
   },
 };
 </script>

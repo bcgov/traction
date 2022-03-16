@@ -35,5 +35,11 @@ export default {
         }, { root: true });
       }
     },
+
+    // Re-get the relevant info for the Faber page
+    async refreshLob({ dispatch }) {
+      await dispatch('sandbox/refreshCurrentSandbox', {}, { root: true });
+      await dispatch('getStudents');
+    },
   }
 };

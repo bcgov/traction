@@ -1,43 +1,5 @@
 <template>
   <div class="students-list">
-    <v-row>
-      <v-col cols="6">
-        <div v-if="tenant.public_did">
-          <v-icon color="success">check_circle_outline</v-icon> Faber University
-          is an Issuer
-        </div>
-        <div v-else>
-          <v-icon color="error">error_outline</v-icon> Faber University has not
-          met the criteria to be an Issuer yet
-
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <v-btn
-                large
-                icon
-                v-bind="attrs"
-                v-on="on"
-                @click="makeFaberIssuer()"
-              >
-                <v-icon>forward_to_inbox</v-icon>
-              </v-btn>
-            </template>
-            <span>Request Issuer status</span>
-          </v-tooltip>
-        </div>
-      </v-col>
-      <v-col cols="6" class="text-right">
-        <v-icon class="mr-4">refresh</v-icon>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
-            <span v-bind="attrs" v-on="on">
-              <v-icon>group</v-icon> office-admin-001
-            </span>
-          </template>
-          <span>Not really logged in anywhere, just for show</span>
-        </v-tooltip>
-      </v-col>
-    </v-row>
     <h2 class="my-4">Registered Student List</h2>
     <!-- table header -->
     <v-data-table
@@ -183,13 +145,6 @@ export default {
   },
   methods: {
     ...mapActions('faber', ['getStudents']),
-    ...mapActions('sandbox', ['makeIssuer']),
-    async makeFaberIssuer() {
-      await this.makeIssuer({
-        tenantId: this.tenant.id,
-        sandboxId: this.currentSandbox.id,
-      });
-    },
     showStudentDetails(student) {
       this.selectedStudent = student;
       this.studentDialog = true;

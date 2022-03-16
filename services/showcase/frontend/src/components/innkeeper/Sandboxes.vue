@@ -35,14 +35,6 @@
                     Public DID: {{ lob.public_did }} <br />
                     Cred. Def ID: {{ lob.cred_def_id }}
                     <br />
-                    <!-- <v-btn
-                      small
-                      color="primary"
-                      @click="makeIssuer(lob.id, item.id)"
-                      :disabled="!lob.traction_issue_enabled"
-                    >
-                      Promote To Issuer
-                    </v-btn> -->
                   </p>
                 </v-col>
               </v-row>
@@ -139,12 +131,6 @@ export default {
     async fetchSandboxList() {
       this.loading = true;
       await this.getSandboxes();
-      this.loading = false;
-    },
-    async setTenantAsIssuer(tenantId, sandboxId) {
-      this.loading = true;
-      await this.makeIssuer({ tenantId: tenantId, sandboxId: sandboxId });
-      await this.fetchSandboxList();
       this.loading = false;
     },
   },
