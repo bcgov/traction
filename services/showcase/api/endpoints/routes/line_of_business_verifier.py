@@ -1,7 +1,5 @@
 import logging
-from typing import List, Dict
 from uuid import UUID
-from pydantic import BaseModel
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession

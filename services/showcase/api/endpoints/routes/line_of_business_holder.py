@@ -10,7 +10,7 @@ from starlette import status
 from api.endpoints.dependencies.db import get_db
 from api.db.repositories.line_of_business import LobRepository
 
-from api.services import sandbox, traction
+from api.services import traction
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
