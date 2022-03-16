@@ -1,4 +1,4 @@
-import { showcaseService } from '@/services';
+import { lobService, sandboxService } from '@/services';
 import { Tenants } from '@/utils/constants';
 import { NotificationTypes } from '@/utils/constants';
 
@@ -26,7 +26,7 @@ export default {
     // Post a new sandbox
     async createSandbox({ dispatch }, tag) {
       try {
-        await showcaseService.createSandbox(tag);
+        await sandboxService.createSandbox(tag);
       }
       catch (error) {
         dispatch('notifications/addNotification', {
@@ -39,7 +39,7 @@ export default {
     async getSandboxes({ commit, dispatch }) {
       try {
         // Get the forms based on the user's permissions
-        const response = await showcaseService.getSandboxes();
+        const response = await sandboxService.getSandboxes();
         commit('SET_SANDBOXES', response.data);
       } catch (error) {
         dispatch('notifications/addNotification', {
@@ -49,12 +49,12 @@ export default {
       }
     },
     // Promote a tenant in the sandbox to an issuer
-    async makeIssuer({ dispatch }, item) {
+    async makeIssuer({ dispatch, state }, tenantId) {
       try {
-        const response = await showcaseService.makeIssuer(item.sandboxId, item.tenantId);
+        const response = await lobService.makeIssuer(state.currentSandbox.id, tenantId);
         if (response) {
           dispatch('notifications/addNotification', {
-            message: 'The request to make Faber University an Issuer was recieved.',
+            message: 'The request to make Faber University an Issuer was recieved. Check back to see once it has processed',
             type: NotificationTypes.SUCCESS
           }, { root: true });
         }
@@ -74,6 +74,22 @@ export default {
         commit('alice/SET_TENANT', toSelect.lobs.find(t => t.name == Tenants.ALICE), { root: true });
         commit('faber/SET_TENANT', toSelect.lobs.find(t => t.name == Tenants.FABER), { root: true });
         commit('acme/SET_TENANT', toSelect.lobs.find(t => t.name == Tenants.ACME), { root: true });
+      }
+    },
+    // Get the currently selected sandbox again
+    async refreshCurrentSandbox({ commit, dispatch, getters }) {
+      try {
+        // Fetch the current sandbox again and re-mutate the lob's store module tenant settings
+        const response = await sandboxService.getSandbox(getters.currentSandbox.id);
+        commit('SET_CURRENT', response.data);
+        commit('alice/SET_TENANT', response.data.lobs.find(t => t.name == Tenants.ALICE), { root: true });
+        commit('faber/SET_TENANT', response.data.lobs.find(t => t.name == Tenants.FABER), { root: true });
+        commit('acme/SET_TENANT', response.data.lobs.find(t => t.name == Tenants.ACME), { root: true });
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while getting the sandbox.',
+          consoleError: `Error getting sandbox ${getters.currentSandbox.id}: ${error}`,
+        }, { root: true });
       }
     },
   }
