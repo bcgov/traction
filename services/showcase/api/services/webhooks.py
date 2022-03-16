@@ -126,11 +126,12 @@ async def handle_presentation_request(lob: Lob, payload: dict, db: AsyncSession)
             # for now, we are just going to find the credential and respond
             # it should notify alice that her credential has been requested
             # and how to proceed.
-            await traction.tenant_send_credential(
-                wallet_id=lob.wallet_id,
-                wallet_key=lob.wallet_key,
-                present_req=present_req,
-            )
+            # await traction.tenant_send_credential(
+            #     wallet_id=lob.wallet_id,
+            #     wallet_key=lob.wallet_key,
+            #     present_req=present_req,
+            # )
+            pass
 
     except KeyError:
         pass

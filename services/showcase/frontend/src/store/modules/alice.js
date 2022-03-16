@@ -36,6 +36,13 @@ export default {
     }
   },
   actions: {
+    // Re-get the relevant info for the Alice page
+    async refreshLob({ dispatch }) {
+      await dispatch('sandbox/refreshCurrentSandbox', {}, { root: true });
+      await dispatch('getOfbMessages');
+      await dispatch('getCredentials');
+      await dispatch('getCredentialOffers');
+    },
     // Accept an invitation message
     async accept({ dispatch, state, rootState }, msg) {
       try {
@@ -113,23 +120,37 @@ export default {
         }, { root: true });
       }
     },
-
-    // Re-get the relevant info for the Alice page
-    async refreshLob({ dispatch }) {
-      await dispatch('sandbox/refreshCurrentSandbox', {}, { root: true });
-      await dispatch('getOfbMessages');
-      await dispatch('getCredentials');
-      await dispatch('getCredentialOffers');
-    },
     async getPresentationRequests({ commit, dispatch, state, rootState }) {
       try {
-        const response = await showcaseService.getPresentationRequests(rootState.sandbox.currentSandbox.id, state.tenant.id);
+        const response = await lobService.getPresentationRequests(rootState.sandbox.currentSandbox.id, state.tenant.id);
         commit('SET_PRESENTATION_REQUESTS', response.data);
       }
       catch (error) {
         dispatch('notifications/addNotification', {
           message: 'An error occurred while getting Presentation Requests.',
           consoleError: `Error getting presentation requests: ${error}`,
+        }, { root: true });
+      }
+    },
+    async acceptPresentationRequest({ dispatch, state, rootState }, pres_req_id) {
+      try {
+        await lobService.acceptPresentationRequest(rootState.sandbox.currentSandbox.id, state.tenant.id, pres_req_id);
+      }
+      catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while accepting presentation request.',
+          consoleError: `Error accepting presentation request: ${error}`,
+        }, { root: true });
+      }
+    },
+    async rejectPresentationRequest({ dispatch, state, rootState }, pres_req_id) {
+      try {
+        await lobService.rejectPresentationRequest(rootState.sandbox.currentSandbox.id, state.tenant.id, pres_req_id);
+      }
+      catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while rejecting presentation request.',
+          consoleError: `Error rejecting presentation request: ${error}`,
         }, { root: true });
       }
     },

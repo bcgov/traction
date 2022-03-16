@@ -9,7 +9,7 @@
       >
         <v-card-title class="grey lighten-3 mb-3">{{ pr.id }}</v-card-title>
         <v-card-text>
-          <template v-for="(value, key) in pr">
+          <template v-for="(value, key) in pr.presentation">
             <div :key="key">
               <b>{{ key }}:</b> {{ value }}
             </div>
@@ -27,10 +27,20 @@
             </v-expansion-panel>
           </v-expansion-panels> -->
         </v-card-text>
-        <v-btn small color="primary" class="ma-4" @click="accept(pr.id)">
+        <v-btn
+          small
+          color="primary"
+          class="ma-4"
+          @click="accept(pr.presentation.id)"
+        >
           Accept
         </v-btn>
-        <v-btn small color="error" class="ma-4" @click="reject(pr.id)">
+        <v-btn
+          small
+          color="error"
+          class="ma-4"
+          @click="reject(pr.presentation.id)"
+        >
           Reject
         </v-btn>
       </v-card>
@@ -56,23 +66,28 @@ export default {
   computed: {
     ...mapGetters('alice', ['presentationRequests']),
     pendingPresentationRequests() {
-      return this.presentationRequests;
+      return this.presentationRequests.filter(
+        (pr) =>
+          pr.presentation.present_state === 'request_received' &&
+          pr.presentation.present_role === 'holder' &&
+          (pr.workflow == undefined || pr.workflow.workflow_state !== 'error')
+      );
     },
   },
   methods: {
     ...mapActions('alice', [
       'getPresentationRequests',
-      'acceptPresentationRequests',
-      'rejectPresentationRequests',
+      'acceptPresentationRequest',
+      'rejectPresentationRequest',
     ]),
-    async accept(cred_offer_id) {
-      await this.acceptPresentationRequests(cred_offer_id);
+    async accept(pres_req_id) {
+      await this.acceptPresentationRequest(pres_req_id);
       await new Promise((r) => setTimeout(r, 1000)).then(() => {
         this.getPresentationRequests();
       });
     },
-    async reject(cred_offer_id) {
-      await this.rejectPresentationRequests(cred_offer_id);
+    async reject(pres_req_id) {
+      await this.rejectPresentationRequest(pres_req_id);
       await new Promise((r) => setTimeout(r, 1000)).then(() => {
         this.getPresentationRequests();
       });

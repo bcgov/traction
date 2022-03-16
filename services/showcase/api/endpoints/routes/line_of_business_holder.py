@@ -78,10 +78,10 @@ async def accept_credential_offer(
     lob_repo = LobRepository(db_session=db)
     lob = await lob_repo.get_by_id_with_sandbox(sandbox_id, lob_id)
     # go get all creds the lob holds
-    creds = await traction.tenant_accept_credential_offer(
+    resp = await traction.tenant_accept_credential_offer(
         lob.wallet_id, lob.wallet_key, cred_issue_id
     )
-    return creds
+    return resp
 
 
 @router.post(
@@ -98,10 +98,10 @@ async def reject_credential_offer(
     lob_repo = LobRepository(db_session=db)
     lob = await lob_repo.get_by_id_with_sandbox(sandbox_id, lob_id)
     # go get all creds the lob holds
-    creds = await traction.tenant_reject_credential_offer(
+    resp = await traction.tenant_reject_credential_offer(
         lob.wallet_id, lob.wallet_key, cred_issue_id
     )
-    return creds
+    return resp
 
 
 # CREDENTIALS
@@ -125,7 +125,7 @@ async def get_credentials(
     return creds
 
 
-# PRESENTATION REQUESTS role=holder
+# PRESENTATION REQUESTS
 @router.get(
     "/holder/presentation-requests",
     status_code=status.HTTP_200_OK,
@@ -141,3 +141,53 @@ async def get_presentation_requests(
     pres_exchs = await traction.tenant_get_cred_requests(lob.wallet_id, lob.wallet_key)
 
     return pres_exchs
+
+
+@router.post(
+    "/holder/presentation-requests/{pres_req_id}/accept",
+    status_code=status.HTTP_200_OK,
+)
+async def accept_presentation_requests(
+    sandbox_id: UUID,
+    lob_id: UUID,
+    pres_req_id: UUID,
+    db: AsyncSession = Depends(get_db),
+):
+    lob_repo = LobRepository(db_session=db)
+    lob = await lob_repo.get_by_id_with_sandbox(sandbox_id, lob_id)
+
+    pres_exchs = await traction.tenant_get_cred_requests(lob.wallet_id, lob.wallet_key)
+
+    pres_req = [
+        pr["presentation"]
+        for pr in pres_exchs
+        if pr["presentation"]["id"] == str(pres_req_id)
+    ]
+    if not pres_req:
+        logger.warn("cred request not found")
+
+    resp = await traction.tenant_send_credential(
+        lob.wallet_id, lob.wallet_key, pres_req[0]
+    )
+
+    return resp
+
+
+@router.post(
+    "/holder/presentation-requests/{pres_req_id}/reject",
+    status_code=status.HTTP_200_OK,
+)
+async def reject_presentation_requests(
+    sandbox_id: UUID,
+    lob_id: UUID,
+    pres_req_id: UUID,
+    db: AsyncSession = Depends(get_db),
+):
+    lob_repo = LobRepository(db_session=db)
+    lob = await lob_repo.get_by_id_with_sandbox(sandbox_id, lob_id)
+
+    resp = await traction.tenant_cred_request_reject(
+        lob.wallet_id, lob.wallet_key, pres_req_id
+    )
+
+    return resp

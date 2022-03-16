@@ -557,7 +557,7 @@ async def tenant_present_credential(
     auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
     data = proof_presentation
     params = {
-        "cred_issue_id": presentation_id,
+        "pres_req_id": presentation_id,
     }
     async with ClientSession() as client_session:
         async with await client_session.post(
@@ -630,6 +630,31 @@ async def tenant_get_creds_for_request(
                 logger.exception(
                     "Error getting credentials for presentation request", exc_info=True
                 )
+                text = await response.text()
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=text,
+                )
+
+
+async def tenant_cred_request_reject(
+    wallet_id: UUID, wallet_key: UUID, pres_req_id: UUID
+):
+    auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
+    data = {}
+    params = {"pres_req_id": str(pres_req_id)}
+    async with ClientSession() as client_session:
+        async with await client_session.post(
+            url=t_urls.TENANT_HOLDER_CREDENTIAL_REQUEST_REJECT,
+            headers=auth_headers,
+            params=params,
+            json=data,
+        ) as response:
+            try:
+                resp = await response.json()
+                return resp
+            except ContentTypeError:
+                logger.exception("Error rejecting presentation request", exc_info=True)
                 text = await response.text()
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

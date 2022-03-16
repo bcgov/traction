@@ -385,14 +385,14 @@ async def holder_get_creds_for_pres_request(
 
 @router.post("/holder/present-credential", response_model=PresentCredentialData)
 async def holder_present_credential(
-    cred_issue_id: str,
+    pres_req_id: str,
     presentation: CredPresentation,
     db: AsyncSession = Depends(get_db),
 ) -> PresentCredentialData:
     # holder has to present their credential(s)
     present_repo = PresentCredentialsRepository(db_session=db)
     workflow_repo = TenantWorkflowsRepository(db_session=db)
-    present_cred = await present_repo.get_by_id(cred_issue_id)
+    present_cred = await present_repo.get_by_id(pres_req_id)
     if present_cred.workflow_id:
         tenant_workflow = None
         if present_cred.workflow_id:
@@ -446,13 +446,13 @@ async def holder_present_credential(
 
 @router.post("/holder/reject-request", response_model=PresentCredentialData)
 async def holder_reject_presentation_request(
-    cred_issue_id: str,
+    pres_req_id: str,
     db: AsyncSession = Depends(get_db),
 ) -> PresentCredentialData:
     # holder has to present their credential(s)
     present_repo = PresentCredentialsRepository(db_session=db)
     workflow_repo = TenantWorkflowsRepository(db_session=db)
-    present_cred = await present_repo.get_by_id(cred_issue_id)
+    present_cred = await present_repo.get_by_id(pres_req_id)
     if present_cred.workflow_id:
         tenant_workflow = None
         if present_cred.workflow_id:
