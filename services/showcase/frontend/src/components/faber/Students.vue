@@ -27,7 +27,7 @@
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
-              @click="invite(item.id)"
+              @click="inviteStudent(item)"
               :disabled="!item.wallet_id"
               large
               icon
@@ -44,17 +44,17 @@
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
-              @click="issueDegree(item.id)"
+              @click="issueDegree(item)"
               :disabled="!tenant.public_did || !item.wallet_id"
               large
               icon
               v-bind="attrs"
               v-on="on"
             >
-              <v-icon>generating_tokens</v-icon>
+              <v-icon>mdi-certificate</v-icon>
             </v-btn>
           </template>
-          <span>Issue a Credential</span>
+          <span>Issue a Degree Credential</span>
         </v-tooltip>
 
         <!-- View details -->
@@ -74,21 +74,6 @@
         </v-tooltip>
       </template>
     </v-data-table>
-
-    <v-skeleton-loader
-      v-if="invitation || loadingInvitation"
-      :loading="loadingInvitation"
-      type="card"
-      max-width="600"
-      class="mx-auto my-12"
-    >
-      <v-card class="mx-auto my-12" max-width="600" outlined>
-        <v-card-title>Active Invitation</v-card-title>
-        <v-card-text>
-          {{ JSON.stringify(invitation, 0, 2) }}
-        </v-card-text>
-      </v-card>
-    </v-skeleton-loader>
 
     <!-- Dialog to show raw json -->
     <v-dialog v-model="studentDialog" width="800">
@@ -116,7 +101,6 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import { lobService } from '@/services';
 
 export default {
   name: 'Students',
@@ -132,8 +116,6 @@ export default {
           sortable: false,
         },
       ],
-      invitation: null,
-      loadingInvitation: false,
       loadingStudents: true,
       selectedStudent: {},
       studentDialog: false,
@@ -144,42 +126,10 @@ export default {
     ...mapGetters('sandbox', ['currentSandbox']),
   },
   methods: {
-    ...mapActions('faber', ['getStudents']),
+    ...mapActions('faber', ['getStudents', 'inviteStudent', 'issueDegree']),
     showStudentDetails(student) {
       this.selectedStudent = student;
       this.studentDialog = true;
-    },
-    async invite(id) {
-      this.loadingInvitation = true;
-      try {
-        const response = await lobService.createInvitationStudent(
-          this.currentSandbox.id,
-          this.tenant.id,
-          id
-        );
-        this.invitation = response.data;
-      } catch (error) {
-        alert('error creating invitation (TBD');
-        this.invitation = { error: 'something bad' };
-      } finally {
-        this.loadingInvitation = false;
-      }
-    },
-    async issueDegree(id) {
-      this.loadingInvitation = true;
-      try {
-        const response = await lobService.issueDegree(
-          this.currentSandbox.id,
-          this.tenant.id,
-          id
-        );
-        this.invitation = response.data;
-      } catch (error) {
-        alert('error issuing credential (TBD)');
-        this.invitation = { error: 'something bad' };
-      } finally {
-        this.loadingInvitation = false;
-      }
     },
   },
   async mounted() {
