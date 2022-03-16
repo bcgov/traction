@@ -10,7 +10,11 @@
     </v-parallax>
     <v-container>
       <div v-if="currentSandbox">
-        <Students />
+        <v-progress-linear v-if="loading" indeterminate color="#173840" />
+        <div v-else>
+          <Header @refresh="refreshFaber" />
+          <Students />
+        </div>
       </div>
       <div v-else>
         No sandbox session set, please go to Innkeeper tab to set that up
@@ -20,16 +24,32 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
+import Header from '@/components/faber/Header.vue';
 import Students from '@/components/faber/Students.vue';
+
 export default {
   name: 'Faber',
   components: {
+    Header,
     Students,
+  },
+  data() {
+    return {
+      loading: false,
+    };
   },
   computed: {
     ...mapGetters('sandbox', ['currentSandbox']),
+  },
+  methods: {
+    ...mapActions('faber', ['refreshLob']),
+    async refreshFaber() {
+      this.loading = true;
+      await this.refreshLob();
+      this.loading = false;
+    },
   },
 };
 </script>

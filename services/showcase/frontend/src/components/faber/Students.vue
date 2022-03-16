@@ -1,47 +1,34 @@
 <template>
   <div class="students-list">
-    <v-row>
-      <v-col cols="6">
-        <div v-if="tenant.public_did">
-          <v-icon color="success">check_circle_outline</v-icon> Faber University
-          is an Issuer
-        </div>
-        <div v-else>
-          <v-icon color="error">error_outline</v-icon> Faber University has not
-          met the criteria to be an Issuer yet
-          <v-btn large icon @click="makeFaberIssuer()">
-            <v-icon>forward_to_inbox</v-icon>
-          </v-btn>
-        </div>
-      </v-col>
-      <v-col cols="6" class="text-right">
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
-            <span v-bind="attrs" v-on="on">
-              <v-icon>group</v-icon> office-admin-001
-            </span>
-          </template>
-          <span>Not really logged in anywhere, just for show</span>
-        </v-tooltip>
-      </v-col>
-    </v-row>
     <h2 class="my-4">Registered Student List</h2>
     <!-- table header -->
     <v-data-table
       :headers="headers"
       item-key="id"
-      :items="currentSandbox.students"
+      :items="students"
       disable-sort
       disable-pagination
       hide-default-footer
+      :loading="loadingStudents"
     >
+      <template #[`item.name`]="{ item }">
+        {{ item.name }}
+        <v-tooltip bottom v-if="item.wallet_id">
+          <template v-slot:activator="{ on, attrs }">
+            <span v-bind="attrs" v-on="on">
+              <v-icon color="#173840">mdi-wallet</v-icon>
+            </span>
+          </template>
+          <span>{{ item.name }} has a wallet registered in our system</span>
+        </v-tooltip>
+      </template>
       <template #[`item.actions`]="{ item }">
         <!-- Invite user -->
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
-              @click="invite(item.id)"
-              :disabled="item.name != 'Alice Smith'"
+              @click="inviteStudent(item)"
+              :disabled="!item.wallet_id"
               large
               icon
               v-bind="attrs"
@@ -57,17 +44,17 @@
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
-              @click="issueDegree(item.id)"
-              :disabled="!tenant.public_did"
+              @click="issueDegree(item)"
+              :disabled="!tenant.public_did || !item.wallet_id"
               large
               icon
               v-bind="attrs"
               v-on="on"
             >
-              <v-icon>generating_tokens</v-icon>
+              <v-icon>mdi-certificate</v-icon>
             </v-btn>
           </template>
-          <span>Issue a Credential</span>
+          <span>Issue a Degree Credential</span>
         </v-tooltip>
 
         <!-- View details -->
@@ -87,21 +74,6 @@
         </v-tooltip>
       </template>
     </v-data-table>
-
-    <v-skeleton-loader
-      v-if="invitation || loadingInvitation"
-      :loading="loadingInvitation"
-      type="card"
-      max-width="600"
-      class="mx-auto my-12"
-    >
-      <v-card class="mx-auto my-12" max-width="600" outlined>
-        <v-card-title>Active Invitation</v-card-title>
-        <v-card-text>
-          {{ JSON.stringify(invitation, 0, 2) }}
-        </v-card-text>
-      </v-card>
-    </v-skeleton-loader>
 
     <!-- Dialog to show raw json -->
     <v-dialog v-model="studentDialog" width="800">
@@ -129,7 +101,6 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import { showcaseService } from '@/services';
 
 export default {
   name: 'Students',
@@ -145,60 +116,25 @@ export default {
           sortable: false,
         },
       ],
-      invitation: null,
-      loadingInvitation: false,
+      loadingStudents: true,
       selectedStudent: {},
       studentDialog: false,
     };
   },
   computed: {
-    ...mapGetters('faber', ['tenant']),
+    ...mapGetters('faber', ['students', 'tenant']),
     ...mapGetters('sandbox', ['currentSandbox']),
   },
   methods: {
-    ...mapActions('sandbox', ['makeIssuer']),
-    async makeFaberIssuer() {
-      await this.makeIssuer({
-        tenantId: this.tenant.id,
-        sandboxId: this.currentSandbox.id,
-      });
-    },
+    ...mapActions('faber', ['getStudents', 'inviteStudent', 'issueDegree']),
     showStudentDetails(student) {
       this.selectedStudent = student;
       this.studentDialog = true;
     },
-    async invite(id) {
-      this.loadingInvitation = true;
-      try {
-        const response = await showcaseService.createInvitationStudent(
-          this.currentSandbox.id,
-          this.tenant.id,
-          id
-        );
-        this.invitation = response.data;
-      } catch (error) {
-        alert('error creating invitation (TBD');
-        this.invitation = { error: 'something bad' };
-      } finally {
-        this.loadingInvitation = false;
-      }
-    },
-    async issueDegree(id) {
-      this.loadingInvitation = true;
-      try {
-        const response = await showcaseService.issueDegree(
-          this.currentSandbox.id,
-          this.tenant.id,
-          id
-        );
-        this.invitation = response.data;
-      } catch (error) {
-        alert('error issuing credential (TBD)');
-        this.invitation = { error: 'something bad' };
-      } finally {
-        this.loadingInvitation = false;
-      }
-    },
+  },
+  async mounted() {
+    await this.getStudents();
+    this.loadingStudents = false;
   },
 };
 </script>

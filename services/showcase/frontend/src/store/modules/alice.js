@@ -1,4 +1,4 @@
-import { showcaseService } from '@/services';
+import { lobService } from '@/services';
 import { NotificationTypes } from '@/utils/constants';
 
 // The store module to hold the "Alice" tenant components
@@ -34,7 +34,7 @@ export default {
     // Accept an invitation message
     async accept({ dispatch, state, rootState }, msg) {
       try {
-        const response = await showcaseService.acceptInvitation(rootState.sandbox.currentSandbox.id, state.tenant.id, msg.sender.id, msg.msg);
+        const response = await lobService.acceptInvitation(rootState.sandbox.currentSandbox.id, state.tenant.id, msg.sender.id, msg.msg);
         if (response) {
           dispatch('notifications/addNotification', {
             message: `Accepted ${msg.msg_type} from ${msg.sender ? msg.sender.name : ''}`,
@@ -51,7 +51,7 @@ export default {
     // Query the showcase API for out of band messages for this tenant
     async getOfbMessages({ commit, dispatch, state, rootState }) {
       try {
-        const response = await showcaseService.getOutOfBandMessages(rootState.sandbox.currentSandbox.id, state.tenant.id);
+        const response = await lobService.getOutOfBandMessages(rootState.sandbox.currentSandbox.id, state.tenant.id);
         commit('SET_OFB_MESSAGES', response.data);
       }
       catch (error) {
@@ -64,7 +64,7 @@ export default {
     // Query the showcase API for out of band messages for this tenant
     async getCredentials({ commit, dispatch, state, rootState }) {
       try {
-        const response = await showcaseService.getCredentials(rootState.sandbox.currentSandbox.id, state.tenant.id);
+        const response = await lobService.getCredentials(rootState.sandbox.currentSandbox.id, state.tenant.id);
         commit('SET_LOB_CREDENTIALS', response.data);
       }
       catch (error) {
@@ -76,7 +76,7 @@ export default {
     },
     async getCredentialOffers({ commit, dispatch, state, rootState }) {
       try {
-        const response = await showcaseService.getCredentialOffers(rootState.sandbox.currentSandbox.id, state.tenant.id);
+        const response = await lobService.getCredentialOffers(rootState.sandbox.currentSandbox.id, state.tenant.id);
         commit('SET_LOB_CREDENTIAL_OFFERS', response.data);
       }
       catch (error) {
@@ -88,7 +88,7 @@ export default {
     },
     async acceptCredentialOffer({ dispatch, state, rootState }, cred_issue_id) {
       try {
-        await showcaseService.acceptCredentialOffer(rootState.sandbox.currentSandbox.id, state.tenant.id, cred_issue_id);
+        await lobService.acceptCredentialOffer(rootState.sandbox.currentSandbox.id, state.tenant.id, cred_issue_id);
       }
       catch (error) {
         dispatch('notifications/addNotification', {
@@ -99,7 +99,7 @@ export default {
     },
     async rejectCredentialOffer({ dispatch, state, rootState }, cred_issue_id) {
       try {
-        await showcaseService.rejectCredentialOffer(rootState.sandbox.currentSandbox.id, state.tenant.id, cred_issue_id);
+        await lobService.rejectCredentialOffer(rootState.sandbox.currentSandbox.id, state.tenant.id, cred_issue_id);
       }
       catch (error) {
         dispatch('notifications/addNotification', {
@@ -107,6 +107,14 @@ export default {
           consoleError: `Error getting credential offers: ${error}`,
         }, { root: true });
       }
+    },
+
+    // Re-get the relevant info for the Alice page
+    async refreshLob({ dispatch }) {
+      await dispatch('sandbox/refreshCurrentSandbox', {}, { root: true });
+      await dispatch('getOfbMessages');
+      await dispatch('getCredentials');
+      await dispatch('getCredentialOffers');
     },
   }
 };

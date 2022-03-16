@@ -1,11 +1,11 @@
 <template>
   <v-alert
-    :class="'target-notification ' + notification.class"
-    :icon="notification.icon"
-    prominent
+    border="top"
+    colored-border
     dismissible
     @input="alertClosed"
     transition="slide-y-transition"
+    :type="notification.type"
   >
     {{ notification.message }}
   </v-alert>
@@ -47,7 +47,7 @@ export default {
 </script>
 
 <style scoped>
-  .target-notification >>> .v-alert__icon.v-icon:after {
-    display: none;
-  }
+.target-notification >>> .v-alert__icon.v-icon:after {
+  display: none;
+}
 </style>

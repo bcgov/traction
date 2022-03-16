@@ -1,66 +1,50 @@
 <template>
-  <div class="applicants-list">
-    <h3 class="mb-3">
-      Job Applicants ({{ currentSandbox.applicants.length }})
-    </h3>
-    <v-row>
-      <v-col v-for="appl in currentSandbox.applicants" :key="appl.id" cols="4">
-        <v-card
-          class="mx-auto"
-          outlined
-          tile
-          @click="SET_SELECTED_APPLICANT(appl)"
-        >
-          <v-system-bar color="rgba(0, 160, 144)" />
-          <v-list-item three-line>
-            <v-list-item-content>
-              <div class="text-overline mb-4" v-if="appl.alias">
-                <v-icon>mdi-check-decagram-outline</v-icon> {{ appl.alias }}
-              </div>
-              <v-list-item-title class="text-h5 mb-1">
-                {{ appl.name }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                Degree: {{ appl.degree }} <br />
-                Invitation State: {{ appl.invitation_state }} <br />
-              </v-list-item-subtitle>
-            </v-list-item-content>
-
-            <v-list-item-avatar tile size="50">
-              <v-avatar x-large color="rgba(0, 160, 144)">
-                <v-icon dark>mdi-account</v-icon>
-              </v-avatar>
-            </v-list-item-avatar>
-          </v-list-item>
-
-          <v-card-actions>
-            <v-btn outlined rounded text :disabled="!appl.alias" @click.prevent="createInvitation(appl)">
-              Invite
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-col>
-    </v-row>
+  <div>
+    <div v-if="loading" class="text-center">
+      <v-progress-circular
+        indeterminate
+        size="100"
+        v-if="loading"
+        color="primary"
+      />
+    </div>
+    <div v-else class="applicants-list">
+      <h3 class="mb-3">Job Applicants ({{ applicants.length }})</h3>
+      <v-row>
+        <v-col v-for="appl in applicants" :key="appl.id" cols="4">
+          <ApplicantCard :applicant="appl" />
+        </v-col>
+      </v-row>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapActions, mapMutations, mapGetters } from 'vuex';
 
+import ApplicantCard from '@/components/acme/ApplicantCard.vue';
+
 export default {
   name: 'Applicants',
+  components: {
+    ApplicantCard,
+  },
   data() {
     return {
+      loading: true,
       selectedApplicant: {},
     };
   },
   computed: {
-    ...mapGetters('acme', ['tenant']),
-    ...mapGetters('sandbox', ['currentSandbox']),
+    ...mapGetters('acme', ['applicants', 'tenant']),
   },
   methods: {
     ...mapMutations('acme', ['SET_SELECTED_APPLICANT']),
-    ...mapActions('acme', ['createInvitation']),
+    ...mapActions('acme', ['createInvitation', 'getApplicants']),
+  },
+  async mounted() {
+    await this.getApplicants();
+    this.loading = false;
   },
 };
 </script>

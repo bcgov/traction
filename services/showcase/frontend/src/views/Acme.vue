@@ -1,8 +1,16 @@
 <template>
   <div class="acme-portal">
-    <Header />
+    <Header @refresh="refreshAcme" />
     <v-container fluid v-if="currentSandbox">
-      <v-row>
+      <div v-if="loading" class="text-center">
+        <v-progress-circular
+          indeterminate
+          size="100"
+          v-if="loading"
+          color="primary"
+        />
+      </div>
+      <v-row v-else>
         <v-col cols="4" lg="2">
           <Sidebar />
         </v-col>
@@ -21,7 +29,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters, mapMutations } from 'vuex';
 
 import Applicants from '@/components/acme/Applicants.vue';
 import Header from '@/components/acme/Header.vue';
@@ -31,22 +39,27 @@ import Sidebar from '@/components/acme/Sidebar.vue';
 export default {
   name: 'Acme',
   components: { Applicants, Header, SelectedApplicant, Sidebar },
+  data() {
+    return {
+      loading: false,
+    };
+  },
   computed: {
     ...mapGetters('sandbox', ['currentSandbox']),
     ...mapGetters('acme', ['selectedApplicant']),
   },
-  data: () => ({
-    selectedItem: 1,
-    items: [
-      { text: 'Employees', icon: 'mdi-card-account-details' },
-      { text: 'Job Applicants', icon: 'mdi-account-multiple' },
-      { text: 'Starred', icon: 'mdi-star' },
-      { text: 'Recent', icon: 'mdi-history' },
-      { text: 'Offline', icon: 'mdi-check-circle' },
-      { text: 'Uploads', icon: 'mdi-upload' },
-      { text: 'Backups', icon: 'mdi-cloud-upload' },
-    ],
-  }),
+  methods: {
+    ...mapActions('acme', ['refreshLob']),
+    ...mapMutations('acme', ['SET_SELECTED_APPLICANT']),
+    async refreshAcme() {
+      this.loading = true;
+      await this.refreshLob();
+      this.loading = false;
+    },
+  },
+  mounted () {
+    this.SET_SELECTED_APPLICANT(null);
+  },
 };
 </script>
 
@@ -55,9 +68,5 @@ export default {
   height: 100%;
   font-family: 'Helvetica' !important;
   background-color: whitesmoke !important;
-
-  .v-item--active {
-    color: rgba(0, 160, 144) !important;
-  }
 }
 </style>
