@@ -101,8 +101,8 @@ async def handle_schema(lob: Lob, payload: dict, db: AsyncSession):
         upd = LobUpdate(
             **lob.dict(),
         )
-        await repo.update(upd)
-        logger.info(f"handle_schema(lob = {lob})")
+        updated = await repo.update(upd)
+        logger.info(f"handle_schema(updated lob = {updated})")
 
     return True
 
