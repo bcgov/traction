@@ -1,7 +1,6 @@
 import logging
-from typing import List, Dict
+from typing import List
 from uuid import UUID
-from pydantic import BaseModel
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,7 +14,7 @@ from api.db.repositories.out_of_band import OutOfBandRepository
 from api.endpoints.dependencies.db import get_db
 from api.db.repositories.line_of_business import LobRepository
 
-from api.services import sandbox, traction
+from api.services import sandbox
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
