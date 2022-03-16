@@ -95,14 +95,12 @@ async def handle_schema(lob: Lob, payload: dict, db: AsyncSession):
     # }
     if payload["status"] == "completed" and payload["cred_def_state"] == "completed":
         cred_def_id = payload["cred_def_id"]
-        logger.info(f"handle_schema(cred_def_id = {cred_def_id})")
         repo = LobRepository(db_session=db)
         lob.cred_def_id = cred_def_id
         upd = LobUpdate(
             **lob.dict(),
         )
-        updated = await repo.update(upd)
-        logger.info(f"handle_schema(updated lob = {updated})")
+        await repo.update(upd)
 
     return True
 
