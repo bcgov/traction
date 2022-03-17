@@ -14,7 +14,6 @@ from typing import AsyncGenerator
 from httpx import AsyncClient, Limits, Timeout
 
 
-@pytest.mark.integtest
 @pytest.fixture(scope="session")
 def event_loop(request) -> Generator:
     """Create an instance of the default event loop for each test case."""
@@ -23,7 +22,6 @@ def event_loop(request) -> Generator:
     loop.close()
 
 
-@pytest.mark.integtest
 @pytest_asyncio.fixture()
 async def db_session() -> AsyncSession:
     async with engine.begin() as connection:
@@ -35,7 +33,6 @@ async def db_session() -> AsyncSession:
             await session.rollback()
 
 
-@pytest.mark.integtest
 @pytest.fixture()
 def override_get_db(db_session: AsyncSession) -> Callable:
     async def _override_get_db():
@@ -45,7 +42,6 @@ def override_get_db(db_session: AsyncSession) -> Callable:
     return _override_get_db
 
 
-@pytest.mark.integtest
 @pytest.fixture()
 def test_app(override_get_db: Callable) -> FastAPI:
     from api.endpoints.dependencies.db import get_db
@@ -60,14 +56,12 @@ def test_app(override_get_db: Callable) -> FastAPI:
     return app
 
 
-@pytest.mark.integtest
 @pytest_asyncio.fixture()
 async def test_client(test_app: FastAPI) -> AsyncGenerator:
     async with AsyncClient(app=test_app, base_url="http://localhost:5000") as ac:
         yield ac
 
 
-@pytest.mark.integtest
 @pytest_asyncio.fixture()
 async def app_client() -> AsyncGenerator:
     limits = Limits(

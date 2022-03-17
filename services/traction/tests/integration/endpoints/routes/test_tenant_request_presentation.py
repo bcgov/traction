@@ -114,7 +114,7 @@ async def test_tenants_issue_cred_request_proof_reject_request(
     holder_resp = await app_client.post(
         "/tenant/v1/credentials/holder/reject-request",
         headers=t2_headers,
-        params={"cred_issue_id": holder_present_id},
+        params={"pres_req_id": holder_present_id},
     )
     assert holder_resp.status_code == 200, holder_resp.content
     holder_data = json.loads(holder_resp.content)

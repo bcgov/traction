@@ -363,11 +363,11 @@ async def holder_get_presentation_requests(
 
 @router.get("/holder/creds-for-request", response_model=List[CredPrecisForProof])
 async def holder_get_creds_for_pres_request(
-    cred_issue_id: str,
+    pres_req_id: str,
     db: AsyncSession = Depends(get_db),
 ) -> List[PresentCredentialData]:
     present_repo = PresentCredentialsRepository(db_session=db)
-    present_cred = await present_repo.get_by_id(cred_issue_id)
+    present_cred = await present_repo.get_by_id(pres_req_id)
     creds = pres_cred_v10_api.present_proof_records_pres_ex_id_credentials_get(
         str(present_cred.pres_exch_id)
     )
