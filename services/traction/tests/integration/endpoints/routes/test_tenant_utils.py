@@ -331,7 +331,7 @@ async def request_credential_presentation(
     holder_resp = await app_client.get(
         "/tenant/v1/credentials/holder/creds-for-request",
         headers=t2_headers,
-        params={"cred_issue_id": holder_data["presentation"]["id"]},
+        params={"pres_req_id": holder_data["presentation"]["id"]},
     )
     assert holder_resp.status_code == 200, holder_resp.content
     cred_results = parse_obj_as(List[CredPrecisForProof], holder_resp.json())
@@ -342,7 +342,7 @@ async def request_credential_presentation(
     holder_resp = await app_client.post(
         "/tenant/v1/credentials/holder/present-credential",
         headers=t2_headers,
-        params={"cred_issue_id": holder_data["presentation"]["id"]},
+        params={"pres_req_id": holder_data["presentation"]["id"]},
         json=proof_presentation,
     )
     assert holder_resp.status_code == 200, holder_resp.content
