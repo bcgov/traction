@@ -107,6 +107,51 @@ export default {
 
 
   // -------------------------------------------------------------------------
+  // Presentation Requests
+  // -------------------------------------------------------------------------
+  /**
+   
+
+  /**
+ * @function getPresentationRequests
+ * Get the current sandboxes in this instance of the showcase app
+ * @param {string} sandboxId The identifier for the sandbox
+ * @param {string} lobId The identifier for the line of business
+ * @returns {Promise} An axios response
+ */
+  getPresentationRequests(sandboxId, lobId) {
+    return appAxios().get(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/holder/presentation-requests`);
+  },
+
+  /**
+* @function acceptPresentationRequest
+* Get the current sandboxes in this instance of the showcase app
+* @param {string} sandboxId The identifier for the sandbox
+* @param {string} lobId The identifier for the line of business
+* @param {string} pres_req_id The identifier for the credential offer
+* @returns {Promise} An axios response
+*/
+  acceptPresentationRequest(sandboxId, lobId, pres_req_id) {
+    return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/holder/presentation-requests/${pres_req_id}/accept`);
+  },
+
+  /**
+   * @function rejectPresentationRequest
+   * Get the current sandboxes in this instance of the showcase app
+   * @param {string} sandboxId The identifier for the sandbox
+   * @param {string} lobId The identifier for the line of business
+   * @param {string} pres_req_id The identifier for the credential offer
+   * @returns {Promise} An axios response
+   */
+  rejectPresentationRequest(sandboxId, lobId, pres_req_id) {
+    return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/holder/presentation-requests/${pres_req_id}/reject`);
+  },
+
+
+  // -------------------------------------------------------------/presentation-requests
+
+
+  // -------------------------------------------------------------------------
   // Issue
   // -------------------------------------------------------------------------
   /**

@@ -33,3 +33,6 @@ TENANT_VERIFIER_REQUEST_CREDENTIALS = f"{R_TNT_V1}/credentials/verifier/request"
 TENANT_HOLDER_CREDENTIALS_FOR_REQ = f"{R_TNT_V1}/credentials/holder/creds-for-request"
 TENANT_HOLDER_CREDENTIAL_REQUESTS = f"{R_TNT_V1}/credentials/holder/request"
 TENANT_HOLDER_PRESENT_CREDS = f"{R_TNT_V1}/credentials/holder/present-credential"
+TENANT_HOLDER_CREDENTIAL_REQUEST_REJECT = (
+    f"{R_TNT_V1}/credentials/holder/reject-request"
+)

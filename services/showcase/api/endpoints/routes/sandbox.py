@@ -16,6 +16,11 @@ from api.services.sandbox import create_new_sandbox
 from api.endpoints.routes.student import router as students_router
 from api.endpoints.routes.job_applicant import router as applicants_router
 from api.endpoints.routes.line_of_business import router as lobs_router
+from api.endpoints.routes.line_of_business_issuer import router as lobs_issuer_router
+from api.endpoints.routes.line_of_business_holder import router as lobs_holder_router
+from api.endpoints.routes.line_of_business_verifier import (
+    router as lobs_verifier_router,
+)
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -28,6 +33,21 @@ router.include_router(
 )
 router.include_router(
     lobs_router, tags=["line_of_business"], prefix="/sandboxes/{sandbox_id}"
+)
+router.include_router(
+    lobs_issuer_router,
+    tags=["line_of_business/issuer"],
+    prefix="/sandboxes/{sandbox_id}/lobs/{lob_id}",
+)
+router.include_router(
+    lobs_holder_router,
+    tags=["line_of_business/holder"],
+    prefix="/sandboxes/{sandbox_id}/lobs/{lob_id}",
+)
+router.include_router(
+    lobs_verifier_router,
+    tags=["line_of_business/verifier"],
+    prefix="/sandboxes/{sandbox_id}/lobs/{lob_id}",
 )
 
 

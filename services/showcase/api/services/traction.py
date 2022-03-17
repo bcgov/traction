@@ -2,6 +2,7 @@ import json
 import logging
 from typing import Optional, List
 from uuid import UUID
+from enum import Enum
 
 from aiohttp import ClientSession, ContentTypeError
 from pydantic import parse_obj_as
@@ -17,12 +18,20 @@ from api.services import traction_urls as t_urls
 logger = logging.getLogger(__name__)
 
 
+class ARIES_PROTOCOL_ROLES(str, Enum):
+    HOLDER = "holder"
+    VERIFIER = "verifier"
+    ISSUER = "issuer"
+
+
 class CredPrecisForProof(BaseSchema):
     cred_info: dict
     interval: dict | None = None
     presentation_referents: list
 
 
+# TODO JS: I think this function should be a feature in Traction
+# (we can make a response for you if you don't care)
 def build_proof_presentation(
     present_request: dict,
     cred_results: List[CredPrecisForProof],
@@ -472,6 +481,28 @@ async def tenant_issue_credential(
                 )
 
 
+# PRESENTATION EXCHANGES
+async def tenant_get_credential_exchanges(
+    wallet_id: UUID, wallet_key: UUID, present_req: dict
+):
+    presentation_id = present_req["id"]
+    # find for presentation request
+    resp = await tenant_get_creds_for_request(wallet_id, wallet_key, presentation_id)
+    cred_results = parse_obj_as(List[CredPrecisForProof], resp)
+    present_request = json.loads(present_req["present_request"])
+    proof_presentation = build_proof_presentation(present_request, cred_results)
+
+    # submit proof
+    resp = await tenant_present_credential(
+        wallet_id,
+        wallet_key,
+        presentation_id,
+        proof_presentation,
+    )
+
+    return resp
+
+
 async def tenant_request_credential_presentation(
     wallet_id: UUID,
     wallet_key: UUID,
@@ -528,7 +559,7 @@ async def tenant_present_credential(
     auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
     data = proof_presentation
     params = {
-        "cred_issue_id": presentation_id,
+        "pres_req_id": presentation_id,
     }
     async with ClientSession() as client_session:
         async with await client_session.post(
@@ -606,6 +637,34 @@ async def tenant_get_creds_for_request(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail=text,
                 )
+
+
+async def tenant_cred_request_reject(
+    wallet_id: UUID, wallet_key: UUID, pres_req_id: UUID
+):
+    auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
+    data = {}
+    params = {"pres_req_id": str(pres_req_id)}
+    async with ClientSession() as client_session:
+        async with await client_session.post(
+            url=t_urls.TENANT_HOLDER_CREDENTIAL_REQUEST_REJECT,
+            headers=auth_headers,
+            params=params,
+            json=data,
+        ) as response:
+            try:
+                resp = await response.json()
+                return resp
+            except ContentTypeError:
+                logger.exception("Error rejecting presentation request", exc_info=True)
+                text = await response.text()
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=text,
+                )
+
+
+# CREDENTIAL OFFER
 
 
 async def tenant_accept_cred_offer(
