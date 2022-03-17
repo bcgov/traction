@@ -292,10 +292,10 @@ traction_api:
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
     # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
     limits:
-      cpu: 600m
+      cpu: 1000m
       memory: 2600Mi
     requests:
-      cpu: 300m
+      cpu: 500m
       memory: 1300Mi
 
   nodeSelector: {}
