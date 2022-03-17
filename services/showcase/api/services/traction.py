@@ -616,7 +616,7 @@ async def tenant_get_creds_for_request(
     auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
     data = {}
     params = {
-        "cred_issue_id": presentation_id,
+        "pres_req_id": presentation_id,
     }
     async with ClientSession() as client_session:
         async with await client_session.get(
