@@ -13,9 +13,9 @@
             <li><b>Name: </b>{{ c.attrs.name }}</li>
             <li><b>Age: </b>{{ c.attrs.age }}</li>
             <li><b>Student ID: </b>{{ c.attrs.student_id }}</li>
-            <hr />
+            <hr class="my-2" />
             <li>
-              <b>Issuer Name: </b>
+              <b>Issuer: </b>
               <a target="_blank" :href="issuer_nym_link(c.cred_def_id)">
                 {{ issuer_name() }}
               </a>
@@ -25,12 +25,13 @@
               Active
             </li>
           </ul>
-          <v-expansion-panels>
+          <v-expansion-panels class="mt-2">
             <v-expansion-panel>
               <v-expansion-panel-header> Details </v-expansion-panel-header>
               <v-expansion-panel-content>
                 <div><b>cred_def_id:</b> {{ c.cred_def_id }}</div>
                 <div><b>schema_id:</b> {{ c.schema_id }}</div>
+                <div><b>date_received:</b> {{ c.attrs.date }}</div>
               </v-expansion-panel-content>
             </v-expansion-panel>
           </v-expansion-panels>
