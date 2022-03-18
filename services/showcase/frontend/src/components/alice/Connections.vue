@@ -16,7 +16,7 @@
             <hr class="my-2" />
             <li>
               <b>Issuer: </b>
-              <a target="_blank" :href="issuer_nym_link(c.cred_def_id)">
+              <a target="_blank" :href="nym_link(c.cred_def_id)">
                 {{ issuer_name() }}
               </a>
             </li>
@@ -62,7 +62,7 @@ export default {
     issuer_name() {
       return 'Faber University';
     },
-    issuer_nym_link(cred_def_id) {
+    nym_link(cred_def_id) {
       return `http://test.bcovrin.vonx.io/browse/domain?page=1&query=${
         cred_def_id.split(':')[0]
       }&txn_type=1`;
