@@ -201,6 +201,12 @@ class SchemaWorkflow(BaseWorkflow):
             schema_id=tenant_schema.schema_id,
             tag=tenant_schema.cred_def_tag,
         )
+        if tenant_schema.cred_revocation:
+            cred_def_request.support_revocation = tenant_schema.cred_revocation
+            cred_def_request.revocation_registry_size = (
+                tenant_schema.cred_revoc_reg_size
+            )
+
         data = {"body": cred_def_request}
         cred_def_response = cred_def_api.credential_definitions_post(**data)
         # we get back either "cred_def_response.sent" or "cred_def_response.txn"

@@ -58,7 +58,8 @@ async def test_tenants_connect(app_client: AsyncClient) -> None:
 
 
 @pytest.mark.integtest
-async def test_tenant_issuer(app_client: AsyncClient) -> None:
+@pytest.mark.parametrize('support_revocation', [False, True,])
+async def test_tenant_issuer(support_revocation, app_client: AsyncClient) -> None:
     # get a token
     bearer_token = await innkeeper_auth(app_client)
     ik_headers = innkeeper_headers(bearer_token)
@@ -78,12 +79,15 @@ async def test_tenant_issuer(app_client: AsyncClient) -> None:
         t1_headers,
         cred_def_tag="test_tag",
         schema=schema,
+        revocable=support_revocation,
+        revoc_reg_size=10 if support_revocation else None,
     )
     assert cred_def_id, "No cred def id returned"
 
 
 @pytest.mark.integtest
-async def test_tenants_issue_credential(app_client: AsyncClient) -> None:
+@pytest.mark.parametrize('support_revocation', [False, True,])
+async def test_tenants_issue_credential(support_revocation, app_client: AsyncClient) -> None:
     # get a token
     bearer_token = await innkeeper_auth(app_client)
     ik_headers = innkeeper_headers(bearer_token)
@@ -106,6 +110,8 @@ async def test_tenants_issue_credential(app_client: AsyncClient) -> None:
         t1_headers,
         cred_def_tag="test_tag",
         schema=schema,
+        revocable=support_revocation,
+        revoc_reg_size=10 if support_revocation else None,
     )
     assert cred_def_id, "No cred def id returned"
 
@@ -127,7 +133,13 @@ async def test_tenants_issue_credential(app_client: AsyncClient) -> None:
         ]
     }
     await issue_credential(
-        app_client, t1_headers, "alice", t2_headers, cred_def_id, credential
+        app_client,
+        t1_headers,
+        "alice",
+        t2_headers,
+        cred_def_id,
+        credential,
+        check_revoc=support_revocation,
     )
 
     # should be one credentials for our t2
@@ -139,7 +151,8 @@ async def test_tenants_issue_credential(app_client: AsyncClient) -> None:
 
 
 @pytest.mark.integtest
-async def test_tenants_issue_credential_request_proof(app_client: AsyncClient) -> None:
+@pytest.mark.parametrize('support_revocation', [False, True,])
+async def test_tenants_issue_credential_request_proof(support_revocation, app_client: AsyncClient) -> None:
     # get a token
     bearer_token = await innkeeper_auth(app_client)
     ik_headers = innkeeper_headers(bearer_token)
@@ -162,6 +175,8 @@ async def test_tenants_issue_credential_request_proof(app_client: AsyncClient) -
         t1_headers,
         cred_def_tag="test_tag",
         schema=schema,
+        revocable=support_revocation,
+        revoc_reg_size=10 if support_revocation else None,
     )
     assert cred_def_id, "No cred def id returned"
 
@@ -183,7 +198,13 @@ async def test_tenants_issue_credential_request_proof(app_client: AsyncClient) -
         ]
     }
     await issue_credential(
-        app_client, t1_headers, "alice", t2_headers, cred_def_id, credential
+        app_client,
+        t1_headers,
+        "alice",
+        t2_headers,
+        cred_def_id,
+        credential,
+        check_revoc=support_revocation,
     )
 
     # should be one credentials for our t2
