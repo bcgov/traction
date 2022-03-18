@@ -505,7 +505,7 @@ async def tenant_get_issued_credentials(
                 #     "connection_id": "61afc10d-3710-4997-bb6a-d778884aba87",
                 #     "cred_type": "anoncreds",
                 #     "cred_protocol": "v1.0",
-                #     "cred_def_id": "M4kWCeCs7wKYgrYfFwNpxD:3:CL:181415:degree_41.82.18",
+                #     "cred_def_id": "...",
                 #     "credential":  ...
                 #     "issue_role": "issuer",
                 #     "issue_state": "credential_acked",
