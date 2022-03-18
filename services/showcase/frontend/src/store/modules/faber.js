@@ -5,16 +5,21 @@ import { NotificationTypes } from '@/utils/constants';
 export default {
   namespaced: true,
   state: {
+    issuedCredentials: [],
     students: [],
     tenant: {}
   },
   getters: {
+    issuedCredentials: state => state.issuedCredentials,
     students: state => state.students
       ? state.students.sort((a, b) => a.name.localeCompare(b.name))
       : [],
     tenant: state => state.tenant
   },
   mutations: {
+    SET_ISSUED_CREDENTIALS(state, creds) {
+      state.issuedCredentials = creds;
+    },
     SET_STUDENTS(state, students) {
       state.students = students;
     },
@@ -80,11 +85,27 @@ export default {
         }, { root: true });
       }
     },
+    // Query the showcase API to fetch the Lobs issued credentials
+    async getIssuedCredentials({ commit, dispatch, rootState, state }) {
+      try {
+        const response = await lobService.getIssuedCredentials(
+          rootState.sandbox.currentSandbox.id,
+          state.tenant.id);
+        commit('SET_ISSUED_CREDENTIALS', response.data);
+      }
+      catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while fetching the Issued Credentials list.',
+          consoleError: `Error getting issued credentials: ${error}`,
+        }, { root: true });
+      }
+    },
 
     // Re-get the relevant info for the Faber page
     async refreshLob({ dispatch }) {
       await dispatch('sandbox/refreshCurrentSandbox', {}, { root: true });
       await dispatch('getStudents');
+      await dispatch('getIssuedCredentials');
     },
   }
 };

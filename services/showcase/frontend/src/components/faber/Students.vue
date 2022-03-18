@@ -5,7 +5,7 @@
     <v-data-table
       :headers="headers"
       item-key="id"
-      :items="students"
+      :items="studentList"
       disable-sort
       disable-pagination
       hide-default-footer
@@ -28,7 +28,7 @@
           <template #activator="{ on, attrs }">
             <v-btn
               @click="inviteStudent(item)"
-              :disabled="!item.wallet_id"
+              :disabled="!item.wallet_id || item.connection_id"
               large
               icon
               v-bind="attrs"
@@ -41,11 +41,11 @@
         </v-tooltip>
 
         <!-- Issue Credential -->
-        <v-tooltip bottom>
+        <v-tooltip bottom v-if="!item.credential">
           <template #activator="{ on, attrs }">
             <v-btn
               @click="issueDegree(item)"
-              :disabled="!tenant.public_did || !item.wallet_id"
+              :disabled="!tenant.public_did || !item.wallet_id || !item.connection_id"
               large
               icon
               v-bind="attrs"
@@ -55,6 +55,22 @@
             </v-btn>
           </template>
           <span>Issue a Degree Credential</span>
+        </v-tooltip>
+
+        <!-- View Issued Credential -->
+        <v-tooltip bottom v-if="item.credential">
+          <template #activator="{ on, attrs }">
+            <v-btn
+              @click="viewDegreeDetails(item)"
+              large
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>mdi-certificate-outline</v-icon>
+            </v-btn>
+          </template>
+          <span>View Issued Credential</span>
         </v-tooltip>
 
         <!-- View details -->
@@ -96,6 +112,28 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <!-- Dialog to show issued degree -->
+    <v-dialog v-model="degreeDialog" width="800">
+      <v-card>
+        <v-card-title class="text-h5 grey lighten-2">
+          Degree Details
+        </v-card-title>
+
+        <v-card-text>
+          <pre>{{ JSON.stringify(selectedCredential, 0, 2) }}</pre>
+        </v-card-text>
+
+        <v-divider></v-divider>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="degreeDialog = false">
+            Close
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
   </div>
 </template>
 
@@ -119,21 +157,60 @@ export default {
       loadingStudents: true,
       selectedStudent: {},
       studentDialog: false,
+      selectedCredential: {},
+      degreeDialog: false,
     };
   },
   computed: {
-    ...mapGetters('faber', ['students', 'tenant']),
+    ...mapGetters('faber', ['students', 'tenant', 'issuedCredentials']),
     ...mapGetters('sandbox', ['currentSandbox']),
+    credentialList() {
+      const credentials = this.issuedCredentials.map((cred) => {
+        // transforming the raw traction data to something reasonable
+        // TODO: update traction api responses to be business friendly
+        const c = cred.credential;
+        const w = cred.workflow;
+        const credential = JSON.parse(c.credential);
+        const data = {};
+        credential.attributes.forEach((attr) => {
+          data[attr.name] = attr.value;
+        });
+        return {
+          'id': c.id,
+          'cred_def_id': c.cred_def_id,
+          'data': data,
+          'state': w.workflow_state,
+          'created_at': c.created_at,
+          'updated_at': c.updated_at
+        };
+      });
+      return credentials;
+    },
+    studentList() {
+      const items = this.students.map((stu) => {
+        let item = {...stu};
+        item.credential = this.credentialList.find((c)=> c.data.student_id === item.student_id) !== undefined;
+        return item;
+      });
+      return items;
+    },
+
   },
   methods: {
-    ...mapActions('faber', ['getStudents', 'inviteStudent', 'issueDegree']),
+    ...mapActions('faber', ['getStudents', 'inviteStudent', 'issueDegree', 'getIssuedCredentials']),
     showStudentDetails(student) {
       this.selectedStudent = student;
       this.studentDialog = true;
     },
+    viewDegreeDetails(student) {
+      this.selectedStudent = student;
+      this.selectedCredential = this.credentialList.find((c)=> c.data.student_id === student.student_id);
+      this.degreeDialog = true;
+    }
   },
   async mounted() {
     await this.getStudents();
+    await this.getIssuedCredentials();
     this.loadingStudents = false;
   },
 };

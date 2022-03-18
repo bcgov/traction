@@ -49,3 +49,24 @@ async def issue_degree(
     )
 
     return resp
+
+
+@router.get(
+    "/issued-credentials",
+    status_code=status.HTTP_200_OK,
+)
+async def get_issued_credentials(
+    sandbox_id: UUID,
+    lob_id: UUID,
+    db: AsyncSession = Depends(get_db),
+):
+    lob_repo = LobRepository(db_session=db)
+    lob = await lob_repo.get_by_id_with_sandbox(sandbox_id, lob_id)
+
+    # call traction to see what credentials we've issued.
+    resp = await traction.tenant_get_issued_credentials(
+        lob.wallet_id,
+        lob.wallet_key,
+    )
+
+    return resp
