@@ -140,15 +140,15 @@ class SchemaWorkflow(BaseWorkflow):
                             tenant_schema,
                         ) = await self.process_cred_def(tenant_schema, signature)
 
-                    elif signature["operation"]["type"] == "114":
-                        related_cred_def_id = webhook_message["payload"]["meta_data"][
-                            "context"
-                        ]["cred_def_id"]
-                        if related_cred_def_id == str(tenant_schema.cred_def_id):
-                            (
-                                workflow_completed,
-                                tenant_schema,
-                            ) = await self.process_revoc(tenant_schema, webhook_message)
+                    elif signature["operation"]["type"] == "114" and webhook_message[
+                        "payload"
+                    ]["meta_data"]["context"]["cred_def_id"] == str(
+                        tenant_schema.cred_def_id
+                    ):
+                        (
+                            workflow_completed,
+                            tenant_schema,
+                        ) = await self.process_revoc(tenant_schema, webhook_message)
 
                     if workflow_completed:
                         # finish off our workflow
