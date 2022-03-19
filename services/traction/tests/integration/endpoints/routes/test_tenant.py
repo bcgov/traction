@@ -58,7 +58,13 @@ async def test_tenants_connect(app_client: AsyncClient) -> None:
 
 
 @pytest.mark.integtest
-@pytest.mark.parametrize('support_revocation', [False, True,])
+@pytest.mark.parametrize(
+    "support_revocation",
+    [
+        False,
+        True,
+    ],
+)
 async def test_tenant_issuer(support_revocation, app_client: AsyncClient) -> None:
     # get a token
     bearer_token = await innkeeper_auth(app_client)
@@ -86,8 +92,16 @@ async def test_tenant_issuer(support_revocation, app_client: AsyncClient) -> Non
 
 
 @pytest.mark.integtest
-@pytest.mark.parametrize('support_revocation', [False, True,])
-async def test_tenants_issue_credential(support_revocation, app_client: AsyncClient) -> None:
+@pytest.mark.parametrize(
+    "support_revocation",
+    [
+        False,
+        True,
+    ],
+)
+async def test_tenants_issue_credential(
+    support_revocation, app_client: AsyncClient
+) -> None:
     # get a token
     bearer_token = await innkeeper_auth(app_client)
     ik_headers = innkeeper_headers(bearer_token)
@@ -151,8 +165,16 @@ async def test_tenants_issue_credential(support_revocation, app_client: AsyncCli
 
 
 @pytest.mark.integtest
-@pytest.mark.parametrize('support_revocation', [False, True,])
-async def test_tenants_issue_credential_request_proof(support_revocation, app_client: AsyncClient) -> None:
+@pytest.mark.parametrize(
+    "support_revocation",
+    [
+        False,
+        True,
+    ],
+)
+async def test_tenants_issue_credential_request_proof(
+    support_revocation, app_client: AsyncClient
+) -> None:
     # get a token
     bearer_token = await innkeeper_auth(app_client)
     ik_headers = innkeeper_headers(bearer_token)

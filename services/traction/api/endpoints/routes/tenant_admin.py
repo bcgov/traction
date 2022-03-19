@@ -242,6 +242,7 @@ async def create_tenant_schema(
             schema_id=tenant_schema.schema_id,
             schema_state=tenant_schema.schema_state,
             cred_def_state=tenant_schema.cred_def_state,
+            revoc_reg_state=tenant_schema.revoc_reg_state,
         )
         tenant_schema = await schema_repo.update(schema_update)
         logger.debug(f">>> Updated tenant_schema: {tenant_schema}")
