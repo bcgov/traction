@@ -3,7 +3,11 @@
     <v-btn text id="footer-home" href="https://www.gov.bc.ca/">
       <span>Home</span>
     </v-btn>
-    <v-btn text id="footer-about" href="https://www2.gov.bc.ca/gov/content/about-gov-bc-ca">
+    <v-btn
+      text
+      id="footer-about"
+      href="https://www2.gov.bc.ca/gov/content/about-gov-bc-ca"
+    >
       <span>About gov.bc.ca</span>
     </v-btn>
     <v-btn text id="footer-disclaimer" href="http://gov.bc.ca/disclaimer">
@@ -12,21 +16,36 @@
     <v-btn text id="footer-privacy" href="http://gov.bc.ca/privacy">
       <span>Privacy</span>
     </v-btn>
-    <v-btn text id="footer-accessibility" href="http://gov.bc.ca/webaccessibility">
+    <v-btn
+      text
+      id="footer-accessibility"
+      href="http://gov.bc.ca/webaccessibility"
+    >
       <span>Accessibility</span>
     </v-btn>
     <v-btn text id="footer-copyright" href="http://gov.bc.ca/copyright">
       <span>Copyright</span>
     </v-btn>
-    <v-btn text id="footer-contact" href="https://www2.gov.bc.ca/gov/content/home/contact-us">
+    <v-btn
+      text
+      id="footer-contact"
+      href="https://www2.gov.bc.ca/gov/content/home/contact-us"
+    >
       <span>Contact Us</span>
     </v-btn>
+    <v-spacer />
+    <v-switch
+      v-model="$vuetify.theme.dark"
+      inset
+      label="BC Theme"
+      persistent-hint
+    ></v-switch>
   </v-footer>
 </template>
 
 <script>
 export default {
-  name: 'BCGovFooter'
+  name: 'BCGovFooter',
 };
 </script>
 

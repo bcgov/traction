@@ -1,0 +1,23 @@
+// For overriding any Vuetify variables or specifiying our own
+
+// --------------------------------------------------------------------------------
+// Vuetify Overrides
+// --------------------------------------------------------------------------------
+// Take the "dark" theme and set all its variables to the same as the light theme
+// This is so we can use the "dark" as the BC Gov theme in the showcase app
+// See vuetify.js themes for regular theme color setting after this.
+@import '~vuetify/src/styles/styles.sass';
+$material-dark: map-merge(
+  $material-dark,
+  (
+     $material-light
+  )
+);
+// -----------------------------------------------------------------------overrides
+
+// --------------------------------------------------------------------------------
+// Custom variables we may want
+// --------------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------custom vars
+

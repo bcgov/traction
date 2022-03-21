@@ -3,7 +3,15 @@
     <v-row class="text-center">
       <v-col cols="12">
         <v-img
+          v-if="this.$vuetify.theme.dark"
           src="@/assets/images/traction_logo_bcgov.svg"
+          class="my-3"
+          contain
+          height="300"
+        />
+        <v-img
+          v-else
+          src="@/assets/images/traction_logo.svg"
           class="my-3"
           contain
           height="300"
@@ -16,18 +24,14 @@
         </h1>
 
         <p class="subheading font-weight-regular">
-          The showcase app is a demonstration of how multiple line-of-business applications can integrate with the Traction product.
-          <br>This app is not part of the Traction product
+          The showcase app is a demonstration of how multiple line-of-business
+          applications can integrate with the Traction product.
+          <br />This app is not part of the Traction product
         </p>
       </v-col>
 
-      <v-col
-        class="mb-5"
-        cols="12"
-      >
-        <h2 class="text-h5 font-weight-bold mb-3">
-          What's next?
-        </h2>
+      <v-col class="mb-5" cols="12">
+        <h2 class="text-h5 font-weight-bold mb-3">What's next?</h2>
 
         <v-row justify="center">
           <a
@@ -42,13 +46,8 @@
         </v-row>
       </v-col>
 
-      <v-col
-        class="mb-5"
-        cols="12"
-      >
-        <h2 class="text-h5 font-weight-bold mb-3">
-          Important Links
-        </h2>
+      <v-col class="mb-5" cols="12">
+        <h2 class="text-h5 font-weight-bold mb-3">Important Links</h2>
 
         <v-row justify="center">
           <a
@@ -63,13 +62,8 @@
         </v-row>
       </v-col>
 
-      <v-col
-        class="mb-5"
-        cols="12"
-      >
-        <h2 class="text-h5 font-weight-bold mb-3">
-          Ecosystem
-        </h2>
+      <v-col class="mb-5" cols="12">
+        <h2 class="text-h5 font-weight-bold mb-3">Ecosystem</h2>
 
         <v-row justify="center">
           <a
