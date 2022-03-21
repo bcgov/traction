@@ -17,11 +17,17 @@
               <strong>To:</strong> {{ msg.recipient.name }} <br />
 
               <!-- Accept, reject -->
-              <v-btn small color="primary" class="mr-4" @click="accept(msg)">
+              <v-btn v-if="!msg.action" small color="primary" class="mr-4" @click="accept(msg)">
                 Accept
               </v-btn>
-              <v-btn small color="error" class="mr-4" @click="reject">
+              <v-btn v-if="msg.action==='Accepted'" small color="info" class="mr-4">
+                {{ msg.action }}
+              </v-btn>
+              <v-btn v-if="!msg.action" small color="error" class="mr-4" @click="reject(msg)">
                 Reject
+              </v-btn>
+              <v-btn v-if="msg.action==='Rejected'" small color="warning" class="mr-4">
+                {{ msg.action }}
               </v-btn>
 
               <!-- Dialog/btn to show raw json -->
@@ -75,10 +81,7 @@ export default {
     ...mapGetters('alice', ['ofbMessages']),
   },
   methods: {
-    ...mapActions('alice', ['accept', 'getOfbMessages']),
-    reject() {
-      alert('TBA');
-    },
+    ...mapActions('alice', ['accept', 'reject', 'getOfbMessages']),
   },
   async mounted() {
     await this.getOfbMessages();
