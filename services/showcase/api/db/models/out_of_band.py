@@ -54,8 +54,7 @@ class OutOfBandRead(OutOfBandBase):
     updated_at: datetime
 
 
-class OutOfBandUpdate(OutOfBandBase):
+class OutOfBandUpdate(BaseModel):
+    id: uuid.UUID
     name: Optional[str] = None
-    sender_id: Optional[uuid.UUID]
-    recipient_id: Optional[uuid.UUID]
-    sandbox_id: Optional[uuid.UUID]
+    action: Optional[str] = None

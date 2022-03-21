@@ -200,6 +200,22 @@ export default {
   getOutOfBandMessages(sandboxId, lobId) {
     return appAxios().get(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/out-of-band-msgs`);
   },
+  /**
+   * @function updateOutOfBandMessageAction
+   * Update the action for an out of band message
+   * @param {string} sandboxId The identifier for the sandbox
+   * @param {string} lobId The identifier for the line of business
+   * @param {string} oobId The identifier for the message
+   * @param {string} action The action taken on the message
+   * @returns {Promise} An axios response
+   */
+  updateOutOfBandMessageAction(sandboxId, lobId, oobId, action) {
+    const payload = {
+      id: oobId,
+      action: action
+    };
+    return appAxios().put(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/out-of-band-msgs`, payload);
+  },
   // -------------------------------------------------------------/messages
 
 };

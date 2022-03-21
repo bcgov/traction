@@ -59,6 +59,25 @@ export default {
           consoleError: `Error accepting invitation: ${error}`,
         }, { root: true });
       }
+      try {
+        await lobService.updateOutOfBandMessageAction(rootState.sandbox.currentSandbox.id, state.tenant.id, msg.id, 'Accepted');
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while setting the invitation message to accepted.',
+          consoleError: `Error updating message status: ${error}`,
+        }, { root: true });
+      }
+    },
+    async reject({ dispatch, state, rootState }, msg) {
+      try {
+        // we do not do anything here... no problem report, just mark as rejected
+        await lobService.updateOutOfBandMessageAction(rootState.sandbox.currentSandbox.id, state.tenant.id, msg.id, 'Rejected');
+      } catch (error) {
+        dispatch('notifications/addNotification', {
+          message: 'An error occurred while setting the invitation message to rejected.',
+          consoleError: `Error updating message status: ${error}`,
+        }, { root: true });
+      }
     },
     // Query the showcase API for out of band messages for this tenant
     async getOfbMessages({ commit, dispatch, state, rootState }) {
