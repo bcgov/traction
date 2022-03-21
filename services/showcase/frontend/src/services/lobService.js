@@ -110,7 +110,7 @@ export default {
   // Presentation Requests
   // -------------------------------------------------------------------------
   /**
-   
+
 
   /**
  * @function getPresentationRequests
@@ -173,6 +173,16 @@ export default {
    */
   issueDegree(sandboxId, lobId, studentId) {
     return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/students/${studentId}/issue-degree`);
+  },
+  /**
+   * @function issueDegree
+   * Create a invitation
+   * @param {string} sandboxId The identifier for the sandbox
+   * @param {string} lobId The identifier for the line of business
+   * @returns {Promise} An axios response
+   */
+  getIssuedCredentials(sandboxId, lobId) {
+    return appAxios().get(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/issued-credentials`);
   },
   // -------------------------------------------------------------/issue
 

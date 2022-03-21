@@ -481,6 +481,81 @@ async def tenant_issue_credential(
                 )
 
 
+async def tenant_get_issued_credentials(
+    wallet_id: UUID,
+    wallet_key: UUID,
+):
+    auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
+    data = {}
+    params = {}
+    async with ClientSession() as client_session:
+        async with await client_session.get(
+            url=t_urls.TENANT_CREDENTIAL_ISSUE,
+            headers=auth_headers,
+            params=params,
+            json=data,
+        ) as response:
+            try:
+                resp = await response.json()
+                # we are going to transform this to something usable
+                # {
+                #   "credential": {
+                #     "tenant_id": "8448fefa-e7a3-443c-8e12-da254e390fde",
+                #     "wallet_id": "7284c309-0dcf-440e-9ae9-61439d47ae2a",
+                #     "connection_id": "61afc10d-3710-4997-bb6a-d778884aba87",
+                #     "cred_type": "anoncreds",
+                #     "cred_protocol": "v1.0",
+                #     "cred_def_id": "...",
+                #     "credential":  ...
+                #     "issue_role": "issuer",
+                #     "issue_state": "credential_acked",
+                #     "workflow_id": "62d15719-5166-46c5-9b0f-056d818dc4f8",
+                #     "cred_exch_id": "e43c98b0-98ab-4b4e-a224-d1a21f530e45",
+                #     "id": "80d27752-3768-4913-95ad-57b7e8f3a95b",
+                #     "created_at": "2022-03-18T18:02:59.581580",
+                #     "updated_at": "2022-03-18T18:05:13.288659"
+                #   },
+                #   "workflow": {
+                #     "wallet_id": "7284c309-0dcf-440e-9ae9-61439d47ae2a",
+                #     "workflow_type": "api.services.IssueCredentialWorkflow",
+                #     "workflow_state": "completed",
+                #     "workflow_state_msg": null,
+                #     "wallet_bearer_token": null,
+                #     "id": "62d15719-5166-46c5-9b0f-056d818dc4f8",
+                #     "created_at": "2022-03-18T18:02:59.586718",
+                #     "updated_at": "2022-03-18T18:05:13.293895"
+                #   }
+                # }
+
+                # def xform(o):
+                #     credential = o["credential"]
+                #     workflow = o["workflow"]
+                #
+                #     credential_data = json.loads(credential["credential"])
+                #     simple_cred_data = {}
+                #     for d in credential_data["attributes"]:
+                #         simple_cred_data[d["name"]] = d["value"]
+                #     return {
+                #         "id": credential["id"],
+                #         "cred_def_id": credential["cred_def_id"],
+                #         "data": simple_cred_data,
+                #         "state": workflow["workflow_state"],
+                #         "created_at": credential["created_at"],
+                #         "updated_at": credential["updated_at"]
+                #     }
+                #
+                # iterator = map(xform, resp)
+                # return list(iterator)
+                return resp
+            except ContentTypeError:
+                logger.exception("Error getting issued credential list", exc_info=True)
+                text = await response.text()
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=text,
+                )
+
+
 # PRESENTATION EXCHANGES
 async def tenant_get_credential_exchanges(
     wallet_id: UUID, wallet_key: UUID, present_req: dict
