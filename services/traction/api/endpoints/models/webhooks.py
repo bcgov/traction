@@ -47,6 +47,12 @@ WEBHOOK_ISSUE_LISTENER_PATTERN = re.compile(
 WEBHOOK_PRESENT_LISTENER_PATTERN = re.compile(
     f"^{WEBHOOK_EVENT_PREFIX}{WebhookTopicType.present_proof}(.*)?$"
 )
+WEBHOOK_REVOC_REG_LISTENER_PATTERN = re.compile(
+    f"^{WEBHOOK_EVENT_PREFIX}{WebhookTopicType.revocation_registry}(.*)?$"
+)
+WEBHOOK_REVOC_NOTIFY_LISTENER_PATTERN = re.compile(
+    f"^{WEBHOOK_EVENT_PREFIX}{WebhookTopicType.revocation_notification}(.*)?$"
+)
 
 
 class TenantEventTopicType(str, Enum):

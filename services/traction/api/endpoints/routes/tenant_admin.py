@@ -147,6 +147,8 @@ async def create_tenant_schema(
     schema_request: TenantSchemaRequest | None = None,
     schema_id: str | None = None,
     cred_def_tag: str | None = None,
+    revocable: bool | None = False,
+    revoc_reg_size: int | None = 1000,
     db: AsyncSession = Depends(get_db),
 ) -> List[TenantSchemaData]:
     """
@@ -213,6 +215,9 @@ async def create_tenant_schema(
             else TenantWorkflowStateType.completed,
             cred_def_tag=cred_def_tag,
             cred_def_state=TenantWorkflowStateType.pending if cred_def_tag else None,
+            cred_revocation=revocable,
+            cred_revoc_reg_size=revoc_reg_size if revocable else None,
+            revoc_reg_state=TenantWorkflowStateType.pending if revocable else None,
         )
         tenant_schema = await schema_repo.create(tenant_schema)
         logger.debug(f">>> Created new tenant_schema: {tenant_schema}")
@@ -237,6 +242,7 @@ async def create_tenant_schema(
             schema_id=tenant_schema.schema_id,
             schema_state=tenant_schema.schema_state,
             cred_def_state=tenant_schema.cred_def_state,
+            revoc_reg_state=tenant_schema.revoc_reg_state,
         )
         tenant_schema = await schema_repo.update(schema_update)
         logger.debug(f">>> Updated tenant_schema: {tenant_schema}")

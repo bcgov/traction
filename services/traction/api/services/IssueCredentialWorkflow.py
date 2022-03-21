@@ -167,7 +167,9 @@ class IssueCredentialWorkflow(BaseWorkflow):
                         webhook_state == CredentialStateType.done
                         or webhook_state == CredentialStateType.credential_acked
                     ):
-                        issue_cred = await self.complete_credential(issue_cred)
+                        issue_cred = await self.complete_credential(
+                            issue_cred, webhook_message
+                        )
 
                         # finish off our workflow
                         await self.complete_workflow()
@@ -264,7 +266,7 @@ class IssueCredentialWorkflow(BaseWorkflow):
         return issue_cred
 
     async def complete_credential(
-        self, issue_cred: IssueCredentialRead
+        self, issue_cred: IssueCredentialRead, webhook_message: dict
     ) -> IssueCredentialRead:
         update_issue = IssueCredentialUpdate(
             id=issue_cred.id,
@@ -272,6 +274,10 @@ class IssueCredentialWorkflow(BaseWorkflow):
             issue_state=issue_cred.issue_state,
             cred_exch_id=issue_cred.cred_exch_id,
         )
+        # capture the revocation info's from the webhook
+        if webhook_message["payload"].get("revoc_reg_id"):
+            update_issue.rev_reg_id = webhook_message["payload"].get("revoc_reg_id")
+            update_issue.cred_rev_id = webhook_message["payload"].get("revocation_id")
         issue_cred = await self.issue_repo.update(update_issue)
         return issue_cred
 

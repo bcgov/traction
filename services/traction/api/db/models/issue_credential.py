@@ -19,6 +19,8 @@ class IssueCredentialBase(BaseModel):
     # workflow_id will be null until the tenant kcks it off
     workflow_id: uuid.UUID = Field(nullable=True, default=None)
     cred_exch_id: uuid.UUID = Field(nullable=True, default=None)
+    rev_reg_id: str = Field(nullable=True, default=None)
+    cred_rev_id: str = Field(nullable=True, default=None)
 
 
 class IssueCredential(IssueCredentialBase, BaseTable, table=True):
@@ -49,3 +51,5 @@ class IssueCredentialUpdate(BaseModel):
     issue_state: str = Field(nullable=False)
     workflow_id: uuid.UUID = Field(nullable=True, default=None)
     cred_exch_id: uuid.UUID = Field(nullable=True, default=None)
+    rev_reg_id: str = Field(nullable=True, default=None)
+    cred_rev_id: str = Field(nullable=True, default=None)

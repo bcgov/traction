@@ -39,6 +39,7 @@ async def check_workflow_state(
 
     i = attempts
     completed = False
+    workflow = None
     while i > 0 and not completed:
         try:
             # wait for the issuer process to complete
@@ -67,6 +68,8 @@ async def check_workflow_state(
         i -= 1
 
     assert completed, workflow["workflow"]["workflow_state"]
+
+    return workflow
 
 
 async def create_tenant(
@@ -110,6 +113,8 @@ async def create_schema_cred_def(
     schema_id: str = None,
     cred_def_tag: str = None,
     schema: dict = None,
+    revocable: bool = False,
+    revoc_reg_size: int = 10,
 ) -> str:
     """Create a schema and/or credential definition for the given issuer tenant."""
 
@@ -121,6 +126,9 @@ async def create_schema_cred_def(
     assert issuer["workflow"]["workflow_state"] == "completed"
 
     params = {"schema_id": schema_id, "cred_def_tag": cred_def_tag}
+    if revocable:
+        params["revocable"] = revocable
+        params["revoc_reg_size"] = revoc_reg_size
     schema_resp = await app_client.post(
         "/tenant/v1/admin/schema", headers=t1_headers, params=params, json=schema
     )
@@ -210,6 +218,7 @@ async def issue_credential(
     credential: dict,
     cred_protocol: str = "v1.0",
     accept_offer: bool = True,
+    check_revoc: bool = False,
 ) -> (str, str):
     """Issue a credential from issuer (t1) to holder (t2)."""
 
@@ -259,12 +268,18 @@ async def issue_credential(
     assert holder_data.get("workflow"), "Error no workflow returned"
     holder_workflow_id = holder_data["workflow"]["id"]
 
-    await check_workflow_state(
+    issue_rec = await check_workflow_state(
         app_client,
         t1_headers,
         "/tenant/v1/credentials/issuer/issue",
         workflow_id=issue_workflow_id,
     )
+
+    if check_revoc:
+        cred = issue_rec["credential"]
+        assert cred.get("rev_reg_id") is not None, "Error no revocation info"
+        assert cred.get("cred_rev_id") is not None, "Error no revocation info"
+
     await check_workflow_state(
         app_client,
         t2_headers,
