@@ -3,40 +3,38 @@
     <v-container>
       <v-app-bar shaped>
         <v-icon x-large color="blue">badge</v-icon>
-        <h1 class="ml-4">Personal Profile</h1>
+        <h2 class="ml-4">Personal Profile</h2>
         <v-spacer></v-spacer>
 
         <v-btn icon @click="refreshAlice">
           <v-icon>refresh</v-icon>
         </v-btn>
 
-        <v-btn icon>
-          <v-icon>mdi-magnify</v-icon>
-        </v-btn>
+        <span class="d-none d-sm-flex">
+          <v-btn icon>
+            <v-icon>mdi-magnify</v-icon>
+          </v-btn>
 
-        <v-btn icon>
-          <v-icon>mdi-heart</v-icon>
-        </v-btn>
+          <v-btn icon>
+            <v-icon>mdi-heart</v-icon>
+          </v-btn>
 
-        <v-btn icon>
-          <v-icon>mdi-dots-vertical</v-icon>
-        </v-btn>
+          <v-btn icon>
+            <v-icon>mdi-dots-vertical</v-icon>
+          </v-btn>
+        </span>
       </v-app-bar>
       <v-row class="mt-4" v-if="currentSandbox">
-        <v-col md="3">
+        <v-col cols="12" sm="4" md="3">
           <User />
         </v-col>
-        <v-col md="6">
-          <CredentialOffers />
-        </v-col>
-        <v-col md="6">
+        <v-col cols="12" sm="8" md="6">
+          <CredentialOffers class="mb-4"/>
+          <PresentationRequests class="mb-4"/>
           <Connections />
         </v-col>
-        <v-col md="3">
+        <v-col cols="12" sm="4" md="3">
           <Messages />
-        </v-col>
-        <v-col md="6">
-          <PresentationRequests />
         </v-col>
       </v-row>
       <v-row v-else>

@@ -11,50 +11,42 @@
           <ul>
             <li v-for="msg in ofbMessages" :key="msg.id" class="mb-4">
               <!-- Message Details -->
-              <h3>{{ msg.msg_type }}</h3>
+              <h3>
+                {{ msg.msg_type }}
+                <small class="ml-3" v-if="msg.action === 'Accepted'">
+                  <v-icon small color="success">check_circle </v-icon>
+                  {{ msg.action }}
+                </small>
+                <small class="ml-3" v-else-if="msg.action === 'Rejected'">
+                  <v-icon small color="error">cancel </v-icon>
+                  {{ msg.action }}
+                </small>
+              </h3>
               {{ msg.created_at | formatDateLong }} <br />
               <strong>From:</strong> {{ msg.sender.name }}<br />
               <strong>To:</strong> {{ msg.recipient.name }} <br />
 
               <!-- Accept, reject -->
-              <v-btn v-if="!msg.action" small color="primary" class="mr-4" @click="accept(msg)">
+              <v-btn
+                v-if="!msg.action"
+                small
+                color="primary"
+                class="white--text mr-4"
+                @click="accept(msg)"
+              >
                 Accept
               </v-btn>
-              <v-btn v-if="msg.action==='Accepted'" small color="info" class="mr-4">
-                {{ msg.action }}
-              </v-btn>
-              <v-btn v-if="!msg.action" small color="error" class="mr-4" @click="reject(msg)">
+              <v-btn
+                v-if="!msg.action"
+                small
+                color="error"
+                class="white--text mr-4"
+                @click="reject(msg)"
+              >
                 Reject
               </v-btn>
-              <v-btn v-if="msg.action==='Rejected'" small color="warning" class="mr-4">
-                {{ msg.action }}
-              </v-btn>
 
-              <!-- Dialog/btn to show raw json -->
-              <v-dialog v-model="dialog" width="800">
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn small text v-bind="attrs" v-on="on"> Details </v-btn>
-                </template>
-
-                <v-card>
-                  <v-card-title class="text-h5 grey lighten-2">
-                    Out of Band Message Details
-                  </v-card-title>
-
-                  <v-card-text>
-                    <pre>{{ JSON.stringify(msg, 0, 2) }}</pre>
-                  </v-card-text>
-
-                  <v-divider></v-divider>
-
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="primary" text @click="dialog = false">
-                      Close
-                    </v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
+              <v-btn small outlined @click="showRawMsg(msg)"> Details </v-btn>
             </li>
           </ul>
         </div>
@@ -63,6 +55,26 @@
         </div>
       </v-skeleton-loader>
     </v-card-text>
+
+    <!-- Dialog/btn to show raw json -->
+    <v-dialog v-model="dialog" width="1000">
+      <v-card>
+        <v-card-title class="text-h5 grey lighten-2">
+          Out of Band Message Details
+        </v-card-title>
+
+        <v-card-text>
+          <pre>{{ JSON.stringify(rawMsgToShow, 0, 2) }}</pre>
+        </v-card-text>
+
+        <v-divider></v-divider>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="dialog = false"> Close </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-card>
 </template>
 
@@ -75,6 +87,7 @@ export default {
     return {
       dialog: false,
       loading: true,
+      rawMsgToShow: {},
     };
   },
   computed: {
@@ -82,6 +95,10 @@ export default {
   },
   methods: {
     ...mapActions('alice', ['accept', 'reject', 'getOfbMessages']),
+    showRawMsg(msg) {
+      this.rawMsgToShow = msg;
+      this.dialog = true;
+    }
   },
   async mounted() {
     await this.getOfbMessages();

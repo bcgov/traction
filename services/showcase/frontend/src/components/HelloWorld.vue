@@ -74,7 +74,6 @@
         </a>
       </v-col>
 
-
       <v-col class="mb-5" cols="12" v-if="this.$vuetify.theme.dark">
         <h2 class="text-h5 font-weight-bold mb-3">Digital Trust Team</h2>
         <a

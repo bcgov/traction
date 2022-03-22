@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <v-card v-if="presentationRequests">
+  <div v-if="presentationRequests && presentationRequests.length">
+    <v-card>
       <v-card-title> Pending Presentation Requests</v-card-title>
       <v-card
         v-for="pr in pendingPresentationRequests"
@@ -30,7 +30,7 @@
         <v-btn
           small
           color="primary"
-          class="ma-4"
+          class="white--text ma-4"
           @click="accept(pr.presentation.id)"
         >
           Accept
@@ -38,17 +38,12 @@
         <v-btn
           small
           color="error"
-          class="ma-4"
+          class="white--text ma-4"
           @click="reject(pr.presentation.id)"
         >
           Reject
         </v-btn>
       </v-card>
-      <v-card-text>TBD</v-card-text>
-    </v-card>
-    <!--EMPTY-->
-    <v-card v-else>
-      <v-card-title> No Presentation Requests</v-card-title>
     </v-card>
   </div>
 </template>

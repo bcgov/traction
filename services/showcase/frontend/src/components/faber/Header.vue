@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col cols="6">
+    <v-col cols="12" sm="6">
       <div v-if="tenant.cred_def_id">
         <v-icon color="success">check_circle_outline</v-icon> Faber University
         is an Issuer
@@ -25,7 +25,7 @@
         </v-tooltip>
       </div>
     </v-col>
-    <v-col cols="6" class="text-right">
+    <v-col cols="12" sm="6" class="text-sm-right">
       <v-btn class="mr-4" icon @click="$emit('refresh')">
         <v-icon>refresh</v-icon>
       </v-btn>

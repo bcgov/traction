@@ -17,7 +17,12 @@
             {{ item.created_at | formatDateLong }}
           </template>
           <template #[`item.actions`]="{ item }">
-            <v-btn small color="primary" @click="selectSandbox(item.id)">
+            <v-btn
+              small
+              color="primary"
+              class="white--text"
+              @click="selectSandbox(item.id)"
+            >
               Use
             </v-btn>
           </template>
@@ -25,13 +30,14 @@
             <td :colspan="headers.length">
               <h3>Businesses in this sandbox</h3>
               <v-row>
-                <v-col v-for="lob in item.lobs" :key="lob.id">
+                <v-col v-for="lob in item.lobs" :key="lob.id" cols="12" md="4">
                   <p>
                     <strong>{{ lob.name }}</strong> <br />
                     ID: {{ lob.id }} <br />
                     Wallet ID: {{ lob.wallet_id }} <br />
                     Wallet Key: {{ lob.wallet_key }} <br />
-                    Traction Issue Enabled: {{ lob.traction_issue_enabled }} <br />
+                    Traction Issue Enabled: {{ lob.traction_issue_enabled }}
+                    <br />
                     Public DID: {{ lob.public_did }} <br />
                     Cred. Def ID: {{ lob.cred_def_id }}
                     <br />
@@ -45,6 +51,7 @@
           :loading="loading"
           :disabled="loading"
           color="primary"
+          class="white--text"
           outlined
           @click="fetchSandboxList"
         >
@@ -75,7 +82,7 @@
             <v-btn
               :disabled="!validNewSandbox"
               color="primary"
-              class="mx-4"
+              class="white--text mx-4"
               @click="create"
             >
               Create
