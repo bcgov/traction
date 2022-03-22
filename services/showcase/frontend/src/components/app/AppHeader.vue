@@ -1,11 +1,9 @@
 <template>
-  <header class="gov-header">
-    <!-- header for browser print only -->
-    <v-toolbar color="#003366" flat class="px-md-12 d-print-none">
+  <header class="traction-header">
+    <v-toolbar color="themeBg" flat class="px-md-12 d-print-none">
       <!-- Navbar content -->
       <a
         href="https://www2.gov.bc.ca"
-        data-test="btn-header-logo"
         v-if="this.$vuetify.theme.dark"
       >
         <v-img
@@ -25,6 +23,20 @@
           width="10rem"
         />
       </a>
+      <a
+        href="https://www2.gov.bc.ca"
+        v-else
+      >
+        <v-img
+          alt="B.C. Government Logo"
+          class="d-none d-md-flex"
+          contain
+          height="3rem"
+          src="@/assets/images/traction_logo.svg"
+          width="4rem"
+        />
+      </a>
+
       <h1
         data-test="btn-header-title"
         class="font-weight-bold text-h6 d-flex pl-4"
@@ -41,15 +53,9 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import PrintLogo from '@/assets/images/bc_logo_print.svg';
 
 export default {
-  name: 'BCGovHeader',
-  data() {
-    return {
-      PrintLogo: PrintLogo,
-    };
-  },
+  name: 'AppHeader',
   computed: {
     ...mapGetters('sandbox', ['currentSandbox']),
     appTitle() {
@@ -62,9 +68,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.gov-header {
+.traction-header {
   @media not print {
-    border-bottom: 2px solid #fcba19;
+    border-bottom: 2px solid var(--v-themeAccent-base);
   }
   .text-h6 {
     font-family: inherit !important;
