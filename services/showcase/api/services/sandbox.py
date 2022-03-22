@@ -15,6 +15,8 @@ from api.db.models.related import SandboxReadPopulated
 from api.db.models.sandbox import (
     SandboxCreate,
     Sandbox,
+    Governance,
+    SchemaDef,
 )
 from api.db.models.student import StudentCreate, StudentCreateFactory
 from api.db.models.line_of_business import LobCreate, Lob
@@ -77,6 +79,15 @@ async def create_new_sandbox(
     lobs_repo = LobRepository(db_session=db)
     applicant_repo = ApplicantRepository(db_session=db)
     student_repo = StudentRepository(db_session=db)
+    if not payload.governance:
+        schema_def = SchemaDef(
+            name="Education Degree",
+            attributes=["student_id", "name", "date", "degree", "age"],
+        )
+        payload.governance = Governance(
+            schema_def=schema_def,
+        )
+
     sandbox = await sandbox_repo.create(payload)
 
     # create traction tenants for our lobs

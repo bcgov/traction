@@ -7,7 +7,8 @@
         :key="pr.id"
         class="ma-3"
       >
-        <v-card-title class="grey lighten-3 mb-3">{{ pr.id }}</v-card-title>
+        <!-- this is not accurate, you will not know what the credential request is for... only in this specific demo -->
+        <v-card-title class="grey lighten-3 mb-3">{{ currentSandbox.governance.schema_def.name }}</v-card-title>
         <v-card-text>
           <template v-for="(value, key) in pr.presentation">
             <div :key="key">
@@ -59,6 +60,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('sandbox', ['currentSandbox']),
     ...mapGetters('alice', ['presentationRequests']),
     pendingPresentationRequests() {
       return this.presentationRequests.filter(

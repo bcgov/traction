@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.db.models import Lob
 from api.db.models.line_of_business import LobUpdate
-from api.db.repositories import LobRepository, StudentRepository
+from api.db.repositories import LobRepository, SandboxRepository, StudentRepository
 from api.db.repositories.job_applicant import ApplicantRepository
 from api.services.websockets import notifier
 from api.services import traction
@@ -58,6 +58,9 @@ async def handle_issuer(lob: Lob, payload: dict, db: AsyncSession):
         upd = LobUpdate(**lob.dict())
         await repo.update(upd)
 
+        sb_repo = SandboxRepository(db_session=db)
+        sb = await sb_repo.get_by_id(lob.sandbox_id)
+
         # TODO: remove this, only for one-time demo
         # now that we are an issuer, let's create a schema/creddefn
         version = format(
@@ -69,18 +72,22 @@ async def handle_issuer(lob: Lob, payload: dict, db: AsyncSession):
             )
         )
         schema = {
-            "schema_name": "degree schema",
+            "schema_name": sb.governance.schema_def.name,
             "schema_version": version,
-            "attributes": ["student_id", "name", "date", "degree", "age"],
+            "attributes": sb.governance.schema_def.attributes,
         }
         tag = f"degree_{version}"
-        resp = await traction.tenant_create_schema(
+        await traction.tenant_create_schema(
             wallet_id=lob.wallet_id,
             wallet_key=lob.wallet_key,
             schema=schema,
             cred_def_tag=tag,
         )
-        logger.info(f"create schema/cred def resp={resp}")
+
+        # update governance
+        sb.governance.schema_def.version = version
+        sb.governance.cred_def_tag = tag
+        await sb_repo.update(sb)
     return True
 
 
@@ -101,6 +108,12 @@ async def handle_schema(lob: Lob, payload: dict, db: AsyncSession):
             **lob.dict(),
         )
         await repo.update(upd)
+
+        sb_repo = SandboxRepository(db_session=db)
+        sb = await sb_repo.get_by_id(lob.sandbox_id)
+        sb.governance.schema_def.id = payload["schema_id"]
+        sb.governance.cred_def_id = payload["cred_def_id"]
+        await sb_repo.update(sb)
 
     return True
 
