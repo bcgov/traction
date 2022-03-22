@@ -101,3 +101,20 @@ class IssueCredentialsRepository(
                 f"{self._table.__name__}<cred_exch_id:{cred_exch_id}> does not exist"
             )
         return self._schema.from_orm(issue_cred)
+
+    async def get_by_cred_rev_reg_id(
+        self, rev_reg_id: str, cred_rev_id: str
+    ) -> Type[IssueCredentialRead]:
+        q = (
+            select(self._table)
+            .where(self._table.rev_reg_id == rev_reg_id)
+            .where(self._table.cred_rev_id == cred_rev_id)
+        )
+        result = await self._db_session.execute(q)
+        issue_cred = result.scalar_one_or_none()
+        if not issue_cred:
+            raise DoesNotExist(
+                f"{self._table.__name__}<rev_reg_id/cred_rev_id:"
+                f"{rev_reg_id}/{cred_rev_id}> does not exist"
+            )
+        return self._schema.from_orm(issue_cred)

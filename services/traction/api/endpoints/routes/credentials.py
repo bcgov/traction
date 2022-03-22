@@ -4,6 +4,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette import status
 
 from api.api_client_utils import get_api_client
 from api.db.errors import DoesNotExist
@@ -51,6 +52,8 @@ from api.services.base import BaseWorkflow
 
 from acapy_client.api.credentials_api import CredentialsApi
 from acapy_client.api.present_proof_v1_0_api import PresentProofV10Api
+from acapy_client.api.revocation_api import RevocationApi
+from acapy_client.model.revoke_request import RevokeRequest
 
 
 router = APIRouter()
@@ -58,6 +61,7 @@ logger = logging.getLogger(__name__)
 
 creds_api = CredentialsApi(api_client=get_api_client())
 pres_cred_v10_api = PresentProofV10Api(api_client=get_api_client())
+revoc_api = RevocationApi(api_client=get_api_client())
 
 
 class IssueCredentialData(BaseModel):
@@ -116,7 +120,8 @@ async def issuer_issue_credential(
         existing_connection = get_connection_with_alias(alias)
         if not existing_connection:
             raise HTTPException(
-                status_code=404, detail=f"Error alias {alias} does not exist"
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Error alias {alias} does not exist",
             )
         connection_id = existing_connection.connection_id
 
@@ -166,6 +171,49 @@ async def issuer_issue_credential(
     # get updated issuer info (should have workflow id etc.)
     issue_cred = await issue_repo.get_by_id(issue_cred.id)
     logger.debug(f">>> Updated (final) issue_cred: {issue_cred}")
+
+    issue = IssueCredentialData(
+        credential=issue_cred,
+        workflow=tenant_workflow,
+    )
+
+    return issue
+
+
+@router.post("/issuer/revoke", response_model=IssueCredentialData)
+async def issuer_revoke_credential(
+    cred_issue_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> IssueCredentialData:
+    issue_repo = IssueCredentialsRepository(db_session=db)
+    workflow_repo = TenantWorkflowsRepository(db_session=db)
+    issue_cred = await issue_repo.get_by_id(cred_issue_id)
+    if not (
+        issue_cred.issue_state == CredentialStateType.done
+        or issue_cred.issue_state == CredentialStateType.credential_acked
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Cannot revoke, credential is in state {issue_cred.issue_state}.",
+        )
+
+    # no fancy workflow stuff, just revoke
+    rev_req = RevokeRequest(
+        rev_reg_id=issue_cred.rev_reg_id,
+        cred_rev_id=issue_cred.cred_rev_id,
+        publish=True,
+    )
+    data = {"body": rev_req}
+    revoc_api.revocation_revoke_post(**data)
+
+    update_issue = IssueCredentialUpdate(
+        id=issue_cred.id,
+        workflow_id=issue_cred.workflow_id,
+        cred_exch_id=issue_cred.cred_exch_id,
+        issue_state=CredentialStateType.credential_revoked,
+    )
+    issue_cred = await issue_repo.update(update_issue)
+    tenant_workflow = await workflow_repo.get_by_id(issue_cred.workflow_id)
 
     issue = IssueCredentialData(
         credential=issue_cred,
@@ -572,7 +620,8 @@ async def verifier_request_credentials(
         existing_connection = get_connection_with_alias(alias)
         if not existing_connection:
             raise HTTPException(
-                status_code=404, detail=f"Error alias {alias} does not exist"
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Error alias {alias} does not exist",
             )
         connection_id = existing_connection.connection_id
 

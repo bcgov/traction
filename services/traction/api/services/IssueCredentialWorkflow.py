@@ -114,6 +114,30 @@ class IssueCredentialWorkflow(BaseWorkflow):
                     return None
 
                 return None
+
+        elif webhook_message["topic"] == WebhookTopicType.issuer_cred_rev:
+            # update credential status to revoked
+            logger.warn(f">>> got a revocation notification: {webhook_message}")
+            rev_reg_id = webhook_message["payload"]["rev_reg_id"]
+            cred_rev_id = webhook_message["payload"]["cred_rev_id"]
+            issue_cred = await issue_repo.get_by_cred_rev_reg_id(
+                rev_reg_id, cred_rev_id
+            )
+            if issue_cred:
+                update_issue = IssueCredentialUpdate(
+                    id=issue_cred.id,
+                    workflow_id=issue_cred.workflow_id,
+                    issue_state=CredentialStateType.credential_revoked,
+                    cred_exch_id=issue_cred.cred_exch_id,
+                )
+                issue_cred = await issue_repo.update(update_issue)
+
+                logger.info(f">>> sending webhook with cred revoc: {issue_cred}")
+                await TenantWorkflowNotifier(profile.db).issuer_workflow_cred_revoc(
+                    issue_cred
+                )
+            return None
+
         else:
             return None
 

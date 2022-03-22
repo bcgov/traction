@@ -37,6 +37,7 @@ class CredentialStateType(str, Enum):
     done = "done"
     abandoned = "abandoned"
     error = "error"
+    credential_revoked = "credential_revoked"
 
 
 class PresentCredentialProtocolType(str, Enum):
