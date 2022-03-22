@@ -24,7 +24,7 @@
 
 <script>
 export default {
-  name: 'BCGovNavBar'
+  name: 'AppNavBar',
 };
 </script>
 
@@ -32,8 +32,8 @@ export default {
 .navigation-main {
   box-shadow: 0 6px 8px -4px #b3b1b3;
   display: flex;
-  color: #fcba19;
-  background-color: #38598a;
+  color: var(--v-themeAccent-base);
+  background-color: var(--v-themeBgSecond-base);
   width: 100%;
   -webkit-box-shadow: 0 6px 8px -4px #b3b1b3;
   -moz-box-shadow: 0 6px 8px -4px #b3b1b3;
@@ -73,8 +73,8 @@ export default {
       }
 
       .router-link-exact-active {
-        background-color: #7ba2cc80;
-        border-bottom: 2px solid #fcba19;
+        background-color: var(--v-themeBgSecond-lighten2);
+        border-bottom: 2px solid var(--v-themeAccent-base);
         font-weight: bold;
       }
     }

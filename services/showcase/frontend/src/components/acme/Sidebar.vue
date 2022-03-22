@@ -3,7 +3,7 @@
     <v-navigation-drawer permanent class="mx-0">
       <v-system-bar color="rgba(42,80,82)" />
       <v-list>
-        <v-list-item>
+        <v-list-item class="d-none d-sm-flex">
           <v-avatar color="rgba(42,80,82)">
             <v-icon dark>mdi-account-tie</v-icon>
           </v-avatar>
@@ -23,7 +23,7 @@
       <v-divider></v-divider>
       <v-list nav>
         <v-list-item-group v-model="selectedItem" color="primary">
-          <v-list-item v-for="(item, i) in items" :key="i">
+          <v-list-item v-for="(item, i) in items" :key="i" :class="item.class">
             <v-list-item-icon>
               <v-icon v-text="item.icon"></v-icon>
             </v-list-item-icon>
@@ -43,14 +43,19 @@ export default {
   name: 'AcmeSidebar',
   data: () => ({
     selectedItem: 1,
+    // All just for show, doesn't do anything
     items: [
-      { text: 'Employees', icon: 'mdi-card-account-details' },
+      {
+        text: 'Employees',
+        icon: 'mdi-card-account-details',
+        class: 'd-none d-sm-flex',
+      },
       { text: 'Job Applicants', icon: 'mdi-account-multiple' },
-      { text: 'Starred', icon: 'mdi-star' },
-      { text: 'Recent', icon: 'mdi-history' },
-      { text: 'Offline', icon: 'mdi-check-circle' },
-      { text: 'Uploads', icon: 'mdi-upload' },
-      { text: 'Backups', icon: 'mdi-cloud-upload' },
+      { text: 'Starred', icon: 'mdi-star', class: 'd-none d-sm-flex' },
+      { text: 'Recent', icon: 'mdi-history', class: 'd-none d-sm-flex' },
+      { text: 'Offline', icon: 'mdi-check-circle', class: 'd-none d-sm-flex' },
+      { text: 'Uploads', icon: 'mdi-upload', class: 'd-none d-sm-flex' },
+      { text: 'Backups', icon: 'mdi-cloud-upload', class: 'd-none d-sm-flex' },
     ],
   }),
 };

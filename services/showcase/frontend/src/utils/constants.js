@@ -9,6 +9,12 @@ export const ApiRoutes = Object.freeze({
   WEBHOOK: '/webhook'
 });
 
+/** For the out of band message status texts ('action' field) */
+export const MessageActions = Object.freeze({
+  ACCEPTED: 'Accepted',
+  REJECTED: 'Rejected'
+});
+
 /** Corresponds to vuetify alert classes for notification types */
 export const NotificationTypes = Object.freeze({
   ERROR: 'error',

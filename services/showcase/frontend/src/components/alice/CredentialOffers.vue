@@ -37,7 +37,7 @@
           <v-btn
             small
             color="primary"
-            class="ma-4"
+            class="white--text ma-4"
             @click="accept(co.credential.id)"
           >
             Accept
@@ -45,7 +45,7 @@
           <v-btn
             small
             color="error"
-            class="ma-4"
+            class="white--text ma-4"
             @click="reject(co.credential.id)"
           >
             Reject

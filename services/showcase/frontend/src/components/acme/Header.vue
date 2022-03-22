@@ -1,5 +1,5 @@
 <template>
-  <v-toolbar dark flat prominent src="@/assets/images/computer.jpg">
+  <v-toolbar light flat prominent src="@/assets/images/computer.jpg">
     <template v-slot:img="{ props }">
       <v-img
         v-bind="props"
@@ -8,7 +8,7 @@
     </template>
     <v-app-bar-nav-icon></v-app-bar-nav-icon>
 
-    <v-toolbar-title>
+    <v-toolbar-title color="white">
       <v-icon x-large color="black">mdi-alpha-a-box</v-icon> ACME Corporation HR
       Portal
     </v-toolbar-title>
