@@ -2,7 +2,7 @@
   <div class="alice-profile">
     <v-container>
       <v-app-bar shaped>
-        <v-icon x-large color="blue">badge</v-icon>
+        <v-icon x-large color="blue">mdi-face-woman-profile</v-icon>
         <h2 class="ml-4">Personal Profile</h2>
         <v-spacer></v-spacer>
 
