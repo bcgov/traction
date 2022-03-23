@@ -1,6 +1,6 @@
 # Build the frontend Vue app with usual vue cli build
 # Vue Build Container
-FROM node:16.13.0-alpine as VUE
+FROM node:16.14.2-alpine as VUE
 WORKDIR /frontend
 COPY frontend .
 RUN npm install && npm run build
