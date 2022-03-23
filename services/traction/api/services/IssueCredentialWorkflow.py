@@ -75,8 +75,11 @@ class IssueCredentialWorkflow(BaseWorkflow):
         if webhook_message["topic"] == WebhookTopicType.issue_credential:
             try:
                 # look up issue_cred based on the cred exchange id
+                wallet_id = get_from_context("TENANT_WALLET_ID")
                 cred_exch_id = webhook_message["payload"]["credential_exchange_id"]
-                issue_cred = await issue_repo.get_by_cred_exch_id(cred_exch_id)
+                issue_cred = await issue_repo.get_by_cred_exch_id(
+                    wallet_id, cred_exch_id
+                )
                 logger.warn(f">>> found corresponding cred issue: {issue_cred}")
                 return issue_cred.workflow_id
             except DoesNotExist:
@@ -118,10 +121,11 @@ class IssueCredentialWorkflow(BaseWorkflow):
         elif webhook_message["topic"] == WebhookTopicType.issuer_cred_rev:
             # update credential status to revoked
             logger.warn(f">>> got a revocation notification: {webhook_message}")
+            wallet_id = get_from_context("TENANT_WALLET_ID")
             rev_reg_id = webhook_message["payload"]["rev_reg_id"]
             cred_rev_id = webhook_message["payload"]["cred_rev_id"]
             issue_cred = await issue_repo.get_by_cred_rev_reg_id(
-                rev_reg_id, cred_rev_id
+                wallet_id, rev_reg_id, cred_rev_id
             )
             if issue_cred:
                 update_issue = IssueCredentialUpdate(
@@ -154,7 +158,10 @@ class IssueCredentialWorkflow(BaseWorkflow):
         return self._issue_repo
 
     async def run_step(self, webhook_message: dict = None) -> TenantWorkflowRead:
-        issue_cred = await self.issue_repo.get_by_workflow_id(self.tenant_workflow.id)
+        wallet_id = get_from_context("TENANT_WALLET_ID")
+        issue_cred = await self.issue_repo.get_by_workflow_id(
+            wallet_id, self.tenant_workflow.id
+        )
 
         # if workflow is "pending" then we need to start it
         # called direct from the tenant admin api so the tenant is "in context"
@@ -216,7 +223,10 @@ class IssueCredentialWorkflow(BaseWorkflow):
         self, webhook_message: dict = None, error_msg: str = None
     ) -> TenantWorkflowRead:
         # send a problem report with the given error
-        issue_cred = await self.issue_repo.get_by_workflow_id(self.tenant_workflow.id)
+        wallet_id = get_from_context("TENANT_WALLET_ID")
+        issue_cred = await self.issue_repo.get_by_workflow_id(
+            wallet_id, self.tenant_workflow.id
+        )
         await self.complete_with_problem_report(issue_cred, webhook_message, error_msg)
 
         # then cancel te workflow

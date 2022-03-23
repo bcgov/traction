@@ -17,7 +17,10 @@ from tests.test_utils import (
 from api.db.models.tenant import TenantRead
 from api.db.models.tenant_issuer import TenantIssuerRead
 from api.endpoints.models.innkeeper import CheckInResponse
-from api.endpoints.models.credentials import CredPrecisForProof
+from api.endpoints.models.credentials import (
+    CredPrecisForProof,
+    CredentialStateType,
+)
 
 
 default_retry_attempts = int(os.environ.get("DEFAULT_RETRY_ATTEMPTS", "11"))
@@ -411,3 +414,86 @@ def build_proof_presentation(
                 break
 
     return proof_presentation
+
+
+async def revoke_credential(
+    app_client: AsyncClient,
+    t1_headers: dict,
+    t2_headers: dict,
+    cred_issue_id: str = None,
+    rev_reg_id: str = None,
+    cred_rev_id: str = None,
+    verify_revoc: bool = True,
+    issuer_workflow_id: str = None,
+    holder_workflow_id: str = None,
+):
+    params = {}
+    if cred_issue_id:
+        params = {
+            "cred_issue_id": cred_issue_id,
+        }
+    else:
+        params = {
+            "rev_reg_id": rev_reg_id,
+            "cred_rev_id": cred_rev_id,
+        }
+    print(">>> revoke credential:", params)
+    revoc_resp = await app_client.post(
+        "/tenant/v1/credentials/issuer/revoke",
+        headers=t1_headers,
+        params=params,
+    )
+    assert revoc_resp.status_code == 200, revoc_resp.content
+
+    # check the issuer and holder credential status
+    print(">>> check issuer status")
+    if verify_revoc and issuer_workflow_id:
+        issue_data = {"credential": {"issue_state": "n/a"}}
+        i = default_retry_attempts
+        while i > 0 and (
+            not issue_data["credential"]["issue_state"]
+            == CredentialStateType.credential_revoked
+        ):
+            await asyncio.sleep(default_pause_between_attempts)
+            params = {"workflow_id": issuer_workflow_id}
+            issue_resp = await app_client.get(
+                "/tenant/v1/credentials/issuer/issue",
+                headers=t1_headers,
+                params=params,
+            )
+            assert issue_resp.status_code == 200, issue_resp.content
+            issue_datas = json.loads(issue_resp.content)
+            assert 1 == len(issue_datas), issue_resp.content
+            issue_data = issue_datas[0]
+            print(">>> check issuer status:", issue_data)
+            i -= 1
+        assert (
+            issue_data["credential"]["issue_state"]
+            == CredentialStateType.credential_revoked
+        ), issue_data["credential"]["issue_state"]
+
+    print(">>> check holder status")
+    if verify_revoc and holder_workflow_id:
+        offer_data = {"credential": {"issue_state": "n/a"}}
+        i = default_retry_attempts
+        while i > 0 and (
+            not offer_data["credential"]["issue_state"]
+            == CredentialStateType.credential_revoked
+        ):
+            await asyncio.sleep(default_pause_between_attempts)
+            params = {"workflow_id": holder_workflow_id}
+            offer_resp = await app_client.get(
+                "/tenant/v1/credentials/holder/offer",
+                headers=t2_headers,
+                params=params,
+            )
+            assert offer_resp.status_code == 200, offer_resp.content
+            offer_datas = json.loads(offer_resp.content)
+            assert 1 == len(offer_datas), offer_resp.content
+            offer_data = offer_datas[0]
+            print(">>> check offer status:", offer_data)
+            i -= 1
+        assert (
+            offer_data["credential"]["issue_state"]
+            == CredentialStateType.credential_revoked
+        ), offer_data["credential"]["issue_state"]

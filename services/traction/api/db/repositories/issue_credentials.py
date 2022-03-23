@@ -80,8 +80,14 @@ class IssueCredentialsRepository(
         items = result.scalars().all()
         return parse_obj_as(List[IssueCredentialRead], items)
 
-    async def get_by_workflow_id(self, workflow_id: UUID) -> Type[IssueCredentialRead]:
-        q = select(self._table).where(self._table.workflow_id == workflow_id)
+    async def get_by_workflow_id(
+        self, wallet_id: UUID, workflow_id: UUID
+    ) -> Type[IssueCredentialRead]:
+        q = (
+            select(self._table)
+            .where(self._table.wallet_id == wallet_id)
+            .where(self._table.workflow_id == workflow_id)
+        )
         result = await self._db_session.execute(q)
         issue_cred = result.scalar_one_or_none()
         if not issue_cred:
@@ -91,9 +97,13 @@ class IssueCredentialsRepository(
         return self._schema.from_orm(issue_cred)
 
     async def get_by_cred_exch_id(
-        self, cred_exch_id: UUID
+        self, wallet_id: UUID, cred_exch_id: UUID
     ) -> Type[IssueCredentialRead]:
-        q = select(self._table).where(self._table.cred_exch_id == cred_exch_id)
+        q = (
+            select(self._table)
+            .where(self._table.wallet_id == wallet_id)
+            .where(self._table.cred_exch_id == cred_exch_id)
+        )
         result = await self._db_session.execute(q)
         issue_cred = result.scalar_one_or_none()
         if not issue_cred:
@@ -103,10 +113,11 @@ class IssueCredentialsRepository(
         return self._schema.from_orm(issue_cred)
 
     async def get_by_cred_rev_reg_id(
-        self, rev_reg_id: str, cred_rev_id: str
+        self, wallet_id: UUID, rev_reg_id: str, cred_rev_id: str
     ) -> Type[IssueCredentialRead]:
         q = (
             select(self._table)
+            .where(self._table.wallet_id == wallet_id)
             .where(self._table.rev_reg_id == rev_reg_id)
             .where(self._table.cred_rev_id == cred_rev_id)
         )

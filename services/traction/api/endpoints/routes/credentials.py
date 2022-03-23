@@ -77,15 +77,29 @@ class PresentCredentialData(BaseModel):
 @router.get("/issuer/issue", response_model=List[IssueCredentialData])
 async def issuer_get_issue_credentials(
     state: TenantWorkflowStateType | None = None,
+    workflow_id: str | None = None,
+    cred_issue_id: str | None = None,
     db: AsyncSession = Depends(get_db),
 ) -> List[IssueCredentialData]:
     # this should take some query params, sorting and paging params...
     wallet_id = get_from_context("TENANT_WALLET_ID")
     issue_repo = IssueCredentialsRepository(db_session=db)
     workflow_repo = TenantWorkflowsRepository(db_session=db)
-    issue_creds = await issue_repo.find_by_wallet_id_and_role(
-        wallet_id, CredentialRoleType.issuer
-    )
+    issue_creds = []
+    if workflow_id:
+        issue_cred = await issue_repo.get_by_workflow_id(wallet_id, workflow_id)
+        issue_creds = [
+            issue_cred,
+        ]
+    elif cred_issue_id:
+        issue_cred = await issue_repo.get_by_id(wallet_id, cred_issue_id)
+        issue_creds = [
+            issue_cred,
+        ]
+    else:
+        issue_creds = await issue_repo.find_by_wallet_id_and_role(
+            wallet_id, CredentialRoleType.issuer
+        )
     issues = []
     for issue_cred in issue_creds:
         tenant_workflow = None
@@ -182,12 +196,21 @@ async def issuer_issue_credential(
 
 @router.post("/issuer/revoke", response_model=IssueCredentialData)
 async def issuer_revoke_credential(
-    cred_issue_id: str,
+    cred_issue_id: str | None = None,
+    rev_reg_id: str | None = None,
+    cred_rev_id: str | None = None,
     db: AsyncSession = Depends(get_db),
 ) -> IssueCredentialData:
+    wallet_id = get_from_context("TENANT_WALLET_ID")
     issue_repo = IssueCredentialsRepository(db_session=db)
     workflow_repo = TenantWorkflowsRepository(db_session=db)
-    issue_cred = await issue_repo.get_by_id(cred_issue_id)
+    issue_cred = None
+    if cred_issue_id:
+        issue_cred = await issue_repo.get_by_id(cred_issue_id)
+    else:
+        issue_cred = await issue_repo.get_by_cred_rev_reg_id(
+            wallet_id, rev_reg_id, cred_rev_id
+        )
     if not (
         issue_cred.issue_state == CredentialStateType.done
         or issue_cred.issue_state == CredentialStateType.credential_acked
@@ -226,15 +249,29 @@ async def issuer_revoke_credential(
 @router.get("/holder/offer", response_model=List[IssueCredentialData])
 async def holder_get_offer_credentials(
     state: TenantWorkflowStateType | None = None,
+    workflow_id: str | None = None,
+    cred_issue_id: str | None = None,
     db: AsyncSession = Depends(get_db),
 ) -> List[IssueCredentialData]:
     # this should take some query params, sorting and paging params...
     wallet_id = get_from_context("TENANT_WALLET_ID")
     issue_repo = IssueCredentialsRepository(db_session=db)
     workflow_repo = TenantWorkflowsRepository(db_session=db)
-    issue_creds = await issue_repo.find_by_wallet_id_and_role(
-        wallet_id, CredentialRoleType.holder
-    )
+    issue_creds = []
+    if workflow_id:
+        issue_cred = await issue_repo.get_by_workflow_id(wallet_id, workflow_id)
+        issue_creds = [
+            issue_cred,
+        ]
+    elif cred_issue_id:
+        issue_cred = await issue_repo.get_by_id(wallet_id, cred_issue_id)
+        issue_creds = [
+            issue_cred,
+        ]
+    else:
+        issue_creds = await issue_repo.find_by_wallet_id_and_role(
+            wallet_id, CredentialRoleType.holder
+        )
     issues = []
     for issue_cred in issue_creds:
         tenant_workflow = None
