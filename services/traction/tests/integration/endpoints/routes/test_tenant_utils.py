@@ -437,7 +437,6 @@ async def revoke_credential(
             "rev_reg_id": rev_reg_id,
             "cred_rev_id": cred_rev_id,
         }
-    print(">>> revoke credential:", params)
     revoc_resp = await app_client.post(
         "/tenant/v1/credentials/issuer/revoke",
         headers=t1_headers,
@@ -446,7 +445,6 @@ async def revoke_credential(
     assert revoc_resp.status_code == 200, revoc_resp.content
 
     # check the issuer and holder credential status
-    print(">>> check issuer status")
     if verify_revoc and issuer_workflow_id:
         issue_data = {"credential": {"issue_state": "n/a"}}
         i = default_retry_attempts
@@ -465,14 +463,12 @@ async def revoke_credential(
             issue_datas = json.loads(issue_resp.content)
             assert 1 == len(issue_datas), issue_resp.content
             issue_data = issue_datas[0]
-            print(">>> check issuer status:", issue_data)
             i -= 1
         assert (
             issue_data["credential"]["issue_state"]
             == CredentialStateType.credential_revoked
         ), issue_data["credential"]["issue_state"]
 
-    print(">>> check holder status")
     if verify_revoc and holder_workflow_id:
         offer_data = {"credential": {"issue_state": "n/a"}}
         i = default_retry_attempts
@@ -491,7 +487,6 @@ async def revoke_credential(
             offer_datas = json.loads(offer_resp.content)
             assert 1 == len(offer_datas), offer_resp.content
             offer_data = offer_datas[0]
-            print(">>> check offer status:", offer_data)
             i -= 1
         assert (
             offer_data["credential"]["issue_state"]

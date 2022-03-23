@@ -87,7 +87,7 @@ class CredentialPreview(BaseSchema):
 class ProofReqAttr(BaseSchema):
     name: str | None = None
     names: list[str] | None = None
-    non_revoked: str | None = None
+    non_revoked: dict | None = None
     restrictions: list[dict] | None = None
 
     def toJSON(self):
@@ -105,7 +105,7 @@ class ProofReqPred(BaseSchema):
     name: str
     p_type: PTypeType
     p_value: int
-    non_revoked: str | None = None
+    non_revoked: dict | None = None
     restrictions: list[dict]
 
     def toJSON(self):

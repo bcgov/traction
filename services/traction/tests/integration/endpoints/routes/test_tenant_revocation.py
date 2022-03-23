@@ -2,6 +2,7 @@ import pytest
 import json
 from typing import List
 import asyncio
+import time
 
 from httpx import AsyncClient, ReadTimeout
 from pydantic import parse_obj_as
@@ -34,7 +35,14 @@ pytestmark = pytest.mark.asyncio
 
 
 @pytest.mark.integtest
-async def test_tenants_issue_cred_req_proof_revoke(app_client: AsyncClient) -> None:
+@pytest.mark.parametrize(
+    "prove_non_revocation",
+    [
+        False,
+        True,
+    ],
+)
+async def test_tenants_issue_cred_req_proof_revoke(prove_non_revocation, app_client: AsyncClient) -> None:
     # get a token
     bearer_token = await innkeeper_auth(app_client)
     ik_headers = innkeeper_headers(bearer_token)
@@ -119,6 +127,15 @@ async def test_tenants_issue_cred_req_proof_revoke(app_client: AsyncClient) -> N
             }
         ],
     }
+    if prove_non_revocation:
+        # pause to ensure we get a clean non-revoc interval
+        await asyncio.sleep(2)
+        proof_req["requested_attributes"][0]["non_revocation"] = {
+            "to": int(time.time())
+        }
+        proof_req["requested_predicates"][0]["non_revocation"] = {
+            "to": int(time.time())
+        }
     await request_credential_presentation(
         app_client, t1_headers, "alice", t2_headers, proof_req
     )
@@ -136,7 +153,17 @@ async def test_tenants_issue_cred_req_proof_revoke(app_client: AsyncClient) -> N
         holder_workflow_id=holder_workflow_id,
     )
 
-    # proof should still be valid (we're not checking revocation)
+    if prove_non_revocation:
+        # pause to ensure we get a clean non-revoc interval
+        await asyncio.sleep(3)
+        proof_req["requested_attributes"][0]["non_revocation"] = {
+            "to": int(time.time())
+        }
+        proof_req["requested_predicates"][0]["non_revocation"] = {
+            "to": int(time.time())
+        }
+
+    # proof should still be valid (unless we're checking non-revocation)
     await request_credential_presentation(
         app_client,
         t1_headers,
