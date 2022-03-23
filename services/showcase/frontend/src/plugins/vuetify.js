@@ -3,6 +3,8 @@ import Vuetify from 'vuetify/lib/framework';
 
 Vue.use(Vuetify);
 
+// Note below the "dark theme" is overloaded to be the optional "BC Gov" theme
+// So it's not really "dark" and as such has been normalized to the same base as the light theme, see scss/variables.scss
 export default new Vuetify({
   defaultAssets: {
     font: true,
@@ -24,7 +26,19 @@ export default new Vuetify({
         error: '#D8292F',
         info: '#2196F3',
         success: '#2E8540',
-        warning: '#FFC107'
+        warning: '#FFC107',
+        // Custom vars
+        themeBg: '#292e34',
+        themeBgSecond: '#393f45',
+        themeAccent:'#39a5dc'
+      },
+      dark: {
+        primary: '#003366',
+        anchor: '#1A5A96',
+        // Custom vars - BC Gov colors
+        themeBg: '#003366',
+        themeBgSecond: '#38598A',
+        themeAccent:'#FCBA19'
       }
     }
   }

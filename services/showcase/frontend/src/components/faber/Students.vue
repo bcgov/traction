@@ -3,6 +3,7 @@
     <h2 class="my-4">Registered Student List</h2>
     <!-- table header -->
     <v-data-table
+      class="px-md-16"
       :headers="headers"
       item-key="id"
       :items="studentList"
@@ -222,7 +223,6 @@ export default {
     table {
       border: 1px solid #173840;
     }
-    padding: 0 5em;
     background-color: transparent !important;
     thead {
       background-color: #173840;

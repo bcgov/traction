@@ -11,11 +11,11 @@
         />
       </div>
       <v-row v-else>
-        <v-col cols="4" lg="2">
+        <v-col cols="12" sm="4" md="3" lg="2">
           <Sidebar />
         </v-col>
-        <v-col cols="8" lg="7"> <Applicants /></v-col>
-        <v-col cols="6" lg="3">
+        <v-col cols="12" sm="8" md="" lg="7"> <Applicants /></v-col>
+        <v-col cols="12" md="5" lg="3">
           <SelectedApplicant v-if="selectedApplicant" />
         </v-col>
       </v-row>

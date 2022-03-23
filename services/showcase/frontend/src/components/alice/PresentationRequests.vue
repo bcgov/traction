@@ -1,13 +1,14 @@
 <template>
-  <div>
-    <v-card v-if="presentationRequests">
+  <div v-if="presentationRequests && presentationRequests.length">
+    <v-card>
       <v-card-title> Pending Presentation Requests</v-card-title>
       <v-card
         v-for="pr in pendingPresentationRequests"
         :key="pr.id"
         class="ma-3"
       >
-        <v-card-title class="grey lighten-3 mb-3">{{ pr.id }}</v-card-title>
+        <!-- this is not accurate, you will not know what the credential request is for... only in this specific demo -->
+        <v-card-title class="grey lighten-3 mb-3">{{ currentSandbox.governance.schema_def.name }}</v-card-title>
         <v-card-text>
           <template v-for="(value, key) in pr.presentation">
             <div :key="key">
@@ -30,7 +31,7 @@
         <v-btn
           small
           color="primary"
-          class="ma-4"
+          class="white--text ma-4"
           @click="accept(pr.presentation.id)"
         >
           Accept
@@ -38,17 +39,12 @@
         <v-btn
           small
           color="error"
-          class="ma-4"
+          class="white--text ma-4"
           @click="reject(pr.presentation.id)"
         >
           Reject
         </v-btn>
       </v-card>
-      <v-card-text>TBD</v-card-text>
-    </v-card>
-    <!--EMPTY-->
-    <v-card v-else>
-      <v-card-title> No Presentation Requests</v-card-title>
     </v-card>
   </div>
 </template>
@@ -64,6 +60,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('sandbox', ['currentSandbox']),
     ...mapGetters('alice', ['presentationRequests']),
     pendingPresentationRequests() {
       return this.presentationRequests.filter(

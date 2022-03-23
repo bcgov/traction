@@ -11,7 +11,7 @@
       <v-card-text>
         <v-card v-for="co in pendingCredentialOffers" :key="co.id" class="ma-3">
           <v-card-title class="grey lighten-3 mb-3">{{
-            co.credential.cred_def_id
+            currentSandbox.governance.schema_def.name
           }}</v-card-title>
           <v-card-text>
             <template
@@ -37,7 +37,7 @@
           <v-btn
             small
             color="primary"
-            class="ma-4"
+            class="white--text ma-4"
             @click="accept(co.credential.id)"
           >
             Accept
@@ -45,7 +45,7 @@
           <v-btn
             small
             color="error"
-            class="ma-4"
+            class="white--text ma-4"
             @click="reject(co.credential.id)"
           >
             Reject
@@ -67,6 +67,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('sandbox', ['currentSandbox']),
     ...mapGetters('alice', ['credentialOffers']),
     pendingCredentialOffers() {
       return this.credentialOffers.filter(
