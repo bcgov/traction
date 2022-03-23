@@ -199,6 +199,7 @@ async def issuer_revoke_credential(
     cred_issue_id: str | None = None,
     rev_reg_id: str | None = None,
     cred_rev_id: str | None = None,
+    comment: str | None = None,
     db: AsyncSession = Depends(get_db),
 ) -> IssueCredentialData:
     wallet_id = get_from_context("TENANT_WALLET_ID")
@@ -222,9 +223,12 @@ async def issuer_revoke_credential(
 
     # no fancy workflow stuff, just revoke
     rev_req = RevokeRequest(
+        comment=comment if comment else "",
+        connection_id=str(issue_cred.connection_id),
         rev_reg_id=issue_cred.rev_reg_id,
         cred_rev_id=issue_cred.cred_rev_id,
         publish=True,
+        notify=True,
     )
     data = {"body": rev_req}
     revoc_api.revocation_revoke_post(**data)

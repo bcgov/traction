@@ -83,6 +83,8 @@ services:
         --auto-request-endorsement \
         --auto-write-transactions \
         --auto-create-revocation-transactions \
+        --notify-revocation \
+        --monitor-revocation-notification \
         ",
       ]
     volumes:

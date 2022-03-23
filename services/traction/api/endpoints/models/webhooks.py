@@ -18,7 +18,7 @@ class WebhookTopicType(str, Enum):
     present_proof_v2_0 = "present_proof_v2_0"
     endorse_transaction = "endorse_transaction"
     revocation_registry = "revocation_registry"
-    revocation_notification = "revocation_notification"
+    revocation_notification = "revocation-notification"
     problem_report = "problem_report"
 
 

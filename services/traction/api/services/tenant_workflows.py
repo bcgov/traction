@@ -22,6 +22,7 @@ from api.endpoints.models.webhooks import (
     WEBHOOK_PRESENT_LISTENER_PATTERN,
     WEBHOOK_PROBLEM_REPORT_LISTENER_PATTERN,
     WEBHOOK_ISSUER_CRED_REV_NOTIFY_LISTENER_PATTERN,
+    WEBHOOK_REVOC_NOTIFY_LISTENER_PATTERN,
 )
 from api.services.base import BaseWorkflow
 from api.services.IssuerWorkflow import IssuerWorkflow
@@ -91,7 +92,7 @@ def subscribe_workflow_events():
         IssueCredentialWorkflow.handle_workflow_events,
     )
     settings.EVENT_BUS.subscribe(
-        WEBHOOK_ISSUER_CRED_REV_NOTIFY_LISTENER_PATTERN,
+        WEBHOOK_REVOC_NOTIFY_LISTENER_PATTERN,
         IssueCredentialWorkflow.handle_workflow_events,
     )
     settings.EVENT_BUS.subscribe(

@@ -118,12 +118,16 @@ class IssueCredentialWorkflow(BaseWorkflow):
 
                 return None
 
-        elif webhook_message["topic"] == WebhookTopicType.issuer_cred_rev:
+        elif webhook_message["topic"] == WebhookTopicType.revocation_notification:
             # update credential status to revoked
             logger.warn(f">>> got a revocation notification: {webhook_message}")
             wallet_id = get_from_context("TENANT_WALLET_ID")
-            rev_reg_id = webhook_message["payload"]["rev_reg_id"]
-            cred_rev_id = webhook_message["payload"]["cred_rev_id"]
+            comment = webhook_message["payload"].get("comment")
+            thread_id = webhook_message["payload"].get("thread_id")
+            # should be "indy::<rev_reg_id>::<cred_rev_id>"
+            thread_id_parts = thread_id.split("::")
+            rev_reg_id = thread_id_parts[1]
+            cred_rev_id = thread_id_parts[2]
             issue_cred = await issue_repo.get_by_cred_rev_reg_id(
                 wallet_id, rev_reg_id, cred_rev_id
             )
