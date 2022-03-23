@@ -142,7 +142,7 @@ class IssueCredentialWorkflow(BaseWorkflow):
 
                 logger.info(f">>> sending webhook with cred revoc: {issue_cred}")
                 await TenantWorkflowNotifier(profile.db).issuer_workflow_cred_revoc(
-                    issue_cred
+                    issue_cred, comment
                 )
             return None
 
