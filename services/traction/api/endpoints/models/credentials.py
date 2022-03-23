@@ -115,6 +115,7 @@ class ProofReqPred(BaseSchema):
 class ProofRequest(BaseSchema):
     requested_attributes: list[ProofReqAttr]
     requested_predicates: list[ProofReqPred]
+    non_revoked: dict | None = None
 
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True)

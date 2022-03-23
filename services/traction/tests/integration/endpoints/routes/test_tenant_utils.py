@@ -308,6 +308,7 @@ async def request_credential_presentation(
     proof_req: dict,
     pres_protocol: str = "v1.0",
     accept_request: bool = True,
+    will_validate: bool = True,
 ) -> (str, str):
     """Request a presentation from t1 (verifier) to t2 (holder)."""
 
@@ -380,6 +381,20 @@ async def request_credential_presentation(
         "/tenant/v1/credentials/holder/request",
         workflow_id=holder_workflow_id,
     )
+
+    # get the verifier-received proof and validate
+    params = {"workflow_id": pres_req_workflow_id}
+    recd_pres = await app_client.get(
+        "/tenant/v1/credentials/verifier/request",
+        headers=t1_headers,
+        params=params,
+    )
+    assert recd_pres.status_code == 200, recd_pres.content
+    pres_data = json.loads(recd_pres.content)
+    assert 1 == len(pres_data)
+    presentation = json.loads(pres_data[0]["presentation"]["presentation"])
+    verified = "true" if will_validate else "false"
+    assert verified == presentation["verified"], recd_pres.content
 
     return pres_req_workflow_id, holder_workflow_id
 

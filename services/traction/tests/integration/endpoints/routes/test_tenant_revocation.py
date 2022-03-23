@@ -42,7 +42,9 @@ pytestmark = pytest.mark.asyncio
         True,
     ],
 )
-async def test_tenants_issue_cred_req_proof_revoke(prove_non_revocation, app_client: AsyncClient) -> None:
+async def test_tenants_issue_cred_req_proof_revoke(
+    prove_non_revocation, app_client: AsyncClient
+) -> None:
     # get a token
     bearer_token = await innkeeper_auth(app_client)
     ik_headers = innkeeper_headers(bearer_token)
@@ -130,14 +132,17 @@ async def test_tenants_issue_cred_req_proof_revoke(prove_non_revocation, app_cli
     if prove_non_revocation:
         # pause to ensure we get a clean non-revoc interval
         await asyncio.sleep(2)
-        proof_req["requested_attributes"][0]["non_revocation"] = {
-            "to": int(time.time())
-        }
-        proof_req["requested_predicates"][0]["non_revocation"] = {
-            "to": int(time.time())
-        }
+        revoc = {"to": int(time.time())}
+        proof_req["requested_attributes"][0]["non_revoked"] = revoc
+        proof_req["requested_predicates"][0]["non_revoked"] = revoc
+        proof_req["non_revoked"] = revoc
     await request_credential_presentation(
-        app_client, t1_headers, "alice", t2_headers, proof_req
+        app_client,
+        t1_headers,
+        "alice",
+        t2_headers,
+        proof_req,
+        will_validate=True,
     )
 
     await asyncio.sleep(2)
@@ -155,13 +160,11 @@ async def test_tenants_issue_cred_req_proof_revoke(prove_non_revocation, app_cli
 
     if prove_non_revocation:
         # pause to ensure we get a clean non-revoc interval
-        await asyncio.sleep(3)
-        proof_req["requested_attributes"][0]["non_revocation"] = {
-            "to": int(time.time())
-        }
-        proof_req["requested_predicates"][0]["non_revocation"] = {
-            "to": int(time.time())
-        }
+        await asyncio.sleep(5)
+        revoc = {"to": int(time.time())}
+        proof_req["requested_attributes"][0]["non_revoked"] = revoc
+        proof_req["requested_predicates"][0]["non_revoked"] = revoc
+        proof_req["non_revoked"] = revoc
 
     # proof should still be valid (unless we're checking non-revocation)
     await request_credential_presentation(
@@ -170,4 +173,5 @@ async def test_tenants_issue_cred_req_proof_revoke(prove_non_revocation, app_cli
         "alice",
         t2_headers,
         proof_req,
+        will_validate=(not prove_non_revocation),
     )

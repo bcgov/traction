@@ -92,7 +92,7 @@ async def issuer_get_issue_credentials(
             issue_cred,
         ]
     elif cred_issue_id:
-        issue_cred = await issue_repo.get_by_id(wallet_id, cred_issue_id)
+        issue_cred = await issue_repo.get_by_id(cred_issue_id)
         issue_creds = [
             issue_cred,
         ]
@@ -268,7 +268,7 @@ async def holder_get_offer_credentials(
             issue_cred,
         ]
     elif cred_issue_id:
-        issue_cred = await issue_repo.get_by_id(wallet_id, cred_issue_id)
+        issue_cred = await issue_repo.get_by_id(cred_issue_id)
         issue_creds = [
             issue_cred,
         ]
@@ -417,15 +417,29 @@ async def holder_reject_credential(
 @router.get("/holder/request", response_model=List[PresentCredentialData])
 async def holder_get_presentation_requests(
     state: TenantWorkflowStateType | None = None,
+    workflow_id: str | None = None,
+    pres_req_id: str | None = None,
     db: AsyncSession = Depends(get_db),
 ) -> List[PresentCredentialData]:
     # this should take some query params, sorting and paging params...
     wallet_id = get_from_context("TENANT_WALLET_ID")
     present_repo = PresentCredentialsRepository(db_session=db)
     workflow_repo = TenantWorkflowsRepository(db_session=db)
-    present_creds = await present_repo.find_by_wallet_id_and_role(
-        wallet_id, PresentationRoleType.holder
-    )
+    present_creds = []
+    if workflow_id:
+        present_cred = await present_repo.get_by_workflow_id(wallet_id, workflow_id)
+        present_creds = [
+            present_cred,
+        ]
+    elif pres_req_id:
+        present_cred = await present_repo.get_by_id(pres_req_id)
+        present_creds = [
+            present_cred,
+        ]
+    else:
+        present_creds = await present_repo.find_by_wallet_id_and_role(
+            wallet_id, PresentationRoleType.holder
+        )
     logger.warn(f">>> queued present_creds: {present_creds}")
     presentations = []
     for present_cred in present_creds:
@@ -616,15 +630,29 @@ async def holder_get_credentials(db: AsyncSession = Depends(get_db)) -> List[dic
 @router.get("/verifier/request", response_model=List[PresentCredentialData])
 async def verifier_get_request_credentials(
     state: TenantWorkflowStateType | None = None,
+    workflow_id: str | None = None,
+    pres_req_id: str | None = None,
     db: AsyncSession = Depends(get_db),
 ) -> List[PresentCredentialData]:
     # this should take some query params, sorting and paging params...
     wallet_id = get_from_context("TENANT_WALLET_ID")
     present_repo = PresentCredentialsRepository(db_session=db)
     workflow_repo = TenantWorkflowsRepository(db_session=db)
-    present_creds = await present_repo.find_by_wallet_id_and_role(
-        wallet_id, PresentationRoleType.verifier
-    )
+    present_creds = []
+    if workflow_id:
+        present_cred = await present_repo.get_by_workflow_id(wallet_id, workflow_id)
+        present_creds = [
+            present_cred,
+        ]
+    elif pres_req_id:
+        present_cred = await present_repo.get_by_id(pres_req_id)
+        present_creds = [
+            present_cred,
+        ]
+    else:
+        present_creds = await present_repo.find_by_wallet_id_and_role(
+            wallet_id, PresentationRoleType.verifier
+        )
     logger.warn(f">>> queued present_creds: {present_creds}")
     presentations = []
     for present_cred in present_creds:
