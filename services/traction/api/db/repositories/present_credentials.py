@@ -81,9 +81,13 @@ class PresentCredentialsRepository(
         return parse_obj_as(List[PresentCredentialRead], items)
 
     async def get_by_workflow_id(
-        self, workflow_id: UUID
+        self, wallet_id: UUID, workflow_id: UUID
     ) -> Type[PresentCredentialRead]:
-        q = select(self._table).where(self._table.workflow_id == workflow_id)
+        q = (
+            select(self._table)
+            .where(self._table.wallet_id == wallet_id)
+            .where(self._table.workflow_id == workflow_id)
+        )
         result = await self._db_session.execute(q)
         present_cred = result.scalar_one_or_none()
         if not present_cred:
@@ -93,9 +97,13 @@ class PresentCredentialsRepository(
         return self._schema.from_orm(present_cred)
 
     async def get_by_pres_exch_id(
-        self, pres_exch_id: UUID
+        self, wallet_id: UUID, pres_exch_id: UUID
     ) -> Type[PresentCredentialRead]:
-        q = select(self._table).where(self._table.pres_exch_id == pres_exch_id)
+        q = (
+            select(self._table)
+            .where(self._table.wallet_id == wallet_id)
+            .where(self._table.pres_exch_id == pres_exch_id)
+        )
         result = await self._db_session.execute(q)
         present_cred = result.scalar_one_or_none()
         if not present_cred:

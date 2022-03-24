@@ -37,6 +37,7 @@ class CredentialStateType(str, Enum):
     done = "done"
     abandoned = "abandoned"
     error = "error"
+    credential_revoked = "credential_revoked"
 
 
 class PresentCredentialProtocolType(str, Enum):
@@ -86,7 +87,7 @@ class CredentialPreview(BaseSchema):
 class ProofReqAttr(BaseSchema):
     name: str | None = None
     names: list[str] | None = None
-    non_revoked: str | None = None
+    non_revoked: dict | None = None
     restrictions: list[dict] | None = None
 
     def toJSON(self):
@@ -104,7 +105,7 @@ class ProofReqPred(BaseSchema):
     name: str
     p_type: PTypeType
     p_value: int
-    non_revoked: str | None = None
+    non_revoked: dict | None = None
     restrictions: list[dict]
 
     def toJSON(self):
@@ -114,6 +115,7 @@ class ProofReqPred(BaseSchema):
 class ProofRequest(BaseSchema):
     requested_attributes: list[ProofReqAttr]
     requested_predicates: list[ProofReqPred]
+    non_revoked: dict | None = None
 
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True)

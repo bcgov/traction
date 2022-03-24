@@ -4,6 +4,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette import status
 
 from api.api_client_utils import get_api_client
 from api.db.errors import DoesNotExist
@@ -51,6 +52,8 @@ from api.services.base import BaseWorkflow
 
 from acapy_client.api.credentials_api import CredentialsApi
 from acapy_client.api.present_proof_v1_0_api import PresentProofV10Api
+from acapy_client.api.revocation_api import RevocationApi
+from acapy_client.model.revoke_request import RevokeRequest
 
 
 router = APIRouter()
@@ -58,6 +61,7 @@ logger = logging.getLogger(__name__)
 
 creds_api = CredentialsApi(api_client=get_api_client())
 pres_cred_v10_api = PresentProofV10Api(api_client=get_api_client())
+revoc_api = RevocationApi(api_client=get_api_client())
 
 
 class IssueCredentialData(BaseModel):
@@ -73,15 +77,29 @@ class PresentCredentialData(BaseModel):
 @router.get("/issuer/issue", response_model=List[IssueCredentialData])
 async def issuer_get_issue_credentials(
     state: TenantWorkflowStateType | None = None,
+    workflow_id: str | None = None,
+    cred_issue_id: str | None = None,
     db: AsyncSession = Depends(get_db),
 ) -> List[IssueCredentialData]:
     # this should take some query params, sorting and paging params...
     wallet_id = get_from_context("TENANT_WALLET_ID")
     issue_repo = IssueCredentialsRepository(db_session=db)
     workflow_repo = TenantWorkflowsRepository(db_session=db)
-    issue_creds = await issue_repo.find_by_wallet_id_and_role(
-        wallet_id, CredentialRoleType.issuer
-    )
+    issue_creds = []
+    if workflow_id:
+        issue_cred = await issue_repo.get_by_workflow_id(wallet_id, workflow_id)
+        issue_creds = [
+            issue_cred,
+        ]
+    elif cred_issue_id:
+        issue_cred = await issue_repo.get_by_id(cred_issue_id)
+        issue_creds = [
+            issue_cred,
+        ]
+    else:
+        issue_creds = await issue_repo.find_by_wallet_id_and_role(
+            wallet_id, CredentialRoleType.issuer
+        )
     issues = []
     for issue_cred in issue_creds:
         tenant_workflow = None
@@ -116,7 +134,8 @@ async def issuer_issue_credential(
         existing_connection = get_connection_with_alias(alias)
         if not existing_connection:
             raise HTTPException(
-                status_code=404, detail=f"Error alias {alias} does not exist"
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Error alias {alias} does not exist",
             )
         connection_id = existing_connection.connection_id
 
@@ -175,18 +194,88 @@ async def issuer_issue_credential(
     return issue
 
 
+@router.post("/issuer/revoke", response_model=IssueCredentialData)
+async def issuer_revoke_credential(
+    cred_issue_id: str | None = None,
+    rev_reg_id: str | None = None,
+    cred_rev_id: str | None = None,
+    comment: str | None = None,
+    db: AsyncSession = Depends(get_db),
+) -> IssueCredentialData:
+    wallet_id = get_from_context("TENANT_WALLET_ID")
+    issue_repo = IssueCredentialsRepository(db_session=db)
+    workflow_repo = TenantWorkflowsRepository(db_session=db)
+    issue_cred = None
+    if cred_issue_id:
+        issue_cred = await issue_repo.get_by_id(cred_issue_id)
+    else:
+        issue_cred = await issue_repo.get_by_cred_rev_reg_id(
+            wallet_id, rev_reg_id, cred_rev_id
+        )
+    if not (
+        issue_cred.issue_state == CredentialStateType.done
+        or issue_cred.issue_state == CredentialStateType.credential_acked
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Cannot revoke, credential is in state {issue_cred.issue_state}.",
+        )
+
+    # no fancy workflow stuff, just revoke
+    rev_req = RevokeRequest(
+        comment=comment if comment else "",
+        connection_id=str(issue_cred.connection_id),
+        rev_reg_id=issue_cred.rev_reg_id,
+        cred_rev_id=issue_cred.cred_rev_id,
+        publish=True,
+        notify=True,
+    )
+    data = {"body": rev_req}
+    revoc_api.revocation_revoke_post(**data)
+
+    update_issue = IssueCredentialUpdate(
+        id=issue_cred.id,
+        workflow_id=issue_cred.workflow_id,
+        cred_exch_id=issue_cred.cred_exch_id,
+        issue_state=CredentialStateType.credential_revoked,
+    )
+    issue_cred = await issue_repo.update(update_issue)
+    tenant_workflow = await workflow_repo.get_by_id(issue_cred.workflow_id)
+
+    issue = IssueCredentialData(
+        credential=issue_cred,
+        workflow=tenant_workflow,
+    )
+
+    return issue
+
+
 @router.get("/holder/offer", response_model=List[IssueCredentialData])
 async def holder_get_offer_credentials(
     state: TenantWorkflowStateType | None = None,
+    workflow_id: str | None = None,
+    cred_issue_id: str | None = None,
     db: AsyncSession = Depends(get_db),
 ) -> List[IssueCredentialData]:
     # this should take some query params, sorting and paging params...
     wallet_id = get_from_context("TENANT_WALLET_ID")
     issue_repo = IssueCredentialsRepository(db_session=db)
     workflow_repo = TenantWorkflowsRepository(db_session=db)
-    issue_creds = await issue_repo.find_by_wallet_id_and_role(
-        wallet_id, CredentialRoleType.holder
-    )
+    issue_creds = []
+    if workflow_id:
+        issue_cred = await issue_repo.get_by_workflow_id(wallet_id, workflow_id)
+        issue_creds = [
+            issue_cred,
+        ]
+    elif cred_issue_id:
+        issue_cred = await issue_repo.get_by_id(cred_issue_id)
+        issue_creds = [
+            issue_cred,
+        ]
+    else:
+        issue_creds = await issue_repo.find_by_wallet_id_and_role(
+            wallet_id, CredentialRoleType.holder
+        )
     issues = []
     for issue_cred in issue_creds:
         tenant_workflow = None
@@ -328,15 +417,29 @@ async def holder_reject_credential(
 @router.get("/holder/request", response_model=List[PresentCredentialData])
 async def holder_get_presentation_requests(
     state: TenantWorkflowStateType | None = None,
+    workflow_id: str | None = None,
+    pres_req_id: str | None = None,
     db: AsyncSession = Depends(get_db),
 ) -> List[PresentCredentialData]:
     # this should take some query params, sorting and paging params...
     wallet_id = get_from_context("TENANT_WALLET_ID")
     present_repo = PresentCredentialsRepository(db_session=db)
     workflow_repo = TenantWorkflowsRepository(db_session=db)
-    present_creds = await present_repo.find_by_wallet_id_and_role(
-        wallet_id, PresentationRoleType.holder
-    )
+    present_creds = []
+    if workflow_id:
+        present_cred = await present_repo.get_by_workflow_id(wallet_id, workflow_id)
+        present_creds = [
+            present_cred,
+        ]
+    elif pres_req_id:
+        present_cred = await present_repo.get_by_id(pres_req_id)
+        present_creds = [
+            present_cred,
+        ]
+    else:
+        present_creds = await present_repo.find_by_wallet_id_and_role(
+            wallet_id, PresentationRoleType.holder
+        )
     logger.warn(f">>> queued present_creds: {present_creds}")
     presentations = []
     for present_cred in present_creds:
@@ -527,15 +630,29 @@ async def holder_get_credentials(db: AsyncSession = Depends(get_db)) -> List[dic
 @router.get("/verifier/request", response_model=List[PresentCredentialData])
 async def verifier_get_request_credentials(
     state: TenantWorkflowStateType | None = None,
+    workflow_id: str | None = None,
+    pres_req_id: str | None = None,
     db: AsyncSession = Depends(get_db),
 ) -> List[PresentCredentialData]:
     # this should take some query params, sorting and paging params...
     wallet_id = get_from_context("TENANT_WALLET_ID")
     present_repo = PresentCredentialsRepository(db_session=db)
     workflow_repo = TenantWorkflowsRepository(db_session=db)
-    present_creds = await present_repo.find_by_wallet_id_and_role(
-        wallet_id, PresentationRoleType.verifier
-    )
+    present_creds = []
+    if workflow_id:
+        present_cred = await present_repo.get_by_workflow_id(wallet_id, workflow_id)
+        present_creds = [
+            present_cred,
+        ]
+    elif pres_req_id:
+        present_cred = await present_repo.get_by_id(pres_req_id)
+        present_creds = [
+            present_cred,
+        ]
+    else:
+        present_creds = await present_repo.find_by_wallet_id_and_role(
+            wallet_id, PresentationRoleType.verifier
+        )
     logger.warn(f">>> queued present_creds: {present_creds}")
     presentations = []
     for present_cred in present_creds:
@@ -572,7 +689,8 @@ async def verifier_request_credentials(
         existing_connection = get_connection_with_alias(alias)
         if not existing_connection:
             raise HTTPException(
-                status_code=404, detail=f"Error alias {alias} does not exist"
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Error alias {alias} does not exist",
             )
         connection_id = existing_connection.connection_id
 
