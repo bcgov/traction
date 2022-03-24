@@ -1,6 +1,6 @@
+# traction [![Lifecycle:Maturing](https://img.shields.io/badge/Lifecycle-Maturing-007EC6)](<Redirect-URL>)
 [![Maintainability](https://api.codeclimate.com/v1/badges/e6df50041dd4373c7e15/maintainability)](https://codeclimate.com/github/bcgov/traction/maintainability)
 
-# traction
 
 Hyperledger Aries Traction - a digital wallet solution for organizations. This project space will be a rewrite of the Business Partner Agent with multitenancy, cloud native architecture and Open APIs.
 
