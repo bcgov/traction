@@ -17,7 +17,7 @@ showcase:
     buildtime: '2022-01-20T22:37:11.102Z'
     pullPolicy: Always
   config:
-    gunicornWorkers: 2
+    webConcurrency: 2
   traction_api:
     endpoint: https://pr-00-traction-api-dev.apps.silver.devops.gov.bc.ca
     secret:

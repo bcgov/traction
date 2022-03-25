@@ -83,7 +83,7 @@ spec:
                   name: {{ template "endorser_api.secret.name" . }}
                   key: user_pwd
             - name: WEB_CONCURRENCY
-              value: {{ .Values.endorser_api.config.gunicornWorkers | quote }}
+              value: {{ .Values.endorser_api.config.webConcurrency | quote }}
             - name: ACAPY_WEBHOOK_URL_API_KEY
               valueFrom:
                 secretKeyRef:
