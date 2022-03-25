@@ -82,7 +82,7 @@ spec:
                   name: {{ .Values.showcase.traction_api.secret.name }}
                   key: api_admin_key
             - name: WEB_CONCURRENCY
-              value: {{ .Values.showcase.config.gunicornWorkers | quote }}
+              value: {{ .Values.showcase.config.webConcurrency | quote }}
             {{- include "showcase.configmap.env.vars" . | nindent 10}}
           resources:
             {{- toYaml .Values.showcase.resources | nindent 12 }}

@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import moment from 'moment';
+import { startCase, lowerCase } from 'lodash';
 
 //
 // Date format Filters {{ expression | filter }}
@@ -29,6 +30,17 @@ export function formatDateLong(value) {
   }
 }
 
+/**
+ * @function keyToLabel
+ * Converts a json key in snakecase to a pretty label
+ * @param {String} value A string
+ * @returns {String} A string read for the UI
+ */
+export function keyToLabel(value) {
+  return startCase(lowerCase(value));
+}
+
 // Define Global Vue Filters
 Vue.filter('formatDate', formatDate);
 Vue.filter('formatDateLong', formatDateLong);
+Vue.filter('keyToLabel', keyToLabel);

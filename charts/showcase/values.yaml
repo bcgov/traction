@@ -27,7 +27,7 @@ showcase:
     pullPolicy: IfNotPresent
 
   config:
-    gunicornWorkers: 2
+    webConcurrency: 2
     staticFilesPath: "/traction/static"
 
   db:

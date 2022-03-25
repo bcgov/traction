@@ -234,7 +234,7 @@ endorser_api:
     ledger:
       browserUrlOverride: ""
       genesisUrlOverride: ""
-    gunicornWorkers: 4
+    webConcurrency: 4
   db:
     admin: endorseradminuser
     user: endorseruser
