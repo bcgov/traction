@@ -59,6 +59,8 @@ A revocation registry has a maximum size. The size should be at least 4, and max
 - As second tenant, accept the credential offer
 - As second tenant, view the received credential
 
+[Watch it here!](./assets/traction-issue-credential.mp4)
+
 Note that there is nothing special the issuer needs to do to issue a revocable credential, this is handled automatically by traction and Aca-py.
 
 A revocable credential generates two additional attributes that are required to later revoke the credential:
@@ -70,8 +72,6 @@ A revocable credential generates two additional attributes that are required to 
     <summary>Show me a screenshot!</summary>
     <img src="./assets/cred-revocable-attrs.png" alt="Revocable Credential Attributes">
 </details>
-
-[Watch it here!](./assets/traction-issue-credential.mp4)
 
 To revoke the credential, you can provide these two values, *or* you can provide the `id` of the credential issue record.
 
