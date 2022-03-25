@@ -21,6 +21,9 @@ class TenantSchemaBase(BaseModel):
     cred_def_txn_id: uuid.UUID = Field(nullable=True, default=None)
     cred_def_id: str = Field(nullable=True, default=None)
     cred_def_state: str = Field(nullable=True, default=None)
+    cred_revocation: bool = Field(nullable=True, default=None)
+    cred_revoc_reg_size: int = Field(nullable=True, default=None)
+    revoc_reg_state: str = Field(nullable=True, default=None)
 
 
 class TenantSchema(TenantSchemaBase, BaseTable, table=True):
@@ -55,3 +58,4 @@ class TenantSchemaUpdate(BaseModel):
     cred_def_txn_id: uuid.UUID = Field(nullable=True, default=None)
     cred_def_id: str = Field(nullable=True, default=None)
     cred_def_state: str = Field(nullable=True, default=None)
+    revoc_reg_state: str = Field(nullable=True, default=None)

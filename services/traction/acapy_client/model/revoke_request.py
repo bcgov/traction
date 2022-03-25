@@ -99,9 +99,12 @@ class RevokeRequest(ModelNormal):
                 and the value is attribute type.
         """
         return {
+            "comment": (str,),  # noqa: E501
+            "connection_id": (str,),  # noqa: E501
             "cred_ex_id": (str,),  # noqa: E501
             "cred_rev_id": (str,),  # noqa: E501
             "publish": (bool,),  # noqa: E501
+            "notify": (bool,),  # noqa: E501
             "rev_reg_id": (str,),  # noqa: E501
         }
 
@@ -110,9 +113,12 @@ class RevokeRequest(ModelNormal):
         return None
 
     attribute_map = {
+        "comment": "comment",  # noqa: E501
+        "connection_id": "connection_id",  # noqa: E501
         "cred_ex_id": "cred_ex_id",  # noqa: E501
         "cred_rev_id": "cred_rev_id",  # noqa: E501
         "publish": "publish",  # noqa: E501
+        "notify": "notify",  # noqa: E501
         "rev_reg_id": "rev_reg_id",  # noqa: E501
     }
 
@@ -156,9 +162,12 @@ class RevokeRequest(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
+            comment (str): Comment. [optional]  # noqa: E501
+            connection_id (str): Connection ID - required if notify. [optional]  # noqa: E501
             cred_ex_id (str): Credential exchange identifier. [optional]  # noqa: E501
             cred_rev_id (str): Credential revocation identifier. [optional]  # noqa: E501
             publish (bool): (True) publish revocation to ledger immediately, or (default, False) mark it pending. [optional]  # noqa: E501
+            notify (bool): (True) notify holder, or (default, False) don't. [optional]  # noqa: E501
             rev_reg_id (str): Revocation registry identifier. [optional]  # noqa: E501
         """
 
@@ -246,9 +255,12 @@ class RevokeRequest(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
+            comment (str): Comment. [optional]  # noqa: E501
+            connection_id (str): Connection ID - required if notify. [optional]  # noqa: E501
             cred_ex_id (str): Credential exchange identifier. [optional]  # noqa: E501
             cred_rev_id (str): Credential revocation identifier. [optional]  # noqa: E501
             publish (bool): (True) publish revocation to ledger immediately, or (default, False) mark it pending. [optional]  # noqa: E501
+            notify (bool): (True) notify holder, or (default, False) don't. [optional]  # noqa: E501
             rev_reg_id (str): Revocation registry identifier. [optional]  # noqa: E501
         """
 

@@ -4,7 +4,7 @@
     <v-card-text v-if="credentials && credentials.length">
       <v-card v-for="c in credentials" :key="c.id" class="ma-3">
         <v-card-title class="grey lighten-3 mb-3">{{
-          'Education Degree' || c.cred_def_id
+          currentSandbox.governance.schema_def.name
         }}</v-card-title>
         <v-card-text>
           <ul>
@@ -55,6 +55,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('sandbox', ['currentSandbox']),
     ...mapGetters('alice', ['credentials']),
   },
   methods: {

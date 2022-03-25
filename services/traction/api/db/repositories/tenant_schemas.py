@@ -85,3 +85,13 @@ class TenantSchemasRepository(
                     f"{self._table.__name__}<transaction_id:{txn_id}> does not exist"
                 )
         return self._schema.from_orm(tenant_schema)
+
+    async def get_by_cred_def_id(self, cred_def_id: str) -> Type[TenantSchemaRead]:
+        q = select(self._table).where(self._table.cred_def_id == cred_def_id)
+        result = await self._db_session.execute(q)
+        tenant_schema = result.scalar_one_or_none()
+        if not tenant_schema:
+            raise DoesNotExist(
+                f"{self._table.__name__}<cred_def_id:{cred_def_id}> does not exist"
+            )
+        return self._schema.from_orm(tenant_schema)

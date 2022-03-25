@@ -110,27 +110,24 @@ export default {
   // Presentation Requests
   // -------------------------------------------------------------------------
   /**
-   
-
-  /**
- * @function getPresentationRequests
- * Get the current sandboxes in this instance of the showcase app
- * @param {string} sandboxId The identifier for the sandbox
- * @param {string} lobId The identifier for the line of business
- * @returns {Promise} An axios response
- */
+   * @function getPresentationRequests
+   * Get the current sandboxes in this instance of the showcase app
+   * @param {string} sandboxId The identifier for the sandbox
+   * @param {string} lobId The identifier for the line of business
+   * @returns {Promise} An axios response
+   */
   getPresentationRequests(sandboxId, lobId) {
     return appAxios().get(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/holder/presentation-requests`);
   },
 
   /**
-* @function acceptPresentationRequest
-* Get the current sandboxes in this instance of the showcase app
-* @param {string} sandboxId The identifier for the sandbox
-* @param {string} lobId The identifier for the line of business
-* @param {string} pres_req_id The identifier for the credential offer
-* @returns {Promise} An axios response
-*/
+   * @function acceptPresentationRequest
+   * Get the current sandboxes in this instance of the showcase app
+   * @param {string} sandboxId The identifier for the sandbox
+   * @param {string} lobId The identifier for the line of business
+   * @param {string} pres_req_id The identifier for the credential offer
+   * @returns {Promise} An axios response
+   */
   acceptPresentationRequest(sandboxId, lobId, pres_req_id) {
     return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/holder/presentation-requests/${pres_req_id}/accept`);
   },
@@ -146,10 +143,7 @@ export default {
   rejectPresentationRequest(sandboxId, lobId, pres_req_id) {
     return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/holder/presentation-requests/${pres_req_id}/reject`);
   },
-
-
   // -------------------------------------------------------------/presentation-requests
-
 
   // -------------------------------------------------------------------------
   // Issue
@@ -174,6 +168,16 @@ export default {
   issueDegree(sandboxId, lobId, studentId) {
     return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/students/${studentId}/issue-degree`);
   },
+  /**
+   * @function issueDegree
+   * Create a invitation
+   * @param {string} sandboxId The identifier for the sandbox
+   * @param {string} lobId The identifier for the line of business
+   * @returns {Promise} An axios response
+   */
+  getIssuedCredentials(sandboxId, lobId) {
+    return appAxios().get(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/issued-credentials`);
+  },
   // -------------------------------------------------------------/issue
 
 
@@ -189,6 +193,22 @@ export default {
    */
   getOutOfBandMessages(sandboxId, lobId) {
     return appAxios().get(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/out-of-band-msgs`);
+  },
+  /**
+   * @function updateOutOfBandMessageAction
+   * Update the action for an out of band message
+   * @param {string} sandboxId The identifier for the sandbox
+   * @param {string} lobId The identifier for the line of business
+   * @param {string} oobId The identifier for the message
+   * @param {string} action The action taken on the message
+   * @returns {Promise} An axios response
+   */
+  updateOutOfBandMessageAction(sandboxId, lobId, oobId, action) {
+    const payload = {
+      id: oobId,
+      action: action
+    };
+    return appAxios().put(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/out-of-band-msgs`, payload);
   },
   // -------------------------------------------------------------/messages
 

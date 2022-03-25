@@ -75,8 +75,11 @@ class IssueCredentialWorkflow(BaseWorkflow):
         if webhook_message["topic"] == WebhookTopicType.issue_credential:
             try:
                 # look up issue_cred based on the cred exchange id
+                wallet_id = get_from_context("TENANT_WALLET_ID")
                 cred_exch_id = webhook_message["payload"]["credential_exchange_id"]
-                issue_cred = await issue_repo.get_by_cred_exch_id(cred_exch_id)
+                issue_cred = await issue_repo.get_by_cred_exch_id(
+                    wallet_id, cred_exch_id
+                )
                 logger.warn(f">>> found corresponding cred issue: {issue_cred}")
                 return issue_cred.workflow_id
             except DoesNotExist:
@@ -114,6 +117,35 @@ class IssueCredentialWorkflow(BaseWorkflow):
                     return None
 
                 return None
+
+        elif webhook_message["topic"] == WebhookTopicType.revocation_notification:
+            # update credential status to revoked
+            logger.warn(f">>> got a revocation notification: {webhook_message}")
+            wallet_id = get_from_context("TENANT_WALLET_ID")
+            comment = webhook_message["payload"].get("comment")
+            thread_id = webhook_message["payload"].get("thread_id")
+            # should be "indy::<rev_reg_id>::<cred_rev_id>"
+            thread_id_parts = thread_id.split("::")
+            rev_reg_id = thread_id_parts[1]
+            cred_rev_id = thread_id_parts[2]
+            issue_cred = await issue_repo.get_by_cred_rev_reg_id(
+                wallet_id, rev_reg_id, cred_rev_id
+            )
+            if issue_cred:
+                update_issue = IssueCredentialUpdate(
+                    id=issue_cred.id,
+                    workflow_id=issue_cred.workflow_id,
+                    issue_state=CredentialStateType.credential_revoked,
+                    cred_exch_id=issue_cred.cred_exch_id,
+                )
+                issue_cred = await issue_repo.update(update_issue)
+
+                logger.info(f">>> sending webhook with cred revoc: {issue_cred}")
+                await TenantWorkflowNotifier(profile.db).issuer_workflow_cred_revoc(
+                    issue_cred, comment
+                )
+            return None
+
         else:
             return None
 
@@ -130,7 +162,10 @@ class IssueCredentialWorkflow(BaseWorkflow):
         return self._issue_repo
 
     async def run_step(self, webhook_message: dict = None) -> TenantWorkflowRead:
-        issue_cred = await self.issue_repo.get_by_workflow_id(self.tenant_workflow.id)
+        wallet_id = get_from_context("TENANT_WALLET_ID")
+        issue_cred = await self.issue_repo.get_by_workflow_id(
+            wallet_id, self.tenant_workflow.id
+        )
 
         # if workflow is "pending" then we need to start it
         # called direct from the tenant admin api so the tenant is "in context"
@@ -167,7 +202,9 @@ class IssueCredentialWorkflow(BaseWorkflow):
                         webhook_state == CredentialStateType.done
                         or webhook_state == CredentialStateType.credential_acked
                     ):
-                        issue_cred = await self.complete_credential(issue_cred)
+                        issue_cred = await self.complete_credential(
+                            issue_cred, webhook_message
+                        )
 
                         # finish off our workflow
                         await self.complete_workflow()
@@ -190,7 +227,10 @@ class IssueCredentialWorkflow(BaseWorkflow):
         self, webhook_message: dict = None, error_msg: str = None
     ) -> TenantWorkflowRead:
         # send a problem report with the given error
-        issue_cred = await self.issue_repo.get_by_workflow_id(self.tenant_workflow.id)
+        wallet_id = get_from_context("TENANT_WALLET_ID")
+        issue_cred = await self.issue_repo.get_by_workflow_id(
+            wallet_id, self.tenant_workflow.id
+        )
         await self.complete_with_problem_report(issue_cred, webhook_message, error_msg)
 
         # then cancel te workflow
@@ -264,7 +304,7 @@ class IssueCredentialWorkflow(BaseWorkflow):
         return issue_cred
 
     async def complete_credential(
-        self, issue_cred: IssueCredentialRead
+        self, issue_cred: IssueCredentialRead, webhook_message: dict
     ) -> IssueCredentialRead:
         update_issue = IssueCredentialUpdate(
             id=issue_cred.id,
@@ -272,6 +312,10 @@ class IssueCredentialWorkflow(BaseWorkflow):
             issue_state=issue_cred.issue_state,
             cred_exch_id=issue_cred.cred_exch_id,
         )
+        # capture the revocation info's from the webhook
+        if webhook_message["payload"].get("revoc_reg_id"):
+            update_issue.rev_reg_id = webhook_message["payload"].get("revoc_reg_id")
+            update_issue.cred_rev_id = webhook_message["payload"].get("revocation_id")
         issue_cred = await self.issue_repo.update(update_issue)
         return issue_cred
 

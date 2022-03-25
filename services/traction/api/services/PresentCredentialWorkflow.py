@@ -81,7 +81,10 @@ class PresentCredentialWorkflow(BaseWorkflow):
             try:
                 # look up present_cred based on the pres exchange id
                 pres_exch_id = webhook_message["payload"]["presentation_exchange_id"]
-                present_cred = await present_repo.get_by_pres_exch_id(pres_exch_id)
+                wallet_id = get_from_context("TENANT_WALLET_ID")
+                present_cred = await present_repo.get_by_pres_exch_id(
+                    wallet_id, pres_exch_id
+                )
                 logger.warn(f">>> found corresponding cred pres: {present_cred}")
                 return present_cred.workflow_id
             except DoesNotExist:
@@ -131,8 +134,9 @@ class PresentCredentialWorkflow(BaseWorkflow):
         return self._present_repo
 
     async def run_step(self, webhook_message: dict = None) -> TenantWorkflowRead:
+        wallet_id = get_from_context("TENANT_WALLET_ID")
         present_cred = await self.present_repo.get_by_workflow_id(
-            self.tenant_workflow.id
+            wallet_id, self.tenant_workflow.id
         )
 
         # if workflow is "pending" then we need to start it
@@ -207,8 +211,9 @@ class PresentCredentialWorkflow(BaseWorkflow):
         self, webhook_message: dict = None, error_msg: str = None
     ) -> TenantWorkflowRead:
         # send a problem report with the given error
+        wallet_id = get_from_context("TENANT_WALLET_ID")
         present_cred = await self.present_repo.get_by_workflow_id(
-            self.tenant_workflow.id
+            wallet_id, self.tenant_workflow.id
         )
         await self.complete_with_problem_report(
             present_cred, webhook_message, error_msg
@@ -251,6 +256,8 @@ class PresentCredentialWorkflow(BaseWorkflow):
             proof_request=proof_req,
             comment="TBD comment goes here",
         )
+        if "non_revoked" in pres_req and pres_req["non_revoked"]:
+            pres_request.non_revoked = pres_req["non_revoked"]
         data = {"body": pres_request}
         logger.warn(f">>> posting pres req with: {data}")
         pres_resp = pres_cred_v10_api.present_proof_send_request_post(**data)

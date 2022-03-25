@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
+from api.db.models.out_of_band import OutOfBandUpdate
 from api.db.models.related import (
     LobReadWithSandbox,
     OutOfBandReadPopulated,
@@ -67,6 +68,29 @@ async def get_out_of_band_messages(
     oob_repo = OutOfBandRepository(db_session=db)
     items = await oob_repo.get_for_lob(lob_id=lob.id)
     return items
+
+
+@router.put(
+    "/lobs/{lob_id}/out-of-band-msgs",
+    status_code=status.HTTP_200_OK,
+    response_model=OutOfBandReadPopulated,
+)
+async def update_out_of_band_message(
+    sandbox_id: UUID,
+    lob_id: UUID,
+    payload: OutOfBandUpdate,
+    db: AsyncSession = Depends(get_db),
+) -> OutOfBandReadPopulated:
+    # make sure lob is in this sandbox...
+    lob_repo = LobRepository(db_session=db)
+    oob_repo = OutOfBandRepository(db_session=db)
+    # make sure lob is good...
+    await lob_repo.get_by_id_with_sandbox(sandbox_id, lob_id)
+    # make sure oob id is good...
+    await oob_repo.get_by_id(payload.id)
+    # update it.
+    updated = await oob_repo.update(payload)
+    return updated
 
 
 @router.post(

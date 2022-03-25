@@ -11,7 +11,7 @@
     <div v-else class="applicants-list">
       <h3 class="mb-3">Job Applicants ({{ applicants.length }})</h3>
       <v-row>
-        <v-col v-for="appl in applicants" :key="appl.id" cols="4">
+        <v-col v-for="appl in applicants" :key="appl.id" cols="12" lg="6" xl="4">
           <ApplicantCard :applicant="appl" />
         </v-col>
       </v-row>

@@ -17,7 +17,10 @@ from tests.test_utils import (
 from api.db.models.tenant import TenantRead
 from api.db.models.tenant_issuer import TenantIssuerRead
 from api.endpoints.models.innkeeper import CheckInResponse
-from api.endpoints.models.credentials import CredPrecisForProof
+from api.endpoints.models.credentials import (
+    CredPrecisForProof,
+    CredentialStateType,
+)
 
 
 default_retry_attempts = int(os.environ.get("DEFAULT_RETRY_ATTEMPTS", "11"))
@@ -39,6 +42,7 @@ async def check_workflow_state(
 
     i = attempts
     completed = False
+    workflow = None
     while i > 0 and not completed:
         try:
             # wait for the issuer process to complete
@@ -67,6 +71,8 @@ async def check_workflow_state(
         i -= 1
 
     assert completed, workflow["workflow"]["workflow_state"]
+
+    return workflow
 
 
 async def create_tenant(
@@ -110,6 +116,8 @@ async def create_schema_cred_def(
     schema_id: str = None,
     cred_def_tag: str = None,
     schema: dict = None,
+    revocable: bool = False,
+    revoc_reg_size: int = 10,
 ) -> str:
     """Create a schema and/or credential definition for the given issuer tenant."""
 
@@ -121,6 +129,9 @@ async def create_schema_cred_def(
     assert issuer["workflow"]["workflow_state"] == "completed"
 
     params = {"schema_id": schema_id, "cred_def_tag": cred_def_tag}
+    if revocable:
+        params["revocable"] = revocable
+        params["revoc_reg_size"] = revoc_reg_size
     schema_resp = await app_client.post(
         "/tenant/v1/admin/schema", headers=t1_headers, params=params, json=schema
     )
@@ -210,6 +221,7 @@ async def issue_credential(
     credential: dict,
     cred_protocol: str = "v1.0",
     accept_offer: bool = True,
+    check_revoc: bool = False,
 ) -> (str, str):
     """Issue a credential from issuer (t1) to holder (t2)."""
 
@@ -259,12 +271,18 @@ async def issue_credential(
     assert holder_data.get("workflow"), "Error no workflow returned"
     holder_workflow_id = holder_data["workflow"]["id"]
 
-    await check_workflow_state(
+    issue_rec = await check_workflow_state(
         app_client,
         t1_headers,
         "/tenant/v1/credentials/issuer/issue",
         workflow_id=issue_workflow_id,
     )
+
+    if check_revoc:
+        cred = issue_rec["credential"]
+        assert cred.get("rev_reg_id") is not None, "Error no revocation info"
+        assert cred.get("cred_rev_id") is not None, "Error no revocation info"
+
     await check_workflow_state(
         app_client,
         t2_headers,
@@ -290,6 +308,7 @@ async def request_credential_presentation(
     proof_req: dict,
     pres_protocol: str = "v1.0",
     accept_request: bool = True,
+    will_validate: bool = True,
 ) -> (str, str):
     """Request a presentation from t1 (verifier) to t2 (holder)."""
 
@@ -363,6 +382,20 @@ async def request_credential_presentation(
         workflow_id=holder_workflow_id,
     )
 
+    # get the verifier-received proof and validate
+    params = {"workflow_id": pres_req_workflow_id}
+    recd_pres = await app_client.get(
+        "/tenant/v1/credentials/verifier/request",
+        headers=t1_headers,
+        params=params,
+    )
+    assert recd_pres.status_code == 200, recd_pres.content
+    pres_data = json.loads(recd_pres.content)
+    assert 1 == len(pres_data)
+    presentation = json.loads(pres_data[0]["presentation"]["presentation"])
+    verified = "true" if will_validate else "false"
+    assert verified == presentation["verified"], recd_pres.content
+
     return pres_req_workflow_id, holder_workflow_id
 
 
@@ -396,3 +429,81 @@ def build_proof_presentation(
                 break
 
     return proof_presentation
+
+
+async def revoke_credential(
+    app_client: AsyncClient,
+    t1_headers: dict,
+    t2_headers: dict,
+    cred_issue_id: str = None,
+    rev_reg_id: str = None,
+    cred_rev_id: str = None,
+    verify_revoc: bool = True,
+    issuer_workflow_id: str = None,
+    holder_workflow_id: str = None,
+):
+    params = {}
+    if cred_issue_id:
+        params = {
+            "cred_issue_id": cred_issue_id,
+        }
+    else:
+        params = {
+            "rev_reg_id": rev_reg_id,
+            "cred_rev_id": cred_rev_id,
+        }
+    revoc_resp = await app_client.post(
+        "/tenant/v1/credentials/issuer/revoke",
+        headers=t1_headers,
+        params=params,
+    )
+    assert revoc_resp.status_code == 200, revoc_resp.content
+
+    # check the issuer and holder credential status
+    if verify_revoc and issuer_workflow_id:
+        issue_data = {"credential": {"issue_state": "n/a"}}
+        i = default_retry_attempts
+        while i > 0 and (
+            not issue_data["credential"]["issue_state"]
+            == CredentialStateType.credential_revoked
+        ):
+            await asyncio.sleep(default_pause_between_attempts)
+            params = {"workflow_id": issuer_workflow_id}
+            issue_resp = await app_client.get(
+                "/tenant/v1/credentials/issuer/issue",
+                headers=t1_headers,
+                params=params,
+            )
+            assert issue_resp.status_code == 200, issue_resp.content
+            issue_datas = json.loads(issue_resp.content)
+            assert 1 == len(issue_datas), issue_resp.content
+            issue_data = issue_datas[0]
+            i -= 1
+        assert (
+            issue_data["credential"]["issue_state"]
+            == CredentialStateType.credential_revoked
+        ), issue_data["credential"]["issue_state"]
+
+    if verify_revoc and holder_workflow_id:
+        offer_data = {"credential": {"issue_state": "n/a"}}
+        i = default_retry_attempts
+        while i > 0 and (
+            not offer_data["credential"]["issue_state"]
+            == CredentialStateType.credential_revoked
+        ):
+            await asyncio.sleep(default_pause_between_attempts)
+            params = {"workflow_id": holder_workflow_id}
+            offer_resp = await app_client.get(
+                "/tenant/v1/credentials/holder/offer",
+                headers=t2_headers,
+                params=params,
+            )
+            assert offer_resp.status_code == 200, offer_resp.content
+            offer_datas = json.loads(offer_resp.content)
+            assert 1 == len(offer_datas), offer_resp.content
+            offer_data = offer_datas[0]
+            i -= 1
+        assert (
+            offer_data["credential"]["issue_state"]
+            == CredentialStateType.credential_revoked
+        ), offer_data["credential"]["issue_state"]

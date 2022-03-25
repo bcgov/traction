@@ -43,6 +43,26 @@ class TenantWorkflowNotifier:
 
         await profile.notify(event_topic, {"topic": topic, "payload": payload})
 
+    async def issuer_workflow_cred_revoc(
+        self, cred_info: IssueCredentialRead, comment: str
+    ):
+        logger.info("received cred revoc")
+        # emit an event for any interested listeners
+        profile = Profile(cred_info.wallet_id, self.db)
+        topic = TenantEventTopicType.issuer_cred_rev
+        event_topic = TRACTION_EVENT_PREFIX + topic
+        logger.info(f"profile.notify {event_topic}")
+
+        # TODO: Webhook payload schema's should become pydantic models?
+        payload = {
+            "status": "credential_revoked",
+            "credential": cred_info.json(),
+            "cred_issue_id": str(cred_info.id),
+            "comment": comment,
+        }
+
+        await profile.notify(event_topic, {"topic": topic, "payload": payload})
+
     async def issuer_workflow_completed(self, tenant_issuer: TenantIssuerRead):
         logger.info("issuer workflow complete")
         # emit an event for any interested listeners

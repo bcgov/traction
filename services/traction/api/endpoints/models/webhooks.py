@@ -18,7 +18,7 @@ class WebhookTopicType(str, Enum):
     present_proof_v2_0 = "present_proof_v2_0"
     endorse_transaction = "endorse_transaction"
     revocation_registry = "revocation_registry"
-    revocation_notification = "revocation_notification"
+    revocation_notification = "revocation-notification"
     problem_report = "problem_report"
 
 
@@ -47,6 +47,15 @@ WEBHOOK_ISSUE_LISTENER_PATTERN = re.compile(
 WEBHOOK_PRESENT_LISTENER_PATTERN = re.compile(
     f"^{WEBHOOK_EVENT_PREFIX}{WebhookTopicType.present_proof}(.*)?$"
 )
+WEBHOOK_REVOC_REG_LISTENER_PATTERN = re.compile(
+    f"^{WEBHOOK_EVENT_PREFIX}{WebhookTopicType.revocation_registry}(.*)?$"
+)
+WEBHOOK_REVOC_NOTIFY_LISTENER_PATTERN = re.compile(
+    f"^{WEBHOOK_EVENT_PREFIX}{WebhookTopicType.revocation_notification}(.*)?$"
+)
+WEBHOOK_ISSUER_CRED_REV_NOTIFY_LISTENER_PATTERN = re.compile(
+    f"^{WEBHOOK_EVENT_PREFIX}{WebhookTopicType.issuer_cred_rev}(.*)?$"
+)
 
 
 class TenantEventTopicType(str, Enum):
@@ -54,6 +63,7 @@ class TenantEventTopicType(str, Enum):
     schema = "schema"
     issue_cred = "issue_cred"
     present_req = "present_req"
+    issuer_cred_rev = "issuer_cred_rev"
 
 
 # the event id will be "traction::EVENT::<topic>::<potentially some other id>"

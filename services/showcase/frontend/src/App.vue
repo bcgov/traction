@@ -1,8 +1,8 @@
 <template>
   <v-app>
     <BaseNotificationContainer />
-    <BCGovHeader />
-    <BCGovNavBar />
+    <AppHeader />
+    <AppNavBar />
 
     <v-main>
       <transition name="component-fade" mode="out-in">
@@ -10,21 +10,21 @@
       </transition>
     </v-main>
 
-    <BCGovFooter />
+    <AppFooter />
   </v-app>
 </template>
 
 <script>
-import BCGovHeader from '@/components/bcgov/BCGovHeader.vue';
-import BCGovFooter from '@/components/bcgov/BCGovFooter.vue';
-import BCGovNavBar from '@/components/bcgov/BCGovNavBar.vue';
+import AppHeader from '@/components/app/AppHeader.vue';
+import AppFooter from '@/components/app/AppFooter.vue';
+import AppNavBar from '@/components/app/AppNavBar.vue';
 
 export default {
   name: 'App',
   components: {
-    BCGovHeader,
-    BCGovFooter,
-    BCGovNavBar
+    AppHeader,
+    AppFooter,
+    AppNavBar
   }
 };
 </script>

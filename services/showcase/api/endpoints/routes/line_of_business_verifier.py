@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
+from api.db.repositories import SandboxRepository
 from api.endpoints.dependencies.db import get_db
 from api.db.repositories.line_of_business import LobRepository
 from api.db.repositories.job_applicant import ApplicantRepository
@@ -27,21 +28,21 @@ async def request_degree(
 ) -> None:
     a_repo = ApplicantRepository(db_session=db)
     lob_repo = LobRepository(db_session=db)
+    sb_repo = SandboxRepository(db_session=db)
 
     applicant = await a_repo.get_by_id_in_sandbox(sandbox_id, applicant_id)
     acme = await lob_repo.get_by_id_with_sandbox(sandbox_id, lob_id)
-    # going to get faber, so we can use their cred def id
-    faber = await lob_repo.get_by_name_with_sandbox(sandbox_id, "Faber")
+    sb = await sb_repo.get_by_id(sandbox_id)
 
     proof_req = {
         "requested_attributes": [
             {
                 "name": "degree",
-                "restrictions": [{"cred_def_id": faber.cred_def_id}],
+                "restrictions": [{"cred_def_id": sb.governance.cred_def_id}],
             },
             {
                 "name": "date",
-                "restrictions": [{"cred_def_id": faber.cred_def_id}],
+                "restrictions": [{"cred_def_id": sb.governance.cred_def_id}],
             },
         ],
         "requested_predicates": [
@@ -49,7 +50,7 @@ async def request_degree(
                 "name": "age",
                 "p_type": ">",
                 "p_value": 18,
-                "restrictions": [{"cred_def_id": faber.cred_def_id}],
+                "restrictions": [{"cred_def_id": sb.governance.cred_def_id}],
             }
         ],
     }
