@@ -1,6 +1,6 @@
 <template>
   <div v-if="presentationRequests && presentationRequests.length">
-    <v-card>
+    <v-card class="pa-3">
       <v-card-title> Pending Presentation Requests</v-card-title>
       <v-card
         v-for="pr in pendingPresentationRequests"
@@ -8,25 +8,50 @@
         class="ma-3"
       >
         <!-- this is not accurate, you will not know what the credential request is for... only in this specific demo -->
-        <v-card-title class="grey lighten-3 mb-3">{{ currentSandbox.governance.schema_def.name }}</v-card-title>
+        <v-card-title class="grey lighten-3 mb-3">{{
+          currentSandbox.governance.schema_def.name
+        }}</v-card-title>
         <v-card-text>
-          <template v-for="(value, key) in pr.presentation">
-            <div :key="key">
-              <b>{{ key }}:</b> {{ value }}
+          <div><b>Verifier: </b> {{ connection_label(pr.connection_id) }}</div>
+          <div
+            v-for="key in ['connection_id', 'created_at', 'present_state']"
+            :key="key"
+          >
+            <b>{{ key | keyToLabel }}: </b> {{ pr.presentation[key] }}
+          </div>
+          <hr />
+          <b>Requested Data:</b>
+          <ul>
+            <div
+              v-for="attr in JSON.parse(pr.presentation.present_request)
+                .requested_attributes"
+              :key="attr.name"
+            >
+              <li>
+                <b>{{ attr.name | keyToLabel }} </b>
+                <br /><i>RESTRICTIONS:</i> <br />
+                <div class="ml-2">
+                  <ul>
+                    <li>
+                      cred_def_id ==
+                      {{ attr.restrictions[0].cred_def_id }}
+                    </li>
+                  </ul>
+                </div>
+              </li>
             </div>
-          </template>
-          <!-- <v-expansion-panels>
+          </ul>
+
+          <v-expansion-panels>
             <v-expansion-panel>
               <v-expansion-panel-header> Details </v-expansion-panel-header>
               <v-expansion-panel-content>
-                <template v-for="(value, key) in co.credential">
-                  <div :key="key">
-                    <b>{{ key }}:</b> {{ value }}
-                  </div>
-                </template>
+                <div v-for="(value, key) in pr.presentation" :key="key">
+                  <b>{{ key | keyToLabel }}: </b> {{ value }}
+                </div>
               </v-expansion-panel-content>
             </v-expansion-panel>
-          </v-expansion-panels> -->
+          </v-expansion-panels>
         </v-card-text>
         <v-btn
           small
@@ -77,6 +102,10 @@ export default {
       'acceptPresentationRequest',
       'rejectPresentationRequest',
     ]),
+    connection_label() {
+      // This needs to take connection_id and map it through the store
+      return 'Acme';
+    },
     async accept(pres_req_id) {
       await this.acceptPresentationRequest(pres_req_id);
       await new Promise((r) => setTimeout(r, 1000)).then(() => {

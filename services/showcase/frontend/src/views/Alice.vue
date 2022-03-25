@@ -29,9 +29,9 @@
           <User />
         </v-col>
         <v-col cols="12" sm="8" md="6">
-          <CredentialOffers class="mb-4"/>
-          <PresentationRequests class="mb-4"/>
-          <Connections />
+          <CredentialOffers class="mb-4" />
+          <PresentationRequests class="mb-4" />
+          <Credentials />
         </v-col>
         <v-col cols="12" sm="4" md="3">
           <Messages />
@@ -49,7 +49,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 
-import Connections from '@/components/alice/Connections.vue';
+import Credentials from '@/components/alice/Credentials.vue';
 import CredentialOffers from '../components/alice/CredentialOffers.vue';
 import Messages from '@/components/alice/Messages.vue';
 import User from '@/components/alice/User.vue';
@@ -58,7 +58,7 @@ import PresentationRequests from '../components/alice/PresentationRequests.vue';
 export default {
   name: 'Alice',
   components: {
-    Connections,
+    Credentials,
     Messages,
     User,
     CredentialOffers,
