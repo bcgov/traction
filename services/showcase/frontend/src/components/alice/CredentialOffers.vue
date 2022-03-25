@@ -14,25 +14,27 @@
             currentSandbox.governance.schema_def.name
           }}</v-card-title>
           <v-card-text>
-            <template
-              v-for="(value, key) in JSON.parse(co.credential.credential)"
-            >
-              <div :key="key">
-                <b>{{ key }}:</b> {{ value }}
-              </div>
-            </template>
-            <v-expansion-panels>
-              <v-expansion-panel>
-                <v-expansion-panel-header> Details </v-expansion-panel-header>
-                <v-expansion-panel-content>
-                  <template v-for="(value, key) in co.credential">
-                    <div :key="key">
-                      <b>{{ key }}:</b> {{ value }}
-                    </div>
-                  </template>
-                </v-expansion-panel-content>
-              </v-expansion-panel>
-            </v-expansion-panels>
+            <div>
+              <b>Issuer: </b>
+              <!--Ideally this would link to a local 'connection details' page-->
+              <a target="_blank" :href="nym_link(co.credential.cred_def_id)">
+                {{ issuer_name() }}
+              </a>
+            </div>
+            <div v-for="key in ['cred_type', 'created_at']" :key="key">
+              <b>{{ key | keyToLabel }}: </b> {{ co.credential[key] }}
+            </div>
+            <h2 class="my-2"><u>Values:</u></h2>
+            <ul>
+              <template
+                v-for="attr in JSON.parse(co.credential.credential)
+                  .credential_proposal.attributes"
+              >
+                <li :key="attr.name">
+                  <b>{{ attr.name }}: </b>{{ attr.value }}
+                </li>
+              </template>
+            </ul>
           </v-card-text>
           <v-btn
             small
@@ -50,6 +52,18 @@
           >
             Reject
           </v-btn>
+          <!-- <v-expansion-panels>
+            <v-expansion-panel>
+              <v-expansion-panel-header> Raw </v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <template v-for="(value, key) in co.credential">
+                  <div :key="key">
+                    <b>{{ key }}:</b> {{ value }}
+                  </div>
+                </template>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels> -->
         </v-card>
       </v-card-text>
     </v-card>
@@ -84,6 +98,15 @@ export default {
       'acceptCredentialOffer',
       'rejectCredentialOffer',
     ]),
+
+    issuer_name() {
+      return 'Faber University';
+    },
+    nym_link(cred_def_id) {
+      return `http://test.bcovrin.vonx.io/browse/domain?page=1&query=${
+        cred_def_id.split(':')[0]
+      }&txn_type=1`;
+    },
     async accept(cred_offer_id) {
       await this.acceptCredentialOffer(cred_offer_id);
       await new Promise((r) => setTimeout(r, 1000)).then(() => {
