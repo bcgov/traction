@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-title> My Active Connections and Credentials</v-card-title>
+    <v-card-title> My Credentials</v-card-title>
     <v-card-text v-if="credentials && credentials.length">
       <v-card v-for="c in credentials" :key="c.id" class="ma-3">
         <v-card-title class="grey lighten-3 mb-3">{{
@@ -38,9 +38,7 @@
         </v-card-text>
       </v-card>
     </v-card-text>
-    <v-card-text v-else>
-      There are no active connections or credentials to show
-    </v-card-text>
+    <v-card-text v-else> There are no credentials to show </v-card-text>
   </v-card>
 </template>
 
@@ -48,7 +46,7 @@
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
-  name: 'AliceConnections',
+  name: 'AliceCredentials',
   data() {
     return {
       loading: false,
