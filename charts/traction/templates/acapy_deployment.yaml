@@ -59,6 +59,8 @@ spec:
            --auto-request-endorsement \
            --auto-write-transactions \
            --auto-create-revocation-transactions \
+           --notify-revocation \
+           --monitor-revocation-notification \
            {{- if .Values.acapy.adminInsecureMode }}
            --admin-insecure-mode \
            {{ else }}
