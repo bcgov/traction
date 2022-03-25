@@ -236,9 +236,9 @@ traction_api:
     ledger:
       browserUrlOverride: ""
       genesisUrlOverride: ""
-    gunicornWorkers: 4
-    defaultRetryAttempts: 20
-    defaultPauseBetweenAttempts: 3
+    webConcurrency: 4
+    defaultRetryAttempts: 30
+    defaultPauseBetweenAttempts: 5
   db:
     admin: tractionadminuser
     user: tractionuser
