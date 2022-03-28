@@ -238,7 +238,7 @@ traction_api:
       genesisUrlOverride: ""
     webConcurrency: 4
     defaultRetryAttempts: 30
-    defaultPauseBetweenAttempts: 5
+    defaultPauseBetweenAttempts: 3
   db:
     admin: tractionadminuser
     user: tractionuser

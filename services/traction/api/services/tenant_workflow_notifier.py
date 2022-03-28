@@ -26,6 +26,23 @@ class TenantWorkflowNotifier:
         """Accessor for db session instance."""
         return self._db
 
+    async def issuer_workflow_credential_acked(self, issued_cred: IssueCredentialRead):
+        logger.info("issued credential acknowledged")
+        # emit an event for any interested listeners
+        profile = Profile(issued_cred.wallet_id, self.db)
+        topic = TenantEventTopicType.issue_cred
+        event_topic = TRACTION_EVENT_PREFIX + topic
+        logger.info(f"profile.notify {event_topic}")
+
+        # TODO: Webhook payload schema's should become pydantic models?
+        payload = {
+            "status": issued_cred.issue_state,
+            "role": issued_cred.issue_role,
+            "issued_credential": issued_cred.json(),
+        }
+
+        await profile.notify(event_topic, {"topic": topic, "payload": payload})
+
     async def issuer_workflow_cred_offer(self, cred_offer: IssueCredentialRead):
         logger.info("received cred offer")
         # emit an event for any interested listeners

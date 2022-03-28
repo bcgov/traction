@@ -9,6 +9,8 @@ acapy:
     requests:
       cpu: 120m
       memory: 400Mi
+  tails:
+    enabled: true
 postgresql:
   fullnameOverride: 'pr-00-traction'
   resources:
