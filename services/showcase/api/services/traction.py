@@ -417,6 +417,8 @@ async def tenant_create_schema(
     schema: dict = None,
     schema_id: str = None,
     cred_def_tag: str = None,
+    revocable: bool = True,
+    revoc_reg_size: int = 10,
 ):
     auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
     data = schema
@@ -425,6 +427,10 @@ async def tenant_create_schema(
         params["schema_id"] = schema_id
     if cred_def_tag is not None:
         params["cred_def_tag"] = cred_def_tag
+    if revocable:
+        params["revocable"] = str(revocable)
+        params["revoc_reg_size"] = revoc_reg_size
+
     async with ClientSession() as client_session:
         async with await client_session.post(
             url=t_urls.TENANT_CREATE_SCHEMA,
@@ -474,6 +480,39 @@ async def tenant_issue_credential(
                 return resp
             except ContentTypeError:
                 logger.exception("Error issuing credential", exc_info=True)
+                text = await response.text()
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=text,
+                )
+
+
+async def tenant_revoke_credential(
+    wallet_id: UUID,
+    wallet_key: UUID,
+    rev_reg_id: str,
+    cred_rev_id: str,
+    comment: str,
+):
+    auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
+    data = {}
+    params = {
+        "rev_reg_id": rev_reg_id,
+        "cred_rev_id": cred_rev_id,
+        "comment": comment,
+    }
+    async with ClientSession() as client_session:
+        async with await client_session.post(
+            url=t_urls.TENANT_CREDENTIAL_REVOKE,
+            headers=auth_headers,
+            params=params,
+            json=data,
+        ) as response:
+            try:
+                resp = await response.json()
+                return resp
+            except ContentTypeError:
+                logger.exception("Error revoking credential", exc_info=True)
                 text = await response.text()
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
