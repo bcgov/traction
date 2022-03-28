@@ -1,4 +1,5 @@
 import logging
+import json
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -62,7 +63,7 @@ class ConnectionWorkflow(BaseWorkflow):
         if webhook_message["topic"] == "connections":
             try:
                 tenant_connection = (
-                    await connection_repo.get_by_wallet_and_endorser_connection_id(
+                    await connection_repo.get_by_wallet_and_connection_id(
                         profile.wallet_id,
                         webhook_message["payload"]["connection_id"],
                     )
@@ -157,8 +158,10 @@ class ConnectionWorkflow(BaseWorkflow):
         update_connection = TenantConnectionUpdate(
             id=tenant_connection.id,
             workflow_id=tenant_connection.workflow_id,
-            issue_state=tenant_connection.issue_state,
-            invitation=invitation,
+            connection_state=ConnectionStateType.invitation,
+            connection_id=invitation.connection_id,
+            invitation=json.dumps(invitation.invitation),
+            invitation_url=invitation.invitation_url,
         )
         tenant_connection = await self.connection_repo.update(update_connection)
         return tenant_connection
@@ -169,14 +172,15 @@ class ConnectionWorkflow(BaseWorkflow):
         logger.debug(">>> initiate connection request ...")
         invitation = receive_invitation(
             alias=tenant_connection.alias,
-            payload=tenant_connection.ivitation,
+            payload=json.loads(tenant_connection.invitation),
             their_public_did=tenant_connection.their_public_did,
         )
         update_connection = TenantConnectionUpdate(
             id=tenant_connection.id,
             workflow_id=tenant_connection.workflow_id,
-            issue_state=tenant_connection.issue_state,
-            invitation=invitation,
+            connection_state=ConnectionStateType.request,
+            connection_id=invitation.connection_id,
+            invitation=tenant_connection.invitation,
         )
         tenant_connection = await self.connection_repo.update(update_connection)
         return tenant_connection

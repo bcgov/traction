@@ -15,6 +15,7 @@ class TenantConnectionBase(BaseModel):
     connection_protocol: str = Field(nullable=True, default=None)
     connection_id: uuid.UUID = Field(nullable=True, default=None)
     invitation: str = Field(nullable=True, default=None)
+    invitation_url: str = Field(nullable=True, default=None)
     their_public_did: str = Field(nullable=True, default=None)
     # workflow_id will be null until the tenant kicks it off
     workflow_id: uuid.UUID = Field(nullable=True, default=None)
@@ -49,4 +50,5 @@ class TenantConnectionUpdate(BaseModel):
     connection_protocol: str = Field(nullable=True, default=None)
     connection_state: str = Field(nullable=True, default=None)
     invitation: str = Field(nullable=True, default=None)
+    invitation_url: str = Field(nullable=True, default=None)
     their_public_did: str = Field(nullable=True, default=None)

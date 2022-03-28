@@ -1,5 +1,6 @@
 import logging
 from typing import Optional
+import json
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -113,6 +114,7 @@ async def create_tenant_invitation(
     logger.debug(f">>> Created tenant_workflow: {tenant_workflow}")
     connection_update = TenantConnectionUpdate(
         id=tenant_connection.id,
+        connection_state=tenant_connection.connection_state,
         workflow_id=tenant_workflow.id,
     )
     tenant_connection = await connection_repo.update(connection_update)
@@ -136,13 +138,13 @@ async def create_tenant_invitation(
     return connection
 
 
-@router.post("/receive-invitation", response_model=Connection)
+@router.post("/receive-invitation", response_model=TenantConnectionData)
 async def receive_tenant_invitation(
     alias: str,
     payload: dict | None = None,
     their_public_did: str | None = None,
     db: AsyncSession = Depends(get_db),
-):
+) -> TenantConnectionData:
     existing_connection = get_connection_with_alias(alias)
     if existing_connection is not None:
         raise HTTPException(
@@ -159,7 +161,7 @@ async def receive_tenant_invitation(
         alias=alias,
         connection_role=ConnectionRoleType.invitee,
         connection_state=ConnectionStateType.start,
-        invitation=payload,
+        invitation=json.dumps(payload),
         their_public_did=their_public_did,
     )
     tenant_connection = await connection_repo.create(tenant_connection)
@@ -174,6 +176,9 @@ async def receive_tenant_invitation(
     logger.debug(f">>> Created tenant_workflow: {tenant_workflow}")
     connection_update = TenantConnectionUpdate(
         id=tenant_connection.id,
+        connection_state=tenant_connection.connection_state,
+        invitation=tenant_connection.invitation,
+        their_public_did=their_public_did,
         workflow_id=tenant_workflow.id,
     )
     tenant_connection = await connection_repo.update(connection_update)

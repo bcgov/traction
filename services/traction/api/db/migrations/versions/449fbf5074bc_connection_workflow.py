@@ -34,6 +34,7 @@ def upgrade():
         sa.Column("connection_protocol", sa.String(), nullable=True, default=False),
         sa.Column("connection_id", pg.UUID(as_uuid=True), nullable=True, default=False),
         sa.Column("invitation", sa.String(), nullable=True, default=False),
+        sa.Column("invitation_url", sa.String(), nullable=True, default=False),
         sa.Column("their_public_did", sa.String(), nullable=True, default=False),
         sa.Column("workflow_id", pg.UUID(as_uuid=True), nullable=True, default=False),
         sa.Column(
