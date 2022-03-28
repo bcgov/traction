@@ -206,6 +206,11 @@ class IssueCredentialWorkflow(BaseWorkflow):
                             issue_cred, webhook_message
                         )
 
+                        logger.info(f">>> sending credential acked: {issue_cred}")
+                        await self.workflow_notifier.issuer_workflow_credential_acked(
+                            issue_cred
+                        )
+
                         # finish off our workflow
                         await self.complete_workflow()
 

@@ -8,6 +8,8 @@ acapy:
     requests:
       cpu: 200m
       memory: 820Mi
+  tails:
+    enabled: true
 postgresql:
   resources:
     limits:
