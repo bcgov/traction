@@ -9,14 +9,15 @@ from api.db.models.base import BaseModel, BaseTable
 class TenantConnectionBase(BaseModel):
     tenant_id: uuid.UUID = Field(nullable=False)
     wallet_id: uuid.UUID = Field(nullable=False)
-    # workflow_id will be null until the tenant kcks it off
-    workflow_id: uuid.UUID = Field(nullable=True, default=None)
+    alias: str = Field(nullable=False)
     connection_role: str = Field(nullable=False)
-    connection_id: uuid.UUID = Field(nullable=False)
     connection_state: str = Field(nullable=False)
-    connection_protocol: str = Field(nullable=False)
+    connection_protocol: str = Field(nullable=True, default=None)
+    connection_id: uuid.UUID = Field(nullable=True, default=None)
     invitation: str = Field(nullable=True, default=None)
     their_public_did: str = Field(nullable=True, default=None)
+    # workflow_id will be null until the tenant kicks it off
+    workflow_id: uuid.UUID = Field(nullable=True, default=None)
 
 
 class TenantConnection(TenantConnectionBase, BaseTable, table=True):
@@ -45,4 +46,7 @@ class TenantConnectionUpdate(BaseModel):
     # so no need to worry about accidentally updating id or other fields
     id: uuid.UUID
     workflow_id: uuid.UUID = Field(nullable=True, default=None)
+    connection_protocol: str = Field(nullable=True, default=None)
     connection_state: str = Field(nullable=True, default=None)
+    invitation: str = Field(nullable=True, default=None)
+    their_public_did: str = Field(nullable=True, default=None)

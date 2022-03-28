@@ -1,5 +1,6 @@
 from typing import List, Type
 from uuid import UUID
+from pydantic import parse_obj_as
 from sqlalchemy import select
 
 from api.db.errors import DoesNotExist

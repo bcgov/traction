@@ -2,6 +2,7 @@ from enum import Enum
 
 
 class TenantWorkflowTypeType(str, Enum):
+    connection = "api.services.TenantConnectionWorkflow"
     issuer = "api.services.IssuerWorkflow"
     schema = "api.services.SchemaWorkflow"
     issue_cred = "api.services.IssueCredentialWorkflow"

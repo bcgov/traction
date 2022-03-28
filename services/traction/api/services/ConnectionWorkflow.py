@@ -1,11 +1,8 @@
 import logging
-import requests
-import time
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.api_client_utils import get_api_client
-from api.core.config import settings
 from api.core.event_bus import Event
 from api.core.profile import Profile
 from api.db.errors import DoesNotExist
@@ -16,6 +13,7 @@ from api.endpoints.models.connections import (
     ConnectionStateType,
     ConnectionRoleType,
 )
+from api.endpoints.dependencies.tenant_security import get_from_context
 from api.endpoints.models.tenant_workflow import (
     TenantWorkflowStateType,
 )
@@ -106,7 +104,9 @@ class ConnectionWorkflow(BaseWorkflow):
 
             # first step is to initiate the connection
             if tenant_connection.connection_role == ConnectionRoleType.inviter:
-                tenant_connection = await self.initiate_conn_invitation(tenant_connection)
+                tenant_connection = await self.initiate_conn_invitation(
+                    tenant_connection
+                )
 
             elif tenant_connection.connection_role == ConnectionRoleType.invitee:
                 tenant_connection = await self.initiate_conn_request(tenant_connection)
@@ -120,7 +120,6 @@ class ConnectionWorkflow(BaseWorkflow):
         # called on receipt of webhook, so need to put the proper tenant "in context"
         elif self.tenant_workflow.workflow_state == TenantWorkflowStateType.in_progress:
             webhook_topic = webhook_message["topic"]
-            complete_workflow = False
             logger.debug(f">>> run in_progress workflow for topic: {webhook_topic}")
             if webhook_topic == WebhookTopicType.connections:
                 if webhook_message["payload"].get("state"):
@@ -152,14 +151,34 @@ class ConnectionWorkflow(BaseWorkflow):
         self, tenant_connection: TenantConnectionRead
     ) -> TenantConnectionRead:
         logger.debug(">>> initiate connection invitation ...")
-        # TODO
+        invitation = create_invitation(
+            tenant_connection.alias, tenant_connection.connection_protocol
+        )
+        update_connection = TenantConnectionUpdate(
+            id=tenant_connection.id,
+            workflow_id=tenant_connection.workflow_id,
+            issue_state=tenant_connection.issue_state,
+            invitation=invitation,
+        )
+        tenant_connection = await self.connection_repo.update(update_connection)
         return tenant_connection
 
     async def initiate_conn_request(
         self, tenant_connection: TenantConnectionRead
     ) -> TenantConnectionRead:
         logger.debug(">>> initiate connection request ...")
-        # TODO
+        invitation = receive_invitation(
+            alias=tenant_connection.alias,
+            payload=tenant_connection.ivitation,
+            their_public_did=tenant_connection.their_public_did,
+        )
+        update_connection = TenantConnectionUpdate(
+            id=tenant_connection.id,
+            workflow_id=tenant_connection.workflow_id,
+            issue_state=tenant_connection.issue_state,
+            invitation=invitation,
+        )
+        tenant_connection = await self.connection_repo.update(update_connection)
         return tenant_connection
 
     async def update_connection_state(
