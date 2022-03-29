@@ -32,12 +32,14 @@ jobs:
           certificate_authority_data: ${{ secrets.OPENSHIFT_CA_CRT }}
           namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
       
-      - name: Uninstall via Helm 
+      - name: Uninstall via Helm
+        continue-on-error: true
         run: |
           helm uninstall pr-${{ github.event.number }}-showcase
           helm uninstall pr-${{ github.event.number }}-traction
       
-      - name: Remove Openshift Objects 
+      - name: Remove Openshift Objects
+        continue-on-error: true 
         run: |
           oc delete secret,pvc --selector "app.kubernetes.io/instance"=pr-${{ github.event.number }}-showcase
           oc delete secret,pvc --selector "app.kubernetes.io/instance"=pr-${{ github.event.number }}-traction
