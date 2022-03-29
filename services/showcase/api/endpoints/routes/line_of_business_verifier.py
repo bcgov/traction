@@ -38,6 +38,7 @@ async def request_degree(
     revoc = {"to": int(time())}
 
     proof_req = {
+        "non_revoked": revoc,
         "requested_attributes": [
             {
                 "name": "degree",
