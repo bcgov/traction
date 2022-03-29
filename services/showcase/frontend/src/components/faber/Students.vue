@@ -68,12 +68,12 @@
               v-bind="attrs"
               v-on="on"
             >
-              <v-icon v-if="hasRevocableCredential(item)">mdi-certificate-outline</v-icon>
-              <v-icon v-else color="#5e0000">mdi-certificate-outline</v-icon>
+              <v-icon v-if="credentialRevoked(item)" color="#5e0000">mdi-certificate-outline</v-icon>
+              <v-icon v-else>mdi-certificate-outline</v-icon>
             </v-btn>
           </template>
-          <span v-if="hasRevocableCredential(item)">View Issued Credential</span>
-          <span v-else>View Revoked Credential</span>
+          <span v-if="credentialRevoked(item)">View Revoked Credential</span>
+          <span v-else>View Issued Credential</span>
         </v-tooltip>
 
         <!-- View details -->
@@ -130,7 +130,7 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn v-if="selectedCredential.revocable" color="secondary" text @click="revokeStudentDegree()">
+          <v-btn v-if="canRevokeCredential(selectedCredential)" color="secondary" text @click="revokeStudentDegree()">
             Revoke
           </v-btn>
           <v-btn color="primary" text @click="degreeDialog = false">
@@ -218,10 +218,13 @@ export default {
       await this.revokeDegree(this.selectedStudent);
       this.degreeDialog = false;
     },
-    hasRevocableCredential(student) {
-      const credential = this.credentialList.find((c)=> c.data.student_id === student.student_id);
-      const result = credential ? credential.revocable : false;
+    credentialRevoked(student) {
+      const c = this.credentialList.find((c)=> c.data.student_id === student.student_id);
+      const result = c ? c.issue_state == 'credential_revoked' : false;
       return result;
+    },
+    canRevokeCredential(cred) {
+      return cred.revocable && cred.issue_state == 'credential_acked' && cred.workflow_state == 'completed';
     }
   },
   async mounted() {
