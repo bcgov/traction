@@ -89,16 +89,19 @@ jobs:
           certificate_authority_data: ${{ secrets.OPENSHIFT_CA_CRT }}
           namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
 
-      - name: Run tests in pod 
+      - name: Run tests in pod
+        continue-on-error: true 
         run: |
           API_POD=$(oc get pods -o name --selector app.kubernetes.io/instance=${{ github.event.inputs.instance_name }},app.kubernetes.io/name=${{ github.event.inputs.instance_name }}-api)
           kubectl exec $API_POD -- pytest -p no:cacheprovider --asyncio-mode=strict -m integtest --discord-webhook=${{ secrets.PYTEST_DISCORD_WEBHOOK }} --discord-attach-file
           
-      - name: Uninstall via Helm 
+      - name: Uninstall via Helm
+        continue-on-error: true 
         run: |
           helm uninstall "${{ github.event.inputs.instance_name }}"
       
       - name: Remove Openshift Objects 
+        continue-on-error: true
         run: |
           oc delete secret,pvc --selector "app.kubernetes.io/instance"="${{ github.event.inputs.instance_name }}"          
 
