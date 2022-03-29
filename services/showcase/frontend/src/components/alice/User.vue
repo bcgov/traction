@@ -7,7 +7,7 @@
       <p class="ml-3 pt-4">Alice</p>
     </v-card-title>
     <v-card-text>
-      <p class="text-center">Student @ Faber University</p>
+      <p class="text-center">Student @ Faber College</p>
       <hr />
       <p class="mt-3 mb-0">
         <strong>ID:</strong> {{ tenant.id }} <br />

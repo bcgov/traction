@@ -68,10 +68,12 @@
               v-bind="attrs"
               v-on="on"
             >
-              <v-icon>mdi-certificate-outline</v-icon>
+              <v-icon v-if="hasRevocableCredential(item)">mdi-certificate-outline</v-icon>
+              <v-icon v-else color="#5e0000">mdi-certificate-outline</v-icon>
             </v-btn>
           </template>
-          <span>View Issued Credential</span>
+          <span v-if="hasRevocableCredential(item)">View Issued Credential</span>
+          <span v-else>View Revoked Credential</span>
         </v-tooltip>
 
         <!-- View details -->
@@ -128,6 +130,9 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
+          <v-btn v-if="selectedCredential.revocable" color="secondary" text @click="revokeStudentDegree()">
+            Revoke
+          </v-btn>
           <v-btn color="primary" text @click="degreeDialog = false">
             Close
           </v-btn>
@@ -180,7 +185,9 @@ export default {
           'id': c.id,
           'cred_def_id': c.cred_def_id,
           'data': data,
-          'state': w.workflow_state,
+          'revocable': c.rev_reg_id !== null,
+          'issue_state': c.issue_state,
+          'workflow_state': w.workflow_state,
           'created_at': c.created_at,
           'updated_at': c.updated_at
         };
@@ -194,11 +201,10 @@ export default {
         return item;
       });
       return items;
-    },
-
+    }
   },
   methods: {
-    ...mapActions('faber', ['getStudents', 'inviteStudent', 'issueDegree', 'getIssuedCredentials']),
+    ...mapActions('faber', ['getStudents', 'inviteStudent', 'issueDegree', 'getIssuedCredentials', 'revokeDegree', 'refreshLob']),
     showStudentDetails(student) {
       this.selectedStudent = student;
       this.studentDialog = true;
@@ -207,6 +213,15 @@ export default {
       this.selectedStudent = student;
       this.selectedCredential = this.credentialList.find((c)=> c.data.student_id === student.student_id);
       this.degreeDialog = true;
+    },
+    async revokeStudentDegree() {
+      await this.revokeDegree(this.selectedStudent);
+      this.degreeDialog = false;
+    },
+    hasRevocableCredential(student) {
+      const credential = this.credentialList.find((c)=> c.data.student_id === student.student_id);
+      const result = credential ? credential.revocable : false;
+      return result;
     }
   },
   async mounted() {
