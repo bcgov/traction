@@ -3,7 +3,7 @@
     <v-parallax dark src="@/assets/images/library.jpg" class="faber-header">
       <v-row align="center" justify="center">
         <v-col class="text-center" cols="12">
-          <h1 class="mb-4" color="red">Faber University</h1>
+          <h1 class="mb-4" color="red">Faber College</h1>
           <h4 class="subheading">Student Registry</h4>
         </v-col>
       </v-row>

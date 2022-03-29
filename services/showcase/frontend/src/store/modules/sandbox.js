@@ -54,7 +54,7 @@ export default {
         const response = await lobService.makeIssuer(state.currentSandbox.id, tenantId);
         if (response) {
           dispatch('notifications/addNotification', {
-            message: 'The request to make Faber University an Issuer was recieved. Check back to see once it has processed',
+            message: 'The request to make Faber College an Issuer was received. Check back to see once it has processed',
             type: NotificationTypes.SUCCESS
           }, { root: true });
         }

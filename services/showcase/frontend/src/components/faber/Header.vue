@@ -2,11 +2,11 @@
   <v-row>
     <v-col cols="12" sm="6">
       <div v-if="tenant.cred_def_id">
-        <v-icon color="success">check_circle_outline</v-icon> Faber University
+        <v-icon color="success">check_circle_outline</v-icon> Faber College
         is an Issuer
       </div>
       <div v-else>
-        <v-icon color="error">error_outline</v-icon> Faber University has not
+        <v-icon color="error">error_outline</v-icon> Faber College has not
         met the criteria to be an Issuer yet
 
         <v-tooltip bottom>
