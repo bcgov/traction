@@ -160,9 +160,10 @@ export default {
   },
   /**
    * @function issueDegree
-   * Create a invitation
+   * Issue a degree to a student
    * @param {string} sandboxId The identifier for the sandbox
    * @param {string} lobId The identifier for the line of business
+   * @param {string} studentId The identifier for the student
    * @returns {Promise} An axios response
    */
   issueDegree(sandboxId, lobId, studentId) {
@@ -177,6 +178,17 @@ export default {
    */
   getIssuedCredentials(sandboxId, lobId) {
     return appAxios().get(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/issued-credentials`);
+  },
+  /**
+   * @function revokeDegree
+   * Revoke a degree from a student
+   * @param {string} sandboxId The identifier for the sandbox
+   * @param {string} lobId The identifier for the line of business
+   * @param {string} studentId The identifier for the student
+   * @returns {Promise} An axios response
+   */
+  revokeDegree(sandboxId, lobId, studentId) {
+    return appAxios().post(`${ApiRoutes.SANDBOXES}/${sandboxId}/lobs/${lobId}/students/${studentId}/revoke-degree`);
   },
   // -------------------------------------------------------------/issue
 

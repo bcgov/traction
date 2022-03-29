@@ -100,7 +100,7 @@ export default {
     ]),
 
     issuer_name() {
-      return 'Faber University';
+      return 'Faber College';
     },
     nym_link(cred_def_id) {
       return `http://test.bcovrin.vonx.io/browse/domain?page=1&query=${

@@ -51,7 +51,7 @@ export default {
         );
         if (response) {
           dispatch('notifications/addNotification', {
-            message: `Invited ${student.name} to connect to Faber University.`,
+            message: `Invited ${student.name} to connect to Faber College.`,
             type: NotificationTypes.SUCCESS
           }, { root: true });
         }
@@ -73,7 +73,7 @@ export default {
         );
         if (response) {
           dispatch('notifications/addNotification', {
-            message: `Issued a Degree Credential from Faber University to ${student.name}.`,
+            message: `Issued a Degree Credential from ${state.tenant.name} to ${student.name}.`,
             type: NotificationTypes.SUCCESS
           }, { root: true });
         }
@@ -97,6 +97,28 @@ export default {
         dispatch('notifications/addNotification', {
           message: 'An error occurred while fetching the Issued Credentials list.',
           consoleError: `Error getting issued credentials: ${error}`,
+        }, { root: true });
+      }
+    },
+    // Revoke a degree from a student
+    async revokeDegree({ dispatch, rootState, state }, student) {
+      try {
+        const response = lobService.revokeDegree(
+          rootState.sandbox.currentSandbox.id,
+          state.tenant.id,
+          student.id
+        );
+        if (response) {
+          dispatch('notifications/addNotification', {
+            message: `Revoking Degree Credential from ${student.name}.`,
+            type: NotificationTypes.SUCCESS
+          }, { root: true });
+        }
+      }
+      catch (error) {
+        dispatch('notifications/addNotification', {
+          message: `An error while issuing the degree to ${student.name}.`,
+          consoleError: `Error issuing degree: ${error}`,
         }, { root: true });
       }
     },

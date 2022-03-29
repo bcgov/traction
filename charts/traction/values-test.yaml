@@ -1,5 +1,8 @@
 global:
   ingressSuffix: -test.apps.silver.devops.gov.bc.ca
+acapy:
+  tails:
+    enabled: true
 traction_api:
   image:
     tag: "ghcr.io/bcgov/traction-api:sha-0bd01da"
