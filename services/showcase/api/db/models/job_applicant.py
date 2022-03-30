@@ -17,6 +17,7 @@ class ApplicantBase(BaseModel):
     # just want their degree and date of degree
     degree: Optional[str] = Field(default=None, nullable=True)
     date: Optional[datetime] = Field(default=None, nullable=True)
+    verified: Optional[str] = Field(default=None, nullable=True)
 
     # track invitation information
     # this is for this LOB to track this entity in Traction
@@ -53,6 +54,7 @@ class ApplicantRead(ApplicantBase):
     updated_at: datetime
     degree: Optional[str] = None
     date: Optional[datetime] = None
+    verified: Optional[str] = None
 
 
 class ApplicantUpdate(ApplicantBase):
@@ -67,6 +69,7 @@ class ApplicantCreateFactory(ModelFactory):
 
     name = Use(Faker().name)
     degree = None
+    verified = True
     date = None
     wallet_id = None
     alias = None

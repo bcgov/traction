@@ -169,6 +169,7 @@ async def handle_present_proof(lob: Lob, payload: dict, db: AsyncSession):
 
             applicant.degree = attr_1["raw"]
             applicant.date = datetime.strptime(attr_2["raw"], "%d-%m-%Y")
+            applicant.verified = payload["verified"]
             await a_repo.update(applicant)
 
             # notify frontend?

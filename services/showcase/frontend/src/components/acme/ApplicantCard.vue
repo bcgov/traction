@@ -5,7 +5,11 @@
     tile
     @click="SET_SELECTED_APPLICANT(applicant)"
   >
-    <v-system-bar color="rgba(0, 160, 144)" />
+    <v-system-bar
+      v-if="applicant.verified === 'false'"
+      color="rgba(200, 060, 74)"
+    />
+    <v-system-bar v-else color="rgba(0, 160, 144)" />
     <v-list-item three-line>
       <v-list-item-content>
         <div class="text-overline mb-4" v-if="applicant.alias">
@@ -15,7 +19,23 @@
           {{ applicant.name }}
         </v-list-item-title>
         <v-list-item-subtitle>
-          Degree: {{ applicant.degree }} <br />
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon
+                v-if="applicant.verified === 'false'"
+                v-bind="attrs"
+                v-on="on"
+                small
+                color="#DC143C"
+              >
+                error
+              </v-icon>
+            </template>
+            <span>ERROR: DATA COULD NOT BE VERIFIED</span>
+          </v-tooltip>
+          Degree: {{ applicant.degree }}
+          <br />
+
           Invitation State: {{ applicant.invitation_state }}
           <v-icon v-if="applicant.invitation_state === 'completed'" small>
             check_circle
