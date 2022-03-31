@@ -179,7 +179,7 @@ async def connect_tenants(
     resp_connection = await app_client.post(
         "/tenant/v1/connections/receive-invitation",
         params=data,
-        json=invitation["invitation"],
+        json=json.loads(invitation["connection"]["invitation"]),
         headers=t2_headers,
     )
     assert resp_connection.status_code == 200, resp_connection.content

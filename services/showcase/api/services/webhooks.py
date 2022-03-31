@@ -28,24 +28,23 @@ async def handle_connections(lob: Lob, payload: dict, db: AsyncSession):
     #   applicant (ie they accepted)
     # we want to track the state of the invitation.
     try:
-        if payload["invitation_key"] and payload["invitation_msg_id"]:
-            # student should only get an invitation from Faber
-            if payload["alias"] == "Faber":
-                stu_repo = StudentRepository(db_session=db)
-                student = await stu_repo.get_by_alias_in_sandbox(
-                    lob.sandbox_id, lob.name
-                )
-                student.invitation_state = payload["state"]
-                await stu_repo.update(student)
+        connection = json.loads(payload["connection"])
+        # student should only get an invitation from Faber
+        if connection["alias"] == "Faber":
+            stu_repo = StudentRepository(db_session=db)
+            student = await stu_repo.get_by_alias_in_sandbox(lob.sandbox_id, lob.name)
+            student.invitation_state = connection["connection_state"]
+            await stu_repo.update(student)
 
-            # applications will get invitation from Acme
-            if payload["alias"] == "Acme":
-                a_repo = ApplicantRepository(db_session=db)
-                appl = await a_repo.get_by_alias_in_sandbox(lob.sandbox_id, lob.name)
-                appl.invitation_state = payload["state"]
-                await a_repo.update(appl)
+        # applications will get invitation from Acme
+        if connection["alias"] == "Acme":
+            a_repo = ApplicantRepository(db_session=db)
+            appl = await a_repo.get_by_alias_in_sandbox(lob.sandbox_id, lob.name)
+            appl.invitation_state = connection["connection_state"]
+            await a_repo.update(appl)
 
     except KeyError:
+        logger.warn(f"KeyError: {payload}")
         pass
 
     return True
@@ -175,6 +174,7 @@ async def handle_present_proof(lob: Lob, payload: dict, db: AsyncSession):
 
             applicant.degree = attr_1["raw"]
             applicant.date = datetime.strptime(attr_2["raw"], "%d-%m-%Y")
+            applicant.verified = payload["verified"]
             await a_repo.update(applicant)
 
             # notify frontend?
@@ -228,19 +228,22 @@ async def handle_webhook(lob: Lob, topic: str, payload: dict, db: AsyncSession):
             },
         }
     )
-    if "connections" == topic:
+    # topic = "connections" is the acapy event, ignore that one
+    if "connection" == topic:
         return await handle_connections(lob, payload, db)
-    if "issuer" == topic:
+    elif "issuer" == topic:
         return await handle_issuer(lob, payload, db)
-    if "schema" == topic:
+    elif "schema" == topic:
         return await handle_schema(lob, payload, db)
     # topic = "issue_credential" is the acapy event, ignore that one
-    if "issue_cred" == topic:
+    elif "issue_cred" == topic:
         return await handle_issue_credential(lob, payload, db)
-    if "present_req" == topic:
+    elif "present_req" == topic:
         return await handle_presentation_request(lob, payload, db)
-    if "present_proof" == topic:
+    elif "present_proof" == topic:
         return await handle_present_proof(lob, payload, db)
-    if "issuer_cred_rev" == topic:
+    elif "issuer_cred_rev" == topic:
         return await handle_credential_revoked(lob, payload, db)
+    else:
+        logger.warn(f"Ignoring event for topic {topic}")
     return False
