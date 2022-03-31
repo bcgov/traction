@@ -26,9 +26,7 @@ async def handle_connections(lob: Lob, payload: dict, db: AsyncSession):
         # student should only get an invitation from Faber
         if connection["alias"] == "Faber":
             stu_repo = StudentRepository(db_session=db)
-            student = await stu_repo.get_by_alias_in_sandbox(
-                lob.sandbox_id, lob.name
-            )
+            student = await stu_repo.get_by_alias_in_sandbox(lob.sandbox_id, lob.name)
             student.invitation_state = connection["connection_state"]
             await stu_repo.update(student)
 
