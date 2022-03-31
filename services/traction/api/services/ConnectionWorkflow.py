@@ -135,8 +135,11 @@ class ConnectionWorkflow(BaseWorkflow):
                         webhook_state == ConnectionStateType.active
                         or webhook_state == ConnectionStateType.completed
                     ):
-                        tenant_connection = await self.complete_connection(
-                            tenant_connection, webhook_message
+                        logger.info(
+                            f">>> sending connection active: {tenant_connection}"
+                        )
+                        await self.workflow_notifier.issuer_workflow_connection_active(
+                            tenant_connection
                         )
 
                         # finish off our workflow

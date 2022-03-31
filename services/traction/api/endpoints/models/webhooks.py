@@ -59,6 +59,7 @@ WEBHOOK_ISSUER_CRED_REV_NOTIFY_LISTENER_PATTERN = re.compile(
 
 
 class TenantEventTopicType(str, Enum):
+    connection = "connection"
     issuer = "issuer"
     schema = "schema"
     issue_cred = "issue_cred"
