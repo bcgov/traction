@@ -3,6 +3,9 @@
     <v-card-title> My Credentials</v-card-title>
     <v-card-text v-if="credentials && credentials.length">
       <v-card v-for="c in credentials" :key="c.id" class="ma-3">
+        <v-system-bar v-if="revokedMsg" color="rgba(200, 060, 74)" style="justify-content: center">
+          <b style="color: white;font-size: large;">{{ revokedMsg }}</b>
+        </v-system-bar>
         <v-card-title class="grey lighten-3 mb-3">{{
           currentSandbox.governance.schema_def.name
         }}</v-card-title>
@@ -50,14 +53,15 @@ export default {
   data() {
     return {
       loading: false,
+      revokedMsg: undefined
     };
   },
   computed: {
     ...mapGetters('sandbox', ['currentSandbox']),
-    ...mapGetters('alice', ['credentials']),
+    ...mapGetters('alice', ['credentials', 'ofbMessages']),
   },
   methods: {
-    ...mapActions('alice', ['getCredentials']),
+    ...mapActions('alice', ['getCredentials', 'getOfbMessages']),
     issuer_name() {
       return 'Faber College';
     },
@@ -69,6 +73,9 @@ export default {
   },
   async mounted() {
     await this.getCredentials();
+    await this.getOfbMessages();
+    const revoked = this.ofbMessages.find(x => x.msg_type === 'Revocation');
+    this.revokedMsg = revoked ? revoked.msg.comment : undefined;
     this.loading = false;
   },
 };

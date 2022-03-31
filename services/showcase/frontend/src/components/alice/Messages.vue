@@ -11,42 +11,55 @@
           <ul>
             <li v-for="msg in ofbMessages" :key="msg.id" class="mb-4">
               <!-- Message Details -->
-              <h3>
-                {{ msg.msg_type }}
-                <small class="ml-3" v-if="msg.action === 'Accepted'">
-                  <v-icon small color="success">check_circle </v-icon>
-                  {{ msg.action }}
-                </small>
-                <small class="ml-3" v-else-if="msg.action === 'Rejected'">
-                  <v-icon small color="error">cancel </v-icon>
-                  {{ msg.action }}
-                </small>
-              </h3>
-              {{ msg.created_at | formatDateLong }} <br />
-              <strong>From:</strong> {{ msg.sender.name }}<br />
-              <strong>To:</strong> {{ msg.recipient.name }} <br />
+              <div v-if="msg.msg_type === 'Invitation'">
+                <h3>
+                  {{ msg.msg_type }}
+                  <small class="ml-3" v-if="msg.action === 'Accepted'">
+                    <v-icon small color="success">check_circle </v-icon>
+                    {{ msg.action }}
+                  </small>
+                  <small class="ml-3" v-else-if="msg.action === 'Rejected'">
+                    <v-icon small color="error">cancel </v-icon>
+                    {{ msg.action }}
+                  </small>
+                </h3>
+                {{ msg.created_at | formatDateLong }} <br />
+                <strong>From:</strong> {{ msg.sender.name }}<br />
+                <strong>To:</strong> {{ msg.recipient.name }} <br />
 
-              <!-- Accept, reject -->
-              <v-btn
-                v-if="!msg.action"
-                small
-                color="primary"
-                class="white--text mr-4"
-                @click="accept(msg)"
-              >
-                Accept
-              </v-btn>
-              <v-btn
-                v-if="!msg.action"
-                small
-                color="error"
-                class="white--text mr-4"
-                @click="reject(msg)"
-              >
-                Reject
-              </v-btn>
+                <!-- Accept, reject -->
+                <v-btn
+                  v-if="!msg.action"
+                  small
+                  color="primary"
+                  class="white--text mr-4"
+                  @click="accept(msg)"
+                >
+                  Accept
+                </v-btn>
+                <v-btn
+                  v-if="!msg.action"
+                  small
+                  color="error"
+                  class="white--text mr-4"
+                  @click="reject(msg)"
+                >
+                  Reject
+                </v-btn>
 
-              <v-btn small outlined @click="showRawMsg(msg)"> Details </v-btn>
+                <v-btn small outlined @click="showRawMsg(msg)"> Details </v-btn>
+              </div>
+              <div v-if="msg.msg_type === 'Revocation'">
+                <h3>
+                  {{ msg.msg_type }}
+                  <small class="ml-3">
+                    <v-icon small color="error">cancel</v-icon>
+                  </small>
+                </h3>
+                {{ msg.created_at | formatDateLong }} <br />
+                {{ msg.msg.comment }} <br />
+                <v-btn small outlined @click="showRawMsg(msg)"> Details </v-btn>
+              </div>
             </li>
           </ul>
         </div>
