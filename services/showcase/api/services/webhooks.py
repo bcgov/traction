@@ -7,7 +7,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.db.models import Lob
 from api.db.models.line_of_business import LobUpdate
-from api.db.repositories import LobRepository, SandboxRepository, StudentRepository
+from api.db.models.out_of_band import OutOfBandCreate
+from api.db.repositories import (
+    LobRepository,
+    SandboxRepository,
+    StudentRepository,
+    OutOfBandRepository,
+)
 from api.db.repositories.job_applicant import ApplicantRepository
 from api.services.websockets import notifier
 from api.services import traction
@@ -178,6 +184,36 @@ async def handle_present_proof(lob: Lob, payload: dict, db: AsyncSession):
     return True
 
 
+async def handle_credential_revoked(lob: Lob, payload: dict, db: AsyncSession):
+    logger.info(f"handle_credential_revoked(lob={lob.name}, payload={payload})")
+    try:
+        # there are 2 different payloads, one for issuer and one for holder.
+        # perhaps we need different topics?
+        if "cred_def_id" in payload:
+            # this is for the issuer...
+            pass
+        if "credential" in payload:
+            # this is for the holder...
+            # use holder lob id for both sender and recipient
+            # we just want to surface a message to the holder that a credential
+            # has been revoked
+            payload["credential"] = json.loads(payload["credential"])
+            oob_repo = OutOfBandRepository(db_session=db)
+            oob = OutOfBandCreate(
+                sandbox_id=lob.sandbox_id,
+                sender_id=lob.id,
+                recipient_id=lob.id,
+                msg_type="Revocation",
+                msg=payload,
+            )
+            await oob_repo.create(oob)
+
+    except KeyError:
+        pass
+
+    return True
+
+
 async def handle_webhook(lob: Lob, topic: str, payload: dict, db: AsyncSession):
     logger.info(f"handle_webhook(lob = {lob.name}, topic = {topic})")
     # TODO - make proper notifications to FE that are useful...
@@ -205,4 +241,6 @@ async def handle_webhook(lob: Lob, topic: str, payload: dict, db: AsyncSession):
         return await handle_presentation_request(lob, payload, db)
     if "present_proof" == topic:
         return await handle_present_proof(lob, payload, db)
+    if "issuer_cred_rev" == topic:
+        return await handle_credential_revoked(lob, payload, db)
     return False

@@ -8,6 +8,7 @@
         }}</v-card-title>
         <v-card-text>
           <ul>
+            <li v-if="revokedMsg"><b style="color: darkred;font-size: x-large;">{{ revokedMsg }}</b></li>
             <li><b>Degree: </b>{{ c.attrs.degree }}</li>
             <li><b>Completion Date: </b>{{ c.attrs.date }}</li>
             <li><b>Name: </b>{{ c.attrs.name }}</li>
@@ -50,14 +51,15 @@ export default {
   data() {
     return {
       loading: false,
+      revokedMsg: undefined
     };
   },
   computed: {
     ...mapGetters('sandbox', ['currentSandbox']),
-    ...mapGetters('alice', ['credentials']),
+    ...mapGetters('alice', ['credentials', 'ofbMessages']),
   },
   methods: {
-    ...mapActions('alice', ['getCredentials']),
+    ...mapActions('alice', ['getCredentials', 'getOfbMessages']),
     issuer_name() {
       return 'Faber College';
     },
@@ -69,6 +71,9 @@ export default {
   },
   async mounted() {
     await this.getCredentials();
+    await this.getOfbMessages();
+    const revoked = this.ofbMessages.find(x => x.msg_type === 'Revocation');
+    this.revokedMsg = revoked ? revoked.msg.comment : undefined;
     this.loading = false;
   },
 };
