@@ -52,6 +52,9 @@
               <div v-if="msg.msg_type === 'Revocation'">
                 <h3>
                   {{ msg.msg_type }}
+                  <small class="ml-3">
+                    <v-icon small color="error">cancel</v-icon>
+                  </small>
                 </h3>
                 {{ msg.created_at | formatDateLong }} <br />
                 {{ msg.msg.comment }} <br />

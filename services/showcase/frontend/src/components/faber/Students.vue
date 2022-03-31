@@ -68,7 +68,7 @@
               v-bind="attrs"
               v-on="on"
             >
-              <v-icon v-if="credentialRevoked(item)" color="#5e0000">mdi-certificate-outline</v-icon>
+              <v-icon v-if="credentialRevoked(item)" color="rgba(200, 060, 74)">mdi-certificate-outline</v-icon>
               <v-icon v-else>mdi-certificate-outline</v-icon>
             </v-btn>
           </template>

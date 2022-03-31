@@ -3,12 +3,14 @@
     <v-card-title> My Credentials</v-card-title>
     <v-card-text v-if="credentials && credentials.length">
       <v-card v-for="c in credentials" :key="c.id" class="ma-3">
+        <v-system-bar v-if="revokedMsg" color="rgba(200, 060, 74)" style="justify-content: center">
+          <b style="color: white;font-size: large;">{{ revokedMsg }}</b>
+        </v-system-bar>
         <v-card-title class="grey lighten-3 mb-3">{{
           currentSandbox.governance.schema_def.name
         }}</v-card-title>
         <v-card-text>
           <ul>
-            <li v-if="revokedMsg"><b style="color: darkred;font-size: x-large;">{{ revokedMsg }}</b></li>
             <li><b>Degree: </b>{{ c.attrs.degree }}</li>
             <li><b>Completion Date: </b>{{ c.attrs.date }}</li>
             <li><b>Name: </b>{{ c.attrs.name }}</li>
