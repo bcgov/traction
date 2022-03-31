@@ -159,6 +159,7 @@ class ConnectionWorkflow(BaseWorkflow):
             id=tenant_connection.id,
             workflow_id=tenant_connection.workflow_id,
             connection_state=ConnectionStateType.invitation,
+            connection_protocol=tenant_connection.connection_protocol,
             connection_id=invitation.connection_id,
             invitation=json.dumps(invitation.invitation),
             invitation_url=invitation.invitation_url,
@@ -192,7 +193,12 @@ class ConnectionWorkflow(BaseWorkflow):
         update_connection = TenantConnectionUpdate(
             id=tenant_connection.id,
             workflow_id=self.tenant_workflow.id,
-            issue_state=state,
+            connection_state=state,
+            connection_protocol=tenant_connection.connection_protocol,
+            connection_id=tenant_connection.connection_id,
+            invitation=tenant_connection.invitation,
+            invitation_url=tenant_connection.invitation_url,
+            their_public_did=tenant_connection.their_public_did,
         )
         tenant_connection = await self.connection_repo.update(update_connection)
         return tenant_connection

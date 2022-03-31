@@ -1,6 +1,7 @@
 import uuid
 import datetime
 from typing import Optional
+import json
 
 import pydantic
 from fastapi import HTTPException
@@ -232,7 +233,7 @@ async def create_invitation_for_student(
             sender_id=lob.id,
             recipient_id=recipient_lob.id,
             msg_type="Invitation",
-            msg=resp["invitation"],
+            msg=json.loads(resp["invitation"]),
         )
         await oob_repo.create(oob)
 
@@ -243,7 +244,7 @@ async def create_invitation_for_student(
     return InviteStudentResponse(
         student_id=student.id,
         connection_id=uuid.UUID(resp["connection_id"]),
-        invitation=resp["invitation"],
+        invitation=json.loads(resp["invitation"]),
     )
 
 
@@ -290,7 +291,7 @@ async def create_invitation_for_applicant(
             sender_id=lob.id,
             recipient_id=recipient_lob.id,
             msg_type="Invitation",
-            msg=resp["invitation"],
+            msg=json.loads(resp["invitation"]),
         )
         await oob_repo.create(oob)
 
@@ -301,7 +302,7 @@ async def create_invitation_for_applicant(
     return InviteApplicantResponse(
         applicant_id=appl.id,
         connection_id=uuid.UUID(resp["connection_id"]),
-        invitation=resp["invitation"],
+        invitation=json.loads(resp["invitation"]),
     )
 
 

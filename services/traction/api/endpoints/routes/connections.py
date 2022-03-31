@@ -114,8 +114,10 @@ async def create_tenant_invitation(
     logger.debug(f">>> Created tenant_workflow: {tenant_workflow}")
     connection_update = TenantConnectionUpdate(
         id=tenant_connection.id,
-        connection_state=tenant_connection.connection_state,
         workflow_id=tenant_workflow.id,
+        connection_state=tenant_connection.connection_state,
+        connection_protocol=tenant_connection.connection_protocol,
+        connection_id=tenant_connection.connection_id,
     )
     tenant_connection = await connection_repo.update(connection_update)
     logger.debug(f">>> Updated tenant_connection: {tenant_connection}")
@@ -177,6 +179,8 @@ async def receive_tenant_invitation(
     connection_update = TenantConnectionUpdate(
         id=tenant_connection.id,
         connection_state=tenant_connection.connection_state,
+        connection_protocol=tenant_connection.connection_protocol,
+        connection_id=tenant_connection.connection_id,
         invitation=tenant_connection.invitation,
         their_public_did=their_public_did,
         workflow_id=tenant_workflow.id,

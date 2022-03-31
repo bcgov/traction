@@ -334,7 +334,8 @@ async def create_invitation(
         ) as response:
             try:
                 resp = await response.json()
-                return resp
+                connection = resp["connection"]
+                return connection
             except ContentTypeError:
                 logger.exception("Error creating invitation", exc_info=True)
                 text = await response.text()
@@ -360,7 +361,8 @@ async def accept_invitation(
         ) as response:
             try:
                 resp = await response.json()
-                return resp
+                connection = resp["connection"]
+                return connection
             except ContentTypeError:
                 logger.exception("Error accepting invitation", exc_info=True)
                 text = await response.text()
