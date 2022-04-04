@@ -2,19 +2,19 @@
 
 ## Architecture
 
-The Traction Showcase App is a front end implementing (at this time) the "Alice, Faber, Acme" demo use case to show example Line Of Business applicaiton useage of Traction.
+The Traction Showcase App is a front end implementing (at this time) the "Alice, Faber, Acme" demo use case to show an example Line Of Business application usage of Traction.
 
 The showcase app is a separate standalone application from Traction and consists of the following parts
 
-- The showcase API. A REST API built on FastAPI. Interacts with Traction, and does "showcase LOB" buisness logic.
+- The showcase API. A REST API built on FastAPI. Interacts with Traction, and does "showcase LOB" business logic.
 - The showcase front end. A VUE SPA served from the root (/) of the showcase API and calling the showcase API for all actions.
 - A Postgres database keeping showcase app LOB data etc
 
-So the showcase app needs to talk to an exsiting Traction and Aca-py environment to perform its functionality.
+So the showcase app needs to talk to an existing Traction and Aca-py environment to perform its functionality.
 
 ## Local Development/Usage
 
-The Showcase Applicaiton interfaces with a Traction/Aca-py environment so standing up just the showcase app won't do much. The Traction repo docker compose scripts (in this repo at `\traction\scripts`) could be used to stand up the Traction infrastructure, and build and start up the showcase API (be sure to copy the `.env-examples` file over to a local `.env`):
+The Showcase Application interfaces with a Traction/Aca-py environment so standing up just the showcase app won't do much. The Traction repo docker compose scripts (in this repo at `\traction\scripts`) could be used to stand up the Traction infrastructure, and build and start up the showcase API (be sure to copy the `.env-examples` file over to a local `.env`):
 
 `docker-compose -f docker-compose.yml -f docker-compose.showcase.yml up --build`
 
