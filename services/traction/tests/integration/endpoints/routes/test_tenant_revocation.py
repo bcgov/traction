@@ -76,7 +76,7 @@ async def test_tenants_issue_cred_req_proof_revoke(
 
     # should be zero credentials for our t2
     creds_resp = await app_client.get(
-        "/tenant/v1/credentials/holder/", headers=t2_headers
+        "/tenant/v0/credentials/holder/", headers=t2_headers
     )
     assert creds_resp.status_code == 200, creds_resp.content
     assert 0 == len(json.loads(creds_resp.content)), creds_resp.content
@@ -101,7 +101,7 @@ async def test_tenants_issue_cred_req_proof_revoke(
 
     # should be one credentials for our t2
     creds_resp = await app_client.get(
-        "/tenant/v1/credentials/holder/", headers=t2_headers
+        "/tenant/v0/credentials/holder/", headers=t2_headers
     )
     assert creds_resp.status_code == 200, creds_resp.content
     held_credentials = json.loads(creds_resp.content)

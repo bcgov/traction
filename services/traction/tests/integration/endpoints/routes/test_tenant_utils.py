@@ -86,7 +86,7 @@ async def create_tenant(
     tenant1_name = random_string(tenant_name, 12)
     data = {"name": tenant1_name}
     resp_tenant1 = await app_client.post(
-        "/innkeeper/v1/check-in", json=data, headers=ik_headers
+        "/innkeeper/v0/check-in", json=data, headers=ik_headers
     )
     assert resp_tenant1.status_code == 201, resp_tenant1.content
     c1_resp = CheckInResponse(**resp_tenant1.json())
@@ -98,14 +98,14 @@ async def create_tenant(
         return t1_headers
 
     resp_issuer1 = await app_client.post(
-        f"/innkeeper/v1/issuers/{c1_resp.id}", headers=ik_headers
+        f"/innkeeper/v0/issuers/{c1_resp.id}", headers=ik_headers
     )
     assert resp_issuer1.status_code == 200, resp_issuer1.content
 
-    resp_issuer1 = await app_client.post("/tenant/v1/admin/issuer", headers=t1_headers)
+    resp_issuer1 = await app_client.post("/tenant/v0/admin/issuer", headers=t1_headers)
     assert resp_issuer1.status_code == 200, resp_issuer1.content
 
-    await check_workflow_state(app_client, t1_headers, "/tenant/v1/admin/issuer")
+    await check_workflow_state(app_client, t1_headers, "/tenant/v0/admin/issuer")
 
     return t1_headers
 
@@ -122,7 +122,7 @@ async def create_schema_cred_def(
     """Create a schema and/or credential definition for the given issuer tenant."""
 
     # make sure our tenant is actually an issuer
-    resp_issuer1 = await app_client.get("/tenant/v1/admin/issuer", headers=t1_headers)
+    resp_issuer1 = await app_client.get("/tenant/v0/admin/issuer", headers=t1_headers)
     assert resp_issuer1.status_code == 200, resp_issuer1.content
     issuer = json.loads(resp_issuer1.content)
     assert issuer.get("workflow")
@@ -133,7 +133,7 @@ async def create_schema_cred_def(
         params["revocable"] = revocable
         params["revoc_reg_size"] = revoc_reg_size
     schema_resp = await app_client.post(
-        "/tenant/v1/admin/schema", headers=t1_headers, params=params, json=schema
+        "/tenant/v0/admin/schema", headers=t1_headers, params=params, json=schema
     )
     assert schema_resp.status_code == 200, schema_resp.content
     schema = json.loads(schema_resp.content)
@@ -143,10 +143,10 @@ async def create_schema_cred_def(
     await asyncio.sleep(default_pause_between_attempts)
 
     await check_workflow_state(
-        app_client, t1_headers, "/tenant/v1/admin/schema", workflow_id=workflow_id
+        app_client, t1_headers, "/tenant/v0/admin/schema", workflow_id=workflow_id
     )
 
-    schema_resp = await app_client.get("/tenant/v1/admin/schema", headers=t1_headers)
+    schema_resp = await app_client.get("/tenant/v0/admin/schema", headers=t1_headers)
     assert schema_resp.status_code == 200, schema_resp.content
 
     schemas = json.loads(schema_resp.content)
@@ -169,7 +169,7 @@ async def connect_tenants(
 
     data = {"alias": t1_alias, "invitation_type": invitation_type}
     resp_invitation = await app_client.post(
-        "/tenant/v1/connections/create-invitation", params=data, headers=t1_headers
+        "/tenant/v0/connections/create-invitation", params=data, headers=t1_headers
     )
     assert resp_invitation.status_code == 200, resp_invitation.content
 
@@ -177,7 +177,7 @@ async def connect_tenants(
 
     data = {"alias": t2_alias}
     resp_connection = await app_client.post(
-        "/tenant/v1/connections/receive-invitation",
+        "/tenant/v0/connections/receive-invitation",
         params=data,
         json=json.loads(invitation["connection"]["invitation"]),
         headers=t2_headers,
@@ -188,14 +188,14 @@ async def connect_tenants(
     completed = False
     while 0 < i and not completed:
         t1_connections_resp = await app_client.get(
-            "/tenant/v1/connections/", headers=t1_headers, params={"alias": t1_alias}
+            "/tenant/v0/connections/", headers=t1_headers, params={"alias": t1_alias}
         )
         assert t1_connections_resp.status_code == 200, t1_connections_resp.content
         t1_connections = json.loads(t1_connections_resp.content)
         assert 1 == len(t1_connections), t1_connections
 
         t2_connections_resp = await app_client.get(
-            "/tenant/v1/connections/", headers=t2_headers, params={"alias": t2_alias}
+            "/tenant/v0/connections/", headers=t2_headers, params={"alias": t2_alias}
         )
         assert t2_connections_resp.status_code == 200, t2_connections_resp.content
         t2_connections = json.loads(t2_connections_resp.content)
@@ -231,7 +231,7 @@ async def issue_credential(
         "alias": t1_alias,
     }
     issue_resp = await app_client.post(
-        "/tenant/v1/credentials/issuer/issue",
+        "/tenant/v0/credentials/issuer/issue",
         headers=t1_headers,
         params=params,
         json=credential,
@@ -245,7 +245,7 @@ async def issue_credential(
     i = default_retry_attempts
     while i > 0 and not holder_data:
         holder_resp = await app_client.get(
-            "/tenant/v1/credentials/holder/offer",
+            "/tenant/v0/credentials/holder/offer",
             headers=t2_headers,
             params={"state": "pending"},
         )
@@ -262,7 +262,7 @@ async def issue_credential(
         return issue_workflow_id, holder_data["credential"]["id"]
 
     holder_resp = await app_client.post(
-        "/tenant/v1/credentials/holder/accept_offer",
+        "/tenant/v0/credentials/holder/accept_offer",
         headers=t2_headers,
         params={"cred_issue_id": holder_data["credential"]["id"]},
     )
@@ -274,7 +274,7 @@ async def issue_credential(
     issue_rec = await check_workflow_state(
         app_client,
         t1_headers,
-        "/tenant/v1/credentials/issuer/issue",
+        "/tenant/v0/credentials/issuer/issue",
         workflow_id=issue_workflow_id,
     )
 
@@ -286,13 +286,13 @@ async def issue_credential(
     await check_workflow_state(
         app_client,
         t2_headers,
-        "/tenant/v1/credentials/holder/offer",
+        "/tenant/v0/credentials/holder/offer",
         workflow_id=holder_workflow_id,
     )
 
     # workflows completed there should be a new credential available
     creds_resp = await app_client.get(
-        "/tenant/v1/credentials/holder/", headers=t2_headers
+        "/tenant/v0/credentials/holder/", headers=t2_headers
     )
     assert creds_resp.status_code == 200, creds_resp.content
     assert 1 == len(json.loads(creds_resp.content)), creds_resp.content
@@ -317,7 +317,7 @@ async def request_credential_presentation(
         "alias": t1_alias,
     }
     pres_resp = await app_client.post(
-        "/tenant/v1/credentials/verifier/request",
+        "/tenant/v0/credentials/verifier/request",
         headers=t1_headers,
         params=params,
         json=proof_req,
@@ -331,7 +331,7 @@ async def request_credential_presentation(
     i = default_retry_attempts
     while i > 0 and not holder_data:
         holder_resp = await app_client.get(
-            "/tenant/v1/credentials/holder/request",
+            "/tenant/v0/credentials/holder/request",
             headers=t2_headers,
             params={"state": "pending"},
         )
@@ -348,7 +348,7 @@ async def request_credential_presentation(
         return pres_req_workflow_id, holder_data["presentation"]["id"]
 
     holder_resp = await app_client.get(
-        "/tenant/v1/credentials/holder/creds-for-request",
+        "/tenant/v0/credentials/holder/creds-for-request",
         headers=t2_headers,
         params={"pres_req_id": holder_data["presentation"]["id"]},
     )
@@ -359,7 +359,7 @@ async def request_credential_presentation(
 
     # submit proof
     holder_resp = await app_client.post(
-        "/tenant/v1/credentials/holder/present-credential",
+        "/tenant/v0/credentials/holder/present-credential",
         headers=t2_headers,
         params={"pres_req_id": holder_data["presentation"]["id"]},
         json=proof_presentation,
@@ -372,20 +372,20 @@ async def request_credential_presentation(
     await check_workflow_state(
         app_client,
         t1_headers,
-        "/tenant/v1/credentials/verifier/request",
+        "/tenant/v0/credentials/verifier/request",
         workflow_id=pres_req_workflow_id,
     )
     await check_workflow_state(
         app_client,
         t2_headers,
-        "/tenant/v1/credentials/holder/request",
+        "/tenant/v0/credentials/holder/request",
         workflow_id=holder_workflow_id,
     )
 
     # get the verifier-received proof and validate
     params = {"workflow_id": pres_req_workflow_id}
     recd_pres = await app_client.get(
-        "/tenant/v1/credentials/verifier/request",
+        "/tenant/v0/credentials/verifier/request",
         headers=t1_headers,
         params=params,
     )
@@ -453,7 +453,7 @@ async def revoke_credential(
             "cred_rev_id": cred_rev_id,
         }
     revoc_resp = await app_client.post(
-        "/tenant/v1/credentials/issuer/revoke",
+        "/tenant/v0/credentials/issuer/revoke",
         headers=t1_headers,
         params=params,
     )
@@ -470,7 +470,7 @@ async def revoke_credential(
             await asyncio.sleep(default_pause_between_attempts)
             params = {"workflow_id": issuer_workflow_id}
             issue_resp = await app_client.get(
-                "/tenant/v1/credentials/issuer/issue",
+                "/tenant/v0/credentials/issuer/issue",
                 headers=t1_headers,
                 params=params,
             )
@@ -494,7 +494,7 @@ async def revoke_credential(
             await asyncio.sleep(default_pause_between_attempts)
             params = {"workflow_id": holder_workflow_id}
             offer_resp = await app_client.get(
-                "/tenant/v1/credentials/holder/offer",
+                "/tenant/v0/credentials/holder/offer",
                 headers=t2_headers,
                 params=params,
             )

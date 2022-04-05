@@ -22,7 +22,7 @@ async def checkin_tenant(test_client: AsyncClient) -> (CheckInResponse, dict):
     headers = innkeeper_headers(bearer_token)
     checkin = CheckInRequest(name=random_string("tenant_test_", 12))
     resp = await test_client.post(
-        "/innkeeper/v1/check-in", headers=headers, json=checkin.dict()
+        "/innkeeper/v0/check-in", headers=headers, json=checkin.dict()
     )
     checkin_resp = CheckInResponse(**resp.json())
     return checkin_resp, headers
@@ -32,7 +32,7 @@ async def checkin_tenant(test_client: AsyncClient) -> (CheckInResponse, dict):
 async def test_check_in(test_client: AsyncClient) -> None:
     async def api_call(headers, json):
         resp = await test_client.post(
-            url="/innkeeper/v1/check-in", headers=headers, json=json
+            url="/innkeeper/v0/check-in", headers=headers, json=json
         )
         return resp
 
@@ -67,7 +67,7 @@ async def test_check_in(test_client: AsyncClient) -> None:
 async def test_get_tenant(test_client: AsyncClient) -> None:
     async def api_call(headers, id):
         resp = await test_client.get(
-            url=f"/innkeeper/v1/tenants/{id}",
+            url=f"/innkeeper/v0/tenants/{id}",
             headers=headers,
         )
         return resp
@@ -101,7 +101,7 @@ async def test_get_tenant(test_client: AsyncClient) -> None:
 async def test_get_tenants(test_client: AsyncClient) -> None:
     async def api_call(headers):
         resp = await test_client.get(
-            url="/innkeeper/v1/tenants",
+            url="/innkeeper/v0/tenants",
             headers=headers,
         )
         return resp
@@ -126,7 +126,7 @@ async def test_get_tenants(test_client: AsyncClient) -> None:
 async def test_make_issuer(test_client: AsyncClient) -> None:
     async def api_call(headers, id):
         resp = await test_client.post(
-            url=f"/innkeeper/v1/issuers/{id}",
+            url=f"/innkeeper/v0/issuers/{id}",
             headers=headers,
         )
         return resp
@@ -156,7 +156,7 @@ async def test_make_issuer(test_client: AsyncClient) -> None:
 async def test_get_issuer(test_client: AsyncClient) -> None:
     async def api_call(headers, id):
         resp = await test_client.get(
-            url=f"/innkeeper/v1/issuers/{id}",
+            url=f"/innkeeper/v0/issuers/{id}",
             headers=headers,
         )
         return resp
@@ -165,7 +165,7 @@ async def test_get_issuer(test_client: AsyncClient) -> None:
 
     # make this tenant an issuer...
     resp = await test_client.post(
-        f"/innkeeper/v1/issuers/{checkin_resp.id}", headers=headers
+        f"/innkeeper/v0/issuers/{checkin_resp.id}", headers=headers
     )
     assert resp.status_code == 200, resp.content
 
@@ -196,7 +196,7 @@ async def test_get_issuer(test_client: AsyncClient) -> None:
 async def test_get_issuers(test_client: AsyncClient) -> None:
     async def api_call(headers):
         resp = await test_client.get(
-            url="/innkeeper/v1/issuers",
+            url="/innkeeper/v0/issuers",
             headers=headers,
         )
         return resp
@@ -205,7 +205,7 @@ async def test_get_issuers(test_client: AsyncClient) -> None:
 
     # make this tenant an issuer...
     resp = await test_client.post(
-        f"/innkeeper/v1/issuers/{checkin_resp.id}", headers=headers
+        f"/innkeeper/v0/issuers/{checkin_resp.id}", headers=headers
     )
     assert resp.status_code == 200, resp.content
 

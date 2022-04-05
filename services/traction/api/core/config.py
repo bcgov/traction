@@ -85,6 +85,7 @@ class GlobalConfig(BaseSettings):
     DB_ECHO_LOG: bool = False
 
     # Api V1 prefix
+    API_V0_STR = "/v0"
     API_V1_STR = "/v1"
 
     # openssl rand -hex 32
