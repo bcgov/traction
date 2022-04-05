@@ -43,7 +43,7 @@ def get_tenantapp() -> FastAPI:
     # mount other endpoints, these will be secured by the above token endpoint
     application.include_router(
         tenant_router,
-        prefix=settings.API_V1_STR,
+        prefix=settings.API_V0_STR,
         dependencies=[Depends(OAuth2PasswordBearer(tokenUrl="token"))],
     )
     return application

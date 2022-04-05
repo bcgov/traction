@@ -63,7 +63,7 @@ async def test_tenants_issue_cred_holder_reject(app_client: AsyncClient) -> None
 
     # should be zero credentials for our t2
     creds_resp = await app_client.get(
-        "/tenant/v1/credentials/holder/", headers=t2_headers
+        "/tenant/v0/credentials/holder/", headers=t2_headers
     )
     assert creds_resp.status_code == 200, creds_resp.content
     assert 0 == len(json.loads(creds_resp.content)), creds_resp.content
@@ -88,7 +88,7 @@ async def test_tenants_issue_cred_holder_reject(app_client: AsyncClient) -> None
 
     # reject!
     holder_resp = await app_client.post(
-        "/tenant/v1/credentials/holder/reject_offer",
+        "/tenant/v0/credentials/holder/reject_offer",
         headers=t2_headers,
         params={"cred_issue_id": holder_offer_id},
     )
@@ -100,14 +100,14 @@ async def test_tenants_issue_cred_holder_reject(app_client: AsyncClient) -> None
     await check_workflow_state(
         app_client,
         t1_headers,
-        "/tenant/v1/credentials/issuer/issue",
+        "/tenant/v0/credentials/issuer/issue",
         workflow_id=issue_workflow_id,
         expected_state="error",
     )
     await check_workflow_state(
         app_client,
         t2_headers,
-        "/tenant/v1/credentials/holder/offer",
+        "/tenant/v0/credentials/holder/offer",
         workflow_id=holder_workflow_id,
         expected_state="error",
     )
