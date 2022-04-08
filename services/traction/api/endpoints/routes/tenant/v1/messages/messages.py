@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import Optional
 from uuid import UUID
 
 
@@ -14,7 +14,9 @@ from api.endpoints.models.v1.models import (
     TractionMessageList,
     SendTractionMessageResponse,
     SendTractionMessagePayload,
-    UpdateTractionMessagePayload, BulkUpdateTractionMessagePayload, BulkDeleteTractionMessagePayload,
+    UpdateTractionMessagePayload,
+    BulkUpdateTractionMessagePayload,
+    BulkDeleteTractionMessagePayload,
 )
 
 router = APIRouter()
@@ -23,6 +25,9 @@ logger = logging.getLogger(__name__)
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=TractionMessageList)
 async def list_messages(
+    limit: Optional[int],
+    marker: Optional[UUID],
+    contact_id: Optional[UUID],
     db: AsyncSession = Depends(get_db),
 ) -> TractionMessageList:
     raise NotImplementedError

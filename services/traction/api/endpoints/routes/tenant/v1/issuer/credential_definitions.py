@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import Optional
 from uuid import UUID
 
 
@@ -24,6 +24,9 @@ logger = logging.getLogger(__name__)
     "/", status_code=status.HTTP_200_OK, response_model=CredentialDefinitionList
 )
 async def list_credential_definitions(
+    limit: Optional[int],
+    marker: Optional[UUID],
+    tags: Optional[str],
     db: AsyncSession = Depends(get_db),
 ) -> CredentialDefinitionList:
     raise NotImplementedError

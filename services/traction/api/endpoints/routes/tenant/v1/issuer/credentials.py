@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import Optional
 from uuid import UUID
 
 
@@ -17,7 +17,8 @@ from api.endpoints.models.v1.models import (
     OfferCredentialPayload,
     IssueCredentialResponse,
     AbandonCredentialResponse,
-    RevokeCredentialResponse, CredentialList,
+    RevokeCredentialResponse,
+    CredentialList,
 )
 
 router = APIRouter()
@@ -26,6 +27,11 @@ logger = logging.getLogger(__name__)
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=CredentialList)
 async def list_issued_credentials(
+    limit: Optional[int],
+    marker: Optional[UUID],
+    contact_id: Optional[UUID],
+    tags: Optional[str],
+    acapy: Optional[bool],
     db: AsyncSession = Depends(get_db),
 ) -> CredentialList:
     raise NotImplementedError

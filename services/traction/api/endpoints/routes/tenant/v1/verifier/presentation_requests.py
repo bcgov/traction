@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import Optional
 from uuid import UUID
 
 
@@ -25,10 +25,13 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-@router.get(
-    "/", status_code=status.HTTP_200_OK, response_model=PresentationRequestList
-)
+@router.get("/", status_code=status.HTTP_200_OK, response_model=PresentationRequestList)
 async def list_presentation_requests(
+    limit: Optional[int],
+    marker: Optional[UUID],
+    contact_id: Optional[UUID],
+    tags: Optional[str],
+    acapy: Optional[bool],
     db: AsyncSession = Depends(get_db),
 ) -> PresentationRequestList:
     raise NotImplementedError

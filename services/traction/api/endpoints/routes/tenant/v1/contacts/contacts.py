@@ -1,5 +1,7 @@
 import logging
-from typing import List
+
+from typing import Optional
+from uuid import UUID
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -10,7 +12,8 @@ from api.endpoints.models.v1.models import (
     CreateInvitationResponse,
     CreateInvitationPayload,
     ReceiveInvitationPayload,
-    ReceiveInvitationResponse, ContactList,
+    ReceiveInvitationResponse,
+    ContactList,
 )
 
 # /contacts
@@ -19,7 +22,13 @@ logger = logging.getLogger(__name__)
 
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=ContactList)
-async def list_contacts(db: AsyncSession = Depends(get_db)) -> ContactList:
+async def list_contacts(
+    limit: Optional[int],
+    marker: Optional[UUID],
+    tags: Optional[str],
+    acapy: Optional[bool],
+    db: AsyncSession = Depends(get_db),
+) -> ContactList:
     raise NotImplementedError
 
 

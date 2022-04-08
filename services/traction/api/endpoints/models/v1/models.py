@@ -40,6 +40,7 @@ StateType = TypeVar("StateType")
 AcapyType = TypeVar("AcapyType")
 ProtocolType = TypeVar("ProtocolType")
 
+
 class ContactStatusType(str, Enum):
     active = "Active"
     inactive = "Inactive"
@@ -101,7 +102,6 @@ class PresentationRequestStateType(str, Enum):
     pass
 
 
-
 class MessageStatusType(str, Enum):
     new = "New"
     read = "Read"
@@ -148,7 +148,6 @@ class PresentationRequestAcapy(BaseModel):
     presentation_exchange: Union[V10PresentationExchange, V20PresExRecord]
 
 
-
 class EventAcapy(BaseModel):
     pass
 
@@ -160,7 +159,6 @@ class MessageAcapy(BaseModel):
 class Link(BaseModel):
     href: AnyUrl
     rel: str
-
 
 
 class History(GenericModel, Generic[StatusType, AcapyType]):
@@ -405,7 +403,11 @@ class AbandonPresentationResponse(BaseModel):
 
 
 class PresentationRequest(
-    AcapyItem[PresentationRequestStatusType, PresentationRequestStateType, PresentationRequestAcapy]
+    AcapyItem[
+        PresentationRequestStatusType,
+        PresentationRequestStateType,
+        PresentationRequestAcapy,
+    ]
 ):
     presentation_request_id: UUID
     presentation_request: Union[IndyProofRequest, V20PresRequest]
@@ -413,7 +415,6 @@ class PresentationRequest(
     contact: Contact = Field(...)
     external_reference_id: str
     links: List[Link] = []
-
 
 
 class PresentationRequestList(ListBase[PresentationRequest]):
@@ -433,10 +434,8 @@ class AcceptPresentationResponse(BaseModel):
     presentation_request: PresentationRequest
 
 
-
 class RejectPresentationResponse(BaseModel):
     presentation_request: PresentationRequest
-
 
 
 class AcceptProposalResponse(BaseModel):
@@ -453,6 +452,7 @@ class PresentationRequestTemplate(BaseModel):
     presentation_request: Union[IndyProofRequest, V20PresRequest]
     tags: List[str] = []
 
+
 class PresentationRequestTemplateList(ListBase[PresentationRequestTemplate]):
     pass
 
@@ -467,7 +467,6 @@ class UpdatePresentationRequestTemplatePayload(BaseModel):
     name: str = Field(...)
     presentation_request: Union[IndyProofRequest, V20PresRequest]
     tags: List[str] = []
-
 
 
 class IssuerConfig(BaseModel):

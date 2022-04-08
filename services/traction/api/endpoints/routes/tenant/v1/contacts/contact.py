@@ -14,7 +14,8 @@ from api.endpoints.models.v1.models import (
     UpdateContactPayload,
     PresentationList,
     PresentationRequestList,
-    TractionMessageList, CredentialList,
+    TractionMessageList,
+    CredentialList,
 )
 
 

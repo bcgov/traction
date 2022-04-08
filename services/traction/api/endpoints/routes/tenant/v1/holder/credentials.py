@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import Optional
 from uuid import UUID
 
 
@@ -27,7 +27,14 @@ logger = logging.getLogger(__name__)
 
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=CredentialList)
-async def list_held_credentials(db: AsyncSession = Depends(get_db)) -> CredentialList:
+async def list_held_credentials(
+    limit: Optional[int],
+    marker: Optional[UUID],
+    contact_id: Optional[UUID],
+    tags: Optional[str],
+    acapy: Optional[bool],
+    db: AsyncSession = Depends(get_db),
+) -> CredentialList:
     raise NotImplementedError
 
 

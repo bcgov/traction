@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
@@ -11,7 +12,8 @@ from api.endpoints.dependencies.db import get_db
 from api.endpoints.models.v1.models import (
     CreatePresentationRequestTemplatePayload,
     PresentationRequestTemplate,
-    UpdatePresentationRequestTemplatePayload, PresentationRequestTemplateList,
+    UpdatePresentationRequestTemplatePayload,
+    PresentationRequestTemplateList,
 )
 
 
@@ -25,6 +27,9 @@ logger = logging.getLogger(__name__)
     response_model=PresentationRequestTemplateList,
 )
 async def list_presentation_request_templates(
+    limit: Optional[int],
+    marker: Optional[UUID],
+    tags: Optional[str],
     db: AsyncSession = Depends(get_db),
 ) -> PresentationRequestTemplateList:
     raise NotImplementedError
