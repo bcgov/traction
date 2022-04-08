@@ -11,7 +11,7 @@ from api.endpoints.dependencies.db import get_db
 
 from api.core.config import settings
 from api.endpoints.routes.tenant_api import tenant_router
-from api.endpoints.routes.tenant.v1 import tenant_router as v1_tenant_router
+from api.endpoints.routes.tenant.v1.tenant_api import router as v1_tenant_router
 
 from api.endpoints.dependencies.jwt_security import AccessToken
 from api.endpoints.dependencies.tenant_security import (

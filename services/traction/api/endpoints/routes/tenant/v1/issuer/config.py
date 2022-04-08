@@ -21,7 +21,7 @@ async def get_issuer_config(db: AsyncSession = Depends(get_db)) -> IssuerConfig:
     raise NotImplementedError
 
 
-@router.put(
+@router.post(
     "/make-issuer", status_code=status.HTTP_202_ACCEPTED, response_model=IssuerConfig
 )
 async def make_tenant_an_issuer(db: AsyncSession = Depends(get_db)) -> None:

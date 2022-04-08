@@ -1,5 +1,4 @@
 import logging
-from typing import List
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
@@ -12,7 +11,7 @@ from api.endpoints.dependencies.db import get_db
 from api.endpoints.models.v1.models import (
     CreatePresentationRequestTemplatePayload,
     PresentationRequestTemplate,
-    UpdatePresentationRequestTemplatePayload,
+    UpdatePresentationRequestTemplatePayload, PresentationRequestTemplateList,
 )
 
 
@@ -23,11 +22,11 @@ logger = logging.getLogger(__name__)
 @router.get(
     "/",
     status_code=status.HTTP_200_OK,
-    response_model=List[PresentationRequestTemplate],
+    response_model=PresentationRequestTemplateList,
 )
 async def list_presentation_request_templates(
     db: AsyncSession = Depends(get_db),
-) -> List[PresentationRequestTemplate]:
+) -> PresentationRequestTemplateList:
     raise NotImplementedError
 
 

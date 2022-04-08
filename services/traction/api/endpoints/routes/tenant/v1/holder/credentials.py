@@ -13,6 +13,7 @@ from api.endpoints.dependencies.db import get_db
 # https://github.com/hyperledger/aries-rfcs/blob/main/features/0453-issue-credential-v2/README.md
 from api.endpoints.models.v1.models import (
     Credential,
+    CredentialList,
     AcceptCredentialResponse,
     RejectCredentialResponse,
     ProposeCredentialResponse,
@@ -25,8 +26,8 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-@router.get("/", status_code=status.HTTP_200_OK, response_model=List[Credential])
-async def list_held_credentials(db: AsyncSession = Depends(get_db)) -> List[Credential]:
+@router.get("/", status_code=status.HTTP_200_OK, response_model=CredentialList)
+async def list_held_credentials(db: AsyncSession = Depends(get_db)) -> CredentialList:
     raise NotImplementedError
 
 

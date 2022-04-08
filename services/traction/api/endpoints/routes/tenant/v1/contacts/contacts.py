@@ -7,11 +7,10 @@ from starlette import status
 
 from api.endpoints.dependencies.db import get_db
 from api.endpoints.models.v1.models import (
-    Contact,
     CreateInvitationResponse,
     CreateInvitationPayload,
     ReceiveInvitationPayload,
-    ReceiveInvitationResponse,
+    ReceiveInvitationResponse, ContactList,
 )
 
 # /contacts
@@ -19,8 +18,8 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-@router.get("/", status_code=status.HTTP_200_OK, response_model=List[Contact])
-async def list_contacts(db: AsyncSession = Depends(get_db)) -> List[Contact]:
+@router.get("/", status_code=status.HTTP_200_OK, response_model=ContactList)
+async def list_contacts(db: AsyncSession = Depends(get_db)) -> ContactList:
     raise NotImplementedError
 
 

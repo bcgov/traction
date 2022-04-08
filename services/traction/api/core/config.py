@@ -28,6 +28,9 @@ class GlobalConfig(BaseSettings):
     INNKEEPER_TITLE: str = "Traction Innkeeper"
     INNKEEPER_DESCRIPTION: str = "Endpoints for Innkeeper of Traction"
 
+    PUBLIC_TITLE: str = "Traction Public"
+    PUBLIC_DESCRIPTION: str = "Endpoints for Public (Unauthenticated) use"
+
     ENVIRONMENT: EnvironmentEnum
     DEBUG: bool = False
     TESTING: bool = False

@@ -12,7 +12,7 @@ from api.endpoints.dependencies.db import get_db
 # https://github.com/hyperledger/aries-rfcs/blob/main/features/0037-present-proof/README.md
 # https://github.com/hyperledger/aries-rfcs/blob/main/features/0454-present-proof-v2/README.md
 from api.endpoints.models.v1.models import (
-    PresentationRequest,
+    PresentationRequestList,
     SendPresentationRequestResponse,
     SendPresentationRequestPayload,
     AcceptProposalResponse,
@@ -26,11 +26,11 @@ logger = logging.getLogger(__name__)
 
 
 @router.get(
-    "/", status_code=status.HTTP_200_OK, response_model=List[PresentationRequest]
+    "/", status_code=status.HTTP_200_OK, response_model=PresentationRequestList
 )
 async def list_presentation_requests(
     db: AsyncSession = Depends(get_db),
-) -> List[PresentationRequest]:
+) -> PresentationRequestList:
     raise NotImplementedError
 
 

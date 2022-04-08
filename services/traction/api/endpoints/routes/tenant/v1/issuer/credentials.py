@@ -17,17 +17,17 @@ from api.endpoints.models.v1.models import (
     OfferCredentialPayload,
     IssueCredentialResponse,
     AbandonCredentialResponse,
-    RevokeCredentialResponse,
+    RevokeCredentialResponse, CredentialList,
 )
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-@router.get("/", status_code=status.HTTP_200_OK, response_model=List[Credential])
+@router.get("/", status_code=status.HTTP_200_OK, response_model=CredentialList)
 async def list_issued_credentials(
     db: AsyncSession = Depends(get_db),
-) -> List[Credential]:
+) -> CredentialList:
     raise NotImplementedError
 
 

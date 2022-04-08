@@ -1,45 +1,52 @@
 import logging
 from typing import List
+from uuid import UUID
+
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from api.endpoints.dependencies.db import get_db
+
 from api.endpoints.models.v1.models import (
-    TractionEventList, BulkUpdateTractionEventPayload, BulkDeleteTractionEventPayload,
+    TractionSchema,
+    CreateTractionSchemaPayload,
+    ImportTractionSchemaPayload,
 )
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-@router.get("/", status_code=status.HTTP_200_OK, response_model=TractionEventList)
-async def list_traction_events(
+@router.get("/", status_code=status.HTTP_200_OK, response_model=List[TractionSchema])
+async def list_schemas(
     db: AsyncSession = Depends(get_db),
-) -> TractionEventList:
+) -> List[TractionSchema]:
     raise NotImplementedError
 
 
-@router.put(
+@router.post(
     "/",
     status_code=status.HTTP_202_ACCEPTED,
-    response_model=TractionEventList,
+    response_model=TractionSchema,
 )
-async def bulk_update_traction_events(
-    payload: BulkUpdateTractionEventPayload,
+async def create_schema(
+    payload: CreateTractionSchemaPayload,
     db: AsyncSession = Depends(get_db),
-) -> None:
+) -> TractionSchema:
     raise NotImplementedError
 
 
-@router.delete(
-    "/",
-    status_code=status.HTTP_202_ACCEPTED,
-    response_model=TractionEventList,
+@router.post(
+    "/import-schema",
+    status_code=status.HTTP_200_OK,
+    response_model=TractionSchema,
 )
-async def bulk_delete_traction_events(
-    payload: BulkDeleteTractionEventPayload,
+async def import_schema(
+    payload: ImportTractionSchemaPayload,
     db: AsyncSession = Depends(get_db),
-) -> None:
+) -> TractionSchema:
     raise NotImplementedError
+
+

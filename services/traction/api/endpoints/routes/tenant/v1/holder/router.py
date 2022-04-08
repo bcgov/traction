@@ -1,10 +1,8 @@
 from fastapi import APIRouter
 
-from .credentials import router as credentials_router
-from .presentations import router as presentations_router
+from .credentials import router as credentials
+from .presentations import router as presentations
 
 router = APIRouter()
-router.include_router(credentials_router, prefix="/credentials", tags=["credentials"])
-router.include_router(
-    presentations_router, prefix="/presentations", tags=["presentations"]
-)
+router.include_router(credentials, prefix="/credentials", tags=["credentials"])
+router.include_router(presentations, prefix="/presentations", tags=["presentations"])

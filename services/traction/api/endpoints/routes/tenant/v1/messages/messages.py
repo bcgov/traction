@@ -11,29 +11,30 @@ from api.endpoints.dependencies.db import get_db
 
 from api.endpoints.models.v1.models import (
     TractionMessage,
+    TractionMessageList,
     SendTractionMessageResponse,
     SendTractionMessagePayload,
-    UpdateTractionMessagePayload,
+    UpdateTractionMessagePayload, BulkUpdateTractionMessagePayload, BulkDeleteTractionMessagePayload,
 )
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-@router.get("/", status_code=status.HTTP_200_OK, response_model=List[TractionMessage])
+@router.get("/", status_code=status.HTTP_200_OK, response_model=TractionMessageList)
 async def list_messages(
     db: AsyncSession = Depends(get_db),
-) -> List[TractionMessage]:
+) -> TractionMessageList:
     raise NotImplementedError
 
 
 @router.put(
     "/",
     status_code=status.HTTP_202_ACCEPTED,
-    response_model=List[TractionMessage],
+    response_model=TractionMessageList,
 )
 async def bulk_update_messages(
-    payload: List[TractionMessage],
+    payload: BulkUpdateTractionMessagePayload,
     db: AsyncSession = Depends(get_db),
 ) -> None:
     raise NotImplementedError
@@ -42,10 +43,10 @@ async def bulk_update_messages(
 @router.delete(
     "/",
     status_code=status.HTTP_202_ACCEPTED,
-    response_model=List[TractionMessage],
+    response_model=TractionMessageList,
 )
 async def bulk_delete_messages(
-    payload: List[TractionMessage],
+    payload: BulkDeleteTractionMessagePayload,
     db: AsyncSession = Depends(get_db),
 ) -> None:
     raise NotImplementedError

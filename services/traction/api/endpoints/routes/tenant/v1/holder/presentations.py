@@ -18,7 +18,7 @@ from api.endpoints.models.v1.models import (
     SendPresentationProposalResponse,
     SendPresentationProposalPayload,
     AbandonPresentationResponse,
-    AbandonPresentationPayload,
+    AbandonPresentationPayload, PresentationCredentialList,
 )
 
 router = APIRouter()
@@ -27,6 +27,18 @@ logger = logging.getLogger(__name__)
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=List[Presentation])
 async def list_presentations(db: AsyncSession = Depends(get_db)) -> List[Presentation]:
+    raise NotImplementedError
+
+
+@router.get(
+    "/{presentation_id}/matching-credentials",
+    status_code=status.HTTP_200_OK,
+    response_model=PresentationCredentialList,
+)
+async def list_matching_credentials_for_presentation(
+    presentation_id: UUID,
+    db: AsyncSession = Depends(get_db),
+) -> PresentationCredentialList:
     raise NotImplementedError
 
 

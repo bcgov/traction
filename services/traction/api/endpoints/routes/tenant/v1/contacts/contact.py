@@ -1,5 +1,5 @@
 import logging
-from typing import List
+
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
@@ -11,24 +11,15 @@ from api.endpoints.dependencies.db import get_db
 
 from api.endpoints.models.v1.models import (
     Contact,
-    CreateContactPayload,
     UpdateContactPayload,
-    Credential,
-    Presentation,
-    PresentationRequest,
-    TractionMessage,
+    PresentationList,
+    PresentationRequestList,
+    TractionMessageList, CredentialList,
 )
 
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
-
-
-@router.post("/", status_code=status.HTTP_201_CREATED, response_model=Contact)
-async def create_contact(
-    payload: CreateContactPayload, db: AsyncSession = Depends(get_db)
-) -> Contact:
-    raise NotImplementedError
 
 
 @router.get("/{contact_id}", status_code=status.HTTP_200_OK, response_model=Contact)
@@ -53,43 +44,43 @@ async def delete_contact(
 @router.get(
     "/{contact_id}/credentials/",
     status_code=status.HTTP_200_OK,
-    response_model=List[Credential],
+    response_model=CredentialList,
 )
 async def list_credentials_exchanged_with_contact(
     contact_id: UUID, db: AsyncSession = Depends(get_db)
-) -> List[Credential]:
+) -> CredentialList:
     raise NotImplementedError
 
 
 @router.get(
     "/{contact_id}/presentations/",
     status_code=status.HTTP_200_OK,
-    response_model=List[Presentation],
+    response_model=PresentationList,
 )
 async def list_presentations_exchanged_with_contact(
     contact_id: UUID, db: AsyncSession = Depends(get_db)
-) -> List[Presentation]:
+) -> PresentationList:
     raise NotImplementedError
 
 
 @router.get(
     "/{contact_id}/presentation-requests/",
     status_code=status.HTTP_200_OK,
-    response_model=List[PresentationRequest],
+    response_model=PresentationRequestList,
 )
 async def list_presentation_requests_exchanged_with_contact(
     contact_id: UUID, db: AsyncSession = Depends(get_db)
-) -> List[PresentationRequest]:
+) -> PresentationRequestList:
     raise NotImplementedError
 
 
 @router.get(
     "/{contact_id}/messages/",
     status_code=status.HTTP_200_OK,
-    response_model=List[TractionMessage],
+    response_model=TractionMessageList,
 )
 async def list_messages_exchanged_with__contact(
     contact_id: UUID,
     db: AsyncSession = Depends(get_db),
-) -> List[TractionMessage]:
+) -> TractionMessageList:
     raise NotImplementedError
