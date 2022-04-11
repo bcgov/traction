@@ -43,3 +43,15 @@ runs:
         cp .env-example .env
         docker-compose -f "docker-compose.yml" up -d --build
       shell: bash
+
+    - name: Display running
+      run: |
+        cd ./scripts
+        docker ps
+      shell: bash
+
+    - name: Run pytest
+      run: |
+        cd ./scripts
+        docker exec scripts_traction-api_1 pytest --asyncio-mode=strict
+      shell: bash
