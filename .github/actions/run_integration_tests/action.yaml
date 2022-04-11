@@ -38,5 +38,7 @@ runs:
       uses: actions/checkout@v2
 
     - name: Start containers
+      run: |
+        cd ./scripts
+        docker-compose -f "docker-compose.yml" up -d --build
       shell: bash
-      run: ./scripts/docker-compose -f "docker-compose.yml" up -d --build
