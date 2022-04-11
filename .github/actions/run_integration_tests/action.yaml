@@ -40,5 +40,6 @@ runs:
     - name: Start containers
       run: |
         cd ./scripts
+        cp .env-example .env
         docker-compose -f "docker-compose.yml" up -d --build
       shell: bash
