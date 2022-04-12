@@ -5,7 +5,15 @@ Feature: aries connection
          | name  | role    |
          | alice | invitee |
          | faber | inviter |
-        When "faber" generates a connection invitation
+        When "faber" generates a connection invitation for "alice"
         And "alice" receives the invitation from "faber"
-        Then "faber" has a connection in state "active"
-        And "alice" has a connection in state "active"
+        Then "faber" has a connection to "alice" in state "active"
+        And "alice" has a connection to "faber" in state "active"
+
+    Scenario: shorthand to connect two agents
+        Given we have "2" traction tenants
+         | name  | role    |
+         | alice | invitee |
+         | faber | inviter |
+        And "alice" and "faber" are connected
+        Then "faber" has a connection to "alice" in state "active"

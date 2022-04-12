@@ -1,4 +1,4 @@
-import random, string
+import random, string, asyncio
 
 from behave import *
 from behave.api.async_step import async_run_until_complete
@@ -46,7 +46,9 @@ async def get_innkeeper_token(context):
 
 
 @given("we have {n} traction tenants")
+@when("we have {n} traction tenants")
 @async_run_until_complete
+@asyncio.coroutine
 async def create_traction_tenants(context, n):
     rand_suffix = "-" + "".join(random.choice(string.ascii_letters) for i in range(6))
 
