@@ -64,4 +64,3 @@ def step_impl(context, tenant_1, tenant_2):
     And "{tenant_2}" receives the invitation from "{tenant_1}"
     """
     )
-    time.sleep(1)

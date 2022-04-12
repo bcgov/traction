@@ -35,6 +35,20 @@ docker-compose up
 docker exec scripts_traction-api_1 pytest --asyncio-mode=strict -m integtest
 ```
 
+## Behaviour Driven Tests
+To run 'Behave' bdd tests. start traction, then navigate to bdd-tests folder and run behave
+
+terminal 1 (from this folder)
+```shell
+cd ../../scripts
+docker-compose up
+```
+terminal 2 (from this folder)
+```shell
+cd bdd-tests
+behave
+```
+
 ## Adding a New Database Model
 
 Add a new python model file in the `services/traction/api/db/models` directory.  You can review the existing model files for examples.
