@@ -40,6 +40,7 @@ def step_impl(context, invitee: str, inviter: str):
     time.sleep(1)
 
 
+@given('"{tenant}" has a connection to "{tenant_2}" in state "{connection_state}"')
 @then('"{tenant}" has a connection to "{tenant_2}" in state "{connection_state}"')
 def step_impl(context, tenant, tenant_2, connection_state):
     response = requests.get(
@@ -62,5 +63,6 @@ def step_impl(context, tenant_1, tenant_2):
         f"""
     Given "{tenant_1}" generates a connection invitation for "{tenant_2}"
     And "{tenant_2}" receives the invitation from "{tenant_1}"
+    And "{tenant_1}" has a connection to "{tenant_2}" in state "active"
     """
     )
