@@ -1,10 +1,7 @@
-import asyncio
 import json
 import requests
 import time
 from behave import *
-from behave.api.async_step import async_run_until_complete
-from aiohttp import ClientSession, ContentTypeError
 from starlette import status
 
 
