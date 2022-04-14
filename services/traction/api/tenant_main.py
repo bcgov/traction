@@ -17,6 +17,7 @@ from api.endpoints.dependencies.tenant_security import (
     get_tenant_access_token,
 )
 
+from api.endpoints.routes.v1.tenant import v1_tenant_router
 
 logger = logging.getLogger(__name__)
 
@@ -39,11 +40,18 @@ def get_tenantapp() -> FastAPI:
         middleware=middleware,
     )
     # mount the token endpoint
-    application.include_router(router, prefix="")
+    application.include_router(router, prefix="", tags=["tenant token"])
     # mount other endpoints, these will be secured by the above token endpoint
+    application.include_router(
+        v1_tenant_router,
+        prefix=settings.API_V1_STR,
+        tags=[],
+        dependencies=[Depends(OAuth2PasswordBearer(tokenUrl="token"))],
+    )
     application.include_router(
         tenant_router,
         prefix=settings.API_V0_STR,
+        tags=["v0"],
         dependencies=[Depends(OAuth2PasswordBearer(tokenUrl="token"))],
     )
     return application
