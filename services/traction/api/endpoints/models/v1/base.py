@@ -17,18 +17,17 @@ class Link(BaseModel):
 class Item(GenericModel, Generic[StatusType, StateType]):
     status: StatusType
     state: StateType
-    deleted: bool
+    deleted: bool = False
 
 
 class TagsItem(Item[StatusType, StateType], Generic[StatusType, StateType]):
-    tags: List[str] = []
+    tags: List[str] | None = []
 
 
 class AcapyItem(
     TagsItem[StatusType, StateType], Generic[StatusType, StateType, AcapyType]
 ):
-    tags: List[str] = []
-    acapy: AcapyType
+    acapy: Optional[AcapyType] = None
 
 
 class ListResponse(GenericModel, Generic[ItemType]):
@@ -47,7 +46,7 @@ class ListItemParameters(GenericModel, Generic[StatusType, StateType]):
 class ListTagsItemParameters(
     ListItemParameters[StatusType, StateType], Generic[StatusType, StateType]
 ):
-    tags: Optional[List[str]] | None = None
+    tags: Optional[List[str]] | None = []
 
 
 class ListAcapyItemParameters(
