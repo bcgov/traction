@@ -6,12 +6,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from api.endpoints.dependencies.db import get_db
-
+from api.endpoints.dependencies.tenant_security import get_from_context
+from api.endpoints.models.v1.contacts import ContactGetResponse
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-@router.get("/{contact_id}", status_code=status.HTTP_200_OK)
-async def get_contact(contact_id: UUID, db: AsyncSession = Depends(get_db)):
+@router.get(
+    "/{contact_id}", status_code=status.HTTP_200_OK, response_model=ContactGetResponse
+)
+async def get_contact(
+    contact_id: UUID, acapy: bool | None = False, db: AsyncSession = Depends(get_db)
+) -> ContactGetResponse:
+    wallet_id = get_from_context("TENANT_WALLET_ID")
+    tenant_id = get_from_context("TENANT_ID")
+    logger.debug(f"tenant id = {tenant_id}, wallet id = {wallet_id}")
     raise NotImplementedError
