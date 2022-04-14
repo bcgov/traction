@@ -8,6 +8,7 @@ from starlette import status
 from api.endpoints.dependencies.db import get_db
 from api.endpoints.dependencies.tenant_security import get_from_context
 from api.endpoints.models.v1.contacts import ContactGetResponse
+from api.services.v1 import contacts_service
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -21,5 +22,6 @@ async def get_contact(
 ) -> ContactGetResponse:
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
-    logger.debug(f"tenant id = {tenant_id}, wallet id = {wallet_id}")
-    raise NotImplementedError
+    return await contacts_service.get_contact(
+        db, tenant_id, wallet_id, contact_id=contact_id, acapy=acapy
+    )

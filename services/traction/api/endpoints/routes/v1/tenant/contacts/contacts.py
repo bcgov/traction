@@ -6,6 +6,7 @@ from starlette import status
 
 from api.endpoints.dependencies.db import get_db
 from api.endpoints.dependencies.tenant_security import get_from_context
+from api.endpoints.models.connections import ConnectionRoleType
 
 from api.endpoints.models.v1.contacts import (
     ContactListResponse,
@@ -13,7 +14,9 @@ from api.endpoints.models.v1.contacts import (
     CreateInvitationPayload,
     ReceiveInvitationPayload,
     ReceiveInvitationResponse,
+    ContactListParameters,
 )
+from api.services.v1 import contacts_service
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -24,9 +27,18 @@ async def list_contacts(
     skip: int = 0,
     limit: int | None = None,
     acapy: bool | None = False,
+    name: str | None = None,
+    role: ConnectionRoleType | None = None,
     db: AsyncSession = Depends(get_db),
 ) -> ContactListResponse:
-    raise NotImplementedError
+    wallet_id = get_from_context("TENANT_WALLET_ID")
+    tenant_id = get_from_context("TENANT_ID")
+    parameters = ContactListParameters(
+        skip=skip, limit=limit, acapy=acapy, name=name, role=role
+    )
+    return await contacts_service.list_contacts(
+        db, tenant_id, wallet_id, parameters=parameters
+    )
 
 
 @router.post(
@@ -40,8 +52,9 @@ async def contact_create_invitation(
 ) -> CreateInvitationResponse:
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
-    logger.debug(f"tenant id = {tenant_id}, wallet id = {wallet_id}")
-    raise NotImplementedError
+    return await contacts_service.create_invitation(
+        db, tenant_id, wallet_id, payload=payload
+    )
 
 
 @router.post(
@@ -53,4 +66,8 @@ async def contact_receive_invitation(
     payload: ReceiveInvitationPayload,
     db: AsyncSession = Depends(get_db),
 ) -> ReceiveInvitationResponse:
-    raise NotImplementedError
+    wallet_id = get_from_context("TENANT_WALLET_ID")
+    tenant_id = get_from_context("TENANT_ID")
+    return await contacts_service.receive_invitation(
+        db, tenant_id, wallet_id, payload=payload
+    )

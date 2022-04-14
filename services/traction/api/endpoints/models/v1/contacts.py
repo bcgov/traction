@@ -12,7 +12,12 @@ from api.endpoints.models.connections import (
     ConnectionRoleType,
     ConnectionProtocolType,
 )
-from api.endpoints.models.v1.base import AcapyItem, ListResponse, GetResponse
+from api.endpoints.models.v1.base import (
+    AcapyItem,
+    ListResponse,
+    GetResponse,
+    ListAcapyItemParameters,
+)
 
 
 class ContactStatusType(str, Enum):
@@ -45,6 +50,14 @@ class Contact(AcapyItem[ContactStatusType, ConnectionStateType, ContactAcapy]):
     ping: ContactPing
     public_did: str
     role: ConnectionRoleType
+
+
+class ContactListParameters(
+    ListAcapyItemParameters[ContactStatusType, ConnectionStateType]
+):
+    name: str | None = None
+    external_reference_id: Optional[str] | None = None
+    role: ConnectionRoleType | None = None
 
 
 class ContactListResponse(ListResponse[Contact]):

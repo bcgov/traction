@@ -1,5 +1,4 @@
-from typing import List, Generic, TypeVar
-
+from typing import List, Generic, TypeVar, Optional
 
 from pydantic import BaseModel, AnyUrl
 from pydantic.generics import GenericModel
@@ -35,6 +34,26 @@ class AcapyItem(
 class ListResponse(GenericModel, Generic[ItemType]):
     items: List[ItemType] = []
     links: List[Link] = []
+
+
+class ListItemParameters(GenericModel, Generic[StatusType, StateType]):
+    skip: int = (0,)
+    limit: int | None = (20,)
+    status: Optional[StatusType] = None
+    state: Optional[StateType] = None
+    deleted: bool | None = False
+
+
+class ListTagsItemParameters(
+    ListItemParameters[StatusType, StateType], Generic[StatusType, StateType]
+):
+    tags: Optional[List[str]] | None = None
+
+
+class ListAcapyItemParameters(
+    ListItemParameters[StatusType, StateType], Generic[StatusType, StateType]
+):
+    acapy: bool | None = False
 
 
 class GetResponse(GenericModel, Generic[ItemType]):
