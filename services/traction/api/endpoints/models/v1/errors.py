@@ -20,3 +20,11 @@ class BaseError(Exception):
 
 class MethodNotImplementedError(BaseError):
     pass
+
+
+class AlreadyExistsError(BaseError):
+    pass
+
+
+class NotFoundError(BaseError):
+    pass

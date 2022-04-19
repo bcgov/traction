@@ -27,62 +27,62 @@ class ContactStatusType(str, Enum):
 
 
 class ContactAcapy(BaseModel):
-    connection: dict
-    invitation: dict
+    connection: dict = {}
+    invitation: dict = {}
 
 
 class ContactPing(BaseModel):
-    ping_enabled: bool
-    last_response_at: datetime
+    ping_enabled: bool = False
+    last_response_at: Optional[datetime] = None
 
 
 class ContactInfo(BaseModel):
-    name: str
-    email: str
-    phone: str
+    name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
 
 
-class Contact(AcapyItem[ContactStatusType, ConnectionStateType, ContactAcapy]):
+class ContactItem(AcapyItem[ContactStatusType, ConnectionStateType, ContactAcapy]):
     contact_id: UUID
-    name: str
-    contact_info: ContactInfo
-    external_reference_id: str
-    ping: ContactPing
-    public_did: str
+    alias: str
+    contact_info: ContactInfo = ContactInfo()
+    external_reference_id: Optional[str]
+    ping: ContactPing = ContactPing()
+    public_did: Optional[str]
     role: ConnectionRoleType
 
 
 class ContactListParameters(
     ListAcapyItemParameters[ContactStatusType, ConnectionStateType]
 ):
-    name: str | None = None
+    alias: str | None = None
     external_reference_id: Optional[str] | None = None
     role: ConnectionRoleType | None = None
 
 
-class ContactListResponse(ListResponse[Contact]):
+class ContactListResponse(ListResponse[ContactItem]):
     pass
 
 
-class ContactGetResponse(GetResponse[Contact]):
+class ContactGetResponse(GetResponse[ContactItem]):
     pass
 
 
 class CreateInvitationPayload(BaseModel):
-    name: str = Field(...)
+    alias: str = Field(...)
     invitation_type: ConnectionProtocolType = ConnectionProtocolType.DIDExchange
 
 
-class CreateInvitationResponse(GetResponse[Contact]):
+class CreateInvitationResponse(GetResponse[ContactItem]):
     pass
 
 
 class ReceiveInvitationPayload(BaseModel):
-    name: str = Field(...)
+    alias: str = Field(...)
     invitation: Union[None, InvitationMessage, ReceiveInvitationRequest] = None
     invitation_url: Optional[AnyUrl] = None
     their_public_did: Optional[str] = None
 
 
-class ReceiveInvitationResponse(GetResponse[Contact]):
+class ReceiveInvitationResponse(GetResponse[ContactItem]):
     pass

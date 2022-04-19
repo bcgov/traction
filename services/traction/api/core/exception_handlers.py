@@ -7,7 +7,12 @@ from starlette_context import context
 from starlette_context.header_keys import HeaderKeys
 
 from api.db.errors import AlreadyExists, DoesNotExist
-from api.endpoints.models.v1.errors import MethodNotImplementedError
+from api.endpoints.models.v1.errors import (
+    MethodNotImplementedError,
+    BaseError,
+    AlreadyExistsError,
+    NotFoundError,
+)
 
 
 def add_exception_handlers(_app: FastAPI):
@@ -38,6 +43,55 @@ def add_exception_handlers(_app: FastAPI):
     async def method_not_implemented_exception_handler(
         request: Request, exc: MethodNotImplementedError
     ):
+        status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return JSONResponse(
+            status_code=status_code,
+            content={
+                "request_id": context.data[HeaderKeys.request_id],
+                "status": status_code,
+                "code": exc.code,
+                "title": exc.title,
+                "detail": exc.detail,
+                "links": exc.links,
+            },
+        )
+
+    @_app.exception_handler(AlreadyExistsError)
+    async def resource_already_exists_exception_handler(
+        request: Request, exc: AlreadyExistsError
+    ):
+        status_code = status.HTTP_409_CONFLICT
+        return JSONResponse(
+            status_code=status_code,
+            content={
+                "request_id": context.data[HeaderKeys.request_id],
+                "status": status_code,
+                "code": exc.code,
+                "title": exc.title,
+                "detail": exc.detail,
+                "links": exc.links,
+            },
+        )
+
+    @_app.exception_handler(NotFoundError)
+    async def resource_not_found_implemented_exception_handler(
+        request: Request, exc: NotFoundError
+    ):
+        status_code = status.HTTP_404_NOT_FOUND
+        return JSONResponse(
+            status_code=status_code,
+            content={
+                "request_id": context.data[HeaderKeys.request_id],
+                "status": status_code,
+                "code": exc.code,
+                "title": exc.title,
+                "detail": exc.detail,
+                "links": exc.links,
+            },
+        )
+
+    @_app.exception_handler(BaseError)
+    async def base_error_exception_handler(request: Request, exc: BaseError):
         status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return JSONResponse(
             status_code=status_code,

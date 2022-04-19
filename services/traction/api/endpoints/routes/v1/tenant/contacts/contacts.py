@@ -27,14 +27,14 @@ async def list_contacts(
     skip: int = 0,
     limit: int | None = None,
     acapy: bool | None = False,
-    name: str | None = None,
+    alias: str | None = None,
     role: ConnectionRoleType | None = None,
     db: AsyncSession = Depends(get_db),
 ) -> ContactListResponse:
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
     parameters = ContactListParameters(
-        skip=skip, limit=limit, acapy=acapy, name=name, role=role
+        skip=skip, limit=limit, acapy=acapy, alias=alias, role=role
     )
     return await contacts_service.list_contacts(
         db, tenant_id, wallet_id, parameters=parameters
