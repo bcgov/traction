@@ -18,10 +18,27 @@ logger = logging.getLogger(__name__)
     "/{contact_id}", status_code=status.HTTP_200_OK, response_model=ContactGetResponse
 )
 async def get_contact(
-    contact_id: UUID, acapy: bool | None = False, db: AsyncSession = Depends(get_db)
+    contact_id: UUID,
+    acapy: bool | None = False,
+    deleted: bool | None = False,
+    db: AsyncSession = Depends(get_db),
 ) -> ContactGetResponse:
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
     return await contacts_service.get_contact(
-        db, tenant_id, wallet_id, contact_id=contact_id, acapy=acapy
+        db, tenant_id, wallet_id, contact_id=contact_id, acapy=acapy, deleted=deleted
+    )
+
+
+@router.delete(
+    "/{contact_id}", status_code=status.HTTP_200_OK, response_model=ContactGetResponse
+)
+async def delete_contact(
+    contact_id: UUID,
+    db: AsyncSession = Depends(get_db),
+) -> ContactGetResponse:
+    wallet_id = get_from_context("TENANT_WALLET_ID")
+    tenant_id = get_from_context("TENANT_ID")
+    return await contacts_service.delete_contact(
+        db, tenant_id, wallet_id, contact_id=contact_id
     )

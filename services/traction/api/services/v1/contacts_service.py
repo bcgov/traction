@@ -1,10 +1,14 @@
+import json
 import logging
 from uuid import UUID
 
+from sqlalchemy import select, update
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from api.db.models.v1.contact import Contact
 from api.endpoints.models.connections import ConnectionStateType, ConnectionRoleType
+from api.endpoints.routes.connections import create_invitation as v0_create_invitation
+from api.endpoints.routes.connections import receive_invitation as v0_receive_invitation
 from api.endpoints.models.v1.contacts import (
     CreateInvitationPayload,
     CreateInvitationResponse,
@@ -43,8 +47,21 @@ async def create_invitation(
             title="Create Invitation alias in use",
             detail=f"Error alias {payload.alias} already in use.",
         )
+    # This should get removed when v0 is phased out...
+    # we need to do this to keep v0 working and kick off that connection workflow
+    v0_tenant_invitation = await v0_create_invitation(
+        tenant_id=tenant_id,
+        wallet_id=wallet_id,
+        alias=payload.alias,
+        invitation_type=payload.invitation_type,
+        db=db,
+    )
 
-    invitation = connections.create_invitation(payload.alias, payload.invitation_type)
+    # we should be creating our own invitations and connections,
+    # but they are done in the v0 code
+    # invitation = connections.create_invitation(payload.alias, payload.invitation_type)
+    invitation = json.loads(v0_tenant_invitation.connection.invitation)
+    invitation_url = v0_tenant_invitation.connection.invitation_url
     connection = connections.get_connection_with_alias(payload.alias)
 
     # create a new contact record
@@ -56,18 +73,18 @@ async def create_invitation(
         role=ConnectionRoleType.inviter,
         connection_id=connection.connection_id,
         connection_alias=connection.alias,
-        invitation=invitation.invitation,
+        invitation=invitation,
         connection=connection,
     )
     db.add(db_contact)
     await db.commit()
 
     item = ContactItem(**db_contact.dict())
-    item.acapy = ContactAcapy(invitation=invitation.invitation, connection=connection)
+    item.acapy = ContactAcapy(invitation=invitation, connection=connection)
     return CreateInvitationResponse(
         item=item,
-        invitation=invitation.invitation,
-        invitation_url=invitation.invitation_url,
+        invitation=invitation,
+        invitation_url=invitation_url,
     )
 
 
@@ -101,15 +118,27 @@ async def receive_invitation(
             detail=f"Error alias {label} already in use.",
         )
 
-    connection = connections.receive_invitation(
-        label,
+    # This should get removed when v0 is phased out...
+    # we need to do this to keep v0 working and kick off that connection workflow
+    await v0_receive_invitation(
+        tenant_id=tenant_id,
+        wallet_id=wallet_id,
+        alias=label,
         payload=invitation,
         their_public_did=payload.their_public_did,
+        db=db,
     )
+
+    # connection = connections.receive_invitation(
+    #     label,
+    #     payload=invitation,
+    #     their_public_did=payload.their_public_did,
+    # )
+    connection = connections.get_connection_with_alias(label)
 
     # create a new contact record
     db_contact = Contact(
-        alias=payload.alias,
+        alias=label,
         tenant_id=tenant_id,
         status=ContactStatusType.pending,
         state=ConnectionStateType.start,
@@ -118,6 +147,7 @@ async def receive_invitation(
         connection_alias=connection.alias,
         invitation=invitation,
         connection=connection,
+        public_did=payload.their_public_did,
     )
     db.add(db_contact)
     await db.commit()
@@ -146,8 +176,16 @@ async def get_contact(
     wallet_id: UUID,
     contact_id: UUID,
     acapy: bool | None = False,
+    deleted: bool | None = False,
 ) -> ContactGetResponse:
-    db_contact = await db.get(Contact, contact_id)
+    q = (
+        select(Contact)
+        .where(Contact.tenant_id == tenant_id)
+        .where(Contact.contact_id == contact_id)
+        .where(Contact.deleted == deleted)
+    )
+    q_result = await db.execute(q)
+    db_contact = q_result.scalar_one_or_none()
 
     if not db_contact:
         raise NotFoundError(
@@ -165,3 +203,20 @@ async def get_contact(
         item.acapy = None
 
     return ContactGetResponse(item=item)
+
+
+async def delete_contact(
+    db: AsyncSession, tenant_id: UUID, wallet_id: UUID, contact_id: UUID
+) -> ContactGetResponse:
+    q = (
+        update(Contact)
+        .where(Contact.tenant_id == tenant_id)
+        .where(Contact.contact_id == contact_id)
+        .values(deleted=True, status=ContactStatusType.deleted)
+    )
+    await db.execute(q)
+    await db.commit()
+
+    return await get_contact(
+        db, tenant_id, wallet_id, contact_id, acapy=False, deleted=True
+    )

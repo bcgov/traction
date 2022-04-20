@@ -22,6 +22,7 @@ class ContactStatusType(str, Enum):
     active = "Active"
     approved = "Approved"
     pending = "Pending"
+    deleted = "Deleted"
 
 
 class ContactAcapy(BaseModel):
@@ -56,6 +57,7 @@ class ContactListParameters(
     alias: str | None = None
     external_reference_id: Optional[str] | None = None
     role: ConnectionRoleType | None = None
+    deleted: bool | None = False
 
 
 class ContactListResponse(ListResponse[ContactItem]):

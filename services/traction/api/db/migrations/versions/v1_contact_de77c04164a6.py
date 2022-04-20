@@ -48,6 +48,7 @@ def upgrade():
         sa.Column("last_response_at", sa.DateTime(), nullable=True),
         sa.Column("connection", postgresql.JSON(astext_type=sa.Text()), nullable=True),
         sa.Column("invitation", postgresql.JSON(astext_type=sa.Text()), nullable=True),
+        sa.Column("deleted", sa.Boolean(), nullable=False),
         sa.Column(
             "created_at",
             postgresql.TIMESTAMP(),
