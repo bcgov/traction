@@ -1,3 +1,4 @@
+import logging
 from uuid import UUID
 
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -22,6 +23,9 @@ from api.endpoints.models.v1.errors import (
     NotFoundError,
 )
 from api.services import connections
+from api.services.v1 import invitation_parser
+
+logger = logging.getLogger(__name__)
 
 
 async def create_invitation(
@@ -52,15 +56,19 @@ async def create_invitation(
         role=ConnectionRoleType.inviter,
         connection_id=connection.connection_id,
         connection_alias=connection.alias,
-        invitation=invitation,
+        invitation=invitation.invitation,
         connection=connection,
     )
     db.add(db_contact)
     await db.commit()
 
     item = ContactItem(**db_contact.dict())
-    item.acapy = ContactAcapy(invitation=invitation, connection=connection)
-    return CreateInvitationResponse(item=item)
+    item.acapy = ContactAcapy(invitation=invitation.invitation, connection=connection)
+    return CreateInvitationResponse(
+        item=item,
+        invitation=invitation.invitation,
+        invitation_url=invitation.invitation_url,
+    )
 
 
 async def receive_invitation(
@@ -69,10 +77,55 @@ async def receive_invitation(
     wallet_id: UUID,
     payload: ReceiveInvitationPayload,
 ) -> ReceiveInvitationResponse:
-    raise MethodNotImplementedError(
-        code="contacts.receive.invitation.not.implemented",
-        title="Receive Invitation has not been implemented",
+
+    # if invitation url, then we need to go get the invitation payload...
+    if payload.invitation_url:
+        check_invitation = await invitation_parser.check_invitation(
+            payload.invitation_url
+        )
+        invitation = check_invitation.invitation
+        label = check_invitation.label
+    elif payload.invitation:
+        invitation = payload.invitation
+        label = invitation.get("label")
+
+    if payload.alias:
+        label = payload.alias
+
+    # see if there is an existing connection with this label (name)
+    existing_connection = connections.get_connection_with_alias(label)
+    if existing_connection is not None:
+        raise AlreadyExistsError(
+            code="contacts.receive.invitation.existing.alias",
+            title="Receive Invitation alias in use",
+            detail=f"Error alias {label} already in use.",
+        )
+
+    connection = connections.receive_invitation(
+        label,
+        payload=invitation,
+        their_public_did=payload.their_public_did,
     )
+
+    # create a new contact record
+    db_contact = Contact(
+        alias=payload.alias,
+        tenant_id=tenant_id,
+        status=ContactStatusType.pending,
+        state=ConnectionStateType.start,
+        role=ConnectionRoleType.invitee,
+        connection_id=connection.connection_id,
+        connection_alias=connection.alias,
+        invitation=invitation,
+        connection=connection,
+    )
+    db.add(db_contact)
+    await db.commit()
+
+    item = ContactItem(**db_contact.dict())
+
+    item.acapy = ContactAcapy(invitation=invitation, connection=connection)
+    return ReceiveInvitationResponse(item=item)
 
 
 async def list_contacts(

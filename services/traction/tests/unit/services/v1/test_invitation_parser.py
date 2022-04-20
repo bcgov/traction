@@ -1,0 +1,38 @@
+import pytest
+
+from api.services.v1 import invitation_parser
+
+pytestmark = pytest.mark.asyncio
+
+
+async def test_uri_to_url():
+   street_cred_redirect = "id.streetcred://launch/?d_m=eyJsYWJlbCI6IlNuYXBwZXIiLCJpbWFnZVVybCI6bnVsbCwic2VydmljZUVuZHBvaW50IjoiaHR0cHM6Ly90cmluc2ljLW1lZGlhdG9yLWFnZW50LWV1cm9wZS5henVyZXdlYnNpdGVzLm5ldC8iLCJyb3V0aW5nS2V5cyI6WyJDTFBmc3hVaDNMOWR2U2huNjRmYkZKZExrbzZHbmVhQkNEWkJQNjZpWVV3RCJdLCJyZWNpcGllbnRLZXlzIjpbIkc5cDVydVRqcDJiVHhWellIUVpySmZISkNDaENRVUpOVllrUWhTcGlmWTdkIl0sIkBpZCI6IjBiNTc1Zjc4LTNiNTQtNGFhNS1hMzMyLTcwNTljZDg5YzA1NiIsIkB0eXBlIjoiZGlkOnNvdjpCekNic05ZaE1yakhpcVpEVFVBU0hnO3NwZWMvY29ubmVjdGlvbnMvMS4wL2ludml0YXRpb24ifQ%3D%3D&orig=https%3a%2f%2fredir.trinsic.id%2f46yG3VegpCqc"
+   url = invitation_parser.uri_to_url(street_cred_redirect, True)
+   assert url.query
+
+
+async def test_check_invitation_redirect():
+   trinsic_redirect = "https://trinsic.studio/url/0158bf62-ef48-47ac-b9d7-4f9467bc01e6"
+   result = await invitation_parser.check_invitation(trinsic_redirect)
+   assert result.invitation
+   assert result.invitation_block
+   assert result.label
+
+
+async def test_check_invitation_oob():
+   oob = "http://traction-agent:8030?oob=eyJAdHlwZSI6ICJodHRwczovL2RpZGNvbW0ub3JnL291dC1vZi1iYW5kLzEuMC9pbnZpdGF0aW9uIiwgIkBpZCI6ICI5ZGNjY2U2OS1iOGQ4LTQ4ODAtODQyNS1lMzYwOTU1Yzk1ZWMiLCAic2VydmljZXMiOiBbeyJpZCI6ICIjaW5saW5lIiwgInR5cGUiOiAiZGlkLWNvbW11bmljYXRpb24iLCAicmVjaXBpZW50S2V5cyI6IFsiZGlkOmtleTp6Nk1raXZtVkpmRVc3cXN6eUJ0MmlacFUzZ2Y1eGk2UXJhenJHNzFQOTNuQWJUMVUiXSwgInNlcnZpY2VFbmRwb2ludCI6ICJodHRwOi8vdHJhY3Rpb24tYWdlbnQ6ODAzMCJ9XSwgImhhbmRzaGFrZV9wcm90b2NvbHMiOiBbImh0dHBzOi8vZGlkY29tbS5vcmcvZGlkZXhjaGFuZ2UvMS4wIl0sICJsYWJlbCI6ICJxd2VydHkifQ=="
+   result = await invitation_parser.check_invitation(oob)
+   assert result.invitation
+   assert result.invitation_block
+   assert result.label
+
+
+async def test_parse_invitation_oob():
+   oob = "eyJAdHlwZSI6ICJodHRwczovL2RpZGNvbW0ub3JnL291dC1vZi1iYW5kLzEuMC9pbnZpdGF0aW9uIiwgIkBpZCI6ICI5ZGNjY2U2OS1iOGQ4LTQ4ODAtODQyNS1lMzYwOTU1Yzk1ZWMiLCAic2VydmljZXMiOiBbeyJpZCI6ICIjaW5saW5lIiwgInR5cGUiOiAiZGlkLWNvbW11bmljYXRpb24iLCAicmVjaXBpZW50S2V5cyI6IFsiZGlkOmtleTp6Nk1raXZtVkpmRVc3cXN6eUJ0MmlacFUzZ2Y1eGk2UXJhenJHNzFQOTNuQWJUMVUiXSwgInNlcnZpY2VFbmRwb2ludCI6ICJodHRwOi8vdHJhY3Rpb24tYWdlbnQ6ODAzMCJ9XSwgImhhbmRzaGFrZV9wcm90b2NvbHMiOiBbImh0dHBzOi8vZGlkY29tbS5vcmcvZGlkZXhjaGFuZ2UvMS4wIl0sICJsYWJlbCI6ICJxd2VydHkifQ=="
+   result = invitation_parser.parse_invitation(oob)
+   assert result.invitation
+   assert result.invitation_block
+   assert result.label
+   assert result.oob
+   assert result.parsed
+
