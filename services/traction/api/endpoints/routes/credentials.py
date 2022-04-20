@@ -9,7 +9,6 @@ from starlette import status
 from api.api_client_utils import get_api_client
 from api.db.errors import DoesNotExist
 from api.db.models.issue_credential import (
-    IssueCredentialCreate,
     IssueCredentialRead,
     IssueCredentialUpdate,
 )
@@ -31,14 +30,10 @@ from api.services.connections import (
 from api.endpoints.dependencies.db import get_db
 from api.endpoints.dependencies.tenant_security import get_from_context
 from api.endpoints.models.credentials import (
-    IssueCredentialProtocolType,
-    CredentialType,
-    CredentialStateType,
     CredentialRoleType,
     PresentCredentialProtocolType,
     PresentationStateType,
     PresentationRoleType,
-    CredentialPreview,
     ProofRequest,
     CredPrecisForProof,
     CredPresentation,
@@ -53,7 +48,6 @@ from api.services.base import BaseWorkflow
 from acapy_client.api.credentials_api import CredentialsApi
 from acapy_client.api.present_proof_v1_0_api import PresentProofV10Api
 from acapy_client.api.revocation_api import RevocationApi
-from acapy_client.model.revoke_request import RevokeRequest
 
 
 router = APIRouter()
@@ -72,182 +66,6 @@ class IssueCredentialData(BaseModel):
 class PresentCredentialData(BaseModel):
     presentation: PresentCredentialRead | None = None
     workflow: TenantWorkflowRead | None = None
-
-
-@router.get("/issuer/issue", response_model=List[IssueCredentialData])
-async def issuer_get_issue_credentials(
-    state: TenantWorkflowStateType | None = None,
-    workflow_id: str | None = None,
-    cred_issue_id: str | None = None,
-    db: AsyncSession = Depends(get_db),
-) -> List[IssueCredentialData]:
-    # this should take some query params, sorting and paging params...
-    wallet_id = get_from_context("TENANT_WALLET_ID")
-    issue_repo = IssueCredentialsRepository(db_session=db)
-    workflow_repo = TenantWorkflowsRepository(db_session=db)
-    issue_creds = []
-    if workflow_id:
-        issue_cred = await issue_repo.get_by_workflow_id(wallet_id, workflow_id)
-        issue_creds = [
-            issue_cred,
-        ]
-    elif cred_issue_id:
-        issue_cred = await issue_repo.get_by_id(cred_issue_id)
-        issue_creds = [
-            issue_cred,
-        ]
-    else:
-        issue_creds = await issue_repo.find_by_wallet_id_and_role(
-            wallet_id, CredentialRoleType.issuer
-        )
-    issues = []
-    for issue_cred in issue_creds:
-        tenant_workflow = None
-        if issue_cred.workflow_id:
-            try:
-                tenant_workflow = await workflow_repo.get_by_id(issue_cred.workflow_id)
-            except DoesNotExist:
-                pass
-        if (
-            (not state)
-            or (not tenant_workflow and state == TenantWorkflowStateType.pending)
-            or (tenant_workflow and state == tenant_workflow.workflow_state)
-        ):
-            issue = IssueCredentialData(
-                credential=issue_cred,
-                workflow=tenant_workflow,
-            )
-            issues.append(issue)
-    return issues
-
-
-@router.post("/issuer/issue", response_model=IssueCredentialData)
-async def issuer_issue_credential(
-    cred_protocol: IssueCredentialProtocolType,
-    credential: CredentialPreview,
-    cred_def_id: str | None = None,
-    connection_id: str | None = None,
-    alias: str | None = None,
-    db: AsyncSession = Depends(get_db),
-) -> IssueCredentialData:
-    if not connection_id:
-        existing_connection = get_connection_with_alias(alias)
-        if not existing_connection:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Error alias {alias} does not exist",
-            )
-        connection_id = existing_connection.connection_id
-
-    if cred_protocol == IssueCredentialProtocolType.v20:
-        raise NotImplementedError()  # TODO
-    cred_type = CredentialType.anoncreds
-
-    wallet_id = get_from_context("TENANT_WALLET_ID")
-    tenant_id = get_from_context("TENANT_ID")
-    issue_repo = IssueCredentialsRepository(db_session=db)
-
-    issue_cred = IssueCredentialCreate(
-        tenant_id=tenant_id,
-        wallet_id=wallet_id,
-        connection_id=connection_id,
-        cred_type=cred_type,
-        cred_protocol=cred_protocol,
-        cred_def_id=cred_def_id,
-        credential=credential.toJSON(),
-        issue_role=CredentialRoleType.issuer,
-        issue_state=CredentialStateType.pending,
-    )
-    issue_cred = await issue_repo.create(issue_cred)
-
-    tenant_workflow = await create_workflow(
-        wallet_id,
-        TenantWorkflowTypeType.issue_cred,
-        db,
-        error_if_wf_exists=False,
-        start_workflow=False,
-    )
-    logger.debug(f">>> Created tenant_workflow: {tenant_workflow}")
-    issue_update = IssueCredentialUpdate(
-        id=issue_cred.id,
-        workflow_id=tenant_workflow.id,
-        issue_state=issue_cred.issue_state,
-    )
-    issue_cred = await issue_repo.update(issue_update)
-    logger.debug(f">>> Updated issue_cred: {issue_cred}")
-
-    # start workflow
-    tenant_workflow = await BaseWorkflow.next_workflow_step(
-        db, tenant_workflow=tenant_workflow
-    )
-    logger.debug(f">>> Updated tenant_workflow: {tenant_workflow}")
-
-    # get updated issuer info (should have workflow id etc.)
-    issue_cred = await issue_repo.get_by_id(issue_cred.id)
-    logger.debug(f">>> Updated (final) issue_cred: {issue_cred}")
-
-    issue = IssueCredentialData(
-        credential=issue_cred,
-        workflow=tenant_workflow,
-    )
-
-    return issue
-
-
-@router.post("/issuer/revoke", response_model=IssueCredentialData)
-async def issuer_revoke_credential(
-    cred_issue_id: str | None = None,
-    rev_reg_id: str | None = None,
-    cred_rev_id: str | None = None,
-    comment: str | None = None,
-    db: AsyncSession = Depends(get_db),
-) -> IssueCredentialData:
-    wallet_id = get_from_context("TENANT_WALLET_ID")
-    issue_repo = IssueCredentialsRepository(db_session=db)
-    workflow_repo = TenantWorkflowsRepository(db_session=db)
-    issue_cred = None
-    if cred_issue_id:
-        issue_cred = await issue_repo.get_by_id(cred_issue_id)
-    else:
-        issue_cred = await issue_repo.get_by_cred_rev_reg_id(
-            wallet_id, rev_reg_id, cred_rev_id
-        )
-    if not (
-        issue_cred.issue_state == CredentialStateType.done
-        or issue_cred.issue_state == CredentialStateType.credential_acked
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Cannot revoke, credential is in state {issue_cred.issue_state}.",
-        )
-
-    # no fancy workflow stuff, just revoke
-    rev_req = RevokeRequest(
-        comment=comment if comment else "",
-        connection_id=str(issue_cred.connection_id),
-        rev_reg_id=issue_cred.rev_reg_id,
-        cred_rev_id=issue_cred.cred_rev_id,
-        publish=True,
-        notify=True,
-    )
-    data = {"body": rev_req}
-    revoc_api.revocation_revoke_post(**data)
-
-    update_issue = IssueCredentialUpdate(
-        id=issue_cred.id,
-        workflow_id=issue_cred.workflow_id,
-        cred_exch_id=issue_cred.cred_exch_id,
-        issue_state=CredentialStateType.credential_revoked,
-    )
-    issue_cred = await issue_repo.update(update_issue)
-    tenant_workflow = await workflow_repo.get_by_id(issue_cred.workflow_id)
-
-    issue = IssueCredentialData(
-        credential=issue_cred,
-        workflow=tenant_workflow,
-    )
-
-    return issue
 
 
 @router.get("/holder/offer", response_model=List[IssueCredentialData])
