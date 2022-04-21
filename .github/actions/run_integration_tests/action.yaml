@@ -41,6 +41,13 @@ runs:
       run: |
         cd ./scripts
         cp .env-example .env
+        . /dev/stdin <<<"$(cat <(curl -s --raw https://raw.githubusercontent.com/bcgov/DITP-DevOps/main/code/snippets/getDockerHost))" 
+        export DOCKERHOST=$(getDockerHost)
+        echo $DOCKERHOST
+        export TRACTION_ENDPOINT=http://$DOCKERHOST:5100
+        echo $TRACTION_ENDPOINT
+        export ENDORSER_ENDPOINT=http://$DOCKERHOST:5300
+        export ACAPY_ENDORSER_ENDPOINT=http://$DOCKERHOST:9030
         docker-compose -f "docker-compose.yml" up -d --build
       shell: bash
 
@@ -48,16 +55,10 @@ runs:
       run: |
         cd ./scripts
         docker ps
-        . /dev/stdin <<<"$(cat <(curl -s --raw https://raw.githubusercontent.com/bcgov/DITP-DevOps/main/code/snippets/getDockerHost))" 
-        export DOCKERHOST=$(getDockerHost)
-        echo $DOCKERHOST
-        echo $TRACTION_ENDPOINT
-        export TRACTION_ENDPOINT=${http://$DOCKERHOST:5100}
-        echo $TRACTION_ENDPOINT
       shell: bash
 
-    # - name: Run pytest
-    #   run: |
-    #     cd ./scripts
-    #     docker exec scripts_traction-api_1 pytest --asyncio-mode=strict
-    #   shell: bash
+    - name: Run pytest
+      run: |
+        cd ./scripts
+        docker exec scripts_traction-api_1 pytest --asyncio-mode=strict
+      shell: bash
