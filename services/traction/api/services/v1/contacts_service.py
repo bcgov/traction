@@ -2,7 +2,7 @@ import json
 import logging
 from uuid import UUID
 
-from sqlalchemy import select, update
+from sqlalchemy import select, update, desc
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from api.db.models.v1.contact import Contact
@@ -22,7 +22,6 @@ from api.endpoints.models.v1.contacts import (
     ContactGetResponse,
 )
 from api.endpoints.models.v1.errors import (
-    MethodNotImplementedError,
     AlreadyExistsError,
     NotFoundError,
 )
@@ -164,10 +163,38 @@ async def list_contacts(
     wallet_id: UUID,
     parameters: ContactListParameters,
 ) -> ContactListResponse:
-    raise MethodNotImplementedError(
-        code="contacts.list.not.implemented",
-        title="List Contacts has not been implemented",
+
+    filters = [Contact.tenant_id == tenant_id, Contact.deleted == parameters.deleted]
+    if parameters.status:
+        filters.append(Contact.status == parameters.status)
+    if parameters.state:
+        filters.append(Contact.state == parameters.state)
+    if parameters.role:
+        filters.append(Contact.role == parameters.role)
+    if parameters.external_reference_id:
+        filters.append(
+            Contact.external_reference_id == parameters.external_reference_id
+        )
+    if parameters.alias:
+        filters.append(Contact.alias.contains(parameters.alias))
+
+    q = (
+        select(Contact)
+        .filter(*filters)
+        .limit(parameters.limit)
+        .offset(parameters.skip)
+        .order_by(desc(Contact.created_at))
     )
+
+    q_result = await db.execute(q)
+    db_contacts = q_result.scalars()
+
+    items = []
+    for db_contact in db_contacts:
+        item = contact_to_contact_item(db_contact, parameters.acapy)
+        items.append(item)
+
+    return ContactListResponse(items=items)
 
 
 async def get_contact(
@@ -194,13 +221,7 @@ async def get_contact(
             detail=f"Contact does not exist for id<{contact_id}>",
         )
 
-    item = ContactItem(**db_contact.dict())
-    if acapy:
-        item.acapy = ContactAcapy(
-            invitation=db_contact.invitation, connection=db_contact.connection
-        )
-    else:
-        item.acapy = None
+    item = contact_to_contact_item(db_contact, acapy)
 
     return ContactGetResponse(item=item)
 
@@ -220,3 +241,15 @@ async def delete_contact(
     return await get_contact(
         db, tenant_id, wallet_id, contact_id, acapy=False, deleted=True
     )
+
+
+def contact_to_contact_item(
+    db_contact: Contact, acapy: bool | None = False
+) -> ContactItem:
+    item = ContactItem(**db_contact.dict())
+    if acapy:
+        item.acapy = ContactAcapy(
+            invitation=db_contact.invitation, connection=db_contact.connection
+        )
+
+    return item
