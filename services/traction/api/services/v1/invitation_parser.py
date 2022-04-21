@@ -2,7 +2,7 @@ import base64
 import json
 import logging
 import urllib
-from urllib.parse import urlparse, parse_qs, unquote_plus, urlunparse
+from urllib.parse import urlparse, parse_qs, unquote_plus, urlunparse, ParseResultBytes
 from aiohttp import (
     ClientSession,
 )
@@ -100,21 +100,25 @@ def decode_invitation_block(invitation_block):
     return None
 
 
-def uri_to_url(invitation_uri: str, decode: bool | None = False):
+def uri_to_url(invitation_uri: str, decode: bool | None = False) -> ParseResultBytes:
     result = None
 
+    parsed_url = parse_uri(invitation_uri, decode)
+
+    if parsed_url.scheme == "http" or parsed_url.scheme == "https":
+        result = parsed_url
+    else:
+        # we only care about the query portion of this url
+        # so we can parse out the invitation block
+        q = parsed_url.query
+        result = urlparse(f"https://placeholder.co?{q}") if q else None
+
+    return result
+
+
+def parse_uri(invitation_uri: str, decode: bool | None = False) -> ParseResultBytes:
     decoded_uri = invitation_uri
     if decode:
         decoded_uri = urllib.parse.unquote(decoded_uri)
 
-    url = urlparse(decoded_uri)
-    if url.scheme == "http" or url.scheme == "https":
-        result = url
-    else:
-        # we only care about the query portion of this url
-        # so we can parse out the invitation block
-        q = url.query
-        if q:
-            result = urlparse(f"https://placeholder.co?{q}")
-
-    return result
+    return urlparse(decoded_uri)
