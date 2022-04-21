@@ -1,5 +1,7 @@
 # coding: utf-8
 
+import logging
+
 from typing import Dict, List  # noqa: F401
 
 from fastapi import (  # noqa: F401
@@ -33,6 +35,8 @@ from api import acapy_utils as au
 router = APIRouter()
 
 
+logger = logging.getLogger(__name__)
+
 @router.post(
     "/multitenancy/wallet",
     responses={
@@ -45,6 +49,7 @@ async def multitenancy_wallet_post(
     request: Request,
     body: CreateWalletRequest = Body(None, description=""),
 ) -> CreateWalletResponse:
+    logger.warning(request.__dict__)
     resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
