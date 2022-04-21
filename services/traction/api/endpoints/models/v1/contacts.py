@@ -1,12 +1,10 @@
 from datetime import datetime
 from enum import Enum
-from typing import Union, Optional
+from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel, Field, AnyUrl
 
-from acapy_wrapper.models.invitation_message import InvitationMessage
-from acapy_wrapper.models.receive_invitation_request import ReceiveInvitationRequest
 from api.endpoints.models.connections import (
     ConnectionStateType,
     ConnectionRoleType,
@@ -24,6 +22,7 @@ class ContactStatusType(str, Enum):
     active = "Active"
     approved = "Approved"
     pending = "Pending"
+    deleted = "Deleted"
 
 
 class ContactAcapy(BaseModel):
@@ -58,6 +57,7 @@ class ContactListParameters(
     alias: str | None = None
     external_reference_id: Optional[str] | None = None
     role: ConnectionRoleType | None = None
+    deleted: bool | None = False
 
 
 class ContactListResponse(ListResponse[ContactItem]):
@@ -74,12 +74,13 @@ class CreateInvitationPayload(BaseModel):
 
 
 class CreateInvitationResponse(GetResponse[ContactItem]):
-    pass
+    invitation: dict | None = {}
+    invitation_url: str | None = None
 
 
 class ReceiveInvitationPayload(BaseModel):
-    alias: str = Field(...)
-    invitation: Union[None, InvitationMessage, ReceiveInvitationRequest] = None
+    alias: Optional[str] = None
+    invitation: Optional[dict] = None
     invitation_url: Optional[AnyUrl] = None
     their_public_did: Optional[str] = None
 

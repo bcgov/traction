@@ -92,49 +92,8 @@ async def create_tenant_invitation(
 
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
-    connection_repo = TenantConnectionsRepository(db_session=db)
-
-    tenant_connection = TenantConnectionCreate(
-        tenant_id=tenant_id,
-        wallet_id=wallet_id,
-        alias=alias,
-        connection_role=ConnectionRoleType.inviter,
-        connection_state=ConnectionStateType.start,
-        connection_protocol=invitation_type,
-    )
-    tenant_connection = await connection_repo.create(tenant_connection)
-
-    tenant_workflow = await create_workflow(
-        wallet_id,
-        TenantWorkflowTypeType.connection,
-        db,
-        error_if_wf_exists=False,
-        start_workflow=False,
-    )
-    logger.debug(f">>> Created tenant_workflow: {tenant_workflow}")
-    connection_update = TenantConnectionUpdate(
-        id=tenant_connection.id,
-        workflow_id=tenant_workflow.id,
-        connection_state=tenant_connection.connection_state,
-        connection_protocol=tenant_connection.connection_protocol,
-        connection_id=tenant_connection.connection_id,
-    )
-    tenant_connection = await connection_repo.update(connection_update)
-    logger.debug(f">>> Updated tenant_connection: {tenant_connection}")
-
-    # start workflow
-    tenant_workflow = await BaseWorkflow.next_workflow_step(
-        db, tenant_workflow=tenant_workflow
-    )
-    logger.debug(f">>> Updated tenant_workflow: {tenant_workflow}")
-
-    # get updated issuer info (should have workflow id etc.)
-    tenant_connection = await connection_repo.get_by_id(tenant_connection.id)
-    logger.debug(f">>> Updated (final) tenant_connection: {tenant_connection}")
-
-    connection = TenantConnectionData(
-        connection=tenant_connection,
-        workflow=tenant_workflow,
+    connection = await create_invitation(
+        tenant_id, wallet_id, alias, invitation_type, db
     )
 
     return connection
@@ -155,52 +114,8 @@ async def receive_tenant_invitation(
 
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
-    connection_repo = TenantConnectionsRepository(db_session=db)
-
-    tenant_connection = TenantConnectionCreate(
-        tenant_id=tenant_id,
-        wallet_id=wallet_id,
-        alias=alias,
-        connection_role=ConnectionRoleType.invitee,
-        connection_state=ConnectionStateType.start,
-        invitation=json.dumps(payload),
-        their_public_did=their_public_did,
-    )
-    tenant_connection = await connection_repo.create(tenant_connection)
-
-    tenant_workflow = await create_workflow(
-        wallet_id,
-        TenantWorkflowTypeType.connection,
-        db,
-        error_if_wf_exists=False,
-        start_workflow=False,
-    )
-    logger.debug(f">>> Created tenant_workflow: {tenant_workflow}")
-    connection_update = TenantConnectionUpdate(
-        id=tenant_connection.id,
-        connection_state=tenant_connection.connection_state,
-        connection_protocol=tenant_connection.connection_protocol,
-        connection_id=tenant_connection.connection_id,
-        invitation=tenant_connection.invitation,
-        their_public_did=their_public_did,
-        workflow_id=tenant_workflow.id,
-    )
-    tenant_connection = await connection_repo.update(connection_update)
-    logger.debug(f">>> Updated tenant_connection: {tenant_connection}")
-
-    # start workflow
-    tenant_workflow = await BaseWorkflow.next_workflow_step(
-        db, tenant_workflow=tenant_workflow
-    )
-    logger.debug(f">>> Updated tenant_workflow: {tenant_workflow}")
-
-    # get updated issuer info (should have workflow id etc.)
-    tenant_connection = await connection_repo.get_by_id(tenant_connection.id)
-    logger.debug(f">>> Updated (final) tenant_connection: {tenant_connection}")
-
-    connection = TenantConnectionData(
-        connection=tenant_connection,
-        workflow=tenant_workflow,
+    connection = await receive_invitation(
+        tenant_id, wallet_id, alias, payload, their_public_did, db
     )
 
     return connection
@@ -223,3 +138,94 @@ async def send_tenant_message(
     response = send_basic_message(connection_id, payload.content)
 
     return response
+
+
+async def create_invitation(tenant_id, wallet_id, alias, invitation_type, db):
+    connection_repo = TenantConnectionsRepository(db_session=db)
+    tenant_connection = TenantConnectionCreate(
+        tenant_id=tenant_id,
+        wallet_id=wallet_id,
+        alias=alias,
+        connection_role=ConnectionRoleType.inviter,
+        connection_state=ConnectionStateType.start,
+        connection_protocol=invitation_type,
+    )
+    tenant_connection = await connection_repo.create(tenant_connection)
+    tenant_workflow = await create_workflow(
+        wallet_id,
+        TenantWorkflowTypeType.connection,
+        db,
+        error_if_wf_exists=False,
+        start_workflow=False,
+    )
+    logger.debug(f">>> Created tenant_workflow: {tenant_workflow}")
+    connection_update = TenantConnectionUpdate(
+        id=tenant_connection.id,
+        workflow_id=tenant_workflow.id,
+        connection_state=tenant_connection.connection_state,
+        connection_protocol=tenant_connection.connection_protocol,
+        connection_id=tenant_connection.connection_id,
+    )
+    tenant_connection = await connection_repo.update(connection_update)
+    logger.debug(f">>> Updated tenant_connection: {tenant_connection}")
+    # start workflow
+    tenant_workflow = await BaseWorkflow.next_workflow_step(
+        db, tenant_workflow=tenant_workflow
+    )
+    logger.debug(f">>> Updated tenant_workflow: {tenant_workflow}")
+    # get updated issuer info (should have workflow id etc.)
+    tenant_connection = await connection_repo.get_by_id(tenant_connection.id)
+    logger.debug(f">>> Updated (final) tenant_connection: {tenant_connection}")
+    connection = TenantConnectionData(
+        connection=tenant_connection,
+        workflow=tenant_workflow,
+    )
+    return connection
+
+
+async def receive_invitation(
+    tenant_id, wallet_id, alias, payload, their_public_did, db
+):
+    connection_repo = TenantConnectionsRepository(db_session=db)
+    tenant_connection = TenantConnectionCreate(
+        tenant_id=tenant_id,
+        wallet_id=wallet_id,
+        alias=alias,
+        connection_role=ConnectionRoleType.invitee,
+        connection_state=ConnectionStateType.start,
+        invitation=json.dumps(payload),
+        their_public_did=their_public_did,
+    )
+    tenant_connection = await connection_repo.create(tenant_connection)
+    tenant_workflow = await create_workflow(
+        wallet_id,
+        TenantWorkflowTypeType.connection,
+        db,
+        error_if_wf_exists=False,
+        start_workflow=False,
+    )
+    logger.debug(f">>> Created tenant_workflow: {tenant_workflow}")
+    connection_update = TenantConnectionUpdate(
+        id=tenant_connection.id,
+        connection_state=tenant_connection.connection_state,
+        connection_protocol=tenant_connection.connection_protocol,
+        connection_id=tenant_connection.connection_id,
+        invitation=tenant_connection.invitation,
+        their_public_did=their_public_did,
+        workflow_id=tenant_workflow.id,
+    )
+    tenant_connection = await connection_repo.update(connection_update)
+    logger.debug(f">>> Updated tenant_connection: {tenant_connection}")
+    # start workflow
+    tenant_workflow = await BaseWorkflow.next_workflow_step(
+        db, tenant_workflow=tenant_workflow
+    )
+    logger.debug(f">>> Updated tenant_workflow: {tenant_workflow}")
+    # get updated issuer info (should have workflow id etc.)
+    tenant_connection = await connection_repo.get_by_id(tenant_connection.id)
+    logger.debug(f">>> Updated (final) tenant_connection: {tenant_connection}")
+    connection = TenantConnectionData(
+        connection=tenant_connection,
+        workflow=tenant_workflow,
+    )
+    return connection

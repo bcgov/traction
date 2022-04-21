@@ -5,6 +5,13 @@ from api.db.models.tenant import Tenant  # noqa: F401
 from api.db.models.tenant_webhook import TenantWebhook  # noqa: F401
 from api.db.models.tenant_webhook_msg import TenantWebhookMsg  # noqa: F401
 
-from api.db.models.v1.contact import Contact  # noqa: F401
+from api.db.models.v1.contact import Contact, ContactHistory  # noqa: F401
 
-__all__ = ["BaseTable", "Tenant", "TenantWebhook", "TenantWebhookMsg", "Contact"]
+__all__ = [
+    "BaseTable",
+    "Tenant",
+    "TenantWebhook",
+    "TenantWebhookMsg",
+    "Contact",
+    "ContactHistory",
+]
