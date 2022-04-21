@@ -65,7 +65,9 @@ class GlobalConfig(BaseSettings):
         "TRACTION_API_ADMIN_USER", "innkeeper"
     )
     TRACTION_API_ADMIN_KEY: str = os.environ.get("TRACTION_API_ADMIN_KEY", "change-me")
-
+    TRACTION_HOST_URL: str = os.environ.get(
+        "TRACTION_HOST_URL", "http://traction-api:5000"
+    )
     TRACTION_WEBHOOK_URL: str = os.environ.get(
         "TRACTION_WEBHOOK_URL", "http://traction-api:5000/webhook"
     )
@@ -83,6 +85,8 @@ class GlobalConfig(BaseSettings):
     ACAPY_GENESIS_URL: str = os.environ.get("ACAPY_GENESIS_URL")
 
     DB_ECHO_LOG: bool = False
+
+    DEFAULT_PAGE_SIZE: int = os.environ.get("DEFAULT_PAGE_SIZE", 10)
 
     # Api V1 prefix
     API_V0_STR = "/v0"
@@ -103,6 +107,7 @@ class LocalConfig(GlobalConfig):
     """Local configurations."""
 
     DEBUG: bool = True
+    DB_ECHO_LOG = True
     ENVIRONMENT: EnvironmentEnum = EnvironmentEnum.LOCAL
 
 

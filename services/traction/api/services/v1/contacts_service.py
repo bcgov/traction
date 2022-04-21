@@ -1,12 +1,16 @@
 import json
 import logging
+
+from typing import List
 from uuid import UUID
 
 from sqlalchemy import select, update, desc
+from sqlalchemy.sql.functions import func
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from api.db.models.v1.contact import Contact
 from api.endpoints.models.connections import ConnectionStateType, ConnectionRoleType
+from api.endpoints.models.v1.base import Link, build_list_links
 from api.endpoints.routes.connections import create_invitation as v0_create_invitation
 from api.endpoints.routes.connections import receive_invitation as v0_receive_invitation
 from api.endpoints.models.v1.contacts import (
@@ -164,6 +168,9 @@ async def list_contacts(
     parameters: ContactListParameters,
 ) -> ContactListResponse:
 
+    limit = parameters.page_size
+    skip = (parameters.page_num - 1) * limit
+
     filters = [Contact.tenant_id == tenant_id, Contact.deleted == parameters.deleted]
     if parameters.status:
         filters.append(Contact.status == parameters.status)
@@ -178,23 +185,30 @@ async def list_contacts(
     if parameters.alias:
         filters.append(Contact.alias.contains(parameters.alias))
 
-    q = (
-        select(Contact)
-        .filter(*filters)
-        .limit(parameters.limit)
-        .offset(parameters.skip)
-        .order_by(desc(Contact.created_at))
-    )
+    # build out a base query with all filters
+    base_q = select(Contact).filter(*filters)
 
-    q_result = await db.execute(q)
-    db_contacts = q_result.scalars()
+    # get a count of ALL records matching our base query
+    count_q = select([func.count()]).select_from(base_q)
+    count_q_rec = await db.execute(count_q)
+    total_count = count_q_rec.scalar()
+
+    # add in our paging and ordering to get the result set
+    results_q = base_q.limit(limit).offset(skip).order_by(desc(Contact.created_at))
+
+    results_q_recs = await db.execute(results_q)
+    db_contacts = results_q_recs.scalars()
 
     items = []
     for db_contact in db_contacts:
         item = contact_to_contact_item(db_contact, parameters.acapy)
         items.append(item)
 
-    return ContactListResponse(items=items)
+    links = contacts_list_links(total_count, parameters)
+
+    return ContactListResponse(
+        items=items, count=len(items), total=total_count, links=links
+    )
 
 
 async def get_contact(
@@ -253,3 +267,10 @@ def contact_to_contact_item(
         )
 
     return item
+
+
+def contacts_list_links(
+    total_record_count: int,
+    parameters: ContactListParameters,
+) -> List[Link]:
+    return build_list_links(total_record_count, parameters, "/tenant/v1/contacts/")

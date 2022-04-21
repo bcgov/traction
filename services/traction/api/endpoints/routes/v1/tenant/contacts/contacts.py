@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
+from api.core.config import settings
 from api.endpoints.dependencies.db import get_db
 from api.endpoints.dependencies.tenant_security import get_from_context
 from api.endpoints.models.connections import ConnectionRoleType
@@ -24,8 +25,8 @@ logger = logging.getLogger(__name__)
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=ContactListResponse)
 async def list_contacts(
-    skip: int = 0,
-    limit: int | None = None,
+    page_num: int | None = 1,
+    page_size: int | None = settings.DEFAULT_PAGE_SIZE,
     acapy: bool | None = False,
     alias: str | None = None,
     role: ConnectionRoleType | None = None,
@@ -35,7 +36,12 @@ async def list_contacts(
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
     parameters = ContactListParameters(
-        skip=skip, limit=limit, acapy=acapy, alias=alias, role=role, deleted=deleted
+        page_num=page_num,
+        page_size=page_size,
+        acapy=acapy,
+        alias=alias,
+        role=role,
+        deleted=deleted,
     )
     return await contacts_service.list_contacts(
         db, tenant_id, wallet_id, parameters=parameters
