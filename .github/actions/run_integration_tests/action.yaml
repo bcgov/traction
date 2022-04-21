@@ -37,21 +37,24 @@ runs:
     - name: Check out
       uses: actions/checkout@v2
 
-    - name: Start containers
-      run: |
-        cd ./scripts
-        cp .env-example .env
-        docker-compose -f "docker-compose.yml" up -d --build
-      shell: bash
+    # - name: Start containers
+    #   run: |
+    #     cd ./scripts
+    #     cp .env-example .env
+    #     docker-compose -f "docker-compose.yml" up -d --build
+    #   shell: bash
 
     - name: Display running
       run: |
         cd ./scripts
         docker ps
+        . /dev/stdin <<<"$(cat <(curl -s --raw https://raw.githubusercontent.com/bcgov/DITP-DevOps/main/code/snippets/getDockerHost))" 
+        export DOCKERHOST=$(getDockerHost)
+        echo $DOCKERHOST
       shell: bash
 
-    - name: Run pytest
-      run: |
-        cd ./scripts
-        docker exec scripts_traction-api_1 pytest --asyncio-mode=strict
-      shell: bash
+    # - name: Run pytest
+    #   run: |
+    #     cd ./scripts
+    #     docker exec scripts_traction-api_1 pytest --asyncio-mode=strict
+    #   shell: bash
