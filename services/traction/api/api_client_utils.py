@@ -5,6 +5,6 @@ from api.core.config import settings
 
 
 def get_api_client():
-    configuration = Configuration(host="http://traction-agent:8031")
+    configuration = Configuration(host="grabasserlkjhndxfg:8031")
     api_client = ApiClient(configuration=configuration)
     return api_client
