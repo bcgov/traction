@@ -58,7 +58,7 @@ def test_app(override_get_db: Callable) -> FastAPI:
 
 @pytest_asyncio.fixture()
 async def test_client(test_app: FastAPI) -> AsyncGenerator:
-    async with AsyncClient(app=test_app, base_url="http://localhost:5000") as ac:
+    async with AsyncClient(app=test_app, base_url="http://traction-api:5000") as ac:
         yield ac
 
 
