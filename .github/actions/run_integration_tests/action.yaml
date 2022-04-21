@@ -48,6 +48,9 @@ runs:
         echo $TRACTION_ENDPOINT
         export ENDORSER_ENDPOINT=http://$DOCKERHOST:5300
         export ACAPY_ENDORSER_ENDPOINT=http://$DOCKERHOST:9030
+        export ACAPY_ENDPOINT=http://$DOCKERHOST:8030
+        export ACAPY_ADMIN_URL=http://$DOCKERHOST:8031
+        export TRACTION_HOST_URL=http://$DOCKERHOST:5000
         docker-compose -f "docker-compose.yml" up -d --build
       shell: bash
 
@@ -60,5 +63,5 @@ runs:
     - name: Run pytest
       run: |
         cd ./scripts
-        docker exec scripts_traction-api_1 pytest -k 'test_check_in' --asyncio-mode=strict
+        docker exec scripts_traction-api_1 pytest -k 'test_check_in' --log-level=debug --asyncio-mode=strict
       shell: bash
