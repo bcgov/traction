@@ -50,6 +50,8 @@ async def multitenancy_wallet_post(
     body: CreateWalletRequest = Body(None, description=""),
 ) -> CreateWalletResponse:
     logger.warning(request.__dict__)
+    print("***TESTWARNING***")
+    print(request.__dict__)
     resp_text = await au.acapy_admin_request_from_request(request)
     return resp_text
 
