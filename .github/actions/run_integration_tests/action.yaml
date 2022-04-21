@@ -41,7 +41,7 @@ runs:
       run: |
         cd ./scripts
         cp .env-example .env
-        docker-compose -f "docker-compose.yml" up -d --build --add-host=host.docker.internal:host-gateway
+        docker-compose -f "docker-compose.yml" up -d --build
       shell: bash
 
     - name: Display running
