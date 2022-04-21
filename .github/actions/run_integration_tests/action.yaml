@@ -41,17 +41,7 @@ runs:
       run: |
         cd ./scripts
         cp .env-example .env
-        . /dev/stdin <<<"$(cat <(curl -s --raw https://raw.githubusercontent.com/bcgov/DITP-DevOps/main/code/snippets/getDockerHost))" 
-        export DOCKERHOST=$(getDockerHost)
-        echo $DOCKERHOST
-        export TRACTION_ENDPOINT=http://$DOCKERHOST:5100
-        echo $TRACTION_ENDPOINT
-        export ENDORSER_ENDPOINT=http://$DOCKERHOST:5300
-        export ACAPY_ENDORSER_ENDPOINT=http://$DOCKERHOST:9030
-        export ACAPY_ENDPOINT=http://$DOCKERHOST:8030
-        export ACAPY_ADMIN_URL=http://$DOCKERHOST:8031
-        export TRACTION_HOST_URL=http://$DOCKERHOST:5000
-        docker-compose -f "docker-compose.yml" up -d --build
+        docker-compose -f "docker-compose.yml" up -d --build --add-host=host.docker.internal:host-gateway
       shell: bash
 
     - name: Display running
