@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
 
 from pydantic import BaseModel, Field, AnyUrl
@@ -15,6 +15,8 @@ from api.endpoints.models.v1.base import (
     ListResponse,
     GetResponse,
     ListAcapyItemParameters,
+    TimelineItem,
+    GetTimelineResponse,
 )
 
 
@@ -51,6 +53,10 @@ class ContactItem(AcapyItem[ContactStatusType, ConnectionStateType, ContactAcapy
     role: ConnectionRoleType
 
 
+class ContactTimelineItem(TimelineItem[ContactStatusType, ConnectionStateType]):
+    pass
+
+
 class ContactListParameters(
     ListAcapyItemParameters[ContactStatusType, ConnectionStateType]
 ):
@@ -64,7 +70,7 @@ class ContactListResponse(ListResponse[ContactItem]):
     pass
 
 
-class ContactGetResponse(GetResponse[ContactItem]):
+class ContactGetResponse(GetTimelineResponse[ContactItem, ContactTimelineItem]):
     pass
 
 
@@ -86,4 +92,19 @@ class ReceiveInvitationPayload(BaseModel):
 
 
 class ReceiveInvitationResponse(GetResponse[ContactItem]):
+    pass
+
+
+class UpdateContactPayload(BaseModel):
+    contact_id: UUID
+    alias: str | None = None
+    status: ContactStatusType | None = None
+    contact_info: ContactInfo | None = None
+    external_reference_id: str | None = None
+    ping: ContactPing | None = None
+    public_did: str | None = None
+    tags: List[str] | None = []
+
+
+class UpdateContactResponse(GetResponse[ContactItem]):
     pass

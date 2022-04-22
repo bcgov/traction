@@ -1,3 +1,4 @@
+# flake8: noqa
 """v1-contacts-history
 
 Revision ID: 0fbab19dd1f4
@@ -18,9 +19,12 @@ depends_on = None
 
 create_contact_history_func = """CREATE OR REPLACE FUNCTION contact_history_func() RETURNS trigger AS $body$
     BEGIN
-        INSERT INTO "contact_history" ( "contact_id", "status", "state" )
-        VALUES(NEW."contact_id",NEW."status",NEW."state");
-        RETURN NEW;
+        IF NEW.status IS DISTINCT FROM OLD.status OR NEW.state IS DISTINCT FROM OLD.state THEN
+            INSERT INTO "contact_history" ( "contact_id", "status", "state" )
+            VALUES(NEW."contact_id",NEW."status",NEW."state");
+            RETURN NEW;
+        END IF;
+        RETURN null;
     END;
     $body$ LANGUAGE plpgsql
 """
