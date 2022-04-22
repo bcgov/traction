@@ -10,6 +10,7 @@ from api.core.config import settings
 ItemType = TypeVar("ItemType")
 StatusType = TypeVar("StatusType")
 StateType = TypeVar("StateType")
+TimelineType = TypeVar("TimelineType")
 AcapyType = TypeVar("AcapyType")
 
 
@@ -24,6 +25,12 @@ class Item(GenericModel, Generic[StatusType, StateType]):
     deleted: bool = False
     created_at: datetime
     updated_at: datetime
+
+
+class TimelineItem(GenericModel, Generic[StatusType, StateType]):
+    status: StatusType
+    state: StateType
+    created_at: datetime
 
 
 class TagsItem(Item[StatusType, StateType], Generic[StatusType, StateType]):
@@ -67,6 +74,10 @@ class ListAcapyItemParameters(
 class GetResponse(GenericModel, Generic[ItemType]):
     item: ItemType
     links: List[Link] = []
+
+
+class GetTimelineResponse(GetResponse[ItemType], Generic[ItemType, TimelineType]):
+    timeline: List[TimelineType] = []
 
 
 def build_list_links(

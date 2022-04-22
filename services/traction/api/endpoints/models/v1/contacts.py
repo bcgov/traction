@@ -15,6 +15,8 @@ from api.endpoints.models.v1.base import (
     ListResponse,
     GetResponse,
     ListAcapyItemParameters,
+    TimelineItem,
+    GetTimelineResponse,
 )
 
 
@@ -51,6 +53,10 @@ class ContactItem(AcapyItem[ContactStatusType, ConnectionStateType, ContactAcapy
     role: ConnectionRoleType
 
 
+class ContactTimelineItem(TimelineItem[ContactStatusType, ConnectionStateType]):
+    pass
+
+
 class ContactListParameters(
     ListAcapyItemParameters[ContactStatusType, ConnectionStateType]
 ):
@@ -64,7 +70,7 @@ class ContactListResponse(ListResponse[ContactItem]):
     pass
 
 
-class ContactGetResponse(GetResponse[ContactItem]):
+class ContactGetResponse(GetTimelineResponse[ContactItem, ContactTimelineItem]):
     pass
 
 

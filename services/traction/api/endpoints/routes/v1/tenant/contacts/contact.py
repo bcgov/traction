@@ -26,12 +26,19 @@ async def get_contact(
     contact_id: UUID,
     acapy: bool | None = False,
     deleted: bool | None = False,
+    timeline: bool | None = False,
     db: AsyncSession = Depends(get_db),
 ) -> ContactGetResponse:
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
     response = await contacts_service.get_contact(
-        db, tenant_id, wallet_id, contact_id=contact_id, acapy=acapy, deleted=deleted
+        db,
+        tenant_id,
+        wallet_id,
+        contact_id=contact_id,
+        acapy=acapy,
+        deleted=deleted,
+        timeline=timeline,
     )
     # add links
     response.links = contacts_service.build_item_links(str(request.url), response.item)

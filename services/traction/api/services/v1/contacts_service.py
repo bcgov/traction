@@ -9,7 +9,7 @@ from sqlalchemy import select, update, desc
 from sqlalchemy.sql.functions import func
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.models.v1.contact import Contact
+from api.db.models.v1.contact import Contact, ContactHistory
 from api.endpoints.models.connections import ConnectionStateType, ConnectionRoleType
 from api.endpoints.models.v1.base import Link, build_list_links
 from api.endpoints.routes.connections import create_invitation as v0_create_invitation
@@ -28,6 +28,7 @@ from api.endpoints.models.v1.contacts import (
     UpdateContactPayload,
     UpdateContactResponse,
     ContactPing,
+    ContactTimelineItem,
 )
 from api.endpoints.models.v1.errors import (
     AlreadyExistsError,
@@ -223,12 +224,16 @@ async def get_contact(
     contact_id: UUID,
     acapy: bool | None = False,
     deleted: bool | None = False,
+    timeline: bool | None = False,
 ) -> ContactGetResponse:
     db_contact = await get_contact_by_id(db, tenant_id, contact_id, deleted)
 
     item = contact_to_contact_item(db_contact, acapy)
+    timeline_items = []
+    if timeline:
+        timeline_items = await get_contact_timeline(db, contact_id)
 
-    return ContactGetResponse(item=item)
+    return ContactGetResponse(item=item, timeline=timeline_items)
 
 
 async def update_contact(
@@ -366,3 +371,21 @@ async def get_contact_by_id(
             detail=f"Contact does not exist for id<{contact_id}>",
         )
     return db_contact
+
+
+async def get_contact_timeline(
+    db: AsyncSession,
+    contact_id: UUID,
+) -> List[ContactTimelineItem]:
+    q = (
+        select(ContactHistory)
+        .where(ContactHistory.contact_id == contact_id)
+        .order_by(desc(ContactHistory.created_at))
+    )
+    q_result = await db.execute(q)
+    db_items = q_result.scalars()
+
+    results = []
+    for db_item in db_items:
+        results.append(ContactTimelineItem(**db_item.dict()))
+    return results
