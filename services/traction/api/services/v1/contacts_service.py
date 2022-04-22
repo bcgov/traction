@@ -273,4 +273,4 @@ def contacts_list_links(
     total_record_count: int,
     parameters: ContactListParameters,
 ) -> List[Link]:
-    return build_list_links(total_record_count, parameters, "/tenant/v1/contacts/")
+    return build_list_links(total_record_count, parameters)

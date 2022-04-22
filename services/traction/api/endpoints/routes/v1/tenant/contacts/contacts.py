@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=ContactListResponse)
 async def list_contacts(
+    request: Request,
     page_num: int | None = 1,
     page_size: int | None = settings.DEFAULT_PAGE_SIZE,
     acapy: bool | None = False,
@@ -36,6 +37,7 @@ async def list_contacts(
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
     parameters = ContactListParameters(
+        url=str(request.url),
         page_num=page_num,
         page_size=page_size,
         acapy=acapy,
