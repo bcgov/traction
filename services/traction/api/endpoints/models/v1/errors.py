@@ -28,3 +28,7 @@ class AlreadyExistsError(BaseError):
 
 class NotFoundError(BaseError):
     pass
+
+
+class IdNotMatchError(BaseError):
+    pass

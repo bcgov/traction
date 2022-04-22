@@ -12,6 +12,7 @@ from api.endpoints.models.v1.errors import (
     BaseError,
     AlreadyExistsError,
     NotFoundError,
+    IdNotMatchError,
 )
 
 
@@ -78,6 +79,21 @@ def add_exception_handlers(_app: FastAPI):
         request: Request, exc: NotFoundError
     ):
         status_code = status.HTTP_404_NOT_FOUND
+        return JSONResponse(
+            status_code=status_code,
+            content={
+                "request_id": context.data[HeaderKeys.request_id],
+                "status": status_code,
+                "code": exc.code,
+                "title": exc.title,
+                "detail": exc.detail,
+                "links": exc.links,
+            },
+        )
+
+    @_app.exception_handler(IdNotMatchError)
+    async def id_not_match_exception_handler(request: Request, exc: IdNotMatchError):
+        status_code = status.HTTP_409_CONFLICT
         return JSONResponse(
             status_code=status_code,
             content={

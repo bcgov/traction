@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
 
 from pydantic import BaseModel, Field, AnyUrl
@@ -86,4 +86,19 @@ class ReceiveInvitationPayload(BaseModel):
 
 
 class ReceiveInvitationResponse(GetResponse[ContactItem]):
+    pass
+
+
+class UpdateContactPayload(BaseModel):
+    contact_id: UUID
+    alias: str | None = None
+    status: ContactStatusType | None = None
+    contact_info: ContactInfo | None = None
+    external_reference_id: str | None = None
+    ping: ContactPing | None = None
+    public_did: str | None = None
+    tags: List[str] | None = []
+
+
+class UpdateContactResponse(GetResponse[ContactItem]):
     pass

@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Generic, TypeVar, Optional
 from urllib.parse import urlencode
 
@@ -21,6 +22,8 @@ class Item(GenericModel, Generic[StatusType, StateType]):
     status: StatusType
     state: StateType
     deleted: bool = False
+    created_at: datetime
+    updated_at: datetime
 
 
 class TagsItem(Item[StatusType, StateType], Generic[StatusType, StateType]):
