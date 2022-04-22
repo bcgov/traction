@@ -1,20 +1,15 @@
-import fastapi
 import logging
-from typing import List
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 from pydantic import BaseModel
-
-from api.services.v1 import issuer_service
 
 
 from api.api_client_utils import get_api_client
 
 from api.endpoints.dependencies.tenant_security import get_from_context
-from api.endpoints.dependencies.db import get_db
 from api.services.tenant_workflows import create_workflow
 
 from api.db.errors import DoesNotExist
@@ -51,6 +46,7 @@ from api.endpoints.models.tenant_workflow import (
 )
 
 logger = logging.getLogger(__name__)
+revoc_api = RevocationApi(api_client=get_api_client())
 
 
 class IssueCredentialData(BaseModel):
