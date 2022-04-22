@@ -34,7 +34,6 @@ from api.endpoints.dependencies.db import get_db
 from api.endpoints.models.tenant_schema import TenantSchemaRequest
 from api.endpoints.models.tenant_workflow import (
     TenantWorkflowTypeType,
-    TenantWorkflowStateType,
 )
 from api.services.tenant_workflows import create_workflow
 
