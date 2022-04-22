@@ -68,6 +68,3 @@ async def create_tenant_schema(
         revocable,
         revoc_reg_size,
     )
-
-
-###
