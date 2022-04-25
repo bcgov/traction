@@ -5,39 +5,12 @@ on:
       - 'v*'
 
 jobs: 
-  empty:
-    name: Empty job for forked repo
-    runs-on: ubuntu-20.04
-    if: github.repository_owner == 'bcgov'
-    env:
-      CI_IS_TEST: false
-      CI_IS_PROD: false
-      CI_VERSION: ''
-      CI_PRERELEASE: ''
-      PROMOTE_TO: 'test'
-      PROMOTE_FROM: 'dev'
-    steps:
-      - name: Parse semver string
-        continue-on-error: true
-        id: semver_parser 
-        uses: booxmedialtd/ws-action-parse-semver@v1
-        with:
-          input_string: ${{ github.ref }}
-          version_extractor_regex: '\/v(.*)$'   
-
-      - name: set version tag
-        if: ${{ steps.semver_parser.outputs.fullversion != null }}
-        run: |
-          echo "CI_VERSION=${{ steps.semver_parser.outputs.fullversion }}" >> $GITHUB_ENV
-          echo "CI_IS_PROD=${{ steps.semver_parser.outputs.prerelease == null }}" >> $GITHUB_ENV
-          echo "CI_IS_TEST=${{ steps.semver_parser.outputs.prerelease != null }}" >> $GITHUB_ENV
-          echo "CI_PRERELEASE=${{ steps.semver_parser.outputs.prerelease }}" >> $GITHUB_ENV
-
   init:
     name: Set promotion values
     runs-on: ubuntu-20.04
     if: github.repository_owner == 'bcgov'
     env:
+      CI_IS_INT: false
       CI_IS_TEST: false
       CI_IS_PROD: false
       CI_VERSION: ''
@@ -58,14 +31,21 @@ jobs:
         run: |
           echo "CI_VERSION=${{ steps.semver_parser.outputs.fullversion }}" >> $GITHUB_ENV
           echo "CI_IS_PROD=${{ steps.semver_parser.outputs.prerelease == null }}" >> $GITHUB_ENV
-          echo "CI_IS_TEST=${{ steps.semver_parser.outputs.prerelease != null }}" >> $GITHUB_ENV
+          echo "CI_IS_INT=${{ steps.semver_parser.outputs.prerelease == 'int' }}" >> $GITHUB_ENV
+          echo "CI_IS_TEST=${{ steps.semver_parser.outputs.prerelease == 'test' }}" >> $GITHUB_ENV
           echo "CI_PRERELEASE=${{ steps.semver_parser.outputs.prerelease }}" >> $GITHUB_ENV
   
+      - name: set cd config (int)
+        if: ${{ fromJSON(env.CI_IS_INT) }}
+        run: |
+          echo "PROMOTE_TO=int" >> $GITHUB_ENV
+          echo "PROMOTE_FROM=development" >> $GITHUB_ENV
+
       - name: set cd config (test)
         if: ${{ fromJSON(env.CI_IS_TEST) }}
         run: |
           echo "PROMOTE_TO=test" >> $GITHUB_ENV
-          echo "PROMOTE_FROM=development" >> $GITHUB_ENV
+          echo "PROMOTE_FROM=int" >> $GITHUB_ENV
 
       - name: set cd config (prod)
         if: ${{ fromJSON(env.CI_IS_PROD) }}
