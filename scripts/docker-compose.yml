@@ -42,50 +42,53 @@ services:
     volumes:
       - ../services/traction:/app:rw
 
+  ngrok-traction-agent:
+    image: wernight/ngrok
+    environment:
+      - ACAPY_HTTP_PORT=${ACAPY_HTTP_PORT}
+    ports:
+      - 4052:4040
+    command: ngrok http traction-agent:${ACAPY_HTTP_PORT} --log stdout
+
   traction-agent:
-    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.4-pre
+    build:
+      context: ../services/aca-py
+      dockerfile: Dockerfile.acapy
     depends_on:
       endorser-agent:
         condition: service_started
       traction-db:
         condition: service_healthy
+    environment:
+      - TRACTION_ENV=${TRACTION_ENV}
+      - NGROK_NAME=ngrok-traction-agent
+      - ACAPY_HTTP_PORT=${ACAPY_HTTP_PORT}
+      - TRACTION_WEBHOOK_URL=${TRACTION_WEBHOOK_URL}
+      - ACAPY_GENESIS_URL=${ACAPY_GENESIS_URL}
+      - ACAPY_ENDPOINT=${ACAPY_ENDPOINT}
+      - ACAPY_WALLET_DATABASE=${ACAPY_WALLET_DATABASE}
+      - ACAPY_WALLET_ENCRYPTION_KEY=${ACAPY_WALLET_ENCRYPTION_KEY}
+      - ACAPY_WALLET_STORAGE_TYPE=${ACAPY_WALLET_TYPE}
+      - POSTGRESQL_HOST=${POSTGRESQL_HOST}
+      - POSTGRESQL_USER=${POSTGRESQL_USER}
+      - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
+      - ACAPY_ADMIN_PORT=${ACAPY_ADMIN_PORT}
+      - AGENT_NAME=${AGENT_NAME}
+      - JWT_SECRET=${JWT_SECRET}
+      - ACAPY_ADMIN_CONFIG=${ACAPY_ADMIN_CONFIG}
+      - ACAPY_READ_ONLY_MODE=${ACAPY_READ_ONLY_MODE}
+      - ACAPY_TAILS_BASE_URL=${ACAPY_TAILS_BASE_URL}
+      - ACAPY_TAILS_UPLOAD_URL=${ACAPY_TAILS_UPLOAD_URL}
+      - ACAPY_ENDORSER_PUBLIC_DID=${ACAPY_ENDORSER_PUBLIC_DID}
+      - ENDORSER_CONNECTION_ALIAS=${ENDORSER_CONNECTION_ALIAS}
     ports:
       - ${ACAPY_ADMIN_PORT}:${ACAPY_ADMIN_PORT}
       - ${ACAPY_HTTP_PORT}:${ACAPY_HTTP_PORT}
     entrypoint: /bin/bash
     command: [
         "-c",
-        "sleep 5;
-        aca-py start \
-        --auto-provision
-        --arg-file acapy-static-args.yml \
-        --inbound-transport http '0.0.0.0' ${ACAPY_HTTP_PORT} \
-        --webhook-url '${TRACTION_WEBHOOK_URL}' \
-        --genesis-url '${ACAPY_GENESIS_URL}' \
-        --endpoint ${ACAPY_ENDPOINT} \
-        --wallet-name '${ACAPY_WALLET_DATABASE}' \
-        --wallet-key '${ACAPY_WALLET_ENCRYPTION_KEY}' \
-        --wallet-storage-type '${ACAPY_WALLET_TYPE}' \
-        --wallet-storage-config '{\"url\":\"${POSTGRESQL_HOST}:5432\",\"max_connections\":5}' \
-        --wallet-storage-creds '{\"account\":\"${POSTGRESQL_USER}\",\"password\":\"${POSTGRESQL_PASSWORD}\",\"admin_account\":\"${POSTGRESQL_USER}\",\"admin_password\":\"${POSTGRESQL_PASSWORD}\"}' \
-        --wallet-name traction-wallet  \
-        --admin '0.0.0.0' ${ACAPY_ADMIN_PORT} \
-        --emit-new-didcomm-prefix \
-        --label '${AGENT_NAME}' \
-        --jwt-secret '${JWT_SECRET}' \
-        ${ACAPY_ADMIN_CONFIG} \
-        ${ACAPY_READ_ONLY_MODE} \
-        ${ACAPY_TAILS_BASE_URL} \
-        ${ACAPY_TAILS_UPLOAD_URL} \
-        --endorser-protocol-role author \
-        --endorser-public-did ${ACAPY_ENDORSER_PUBLIC_DID} \
-        --endorser-alias ${ENDORSER_CONNECTION_ALIAS} \
-        --auto-request-endorsement \
-        --auto-write-transactions \
-        --auto-create-revocation-transactions \
-        --notify-revocation \
-        --monitor-revocation-notification \
-        ",
+        "sleep 5; \
+        ./ngrok-wait.sh"
       ]
     volumes:
       - "./acapy-static-args.yml:/home/indy/acapy-static-args.yml"
@@ -140,7 +143,7 @@ services:
       - ../services/endorser:/app:rw
 
   endorser-agent:
-    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.4-pre
+    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.4-rc0
     depends_on:
       endorser-db:
         condition: service_healthy
