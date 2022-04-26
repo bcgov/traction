@@ -38,9 +38,6 @@ def upgrade():
         sa.Column("role", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
         sa.Column("public_did", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
         sa.Column(
-            "contact_info", postgresql.JSON(astext_type=sa.Text()), nullable=True
-        ),
-        sa.Column(
             "external_reference_id", sqlmodel.sql.sqltypes.AutoString(), nullable=True
         ),
         sa.Column("tags", postgresql.ARRAY(sa.String()), nullable=True),

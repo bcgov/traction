@@ -2,31 +2,24 @@ import json
 import logging
 
 from typing import List
-from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 from uuid import UUID
 
 from sqlalchemy import select, update, desc
 from sqlalchemy.sql.functions import func
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.models.v1.contact import Contact, ContactHistory
+from api.db.models.v1.contact import Contact, ContactTimeline
 from api.endpoints.models.connections import ConnectionStateType, ConnectionRoleType
-from api.endpoints.models.v1.base import Link, build_list_links
 from api.endpoints.routes.connections import create_invitation as v0_create_invitation
 from api.endpoints.routes.connections import receive_invitation as v0_receive_invitation
 from api.endpoints.models.v1.contacts import (
     CreateInvitationPayload,
-    CreateInvitationResponse,
     ReceiveInvitationPayload,
-    ReceiveInvitationResponse,
     ContactListParameters,
-    ContactListResponse,
     ContactStatusType,
     ContactAcapy,
     ContactItem,
-    ContactGetResponse,
     UpdateContactPayload,
-    UpdateContactResponse,
     ContactPing,
     ContactTimelineItem,
 )
@@ -46,7 +39,7 @@ async def create_invitation(
     tenant_id: UUID,
     wallet_id: UUID,
     payload: CreateInvitationPayload,
-) -> CreateInvitationResponse:
+) -> [ContactItem, str, dict]:
 
     # see if there is an existing connection with this alias (name)
     existing_connection = connections.get_connection_with_alias(payload.alias)
@@ -88,13 +81,9 @@ async def create_invitation(
     db.add(db_contact)
     await db.commit()
 
-    item = ContactItem(**db_contact.dict())
-    item.acapy = ContactAcapy(invitation=invitation, connection=connection)
-    return CreateInvitationResponse(
-        item=item,
-        invitation=invitation,
-        invitation_url=invitation_url,
-    )
+    item = contact_to_contact_item(db_contact, True)
+
+    return item, invitation_url, invitation
 
 
 async def receive_invitation(
@@ -102,7 +91,7 @@ async def receive_invitation(
     tenant_id: UUID,
     wallet_id: UUID,
     payload: ReceiveInvitationPayload,
-) -> ReceiveInvitationResponse:
+) -> ContactItem:
 
     # if invitation url, then we need to go get the invitation payload...
     if payload.invitation_url:
@@ -161,10 +150,10 @@ async def receive_invitation(
     db.add(db_contact)
     await db.commit()
 
-    item = ContactItem(**db_contact.dict())
+    item = contact_to_contact_item(db_contact, True)
 
     item.acapy = ContactAcapy(invitation=invitation, connection=connection)
-    return ReceiveInvitationResponse(item=item)
+    return item
 
 
 async def list_contacts(
@@ -172,7 +161,7 @@ async def list_contacts(
     tenant_id: UUID,
     wallet_id: UUID,
     parameters: ContactListParameters,
-) -> ContactListResponse:
+) -> [List, int]:
 
     limit = parameters.page_size
     skip = (parameters.page_num - 1) * limit
@@ -199,6 +188,9 @@ async def list_contacts(
     count_q_rec = await db.execute(count_q)
     total_count = count_q_rec.scalar()
 
+    # TODO: should we raise an exception if paging is invalid?
+    # ie. is negative, or starts after available records
+
     # add in our paging and ordering to get the result set
     results_q = base_q.limit(limit).offset(skip).order_by(desc(Contact.created_at))
 
@@ -210,11 +202,7 @@ async def list_contacts(
         item = contact_to_contact_item(db_contact, parameters.acapy)
         items.append(item)
 
-    links = contacts_list_links(total_count, parameters)
-
-    return ContactListResponse(
-        items=items, count=len(items), total=total_count, links=links
-    )
+    return items, total_count
 
 
 async def get_contact(
@@ -224,16 +212,12 @@ async def get_contact(
     contact_id: UUID,
     acapy: bool | None = False,
     deleted: bool | None = False,
-    timeline: bool | None = False,
-) -> ContactGetResponse:
+) -> ContactItem:
     db_contact = await get_contact_by_id(db, tenant_id, contact_id, deleted)
 
     item = contact_to_contact_item(db_contact, acapy)
-    timeline_items = []
-    if timeline:
-        timeline_items = await get_contact_timeline(db, contact_id)
 
-    return ContactGetResponse(item=item, timeline=timeline_items)
+    return item
 
 
 async def update_contact(
@@ -242,7 +226,7 @@ async def update_contact(
     wallet_id: UUID,
     contact_id: UUID,
     payload: UpdateContactPayload,
-) -> UpdateContactResponse:
+) -> ContactItem:
     # verify this contact exists and is not deleted...
     await get_contact_by_id(db, tenant_id, contact_id, False)
 
@@ -269,9 +253,6 @@ async def update_contact(
         payload_dict["ping_enabled"] = ping_enabled
     del payload_dict["ping"]
 
-    if not payload.contact_info:
-        payload_dict["contact_info"] = {}
-
     q = (
         update(Contact)
         .where(Contact.tenant_id == tenant_id)
@@ -286,12 +267,16 @@ async def update_contact(
 
 async def delete_contact(
     db: AsyncSession, tenant_id: UUID, wallet_id: UUID, contact_id: UUID
-) -> ContactGetResponse:
+) -> ContactItem:
     q = (
         update(Contact)
         .where(Contact.tenant_id == tenant_id)
         .where(Contact.contact_id == contact_id)
-        .values(deleted=True, status=ContactStatusType.deleted)
+        .values(
+            deleted=True,
+            status=ContactStatusType.deleted,
+            state=ConnectionStateType.abandoned,
+        )
     )
     await db.execute(q)
     await db.commit()
@@ -315,39 +300,6 @@ def contact_to_contact_item(
         )
 
     return item
-
-
-def contacts_list_links(
-    total_record_count: int,
-    parameters: ContactListParameters,
-) -> List[Link]:
-    return build_list_links(total_record_count, parameters)
-
-
-def build_item_links(url: str, item: ContactItem) -> List[Link]:
-    links = []
-
-    if not item.deleted:
-        links.append(Link(rel="self", href=url))
-        links.append(Link(rel="update", href=url))
-        links.append(Link(rel="delete", href=url))
-    else:
-        parsed_url = urlparse(url)
-        parsed_qs = parse_qs(parsed_url.query)
-        parsed_qs["deleted"] = True
-        new_url = urlunparse(
-            (
-                parsed_url.scheme,
-                parsed_url.netloc,
-                parsed_url.path,
-                parsed_url.params,
-                urlencode(parsed_qs, doseq=True),
-                parsed_url.fragment,
-            )
-        )
-        links.append(Link(rel="self", href=str(new_url)))
-
-    return links
 
 
 async def get_contact_by_id(
@@ -378,9 +330,9 @@ async def get_contact_timeline(
     contact_id: UUID,
 ) -> List[ContactTimelineItem]:
     q = (
-        select(ContactHistory)
-        .where(ContactHistory.contact_id == contact_id)
-        .order_by(desc(ContactHistory.created_at))
+        select(ContactTimeline)
+        .where(ContactTimeline.contact_id == contact_id)
+        .order_by(desc(ContactTimeline.created_at))
     )
     q_result = await db.execute(q)
     db_items = q_result.scalars()

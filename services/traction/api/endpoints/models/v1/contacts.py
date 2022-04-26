@@ -37,16 +37,9 @@ class ContactPing(BaseModel):
     last_response_at: Optional[datetime] = None
 
 
-class ContactInfo(BaseModel):
-    name: Optional[str] = None
-    email: Optional[str] = None
-    phone: Optional[str] = None
-
-
 class ContactItem(AcapyItem[ContactStatusType, ConnectionStateType, ContactAcapy]):
     contact_id: UUID
     alias: str
-    contact_info: ContactInfo = ContactInfo()
     external_reference_id: Optional[str]
     ping: ContactPing = ContactPing()
     public_did: Optional[str]
@@ -99,7 +92,6 @@ class UpdateContactPayload(BaseModel):
     contact_id: UUID
     alias: str | None = None
     status: ContactStatusType | None = None
-    contact_info: ContactInfo | None = None
     external_reference_id: str | None = None
     ping: ContactPing | None = None
     public_did: str | None = None

@@ -17,6 +17,7 @@ from api.endpoints.models.v1.contacts import (
     ReceiveInvitationResponse,
     ContactListParameters,
 )
+from api.endpoints.routes.v1.link_utils import build_list_links
 from api.services.v1 import contacts_service
 
 router = APIRouter()
@@ -45,8 +46,14 @@ async def list_contacts(
         role=role,
         deleted=deleted,
     )
-    return await contacts_service.list_contacts(
-        db, tenant_id, wallet_id, parameters=parameters
+    items, total_count = await contacts_service.list_contacts(
+        db, tenant_id, wallet_id, parameters
+    )
+
+    links = build_list_links(total_count, parameters)
+
+    return ContactListResponse(
+        items=items, count=len(items), total=total_count, links=links
     )
 
 
@@ -61,8 +68,12 @@ async def contact_create_invitation(
 ) -> CreateInvitationResponse:
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
-    return await contacts_service.create_invitation(
+    item, invitation_url, invitation = await contacts_service.create_invitation(
         db, tenant_id, wallet_id, payload=payload
+    )
+    links = []  # TODO
+    return CreateInvitationResponse(
+        item=item, invitation=invitation, invitation_url=invitation_url, links=links
     )
 
 
@@ -77,6 +88,8 @@ async def contact_receive_invitation(
 ) -> ReceiveInvitationResponse:
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
-    return await contacts_service.receive_invitation(
+    item = await contacts_service.receive_invitation(
         db, tenant_id, wallet_id, payload=payload
     )
+    links = []  # TODO
+    return ReceiveInvitationResponse(item=item, links=links)
