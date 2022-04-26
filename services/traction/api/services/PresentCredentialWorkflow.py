@@ -195,7 +195,9 @@ class PresentCredentialWorkflow(BaseWorkflow):
                     elif webhook_state == PresentationStateType.abandoned:
                         # we got an error so log it and cancel the workflow
                         error_msg = webhook_message["payload"].get("error_msg")
-                        logger.debug(f">>> cancelling workflow with error_msg: {error_msg}")
+                        logger.debug(
+                            f">>> cancelling workflow with error_msg: {error_msg}"
+                        )
                         await self.run_cancel_step(webhook_message, error_msg)
 
                 elif webhook_message["payload"].get("error_msg"):
