@@ -63,7 +63,9 @@ async def get_issued_credentials(
     return response
 
 
-@router.post("/credentials", status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/credentials", status_code=status.HTTP_201_CREATED, response_model=CredentialItem
+)
 async def issue_new_credential(
     cred_protocol: IssueCredentialProtocolType,
     credential: CredentialPreview,
@@ -71,13 +73,13 @@ async def issue_new_credential(
     connection_id: str | None = None,
     alias: str | None = None,
     db: AsyncSession = Depends(get_db),
-) -> IssueCredentialData:
+) -> CredentialItem:
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
     ##Use connection ID for v0 compatability.
 
-    return await issuer_service.issue_new_credential(
+    data = await issuer_service.issue_new_credential(
         db,
         tenant_id,
         wallet_id,
@@ -87,6 +89,19 @@ async def issue_new_credential(
         connection_id,
         alias,
     )
+
+    response = CredentialItem(
+        **data.__dict__,
+        status="v0",  # v0
+        state=data.credential.issue_state,  # v0
+        created_at=data.workflow.created_at,
+        updated_at=data.workflow.updated_at,
+        alias="v0",
+        # contact_id="v0" #v0
+    )
+
+    logger.debug(response)
+    return response
 
 
 @router.post("/credentials/revoke", status_code=status.HTTP_201_CREATED)
@@ -98,8 +113,8 @@ async def revoke_issued_credential(
     db: AsyncSession = Depends(get_db),
 ) -> IssueCredentialData:
     """
-    write an entry to the revocation registry
-    and notify the holder if an active connection exists
+    write a revocation entry to the revocation registry.
+    And, if an active connection exists, notify the holder
     """
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")

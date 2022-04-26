@@ -30,15 +30,6 @@ class IssuerCredentialStatusType(str, Enum):
     revoked = "Revoked"
 
 
-class HolderCredentialStatusType(str, Enum):
-    # offer received needs response
-    offer_received = "Offer Received"
-    # successfully issued into your wallet
-    active = "Active"
-    # revoked by issuer
-    revoked = "Revoked"
-
-
 class CredentialAcapy(BaseModel):
     credential_exchange: dict = {}
 
