@@ -130,4 +130,4 @@ jobs:
           yq eval '.traction_api.image.tag = ${{ needs.read_config.outputs.image_tag }}' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml
           yq eval '.traction_api.image.version = ${{ needs.read_config.outputs.image_version }}' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml
           yq eval '.traction_api.image.buildtime = ${{ needs.read_config.outputs.buildtime }}' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml
-          helm upgrade -f ./charts/traction/values.yaml -f ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml ${{ needs.init.outputs.promote_to }}-traction ./charts/traction --install --wait
+          helm upgrade -f ./charts/traction/values.yaml -f ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml traction ./charts/traction --install --wait
