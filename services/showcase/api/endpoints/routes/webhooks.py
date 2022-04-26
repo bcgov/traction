@@ -50,8 +50,7 @@ async def receive_webhook(
 ):
     lob = await get_lob(lob_id, db)
     try:
-        # request.json() is supposed to be json, but returns str :(
-        event_data = json.loads(await request.json())
+        event_data = await request.json()
     except Exception:
         # could not parse json
         event_data = await request.body()
