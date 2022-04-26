@@ -1,6 +1,6 @@
 global:
   fullnameOverride: "int-traction"
-  ingressSuffix: -int.apps.silver.devops.gov.bc.ca
+  ingressSuffix: .apps.silver.devops.gov.bc.ca
 postgresql:
   fullnameOverride: "int-traction"
 acapy:
