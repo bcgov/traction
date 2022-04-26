@@ -1,4 +1,3 @@
-import json
 import logging
 import uuid
 
@@ -49,11 +48,7 @@ async def receive_webhook(
     db: AsyncSession = Depends(get_db),
 ):
     lob = await get_lob(lob_id, db)
-    try:
-        event_data = await request.json()
-    except Exception:
-        # could not parse json
-        event_data = await request.body()
+    event_data = await request.json()
 
     # we expect a key in the header, so we should match see if that matches
     # in production LOB, we would not be using the wallet_key
