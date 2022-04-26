@@ -1,4 +1,5 @@
 import logging
+from turtle import update
 from typing import List
 
 from fastapi import APIRouter, Depends
@@ -20,11 +21,13 @@ from api.endpoints.models.tenant_workflow import (
     TenantWorkflowStateType,
 )
 
+from api.endpoints.models.v1.issuer import CredentialsListResponse, CredentialItem
+
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-@router.get("/credentials", response_model=List[IssueCredentialData])
+@router.get("/credentials", response_model=CredentialsListResponse)
 async def get_issued_credentials(
     state: TenantWorkflowStateType | None = None,
     workflow_id: str | None = None,
@@ -35,9 +38,29 @@ async def get_issued_credentials(
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
-    return issuer_service.get_issued_credentials(
+    data = await issuer_service.get_issued_credentials(
         db, tenant_id, wallet_id, workflow_id, cred_issue_id, state
     )
+    print(data)
+    resp_data = [
+        CredentialItem(
+            **d.__dict__,
+            status="v0",  # v0
+            state=d.credential.issue_state,  # v0
+            created_at=d.workflow.created_at,
+            updated_at=d.workflow.updated_at,
+            alias="v0",
+            # contact_id="v0"
+        )
+        for d in data
+    ]
+    print(resp_data)
+    response = CredentialsListResponse(
+        items=resp_data, count=len(data), total=len(data)
+    )
+    print(response)
+
+    return response
 
 
 @router.post("/credentials", status_code=status.HTTP_201_CREATED)
@@ -52,7 +75,9 @@ async def issue_new_credential(
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
-    return issuer_service.issue_new_credential(
+    ##Use connection ID for v0 compatability.
+
+    return await issuer_service.issue_new_credential(
         db,
         tenant_id,
         wallet_id,
@@ -79,7 +104,7 @@ async def revoke_issued_credential(
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
-    return issuer_service.revoke_issued_credential(
+    return await issuer_service.revoke_issued_credential(
         db,
         tenant_id,
         wallet_id,

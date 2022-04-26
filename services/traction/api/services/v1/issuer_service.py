@@ -98,6 +98,8 @@ async def get_issued_credentials(
             )
             issues.append(issue)
 
+    return issues
+
 
 async def issue_new_credential(
     db: AsyncSession,

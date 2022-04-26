@@ -25,10 +25,8 @@ class TenantIssuerData(BaseModel):
     workflow: TenantWorkflowRead | None = None
 
 
-@router.post(
-    "/initalize", status_code=status.HTTP_200_OK, response_model=TenantIssuerData
-)
-async def init_issuer(db: AsyncSession = Depends(get_db)) -> TenantIssuerData:
+@router.post("/initalize", status_code=status.HTTP_200_OK)
+async def init_issuer(db: AsyncSession = Depends(get_db)):
     """
     If the innkeeper has authorized your tenant to become an issuer, initialize
     here to write a endorsed public did the configured Hyperledger-Indy service
@@ -51,9 +49,9 @@ async def init_issuer(db: AsyncSession = Depends(get_db)) -> TenantIssuerData:
         # get updated issuer info (should have workflow id and connection_id)
         tenant_issuer = await issuer_repo.get_by_wallet_id(wallet_id)
 
-    issuer = TenantIssuerData(
-        issuer=tenant_issuer,
-        workflow=tenant_workflow,
-    )
+    # issuer = TenantIssuerData(
+    #     issuer=tenant_issuer,
+    #     workflow=tenant_workflow,
+    # )
 
-    return issuer
+    return tenant_issuer
