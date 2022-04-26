@@ -60,7 +60,7 @@ async def call_tenant_lob_app(webhook_msg: TenantWebhookMsg, webhook: TenantWebh
             resp = await client_session.request(
                 "POST",
                 webhook_url,
-                json=webhook_msg.payload,
+                json=json.loads(webhook_msg.payload),
                 headers=headers,
             )
             logger.debug("Post-processing LOB request")
