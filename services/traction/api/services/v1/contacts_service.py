@@ -1,3 +1,10 @@
+"""API Services for Traction Contacts and their AcaPy related data.
+
+Contacts Service encapsulates all data services needed for the Contacts API.
+Service classes should not have any knowledge or dependence on Http Request, Response
+or Sessions; nor should it return API response models directly.
+
+"""
 import json
 import logging
 
@@ -40,7 +47,24 @@ async def create_invitation(
     wallet_id: UUID,
     payload: CreateInvitationPayload,
 ) -> [ContactItem, str, dict]:
+    """Create Invitation.
 
+    Create an invitation and a Contact.
+
+    Args:
+      db: database session
+      tenant_id: Traction ID of tenant making the call
+      wallet_id: AcaPy Wallet ID for tenant
+      payload: Invitation and contact data
+
+    Returns:
+      item: The Traction Contact
+      invitation_url: Invitation on URL format
+      invitation: Invitation block
+
+    Raises:
+        AlreadyExistsError: if the provided alias already exists in Traction OR AcaPy
+    """
     # see if there is an existing connection with this alias (name)
     existing_connection = connections.get_connection_with_alias(payload.alias)
     if existing_connection is not None:
@@ -92,6 +116,26 @@ async def receive_invitation(
     wallet_id: UUID,
     payload: ReceiveInvitationPayload,
 ) -> ContactItem:
+    """Receive Invitation.
+
+    Receive an invitation from another Tenant or ARIES agent. An AcaPy
+    connection will be created and a Traction Contact.
+    The payload can represent many types of invitations: by URL, by
+    Public DID, by a full invitation block. The payload alias is
+    optional, but must be provided if the invitation's agent label cannot
+    be parsed.
+
+    Args:
+      db: database session
+      tenant_id: Traction ID of tenant making the call
+      wallet_id: AcaPy Wallet ID for tenant
+      payload: Invitation data
+
+    Returns: The Traction Contact
+
+    Raises:
+        AlreadyExistsError: if the provided alias already exists in Traction OR AcaPy
+    """
 
     # if invitation url, then we need to go get the invitation payload...
     if payload.invitation_url:
@@ -161,7 +205,21 @@ async def list_contacts(
     tenant_id: UUID,
     wallet_id: UUID,
     parameters: ContactListParameters,
-) -> [List, int]:
+) -> [List[ContactItem], int]:
+    """List Contacts.
+
+    Return a page of contacts filtered by given parameters.
+
+    Args:
+      db: database session
+      tenant_id: Traction ID of tenant making the call
+      wallet_id: AcaPy Wallet ID for tenant
+      parameters: filters for Contacts
+
+    Returns:
+      items: The page of contacts
+      total_count: Total number of contacts matching criteria
+    """
 
     limit = parameters.page_size
     skip = (parameters.page_num - 1) * limit
@@ -213,6 +271,23 @@ async def get_contact(
     acapy: bool | None = False,
     deleted: bool | None = False,
 ) -> ContactItem:
+    """Get  Contact.
+
+    Find and return a Traction Contact by ID.
+
+    Args:
+      db: database session
+      tenant_id: Traction ID of tenant making the call
+      wallet_id: AcaPy Wallet ID for tenant
+      contact_id: Traction ID of Contact
+      acapy: When True, populate the Contact acapy field
+      deleted: When True, return Contact if marked as deleted
+
+    Returns: The Traction Contact
+
+    Raises:
+      NotFoundError: if the contact cannot be found by ID and deleted flag
+    """
     db_contact = await get_contact_by_id(db, tenant_id, contact_id, deleted)
 
     item = contact_to_contact_item(db_contact, acapy)
@@ -227,6 +302,25 @@ async def update_contact(
     contact_id: UUID,
     payload: UpdateContactPayload,
 ) -> ContactItem:
+    """Update  Contact.
+
+    Update a Traction Contact.
+    Note that not all fields can be modified. If they are present in the payload, they
+    will be ignored.
+
+    Args:
+      db: database session
+      tenant_id: Traction ID of tenant making the call
+      wallet_id: AcaPy Wallet ID for tenant
+      contact_id: Traction ID of Contact
+      payload: Contact data fields to update.
+
+    Returns: The Traction Contact
+
+    Raises:
+      NotFoundError: if the contact cannot be found by ID and deleted flag
+      IdNotMatchError: if the contact id parameter and in payload do not match
+    """
     # verify this contact exists and is not deleted...
     await get_contact_by_id(db, tenant_id, contact_id, False)
 
@@ -268,6 +362,23 @@ async def update_contact(
 async def delete_contact(
     db: AsyncSession, tenant_id: UUID, wallet_id: UUID, contact_id: UUID
 ) -> ContactItem:
+    """Delete  Contact.
+
+    Delete a Traction Contact.
+    Note that deletes are "soft" in Traction. The Contact will still exist but must be
+    explicitly asked for using deleted=True parameters for Get or List.
+
+    Args:
+      db: database session
+      tenant_id: Traction ID of tenant making the call
+      wallet_id: AcaPy Wallet ID for tenant
+      contact_id: Traction ID of Contact
+
+    Returns: The Traction Contact
+
+    Raises:
+      NotFoundError: if the contact cannot be found by ID and deleted flag
+    """
     q = (
         update(Contact)
         .where(Contact.tenant_id == tenant_id)
@@ -289,6 +400,19 @@ async def delete_contact(
 def contact_to_contact_item(
     db_contact: Contact, acapy: bool | None = False
 ) -> ContactItem:
+    """Contact to ContactItem.
+
+    Transform a Contact Table record to a ContactItem object.
+
+    Args:
+      db_contact: The Traction database Contact
+      acapy: When True, populate the ContactItem acapy field.
+
+    Returns: The Traction ContactItem
+
+    Raises:
+      NotFoundError: if the contact cannot be found by ID and deleted flag
+    """
     item = ContactItem(**db_contact.dict())
     item.ping = ContactPing(
         ping_enabled=db_contact.ping_enabled,
@@ -308,6 +432,20 @@ async def get_contact_by_id(
     contact_id: UUID,
     deleted: bool | None = False,
 ) -> Contact:
+    """Get Contact by ID (database level).
+
+    Find and return the database Contact record
+
+    Args:
+      db: database session
+      tenant_id: Traction ID of tenant making the call
+      contact_id: Traction ID of Contact
+
+    Returns: The Traction Contact (db) record
+
+    Raises:
+      NotFoundError: if the contact cannot be found by ID and deleted flag
+    """
     q = (
         select(Contact)
         .where(Contact.tenant_id == tenant_id)
@@ -329,6 +467,18 @@ async def get_contact_timeline(
     db: AsyncSession,
     contact_id: UUID,
 ) -> List[ContactTimelineItem]:
+    """Get Contact Timeline items.
+
+    Find and return the Traction Contact Timeline items. Timeline items represent
+    history of changes to Status and/or State. They will be sorted in descending order
+    of creation (newest first).
+
+    Args:
+      db: database session
+      contact_id: Traction ID of Contact
+
+    Returns: List of Contact Timeline items
+    """
     q = (
         select(ContactTimeline)
         .where(ContactTimeline.contact_id == contact_id)

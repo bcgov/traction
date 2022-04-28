@@ -1,3 +1,31 @@
+"""Traction v1 API Base Models.
+
+
+These are base classes (interfaces) for the API resources.
+It is expected that we create concrete classes that will specify specific
+implementations for any of the Generic xTypes.
+
+  Conceptually, there are several base classes/interfaces:
+    *Type: indicates that the implementing class will specify a concrete class for this
+      field.
+
+    *Item: an individual resource, like a record in a database.
+
+    *Response: this would be the outgoing (response) object of an API call.
+
+    *Payload: this would be the incoming (request) body of an API call.
+
+    *Parameters: class that encapsulates various search and filter parameters.
+
+    List*Parameters: class that encapsulates search/filter parameters for an *Item type.
+
+  For example:
+    ContactItem is a concrete implementation of AcapyItem that is our API
+    representation of the database Contact record. It specifies ContactStatusType,
+    ConnectionStateType, and ContactAcapy for its StatusType, StateType and AcapyType
+    implementations.
+
+"""
 from datetime import datetime
 from typing import List, Generic, TypeVar, Optional
 
@@ -6,21 +34,6 @@ from pydantic.generics import GenericModel
 
 from api.core.config import settings
 
-"""
-Models v1 - Base
-
-These are base classes (interfaces) for the API resources.
-It is expected that we create concrete classes
- that will specify specific implementations for any of the Generic *Types.
-
-Conceptually, there are several base classes:
-- *Item: an individual resource, like a record in a database
-- *Response: this would be the outgoing (response) object of an API call
-- *Payload: this would be the incoming (request) body of an API call.
-- *Parameters: class that encapsulates various search and filter parameters
-- List*Parameters: class that encapsulates search/filter parameters for an *Item type
-
-"""
 ItemType = TypeVar("ItemType")
 StatusType = TypeVar("StatusType")
 StateType = TypeVar("StateType")
@@ -29,11 +42,14 @@ AcapyType = TypeVar("AcapyType")
 
 
 class Link(BaseModel):
-    """
+    """Link.
+
     Link class that provides some navigational context to a Resource.
     Point the caller to other related functions or for navigation of paged lists.
 
-    This is a concrete class
+    Attributes:
+      href: URL to call
+      rel: relation to this object; what purpose does this link serve?
     """
 
     href: AnyUrl
@@ -41,16 +57,18 @@ class Link(BaseModel):
 
 
 class Item(GenericModel, Generic[StatusType, StateType]):
-    """
-    Basic building block for all our resource classes.
+    """Item.
 
-    Concrete classes will specify the exact classes to use for Status and State
+    Base class for any individual object/resource.
+    Concrete classes will specify the exact classes to use for Status and State.
 
-    status: Represents a business level status for the object
-    state: Represents a low-level state of the underlying AcaPy object
-    deleted: true if object is deleted. Traction uses soft deletes
-    created_at: timestamp when created
-    updated_at: timestamp when object last modified
+
+    Attributes:
+      status: Represents a business level status for the object
+      state: Represents a low-level state of the underlying AcaPy object
+      deleted: true if object is deleted. Traction uses soft deletes
+      created_at: timestamp when created
+      updated_at: timestamp when object last modified
     """
 
     status: StatusType
@@ -61,14 +79,18 @@ class Item(GenericModel, Generic[StatusType, StateType]):
 
 
 class TimelineItem(GenericModel, Generic[StatusType, StateType]):
-    """
-    Basic building block for items in a Timeline list.
+    """TimelineItem.
 
-    Concrete classes will specify the exact classes to use for Status and State
+    Base class for items in a Timeline list.
+    Concrete classes will specify the exact classes to use for Status and State.
 
-    status: Represents a business level status for the object
-    state: Represents a low-level state of the underlying AcaPy object
-    created_at: timestamp when timeline item was created
+    A collection of TimelineItems will represent the history of changes to Status and
+    state.
+
+    Attributes:
+      status: Represents a business level status for the object
+      state: Represents a low-level state of the underlying AcaPy object
+      created_at: timestamp when created
     """
 
     status: StatusType
@@ -77,11 +99,13 @@ class TimelineItem(GenericModel, Generic[StatusType, StateType]):
 
 
 class TagsItem(Item[StatusType, StateType], Generic[StatusType, StateType]):
-    """
+    """TagsItem.
+
     Inherits from Item.
     Adds a tags attribute, a list of strings used for categorization.
 
-    tags: List[str]
+    Attributes:
+      tags: list of strings used to categorize an Item
     """
 
     tags: List[str] | None = []
@@ -90,31 +114,30 @@ class TagsItem(Item[StatusType, StateType], Generic[StatusType, StateType]):
 class AcapyItem(
     TagsItem[StatusType, StateType], Generic[StatusType, StateType, AcapyType]
 ):
-    """
-    Inherits from TagsItem
+    """AcapyItem.
 
-    Adds a field: acapy, which itself will contain any AcaPy data.
+    Inherits from TagsItem.
+    Adds a acapy attribute (dict).
 
-    In general, AcaPy data must be specifically request via query parameters.
-    The content of AcaPy will be determined by the AcapyType class
-
-    acapy: dict
+    Attributes:
+      acapy: a dict of AcaPy data objects related to the Item
     """
 
     acapy: Optional[AcapyType] = None
 
 
 class ListResponse(GenericModel, Generic[ItemType]):
-    """
-    Basic building block for collection APIs (list, search).
-    This is the structure of the Response
+    """ListResponse.
 
-    Concrete classes will specify the exact classes to use for Item
+    Base class for collection APIs (list, search).
+    In general, these will have a matching ListItemParameters class that will specify
+    filters to use when fetching lists.
 
-    items: list of items, items are paged and filtered by parameters
-    links: list of related links
-    count: the number of items in this page/list
-    total: total number of items that match provided parameters
+    Attributes:
+      items: list of items, items are paged and filtered by parameters
+      links: list of related links
+      count: the number of items in this page/list
+      total: total number of items that match provided parameters
     """
 
     items: List[ItemType] = []
@@ -124,18 +147,18 @@ class ListResponse(GenericModel, Generic[ItemType]):
 
 
 class ListItemParameters(GenericModel, Generic[StatusType, StateType]):
-    """
-    Basic building block for collection APIs (list, search).
-    This is the structure of the parameters used to populate the response.
+    """ListItemParameters.
 
-    Concrete classes will specify the exact classes to use for Status and Type
+    Base class for parameters to collection APIs (list, search).
+    In general, these will be for a specific implementation of a ListItemResponse.
 
-    url: str, the url of the collection, used to build out links
-    page_num: int, which page to return (1 based)
-    page_size: int, maximum number of items to return (0 based)
-    status: filter on status (exact match)
-    state: filter on state (exact match)
-    deleted: bool, when true return only deleted items
+    Attributes:
+      url: the url of the collection, used to build out links
+      page_num: which page to return (1 based)
+      page_size: maximum number of items to return (0 based)
+      status: filter on status (exact match)
+      state: filter on state (exact match)
+      deleted: when true return only deleted items
     """
 
     url: str | None = None
@@ -149,36 +172,43 @@ class ListItemParameters(GenericModel, Generic[StatusType, StateType]):
 class ListTagsItemParameters(
     ListItemParameters[StatusType, StateType], Generic[StatusType, StateType]
 ):
-    """
-    Inherits from ListItemParameters
+    """ListTagsItemParameters.
 
-    tags: List[str], used to filter results based on their tags
+    Inherits from ListItemParameters.
+    Should be used when fetching lists of TagsItem
+
+    Attributes:
+      tags: used to filter results based on their tags
     """
 
     tags: Optional[List[str]] | None = []
 
 
 class ListAcapyItemParameters(
-    ListItemParameters[StatusType, StateType], Generic[StatusType, StateType]
+    ListTagsItemParameters[StatusType, StateType], Generic[StatusType, StateType]
 ):
-    """
-    Inherits from ListTagsItemParameters
+    """ListAcapyItemParameters.
 
-    acapy: bool, when true, return AcaPy data for each item
+    Inherits from ListTagsItemParameters.
+    Should be used when fetching lists of AcapyItem
+
+    Attributes:
+      acapy: when True, populate the item's acapy field
     """
 
     acapy: bool | None = False
 
 
 class GetResponse(GenericModel, Generic[ItemType]):
-    """
-    Basic building block for single resource API
-    This is the structure of the Response
+    """GetResponse.
 
-    Concrete classes will specify the exact classes to use for Item
+    Base class for single resource APIs (Get, Update, Delete).
+    This is the structure of the Response, the type of the item is specified by the
+    implementation.
 
-    item: the data object
-    links: list of related links
+    Attributes:
+      item: the data object
+      links: list of related links
     """
 
     item: ItemType
@@ -186,13 +216,13 @@ class GetResponse(GenericModel, Generic[ItemType]):
 
 
 class GetTimelineResponse(GetResponse[ItemType], Generic[ItemType, TimelineType]):
-    """
-    Builds on GetResponse
-    This is the structure of the Response
+    """GetTimelineResponse.
 
-    Concrete classes will specify the exact classes to use for Timeline Item
+    Inherits from GetResponse.
+    Implementing class will specify the Item's type and the Timeline Item's type.
 
-    timeline: list of timeline items for item
+    Attributes:
+      timeline: list of timeline items for item
     """
 
     timeline: Optional[List[TimelineType]] | None = []
