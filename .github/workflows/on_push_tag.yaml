@@ -34,24 +34,24 @@ jobs:
           echo "CI_IS_INT=${{ steps.semver_parser.outputs.prerelease == 'int' }}" >> $GITHUB_ENV
           echo "CI_IS_TEST=${{ steps.semver_parser.outputs.prerelease == 'test' }}" >> $GITHUB_ENV
           echo "CI_PRERELEASE=${{ steps.semver_parser.outputs.prerelease }}" >> $GITHUB_ENV
-  
-      - name: set cd config (int)
-        if: ${{ fromJSON(env.CI_IS_INT) }}
-        run: |
-          echo "PROMOTE_TO=int" >> $GITHUB_ENV
-          echo "PROMOTE_FROM=development" >> $GITHUB_ENV
 
       - name: set cd config (test)
         if: ${{ fromJSON(env.CI_IS_TEST) }}
         run: |
           echo "PROMOTE_TO=test" >> $GITHUB_ENV
-          echo "PROMOTE_FROM=int" >> $GITHUB_ENV
+          echo "PROMOTE_FROM=development" >> $GITHUB_ENV
+
+      - name: set cd config (int)
+        if: ${{ fromJSON(env.CI_IS_INT) }}
+        run: |
+          echo "PROMOTE_TO=int" >> $GITHUB_ENV
+          echo "PROMOTE_FROM=test" >> $GITHUB_ENV
 
       - name: set cd config (prod)
         if: ${{ fromJSON(env.CI_IS_PROD) }}
         run: |
           echo "PROMOTE_TO=production" >> $GITHUB_ENV
-          echo "PROMOTE_FROM=test" >> $GITHUB_ENV
+          echo "PROMOTE_FROM=teintst" >> $GITHUB_ENV
 
       - name: print outputs
         run: |
@@ -130,4 +130,4 @@ jobs:
           yq eval '.traction_api.image.tag = ${{ needs.read_config.outputs.image_tag }}' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml
           yq eval '.traction_api.image.version = ${{ needs.read_config.outputs.image_version }}' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml
           yq eval '.traction_api.image.buildtime = ${{ needs.read_config.outputs.buildtime }}' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml
-          helm upgrade -f ./charts/traction/values.yaml -f ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml traction ./charts/traction --install --wait
+          helm upgrade -f ./charts/traction/values.yaml -f ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml ${{ needs.init.outputs.promote_to }}-traction ./charts/traction --install --wait
