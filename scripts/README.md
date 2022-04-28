@@ -5,11 +5,11 @@
 
 ### start
 
-1. copy `.env.example` to `.env` and adjust as necessary for your environment
+1. copy `.env-example` to `.env` and adjust as necessary for your environment
 2. bring up traction
 
 ```sh
-cp .env-example .env.local
+cp .env-example .env
 docker-compose build
 docker-compose up
 ```
