@@ -1,5 +1,5 @@
 global:
-  ingressSuffix: -test.apps.apps.silver.devops.gov.bc.ca
+  ingressSuffix: -test.apps.silver.devops.gov.bc.ca
 acapy:
   tails:
     enabled: true
