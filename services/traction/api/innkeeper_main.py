@@ -33,7 +33,7 @@ def get_innkeeperapp() -> FastAPI:
         innkeeper_router,
         prefix=s.API_V0_STR,
         dependencies=[Depends(OAuth2PasswordBearer(tokenUrl="token"))],
-        tags=["innkeeper"],
+        tags=["v0"],
     )
     return application
 
