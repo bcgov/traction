@@ -1,8 +1,5 @@
 global:
-  fullnameOverride: "test-traction"
-  ingressSuffix: .apps.silver.devops.gov.bc.ca
-postgresql:
-  fullnameOverride: "test-traction"
+  ingressSuffix: -test.apps.apps.silver.devops.gov.bc.ca
 acapy:
   tails:
     enabled: true
