@@ -172,6 +172,8 @@ async def issue_new_credential(
         workflow=tenant_workflow,
     )
 
+    return issue
+
 
 async def revoke_issued_credential(
     db: AsyncSession,
