@@ -39,7 +39,9 @@ class TenantSchemaData(BaseModel):
     workflow: TenantWorkflowRead | None = None
 
 
-@router.get("/schema", status_code=status.HTTP_200_OK, response_model=TenantSchemaData)
+@router.get(
+    "/schema", status_code=status.HTTP_200_OK, response_model=List[TenantSchemaData]
+)
 async def get_tenant_schemas(
     db: AsyncSession = Depends(get_db),
 ) -> List[TenantSchemaData]:
@@ -59,25 +61,12 @@ async def get_tenant_schemas(
             except DoesNotExist:
                 pass
 
-        # validation value_error.missing
-        """
-        tenant_id
-        wallet_id
-        id
-        created_at
-        updated_at
-        """
-
         schema = TenantSchemaData(
-            schema_data=TenantSchemaRead(
-                **tenant_schema.__dict__,
-            ),
+            schema_data=tenant_schema,
             workflow=tenant_workflow,
         )
-        logger.warning(schema)
 
         schemas.append(schema)
-    logger.error(schemas)
     return schemas
 
 
