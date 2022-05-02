@@ -12,6 +12,7 @@ from api.endpoints.models.v1.contacts import (
     UpdateContactResponse,
     UpdateContactPayload,
 )
+from api.endpoints.routes.v1.link_utils import build_item_links
 from api.services.v1 import contacts_service
 
 router = APIRouter()
@@ -31,18 +32,23 @@ async def get_contact(
 ) -> ContactGetResponse:
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
-    response = await contacts_service.get_contact(
+
+    item = await contacts_service.get_contact(
         db,
         tenant_id,
         wallet_id,
         contact_id=contact_id,
         acapy=acapy,
         deleted=deleted,
-        timeline=timeline,
     )
-    # add links
-    response.links = contacts_service.build_item_links(str(request.url), response.item)
-    return response
+
+    links = build_item_links(str(request.url), item)
+
+    timeline_items = []
+    if timeline:
+        timeline_items = await contacts_service.get_contact_timeline(db, contact_id)
+
+    return ContactGetResponse(item=item, links=links, timeline=timeline_items)
 
 
 @router.put(
@@ -58,12 +64,14 @@ async def update_contact(
 ) -> UpdateContactResponse:
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
-    response = await contacts_service.update_contact(
+
+    item = await contacts_service.update_contact(
         db, tenant_id, wallet_id, contact_id=contact_id, payload=payload
     )
-    # add links
-    response.links = contacts_service.build_item_links(str(request.url), response.item)
-    return response
+
+    links = build_item_links(str(request.url), item)
+
+    return UpdateContactResponse(item=item, link=links)
 
 
 @router.delete(
@@ -76,9 +84,11 @@ async def delete_contact(
 ) -> ContactGetResponse:
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
-    response = await contacts_service.delete_contact(
+
+    item = await contacts_service.delete_contact(
         db, tenant_id, wallet_id, contact_id=contact_id
     )
-    # add links
-    response.links = contacts_service.build_item_links(str(request.url), response.item)
-    return response
+
+    links = build_item_links(str(request.url), item)
+
+    return ContactGetResponse(item=item, link=links)

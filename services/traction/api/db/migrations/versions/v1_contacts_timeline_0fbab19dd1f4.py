@@ -1,5 +1,5 @@
 # flake8: noqa
-"""v1-contacts-history
+"""v1-contacts-timeline
 
 Revision ID: 0fbab19dd1f4
 Revises: de77c04164a6
@@ -17,10 +17,10 @@ down_revision = "de77c04164a6"
 branch_labels = None
 depends_on = None
 
-create_contact_history_func = """CREATE OR REPLACE FUNCTION contact_history_func() RETURNS trigger AS $body$
+create_contact_timeline_func = """CREATE OR REPLACE FUNCTION contact_timeline_func() RETURNS trigger AS $body$
     BEGIN
         IF NEW.status IS DISTINCT FROM OLD.status OR NEW.state IS DISTINCT FROM OLD.state THEN
-            INSERT INTO "contact_history" ( "contact_id", "status", "state" )
+            INSERT INTO "contact_timeline" ( "contact_id", "status", "state" )
             VALUES(NEW."contact_id",NEW."status",NEW."state");
             RETURN NEW;
         END IF;
@@ -29,20 +29,20 @@ create_contact_history_func = """CREATE OR REPLACE FUNCTION contact_history_func
     $body$ LANGUAGE plpgsql
 """
 
-drop_contact_history_func = """DROP FUNCTION contact_history_trigger"""
+drop_contact_timeline_func = """DROP FUNCTION contact_timeline_trigger"""
 
-create_contact_history_trigger = """CREATE TRIGGER contact_history_trigger
+create_contact_timeline_trigger = """CREATE TRIGGER contact_timeline_trigger
 AFTER INSERT OR UPDATE OF status, state ON contact
-FOR EACH ROW EXECUTE PROCEDURE contact_history_func();"""
+FOR EACH ROW EXECUTE PROCEDURE contact_timeline_func();"""
 
-drop_contact_history_trigger = """DROP TRIGGER contact_history_trigger ON contact"""
+drop_contact_timeline_trigger = """DROP TRIGGER contact_timeline_trigger ON contact"""
 
 
 def upgrade():
     op.create_table(
-        "contact_history",
+        "contact_timeline",
         sa.Column(
-            "contact_history_id",
+            "contact_timeline_id",
             postgresql.UUID(as_uuid=True),
             server_default=sa.text("gen_random_uuid()"),
             nullable=False,
@@ -60,21 +60,23 @@ def upgrade():
             ["contact_id"],
             ["contact.contact_id"],
         ),
-        sa.PrimaryKeyConstraint("contact_history_id"),
+        sa.PrimaryKeyConstraint("contact_timeline_id"),
     )
     op.create_index(
-        op.f("ix_contact_history_contact_id"),
-        "contact_history",
+        op.f("ix_contact_timeline_contact_id"),
+        "contact_timeline",
         ["contact_id"],
         unique=False,
     )
 
-    op.execute(create_contact_history_func)
-    op.execute(create_contact_history_trigger)
+    op.execute(create_contact_timeline_func)
+    op.execute(create_contact_timeline_trigger)
 
 
 def downgrade():
-    op.execute(drop_contact_history_trigger)
-    op.execute(drop_contact_history_func)
-    op.drop_index(op.f("ix_contact_history_contact_id"), table_name="contact_history")
-    op.drop_table("contact_history")
+    op.execute(drop_contact_timeline_trigger)
+    op.execute(drop_contact_timeline_func)
+    op.drop_index(
+        op.f("ix_contact_timeline_timeline_id"), table_name="contact_timeline"
+    )
+    op.drop_table("contact_timeline")
