@@ -74,7 +74,8 @@ async def process_webhook(
 
 async def setup_endorser_connection(payload: dict):
     """Set endorser role on any connections we receive."""
-    if payload["state"] == "completed":
+    # TODO check final state for other connections protocols
+    if (payload["state"] == "completed" and payload["connection_protocol"] == "didexchange/1.0"):
         # confirm if we have already set the role on this connection
         connection_id = payload["connection_id"]
         conn_meta_data = await au.acapy_GET(f"connections/{connection_id}/metadata")
