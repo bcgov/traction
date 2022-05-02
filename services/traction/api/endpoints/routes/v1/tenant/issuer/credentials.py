@@ -41,7 +41,7 @@ async def get_issued_credentials(
     data = await issuer_service.get_issued_credentials(
         db, tenant_id, wallet_id, workflow_id, cred_issue_id, state
     )
-    print(data)
+    logger.debug(data)
     resp_data = [
         CredentialItem(
             **d.__dict__,
@@ -54,11 +54,11 @@ async def get_issued_credentials(
         )
         for d in data
     ]
-    print(resp_data)
+    logger.debug(resp_data)
     response = CredentialsListResponse(
         items=resp_data, count=len(data), total=len(data)
     )
-    print(response)
+    logger.debug(response)
 
     return response
 
@@ -104,7 +104,11 @@ async def issue_new_credential(
     return response
 
 
-@router.post("/credentials/revoke", status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/credentials/revoke",
+    status_code=status.HTTP_201_CREATED,
+    response_model=IssueCredentialData,
+)
 async def revoke_issued_credential(
     cred_issue_id: str | None = None,
     rev_reg_id: str | None = None,

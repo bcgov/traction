@@ -1,5 +1,6 @@
 import logging
 from typing import List
+from venv import create
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -57,11 +58,26 @@ async def get_tenant_schemas(
                 )
             except DoesNotExist:
                 pass
+
+        # validation value_error.missing
+        """
+        tenant_id
+        wallet_id
+        id
+        created_at
+        updated_at
+        """
+
         schema = TenantSchemaData(
-            schema_data=tenant_schema,
+            schema_data=TenantSchemaRead(
+                **tenant_schema.__dict__,
+            ),
             workflow=tenant_workflow,
         )
+        logger.warning(schema)
+
         schemas.append(schema)
+    logger.error(schemas)
     return schemas
 
 
