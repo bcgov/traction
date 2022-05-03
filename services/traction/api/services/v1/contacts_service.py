@@ -268,9 +268,8 @@ async def get_contact(
     tenant_id: UUID,
     wallet_id: UUID,
     contact_id: UUID,
-    acapy: bool | None = False,
     deleted: bool | None = False,
-) -> ContactItem:
+) -> Contact:
     """Get  Contact.
 
     Find and return a Traction Contact by ID.
@@ -290,9 +289,7 @@ async def get_contact(
     """
     db_contact = await get_contact_by_id(db, tenant_id, contact_id, deleted)
 
-    item = contact_to_contact_item(db_contact, acapy)
-
-    return item
+    return db_contact
 
 
 async def update_contact(
@@ -356,7 +353,9 @@ async def update_contact(
     await db.execute(q)
     await db.commit()
 
-    return await get_contact(db, tenant_id, wallet_id, contact_id)
+    return await contact_to_contact_item(
+        get_contact(db, tenant_id, wallet_id, contact_id)
+    )
 
 
 async def delete_contact(
@@ -392,8 +391,8 @@ async def delete_contact(
     await db.execute(q)
     await db.commit()
 
-    return await get_contact(
-        db, tenant_id, wallet_id, contact_id, acapy=False, deleted=True
+    return await contact_to_contact_item(
+        get_contact(db, tenant_id, wallet_id, contact_id, acapy=False, deleted=True)
     )
 
 
