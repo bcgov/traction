@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from api.services.v1 import issuer_service
+from api.services.v1 import issuer_service, contacts_service
 from api.services.v1.issuer_service import IssueCredentialData
 
 from api.endpoints.dependencies.tenant_security import get_from_context
@@ -70,7 +70,7 @@ async def issue_new_credential(
     cred_protocol: IssueCredentialProtocolType,
     credential: CredentialPreview,
     cred_def_id: str | None = None,
-    connection_id: str | None = None,
+    contact_id: str | None = None,
     alias: str | None = None,
     db: AsyncSession = Depends(get_db),
 ) -> CredentialItem:
@@ -79,6 +79,15 @@ async def issue_new_credential(
 
     ##Use connection ID for v0 compatability.
 
+    contact = await contacts_service.get_contact(
+        db,
+        tenant_id,
+        wallet_id,
+        contact_id=contact_id,
+        acapy=True,
+        deleted=False,
+    )
+    logger.warn(contact.acapy)
     data = await issuer_service.issue_new_credential(
         db,
         tenant_id,
@@ -86,7 +95,7 @@ async def issue_new_credential(
         cred_protocol,
         credential,
         cred_def_id,
-        connection_id,
+        contact.acapy.connection["connection_id"],
         alias,
     )
 
@@ -97,7 +106,7 @@ async def issue_new_credential(
         created_at=data.workflow.created_at,
         updated_at=data.workflow.updated_at,
         alias="v0",
-        # contact_id="v0" #v0
+        contact_id=contact_id,  # v0
     )
 
     logger.debug(response)
