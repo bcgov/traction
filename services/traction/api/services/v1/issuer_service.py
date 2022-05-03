@@ -1,5 +1,6 @@
 import logging
 from uuid import UUID
+from typing import List
 
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -61,7 +62,7 @@ async def get_issued_credentials(
     workflow_id: UUID,
     cred_issue_id: UUID,
     state: TenantWorkflowStateType | None = None,
-):
+) -> List[IssueCredentialData]:
     issue_repo = IssueCredentialsRepository(db_session=db)
     workflow_repo = TenantWorkflowsRepository(db_session=db)
     issue_creds = []
