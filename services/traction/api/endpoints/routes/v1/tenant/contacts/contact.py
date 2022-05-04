@@ -33,7 +33,7 @@ async def get_contact(
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
-    db_item = await contacts_service.get_contact(
+    item = await contacts_service.get_contact(
         db,
         tenant_id,
         wallet_id,
@@ -41,8 +41,6 @@ async def get_contact(
         acapy=acapy,
         deleted=deleted,
     )
-
-    item = contacts_service.contact_to_contact_item(db_item, acapy=True)
 
     links = build_item_links(str(request.url), item)
 
