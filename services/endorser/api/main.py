@@ -1,5 +1,7 @@
 import os
 import time
+import logging
+from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI
@@ -7,6 +9,13 @@ from fastapi import FastAPI
 from api.endpoints.routes.webhooks import get_webhookapp
 from api.core.config import settings
 from api.endorser_main import get_endorserapp
+
+# setup loggers
+# TODO: set config via env parameters...
+logging_file_path = (Path(__file__).parent / "logging.conf").resolve()
+logging.config.fileConfig(logging_file_path, disable_existing_loggers=False)
+
+logger = logging.getLogger(__name__)
 
 os.environ["TZ"] = settings.TIMEZONE
 time.tzset()
