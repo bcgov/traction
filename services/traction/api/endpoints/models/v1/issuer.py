@@ -37,7 +37,7 @@ class IssueCredentialPayload(BaseModel):
 
     cred_protocol: IssueCredentialProtocolType
     credential: CredentialPreview
-    cred_def_id: UUID
+    cred_def_id: str
     contact_id: UUID
 
 

@@ -28,7 +28,7 @@ class CreateSchemaPayload(BaseModel):
     # using existing schema_request shape from v0
     schema_request: TenantSchemaRequest | None = None
     schema_id: Optional[UUID]
-    cred_def_tag: Optional[UUID]
+    cred_def_tag: Optional[str]
     revocable: bool | None = False
     revoc_reg_size: int | None = 1000
 

@@ -77,11 +77,9 @@ async def issue_new_credential(
     contact = await Contact.get_contact_by_id(
         db,
         tenant_id,
-        wallet_id,
         contact_id=payload.contact_id,
         deleted=False,
     )
-
     data = await issuer_service.issue_new_credential(
         db,
         tenant_id,
