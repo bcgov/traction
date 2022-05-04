@@ -31,21 +31,22 @@ logger = logging.getLogger(__name__)
 @router.get("/", response_model=CredentialsListResponse)
 async def get_issued_credentials(
     state: TenantWorkflowStateType | None = None,
-    workflow_id: str | None = None,
     cred_issue_id: str | None = None,
     db: AsyncSession = Depends(get_db),
-) -> List[IssueCredentialData]:
+) -> CredentialsListResponse:
     # this should take some query params, sorting and paging params...
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
     data = await issuer_service.get_issued_credentials(
-        db, tenant_id, wallet_id, workflow_id, cred_issue_id, state
+        db, tenant_id, wallet_id, None, cred_issue_id, state
     )
-    logger.debug(data)
+    logger.warn(data)
+
     resp_data = [
         CredentialItem(
             **d.__dict__,
+            credential_id=d.credential.id,
             status="v0",  # v0
             state=d.credential.issue_state,  # v0
             created_at=d.workflow.created_at,
@@ -55,11 +56,10 @@ async def get_issued_credentials(
         )
         for d in data
     ]
-    logger.debug(resp_data)
+
     response = CredentialsListResponse(
         items=resp_data, count=len(data), total=len(data)
     )
-    logger.debug(response)
 
     return response
 
@@ -70,14 +70,13 @@ async def issue_new_credential(
     credential: CredentialPreview,
     cred_def_id: str | None = None,
     contact_id: str | None = None,
-    alias: str | None = None,
     db: AsyncSession = Depends(get_db),
 ) -> CredentialItem:
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
     # Use connection ID for v0 compatability.
-    contact = await Contact.get_contact_by_connection_id(
+    contact = await Contact.get_contact_by_id(
         db,
         tenant_id,
         wallet_id,
@@ -93,7 +92,7 @@ async def issue_new_credential(
         credential,
         cred_def_id,
         contact.connection_id,
-        alias,
+        None,
     )
 
     response = CredentialItem(

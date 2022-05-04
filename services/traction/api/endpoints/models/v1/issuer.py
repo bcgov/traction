@@ -28,6 +28,7 @@ class CredentialAcapy(BaseModel):
 # ):
 class CredentialItem(AcapyItem[str, str, CredentialAcapy]):  # v0
     contact_id: Optional[UUID]  # v0 :UUID
+    credential_id: UUID
     alias: str
     external_reference_id: Optional[str]
     public_did: Optional[str]
