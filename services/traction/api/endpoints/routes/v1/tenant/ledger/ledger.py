@@ -24,26 +24,20 @@ from api.db.errors import DoesNotExist
 from api.db.repositories.tenant_schemas import TenantSchemasRepository
 from api.db.repositories.tenant_workflows import TenantWorkflowsRepository
 
+from api.endpoints.models.v1.ledger import SchemasListResponse
+from api.endpoints.routes.tenant_admin import TenantSchemaData
+
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-class TenantIssuerData(BaseModel):
-    issuer: TenantIssuerRead | None = None
-    workflow: TenantWorkflowRead | None = None
-
-
-class TenantSchemaData(BaseModel):
-    schema_data: TenantSchemaRead | None = None
-    workflow: TenantWorkflowRead | None = None
-
-
 @router.get(
-    "/schema", status_code=status.HTTP_200_OK, response_model=List[TenantSchemaData]
+    "/schemas", status_code=status.HTTP_200_OK, response_model=SchemasListResponse
 )
 async def get_tenant_schemas(
     db: AsyncSession = Depends(get_db),
-) -> List[TenantSchemaData]:
+) -> SchemasListResponse:
+    # copy of v0 implementation from endpoints/routes/tenant_admin
     # this should take some query params, sorting and paging params...
     wallet_id = get_from_context("TENANT_WALLET_ID")
     schema_repo = TenantSchemasRepository(db_session=db)
@@ -66,10 +60,13 @@ async def get_tenant_schemas(
         )
 
         schemas.append(schema)
-    return schemas
+    response = SchemasListResponse(
+        items=schemas, count=len(schemas), total=len(schemas)
+    )
+    return response
 
 
-@router.post("/schema", status_code=status.HTTP_200_OK)
+@router.post("/schemas", status_code=status.HTTP_200_OK)
 # Method moved from v0
 async def create_tenant_schema(
     schema_request: TenantSchemaRequest | None = None,
