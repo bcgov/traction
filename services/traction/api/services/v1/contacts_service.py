@@ -32,7 +32,6 @@ from api.endpoints.models.v1.contacts import (
 )
 from api.endpoints.models.v1.errors import (
     AlreadyExistsError,
-    NotFoundError,
     IdNotMatchError,
 )
 from api.services import connections
@@ -288,7 +287,7 @@ async def get_contact(
     Raises:
       NotFoundError: if the contact cannot be found by ID and deleted flag
     """
-    db_contact = await get_contact_by_id(db, tenant_id, contact_id, deleted)
+    db_contact = await Contact.get_by_id(db, tenant_id, contact_id, deleted)
 
     item = contact_to_contact_item(db_contact, acapy)
 
@@ -322,7 +321,7 @@ async def update_contact(
       IdNotMatchError: if the contact id parameter and in payload do not match
     """
     # verify this contact exists and is not deleted...
-    await get_contact_by_id(db, tenant_id, contact_id, False)
+    await Contact.get_by_id(db, tenant_id, contact_id, False)
 
     # payload contact id must match parameter
     if contact_id != payload.contact_id:
@@ -426,43 +425,6 @@ def contact_to_contact_item(
     return item
 
 
-async def get_contact_by_id(
-    db: AsyncSession,
-    tenant_id: UUID,
-    contact_id: UUID,
-    deleted: bool | None = False,
-) -> Contact:
-    """Get Contact by ID (database level).
-
-    Find and return the database Contact record
-
-    Args:
-      db: database session
-      tenant_id: Traction ID of tenant making the call
-      contact_id: Traction ID of Contact
-
-    Returns: The Traction Contact (db) record
-
-    Raises:
-      NotFoundError: if the contact cannot be found by ID and deleted flag
-    """
-    q = (
-        select(Contact)
-        .where(Contact.tenant_id == tenant_id)
-        .where(Contact.contact_id == contact_id)
-        .where(Contact.deleted == deleted)
-    )
-    q_result = await db.execute(q)
-    db_contact = q_result.scalar_one_or_none()
-    if not db_contact:
-        raise NotFoundError(
-            code="contact.id_not_found",
-            title="Contact does not exist",
-            detail=f"Contact does not exist for id<{contact_id}>",
-        )
-    return db_contact
-
-
 async def get_contact_timeline(
     db: AsyncSession,
     contact_id: UUID,
@@ -479,13 +441,7 @@ async def get_contact_timeline(
 
     Returns: List of Contact Timeline items
     """
-    q = (
-        select(ContactTimeline)
-        .where(ContactTimeline.contact_id == contact_id)
-        .order_by(desc(ContactTimeline.created_at))
-    )
-    q_result = await db.execute(q)
-    db_items = q_result.scalars()
+    db_items = await ContactTimeline.list_by_contact_id(db, contact_id)
 
     results = []
     for db_item in db_items:
