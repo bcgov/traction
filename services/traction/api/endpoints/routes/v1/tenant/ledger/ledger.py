@@ -1,6 +1,5 @@
 import logging
 from typing import List
-from venv import create
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession

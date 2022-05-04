@@ -19,9 +19,7 @@ from api.db.repositories.tenant_workflows import TenantWorkflowsRepository
 from api.db.models.tenant_workflow import (
     TenantWorkflowRead,
 )
-from api.endpoints.models.tenant_workflow import (
-    TenantWorkflowTypeType,
-)
+
 from api.db.models.issue_credential import (
     IssueCredentialCreate,
     IssueCredentialRead,
@@ -35,16 +33,17 @@ from api.endpoints.models.credentials import (
     CredentialRoleType,
     CredentialPreview,
 )
+from api.endpoints.models.tenant_workflow import (
+    TenantWorkflowTypeType,
+    TenantWorkflowStateType,
+)
+
 from acapy_client.model.revoke_request import RevokeRequest
 from acapy_client.api.revocation_api import RevocationApi
 from api.services.connections import (
     get_connection_with_alias,
 )
 from api.services.base import BaseWorkflow
-from api.endpoints.models.tenant_workflow import (
-    TenantWorkflowTypeType,
-    TenantWorkflowStateType,
-)
 
 logger = logging.getLogger(__name__)
 revoc_api = RevocationApi(api_client=get_api_client())
@@ -111,7 +110,7 @@ async def issue_new_credential(
     cred_def_id: str | None = None,
     connection_id: str | None = None,
     alias: str | None = None,
-):
+) -> IssueCredentialData:
     if not connection_id:
         existing_connection = get_connection_with_alias(alias)
         if not existing_connection:
@@ -184,7 +183,7 @@ async def revoke_issued_credential(
     rev_reg_id: UUID,
     cred_rev_id: UUID,
     comment: str,
-):
+) -> IssueCredentialData:
     issue_repo = IssueCredentialsRepository(db_session=db)
     workflow_repo = TenantWorkflowsRepository(db_session=db)
     issue_cred = None
@@ -228,3 +227,4 @@ async def revoke_issued_credential(
         credential=issue_cred,
         workflow=tenant_workflow,
     )
+    return issue

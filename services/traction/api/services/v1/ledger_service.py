@@ -42,7 +42,7 @@ class TenantSchemaData(BaseModel):
     workflow: TenantWorkflowRead | None = None
 
 
-### Method moved from v0
+# Method moved from v0
 async def create_tenant_schema(
     db: AsyncSession,
     wallet_id: UUID,

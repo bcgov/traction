@@ -9,7 +9,6 @@ from starlette import status
 from api.api_client_utils import get_api_client
 from api.db.errors import DoesNotExist
 from api.db.models.issue_credential import (
-    IssueCredentialRead,
     IssueCredentialUpdate,
 )
 from api.db.models.present_credential import (

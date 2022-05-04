@@ -32,7 +32,6 @@ from api.endpoints.models.v1.contacts import (
 )
 from api.endpoints.models.v1.errors import (
     AlreadyExistsError,
-    NotFoundError,
     IdNotMatchError,
 )
 from api.services import connections

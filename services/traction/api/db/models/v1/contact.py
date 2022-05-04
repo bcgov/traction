@@ -3,7 +3,6 @@
 Models of the Traction tables for Contacts and related data.
 
 """
-from time import clock_settime
 import uuid
 from datetime import datetime
 from typing import List
@@ -16,9 +15,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from api.db.models.base import BaseModel
 
 from api.endpoints.models.v1.errors import (
-    AlreadyExistsError,
     NotFoundError,
-    IdNotMatchError,
 )
 
 
