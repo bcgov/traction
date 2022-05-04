@@ -22,7 +22,11 @@ from api.endpoints.models.tenant_workflow import (
     TenantWorkflowStateType,
 )
 
-from api.endpoints.models.v1.issuer import CredentialsListResponse, CredentialItem
+from api.endpoints.models.v1.issuer import (
+    CredentialsListResponse,
+    CredentialItem,
+    CreateSchemaPayload,
+)
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -66,10 +70,7 @@ async def get_issued_credentials(
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=CredentialItem)
 async def issue_new_credential(
-    cred_protocol: IssueCredentialProtocolType,
-    credential: CredentialPreview,
-    cred_def_id: str | None = None,
-    contact_id: str | None = None,
+    payload: CreateSchemaPayload,
     db: AsyncSession = Depends(get_db),
 ) -> CredentialItem:
     wallet_id = get_from_context("TENANT_WALLET_ID")
@@ -80,7 +81,7 @@ async def issue_new_credential(
         db,
         tenant_id,
         wallet_id,
-        contact_id=contact_id,
+        contact_id=payload.contact_id,
         deleted=False,
     )
 
@@ -88,9 +89,9 @@ async def issue_new_credential(
         db,
         tenant_id,
         wallet_id,
-        cred_protocol,
-        credential,
-        cred_def_id,
+        payload.cred_protocol,
+        payload.credential,
+        payload.cred_def_id,
         contact.connection_id,
         None,
     )
@@ -102,7 +103,7 @@ async def issue_new_credential(
         created_at=data.workflow.created_at,
         updated_at=data.workflow.updated_at,
         alias="v0",  # alias is none, CredentialItem won't allow none
-        contact_id=contact_id,  # v0
+        contact_id=payload.contact_id,  # v0
     )
 
     return response
