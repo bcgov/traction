@@ -28,7 +28,7 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-@router.get("/credentials", response_model=CredentialsListResponse)
+@router.get("/", response_model=CredentialsListResponse)
 async def get_issued_credentials(
     state: TenantWorkflowStateType | None = None,
     workflow_id: str | None = None,
@@ -64,9 +64,7 @@ async def get_issued_credentials(
     return response
 
 
-@router.post(
-    "/credentials", status_code=status.HTTP_201_CREATED, response_model=CredentialItem
-)
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=CredentialItem)
 async def issue_new_credential(
     cred_protocol: IssueCredentialProtocolType,
     credential: CredentialPreview,
@@ -112,7 +110,7 @@ async def issue_new_credential(
 
 
 @router.post(
-    "/credentials/revoke",
+    "/revoke",
     status_code=status.HTTP_201_CREATED,
     response_model=IssueCredentialData,
 )
