@@ -40,6 +40,23 @@ class CreateSchemaPayload(BaseModel):
     contact_id: UUID
 
 
+class RevokeSchemaPayload(BaseModel):
+    """RevokeSchemaPayload.
+
+    Payload for Create Schema as Traction Tenant with Issuer Permissions.
+
+    Attributes:
+      alias: required, must be unique. A name/label for the Contact
+      invitation_type: what type of invitation to create
+
+    """
+
+    cred_issue_id: UUID
+    rev_reg_id: UUID
+    cred_rev_id: UUID
+    comment: str
+
+
 class CredentialAcapy(BaseModel):
     credential_exchange: dict = {}
 

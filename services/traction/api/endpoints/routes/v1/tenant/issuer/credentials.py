@@ -26,6 +26,7 @@ from api.endpoints.models.v1.issuer import (
     CredentialsListResponse,
     CredentialItem,
     CreateSchemaPayload,
+    RevokeSchemaPayload,
 )
 
 router = APIRouter()
@@ -115,10 +116,7 @@ async def issue_new_credential(
     response_model=IssueCredentialData,
 )
 async def revoke_issued_credential(
-    cred_issue_id: str | None = None,
-    rev_reg_id: str | None = None,
-    cred_rev_id: str | None = None,
-    comment: str | None = None,
+    payload: RevokeSchemaPayload,
     db: AsyncSession = Depends(get_db),
 ) -> IssueCredentialData:
     """
@@ -132,8 +130,8 @@ async def revoke_issued_credential(
         db,
         tenant_id,
         wallet_id,
-        cred_issue_id,
-        rev_reg_id,
-        cred_rev_id,
-        comment,
+        payload.cred_issue_id,
+        payload.rev_reg_id,
+        payload.cred_rev_id,
+        payload.comment,
     )

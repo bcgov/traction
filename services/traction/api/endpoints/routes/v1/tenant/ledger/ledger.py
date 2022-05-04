@@ -24,7 +24,7 @@ from api.db.errors import DoesNotExist
 from api.db.repositories.tenant_schemas import TenantSchemasRepository
 from api.db.repositories.tenant_workflows import TenantWorkflowsRepository
 
-from api.endpoints.models.v1.ledger import SchemasListResponse
+from api.endpoints.models.v1.ledger import SchemasListResponse, CreateSchemaPayload
 from api.endpoints.routes.tenant_admin import TenantSchemaData
 
 router = APIRouter()
@@ -69,7 +69,7 @@ async def get_tenant_schemas(
 @router.post("/schemas", status_code=status.HTTP_200_OK)
 # Method moved from v0
 async def create_tenant_schema(
-    schema_request: TenantSchemaRequest | None = None,
+    schema_request: CreateSchemaPayload | None = None,
     schema_id: str | None = None,
     cred_def_tag: str | None = None,
     revocable: bool | None = False,
