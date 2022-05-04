@@ -26,7 +26,9 @@ class TenantIssuerData(BaseModel):
     workflow: TenantWorkflowRead | None = None
 
 
-@router.post("/initalize", status_code=status.HTTP_200_OK)
+@router.post(
+    "/initalize", status_code=status.HTTP_200_OK, response_model=TenantIssuerData
+)
 async def init_issuer(db: AsyncSession = Depends(get_db)):
     """
     If the innkeeper has authorized your tenant to become an issuer, initialize
@@ -50,12 +52,12 @@ async def init_issuer(db: AsyncSession = Depends(get_db)):
         # get updated issuer info (should have workflow id and connection_id)
         tenant_issuer = await issuer_repo.get_by_wallet_id(wallet_id)
 
-    # issuer = TenantIssuerData(
-    #     issuer=tenant_issuer,
-    #     workflow=tenant_workflow,
-    # )
+    issuer = TenantIssuerData(
+        issuer=tenant_issuer,
+        workflow=tenant_workflow,
+    )
 
-    return tenant_issuer
+    return issuer
 
 
 @router.get("/", status_code=status.HTTP_200_OK)
