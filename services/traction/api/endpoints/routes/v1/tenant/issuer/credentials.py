@@ -14,10 +14,6 @@ from api.endpoints.dependencies.tenant_security import get_from_context
 from api.endpoints.dependencies.db import get_db
 
 
-from api.endpoints.models.credentials import (
-    IssueCredentialProtocolType,
-    CredentialPreview,
-)
 from api.endpoints.models.tenant_workflow import (
     TenantWorkflowStateType,
 )
@@ -25,7 +21,7 @@ from api.endpoints.models.tenant_workflow import (
 from api.endpoints.models.v1.issuer import (
     CredentialsListResponse,
     CredentialItem,
-    CreateSchemaPayload,
+    IssueCredentialPayload,
     RevokeSchemaPayload,
 )
 
@@ -71,7 +67,7 @@ async def get_issued_credentials(
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=CredentialItem)
 async def issue_new_credential(
-    payload: CreateSchemaPayload,
+    payload: IssueCredentialPayload,
     db: AsyncSession = Depends(get_db),
 ) -> CredentialItem:
     wallet_id = get_from_context("TENANT_WALLET_ID")

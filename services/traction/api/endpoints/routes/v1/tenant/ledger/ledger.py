@@ -69,11 +69,7 @@ async def get_tenant_schemas(
 @router.post("/schemas", status_code=status.HTTP_200_OK)
 # Method moved from v0
 async def create_tenant_schema(
-    schema_request: CreateSchemaPayload | None = None,
-    schema_id: str | None = None,
-    cred_def_tag: str | None = None,
-    revocable: bool | None = False,
-    revoc_reg_size: int | None = 1000,
+    payload: CreateSchemaPayload,
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -90,9 +86,9 @@ async def create_tenant_schema(
         db,
         wallet_id,
         tenant_id,
-        schema_request,
-        schema_id,
-        cred_def_tag,
-        revocable,
-        revoc_reg_size,
+        payload.schema_request,
+        payload.schema_id,
+        payload.cred_def_tag,
+        payload.revocable,
+        payload.revoc_reg_size,
     )

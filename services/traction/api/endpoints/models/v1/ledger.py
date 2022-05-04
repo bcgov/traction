@@ -10,6 +10,7 @@ from api.endpoints.models.v1.base import (
 )
 
 from api.endpoints.routes.tenant_admin import TenantSchemaData
+from api.endpoints.models.tenant_schema import TenantSchemaRequest
 
 
 class CreateSchemaPayload(BaseModel):
@@ -18,13 +19,18 @@ class CreateSchemaPayload(BaseModel):
     Payload for Create Schema as Traction Tenant with Issuer Permissions.
 
     Attributes:
-      alias: required, must be unique. A name/label for the Contact
-      invitation_type: what type of invitation to create
-
+      schema_request: required
+      schema_id:
+      cred_def_tag:
+      revocable:
     """
 
-    cred_def_id: UUID
-    contact_id: UUID
+    # using existing schema_request shape from v0
+    schema_request: TenantSchemaRequest | None = None
+    schema_id: Optional[UUID]
+    cred_def_tag: Optional[UUID]
+    revocable: bool | None = False
+    revoc_reg_size: int | None = 1000
 
 
 # use existing data format from v0, will need to be restructured here like contacts.
