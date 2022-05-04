@@ -62,11 +62,6 @@ pres_cred_v10_api = PresentProofV10Api(api_client=get_api_client())
 revoc_api = RevocationApi(api_client=get_api_client())
 
 
-class IssueCredentialData(BaseModel):
-    credential: IssueCredentialRead | None = None
-    workflow: TenantWorkflowRead | None = None
-
-
 class PresentCredentialData(BaseModel):
     presentation: PresentCredentialRead | None = None
     workflow: TenantWorkflowRead | None = None

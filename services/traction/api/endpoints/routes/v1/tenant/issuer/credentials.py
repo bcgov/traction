@@ -1,13 +1,14 @@
 import logging
-from turtle import update
 from typing import List
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from api.services.v1 import issuer_service, contacts_service
+from api.services.v1 import issuer_service
 from api.services.v1.issuer_service import IssueCredentialData
+
+from api.db.models.v1.contact import Contact
 
 from api.endpoints.dependencies.tenant_security import get_from_context
 from api.endpoints.dependencies.db import get_db
@@ -77,9 +78,8 @@ async def issue_new_credential(
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
-    ##Use connection ID for v0 compatability.
-
-    contact = await contacts_service.get_contact(
+    # Use connection ID for v0 compatability.
+    contact = await Contact.get_contact_by_connection_id(
         db,
         tenant_id,
         wallet_id,
@@ -108,7 +108,6 @@ async def issue_new_credential(
         contact_id=contact_id,  # v0
     )
 
-    logger.debug(response)
     return response
 
 

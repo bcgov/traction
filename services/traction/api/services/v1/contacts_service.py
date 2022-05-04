@@ -268,8 +268,9 @@ async def get_contact(
     tenant_id: UUID,
     wallet_id: UUID,
     contact_id: UUID,
+    acapy: bool | None = False,
     deleted: bool | None = False,
-) -> Contact:
+) -> ContactItem:
     """Get  Contact.
 
     Find and return a Traction Contact by ID.
@@ -287,9 +288,11 @@ async def get_contact(
     Raises:
       NotFoundError: if the contact cannot be found by ID and deleted flag
     """
-    db_contact = await get_contact_by_id(db, tenant_id, contact_id, deleted)
+    db_contact = await Contact.get_contact_by_id(db, tenant_id, contact_id, deleted)
 
-    return db_contact
+    item = contact_to_contact_item(db_contact, acapy)
+
+    return item
 
 
 async def update_contact(
@@ -319,7 +322,7 @@ async def update_contact(
       IdNotMatchError: if the contact id parameter and in payload do not match
     """
     # verify this contact exists and is not deleted...
-    await get_contact_by_id(db, tenant_id, contact_id, False)
+    await Contact.get_contact_by_id(db, tenant_id, contact_id, False)
 
     # payload contact id must match parameter
     if contact_id != payload.contact_id:
@@ -353,9 +356,7 @@ async def update_contact(
     await db.execute(q)
     await db.commit()
 
-    return await contact_to_contact_item(
-        get_contact(db, tenant_id, wallet_id, contact_id)
-    )
+    return await get_contact(db, tenant_id, wallet_id, contact_id)
 
 
 async def delete_contact(
@@ -391,8 +392,8 @@ async def delete_contact(
     await db.execute(q)
     await db.commit()
 
-    return await contact_to_contact_item(
-        get_contact(db, tenant_id, wallet_id, contact_id, acapy=False, deleted=True)
+    return await get_contact(
+        db, tenant_id, wallet_id, contact_id, acapy=False, deleted=True
     )
 
 
@@ -423,43 +424,6 @@ def contact_to_contact_item(
         )
 
     return item
-
-
-async def get_contact_by_id(
-    db: AsyncSession,
-    tenant_id: UUID,
-    contact_id: UUID,
-    deleted: bool | None = False,
-) -> Contact:
-    """Get Contact by ID (database level).
-
-    Find and return the database Contact record
-
-    Args:
-      db: database session
-      tenant_id: Traction ID of tenant making the call
-      contact_id: Traction ID of Contact
-
-    Returns: The Traction Contact (db) record
-
-    Raises:
-      NotFoundError: if the contact cannot be found by ID and deleted flag
-    """
-    q = (
-        select(Contact)
-        .where(Contact.tenant_id == tenant_id)
-        .where(Contact.contact_id == contact_id)
-        .where(Contact.deleted == deleted)
-    )
-    q_result = await db.execute(q)
-    db_contact = q_result.scalar_one_or_none()
-    if not db_contact:
-        raise NotFoundError(
-            code="contact.id_not_found",
-            title="Contact does not exist",
-            detail=f"Contact does not exist for id<{contact_id}>",
-        )
-    return db_contact
 
 
 async def get_contact_timeline(

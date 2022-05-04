@@ -3,15 +3,23 @@
 Models of the Traction tables for Contacts and related data.
 
 """
+from time import clock_settime
 import uuid
 from datetime import datetime
 from typing import List
 
 from sqlmodel import Field
-from sqlalchemy import Column, func, text, String
+from sqlalchemy import Column, func, text, String, select
 from sqlalchemy.dialects.postgresql import UUID, TIMESTAMP, JSON, ARRAY
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 from api.db.models.base import BaseModel
+
+from api.endpoints.models.v1.errors import (
+    AlreadyExistsError,
+    NotFoundError,
+    IdNotMatchError,
+)
 
 
 class Contact(BaseModel, table=True):
@@ -82,6 +90,84 @@ class Contact(BaseModel, table=True):
             TIMESTAMP, nullable=False, server_default=func.now(), onupdate=func.now()
         )
     )
+
+    @classmethod
+    async def get_contact_by_id(
+        cls: "Contact",
+        db: AsyncSession,
+        tenant_id: UUID,
+        contact_id: UUID,
+        deleted: bool | None = False,
+    ) -> "Contact":
+        """Get Contact by ID (database level).
+
+        Find and return the database Contact record
+
+        Args:
+          db: database session
+          tenant_id: Traction ID of tenant making the call
+          contact_id: Traction ID of Contact
+
+        Returns: The Traction Contact (db) record
+
+        Raises:
+          NotFoundError: if the contact cannot be found by ID and deleted flag
+        """
+
+        q = (
+            select(cls)
+            .where(cls.tenant_id == tenant_id)
+            .where(cls.contact_id == contact_id)
+            .where(cls.deleted == deleted)
+        )
+        q_result = await db.execute(q)
+        db_contact = q_result.scalar_one_or_none()
+        if not db_contact:
+            raise NotFoundError(
+                code="contact.id_not_found",
+                title="Contact does not exist",
+                detail=f"Contact does not exist for id<{contact_id}>",
+            )
+        return db_contact
+
+    @classmethod
+    async def get_contact_by_connection_id(
+        cls: "Contact",
+        db: AsyncSession,
+        tenant_id: UUID,
+        connection_id: UUID,
+        deleted: bool | None = False,
+    ) -> "Contact":
+        """Get Contact by ID (database level).
+
+        Find and return the database Contact record
+
+        Args:
+          db: database session
+          tenant_id: Traction ID of tenant making the call
+          contact_id: Traction ID of Contact
+
+        Returns: The Traction Contact (db) record
+
+        Raises:
+          NotFoundError: if the contact cannot be found by ID and deleted flag
+        """
+
+        q = (
+            select(cls)
+            .where(cls.tenant_id == tenant_id)
+            .where(cls.connection_id == connection_id)
+            .where(cls.deleted == deleted)
+        )
+        q_result = await db.execute(q)
+        db_contact = q_result.scalar_one_or_none()
+        if not db_contact:
+            raise NotFoundError(
+                code="contact.id_not_found",
+                title="Contact does not exist",
+                detail=f"Contact does not exist for id<{connection_id}>",
+            )
+        return db_contact
 
 
 class ContactTimeline(BaseModel, table=True):

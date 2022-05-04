@@ -1,23 +1,12 @@
-from datetime import datetime
 from enum import Enum
-from typing import Optional, List
+from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel, Field, AnyUrl
-
-from api.endpoints.models.connections import (
-    ConnectionStateType,
-    ConnectionRoleType,
-    ConnectionProtocolType,
-)
+from pydantic import BaseModel
 
 from api.endpoints.models.v1.base import (
     AcapyItem,
     ListResponse,
-    GetResponse,
-    ListAcapyItemParameters,
-    TimelineItem,
-    GetTimelineResponse,
 )
 
 

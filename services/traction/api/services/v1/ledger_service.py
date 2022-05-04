@@ -3,15 +3,10 @@ import json
 from uuid import UUID
 from typing import List
 
-from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette import status
 from pydantic import BaseModel
 
 
-from api.endpoints.dependencies.db import get_db
-from api.endpoints.dependencies.tenant_security import get_from_context
-from api.endpoints.models.v1.contacts import ContactGetResponse
 from api.endpoints.models.tenant_schema import TenantSchemaRequest
 from api.db.models.tenant_issuer import TenantIssuerRead
 

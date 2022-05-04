@@ -71,7 +71,7 @@ async def get_tenant_schemas(
 
 
 @router.post("/schema", status_code=status.HTTP_200_OK)
-### Method moved from v0
+# Method moved from v0
 async def create_tenant_schema(
     schema_request: TenantSchemaRequest | None = None,
     schema_id: str | None = None,
