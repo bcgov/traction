@@ -4,20 +4,11 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
-from pydantic import BaseModel
 
 
 from api.endpoints.dependencies.db import get_db
 from api.endpoints.dependencies.tenant_security import get_from_context
-from api.endpoints.models.tenant_schema import TenantSchemaRequest
-from api.db.models.tenant_issuer import TenantIssuerRead
-from api.db.models.tenant_schema import (
-    TenantSchemaRead,
-)
 
-from api.db.models.tenant_workflow import (
-    TenantWorkflowRead,
-)
 from api.services.v1 import ledger_service
 
 from api.db.errors import DoesNotExist
