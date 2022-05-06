@@ -29,27 +29,10 @@ async def get_tenant_schemas(
     # this should take some query params, sorting and paging params...
     wallet_id = get_from_context("TENANT_WALLET_ID")
     schema_repo = TenantSchemasRepository(db_session=db)
-    workflow_repo = TenantWorkflowsRepository(db_session=db)
     tenant_schemas = await schema_repo.find_by_wallet_id(wallet_id)
-    schemas = []
-    for tenant_schema in tenant_schemas:
-        tenant_workflow = None
-        if tenant_schema.workflow_id:
-            try:
-                tenant_workflow = await workflow_repo.get_by_id(
-                    tenant_schema.workflow_id
-                )
-            except DoesNotExist:
-                pass
 
-        schema = TenantSchemaData(
-            schema_data=tenant_schema,
-            workflow=tenant_workflow,
-        )
-
-        schemas.append(schema)
     response = SchemasListResponse(
-        items=schemas, count=len(schemas), total=len(schemas)
+        items=tenant_schemas, count=len(tenant_schemas), total=len(tenant_schemas)
     )
     return response
 

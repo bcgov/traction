@@ -13,13 +13,12 @@ from api.api_client_utils import get_api_client
 from api.endpoints.dependencies.tenant_security import get_from_context
 from api.services.tenant_workflows import create_workflow
 
+from api.db.models.v1.contact import Contact
+
+
 from api.db.errors import DoesNotExist
 from api.db.repositories.tenant_workflows import TenantWorkflowsRepository
-
-from api.db.models.tenant_workflow import (
-    TenantWorkflowRead,
-)
-
+from api.db.models.tenant_workflow import TenantWorkflowRead
 from api.db.models.issue_credential import (
     IssueCredentialCreate,
     IssueCredentialRead,
@@ -128,7 +127,11 @@ async def issue_new_credential(
     tenant_id = get_from_context("TENANT_ID")
     issue_repo = IssueCredentialsRepository(db_session=db)
 
+    # TODO: pass in contact id from v1 endpoint
+    contact = Contact.get_contact_by_connection_id(connection_id)
+
     issue_cred = IssueCredentialCreate(
+        contact_id=contact.contact_id,
         tenant_id=tenant_id,
         wallet_id=wallet_id,
         connection_id=connection_id,

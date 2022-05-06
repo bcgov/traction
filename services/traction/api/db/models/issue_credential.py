@@ -7,6 +7,9 @@ from api.db.models.base import BaseModel, BaseTable
 
 
 class IssueCredentialBase(BaseModel):
+    # v1 eventually will nullable=false
+    contact_id: uuid.UUID = Field(nullable=True, foreign_key="contact.contact_id")
+    # v0
     tenant_id: uuid.UUID = Field(nullable=False)
     wallet_id: uuid.UUID = Field(nullable=False)
     connection_id: uuid.UUID = Field(nullable=False)
