@@ -6,6 +6,7 @@ from api.db.models.tenant_webhook import TenantWebhook  # noqa: F401
 from api.db.models.tenant_webhook_msg import TenantWebhookMsg  # noqa: F401
 
 from api.db.models.v1.contact import Contact, ContactTimeline  # noqa: F401
+from api.db.models.v1.connection_invitation import ConnectionInvitation  # noqa: F401
 
 __all__ = [
     "BaseTable",
@@ -14,4 +15,5 @@ __all__ = [
     "TenantWebhookMsg",
     "Contact",
     "ContactTimeline",
+    "ConnectionInvitation",
 ]

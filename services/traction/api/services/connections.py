@@ -109,9 +109,10 @@ def get_connection_with_alias(alias: str) -> Connection:
 
 
 def create_invitation(
-    alias: str, invitation_type: ConnectionProtocolType
+    alias: str, invitation_type: ConnectionProtocolType, multi_use: bool | None = False
 ) -> Invitation:
     if invitation_type == ConnectionProtocolType.DIDExchange:
+        multi_use_qs_val = "true" if multi_use else "false"
         data = {
             "alias": alias,
             "handshake_protocols": [
@@ -119,7 +120,7 @@ def create_invitation(
             ],
         }
         inv = out_of_band_api.out_of_band_create_invitation_post(
-            body=InvitationCreateRequest(**data)
+            multi_use=multi_use_qs_val, body=InvitationCreateRequest(**data)
         )
         connection = get_connection_with_alias(alias)
         invitation = inv_record_to_invitation(inv, connection.connection_id)

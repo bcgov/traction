@@ -288,7 +288,7 @@ async def get_contact(
     Raises:
       NotFoundError: if the contact cannot be found by ID and deleted flag
     """
-    db_contact = await Contact.get_contact_by_id(db, tenant_id, contact_id, deleted)
+    db_contact = await Contact.get_by_id(db, tenant_id, contact_id, deleted)
 
     item = contact_to_contact_item(db_contact, acapy)
 
@@ -322,7 +322,7 @@ async def update_contact(
       IdNotMatchError: if the contact id parameter and in payload do not match
     """
     # verify this contact exists and is not deleted...
-    await Contact.get_contact_by_id(db, tenant_id, contact_id, False)
+    await Contact.get_by_id(db, tenant_id, contact_id, False)
 
     # payload contact id must match parameter
     if contact_id != payload.contact_id:
@@ -456,13 +456,7 @@ async def get_contact_timeline(
 
     Returns: List of Contact Timeline items
     """
-    q = (
-        select(ContactTimeline)
-        .where(ContactTimeline.contact_id == contact_id)
-        .order_by(desc(ContactTimeline.created_at))
-    )
-    q_result = await db.execute(q)
-    db_items = q_result.scalars()
+    db_items = await ContactTimeline.list_by_contact_id(db, contact_id)
 
     results = []
     for db_item in db_items:

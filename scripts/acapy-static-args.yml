@@ -18,7 +18,6 @@ wallet-type: 'indy'
 log-level: info
 multitenant: true
 multitenant-admin: true
-endorser-protocol-role: author
 endorser-alias: 'endorser'
 endorser-public-did: 'SVfHGCEEvEFmpBPcxgNqRR'
 auto-request-endorsement: true
