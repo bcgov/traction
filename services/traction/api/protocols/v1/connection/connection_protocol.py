@@ -9,17 +9,16 @@ from api.endpoints.models.webhooks import WEBHOOK_CONNECTIONS_LISTENER_PATTERN
 
 
 def our_role(their_role: str):
+    result = None
     if ConnectionRoleType.inviter == their_role:
-        return ConnectionRoleType.invitee
+        result = ConnectionRoleType.invitee
     elif ConnectionRoleType.invitee == their_role:
-        return ConnectionRoleType.inviter
+        result = ConnectionRoleType.inviter
     elif ConnectionRoleType.requester == their_role:
-        return ConnectionRoleType.responder
+        result = ConnectionRoleType.responder
     elif ConnectionRoleType.responder == their_role:
-        return ConnectionRoleType.requester
-    else:
-        return None
-
+        result = ConnectionRoleType.requester
+    return result
 
 def role_match(this_role: ConnectionRoleType, their_role: str):
     if not our_role:
