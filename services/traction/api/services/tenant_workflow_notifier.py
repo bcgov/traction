@@ -32,7 +32,7 @@ class TenantWorkflowNotifier:
     ):
         logger.info("connection active")
         # emit an event for any interested listeners
-        profile = Profile(tenant_conn.wallet_id, self.db)
+        profile = Profile(tenant_conn.wallet_id, tenant_conn.tenant_id, self.db)
         topic = TenantEventTopicType.connection
         event_topic = TRACTION_EVENT_PREFIX + topic
         logger.info(f"profile.notify {event_topic}")
@@ -49,7 +49,7 @@ class TenantWorkflowNotifier:
     async def issuer_workflow_credential_acked(self, issued_cred: IssueCredentialRead):
         logger.info("issued credential acknowledged")
         # emit an event for any interested listeners
-        profile = Profile(issued_cred.wallet_id, self.db)
+        profile = Profile(issued_cred.wallet_id, issued_cred.tenant_id, self.db)
         topic = TenantEventTopicType.issue_cred
         event_topic = TRACTION_EVENT_PREFIX + topic
         logger.info(f"profile.notify {event_topic}")
@@ -66,7 +66,7 @@ class TenantWorkflowNotifier:
     async def issuer_workflow_cred_offer(self, cred_offer: IssueCredentialRead):
         logger.info("received cred offer")
         # emit an event for any interested listeners
-        profile = Profile(cred_offer.wallet_id, self.db)
+        profile = Profile(cred_offer.wallet_id, cred_offer.tenant_id, self.db)
         topic = TenantEventTopicType.issue_cred
         event_topic = TRACTION_EVENT_PREFIX + topic
         logger.info(f"profile.notify {event_topic}")
@@ -85,7 +85,7 @@ class TenantWorkflowNotifier:
     ):
         logger.info("received cred revoc")
         # emit an event for any interested listeners
-        profile = Profile(cred_info.wallet_id, self.db)
+        profile = Profile(cred_info.wallet_id, cred_info.tenant_id, self.db)
         topic = TenantEventTopicType.issuer_cred_rev
         event_topic = TRACTION_EVENT_PREFIX + topic
         logger.info(f"profile.notify {event_topic}")
@@ -103,7 +103,7 @@ class TenantWorkflowNotifier:
     async def issuer_workflow_completed(self, tenant_issuer: TenantIssuerRead):
         logger.info("issuer workflow complete")
         # emit an event for any interested listeners
-        profile = Profile(tenant_issuer.wallet_id, self.db)
+        profile = Profile(tenant_issuer.wallet_id, tenant_issuer.tenant_id, self.db)
         topic = TenantEventTopicType.issuer
         event_topic = TRACTION_EVENT_PREFIX + topic
         logger.info(f"profile.notify {event_topic}")
@@ -119,7 +119,7 @@ class TenantWorkflowNotifier:
     async def schema_workflow_completed(self, tenant_schema: TenantSchemaRead):
         logger.info("schema workflow complete")
         # emit an event for any interested listeners
-        profile = Profile(tenant_schema.wallet_id, self.db)
+        profile = Profile(tenant_schema.wallet_id, tenant_schema.tenant_id, self.db)
         topic = TenantEventTopicType.schema
         event_topic = TRACTION_EVENT_PREFIX + topic
         logger.info(f"profile.notify {event_topic}")
@@ -137,7 +137,7 @@ class TenantWorkflowNotifier:
     async def verifier_workflow_proof_req(self, present_req: PresentCredentialRead):
         logger.info("received proof request")
         # emit an event for any interested listeners
-        profile = Profile(present_req.wallet_id, self.db)
+        profile = Profile(present_req.wallet_id, present_req.tenant_id, self.db)
         topic = TenantEventTopicType.present_req
         event_topic = TRACTION_EVENT_PREFIX + topic
         logger.info(f"profile.notify {event_topic}")

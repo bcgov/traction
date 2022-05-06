@@ -20,16 +20,23 @@ class Profile(ABC):
     def __init__(
         self,
         wallet_id: str,
+        tenant_id: str,
         db: AsyncSession,
     ):
         """Initialize a base profile."""
         self._wallet_id = wallet_id
+        self._tenant_id = tenant_id
         self._db = db
 
     @property
     def wallet_id(self):
         """Return this event's wallet_id."""
         return self._wallet_id
+
+    @property
+    def tenant_id(self):
+        """Return this event's tenant_id."""
+        return self._tenant_id
 
     @property
     def db(self):

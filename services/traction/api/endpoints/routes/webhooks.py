@@ -91,7 +91,7 @@ async def process_tenant_webhook(
         context["TENANT_ID"] = tnt.id
 
         # emit an event for any interested listeners
-        profile = Profile(wallet_id, db)
+        profile = Profile(wallet_id, tnt.id, db)
         event_topic = WEBHOOK_EVENT_PREFIX + topic
         logger.debug(
             f">>> sending notification for recvd hook {event_topic} {topic} {payload}"

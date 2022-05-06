@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from api.core.config import settings
 from api.core.exception_handlers import add_exception_handlers
 from api.endpoints.routes.webhooks import get_webhookapp
-from api.protocols.v1 import subscribe_protocol_event_listeners
+from api.protocols.v1.connection import subscribe_connection_protocol_listeners
 from api.services.tenant_webhook_publisher import subscribe_all_events
 from api.services.tenant_workflows import subscribe_workflow_events
 from api.innkeeper_main import get_innkeeperapp
@@ -61,16 +61,16 @@ add_exception_handlers(acapy_wrapper_app)
 @app.on_event("startup")
 async def on_tenant_startup():
     """Register any events we need to respond to."""
-    logger.warn(">>> Starting up app ...")
+    logger.warning(">>> Starting up app ...")
     subscribe_workflow_events()
     subscribe_all_events()
-    subscribe_protocol_event_listeners()
+    subscribe_connection_protocol_listeners()
 
 
 @app.on_event("shutdown")
 def on_tenant_shutdown():
     """TODO no-op for now."""
-    logger.warn(">>> Sutting down app ...")
+    logger.warning(">>> Shutting down app ...")
     pass
 
 

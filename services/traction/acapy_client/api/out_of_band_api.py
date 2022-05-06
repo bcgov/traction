@@ -62,8 +62,8 @@ class OutOfBandApi(object):
                 "validations": {},
                 "allowed_values": {},
                 "openapi_types": {
-                    "auto_accept": (bool,),
-                    "multi_use": (bool,),
+                    "auto_accept": (bool, str,),
+                    "multi_use": (bool, str,),
                     "body": (InvitationCreateRequest,),
                 },
                 "attribute_map": {
