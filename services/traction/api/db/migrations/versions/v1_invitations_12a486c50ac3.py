@@ -54,6 +54,7 @@ def upgrade():
             "connection_alias", sqlmodel.sql.sqltypes.AutoString(), nullable=False
         ),
         sa.Column("invitation_url", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+        sa.Column("invitation_key", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
         sa.ForeignKeyConstraint(
             ["tenant_id"],
             ["tenant.id"],
@@ -61,6 +62,12 @@ def upgrade():
         sa.PrimaryKeyConstraint("invitation_id"),
     )
     op.create_index(op.f("ix_invitation_name"), "invitation", ["name"], unique=False)
+    op.create_index(
+        op.f("ix_invitation_invitation_key"),
+        "invitation",
+        ["invitation_key"],
+        unique=False,
+    )
     op.create_index(
         op.f("ix_invitation_tenant_id"), "invitation", ["tenant_id"], unique=False
     )

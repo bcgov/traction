@@ -66,6 +66,7 @@ class Invitation(BaseModel, table=True):
     connection_id: uuid.UUID = Field(nullable=False)
     connection_alias: str = Field(nullable=False)
     invitation_url: str = Field(nullable=False)
+    invitation_key: str = Field(nullable=True)
     connection: dict = Field(default={}, sa_column=Column(JSON))
     invitation: dict = Field(default={}, sa_column=Column(JSON))
     # --- acapy data
@@ -144,6 +145,35 @@ class Invitation(BaseModel, table=True):
             .where(cls.tenant_id == tenant_id)
             .where(cls.name == name)
             .where(cls.deleted == deleted)
+        )
+        q_result = await db.execute(q)
+        db_item = q_result.scalar_one_or_none()
+        return db_item
+
+    @classmethod
+    async def get_by_invitation_key(
+        cls: "Invitation",
+        db: AsyncSession,
+        tenant_id: UUID,
+        invitation_key: str,
+    ) -> "Invitation":
+        """Get Invitation by Name.
+
+        Find and return the database Invitation record
+
+        Args:
+          db: database session
+          tenant_id: Traction ID of tenant making the call
+          invitation_key: AcaPy Connection Invitation ID
+
+        Returns: The Traction Invitation (db) record or None if not found
+
+        """
+
+        q = (
+            select(cls)
+            .where(cls.tenant_id == tenant_id)
+            .where(cls.invitation_key == invitation_key)
         )
         q_result = await db.execute(q)
         db_item = q_result.scalar_one_or_none()

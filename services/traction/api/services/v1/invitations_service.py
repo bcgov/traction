@@ -50,8 +50,8 @@ async def create_reusable_invitation(
       payload: Reusable Invitation data
 
     Returns:
-      item: The Traction Contact
-      invitation_url: Invitation on URL format
+      item: The Traction Invitation
+      invitation_url: Invitation in URL format
 
     Raises:
         AlreadyExistsError: if the provided name already exists
@@ -60,8 +60,8 @@ async def create_reusable_invitation(
     existing_connection = connections.get_connection_with_alias(payload.name)
     if existing_connection is not None:
         raise AlreadyExistsError(
-            code="contacts.create.invitation.existing.alias",
-            title="Create Invitation alias in use",
+            code="invitation.create.reusable.invitation.existing.alias",
+            title="Create Reusable Invitation alias in use",
             detail=f"Error alias {payload.name} already in use.",
         )
 
@@ -82,11 +82,12 @@ async def create_reusable_invitation(
         reusable=True,
         status=InvitationStatusType.active,
         state=connection.state,
+        connection=connection,
         connection_id=connection.connection_id,
         connection_alias=connection.alias,
+        invitation_key=connection.invitation_key,
         invitation=acapy_invitation.invitation,
         invitation_url=invitation_url,
-        connection=connection,
     )
     db.add(db_invitation)
     await db.commit()
