@@ -10,12 +10,9 @@ from api.endpoints.dependencies.tenant_security import get_from_context
 
 from api.services.v1 import ledger_service
 
-from api.db.errors import DoesNotExist
 from api.db.repositories.tenant_schemas import TenantSchemasRepository
-from api.db.repositories.tenant_workflows import TenantWorkflowsRepository
-
+from api.db.models.tenant_schema import TenantSchemaRead
 from api.endpoints.models.v1.governance import SchemasListResponse, CreateSchemaPayload
-from api.endpoints.routes.tenant_admin import TenantSchemaData
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -42,7 +39,7 @@ async def get_tenant_schemas(
 async def create_tenant_schema(
     payload: CreateSchemaPayload,
     db: AsyncSession = Depends(get_db),
-):
+) -> TenantSchemaRead:
     """
     Create a new schema and/or credential definition.
 

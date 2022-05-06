@@ -24,7 +24,8 @@ class IssuerCredentialStatusType(str, Enum):
 
 
 class AcapyCredentialExchangeStateType(str, Enum):
-    # from https://github.com/hyperledger/aries-cloudagent-python/blob/db6b7699e603ecb335165a79459fbab7b6587a70/aries_cloudagent/protocols/issue_credential/v1_0/models/credential_exchange.py#L44
+    # noqa: E501 from https://github.com/hyperledger/aries-cloudagent-python/blob/db6b7699e603ecb335165a79459fbab7b6587a70/aries_cloudagent/protocols/issue_credential/v1_0/models/credential_exchange.py#L44
+
     STATE_PROPOSAL_SENT = "proposal_sent"
     STATE_PROPOSAL_RECEIVED = "proposal_received"
     STATE_OFFER_SENT = "offer_sent"
@@ -79,9 +80,6 @@ class CredentialAcapy(BaseModel):
     credential_exchange: dict = {}
 
 
-# class CredentialItem(
-#     AcapyItem[IssuerCredentialStatusType, AcapyCredentialExchangeStateType, CredentialAcapy]
-# ):
 class CredentialItem(AcapyItem[str, AcapyCredentialExchangeStateType, CredentialAcapy]):
     contact_id: UUID
     credential_id: UUID
