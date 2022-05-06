@@ -39,10 +39,11 @@ class ReusableInvitationProcessor(DefaultConnectionProtocol):
                 profile.db.add(db_contact)
                 await profile.db.commit()
 
-    async def on_active(self, profile: Profile, payload: dict):
-        self.logger.debug(f"on_active({profile.wallet_id} {payload})")
+    async def on_response(self, profile: Profile, payload: dict):
+        self.logger.debug(f"on_response({profile.wallet_id} {payload})")
 
-        # now that the connection is active, update the alias, connection alias...
+        # now that the connection is far enough along
+        # update the alias, connection alias...
         label = payload["their_label"]
         values = {"alias": label, "connection_alias": label}
         stmt = (
