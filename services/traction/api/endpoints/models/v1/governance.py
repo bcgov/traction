@@ -7,7 +7,7 @@ from api.endpoints.models.v1.base import (
     ListResponse,
 )
 
-from api.endpoints.routes.tenant_admin import TenantSchemaData
+from api.endpoints.routes.tenant_admin import TenantSchemaRead
 from api.endpoints.models.tenant_schema import TenantSchemaRequest
 
 
@@ -32,5 +32,5 @@ class CreateSchemaPayload(BaseModel):
 
 
 # use existing data format from v0, will need to be restructured here like contacts.
-class SchemasListResponse(ListResponse[TenantSchemaData]):
+class SchemasListResponse(ListResponse[TenantSchemaRead]):
     pass

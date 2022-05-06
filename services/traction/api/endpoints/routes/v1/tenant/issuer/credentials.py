@@ -5,7 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from api.services.v1 import issuer_service
-from api.services.v1.issuer_service import IssueCredentialData
+from api.db.models.issue_credential import IssueCredentialRead
+
 
 from api.db.models.v1.contact import Contact
 
@@ -106,12 +107,12 @@ async def issue_new_credential(
 @router.post(
     "/revoke",
     status_code=status.HTTP_201_CREATED,
-    response_model=IssueCredentialData,
+    response_model=IssueCredentialRead,
 )
 async def revoke_issued_credential(
     payload: RevokeSchemaPayload,
     db: AsyncSession = Depends(get_db),
-) -> IssueCredentialData:
+) -> IssueCredentialRead:
     """
     write a revocation entry to the revocation registry.
     And, if an active connection exists, notify the holder

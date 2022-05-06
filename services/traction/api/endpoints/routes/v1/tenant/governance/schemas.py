@@ -14,7 +14,7 @@ from api.db.errors import DoesNotExist
 from api.db.repositories.tenant_schemas import TenantSchemasRepository
 from api.db.repositories.tenant_workflows import TenantWorkflowsRepository
 
-from api.endpoints.models.v1.ledger import SchemasListResponse, CreateSchemaPayload
+from api.endpoints.models.v1.governance import SchemasListResponse, CreateSchemaPayload
 from api.endpoints.routes.tenant_admin import TenantSchemaData
 
 router = APIRouter()

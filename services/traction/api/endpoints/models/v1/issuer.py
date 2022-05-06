@@ -23,6 +23,21 @@ class IssuerCredentialStatusType(str, Enum):
     revoked = "Revoked"
 
 
+class AcapyCredentialExchangeStateType(str, Enum):
+    # from https://github.com/hyperledger/aries-cloudagent-python/blob/db6b7699e603ecb335165a79459fbab7b6587a70/aries_cloudagent/protocols/issue_credential/v1_0/models/credential_exchange.py#L44
+    STATE_PROPOSAL_SENT = "proposal_sent"
+    STATE_PROPOSAL_RECEIVED = "proposal_received"
+    STATE_OFFER_SENT = "offer_sent"
+    STATE_OFFER_RECEIVED = "offer_received"
+    STATE_REQUEST_SENT = "request_sent"
+    STATE_REQUEST_RECEIVED = "request_received"
+    STATE_ISSUED = "credential_issued"
+    STATE_CREDENTIAL_RECEIVED = "credential_received"
+    STATE_ACKED = "credential_acked"
+    STATE_CREDENTIAL_REVOKED = "credential_revoked"
+    STATE_ABANDONED = "abandoned"
+
+
 class IssueCredentialPayload(BaseModel):
     """CreateSchemaPayload.
 
@@ -65,12 +80,11 @@ class CredentialAcapy(BaseModel):
 
 
 # class CredentialItem(
-#     AcapyItem[IssuerCredentialStatusType, ConnectionStateType, CredentialAcapy]
+#     AcapyItem[IssuerCredentialStatusType, AcapyCredentialExchangeStateType, CredentialAcapy]
 # ):
-class CredentialItem(AcapyItem[str, str, CredentialAcapy]):  # v0
-    contact_id: Optional[UUID]  # v0 :UUID
+class CredentialItem(AcapyItem[str, AcapyCredentialExchangeStateType, CredentialAcapy]):
+    contact_id: UUID
     credential_id: UUID
-    alias: str
     external_reference_id: Optional[str]
     public_did: Optional[str]
 
