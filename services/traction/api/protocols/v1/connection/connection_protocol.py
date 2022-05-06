@@ -20,6 +20,7 @@ def our_role(their_role: str):
         result = ConnectionRoleType.requester
     return result
 
+
 def role_match(this_role: ConnectionRoleType, their_role: str):
     if not our_role:
         return True
