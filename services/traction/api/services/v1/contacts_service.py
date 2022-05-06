@@ -33,7 +33,6 @@ from api.endpoints.models.v1.contacts import (
 from api.endpoints.models.v1.errors import (
     AlreadyExistsError,
     IdNotMatchError,
-    NotFoundError,
 )
 from api.services import connections
 from api.services.v1 import invitation_parser
@@ -379,19 +378,6 @@ async def delete_contact(
     Raises:
       NotFoundError: if the contact cannot be found by ID and deleted flag
     """
-    # TODO this should either use get_contact_by_id, or should be a self-contained data operation in a DAL.
-    # how i would do it
-    # contact = Contact.get_contact_by_id(db,tenant_id, contact_id)
-    # if not contact:
-    #     raise NotFoundError
-
-    # contact.deleted = True
-    # contact.status=ContactStatusType.deleted
-    # contact.state=ConnectionStateType.abandoned
-
-    # await db.add(contact)
-    # await db.commit()
-
     q = (
         update(Contact)
         .where(Contact.tenant_id == tenant_id)
