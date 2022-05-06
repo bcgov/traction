@@ -27,7 +27,7 @@ class TenantIssuerData(BaseModel):
 
 
 @router.post(
-    "/initialize", status_code=status.HTTP_200_OK, response_model=TenantIssuerData
+    "/make-issuer", status_code=status.HTTP_200_OK, response_model=TenantIssuerData
 )
 async def init_issuer(db: AsyncSession = Depends(get_db)):
     """

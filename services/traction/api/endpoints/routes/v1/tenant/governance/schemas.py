@@ -21,9 +21,7 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-@router.get(
-    "/schemas", status_code=status.HTTP_200_OK, response_model=SchemasListResponse
-)
+@router.get("/", status_code=status.HTTP_200_OK, response_model=SchemasListResponse)
 async def get_tenant_schemas(
     db: AsyncSession = Depends(get_db),
 ) -> SchemasListResponse:
@@ -56,7 +54,7 @@ async def get_tenant_schemas(
     return response
 
 
-@router.post("/schemas", status_code=status.HTTP_200_OK)
+@router.post("/", status_code=status.HTTP_200_OK)
 # Method moved from v0
 async def create_tenant_schema(
     payload: CreateSchemaPayload,
