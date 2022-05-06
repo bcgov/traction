@@ -14,13 +14,17 @@ class ContactStatusUpdater(DefaultConnectionProtocol):
     async def after_all(self, profile: Profile, payload: dict):
         self.logger.info(f"after_all({profile.wallet_id}, {payload})")
 
-        values = {"state": payload["state"]}
-        if (
-            payload["state"] == ConnectionStateType.completed
-            or payload["state"] == ConnectionStateType.active
-        ):
+        # response is included here for estatus
+        # not all agents will send messages after they send response
+        active_states = [
+            ConnectionStateType.completed,
+            ConnectionStateType.active,
+            ConnectionStateType.response,
+        ]
+
+        values = {"state": payload["state"], "connection": payload}
+        if payload["state"] in active_states:
             values["status"] = ContactStatusType.active
-            values["connection"] = payload
         stmt = (
             update(Contact)
             .where(Contact.connection_id == payload["connection_id"])
