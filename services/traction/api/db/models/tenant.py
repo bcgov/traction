@@ -2,12 +2,15 @@ import uuid
 from datetime import datetime
 from typing import Optional
 
+from sqlalchemy import UniqueConstraint
 from sqlmodel import Field
 
 from api.db.models.base import BaseModel, BaseTable
 
 
 class TenantBase(BaseModel):
+    __table_args__ = (UniqueConstraint("name"), UniqueConstraint("wallet_id"))
+
     name: str = Field(index=True, nullable=False)
     wallet_id: uuid.UUID = Field(nullable=False)
     is_active: bool = Field(nullable=False, default=False)
