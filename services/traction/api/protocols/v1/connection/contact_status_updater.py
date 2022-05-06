@@ -12,7 +12,7 @@ class ContactStatusUpdater(DefaultConnectionProtocol):
         super().__init__(role=None)
 
     async def after_all(self, profile: Profile, payload: dict):
-        self.logger.info(f"after_all({profile.wallet_id}, {payload})")
+        self.logger.debug(f"after_all({profile.wallet_id}, {payload})")
 
         # response is included here for estatus
         # not all agents will send messages after they send response

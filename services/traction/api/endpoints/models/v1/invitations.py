@@ -65,7 +65,7 @@ class InvitationItem(
 class InvitationListParameters(
     ListAcapyItemParameters[InvitationStatusType, ConnectionStateType]
 ):
-    """ContactListParameters.
+    """InvitationListParameters.
 
     Inherits from ListAcapyItemParameters.
     Filters for fetching InvitationItems

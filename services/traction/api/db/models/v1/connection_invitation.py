@@ -1,6 +1,6 @@
-"""Contact Database Tables/Models.
+"""Connection Invitation Database Tables/Models.
 
-Models of the Traction tables for Contacts and related data.
+Models of the Traction tables for Connection Invitation and related data.
 
 """
 import uuid
@@ -19,14 +19,15 @@ from api.endpoints.models.v1.errors import (
 )
 
 
-class Invitation(BaseModel, table=True):
-    """Invitation.
+class ConnectionInvitation(BaseModel, table=True):
+    """ConnectionInvitation.
 
-    This is the model for the Invitation table (postgresql specific dialects in use).
-    Invitations belong to one and only one Tenant.
+    This is the model for the ConnectionInvitation table (postgresql specific dialects
+    in use).
+    ConnectionInvitations belong to one and only one Tenant.
 
     Attributes:
-      invitation_id: Traction Contact ID
+      connection_invitation_id: Traction Contact ID
       tenant_id: Traction Tenant ID, owner of this Contact
       name: Label or Name for the Invitation
       status: Business and Tenant indicator for Invitation status
@@ -39,12 +40,14 @@ class Invitation(BaseModel, table=True):
       invitation_url: URL to call to accept/use this invitation
       state: The underlying AcaPy connection state
       connection: Underlying AcaPy connection record
-      invitation: Underlying AcaPy inviation record (if any)
+      invitation: Underlying AcaPy invitation record (if any)
       created_at: Timestamp when record was created in Traction
       updated_at: Timestamp when record was last modified in Traction
     """
 
-    invitation_id: uuid.UUID = Field(
+    __tablename__ = "connection_invitation"
+
+    connection_invitation_id: uuid.UUID = Field(
         sa_column=Column(
             UUID(as_uuid=True),
             primary_key=True,
@@ -82,20 +85,20 @@ class Invitation(BaseModel, table=True):
 
     @classmethod
     async def get_by_id(
-        cls: "Invitation",
+        cls: "ConnectionInvitation",
         db: AsyncSession,
         tenant_id: UUID,
-        invitation_id: UUID,
+        connection_invitation_id: UUID,
         deleted: bool | None = False,
-    ) -> "Invitation":
-        """Get Invitation by ID.
+    ) -> "ConnectionInvitation":
+        """Get Connection Invitation by ID.
 
-        Find and return the database Invitation record
+        Find and return the database Connection Invitation record
 
         Args:
           db: database session
           tenant_id: Traction ID of tenant making the call
-          invitation_id: Traction ID of Invitation
+          connection_invitation_id: Traction ID of Invitation
 
         Returns: The Traction Invitation (db) record
 
@@ -106,37 +109,37 @@ class Invitation(BaseModel, table=True):
         q = (
             select(cls)
             .where(cls.tenant_id == tenant_id)
-            .where(cls.invitation_id == invitation_id)
+            .where(cls.connection_invitation_id == connection_invitation_id)
             .where(cls.deleted == deleted)
         )
         q_result = await db.execute(q)
         db_item = q_result.scalar_one_or_none()
         if not db_item:
             raise NotFoundError(
-                code="invitation.id_not_found",
+                code="connection_invitation.id_not_found",
                 title="Invitation does not exist",
-                detail=f"Invitation does not exist for id<{invitation_id}>",
+                detail=f"Invitation does not exist for id<{connection_invitation_id}>",
             )
         return db_item
 
     @classmethod
     async def get_by_name(
-        cls: "Invitation",
+        cls: "ConnectionInvitation",
         db: AsyncSession,
         tenant_id: UUID,
         name: UUID,
         deleted: bool | None = False,
-    ) -> "Invitation":
-        """Get Invitation by Name.
+    ) -> "ConnectionInvitation":
+        """Get Connection Invitation by Name.
 
-        Find and return the database Invitation record
+        Find and return the database Connection Invitation record
 
         Args:
           db: database session
           tenant_id: Traction ID of tenant making the call
           name: name of Invitation
 
-        Returns: The Traction Invitation (db) record or None if not found
+        Returns: The Traction Connection Invitation (db) record or None if not found
 
         """
 
@@ -152,14 +155,14 @@ class Invitation(BaseModel, table=True):
 
     @classmethod
     async def get_by_invitation_key(
-        cls: "Invitation",
+        cls: "ConnectionInvitation",
         db: AsyncSession,
         tenant_id: UUID,
         invitation_key: str,
-    ) -> "Invitation":
-        """Get Invitation by Name.
+    ) -> "ConnectionInvitation":
+        """Get Connection Invitation by AcaPy invitation_key.
 
-        Find and return the database Invitation record
+        Find and return the database Connection Invitation record
 
         Args:
           db: database session

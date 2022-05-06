@@ -18,7 +18,7 @@ from api.endpoints.models.v1.errors import (
     AlreadyExistsError,
 )
 from api.services import connections
-from api.db.models.v1.invitation import Invitation
+from api.db.models.v1.connection_invitation import ConnectionInvitation
 from api.endpoints.models.v1.invitations import (
     CreateReusableInvitationPayload,
     CreateReusableInvitationResponse,
@@ -74,7 +74,7 @@ async def create_reusable_invitation(
     invitation_url = acapy_invitation.invitation_url
 
     # create a new contact record
-    db_invitation = Invitation(
+    db_invitation = ConnectionInvitation(
         name=payload.name,
         tags=payload.tags,
         tenant_id=tenant_id,
@@ -122,18 +122,18 @@ async def list_invitations(
     skip = (parameters.page_num - 1) * limit
 
     filters = [
-        Invitation.tenant_id == tenant_id,
-        Invitation.deleted == parameters.deleted,
+        ConnectionInvitation.tenant_id == tenant_id,
+        ConnectionInvitation.deleted == parameters.deleted,
     ]
     if parameters.status:
-        filters.append(Invitation.status == parameters.status)
+        filters.append(ConnectionInvitation.status == parameters.status)
     if parameters.state:
-        filters.append(Invitation.state == parameters.state)
+        filters.append(ConnectionInvitation.state == parameters.state)
     if parameters.name:
-        filters.append(Invitation.name.contains(parameters.name))
+        filters.append(ConnectionInvitation.name.contains(parameters.name))
 
     # build out a base query with all filters
-    base_q = select(Invitation).filter(*filters)
+    base_q = select(ConnectionInvitation).filter(*filters)
 
     # get a count of ALL records matching our base query
     count_q = select([func.count()]).select_from(base_q)
@@ -144,7 +144,9 @@ async def list_invitations(
     # ie. is negative, or starts after available records
 
     # add in our paging and ordering to get the result set
-    results_q = base_q.limit(limit).offset(skip).order_by(desc(Invitation.created_at))
+    results_q = (
+        base_q.limit(limit).offset(skip).order_by(desc(ConnectionInvitation.created_at))
+    )
 
     results_q_recs = await db.execute(results_q)
     db_items = results_q_recs.scalars()
@@ -158,11 +160,11 @@ async def list_invitations(
 
 
 def invitation_to_invitation_item(
-    db_rec: Invitation, acapy: bool | None = False
+    db_rec: ConnectionInvitation, acapy: bool | None = False
 ) -> InvitationItem:
-    """Invitation to InvitationItem.
+    """ConnectionInvitation to InvitationItem.
 
-    Transform a Invitation Table record to a InvitationItem object.
+    Transform a ConnectionInvitation Table record to a InvitationItem object.
 
     Args:
       db_rec: The Traction database Contact
