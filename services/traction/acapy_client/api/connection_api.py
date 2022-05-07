@@ -457,9 +457,9 @@ class ConnectionApi(object):
                 "allowed_values": {},
                 "openapi_types": {
                     "alias": (str,),
-                    "auto_accept": (bool,),
-                    "multi_use": (bool,),
-                    "public": (bool,),
+                    "auto_accept": (bool, str,),
+                    "multi_use": (bool, str,),
+                    "public": (bool, str,),
                     "body": (CreateInvitationRequest,),
                 },
                 "attribute_map": {

@@ -13,6 +13,7 @@ from pydantic import BaseModel, Field
 
 from api.endpoints.models.connections import (
     ConnectionStateType,
+    ConnectionProtocolType,
 )
 from api.endpoints.models.v1.base import (
     AcapyItem,
@@ -97,11 +98,13 @@ class CreateReusableInvitationPayload(BaseModel):
 
     Attributes:
       name: required, must be unique. A name/label for the Invitation
+      invitation_type: what type of invitation to create
       tags: list of tags added to any resulting connections
 
     """
 
     name: str = Field(...)
+    invitation_type: ConnectionProtocolType = ConnectionProtocolType.Connections
     tags: Optional[List[str]] | None = None
 
 
