@@ -40,6 +40,7 @@ async def get_issued_credentials(
     data = await issuer_service.get_issued_credentials(
         db, tenant_id, wallet_id, None, cred_issue_id, state
     )
+    # TODO: v0 compatibility, service should do this after v0 is decommissioned
     resp_data = [
         CredentialItem(
             **d.__dict__,
@@ -87,7 +88,7 @@ async def issue_new_credential(
         contact.connection_id,
         None,
     )
-
+    # TODO: v0 compatibility, service should do this after v0 is decommissioned
     response = CredentialItem(
         **data.__dict__,
         credential_id=data.credential.id,
