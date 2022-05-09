@@ -27,7 +27,6 @@ from api.endpoints.models.v1.invitations import (
     InvitationAcapy,
     InvitationStatusType,
 )
-from api.endpoints.models.connections import ConnectionProtocolType
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +66,7 @@ async def create_reusable_invitation(
 
     acapy_invitation = connections.create_invitation(
         alias=payload.name,
-        invitation_type=ConnectionProtocolType.DIDExchange,
+        invitation_type=payload.invitation_type,
         multi_use=True,
     )
     connection = connections.get_connection_with_alias(payload.name)

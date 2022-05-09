@@ -111,8 +111,8 @@ def get_connection_with_alias(alias: str) -> Connection:
 def create_invitation(
     alias: str, invitation_type: ConnectionProtocolType, multi_use: bool | None = False
 ) -> Invitation:
+    multi_use_qs_val = "true" if multi_use else "false"
     if invitation_type == ConnectionProtocolType.DIDExchange:
-        multi_use_qs_val = "true" if multi_use else "false"
         data = {
             "alias": alias,
             "handshake_protocols": [
@@ -125,7 +125,7 @@ def create_invitation(
         connection = get_connection_with_alias(alias)
         invitation = inv_record_to_invitation(inv, connection.connection_id)
     else:
-        params = {"alias": alias}
+        params = {"alias": alias, "multi_use": multi_use_qs_val}
         inv = connection_api.connections_create_invitation_post(**params)
         invitation = inv_result_to_invitation(inv)
     return invitation

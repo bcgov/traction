@@ -133,7 +133,7 @@ class CreateInvitationPayload(BaseModel):
     """
 
     alias: str = Field(...)
-    invitation_type: ConnectionProtocolType = ConnectionProtocolType.DIDExchange
+    invitation_type: ConnectionProtocolType = ConnectionProtocolType.Connections
 
 
 class CreateInvitationResponse(GetResponse[ContactItem]):
