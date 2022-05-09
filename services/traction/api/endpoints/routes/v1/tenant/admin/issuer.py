@@ -42,7 +42,9 @@ async def init_issuer(db: AsyncSession = Depends(get_db)) -> AdminTenantIssueRea
     return tenant_issuer
 
 
-@router.get("/", status_code=status.HTTP_200_OK, response_model=AdminTenantIssueRead)
+@router.get(
+    "/issuer/self", status_code=status.HTTP_200_OK, response_model=AdminTenantIssueRead
+)
 async def get_issuer_status(db: AsyncSession = Depends(get_db)) -> AdminTenantIssueRead:
     """
     check state of tenant and state of public did.
