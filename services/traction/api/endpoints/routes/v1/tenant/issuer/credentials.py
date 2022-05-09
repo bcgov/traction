@@ -6,7 +6,6 @@ from starlette import status
 
 from api.services.v1 import issuer_service
 
-from api.db.models.v1.contact import Contact
 from api.endpoints.dependencies.tenant_security import get_from_context
 from api.endpoints.dependencies.db import get_db
 
@@ -17,7 +16,6 @@ from api.endpoints.models.tenant_workflow import (
 
 from api.endpoints.models.v1.issuer import (
     CredentialsListResponse,
-    CredentialItem,
     GetCredentialResponse,
     IssueCredentialPayload,
     RevokeSchemaPayload,
@@ -52,38 +50,7 @@ async def issue_new_credential(
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
-    # Use connection ID for v0 compatability.
-    contact = await Contact.get_by_id(
-        db,
-        tenant_id,
-        contact_id=payload.contact_id,
-        deleted=False,
-    )
-    data = await issuer_service.issue_new_credential(
-        db,
-        tenant_id,
-        wallet_id,
-        payload.cred_protocol,
-        payload.credential,
-        payload.cred_def_id,
-        contact.connection_id,
-        None,
-    )
-    # TODO: v0 compatibility, service should do this after v0 is decommissioned
-    response = GetCredentialResponse(
-        item=CredentialItem(
-            **data.__dict__,
-            credential_id=data.credential.id,
-            status="v0",  # v0
-            state=data.credential.issue_state,  # v0
-            created_at=data.workflow.created_at,
-            updated_at=data.workflow.updated_at,
-            alias="v0",  # alias is none, CredentialItem won't allow none
-            contact_id=payload.contact_id,  # v0
-        )
-    )
-
-    return response
+    return await issuer_service.issue_new_credential(db, wallet_id, tenant_id, payload)
 
 
 @router.post(

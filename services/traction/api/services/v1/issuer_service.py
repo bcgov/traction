@@ -145,6 +145,43 @@ async def issue_new_credential(
     db: AsyncSession,
     tenant_id: UUID,
     wallet_id: UUID,
+    payload: IssueCredentialPayload,
+) -> GetCredentialResponse:
+
+    contact = await Contact.get_by_id(
+        db,
+        tenant_id,
+        contact_id=payload.contact_id,
+        deleted=False,
+    )
+    # TODO v0 decomission and merge with natural endpoint
+    data = await _v0_issue_new_credential(
+        db,
+        tenant_id,
+        wallet_id,
+        payload.cred_protocol,
+        payload.credential,
+        payload.cred_def_id,
+        contact.connection_id,
+        None,
+    )
+
+    return CredentialItem(
+        **data.__dict__,
+        credential_id=data.credential.id,
+        status="v0",  # v0
+        state=data.credential.issue_state,  # v0
+        created_at=data.workflow.created_at,
+        updated_at=data.workflow.updated_at,
+        contact_id=payload.contact_id,  # v0
+    )
+
+
+# TODO v0 decomission and merge with natural endpoint
+async def _v0_issue_new_credential(
+    db: AsyncSession,
+    tenant_id: UUID,
+    wallet_id: UUID,
     cred_protocol: IssueCredentialProtocolType,
     credential: CredentialPreview,
     cred_def_id: str | None = None,

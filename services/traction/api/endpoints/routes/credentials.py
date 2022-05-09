@@ -93,7 +93,7 @@ async def issuer_issue_credential(
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
-    return await issuer_service.issue_new_credential(
+    return await issuer_service._v0_issue_new_credential(
         db,
         tenant_id,
         wallet_id,
