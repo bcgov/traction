@@ -162,7 +162,7 @@ async def create_tenant_schema(
     """
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
-    return ledger_service.create_tenant_schema(
+    return await ledger_service.create_tenant_schema(
         db,
         wallet_id,
         tenant_id,
@@ -172,7 +172,6 @@ async def create_tenant_schema(
         revocable,
         revoc_reg_size,
     )
-    pass
 
 
 @router.get(
