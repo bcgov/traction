@@ -38,7 +38,7 @@ async def get_tenant_schemas(
     return response
 
 
-@router.post("/new", status_code=status.HTTP_200_OK)
+@router.post("/", status_code=status.HTTP_200_OK)
 # Method moved from v0
 async def create_tenant_schema(
     payload: CreateSchemaPayload,
