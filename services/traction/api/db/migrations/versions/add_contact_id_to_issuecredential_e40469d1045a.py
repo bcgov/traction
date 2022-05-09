@@ -1,17 +1,18 @@
-"""add contact_id to issue_credential
+"""add contact_id to issuecredential
 
-Revision ID: a398e4a912f2
-Revises: 0fbab19dd1f4
-Create Date: 2022-05-06 22:19:11.851178
+Revision ID: e40469d1045a
+Revises: 12a486c50ac3
+Create Date: 2022-05-09 16:19:46.906138
 
 """
 from alembic import op
 import sqlalchemy as sa
+import sqlmodel
 from sqlalchemy.dialects import postgresql as pg
 
 # revision identifiers, used by Alembic.
-revision = "a398e4a912f2"
-down_revision = "0fbab19dd1f4"
+revision = "e40469d1045a"
+down_revision = "12a486c50ac3"
 branch_labels = None
 depends_on = None
 
