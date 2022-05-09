@@ -76,7 +76,7 @@ async def issuer_get_issue_credentials(
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
-    return await issuer_service.get_issued_credentials(
+    return await issuer_service._v0_get_issued_credentials(
         db, tenant_id, wallet_id, workflow_id, cred_issue_id, state
     )
 

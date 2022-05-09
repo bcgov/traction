@@ -37,28 +37,9 @@ async def get_issued_credentials(
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
-    data = await issuer_service.get_issued_credentials(
-        db, tenant_id, wallet_id, None, cred_issue_id, state
+    return await issuer_service.get_issued_credentials(
+        db, tenant_id, wallet_id, cred_issue_id, state
     )
-    # TODO: v0 compatibility, service should do this after v0 is decommissioned
-    resp_data = [
-        CredentialItem(
-            **d.__dict__,
-            contact_id=d.credential.contact_id,
-            credential_id=d.credential.id,
-            status="v0",  # v0
-            state=d.credential.issue_state,  # v0
-            created_at=d.workflow.created_at,
-            updated_at=d.workflow.updated_at,
-        )
-        for d in data
-    ]
-
-    response = CredentialsListResponse(
-        items=resp_data, count=len(data), total=len(data)
-    )
-
-    return response
 
 
 @router.post(

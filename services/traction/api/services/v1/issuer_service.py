@@ -60,6 +60,35 @@ async def get_issued_credentials(
     db: AsyncSession,
     tenant_id: UUID,
     wallet_id: UUID,
+    cred_issue_id: UUID,
+    state: TenantWorkflowStateType | None = None,
+) -> CredentialsListResponse:
+
+    # TODO v0 decomission and merge with natural endpoint
+    data = await _v0_get_issued_credentials(
+        db, tenant_id, wallet_id, None, cred_issue_id, state
+    )
+    resp_data = [
+        CredentialItem(
+            **d.__dict__,
+            contact_id=d.credential.contact_id,
+            credential_id=d.credential.id,
+            status="v0",  # v0
+            state=d.credential.issue_state,  # v0
+            created_at=d.workflow.created_at,
+            updated_at=d.workflow.updated_at,
+        )
+        for d in data
+    ]
+
+    return CredentialsListResponse(items=resp_data, count=len(data), total=len(data))
+
+
+# TODO v0 decomission and merge with natural endpoint
+async def _v0_get_issued_credentials(
+    db: AsyncSession,
+    tenant_id: UUID,
+    wallet_id: UUID,
     workflow_id: UUID,
     cred_issue_id: UUID,
     state: TenantWorkflowStateType | None = None,
