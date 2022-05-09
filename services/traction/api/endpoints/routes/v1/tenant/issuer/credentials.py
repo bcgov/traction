@@ -91,6 +91,7 @@ async def issue_new_credential(
 
     response = CredentialItem(
         **data.__dict__,
+        credential_id=data.credential.id,
         status="v0",  # v0
         state=data.credential.issue_state,  # v0
         created_at=data.workflow.created_at,
