@@ -40,9 +40,9 @@ class AcapyCredentialExchangeStateType(str, Enum):
 
 
 class IssueCredentialPayload(BaseModel):
-    """CreateSchemaPayload.
+    """IssueCredentialPayload.
 
-    Payload for Create Schema as Traction Tenant with Issuer Permissions.
+    Payload to issue a new credential to an active contact.
 
     Attributes:
       cred_protocol: required
@@ -60,7 +60,7 @@ class IssueCredentialPayload(BaseModel):
 class RevokeSchemaPayload(BaseModel):
     """RevokeSchemaPayload.
 
-    Payload for Create Schema as Traction Tenant with Issuer Permissions.
+    Payload to write a revocation registry entry.
 
     Attributes:
       cred_issue_id:
