@@ -1,4 +1,5 @@
 import logging
+from uuid import uuid4
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -42,18 +43,16 @@ async def get_issued_credentials(
     data = await issuer_service.get_issued_credentials(
         db, tenant_id, wallet_id, None, cred_issue_id, state
     )
-    logger.warn(data)
-
     resp_data = [
         CredentialItem(
             **d.__dict__,
+            contact_id=d.credential.contact_id,
             credential_id=d.credential.id,
             status="v0",  # v0
             state=d.credential.issue_state,  # v0
             created_at=d.workflow.created_at,
             updated_at=d.workflow.updated_at,
             alias="v0",
-            # contact_id="v0"
         )
         for d in data
     ]
@@ -74,7 +73,7 @@ async def issue_new_credential(
     tenant_id = get_from_context("TENANT_ID")
 
     # Use connection ID for v0 compatability.
-    contact = await Contact.get_contact_by_id(
+    contact = await Contact.get_by_id(
         db,
         tenant_id,
         contact_id=payload.contact_id,

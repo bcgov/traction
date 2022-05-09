@@ -1,3 +1,4 @@
+from typing import Optional
 import uuid
 from datetime import datetime
 
@@ -44,6 +45,7 @@ class IssueCredentialRead(IssueCredentialBase):
     id: uuid.UUID
     created_at: datetime
     updated_at: datetime
+    contact_id: Optional[uuid.UUID]  # v1 compatability
 
 
 class IssueCredentialUpdate(BaseModel):

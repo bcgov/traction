@@ -40,6 +40,7 @@ from acapy_client.model.v10_credential_free_offer_request import (
 from acapy_client.model.v10_credential_problem_report_request import (
     V10CredentialProblemReportRequest,
 )
+from api.db.models.v1.contact import Contact
 
 
 logger = logging.getLogger(__name__)
@@ -93,7 +94,13 @@ class IssueCredentialWorkflow(BaseWorkflow):
                     connection_id = payload["connection_id"]
                     cred_def_id = payload["credential_definition_id"]
                     cred_exch_id = payload["credential_exchange_id"]
+
+                    contact = await Contact.get_by_connection_id(
+                        profile.db, tenant_id, connection_id
+                    )
+
                     issue_cred = IssueCredentialCreate(
+                        contact_id=contact.contact_id,
                         tenant_id=tenant_id,
                         wallet_id=wallet_id,
                         connection_id=connection_id,

@@ -63,6 +63,7 @@ async def get_issued_credentials(
 ) -> List[IssueCredentialData]:
     issue_repo = IssueCredentialsRepository(db_session=db)
     workflow_repo = TenantWorkflowsRepository(db_session=db)
+
     issue_creds = []
     if workflow_id:
         issue_cred = await issue_repo.get_by_workflow_id(wallet_id, workflow_id)
@@ -78,8 +79,11 @@ async def get_issued_credentials(
         issue_creds = await issue_repo.find_by_wallet_id_and_role(
             wallet_id, CredentialRoleType.issuer
         )
+
     issues = []
+
     for issue_cred in issue_creds:
+
         tenant_workflow = None
         if issue_cred.workflow_id:
             try:
@@ -128,7 +132,7 @@ async def issue_new_credential(
     issue_repo = IssueCredentialsRepository(db_session=db)
 
     # TODO: pass in contact id from v1 endpoint
-    contact = Contact.get_contact_by_connection_id(connection_id)
+    contact = await Contact.get_by_connection_id(db, tenant_id, connection_id)
 
     issue_cred = IssueCredentialCreate(
         contact_id=contact.contact_id,
