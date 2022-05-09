@@ -70,15 +70,17 @@ async def issue_new_credential(
         None,
     )
     # TODO: v0 compatibility, service should do this after v0 is decommissioned
-    response = CredentialItem(
-        **data.__dict__,
-        credential_id=data.credential.id,
-        status="v0",  # v0
-        state=data.credential.issue_state,  # v0
-        created_at=data.workflow.created_at,
-        updated_at=data.workflow.updated_at,
-        alias="v0",  # alias is none, CredentialItem won't allow none
-        contact_id=payload.contact_id,  # v0
+    response = GetCredentialResponse(
+        item=CredentialItem(
+            **data.__dict__,
+            credential_id=data.credential.id,
+            status="v0",  # v0
+            state=data.credential.issue_state,  # v0
+            created_at=data.workflow.created_at,
+            updated_at=data.workflow.updated_at,
+            alias="v0",  # alias is none, CredentialItem won't allow none
+            contact_id=payload.contact_id,  # v0
+        )
     )
 
     return response
