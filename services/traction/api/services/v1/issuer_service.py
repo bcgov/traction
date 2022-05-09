@@ -265,6 +265,31 @@ async def revoke_issued_credential(
     db: AsyncSession,
     tenant_id: UUID,
     wallet_id: UUID,
+    credential_id: UUID,
+    payload: RevokeSchemaPayload,
+) -> GetCredentialResponse:
+    issue_repo = IssueCredentialsRepository(db_session=db)
+    cred = await issue_repo.get_by_id(credential_id)
+
+    _v0_revoke_issued_credential(
+        db,
+        tenant_id,
+        wallet_id,
+        cred.cred_exch_id,
+        cred.rev_reg_id,
+        cred.cred_rev_id,
+        payload.comment,
+    )
+
+    cred.cred_rev_id
+
+    pass
+
+
+async def _v0_revoke_issued_credential(
+    db: AsyncSession,
+    tenant_id: UUID,
+    wallet_id: UUID,
     cred_issue_id: UUID,
     rev_reg_id: UUID,
     cred_rev_id: UUID,

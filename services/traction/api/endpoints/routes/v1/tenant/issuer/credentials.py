@@ -1,4 +1,5 @@
 import logging
+from uuid import UUID
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -54,11 +55,12 @@ async def issue_new_credential(
 
 
 @router.post(
-    "/revoke",
+    "<credential_id>/revoke",
     status_code=status.HTTP_201_CREATED,
     response_model=GetCredentialResponse,
 )
 async def revoke_issued_credential(
+    credential_id: UUID,
     payload: RevokeSchemaPayload,
     db: AsyncSession = Depends(get_db),
 ) -> GetCredentialResponse:
@@ -73,8 +75,6 @@ async def revoke_issued_credential(
         db,
         tenant_id,
         wallet_id,
-        payload.cred_issue_id,
-        payload.rev_reg_id,
-        payload.cred_rev_id,
-        payload.comment,
+        credential_id,
+        payload,
     )
