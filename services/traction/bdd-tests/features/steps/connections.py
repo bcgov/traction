@@ -52,6 +52,9 @@ def step_impl(context, tenant, tenant_2, connection_state):
     # wait for events
     time.sleep(1)
 
+    # # while we are here, update connection context for this tenant
+    # context.config.userdata[tenant]["connections"] = resp_json
+
 
 ## COMPOSED ACTIONS
 @given('"{tenant_1}" and "{tenant_2}" are connected')
