@@ -6,6 +6,7 @@ from pydantic import BaseModel
 
 from api.endpoints.models.v1.base import (
     AcapyItem,
+    GetResponse,
     ListResponse,
 )
 from api.endpoints.models.credentials import (
@@ -40,9 +41,9 @@ class AcapyCredentialExchangeStateType(str, Enum):
 
 
 class IssueCredentialPayload(BaseModel):
-    """CreateSchemaPayload.
+    """IssueCredentialPayload.
 
-    Payload for Create Schema as Traction Tenant with Issuer Permissions.
+    Payload to issue a new credential to an active contact.
 
     Attributes:
       cred_protocol: required
@@ -60,7 +61,7 @@ class IssueCredentialPayload(BaseModel):
 class RevokeSchemaPayload(BaseModel):
     """RevokeSchemaPayload.
 
-    Payload for Create Schema as Traction Tenant with Issuer Permissions.
+    Payload to write a revocation registry entry.
 
     Attributes:
       cred_issue_id:
@@ -85,6 +86,10 @@ class CredentialItem(AcapyItem[str, AcapyCredentialExchangeStateType, Credential
     credential_id: UUID
     external_reference_id: Optional[str]
     public_did: Optional[str]
+
+
+class GetCredentialResponse(GetResponse[CredentialItem]):
+    pass
 
 
 class CredentialsListResponse(ListResponse[CredentialItem]):

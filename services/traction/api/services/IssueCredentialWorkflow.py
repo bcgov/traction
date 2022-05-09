@@ -14,6 +14,7 @@ from api.db.models.issue_credential import (
     IssueCredentialCreate,
 )
 from api.db.models.tenant_workflow import TenantWorkflowRead
+from api.endpoints.models.v1.errors import NotFoundError
 
 from api.endpoints.dependencies.tenant_security import get_from_context
 from api.endpoints.models.tenant_workflow import (
@@ -95,12 +96,17 @@ class IssueCredentialWorkflow(BaseWorkflow):
                     cred_def_id = payload["credential_definition_id"]
                     cred_exch_id = payload["credential_exchange_id"]
 
-                    contact = await Contact.get_by_connection_id(
-                        profile.db, tenant_id, connection_id
-                    )
+                    contact = None
+                    try:
+                        # supress not found for v0 compatibility
+                        contact = await Contact.get_by_connection_id(
+                            profile.db, tenant_id, connection_id
+                        )
+                    except NotFoundError:
+                        pass
 
                     issue_cred = IssueCredentialCreate(
-                        contact_id=contact.contact_id,
+                        contact_id=contact.contact_id if contact else None,
                         tenant_id=tenant_id,
                         wallet_id=wallet_id,
                         connection_id=connection_id,

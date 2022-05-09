@@ -37,6 +37,9 @@ from api.endpoints.models.tenant_workflow import (
     TenantWorkflowStateType,
 )
 
+from api.endpoints.models.v1.errors import NotFoundError
+
+
 from acapy_client.model.revoke_request import RevokeRequest
 from acapy_client.api.revocation_api import RevocationApi
 from api.services.connections import (
@@ -132,10 +135,15 @@ async def issue_new_credential(
     issue_repo = IssueCredentialsRepository(db_session=db)
 
     # TODO: pass in contact id from v1 endpoint
-    contact = await Contact.get_by_connection_id(db, tenant_id, connection_id)
+    contact = None
+    try:
+        contact = await Contact.get_by_connection_id(db, tenant_id, connection_id)
+    except NotFoundError:
+        # suppress not found for v0 compatabilty
+        pass
 
     issue_cred = IssueCredentialCreate(
-        contact_id=contact.contact_id,
+        contact_id=contact.contact_id if contact else None,
         tenant_id=tenant_id,
         wallet_id=wallet_id,
         connection_id=connection_id,
