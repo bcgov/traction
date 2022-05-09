@@ -51,7 +51,7 @@ async def issue_degree(
     logger.info("issue credential response")
     logger.info(resp)
 
-    return resp, resp["status"]
+    return resp
 
 
 @router.post(
