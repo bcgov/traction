@@ -12,7 +12,11 @@ from api.services.v1 import ledger_service
 
 from api.db.repositories.tenant_schemas import TenantSchemasRepository
 from api.db.models.tenant_schema import TenantSchemaRead
-from api.endpoints.models.v1.governance import SchemasListResponse, CreateSchemaPayload
+from api.endpoints.models.v1.governance import (
+    SchemasListResponse,
+    CreateSchemaPayload,
+    ImportSchemaPayload,
+)
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -34,7 +38,7 @@ async def get_tenant_schemas(
     return response
 
 
-@router.post("/", status_code=status.HTTP_200_OK)
+@router.post("/new", status_code=status.HTTP_200_OK)
 # Method moved from v0
 async def create_tenant_schema(
     payload: CreateSchemaPayload,
@@ -43,8 +47,7 @@ async def create_tenant_schema(
     """
     Create a new schema and/or credential definition.
 
-    If "schema" is provided, create a new schema.
-    If "schema_id" is provided, use an existing schema.
+    "schema_request", defines the new schema.
     If "cred_def_tag" is provided, create a credential definition (which can be for a
     new or existing schema).
     """
@@ -55,6 +58,33 @@ async def create_tenant_schema(
         wallet_id,
         tenant_id,
         payload.schema_request,
+        None,
+        payload.cred_def_tag,
+        payload.revocable,
+        payload.revoc_reg_size,
+    )
+
+
+@router.post("/import", status_code=status.HTTP_200_OK)
+# Method moved from v0
+async def import_tenant_schema(
+    payload: ImportSchemaPayload,
+    db: AsyncSession = Depends(get_db),
+) -> TenantSchemaRead:
+    """
+    Import an existing public schema and optionally create a credential definition.
+
+    If "schema_id" is provided, use an existing schema.
+    If "cred_def_tag" is provided, create a credential definition (which can be for a
+    new or existing schema).
+    """
+    wallet_id = get_from_context("TENANT_WALLET_ID")
+    tenant_id = get_from_context("TENANT_ID")
+    return await ledger_service.create_tenant_schema(
+        db,
+        wallet_id,
+        tenant_id,
+        None,
         payload.schema_id,
         payload.cred_def_tag,
         payload.revocable,
