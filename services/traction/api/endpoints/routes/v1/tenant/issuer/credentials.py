@@ -55,7 +55,7 @@ async def issue_new_credential(
 
 
 @router.post(
-    "<credential_id>/revoke",
+    "/<credential_id>/revoke",
     status_code=status.HTTP_201_CREATED,
     response_model=GetCredentialResponse,
 )
