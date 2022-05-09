@@ -76,7 +76,7 @@ async def issuer_get_issue_credentials(
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
-    return issuer_service.get_issued_credentials(
+    return await issuer_service.get_issued_credentials(
         db, tenant_id, wallet_id, workflow_id, cred_issue_id, state
     )
 
@@ -93,7 +93,7 @@ async def issuer_issue_credential(
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
-    return issuer_service.issue_new_credential(
+    return await issuer_service.issue_new_credential(
         db,
         tenant_id,
         wallet_id,
@@ -120,7 +120,7 @@ async def issuer_revoke_credential(
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
-    return issuer_service.revoke_issued_credential(
+    return await issuer_service.revoke_issued_credential(
         db,
         tenant_id,
         wallet_id,
