@@ -6,6 +6,7 @@ from pydantic import BaseModel
 
 from api.endpoints.models.v1.base import (
     AcapyItem,
+    GetResponse,
     ListResponse,
 )
 from api.endpoints.models.credentials import (
@@ -85,6 +86,10 @@ class CredentialItem(AcapyItem[str, AcapyCredentialExchangeStateType, Credential
     credential_id: UUID
     external_reference_id: Optional[str]
     public_did: Optional[str]
+
+
+class GetCredentialResponse(GetResponse[CredentialItem]):
+    pass
 
 
 class CredentialsListResponse(ListResponse[CredentialItem]):
