@@ -38,8 +38,13 @@ from api.endpoints.models.tenant_workflow import (
 )
 
 from api.endpoints.models.v1.errors import NotFoundError
-
-
+from api.endpoints.models.v1.issuer import (
+    CredentialsListResponse,
+    CredentialItem,
+    GetCredentialResponse,
+    IssueCredentialPayload,
+    RevokeSchemaPayload,
+)
 from acapy_client.model.revoke_request import RevokeRequest
 from acapy_client.api.revocation_api import RevocationApi
 from api.services.connections import (
