@@ -8,7 +8,7 @@ from starlette import status
 from api.endpoints.dependencies.db import get_db
 from api.endpoints.dependencies.tenant_security import get_from_context
 
-from api.services.v1 import ledger_service
+from api.services.v1 import governance_service
 
 from api.db.repositories.tenant_schemas import TenantSchemasRepository
 from api.db.models.tenant_schema import TenantSchemaRead
@@ -55,7 +55,7 @@ async def create_tenant_schema(
     """
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
-    return await ledger_service.create_tenant_schema(
+    return await governance_service.create_tenant_schema(
         db,
         wallet_id,
         tenant_id,
@@ -83,7 +83,7 @@ async def import_tenant_schema(
     """
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
-    return await ledger_service.create_tenant_schema(
+    return await governance_service.create_tenant_schema(
         db,
         wallet_id,
         tenant_id,
