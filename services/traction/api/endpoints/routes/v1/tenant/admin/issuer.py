@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
     "/make-issuer", status_code=status.HTTP_200_OK, response_model=AdminTenantIssueRead
 )
 async def init_issuer(db: AsyncSession = Depends(get_db)) -> AdminTenantIssueRead:
+    # TODO: update to use a v1 style response, not v0 classes
     """
     If the innkeeper has authorized your tenant to become an issuer, initialize
     here to write a endorsed public did the configured Hyperledger-Indy service
@@ -37,21 +38,3 @@ async def init_issuer(db: AsyncSession = Depends(get_db)) -> AdminTenantIssueRea
     tenant_issuer = await issuer_repo.get_by_wallet_id(wallet_id)
 
     return tenant_issuer
-
-
-@router.get(
-    "/issuer/self", status_code=status.HTTP_200_OK, response_model=AdminTenantIssueRead
-)
-async def get_issuer_status(db: AsyncSession = Depends(get_db)) -> AdminTenantIssueRead:
-    """
-    check state of tenant and state of public did.
-    """
-    # this should take some query params, sorting and paging params...
-    # copied from v0
-    wallet_id = get_from_context("TENANT_WALLET_ID")
-    issuer_repo = TenantIssuersRepository(db_session=db)
-    tenant_issuer = await issuer_repo.get_by_wallet_id(wallet_id)
-
-    response = AdminTenantIssueRead(**tenant_issuer.__dict__)
-
-    return response

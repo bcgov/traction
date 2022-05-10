@@ -9,6 +9,10 @@ from api.endpoints.models.v1.base import (
     GetResponse,
     ListResponse,
 )
+from api.endpoints.models.v1.common import (
+    CommentPayload,
+)
+
 from api.endpoints.models.credentials import (
     IssueCredentialProtocolType,
     CredentialPreview,
@@ -58,23 +62,8 @@ class IssueCredentialPayload(BaseModel):
     contact_id: UUID
 
 
-class RevokeSchemaPayload(BaseModel):
-    """RevokeSchemaPayload.
-
-    Payload to write a revocation registry entry.
-
-    Attributes:
-      cred_issue_id:
-      rev_reg_id:
-      cred_rev_id:
-      comment:
-
-    """
-
-    cred_issue_id: UUID
-    rev_reg_id: UUID
-    cred_rev_id: UUID
-    comment: str
+class RevokeSchemaPayload(CommentPayload):
+    pass
 
 
 class CredentialAcapy(BaseModel):

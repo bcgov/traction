@@ -42,6 +42,7 @@ class TenantSchemaData(BaseModel):
     workflow: TenantWorkflowRead | None = None
 
 
+# TODO: update to v1 data structures
 # Method moved from v0
 async def create_tenant_schema(
     db: AsyncSession,

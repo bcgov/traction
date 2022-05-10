@@ -8,7 +8,7 @@ from starlette import status
 from api.endpoints.dependencies.db import get_db
 from api.endpoints.dependencies.tenant_security import get_from_context
 
-from api.services.v1 import ledger_service
+from api.services.v1 import governance_service
 
 from api.db.repositories.tenant_schemas import TenantSchemasRepository
 from api.db.models.tenant_schema import TenantSchemaRead
@@ -23,9 +23,10 @@ logger = logging.getLogger(__name__)
 
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=SchemasListResponse)
-async def get_tenant_schemas(
+async def list_tenant_schemas(
     db: AsyncSession = Depends(get_db),
 ) -> SchemasListResponse:
+    # TODO: add search/paging parameters
     # copy of v0 implementation from endpoints/routes/tenant_admin
     # this should take some query params, sorting and paging params...
     wallet_id = get_from_context("TENANT_WALLET_ID")
@@ -38,12 +39,13 @@ async def get_tenant_schemas(
     return response
 
 
-@router.post("/new", status_code=status.HTTP_200_OK)
+@router.post("/", status_code=status.HTTP_200_OK)
 # Method moved from v0
 async def create_tenant_schema(
     payload: CreateSchemaPayload,
     db: AsyncSession = Depends(get_db),
 ) -> TenantSchemaRead:
+    # TODO: update to v1 response
     """
     Create a new schema and/or credential definition.
 
@@ -53,7 +55,7 @@ async def create_tenant_schema(
     """
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
-    return await ledger_service.create_tenant_schema(
+    return await governance_service.create_tenant_schema(
         db,
         wallet_id,
         tenant_id,
@@ -71,6 +73,7 @@ async def import_tenant_schema(
     payload: ImportSchemaPayload,
     db: AsyncSession = Depends(get_db),
 ) -> TenantSchemaRead:
+    # TODO: update to v1 response
     """
     Import an existing public schema and optionally create a credential definition.
 
@@ -80,7 +83,7 @@ async def import_tenant_schema(
     """
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
-    return await ledger_service.create_tenant_schema(
+    return await governance_service.create_tenant_schema(
         db,
         wallet_id,
         tenant_id,

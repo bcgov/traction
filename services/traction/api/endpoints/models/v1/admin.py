@@ -1,8 +1,18 @@
+from enum import Enum
 from typing import Optional
 from uuid import UUID
 from datetime import datetime
 
+
 from pydantic import BaseModel
+
+
+class PublicDIDStateType(str, Enum):
+    private = "private"
+    requested = "requested"
+    endorsed = "endorsed"
+    published = "published"
+    public = "public"
 
 
 class AdminTenantIssueRead(BaseModel):
@@ -22,6 +32,6 @@ class AdminTenantIssueRead(BaseModel):
     tenant_id: UUID
     wallet_id: UUID
     public_did: Optional[str]
-    public_did_state: str
+    public_did_state: Optional[PublicDIDStateType]
     created_at: datetime
     updated_at: datetime

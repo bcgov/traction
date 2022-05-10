@@ -36,7 +36,7 @@ from api.endpoints.models.tenant_workflow import (
 )
 from api.services.tenant_workflows import create_workflow
 
-from api.services.v1 import ledger_service
+from api.services.v1 import governance_service
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -162,7 +162,7 @@ async def create_tenant_schema(
     """
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
-    return await ledger_service.create_tenant_schema(
+    return await governance_service.create_tenant_schema(
         db,
         wallet_id,
         tenant_id,
