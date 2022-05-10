@@ -10,11 +10,6 @@ from api.services.v1 import issuer_service
 from api.endpoints.dependencies.tenant_security import get_from_context
 from api.endpoints.dependencies.db import get_db
 
-
-from api.endpoints.models.tenant_workflow import (
-    TenantWorkflowStateType,
-)
-
 from api.endpoints.models.v1.issuer import (
     CredentialsListResponse,
     GetCredentialResponse,
@@ -27,17 +22,21 @@ logger = logging.getLogger(__name__)
 
 
 @router.get("/", response_model=CredentialsListResponse)
-async def get_issued_credentials(
-    state: TenantWorkflowStateType | None = None,
-    cred_issue_id: str | None = None,
+async def list_issued_credentials(
     db: AsyncSession = Depends(get_db),
 ) -> CredentialsListResponse:
-    # this should take some query params, sorting and paging params...
+    # TODO: search and paging parameters...
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
-    return await issuer_service.get_issued_credentials(
-        db, tenant_id, wallet_id, cred_issue_id, state
+    items, total_count = await issuer_service.list_issued_credentials(
+        db, tenant_id, wallet_id
+    )
+
+    links = []  # TODO: set the paging links
+
+    return CredentialsListResponse(
+        items=items, count=len(items), total=total_count, links=links
     )
 
 
@@ -51,7 +50,11 @@ async def issue_new_credential(
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
-    return await issuer_service.issue_new_credential(db, wallet_id, tenant_id, payload)
+    item = await issuer_service.issue_new_credential(db, tenant_id, wallet_id, payload)
+
+    links = []  # TODO: set the links for issue new credential
+
+    return GetCredentialResponse(item=item, links=links)
 
 
 @router.post(
@@ -71,10 +74,14 @@ async def revoke_issued_credential(
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
-    return await issuer_service.revoke_issued_credential(
+    item = await issuer_service.revoke_issued_credential(
         db,
         tenant_id,
         wallet_id,
         credential_id,
         payload,
     )
+
+    links = []  # TODO: set the links for revoke credential
+
+    return GetCredentialResponse(item=item, links=links)

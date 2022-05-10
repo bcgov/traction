@@ -39,9 +39,7 @@ from api.endpoints.models.tenant_workflow import (
 
 from api.endpoints.models.v1.errors import NotFoundError
 from api.endpoints.models.v1.issuer import (
-    CredentialsListResponse,
     CredentialItem,
-    GetCredentialResponse,
     IssueCredentialPayload,
     RevokeSchemaPayload,
 )
@@ -61,18 +59,14 @@ class IssueCredentialData(BaseModel):
     workflow: TenantWorkflowRead | None = None
 
 
-async def get_issued_credentials(
+async def list_issued_credentials(
     db: AsyncSession,
     tenant_id: UUID,
     wallet_id: UUID,
-    cred_issue_id: UUID,
-    state: TenantWorkflowStateType | None = None,
-) -> CredentialsListResponse:
-
+) -> [List[CredentialItem], int]:
+    # TODO: add parameters, query to get total count and return page data only
     # TODO v0 decomission and merge with natural endpoint
-    data = await _v0_get_issued_credentials(
-        db, tenant_id, wallet_id, None, cred_issue_id, state
-    )
+    data = await _v0_get_issued_credentials(db, tenant_id, wallet_id, None, None, None)
     resp_data = [
         CredentialItem(
             **d.__dict__,
@@ -86,7 +80,7 @@ async def get_issued_credentials(
         for d in data
     ]
 
-    return CredentialsListResponse(items=resp_data, count=len(data), total=len(data))
+    return resp_data, len(resp_data)
 
 
 # TODO v0 decomission and merge with natural endpoint
@@ -146,7 +140,7 @@ async def issue_new_credential(
     tenant_id: UUID,
     wallet_id: UUID,
     payload: IssueCredentialPayload,
-) -> GetCredentialResponse:
+) -> CredentialItem:
 
     contact = await Contact.get_by_id(
         db,
@@ -267,23 +261,29 @@ async def revoke_issued_credential(
     wallet_id: UUID,
     credential_id: UUID,
     payload: RevokeSchemaPayload,
-) -> GetCredentialResponse:
+) -> CredentialItem:
     issue_repo = IssueCredentialsRepository(db_session=db)
     cred = await issue_repo.get_by_id(credential_id)
 
-    _v0_revoke_issued_credential(
+    data = await _v0_revoke_issued_credential(
         db,
         tenant_id,
         wallet_id,
-        cred.cred_exch_id,
+        credential_id,
         cred.rev_reg_id,
         cred.cred_rev_id,
         payload.comment,
     )
 
-    cred.cred_rev_id
-
-    pass
+    return CredentialItem(
+        **data.__dict__,
+        credential_id=data.credential.id,
+        status="v0",  # v0
+        state=data.credential.issue_state,  # v0
+        created_at=data.workflow.created_at,
+        updated_at=data.workflow.updated_at,
+        contact_id=cred.contact_id,  # v0
+    )
 
 
 async def _v0_revoke_issued_credential(

@@ -23,9 +23,10 @@ logger = logging.getLogger(__name__)
 
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=SchemasListResponse)
-async def get_tenant_schemas(
+async def list_tenant_schemas(
     db: AsyncSession = Depends(get_db),
 ) -> SchemasListResponse:
+    # TODO: add search/paging parameters
     # copy of v0 implementation from endpoints/routes/tenant_admin
     # this should take some query params, sorting and paging params...
     wallet_id = get_from_context("TENANT_WALLET_ID")
@@ -44,6 +45,7 @@ async def create_tenant_schema(
     payload: CreateSchemaPayload,
     db: AsyncSession = Depends(get_db),
 ) -> TenantSchemaRead:
+    # TODO: update to v1 response
     """
     Create a new schema and/or credential definition.
 
@@ -71,6 +73,7 @@ async def import_tenant_schema(
     payload: ImportSchemaPayload,
     db: AsyncSession = Depends(get_db),
 ) -> TenantSchemaRead:
+    # TODO: update to v1 response
     """
     Import an existing public schema and optionally create a credential definition.
 
