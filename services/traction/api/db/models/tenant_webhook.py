@@ -20,6 +20,8 @@ class TenantWebhookBase(BaseModel):
 class TenantWebhook(TenantWebhookBase, BaseTable, table=True):
     # This is the class that represents the table
     webhook_key: str = Field(nullable=True)
+    # alembic issue, this should not optional, but this is inherited and side-effects of
+    # changing this is unknown
     tenant_id: Optional[uuid.UUID] = Field(default=None, foreign_key="tenant.id")
 
 

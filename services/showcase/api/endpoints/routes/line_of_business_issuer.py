@@ -50,6 +50,7 @@ async def issue_degree(
     # we will need some info for revoking this (rev_reg_id, cred_rev_id)
     logger.info("issue credential response")
     logger.info(resp)
+
     return resp
 
 

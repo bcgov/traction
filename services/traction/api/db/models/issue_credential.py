@@ -1,3 +1,4 @@
+from typing import Optional
 import uuid
 from datetime import datetime
 
@@ -7,6 +8,9 @@ from api.db.models.base import BaseModel, BaseTable
 
 
 class IssueCredentialBase(BaseModel):
+    # v1 eventually will nullable=false
+    contact_id: uuid.UUID = Field(nullable=True, foreign_key="contact.contact_id")
+    # v0
     tenant_id: uuid.UUID = Field(nullable=False)
     wallet_id: uuid.UUID = Field(nullable=False)
     connection_id: uuid.UUID = Field(nullable=False)
@@ -32,6 +36,8 @@ class IssueCredentialCreate(IssueCredentialBase):
     # This is the class that represents interface for creating a tenant
     # we must set all the required fields,
     # but do not need to set optional (and shouldn't)
+    # v0 compatability
+    contact_id: Optional[uuid.UUID]
     pass
 
 
@@ -41,6 +47,7 @@ class IssueCredentialRead(IssueCredentialBase):
     id: uuid.UUID
     created_at: datetime
     updated_at: datetime
+    contact_id: Optional[uuid.UUID]  # v1 compatability
 
 
 class IssueCredentialUpdate(BaseModel):

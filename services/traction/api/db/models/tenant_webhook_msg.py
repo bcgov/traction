@@ -16,6 +16,8 @@ class TenantWebhookMsgBase(BaseModel):
     response: str = Field(nullable=True, default=None)
     # if we re-send, create a new record and increment the sequence no
     sequence: int = Field(nullable=False, default=1)
+    # alembic issue, this should not optional, but this is inherited and side-effects of
+    # changing this is unknown
     tenant_id: Optional[uuid.UUID] = Field(default=None, foreign_key="tenant.id")
 
 

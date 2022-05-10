@@ -388,6 +388,7 @@ async def delete_contact(
             state=ConnectionStateType.abandoned,
         )
     )
+
     await db.execute(q)
     await db.commit()
 
