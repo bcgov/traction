@@ -54,5 +54,5 @@ Feature: issuing credentials
         # this loads data into context.config
         And "faber" will accept credential_offer from "alice"
         And we sadly wait for 2 seconds because we have not figured out how to listen for events
-        Then "faber" will have an active credential
+        Then "faber" will have a credential
         And "alice" will have an acked credential_offer
