@@ -25,8 +25,7 @@ def step_impl(context, issuer: str, schema_name: str, cred_def_tag: str):
     }
 
     response = requests.post(
-        context.config.userdata.get("traction_host")
-        + "/tenant/v1/governance/schemas/new",
+        context.config.userdata.get("traction_host") + "/tenant/v1/governance/schemas/",
         json=payload,
         headers=context.config.userdata[issuer]["auth_headers"],
     )
@@ -54,14 +53,16 @@ def step_impl(context, tenant: str, cred_def_state: str, schema_name: str):
 
     content = json.loads(response.content)
 
-    # while we are here, update context.governance
-    context.config.userdata["governance"] = {"schemas": [content["items"]]}
-
     assert len(content["items"]) > 0, content
 
+    # while we are here, update context.governance
+    context.config.userdata["governance"] = {
+        "schemas": {i["schema_name"]: i for i in content["items"]}
+    }
+    print(context.config.userdata["governance"]["schemas"])
     assert any(
         schema["schema_state"] == "completed"
         and schema["cred_def_state"] == cred_def_state
         and schema["schema_name"] == schema_name
         for schema in content["items"]
-    ), response
+    ), response.__dict__
