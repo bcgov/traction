@@ -51,6 +51,19 @@ def step_impl(context, issuer: str, holder: str, schema_name: str):
     assert response.status_code == status.HTTP_201_CREATED, response.__dict__
 
 
+@then('"{issuer}" will have an acked credential_offer')
+def step_impl(context, issuer):
+    response = requests.get(
+        context.config.userdata.get("traction_host")
+        + "/tenant/v1/issuer/credentials"
+        + "?state=completed",
+        headers=context.config.userdata[issuer]["auth_headers"],
+    )
+    assert response.status_code == status.HTTP_200_OK, response.status
+    resp_json = json.loads(response.content)
+    assert len(resp_json["items"]) == 1, resp_json
+
+
 ## COMPOSED ACTIONS
 @given('"{tenant}" is an issuer')
 def step_impl(context, tenant):

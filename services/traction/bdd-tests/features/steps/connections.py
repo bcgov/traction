@@ -29,7 +29,6 @@ def step_impl(context, inviter: str, invitee: str):
 @when('"{invitee}" receives the invitation from "{inviter}"')
 def step_impl(context, invitee: str, inviter: str):
     data = {"alias": inviter, **context.config.userdata[inviter]["invitation"]}
-    pprint.pp(data)
     response = requests.post(
         context.config.userdata.get("traction_host")
         + "/tenant/v1/contacts/receive-invitation",
@@ -38,7 +37,6 @@ def step_impl(context, invitee: str, inviter: str):
     )
     assert response.status_code == status.HTTP_200_OK, response.status
     resp_json = json.loads(response.content)
-    # wait for events
     time.sleep(5)
 
 
@@ -54,7 +52,6 @@ def step_impl(context, tenant, tenant_2, contact_status):
     resp_json = json.loads(response.content)
     assert len(resp_json["items"]) == 1, resp_json
     assert resp_json["items"][0]["status"] == contact_status, resp_json["items"][0]
-    pprint.pp(resp_json)
     # while we are here, update connection context for this tenant
     context.config.userdata[tenant]["connections"] = {
         c["alias"]: c for c in resp_json["items"]

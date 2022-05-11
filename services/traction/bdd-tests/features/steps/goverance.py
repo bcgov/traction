@@ -59,7 +59,6 @@ def step_impl(context, tenant: str, cred_def_state: str, schema_name: str):
     context.config.userdata["governance"] = {
         "schemas": {i["schema_name"]: i for i in content["items"]}
     }
-    print(context.config.userdata["governance"]["schemas"])
     assert any(
         schema["schema_state"] == "completed"
         and schema["cred_def_state"] == cred_def_state
