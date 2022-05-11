@@ -120,7 +120,7 @@ async def issuer_revoke_credential(
     tenant_id = get_from_context("TENANT_ID")
     wallet_id = get_from_context("TENANT_WALLET_ID")
 
-    return await issuer_service.revoke_issued_credential(
+    return await issuer_service._v0_revoke_issued_credential(
         db,
         tenant_id,
         wallet_id,
