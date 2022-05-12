@@ -1,6 +1,7 @@
 import json
 import requests
 import time
+import pprint
 from behave import *
 from starlette import status
 
@@ -10,47 +11,51 @@ from starlette import status
 def step_impl(context, inviter: str, invitee: str):
     response = requests.post(
         context.config.userdata.get("traction_host")
-        + "/tenant/v0/connections/create-invitation",
-        params={"alias": invitee},
+        + "/tenant/v1/contacts/create-invitation",
+        json={"alias": invitee},
         headers=context.config.userdata[inviter]["auth_headers"],
     )
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+
     resp_json = json.loads(response.content)
     response.status_code == status.HTTP_200_OK, resp_json
-    context.config.userdata[inviter]["invitation"] = json.loads(
-        resp_json["connection"]["invitation"]
-    )
+    context.config.userdata[inviter]["invitation"] = {
+        "invitation": resp_json["invitation"],
+        "invitation_url": resp_json["invitation_url"],
+    }
 
 
 @given('"{invitee}" receives the invitation from "{inviter}"')
 @when('"{invitee}" receives the invitation from "{inviter}"')
 def step_impl(context, invitee: str, inviter: str):
+    data = {"alias": inviter, **context.config.userdata[inviter]["invitation"]}
     response = requests.post(
         context.config.userdata.get("traction_host")
-        + "/tenant/v0/connections/receive-invitation",
-        params={"alias": inviter},
-        json=context.config.userdata[inviter]["invitation"],
+        + "/tenant/v1/contacts/receive-invitation",
+        json=data,
         headers=context.config.userdata[invitee]["auth_headers"],
     )
     assert response.status_code == status.HTTP_200_OK, response.status
     resp_json = json.loads(response.content)
-    # wait for events
-    time.sleep(1)
+    time.sleep(5)
 
 
-@given('"{tenant}" has a connection to "{tenant_2}" in state "{connection_state}"')
-@then('"{tenant}" has a connection to "{tenant_2}" in state "{connection_state}"')
-def step_impl(context, tenant, tenant_2, connection_state):
+@given('"{tenant}" has a connection to "{tenant_2}" in status "{contact_status}"')
+@then('"{tenant}" has a connection to "{tenant_2}" in status "{contact_status}"')
+def step_impl(context, tenant, tenant_2, contact_status):
     response = requests.get(
-        context.config.userdata.get("traction_host") + "/tenant/v0/connections",
+        context.config.userdata.get("traction_host") + "/tenant/v1/contacts",
         params={"alias": tenant_2},
         headers=context.config.userdata[tenant]["auth_headers"],
     )
     assert response.status_code == status.HTTP_200_OK, response.status
     resp_json = json.loads(response.content)
-    assert len(resp_json) == 1, context.table
-    assert resp_json[0]["state"] == connection_state, resp_json[0]
-    # wait for events
-    time.sleep(1)
+    assert len(resp_json["items"]) == 1, resp_json
+    assert resp_json["items"][0]["status"] == contact_status, resp_json["items"][0]
+    # while we are here, update connection context for this tenant
+    context.config.userdata[tenant]["connections"] = {
+        c["alias"]: c for c in resp_json["items"]
+    }
 
 
 ## COMPOSED ACTIONS
@@ -60,6 +65,7 @@ def step_impl(context, tenant_1, tenant_2):
         f"""
     Given "{tenant_1}" generates a connection invitation for "{tenant_2}"
     And "{tenant_2}" receives the invitation from "{tenant_1}"
-    And "{tenant_1}" has a connection to "{tenant_2}" in state "active"
+    And "{tenant_1}" has a connection to "{tenant_2}" in status "Active"
+    And "{tenant_2}" has a connection to "{tenant_1}" in status "Active"
     """
     )
