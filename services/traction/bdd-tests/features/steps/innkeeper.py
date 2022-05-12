@@ -4,6 +4,7 @@ from behave import *
 from starlette import status
 
 
+@given('"{tenant}" is allowed to be an issuer by the innkeeper')
 @when('"{tenant}" is allowed to be an issuer by the innkeeper')
 def step_impl(context, tenant: str):
     response = requests.post(
