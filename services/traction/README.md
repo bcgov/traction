@@ -36,7 +36,12 @@ docker exec scripts_traction-api_1 pytest --asyncio-mode=strict -m integtest
 ```
 
 ## Behaviour Driven Tests
-To run 'Behave' bdd tests. start traction, then navigate to bdd-tests folder and run behave
+To run 'Behave' bdd tests. start traction, then navigate to bdd-tests folder and run behave.
+
+install behave
+```shell
+pip install behave
+```
 
 terminal 1 (from this folder)
 ```shell
