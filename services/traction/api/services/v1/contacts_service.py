@@ -98,6 +98,7 @@ async def create_invitation(
         role=ConnectionRoleType.inviter,
         connection_id=connection.connection_id,
         connection_alias=connection.alias,
+        invitation_key=connection.invitation_key,
         invitation=invitation,
         connection=connection,
     )
@@ -186,6 +187,7 @@ async def receive_invitation(
         role=ConnectionRoleType.invitee,
         connection_id=connection.connection_id,
         connection_alias=connection.alias,
+        invitation_key=connection.invitation_key,
         invitation=invitation,
         connection=connection,
         public_did=payload.their_public_did,

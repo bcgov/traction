@@ -41,11 +41,12 @@ class Contact(BaseModel, table=True):
       deleted: Contacts "soft" delete indicator.
       public_did: Represents the Contact's agent's Public DID (if any)
       role: Our role in relation to this Contact
-      connection_id: Underlying AcaPy connection id
-      connection_alias: Underlying AcaPy connection alias
+      connection_id: Underlying AcaPy connection id (found in connection)
+      connection_alias: Underlying AcaPy connection alias (found in connection)
+      invitation_key: Underlying AcaPy connection invitation_key (found in invitation)
       state: The underlying AcaPy connection state
       connection: Underlying AcaPy connection record
-      invitation: Underlying AcaPy inviation record (if any)
+      invitation: Underlying AcaPy invitation record (if any)
       created_at: Timestamp when record was created in Traction
       updated_at: Timestamp when record was last modified in Traction
     """
@@ -72,6 +73,7 @@ class Contact(BaseModel, table=True):
     # acapy data ---
     connection_id: uuid.UUID = Field(nullable=False)
     connection_alias: str = Field(nullable=False)
+    invitation_key: str = Field(nullable=False)
     public_did: str = Field(nullable=True)
     role: str = Field(nullable=False, index=True)
     state: str = Field(nullable=False)
