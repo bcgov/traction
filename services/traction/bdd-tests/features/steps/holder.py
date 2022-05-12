@@ -19,7 +19,6 @@ def step_impl(context, holder: str, issuer: str):
     resp_json = json.loads(response.content)
     assert len(resp_json) == 1, resp_json
 
-    # TODO FIX APPLICATION BUG: inviter alias gets overwritten when invitee accepts
     contact_id = context.config.userdata[holder]["connections"][issuer]["contact_id"]
 
     assert resp_json[0]["credential"]["contact_id"] == contact_id

@@ -27,9 +27,12 @@ class ReusableInvitationProcessor(DefaultConnectionProtocol):
         super().__init__(role=ConnectionRoleType.inviter)
 
     async def on_request(self, profile: Profile, payload: dict):
-        self.logger.info(f"on_request({profile.wallet_id} {payload})")
-        invitation = is_reusable_invitation(profile, payload)
+        self.logger.debug(f"on_request({profile.wallet_id} {payload})")
+        invitation = await is_reusable_invitation(profile, payload)
         if invitation:
+            self.logger.debug(
+                f"on_request >> reusable invitation ({invitation.invitation_key})"
+            )
             # create a contact, we will update the alias when we reach active
             label = payload["invitation_key"]
             db_contact = Contact(
@@ -47,12 +50,14 @@ class ReusableInvitationProcessor(DefaultConnectionProtocol):
             )
             profile.db.add(db_contact)
             await profile.db.commit()
+        else:
+            self.logger.debug("on_request >> not a reusable invitation")
 
     async def on_response(self, profile: Profile, payload: dict):
-        self.logger.info(f"on_response({profile.wallet_id} {payload})")
-        invitation = is_reusable_invitation(profile, payload)
+        self.logger.debug(f"on_response({profile.wallet_id} {payload})")
+        invitation = await is_reusable_invitation(profile, payload)
         if invitation:
-            self.logger.info(
+            self.logger.debug(
                 f"on_response >> reusable invitation ({invitation.invitation_key})"
             )
             # ok, this is one of our invitations...
@@ -69,4 +74,4 @@ class ReusableInvitationProcessor(DefaultConnectionProtocol):
             await profile.db.execute(stmt)
             await profile.db.commit()
         else:
-            self.logger.info("on_response >> not a reusable invitation")
+            self.logger.debug("on_response >> not a reusable invitation")

@@ -1,4 +1,5 @@
 import json, random, string
+import uuid
 from pprint import pp
 import requests
 import time
@@ -15,7 +16,7 @@ def step_impl(context, tenant: str):
     )
     assert response.status_code == status.HTTP_200_OK, response.__dict__
     resp_json = json.loads(response.content)
-    # wait for ensdorser signatures and ledger writes
+    # wait for endorser signatures and ledger writes
     time.sleep(2)
 
 
@@ -23,10 +24,7 @@ def step_impl(context, tenant: str):
 def step_impl(context, issuer: str, holder: str, schema_name: str):
 
     schema = context.config.userdata["governance"]["schemas"][schema_name]
-    # TODO FIX APPLICATION BUG: inviter alias gets overwritten when invitee accepts
-    contact_id = context.config.userdata[issuer]["connections"][
-        context.config.userdata[holder]["name"]
-    ]["contact_id"]
+    contact_id = context.config.userdata[issuer]["connections"][holder]["contact_id"]
 
     data = {
         "cred_protocol": "v1.0",
