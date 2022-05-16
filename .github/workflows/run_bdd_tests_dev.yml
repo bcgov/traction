@@ -44,8 +44,8 @@ jobs:
     if: github.repository_owner == 'bcgov'
     steps:
       - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.inputs.ref }}
+        # with:
+        #   ref: ${{ github.event.inputs.ref }}
 
       - name: install libraries
         run: pip install -r /services/traction/requirements-bdd.txt
