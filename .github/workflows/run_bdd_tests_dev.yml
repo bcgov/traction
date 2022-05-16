@@ -4,27 +4,28 @@ on:
     branches:
       - develop
   schedule:
-  # * is a special character in YAML so you have to quote this string
-  - cron:  '0 12 * * *'
+    # * is a special character in YAML so you have to quote this string
+    - cron: "0 12 * * *"
+  workflow_dispatch:
     inputs:
       deploy_env:
-        description: 'Target (github) environment for deployment: development'
+        description: "Target (github) environment for deployment: development"
         required: true
-        default: 'test'
+        default: "test"
       ref:
-        description: 'The branch, tag or SHA to checkout'
+        description: "The branch, tag or SHA to checkout"
         required: true
-        default: 'develop'
+        default: "develop"
       instance_name:
-        description: 'Instance name'
+        description: "Instance name"
         required: true
-        default: 'bdd-tests-traction'
+        default: "bdd-tests-traction"
 
 jobs:
   get_innkeeper_secret:
     runs-on: ubuntu-20.04
     if: github.repository_owner == 'bcgov'
-    steps: 
+    steps:
       - name: Authenticate and set context
         uses: redhat-actions/oc-login@v1
         with:
@@ -33,24 +34,21 @@ jobs:
           certificate_authority_data: ${{ secrets.OPENSHIFT_CA_CRT }}
           namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
       - name: get oc secret value
-        run:
-          echo "::set-output name=INNKEEPER_PASSWORD::$(oc get secret traction-api -n bc0192-dev --template={{.data.api_admin_key}} | base64 -d)
+        run: echo "::set-output name=INNKEEPER_PASSWORD::$(oc get secret traction-api -n bc0192-dev --template={{.data.api_admin_key}} | base64 -d)
     outputs:
       innkeeper_password: ${{ env.INNKEEPER_PASSWORD }}
   setup_behave:
-    name: 'Build Behave Test Image'
+    name: "Build Behave Test Image"
     runs-on: ubuntu-20.04
     needs: get_innkeeper_secret
     if: github.repository_owner == 'bcgov'
-    steps:      
-      - uses: actions/checkout@v2    
+    steps:
+      - uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.inputs.ref }}    
+          ref: ${{ github.event.inputs.ref }}
 
       - name: install libraries
         run: pip install -r /services/traction/requirements-bdd.txt
       - name: run behave
-        run: 
-        behave --define traction_host=https://traction-api-dev.apps.silver.devops.gov.bc.ca/ innkeeper_password=${{env.INNKEEPER_PASSWORD}}
-
- 
+        run: |
+          behave --define traction_host=https://traction-api-dev.apps.silver.devops.gov.bc.ca/ innkeeper_password=${{env.INNKEEPER_PASSWORD}}
