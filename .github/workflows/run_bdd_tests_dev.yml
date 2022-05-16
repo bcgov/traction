@@ -34,7 +34,7 @@ jobs:
           certificate_authority_data: ${{ secrets.OPENSHIFT_CA_CRT }}
           namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
       - name: get oc secret value
-        run: echo "::set-output name=INNKEEPER_PASSWORD::$(oc get secret traction-api -n bc0192-dev --template={{.data.api_admin_key}} | base64 -d)
+        run: echo "::set-output name=INNKEEPER_PASSWORD::$(oc get secret traction-api -n bc0192-dev --template={{.data.api_admin_key}} | base64 -d)"
     outputs:
       innkeeper_password: ${{ env.INNKEEPER_PASSWORD }}
   setup_behave:
