@@ -22,21 +22,6 @@ on:
         default: "bdd-tests-traction"
 
 jobs:
-  get_innkeeper_secret:
-    runs-on: ubuntu-20.04
-    if: github.repository_owner == 'bcgov'
-    steps:
-      - name: Authenticate and set context
-        uses: redhat-actions/oc-login@v1
-        with:
-          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
-          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-          certificate_authority_data: ${{ secrets.OPENSHIFT_CA_CRT }}
-          namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
-      - name: get oc secret value
-        run: echo "::set-output name=INNKEEPER_PASSWORD::$(oc get secret traction-api -n bc0192-dev --template={{.data.api_admin_key}} | base64 -d)"
-    outputs:
-      innkeeper_password: ${{ env.INNKEEPER_PASSWORD }}
   setup_behave:
     name: "Build Behave Test Image"
     runs-on: ubuntu-20.04
@@ -44,11 +29,9 @@ jobs:
     if: github.repository_owner == 'bcgov'
     steps:
       - uses: actions/checkout@v2
-        # with:
-        #   ref: ${{ github.event.inputs.ref }}
 
       - name: install libraries
         run: pip install -r /services/traction/requirements-bdd.txt
       - name: run behave
         run: |
-          behave --define traction_host=https://traction-api-dev.apps.silver.devops.gov.bc.ca/ innkeeper_password=${{env.INNKEEPER_PASSWORD}}
+          behave --define traction_host=https://traction-api-dev.apps.silver.devops.gov.bc.ca/ innkeeper_password=${{secrets.OPENSHIFT_TRACTION_DEV_INNKEEPER_PASSWORD}}
