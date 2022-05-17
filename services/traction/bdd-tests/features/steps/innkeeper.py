@@ -17,6 +17,7 @@ def step_impl(context, tenant: str):
 
 
 @then('"{tenant}" will have a public did')
+@given('"{tenant}" will have a public did')
 def step_impl(context, tenant: str):
     response = requests.get(
         context.config.userdata.get("traction_host")
