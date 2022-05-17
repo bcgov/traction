@@ -35,4 +35,4 @@ jobs:
         run: pip install -r ./services/traction/requirements-bdd.txt
       - name: run behave
         run: |
-          behave --define traction_host=https://traction-api-dev.apps.silver.devops.gov.bc.ca/ innkeeper_password=${{secrets.OPENSHIFT_TRACTION_DEV_INNKEEPER_PASSWORD}}
+          behave --define traction_host=https://traction-api-dev.apps.silver.devops.gov.bc.ca/ --define innkeeper_password=${{secrets.OPENSHIFT_TRACTION_DEV_INNKEEPER_PASSWORD}}
