@@ -10,10 +10,3 @@ Feature: aries connection
         Then "faber" has a connection to "alice" in status "Active"
         And "alice" has a connection to "faber" in status "Active"
 
-    Scenario: shorthand to connect two agents
-        Given we have "2" traction tenants
-         | name  | role    |
-         | alice | invitee |
-         | faber | inviter |
-        And "alice" and "faber" are connected
-        Then "faber" has a connection to "alice" in status "Active"
