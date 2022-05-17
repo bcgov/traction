@@ -53,7 +53,7 @@ def create_traction_tenants(context, n):
             headers=context.config.userdata["innkeeper_auth_headers"],
         )
         assert check_in_response.status_code == status.HTTP_201_CREATED, pprint.pp(
-            check_in_json.__dict__
+            check_in_response.__dict__
         )
         check_in_json = json.loads(check_in_response.content)
         # authenticate and save token to context
