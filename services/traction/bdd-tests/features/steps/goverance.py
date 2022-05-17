@@ -31,11 +31,6 @@ def step_impl(context, issuer: str, schema_name: str, cred_def_tag: str):
     )
     assert response.status_code == status.HTTP_200_OK, response.__dict__
 
-    # enough time for
-    # schema_state = "completed"
-    # cred_def_state should be "in_progress"
-    time.sleep(5)
-
 
 @given(
     '"{tenant}" has a tenant_schema record with an "{cred_def_state}" cred_def for "{schema_name}"'
