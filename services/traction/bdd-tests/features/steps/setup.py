@@ -24,6 +24,9 @@ def get_innkeeper_token(context):
         data=data,
         headers=headers,
     )
+
+    assert response.status_code == status.HTTP_200_OK, pprint.pp(response.__dict__)
+
     resp = json.loads(response.content)
     token = resp["access_token"]
 
