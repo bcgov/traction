@@ -32,7 +32,7 @@ jobs:
       - run: ls
       - run: ls services/traction
       - name: install libraries
-        run: pip install -r /services/traction/requirements-bdd.txt
+        run: pip install -r ./services/traction/requirements-bdd.txt
       - name: run behave
         run: |
           behave --define traction_host=https://traction-api-dev.apps.silver.devops.gov.bc.ca/ innkeeper_password=${{secrets.OPENSHIFT_TRACTION_DEV_INNKEEPER_PASSWORD}}
