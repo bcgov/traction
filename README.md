@@ -2,7 +2,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/e6df50041dd4373c7e15/maintainability)](https://codeclimate.com/github/bcgov/traction/maintainability)
 
 
-Hyperledger Aries Traction - a digital wallet solution for organizations. This project space will be a rewrite of the Business Partner Agent with multitenancy, cloud native architecture and Open APIs.
+Hyperledger Aries Traction - a digital wallet solution for organizations. The focus of Traction is for line of businesses to easily integrate Aries (aca-py) into their applications; without having to stand up, maintain and manage and instance of aca-py themselves.
 
 Traction provides a service layer to manage Aries agent instances in a multi-tenant aca-py deployment, and provides some value-add services for using aca-py functions such as setting up issuer agents, and issuing and verifying credentials.  Future functionality could include machine-readable governance, etc.
 
