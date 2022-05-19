@@ -92,3 +92,18 @@ def create_traction_tenants(context, n):
                 "Authorization": f"Bearer {auth_token}",
             },
         }
+
+
+def _hard_delete_tenant(context, tenant_config: dict):
+    delete_response = requests.delete(
+        context.config.userdata.get("traction_host")
+        + "/innkeeper/v0/tenants/"
+        + tenant_config["tenant_id"]
+        + "/hard-delete",
+        headers=context.config.userdata["innkeeper_auth_headers"],
+    )
+    assert delete_response.status_code == status.HTTP_204_NO_CONTENT, pprint.pp(
+        delete_response.__dict__
+    )
+    # so that after_scenario won't also try to delete
+    tenant_config["hard_deleted"] = True

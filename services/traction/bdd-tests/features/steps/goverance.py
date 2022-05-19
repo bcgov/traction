@@ -33,10 +33,10 @@ def step_impl(context, issuer: str, schema_name: str, cred_def_tag: str):
 
 
 @given(
-    '"{tenant}" has a tenant_schema record with an "{cred_def_state}" cred_def for "{schema_name}"'
+    '"{tenant}" has a tenant_schema record with a cred_def status of "{cred_def_state}" for "{schema_name}"'
 )
 @then(
-    '"{tenant}" will have a tenant_schema record with an "{cred_def_state}" cred_def for "{schema_name}"'
+    '"{tenant}" will have a tenant_schema record with a cred_def status of "{cred_def_state}" for "{schema_name}"'
 )
 def step_impl(context, tenant: str, cred_def_state: str, schema_name: str):
 
@@ -55,8 +55,7 @@ def step_impl(context, tenant: str, cred_def_state: str, schema_name: str):
         "schemas": {i["schema_name"]: i for i in content["items"]}
     }
     assert any(
-        schema["schema_state"] == "completed"
-        and schema["cred_def_state"] == cred_def_state
+        schema["cred_def_state"] in [cred_def_state, "completed"]
         and schema["schema_name"] == schema_name
         for schema in content["items"]
     ), response.__dict__
