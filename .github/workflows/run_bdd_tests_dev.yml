@@ -1,0 +1,26 @@
+name: Run Behaviour Driven Development Tests
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "The branch, tag or SHA to checkout"
+        required: true
+        default: "develop"
+
+jobs:
+  setup_behave:
+    name: "Build and Run Behave"
+    runs-on: ubuntu-20.04
+    if: github.repository_owner == 'bcgov'
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.ref }}
+
+      - name: install libraries
+        working-directory: services/traction/
+        run: pip install -r ./requirements-bdd.txt
+      - name: run behave
+        working-directory: services/traction/bdd-tests
+        run: |
+          behave --define traction_host=https://traction-api-dev.apps.silver.devops.gov.bc.ca --define innkeeper_password=${{secrets.OPENSHIFT_TRACTION_DEV_INNKEEPER_PASSWORD}}

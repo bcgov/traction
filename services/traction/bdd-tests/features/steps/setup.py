@@ -24,6 +24,9 @@ def get_innkeeper_token(context):
         data=data,
         headers=headers,
     )
+
+    assert response.status_code == status.HTTP_200_OK, pprint.pp(response.__dict__)
+
     resp = json.loads(response.content)
     token = resp["access_token"]
 
@@ -49,7 +52,9 @@ def create_traction_tenants(context, n):
             json={"name": tenant_name},
             headers=context.config.userdata["innkeeper_auth_headers"],
         )
-        assert check_in_response.status_code == status.HTTP_201_CREATED
+        assert check_in_response.status_code == status.HTTP_201_CREATED, pprint.pp(
+            check_in_response.__dict__
+        )
         check_in_json = json.loads(check_in_response.content)
         # authenticate and save token to context
         headers = {
@@ -87,3 +92,18 @@ def create_traction_tenants(context, n):
                 "Authorization": f"Bearer {auth_token}",
             },
         }
+
+
+def _hard_delete_tenant(context, tenant_config: dict):
+    delete_response = requests.delete(
+        context.config.userdata.get("traction_host")
+        + "/innkeeper/v0/tenants/"
+        + tenant_config["tenant_id"]
+        + "/hard-delete",
+        headers=context.config.userdata["innkeeper_auth_headers"],
+    )
+    assert delete_response.status_code == status.HTTP_204_NO_CONTENT, pprint.pp(
+        delete_response.__dict__
+    )
+    # so that after_scenario won't also try to delete
+    tenant_config["deleted"] = True

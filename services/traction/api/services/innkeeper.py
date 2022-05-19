@@ -1,4 +1,6 @@
 import uuid
+import logging
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from acapy_client.api.multitenancy_api import MultitenancyApi
@@ -8,13 +10,14 @@ from api.api_client_utils import get_api_client
 
 from api.core.config import settings
 from api.db.errors import AlreadyExists
-from api.db.models.tenant import TenantCreate
+from api.db.models.tenant import Tenant, TenantCreate, TenantRead
 from api.db.repositories.tenants import TenantsRepository
 from api.endpoints.models.innkeeper import CheckInRequest, CheckInResponse
 
 
 # TODO not sure if these should be global or per-request
 multitenancy_api = MultitenancyApi(api_client=get_api_client())
+logger = logging.getLogger(__name__)
 
 
 async def create_new_tenant(
@@ -67,3 +70,21 @@ async def create_new_tenant(
         else:
             # what to return or throw here?
             return
+
+
+async def hard_delete_tenant(tenant: TenantRead, db: AsyncSession):
+    q = select(Tenant).where(Tenant.id == tenant.id)
+    result = await db.execute(q)
+    db_tenant = result.scalar_one()
+    if not tenant:
+        raise Exception
+
+    response = multitenancy_api.multitenancy_wallet_wallet_id_remove_post(
+        str(tenant.wallet_id)
+    )
+    logger.warn(f"wallet_id = {tenant.wallet_id} has been hard deleted")
+
+    db_tenant.is_active = False
+    db.add(db_tenant)
+    await db.commit()
+    return response
