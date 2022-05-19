@@ -29,7 +29,7 @@ Feature: issuing credentials
         |name|
         |title|
         And we sadly wait for 15 seconds because we have not figured out how to listen for events
-        And "alice" has a tenant_schema record a cred_def status of "completed" for "useless-schema"
+        And "alice" has a tenant_schema record with a cred_def status of "completed" for "useless-schema"
 
         When "alice" issues "faber" a "useless-schema" credential
         And we sadly wait for 2 seconds because we have not figured out how to listen for events
