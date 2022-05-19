@@ -48,4 +48,5 @@ def step_impl(context, tenant: str):
         + tenant_id,
         headers=context.config.userdata["innkeeper_auth_headers"],
     )
-    assert response.status_code == status.HTTP_404_NOT_FOUND, response.__dict__
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    assert not json.loads(response.content)["is_active"]
