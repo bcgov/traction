@@ -4,5 +4,8 @@
     "."
   ],
   "python.testing.unittestEnabled": false,
-  "python.testing.pytestEnabled": true
+  "python.testing.pytestEnabled": true,
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow.json": "file:///home/jsyro/src/digitrust/traction/.github/workflows/run_bdd_tests_dev.yml"
+  }
 }

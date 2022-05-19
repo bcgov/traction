@@ -2,6 +2,7 @@ import json
 import requests
 from behave import *
 from starlette import status
+from steps.setup import _hard_delete_tenant
 
 
 @given('"{tenant}" is allowed to be an issuer by the innkeeper')
@@ -29,3 +30,22 @@ def step_impl(context, tenant: str):
     resp_json = json.loads(response.content)
     assert "public_did" in resp_json.keys(), resp_json
     assert resp_json["public_did"] is not None, resp_json
+
+
+@when('"{tenant}" calls the hard-delete endpoint')
+def step_impl(context, tenant: str):
+    tenant_config = context.config.userdata[tenant]
+    use_fixture(_hard_delete_tenant, context, tenant_config)
+
+
+@then('"{tenant}" will not exist')
+def step_impl(context, tenant: str):
+    tenant_id = context.config.userdata[tenant]["tenant_id"]
+
+    response = requests.get(
+        context.config.userdata.get("traction_host")
+        + "/innkeeper/v0/tenants/"
+        + tenant_id,
+        headers=context.config.userdata["innkeeper_auth_headers"],
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND, response.__dict__
