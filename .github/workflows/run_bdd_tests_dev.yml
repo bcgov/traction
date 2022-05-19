@@ -34,4 +34,4 @@ jobs:
       - name: run behave
         working-directory: services/traction/bdd-tests
         run: |
-          behave --define traction_host=https://traction-api-dev.apps.silver.devops.gov.bc.ca --define innkeeper_password=${{secrets.OPENSHIFT_TRACTION_DEV_INNKEEPER_PASSWORD}}
+          behave --define traction_host=https://pr-177-traction-api-dev.apps.silver.devops.gov.bc.ca --define innkeeper_password=${{secrets.OPENSHIFT_TRACTION_DEV_INNKEEPER_PASSWORD}}
