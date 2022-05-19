@@ -1,25 +1,11 @@
 name: Run Behaviour Driven Development Tests
 on:
-  # pull_request:
-  #   branches:
-  #     - develop
-  # schedule:
-  #   # * is a special character in YAML so you have to quote this string
-  #   - cron: "0 12 * * *"
   workflow_dispatch:
     inputs:
-      deploy_env:
-        description: "Target (github) environment for deployment: development"
-        required: true
-        default: "test"
       ref:
         description: "The branch, tag or SHA to checkout"
         required: true
         default: "develop"
-      instance_name:
-        description: "Instance name"
-        required: true
-        default: "bdd-tests-traction"
 
 jobs:
   setup_behave:
