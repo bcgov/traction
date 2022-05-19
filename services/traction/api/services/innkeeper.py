@@ -84,6 +84,7 @@ async def hard_delete_tenant(tenant: TenantRead, db: AsyncSession):
     )
     logger.warn(f"wallet_id = {tenant.wallet_id} has been hard deleted")
 
-    await db.delete(db_tenant)
+    db_tenant.is_active = False
+    db.add(db_tenant)
     await db.commit()
     return response

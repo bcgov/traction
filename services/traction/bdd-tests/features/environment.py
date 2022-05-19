@@ -11,10 +11,8 @@ def after_scenario(context, scenario):
         for t in context.config.userdata.values()
         if (type(t) == dict) and "tenant_id" in t.keys()
     ]
-    pp(tenants)
 
     for tenant_config in tenants:
-        pp(tenant_config)
-        if not tenant_config.get("hard_deleted", False):
+        if not tenant_config.get("deleted", False):
             _hard_delete_tenant(context, tenant_config)
     pass

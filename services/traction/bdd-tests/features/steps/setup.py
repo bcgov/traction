@@ -106,4 +106,4 @@ def _hard_delete_tenant(context, tenant_config: dict):
         delete_response.__dict__
     )
     # so that after_scenario won't also try to delete
-    tenant_config["hard_deleted"] = True
+    tenant_config["deleted"] = True
