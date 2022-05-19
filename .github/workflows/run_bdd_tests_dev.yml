@@ -1,4 +1,4 @@
-name: Run Behvaiour Driven Development Tests
+name: Run Behaviour Driven Development Tests
 on:
   # pull_request:
   #   branches:
