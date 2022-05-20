@@ -75,7 +75,7 @@ async def create_schema_template(
     """
     Create a new schema and/or credential definition.
 
-    "schema", defines the new schema.
+    "schema_definition", defines the new schema.
     If "credential_definition" is provided, create a credential definition.
     """
     wallet_id = get_from_context("TENANT_WALLET_ID")

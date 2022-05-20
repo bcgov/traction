@@ -29,6 +29,7 @@ from api.endpoints.models.v1.governance import (
     ImportSchemaTemplatePayload,
     CredentialTemplateListParameters,
     CreateCredentialTemplatePayload,
+    UpdateCredentialTemplatePayload,
 )
 from acapy_client.api.endorse_transaction_api import EndorseTransactionApi
 from acapy_client.api.schema_api import SchemaApi
@@ -622,6 +623,139 @@ async def create_credential_template(
     item = credential_template_to_item(db_item)
 
     return item
+
+
+async def get_credential_template(
+    db: AsyncSession,
+    tenant_id: UUID,
+    wallet_id: UUID,
+    credential_template_id: UUID,
+    deleted: bool | None = False,
+) -> CredentialTemplateItem:
+    """Get  Credential Template.
+
+    Find and return a Traction Credential Template by ID.
+
+    Args:
+      db: database session
+      tenant_id: Traction ID of tenant making the call
+      wallet_id: AcaPy Wallet ID for tenant
+      credential_template_id: Traction ID of Credential Template
+      deleted: When True, return Credential Template if marked as deleted
+
+    Returns: The Credential Schema Template
+
+    Raises:
+      NotFoundError: if the item cannot be found by ID and deleted flag
+    """
+    db_rec = await CredentialTemplate.get_by_id(
+        db, tenant_id, credential_template_id, deleted
+    )
+
+    item = credential_template_to_item(db_rec)
+
+    return item
+
+
+async def update_credential_template(
+    db: AsyncSession,
+    tenant_id: UUID,
+    wallet_id: UUID,
+    credential_template_id: UUID,
+    payload: UpdateCredentialTemplatePayload,
+) -> CredentialTemplateItem:
+    """Update  CredentialTemplate.
+
+    Update a Traction SchemaTemplate.
+
+    Note that not all fields can be modified. If they are present in the payload,
+    they will be ignored.
+
+    Args:
+      db: database session
+      tenant_id: Traction ID of tenant making the call
+      wallet_id: AcaPy Wallet ID for tenant
+      credential_template_id: Traction ID of CredentialTemplate
+      payload: CredentialTemplate data fields to update.
+
+    Returns: The Traction CredentialTemplateItem
+
+    Raises:
+      NotFoundError: if the record cannot be found by ID and deleted flag
+      IdNotMatchError: if the credential template id parameter and in payload do not
+        match
+    """
+    # verify this contact exists and is not deleted...
+    await CredentialTemplate.get_by_id(db, tenant_id, credential_template_id, False)
+
+    # payload contact id must match parameter
+    if credential_template_id != payload.credential_template_id:
+        raise IdNotMatchError(
+            code="credential_template.update.id-not-match",
+            title="Credential Template ID mismatch",
+            detail=f"Credential Template ID in payload <{payload.credential_template_id}> does not match Credential Template ID requested <{credential_template_id}>",  # noqa: E501
+        )
+
+    payload_dict = payload.dict()
+    # payload isn't the same as the db... move fields around
+    del payload_dict["credential_template_id"]
+
+    if not payload.status:
+        del payload_dict["status"]
+
+    if not payload.name:
+        del payload_dict["name"]
+
+    q = (
+        update(CredentialTemplate)
+        .where(CredentialTemplate.tenant_id == tenant_id)
+        .where(CredentialTemplate.credential_template_id == credential_template_id)
+        .values(payload_dict)
+    )
+    await db.execute(q)
+    await db.commit()
+
+    return await get_credential_template(
+        db, tenant_id, wallet_id, credential_template_id
+    )
+
+
+async def delete_credential_template(
+    db: AsyncSession, tenant_id: UUID, wallet_id: UUID, credential_template_id: UUID
+) -> CredentialTemplateItem:
+    """Delete  CredentialTemplate.
+
+    Delete a Traction CredentialTemplate.
+    Note that deletes are "soft" in Traction. The CredentialTemplate will still exist
+    but must be explicitly asked for using deleted=True parameters for Get or List.
+
+    Args:
+      db: database session
+      tenant_id: Traction ID of tenant making the call
+      wallet_id: AcaPy Wallet ID for tenant
+      credential_template_id: Traction ID of CredentialTemplate
+
+    Returns: The Traction SchemaTemplate
+
+    Raises:
+      NotFoundError: if the item cannot be found by ID and deleted flag
+    """
+    q = (
+        update(CredentialTemplate)
+        .where(CredentialTemplate.tenant_id == tenant_id)
+        .where(CredentialTemplate.credential_template_id == credential_template_id)
+        .values(
+            deleted=True,
+            status=TemplateStatusType.deleted,
+        )
+    )
+
+    await db.execute(q)
+    await db.commit()
+
+    return await get_credential_template(
+        db, tenant_id, wallet_id, credential_template_id, deleted=True
+    )
 
 
 def schema_template_to_item(db_item: SchemaTemplate) -> SchemaTemplateItem:

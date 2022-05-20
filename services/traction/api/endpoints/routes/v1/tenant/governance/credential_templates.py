@@ -74,6 +74,16 @@ async def create_credential_template(
     background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db),
 ) -> CreateCredentialTemplateResponse:
+    """Create  Credential Template.
+
+    This will create a new Credential Definition on the ledger, associate with this
+    Tenant and a Schema.
+
+    Either schema_id (ledger id) or schema_template_id (Traction ID) is required. If
+    schema_id is used AND that schema does not have an existing Schema Template,
+    then it will be imported and Schema Template will be created.
+
+    """
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
