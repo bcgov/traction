@@ -46,7 +46,6 @@ def step_impl(
     schema_name: str,
 ):
     ex_result_found = False
-    print(len(range(int(timeout))))
     for i in range(int(timeout)):
         time.sleep(1)
         response_data = get_governance_schemas(
@@ -65,8 +64,10 @@ def step_impl(
     ), f"after {i} seconds, tenant_schema found was {response_data}"
 
     # while we are here, update context.governance
-    context.config.userdata["governance"] = {
-        "schemas": {i["schema_name"]: i for i in response_data["items"]}
+    context.config.userdata.setdefault("governance", {})
+
+    context.config.userdata["governance"]["schemas"] = {
+        i["schema_name"]: i for i in response_data["items"]
     }
     print(f"Polled for {i} seconds")
 
