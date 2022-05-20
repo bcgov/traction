@@ -32,3 +32,7 @@ class NotFoundError(BaseError):
 
 class IdNotMatchError(BaseError):
     pass
+
+
+class NotAnIssuerError(BaseError):
+    pass

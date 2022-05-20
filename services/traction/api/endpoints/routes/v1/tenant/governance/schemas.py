@@ -1,95 +1,131 @@
 import logging
+from uuid import UUID
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
+from starlette.background import BackgroundTasks
+from starlette.requests import Request
 
-
+from api.core.config import settings
 from api.endpoints.dependencies.db import get_db
 from api.endpoints.dependencies.tenant_security import get_from_context
+from api.endpoints.routes.v1.link_utils import build_list_links
 
 from api.services.v1 import governance_service
 
-from api.db.repositories.tenant_schemas import TenantSchemasRepository
-from api.db.models.tenant_schema import TenantSchemaRead
 from api.endpoints.models.v1.governance import (
-    SchemasListResponse,
-    CreateSchemaPayload,
-    ImportSchemaPayload,
+    SchemaTemplateListResponse,
+    SchemaTemplateListParameters,
+    CreateSchemaTemplatePayload,
+    CreateSchemaTemplateResponse,
+    ImportSchemaTemplatePayload,
+    ImportSchemaTemplateResponse,
+    TemplateStatusType,
 )
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-@router.get("/", status_code=status.HTTP_200_OK, response_model=SchemasListResponse)
-async def list_tenant_schemas(
+@router.get(
+    "/", status_code=status.HTTP_200_OK, response_model=SchemaTemplateListResponse
+)
+async def list_schema_templates(
+    request: Request,
+    page_num: int | None = 1,
+    page_size: int | None = settings.DEFAULT_PAGE_SIZE,
+    name: str | None = None,
+    schema_id: str | None = None,
+    schema_template_id: UUID | None = None,
+    status: TemplateStatusType | None = None,
+    deleted: bool | None = False,
     db: AsyncSession = Depends(get_db),
-) -> SchemasListResponse:
-    # TODO: add search/paging parameters
-    # copy of v0 implementation from endpoints/routes/tenant_admin
-    # this should take some query params, sorting and paging params...
+) -> SchemaTemplateListResponse:
     wallet_id = get_from_context("TENANT_WALLET_ID")
-    schema_repo = TenantSchemasRepository(db_session=db)
-    tenant_schemas = await schema_repo.find_by_wallet_id(wallet_id)
+    tenant_id = get_from_context("TENANT_ID")
 
-    response = SchemasListResponse(
-        items=tenant_schemas, count=len(tenant_schemas), total=len(tenant_schemas)
+    parameters = SchemaTemplateListParameters(
+        url=str(request.url),
+        page_num=page_num,
+        page_size=page_size,
+        name=name,
+        deleted=deleted,
+        schema_id=schema_id,
+        schema_template_id=schema_template_id,
+        status=status,
     )
-    return response
+    items, total_count = await governance_service.list_schema_templates(
+        db, tenant_id, wallet_id, parameters
+    )
+
+    links = build_list_links(total_count, parameters)
+
+    return SchemaTemplateListResponse(
+        items=items, count=len(items), total=total_count, links=links
+    )
 
 
 @router.post("/", status_code=status.HTTP_200_OK)
-# Method moved from v0
-async def create_tenant_schema(
-    payload: CreateSchemaPayload,
+async def create_schema_template(
+    payload: CreateSchemaTemplatePayload,
+    background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db),
-) -> TenantSchemaRead:
-    # TODO: update to v1 response
+) -> CreateSchemaTemplateResponse:
     """
     Create a new schema and/or credential definition.
 
-    "schema_request", defines the new schema.
-    If "cred_def_tag" is provided, create a credential definition (which can be for a
-    new or existing schema).
+    "schema", defines the new schema.
+    If "credential_definition" is provided, create a credential definition.
     """
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
-    return await governance_service.create_tenant_schema(
-        db,
-        wallet_id,
-        tenant_id,
-        payload.schema_request,
-        None,
-        payload.cred_def_tag,
-        payload.revocable,
-        payload.revoc_reg_size,
+
+    item, c_t_item = await governance_service.create_schema_template(
+        db, tenant_id, wallet_id, payload=payload
+    )
+    links = []  # TODO
+
+    # this will kick off the call to the ledger and then event listeners will finish
+    # populating the schema (and cred def) data.
+    background_tasks.add_task(
+        governance_service.send_schema_request_task, db=db, payload=payload, item=item
+    )
+    return CreateSchemaTemplateResponse(
+        item=item, credential_template=c_t_item, links=links
     )
 
 
 @router.post("/import", status_code=status.HTTP_200_OK)
-# Method moved from v0
-async def import_tenant_schema(
-    payload: ImportSchemaPayload,
+async def import_schema_template(
+    payload: ImportSchemaTemplatePayload,
+    background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db),
-) -> TenantSchemaRead:
-    # TODO: update to v1 response
+) -> ImportSchemaTemplateResponse:
     """
     Import an existing public schema and optionally create a credential definition.
 
-    If "schema_id" is provided, use an existing schema.
-    If "cred_def_tag" is provided, create a credential definition (which can be for a
-    new or existing schema).
+    "schema_id" is the ledger's schema id.
+    If "credential_definition" is provided, create a credential definition.
     """
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
-    return await governance_service.create_tenant_schema(
-        db,
-        wallet_id,
-        tenant_id,
-        None,
-        payload.schema_id,
-        payload.cred_def_tag,
-        payload.revocable,
-        payload.revoc_reg_size,
+
+    item, c_t_item = await governance_service.import_schema_template(
+        db, tenant_id, wallet_id, payload=payload
+    )
+    links = []  # TODO
+
+    # this will kick off the call to the ledger and then event listeners will finish
+    # populating the cred def
+    if c_t_item:
+        background_tasks.add_task(
+            governance_service.send_cred_def_request_task,
+            db=db,
+            tenant_id=tenant_id,
+            credential_template_id=c_t_item.credential_template_id,
+        )
+
+    return ImportSchemaTemplateResponse(
+        item=item, credential_template=c_t_item, links=links
     )

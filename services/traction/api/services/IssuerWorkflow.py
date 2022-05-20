@@ -15,7 +15,7 @@ from api.db.models.tenant_workflow import TenantWorkflowRead
 from api.endpoints.models.connections import (
     ConnectionStateType,
 )
-from api.endpoints.models.v1.admin import PublicDIDStateType
+from api.endpoints.models.tenant_issuer import PublicDIDStateType
 
 from api.endpoints.models.tenant_workflow import (
     TenantWorkflowStateType,

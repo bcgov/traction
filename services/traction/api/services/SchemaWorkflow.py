@@ -71,13 +71,13 @@ class SchemaWorkflow(BaseWorkflow):
             webhook_state = webhook_message["payload"]["state"]
             if not webhook_state == "transaction_acked":
                 return None
-            cred_def_id = webhook_message["payload"]["meta_data"]["context"][
-                "cred_def_id"
-            ]
             try:
+                cred_def_id = webhook_message["payload"]["meta_data"]["context"][
+                    "cred_def_id"
+                ]
                 tenant_schema = await schemas_repo.get_by_cred_def_id(cred_def_id)
                 return tenant_schema.workflow_id
-            except DoesNotExist:
+            except (KeyError, DoesNotExist):
                 # no related workflow so ignore, for now ...
                 return None
         else:
@@ -237,6 +237,7 @@ class SchemaWorkflow(BaseWorkflow):
             )
 
         data = {"body": cred_def_request}
+        logger.info(f"cred def request = {data}")
         cred_def_response = cred_def_api.credential_definitions_post(**data)
         # we get back either "cred_def_response.sent" or "cred_def_response.txn"
 
