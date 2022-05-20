@@ -46,8 +46,15 @@ def step_impl(
     schema_name: str,
 ):
     ex_result_found = False
-    for i in range(int(timeout)):
-        time.sleep(1)
+    timeout = int(timeout)
+    check_period = (
+        float(timeout / 20) if timeout > 20 else 1
+    )  # only check maximum of 20 times
+    time_passed = 0
+    while time_passed < timeout:
+        time.sleep(check_period)
+        time_passed = time_passed + check_period
+
         response_data = get_governance_schemas(
             context, tenant, cred_def_state, schema_name
         )
@@ -61,7 +68,7 @@ def step_impl(
 
     assert (
         ex_result_found
-    ), f"after {i} seconds, tenant_schema found was {response_data}"
+    ), f"after {timeout} seconds, tenant_schema found was {response_data}"
 
     # while we are here, update context.governance
     context.config.userdata.setdefault("governance", {})
@@ -69,7 +76,7 @@ def step_impl(
     context.config.userdata["governance"]["schemas"] = {
         i["schema_name"]: i for i in response_data["items"]
     }
-    print(f"Polled for {i} seconds")
+    print(f"Polled for {tenant} seconds")
 
 
 # @given(
