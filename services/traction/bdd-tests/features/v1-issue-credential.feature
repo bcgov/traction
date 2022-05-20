@@ -10,10 +10,8 @@ Feature: issuing credentials
         |attr|
         |name|
         |title|
-        Then "alice" will have a tenant_schema record with a cred_def status of "pending" for "useless-schema"
         # let schema get signed by endorser, and written to ledger, and cred_def get started
-        And we sadly wait for 5 seconds because we have not figured out how to listen for events
-        And "alice" will have a tenant_schema record with a cred_def status of "in_progress" for "useless-schema"
+        Then check "alice" for 20 seconds for a cred_def status of "in_progress" for "useless-schema"
 
 
     Scenario: offer a credential to an active contact
@@ -28,11 +26,9 @@ Feature: issuing credentials
         |attr|
         |name|
         |title|
-        And we sadly wait for 15 seconds because we have not figured out how to listen for events
-        And "alice" has a tenant_schema record with a cred_def status of "completed" for "useless-schema"
-
+        And check "alice" for 30 seconds for a cred_def status of "completed" for "useless-schema"
         When "alice" issues "faber" a "useless-schema" credential
-        And we sadly wait for 2 seconds because we have not figured out how to listen for events
+        And we sadly wait for 3 seconds because we have not figured out how to listen for events
         Then "faber" will have a credential_offer from "alice"
 
 
@@ -48,8 +44,7 @@ Feature: issuing credentials
         |attr|
         |name|
         |title|
-        And we sadly wait for 15 seconds because we have not figured out how to listen for events
-        And "alice" has a tenant_schema record with a cred_def status of "completed" for "useless-schema" 
+        And check "alice" for 30 seconds for a cred_def status of "completed" for "useless-schema"
         # this loads data into context.config
         When "alice" issues "faber" a "useless-schema" credential
         And we sadly wait for 2 seconds because we have not figured out how to listen for events
