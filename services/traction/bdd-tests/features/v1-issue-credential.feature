@@ -6,6 +6,7 @@ Feature: issuing credentials
         | name  | role    |
         | alice | issuer |
         And "alice" is an issuer
+        And we sadly wait for 3 seconds because we have not figured out how to listen for events
         When "alice" writes a new schema "useless-schema" and cred def tagged "test"
         |attr|
         |name|
@@ -21,6 +22,7 @@ Feature: issuing credentials
         | alice | issuer |
         | faber | holder |
         And "alice" is an issuer
+        And we sadly wait for 3 seconds because we have not figured out how to listen for events
         And "alice" and "faber" are connected
         And "alice" writes a new schema "useless-schema" and cred def tagged "test"
         |attr|
@@ -39,6 +41,7 @@ Feature: issuing credentials
         | alice | issuer |
         | faber | holder |
         And "alice" is an issuer
+        And we sadly wait for 3 seconds because we have not figured out how to listen for events
         And "alice" and "faber" are connected
         And "alice" writes a new schema "useless-schema" and cred def tagged "test"
         |attr|
