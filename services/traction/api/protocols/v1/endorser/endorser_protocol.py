@@ -50,7 +50,7 @@ class EndorserProtocol(ABC):
 
         await self.before_all(profile=profile, payload=payload)
 
-        if self.approve_for_processing(profile=profile, payload=payload):
+        if await self.approve_for_processing(profile=profile, payload=payload):
             await self.before_any(profile=profile, payload=payload)
 
             if EndorserStateType.init == payload["state"]:
@@ -150,7 +150,7 @@ class DefaultEndorserProtocol(EndorserProtocol):
         db_rec = q_result.scalar_one_or_none()
         return db_rec
 
-    def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
+    async def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
         return False
 
     async def before_all(self, profile: Profile, payload: dict):

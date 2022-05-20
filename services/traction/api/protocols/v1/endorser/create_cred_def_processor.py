@@ -1,3 +1,5 @@
+import json
+
 from sqlalchemy import update
 
 from api.core.profile import Profile
@@ -16,13 +18,22 @@ class CreateCredDefProcessor(DefaultEndorserProtocol):
         super().__init__()
 
     def get_schema_id(self, payload: dict) -> str:
-        return payload["meta_data"]["context"]["schema_id"]
+        try:
+            return payload["meta_data"]["context"]["schema_id"]
+        except KeyError:
+            return None
 
     def get_cred_def_id(self, payload: dict) -> str:
-        return payload["meta_data"]["context"]["cred_def_id"]
+        try:
+            return payload["meta_data"]["context"]["cred_def_id"]
+        except KeyError:
+            return None
 
     def get_transaction_id(self, payload: dict) -> str:
-        return payload["transaction_id"]
+        try:
+            return payload["transaction_id"]
+        except KeyError:
+            return None
 
     async def get_credential_template(
         self, profile: Profile, payload: dict
@@ -35,12 +46,24 @@ class CreateCredDefProcessor(DefaultEndorserProtocol):
         except NotFoundError:
             return None
 
-    def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
-        # check metadata for schema
-        return (
-            "schema_id" in payload["meta_data"]["context"]
-            and "cred_def_id" in payload["meta_data"]["context"]
+    async def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
+        has_schema_id = "schema_id" in payload["meta_data"]["context"]
+        has_cred_def_id = "cred_def_id" in payload["meta_data"]["context"]
+        data_json = json.loads(payload["messages_attach"][0]["data"]["json"])
+        is_operation_type_102 = data_json and data_json["operation"]["type"] == "102"
+
+        template = await self.get_credential_template(profile, payload)
+        template_exists = template is not None
+
+        approved = (
+            has_schema_id
+            and has_cred_def_id
+            and is_operation_type_102
+            and template_exists
         )
+
+        self.logger.debug(f"approved = {approved}")
+        return approved
 
     async def before_any(self, profile: Profile, payload: dict):
         o = await self.get_credential_template(profile, payload)

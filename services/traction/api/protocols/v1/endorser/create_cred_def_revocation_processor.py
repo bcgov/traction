@@ -22,7 +22,7 @@ class CreateCredDefRevocationProcessor(CreateCredDefProcessor):
         except NotFoundError:
             return None
 
-    def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
+    async def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
         # check metadata for cred def id, no schema id!
         # we only care about type 114 not 113.
         # we can grab type from data/json in the payload but for the final completion
@@ -37,15 +37,22 @@ class CreateCredDefRevocationProcessor(CreateCredDefProcessor):
             "auto_create_rev_reg" in payload["meta_data"]["processing"]
         )
         data_json = json.loads(payload["messages_attach"][0]["data"]["json"])
-        is_operation_type_114 = data_json["operation"]["type"] == "114"
+        is_operation_type_114 = data_json and data_json["operation"]["type"] == "114"
 
-        return (
+        template = await self.get_credential_template(profile, payload)
+        template_exists = template is not None
+
+        approved = (
             has_no_schema_id
             and has_cred_def_id
             and has_no_create_pending_rev_reg
             and has_auto_create_rev_reg
             and is_operation_type_114
+            and template_exists
         )
+
+        self.logger.debug(f"approved = {approved}")
+        return approved
 
     async def before_any(self, profile: Profile, payload: dict):
         o = await self.get_credential_template(profile, payload)

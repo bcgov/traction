@@ -1,3 +1,4 @@
+import json
 from typing import List
 
 from sqlalchemy import update
@@ -48,12 +49,24 @@ class CreateSchemaProcessor(DefaultEndorserProtocol):
             status=TemplateStatusType.pending,
         )
 
-    def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
-        # check metadata for schema
-        return (
-            "schema_id" in payload["meta_data"]["context"]
-            and "cred_def_id" not in payload["meta_data"]["context"]
+    async def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
+        has_schema_id = "schema_id" in payload["meta_data"]["context"]
+        has_no_cred_def_id = "cred_def_id" not in payload["meta_data"]["context"]
+        data_json = json.loads(payload["messages_attach"][0]["data"]["json"])
+        is_operation_type_101 = data_json and data_json["operation"]["type"] == "101"
+
+        template = await self.get_schema_template(profile, payload)
+        template_exists = template is not None
+
+        approved = (
+            has_schema_id
+            and has_no_cred_def_id
+            and is_operation_type_101
+            and template_exists
         )
+
+        self.logger.debug(f"approved = {approved}")
+        return approved
 
     async def before_any(self, profile: Profile, payload: dict):
         o = await self.get_schema_template(profile, payload)

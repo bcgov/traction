@@ -27,6 +27,8 @@ from api.endpoints.models.v1.governance import (
     SchemaTemplateListParameters,
     UpdateSchemaTemplatePayload,
     ImportSchemaTemplatePayload,
+    CredentialTemplateListParameters,
+    CreateCredentialTemplatePayload,
 )
 from acapy_client.api.endorse_transaction_api import EndorseTransactionApi
 from acapy_client.api.schema_api import SchemaApi
@@ -48,13 +50,14 @@ async def get_public_did(
     db: AsyncSession, tenant_id: UUID, raise_error: bool | None = False
 ):
     issuer_repo = TenantIssuersRepository(db)
+    issuer = None
     try:
-        iss = await issuer_repo.get_by_tenant_id(tenant_id)
+        issuer = await issuer_repo.get_by_tenant_id(tenant_id)
     except DoesNotExist:
         pass
 
-    if iss and iss.public_did_state == PublicDIDStateType.public:
-        return iss.public_did
+    if issuer and issuer.public_did_state == PublicDIDStateType.public:
+        return issuer.public_did
     else:
         if raise_error:
             raise NotAnIssuerError(
@@ -168,7 +171,7 @@ async def list_schema_templates(
       db: database session
       tenant_id: Traction ID of tenant making the call
       wallet_id: AcaPy Wallet ID for tenant
-      parameters: filters for Contacts
+      parameters: filters for schema templates
 
     Returns:
       items: The page of schema templates
@@ -478,11 +481,147 @@ async def import_schema_template(
 
         return item, c_t_item
     else:
-        raise NotFoundError(
-            code="ledger_schema.id_not_found",
-            title="Schema not found",
-            detail=f"Schema was not found on ledger for schema_id<{payload.schema_id}>",
+        raise_schema_id_not_on_ledger(payload.schema_id)
+
+
+async def list_credential_templates(
+    db: AsyncSession,
+    tenant_id: UUID,
+    wallet_id: UUID,
+    parameters: CredentialTemplateListParameters,
+) -> [List[CredentialTemplateItem], int]:
+    """List Credential Templates.
+
+    Return a page of Credential templates filtered by given parameters.
+
+    Args:
+      db: database session
+      tenant_id: Traction ID of tenant making the call
+      wallet_id: AcaPy Wallet ID for tenant
+      parameters: filters for Credential Templates
+
+    Returns:
+      items: The page of schema templates
+      total_count: Total number of items matching criteria
+    """
+
+    limit = parameters.page_size
+    skip = (parameters.page_num - 1) * limit
+
+    filters = [
+        CredentialTemplate.tenant_id == tenant_id,
+        CredentialTemplate.deleted == parameters.deleted,
+    ]
+    if parameters.status:
+        filters.append(CredentialTemplate.status == parameters.status)
+    if parameters.state:
+        filters.append(CredentialTemplate.state == parameters.state)
+
+    if parameters.credential_template_id:
+        filters.append(
+            CredentialTemplate.credential_template_id
+            == parameters.credential_template_id
         )
+    if parameters.cred_def_id:
+        filters.append(CredentialTemplate.cred_def_id == parameters.cred_def_id)
+
+    if parameters.schema_template_id:
+        filters.append(
+            CredentialTemplate.schema_template_id == parameters.schema_template_id
+        )
+    if parameters.schema_id:
+        filters.append(CredentialTemplate.schema_id == parameters.schema_id)
+
+    if parameters.name:
+        filters.append(CredentialTemplate.name.contains(parameters.name))
+
+    # build out a base query with all filters
+    base_q = select(CredentialTemplate).filter(*filters)
+
+    # get a count of ALL records matching our base query
+    count_q = select([func.count()]).select_from(base_q)
+    count_q_rec = await db.execute(count_q)
+    total_count = count_q_rec.scalar()
+
+    # TODO: should we raise an exception if paging is invalid?
+    # ie. is negative, or starts after available records
+
+    # add in our paging and ordering to get the result set
+    results_q = (
+        base_q.limit(limit).offset(skip).order_by(desc(CredentialTemplate.created_at))
+    )
+
+    results_q_recs = await db.execute(results_q)
+    db_recs = results_q_recs.scalars()
+
+    items = []
+    for db_rec in db_recs:
+        item = credential_template_to_item(db_rec)
+        items.append(item)
+
+    return items, total_count
+
+
+async def create_credential_template(
+    db: AsyncSession,
+    tenant_id: UUID,
+    wallet_id: UUID,
+    payload: CreateCredentialTemplatePayload,
+) -> CredentialTemplateItem:
+    # TODO: verify / validate payload
+    # this will check if issuer
+    await get_public_did(db, tenant_id, True)
+
+    schema_template = None
+    if payload.schema_template_id:
+        schema_template = await SchemaTemplate.get_by_id(
+            db, tenant_id, payload.schema_template_id
+        )
+
+    elif payload.schema_id:
+        ledger_schema = fetch_schema_from_ledger(payload.schema_id)
+        if not ledger_schema:
+            # schema id not on ledger...
+            raise_schema_id_not_on_ledger(payload.schema_id)
+
+        try:
+            schema_template = await SchemaTemplate.get_by_schema_id(
+                db, tenant_id, payload.schema_id
+            )
+        except NotFoundError:
+            # not in traction, import it..
+            import_payload = ImportSchemaTemplatePayload(schema_id=payload.schema_id)
+            await import_schema_template(db, tenant_id, wallet_id, import_payload)
+            schema_template = await SchemaTemplate.get_by_schema_id(
+                db, tenant_id, payload.schema_id
+            )
+
+    # create OUR credential template
+    cd = payload.credential_definition
+    if cd.revocation_enabled and cd.revocation_registry_size < 4:
+        cd.revocation_registry_size = 4
+
+    db_item = CredentialTemplate(
+        schema_template_id=schema_template.schema_template_id,
+        tenant_id=tenant_id,
+        status=TemplateStatusType.pending,
+        state=EndorserStateType.init,
+        tags=payload.tags,
+        name=payload.name if payload.name else schema_template.name,
+        attributes=schema_template.attributes,
+        schema_id=schema_template.schema_id,
+        tag=cd.tag,
+        revocation_enabled=cd.revocation_enabled,
+        revocation_registry_size=cd.revocation_registry_size,
+        revocation_registry_state=EndorserStateType.init,
+    )
+    db.add(db_item)
+
+    await db.commit()
+
+    item = credential_template_to_item(db_item)
+
+    return item
 
 
 def schema_template_to_item(db_item: SchemaTemplate) -> SchemaTemplateItem:
@@ -497,3 +636,11 @@ def credential_template_to_item(db_item: CredentialTemplate) -> CredentialTempla
         return CredentialTemplateItem(**db_item.dict())
     else:
         return None
+
+
+def raise_schema_id_not_on_ledger(schema_id):
+    raise NotFoundError(
+        code="ledger_schema.id_not_found",
+        title="Schema not found",
+        detail=f"Schema was not found on ledger for schema_id<{schema_id}>",
+    )

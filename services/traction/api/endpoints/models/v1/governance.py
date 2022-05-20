@@ -100,9 +100,9 @@ class CredentialTemplateListParameters(
 
     name: str | None = None
     cred_def_id: str | None = None
+    credential_template_id: uuid.UUID | None = None
     schema_id: str | None = None
     schema_template_id: uuid.UUID | None = None
-    credential_template_id: uuid.UUID | None = None
 
 
 class SchemaTemplateItem(TagsItem[TemplateStatusType, EndorserStateType]):
@@ -191,6 +191,14 @@ class CredentialDefinitionPayload(BaseModel):
     revocation_registry_size: int = 0
 
 
+class SchemaTemplateGetResponse(GetResponse[SchemaTemplateItem]):
+    pass
+
+
+class CredentialTemplateGetResponse(GetResponse[CredentialTemplateItem]):
+    pass
+
+
 class CreateSchemaTemplatePayload(BaseModel):
     """CreateSchemaTemplatePayload.
 
@@ -212,10 +220,6 @@ class CreateSchemaTemplatePayload(BaseModel):
     credential_definition: Optional[CredentialDefinitionPayload] | None = None
 
 
-class SchemaTemplateGetResponse(GetResponse[SchemaTemplateItem]):
-    pass
-
-
 class CreateSchemaTemplateResponse(SchemaTemplateGetResponse):
     """CreateSchemaTempalateResponse.
 
@@ -226,6 +230,44 @@ class CreateSchemaTemplateResponse(SchemaTemplateGetResponse):
     """
 
     credential_template: CredentialTemplateItem | None = None
+
+
+class CreateCredentialTemplatePayload(BaseModel):
+    """CreateCredentialTemplatePayload.
+
+    Payload for Create Credential (Template) as Traction Tenant with Issuer Permissions.
+    This will create a new Credential Definition on the ledger, associate with this
+    Tenant and a Schema.
+
+    Either schema_id (ledger id) or schema_template_id (Traction ID) is required. If
+    schema_id is used AND that schema does not have an existing Schema Template, then it
+     will be imported and Schema Template will be created.
+
+    Attributes:
+      credential_definition: (required) create a Credential Definition
+      schema_id: (required if no schema_template_id), Ledger ID of schema
+      schema_template_id: (required if no schema_id), Traction ID of schema template
+      name: (required) Traction name
+      tags: (optional) list of strings to categorize the credential template in Traction
+    """
+
+    credential_definition: CredentialDefinitionPayload
+    schema_id: str | None = None
+    schema_template_id: UUID | None = None
+    name: str
+    tags: Optional[List[str]] | None = []
+
+
+class CreateCredentialTemplateResponse(CredentialTemplateGetResponse):
+    """CreateCredentialTemplateResponse.
+
+    Response to Create Credential (Template) API.
+
+    Attributes:
+
+    """
+
+    pass
 
 
 class ImportSchemaTemplatePayload(BaseModel):
@@ -283,4 +325,29 @@ class UpdateSchemaTemplatePayload(BaseModel):
 
 
 class UpdateSchemaTemplateResponse(GetResponse[SchemaTemplateItem]):
+    pass
+
+
+class UpdateCredentialTemplatePayload(BaseModel):
+    """UpdateCredentialTemplatePayload.
+
+    Payload for CredentialTemplate API update.
+    Additional fields may be in the payload, but they will be ignored. Only these fields
+     will be updated.
+
+
+    Attributes:
+      credential_template_id: Traction CredentialTemplate ID, item we are updating.
+      status: update Status to this value
+      name: update the Traction name
+      tags: list of tags will be replaced with this list
+    """
+
+    credential_template_id: UUID
+    name: str | None = None
+    status: TemplateStatusType | None = None
+    tags: List[str] | None = []
+
+
+class UpdateCredentialTemplateResponse(GetResponse[CredentialTemplateItem]):
     pass
