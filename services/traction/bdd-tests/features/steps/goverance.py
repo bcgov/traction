@@ -33,12 +33,51 @@ def step_impl(context, issuer: str, schema_name: str, cred_def_tag: str):
 
 
 @given(
-    '"{tenant}" has a tenant_schema record with a cred_def status of "{cred_def_state}" for "{schema_name}"'
+    'check "{tenant}" for {timeout} seconds for a cred_def status of "{cred_def_state}" for "{schema_name}"'
 )
 @then(
-    '"{tenant}" will have a tenant_schema record with a cred_def status of "{cred_def_state}" for "{schema_name}"'
+    'check "{tenant}" for {timeout} seconds for a cred_def status of "{cred_def_state}" for "{schema_name}"'
 )
-def step_impl(context, tenant: str, cred_def_state: str, schema_name: str):
+def step_impl(
+    context,
+    tenant: str,
+    timeout: str,  # don't know how to make an int natively
+    cred_def_state: str,
+    schema_name: str,
+):
+    ex_result_found = False
+    print(len(range(int(timeout))))
+    for i in range(int(timeout)):
+        time.sleep(1)
+        response_data = get_governance_schemas(
+            context, tenant, cred_def_state, schema_name
+        )
+        if any(
+            schema["cred_def_state"] == cred_def_state
+            and schema["schema_name"] == schema_name
+            for schema in response_data["items"]
+        ):
+            ex_result_found = True
+            break
+
+    assert (
+        ex_result_found
+    ), f"after {i} seconds, tenant_schema found was {response_data}"
+
+    # while we are here, update context.governance
+    context.config.userdata["governance"] = {
+        "schemas": {i["schema_name"]: i for i in response_data["items"]}
+    }
+    print(f"Polled for {i} seconds")
+
+
+# @given(
+#     '"{tenant}" has a tenant_schema record with a cred_def status of "{cred_def_state}" for "{schema_name}"'
+# )
+# @then(
+#     '"{tenant}" will have a tenant_schema record with a cred_def status of "{cred_def_state}" for "{schema_name}"'
+# )
+def get_governance_schemas(context, tenant: str, cred_def_state: str, schema_name: str):
 
     response = requests.get(
         context.config.userdata.get("traction_host") + "/tenant/v1/governance/schemas",
@@ -49,13 +88,4 @@ def step_impl(context, tenant: str, cred_def_state: str, schema_name: str):
     content = json.loads(response.content)
 
     assert len(content["items"]) > 0, content
-
-    # while we are here, update context.governance
-    context.config.userdata["governance"] = {
-        "schemas": {i["schema_name"]: i for i in content["items"]}
-    }
-    assert any(
-        schema["cred_def_state"] in [cred_def_state, "completed"]
-        and schema["schema_name"] == schema_name
-        for schema in content["items"]
-    ), response.__dict__
+    return content
