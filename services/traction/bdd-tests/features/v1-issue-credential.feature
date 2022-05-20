@@ -10,9 +10,8 @@ Feature: issuing credentials
         |attr|
         |name|
         |title|
-        Then check "alice" for 4 seconds for a cred_def status of "pending" for "useless-schema"
         # let schema get signed by endorser, and written to ledger, and cred_def get started
-        And check "alice" for 20 seconds for a cred_def status of "in_progress" for "useless-schema"
+        Then check "alice" for 20 seconds for a cred_def status of "in_progress" for "useless-schema"
 
 
     Scenario: offer a credential to an active contact
