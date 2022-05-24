@@ -4,6 +4,7 @@ from typing import List
 
 from sqlalchemy import select, func, desc, update
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from api.services.v1.governance_service import get_public_did
 
@@ -189,7 +190,13 @@ async def list_issued_credentials(
 
     # add in our paging and ordering to get the result set
     results_q = (
-        base_q.limit(limit).offset(skip).order_by(desc(IssuedCredential.updated_at))
+        base_q.limit(limit)
+        .offset(skip)
+        .options(
+            selectinload(IssuedCredential.contact),
+            selectinload(IssuedCredential.credential_template),
+        )
+        .order_by(desc(IssuedCredential.updated_at))
     )
 
     results_q_recs = await db.execute(results_q)

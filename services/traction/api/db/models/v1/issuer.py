@@ -55,6 +55,7 @@ class IssuedCredential(BaseModel, table=True):
         This will be empty once offer is made and credential_persisted = False.
       revocation_comment: comment entered when revoking Credential
       state: The underlying AcaPy credential exchange state
+      thread_id: AcaPy thread id
       credential_exchange_id: AcaPy id for the credential exchange
       revoc_reg_id: revocation registry id (needed for revocation)
       revocation_id: credential revocation id (needed for revocation)
@@ -89,6 +90,7 @@ class IssuedCredential(BaseModel, table=True):
     # acapy data ---
     state: str = Field(nullable=False)
     cred_def_id: str = Field(nullable=False, index=True)
+    thread_id: str = Field(nullable=True)
     credential_exchange_id: str = Field(nullable=True)
     revoc_reg_id: str = Field(nullable=True)
     revocation_id: str = Field(nullable=True)
@@ -253,6 +255,34 @@ class IssuedCredential(BaseModel, table=True):
 
         q = (
             select(cls)
+            .where(cls.tenant_id == tenant_id)
+            .options(selectinload(cls.contact), selectinload(cls.credential_template))
+            .order_by(desc(cls.updated_at))
+        )
+        q_result = await db.execute(q)
+        db_recs = q_result.scalars()
+        return db_recs
+
+    @classmethod
+    async def list_by_thread_id(
+        cls: "IssuedCredential",
+        db: AsyncSession,
+        tenant_id: uuid.UUID,
+        thread_id: str,
+    ) -> List["IssuedCredential"]:
+        """List by Thread ID.
+
+        Find and return list of Issued Credential records for Thread ID.
+
+          tenant_id: Traction ID of tenant making the call
+          thread_id: AcaPy Thread ID of Issued Credential
+
+        Returns: List of Traction IssuedCredential (db) records in descending order
+        """
+
+        q = (
+            select(cls)
+            .where(cls.thread_id == thread_id)
             .where(cls.tenant_id == tenant_id)
             .options(selectinload(cls.contact), selectinload(cls.credential_template))
             .order_by(desc(cls.updated_at))
