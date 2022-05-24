@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -8,6 +8,9 @@ from api.endpoints.models.v1.base import (
     AcapyItem,
     GetResponse,
     ListResponse,
+    ListAcapyItemParameters,
+    GetTimelineResponse,
+    TimelineItem,
 )
 from api.endpoints.models.v1.common import (
     CommentPayload,
@@ -15,11 +18,15 @@ from api.endpoints.models.v1.common import (
 
 from api.endpoints.models.credentials import (
     IssueCredentialProtocolType,
+    CredentialStateType,
     CredentialPreview,
+    AttributePreview,
 )
 
 
 class IssuerCredentialStatusType(str, Enum):
+    # pending, nothing happened yet
+    pending = "Pending"
     # offer sent, waiting for response
     offer_sent = "Offer Sent"
     # successfully issuer into the holder's wallet
@@ -82,4 +89,74 @@ class GetCredentialResponse(GetResponse[CredentialItem]):
 
 
 class CredentialsListResponse(ListResponse[CredentialItem]):
+    pass
+
+
+class IssuedCredentialListParameters(
+    ListAcapyItemParameters[IssuerCredentialStatusType, CredentialStateType]
+):
+    cred_def_id: str | None = None
+    credential_template_id: UUID | None = None
+    contact_id: UUID | None = None
+    external_reference_id: str | None = None
+
+
+class IssuedCredentialTemplate(BaseModel):
+    credential_template_id: UUID
+    name: str
+    cred_def_id: str
+
+
+class IssuedCredentialContact(BaseModel):
+    contact_id: UUID
+    alias: str
+    external_reference_id: str | None = None
+
+
+class IssuedCredentialAcapy(BaseModel):
+    credential_exchange_id: str | None = None
+    revoc_reg_id: str | None = None
+    revocation_id: str | None = None
+
+
+class IssuedCredentialItem(
+    AcapyItem[IssuerCredentialStatusType, CredentialStateType, IssuedCredentialAcapy]
+):
+    issued_credential_id: UUID
+    credential_template: IssuedCredentialTemplate
+    contact: IssuedCredentialContact
+    revoked: bool
+    comment: str | None = None
+    revocation_comment: str | None = None
+    credential_preview: dict | None = {}
+
+
+class IssuedCredentialTimelineItem(
+    TimelineItem[IssuerCredentialStatusType, CredentialStateType]
+):
+    pass
+
+
+class IssuedCredentialListResponse(ListResponse[IssuedCredentialItem]):
+    pass
+
+
+class IssuedCredentialGetResponse(
+    GetTimelineResponse[IssuedCredentialItem, IssuedCredentialTimelineItem]
+):
+    pass
+
+
+class OfferNewCredentialPayload(BaseModel):
+    contact_id: UUID | None = None
+    connection_id: str | None = None
+    credential_template_id: UUID | None = None
+    cred_def_id: str | None = None
+    external_reference_id: str | None = None
+    comment: str | None = None
+    tags: List[str] | None = []
+    attributes: List[AttributePreview]
+
+
+class OfferNewCredentialResponse(GetResponse[IssuedCredentialItem]):
     pass

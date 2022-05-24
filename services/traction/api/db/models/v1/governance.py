@@ -8,7 +8,7 @@ import uuid
 from datetime import datetime
 from typing import List
 
-from sqlmodel import Field
+from sqlmodel import Field, Relationship
 from sqlalchemy import (
     Column,
     func,
@@ -303,6 +303,12 @@ class CredentialTemplate(BaseModel, table=True):
     revocation_registry_size: int = Field(nullable=True, default=None)
     revocation_registry_state: str = Field(nullable=False)
     # --- ledger data
+
+    # relationships ---
+    issued_credentials: List["IssuedCredential"] = Relationship(  # noqa: F821
+        back_populates="credential_template"
+    )
+    # --- relationships
 
     created_at: datetime = Field(
         sa_column=Column(TIMESTAMP, nullable=False, server_default=func.now())
