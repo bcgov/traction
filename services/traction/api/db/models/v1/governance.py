@@ -440,6 +440,38 @@ class CredentialTemplate(BaseModel, table=True):
         return db_rec
 
     @classmethod
+    async def get_by_schema_and_tag(
+        cls: "CredentialTemplate",
+        db: AsyncSession,
+        tenant_id: uuid.UUID,
+        schema_id: str,
+        tag: str,
+    ) -> "CredentialTemplate":
+        """Get CredentialTemplate by schema id (ledger) and tag.
+
+        Use this to determine if we can create a new template. If we have a tag for
+        this schema, then we cannot reliably create the cred def on the ledger.
+
+        Args:
+          db: database session
+          tenant_id: Traction ID of tenant making the call
+          schema_id: ledger schema id
+          tag: cred def tag
+
+        Returns: The Traction CredentialTemplate (db) record or None
+
+        """
+        q = (
+            select(cls)
+            .where(cls.tenant_id == tenant_id)
+            .where(cls.schema_id == schema_id)
+            .where(cls.tag == tag)
+        )
+        q_result = await db.execute(q)
+        db_rec = q_result.scalar_one_or_none()
+        return db_rec
+
+    @classmethod
     async def list_by_schema_template_id(
         cls: "CredentialTemplate",
         db: AsyncSession,

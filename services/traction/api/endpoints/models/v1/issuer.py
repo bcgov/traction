@@ -174,3 +174,8 @@ class UpdateIssuerCredentialPayload(BaseModel):
 
 class UpdateIssuerCredentialResponse(GetResponse[IssuerCredentialItem]):
     pass
+
+
+class RevokeCredentialPayload(BaseModel):
+    issuer_credential_id: UUID
+    comment: str | None = None

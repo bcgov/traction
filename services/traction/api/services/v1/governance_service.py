@@ -18,6 +18,7 @@ from api.endpoints.models.v1.errors import (
     IdNotMatchError,
     NotFoundError,
     NotAnIssuerError,
+    AlreadyExistsError,
 )
 from api.endpoints.models.v1.governance import (
     CreateSchemaTemplatePayload,
@@ -601,6 +602,17 @@ async def create_credential_template(
     cd = payload.credential_definition
     if cd.revocation_enabled and cd.revocation_registry_size < 4:
         cd.revocation_registry_size = 4
+
+    # see if cd tag already exists
+    exists = await CredentialTemplate.get_by_schema_and_tag(
+        db, tenant_id, schema_template.schema_id, cd.tag
+    )
+    if exists:
+        raise AlreadyExistsError(
+            code="credential_template.tag.in-use",
+            title="Tag in use",
+            detail=f"Tag <{cd.tag}> already in used for schema_id<{schema_template.schema_id}>. Use different tag for new Credential Template",  # noqa: E501
+        )
 
     db_item = CredentialTemplate(
         schema_template_id=schema_template.schema_template_id,

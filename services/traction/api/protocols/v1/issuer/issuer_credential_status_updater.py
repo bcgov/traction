@@ -13,8 +13,8 @@ class IssuerCredentialStatusUpdater(DefaultIssueCredentialProtocol):
     def __init__(self):
         super().__init__()
 
-    async def after_all(self, profile: Profile, payload: dict):
-        self.logger.info(f"after_all({profile.wallet_id}, {payload})")
+    async def before_any(self, profile: Profile, payload: dict):
+        self.logger.debug(f"before_any({profile.wallet_id}, {payload})")
 
         values = {"state": payload["state"]}
 

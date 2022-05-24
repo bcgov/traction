@@ -27,7 +27,7 @@ class CreateCredDefRevocationProcessor(CreateCredDefProcessor):
         # we only care about type 114 not 113.
         # we can grab type from data/json in the payload but for the final completion
         # we should grab it from the signature...
-
+        self.logger.info(f"payload = {payload}")
         has_no_schema_id = "schema_id" not in payload["meta_data"]["context"]
         has_cred_def_id = "cred_def_id" in payload["meta_data"]["context"]
         has_no_create_pending_rev_reg = (
@@ -39,8 +39,11 @@ class CreateCredDefRevocationProcessor(CreateCredDefProcessor):
         data_json = json.loads(payload["messages_attach"][0]["data"]["json"])
         is_operation_type_114 = data_json and data_json["operation"]["type"] == "114"
 
-        template = await self.get_credential_template(profile, payload)
-        template_exists = template is not None
+        template_exists = False
+        if has_cred_def_id and is_operation_type_114:
+            # different transaction, so look up by cred def id
+            template = await self.get_credential_template(profile, payload)
+            template_exists = template is not None
 
         approved = (
             has_no_schema_id

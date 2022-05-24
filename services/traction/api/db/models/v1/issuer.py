@@ -155,6 +155,45 @@ class IssuerCredential(BaseModel, table=True):
         return db_rec
 
     @classmethod
+    async def get_by_credential_exchange_id(
+        cls: "IssuerCredential",
+        db: AsyncSession,
+        tenant_id: uuid.UUID,
+        credential_exchange_id: str,
+    ) -> "IssuerCredential":
+        """Get IssuerCredential by Credential Exchange ID.
+
+        Find and return the database IssuerCredential record
+
+        Args:
+          db: database session
+          tenant_id: Traction ID of tenant making the call
+          credential_exchange_id: acapy message Credential Exchange ID
+
+        Returns: The Traction IssuerCredential (db) record
+
+        Raises:
+          NotFoundError: if the IssuerCredential cannot be found by ID and deleted
+          flag
+        """
+
+        q = (
+            select(cls)
+            .where(cls.tenant_id == tenant_id)
+            .where(cls.credential_exchange_id == credential_exchange_id)
+            .options(selectinload(cls.contact), selectinload(cls.credential_template))
+        )
+        q_result = await db.execute(q)
+        db_rec = q_result.scalar_one_or_none()
+        if not db_rec:
+            raise NotFoundError(
+                code="issuer_credential.credential_exchange_id_not_found",
+                title="Issuer Credential does not exist",
+                detail=f"Issuer Credential does not exist for credential exchange id<{credential_exchange_id}>",  # noqa: E501
+            )
+        return db_rec
+
+    @classmethod
     async def list_by_credential_template_id(
         cls: "IssuerCredential",
         db: AsyncSession,

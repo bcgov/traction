@@ -4,7 +4,9 @@ from abc import ABC, abstractmethod
 from api.core.config import settings
 from api.core.event_bus import Event
 from api.core.profile import Profile
+from api.db.models.v1.issuer import IssuerCredential
 from api.endpoints.models.credentials import CredentialRoleType, CredentialStateType
+from api.endpoints.models.v1.errors import NotFoundError
 from api.endpoints.models.webhooks import WEBHOOK_ISSUE_LISTENER_PATTERN
 
 
@@ -114,8 +116,26 @@ class DefaultIssueCredentialProtocol(IssueCredentialProtocol):
     def __init__(self):
         super().__init__()
 
+    def get_credential_exchange_id(self, payload: dict) -> str:
+        try:
+            return payload["credential_exchange_id"]
+        except KeyError:
+            return None
+
+    async def get_issuer_credential(
+        self, profile: Profile, payload: dict
+    ) -> IssuerCredential:
+        cred_ex_id = self.get_credential_exchange_id(payload=payload)
+        try:
+            return await IssuerCredential.get_by_credential_exchange_id(
+                profile.db, profile.tenant_id, cred_ex_id
+            )
+        except NotFoundError:
+            return None
+
     async def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
-        return False
+        issuer_credential = await self.get_issuer_credential(profile, payload)
+        return issuer_credential is not None
 
     async def before_all(self, profile: Profile, payload: dict):
         pass

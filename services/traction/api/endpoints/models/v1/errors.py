@@ -36,3 +36,7 @@ class IdNotMatchError(BaseError):
 
 class NotAnIssuerError(BaseError):
     pass
+
+
+class IncorrectStatusError(BaseError):
+    pass

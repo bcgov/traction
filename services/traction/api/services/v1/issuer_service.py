@@ -6,6 +6,9 @@ from sqlalchemy import select, func, desc, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from acapy_client.api.revocation_api import RevocationApi
+from acapy_client.model.revoke_request import RevokeRequest
+from api.endpoints.models.v1.governance import TemplateStatusType
 from api.services.v1.governance_service import get_public_did
 
 from acapy_client.api.issue_credential_v1_0_api import IssueCredentialV10Api
@@ -19,7 +22,11 @@ from api.db.models.v1.governance import CredentialTemplate
 from api.db.models.v1.issuer import IssuerCredential, IssuerCredentialTimeline
 
 from api.endpoints.models.credentials import CredentialStateType
-from api.endpoints.models.v1.errors import NotFoundError, IdNotMatchError
+from api.endpoints.models.v1.errors import (
+    NotFoundError,
+    IdNotMatchError,
+    IncorrectStatusError,
+)
 
 from api.endpoints.models.v1.issuer import (
     IssuerCredentialListParameters,
@@ -31,11 +38,12 @@ from api.endpoints.models.v1.issuer import (
     IssuerCredentialStatusType,
     IssuerCredentialTimelineItem,
     UpdateIssuerCredentialPayload,
+    RevokeCredentialPayload,
 )
 from api.api_client_utils import get_api_client
 
 issue_cred_v10_api = IssueCredentialV10Api(api_client=get_api_client())
-
+revoc_api = RevocationApi(api_client=get_api_client())
 
 logger = logging.getLogger(__name__)
 
@@ -102,7 +110,10 @@ async def send_credential_offer_task(
         data = {"body": cred_offer}
         cred_response = issue_cred_v10_api.issue_credential_send_offer_post(**data)
 
-        values = {"credential_exchange_id": cred_response.credential_exchange_id}
+        values = {
+            "credential_exchange_id": cred_response.credential_exchange_id,
+            "thread_id": cred_response.thread_id,
+        }
         if not item.preview_persisted:
             # remove the preview/attributes...
             values["credential_preview"] = {}
@@ -259,6 +270,13 @@ async def offer_new_credential(
             db, tenant_id, payload.cred_def_id
         )
 
+    if db_credential_template.status != TemplateStatusType.active:
+        raise IncorrectStatusError(
+            code="issuer_credential.template.not-active",
+            title="Issuer Credential - Template not active",
+            detail=f"Cannot offer credential unless template status is {TemplateStatusType.active}.",  # noqa: E501
+        )
+
     # convert list of name/value tuples to an object
     attributes = {}
     credential_preview = {"attributes": []}
@@ -380,7 +398,7 @@ async def update_issuer_credential(
       NotFoundError: if the item cannot be found by ID and deleted flag
       IdNotMatchError: if the item id parameter and in payload do not match
     """
-    # verify this contact exists and is not deleted...
+    # verify this item exists and is not deleted...
     await IssuerCredential.get_by_id(db, tenant_id, issuer_credential_id, False)
 
     # payload id must match parameter
@@ -447,4 +465,64 @@ async def delete_issuer_credential(
 
     return await get_issuer_credential(
         db, tenant_id, wallet_id, issuer_credential_id, acapy=False, deleted=True
+    )
+
+
+async def revoke_issuer_credential(
+    db: AsyncSession,
+    tenant_id: UUID,
+    wallet_id: UUID,
+    issuer_credential_id: UUID,
+    payload: RevokeCredentialPayload,
+) -> IssuerCredentialItem:
+    # TODO: need to check permissions and status
+    # verify this item exists and is not deleted...
+    # payload id must match parameter
+    if issuer_credential_id != payload.issuer_credential_id:
+        raise IdNotMatchError(
+            code="issuer_credential.revoke.id-not-match",
+            title="Issuer Credential ID mismatch",
+            detail=f"Issuer Credential ID in payload <{payload.issuer_credential_id}> does not match Issuer Credential ID requested <{issuer_credential_id}>",  # noqa: E501
+        )
+
+    db_item = await IssuerCredential.get_by_id(
+        db, tenant_id, issuer_credential_id, False
+    )
+
+    if db_item.status != IssuerCredentialStatusType.issued:
+        raise IncorrectStatusError(
+            code="issuer_credential.revoke.not-issued",
+            title="Issuer Credential not issued",
+            detail=f"Issuer Credential cannot be revoked unless status is {IssuerCredentialStatusType.issued}.",  # noqa: E501
+        )
+
+    # no fancy workflow stuff, just revoke
+    rev_req = RevokeRequest(
+        comment=payload.comment if payload.comment else "",
+        connection_id=str(db_item.contact.connection_id),
+        rev_reg_id=db_item.revoc_reg_id,
+        cred_rev_id=db_item.revocation_id,
+        publish=True,
+        notify=True,
+    )
+    data = {"body": rev_req}
+    revoc_api.revocation_revoke_post(**data)
+
+    # update our status
+    q = (
+        update(IssuerCredential)
+        .where(IssuerCredential.tenant_id == tenant_id)
+        .where(IssuerCredential.issuer_credential_id == issuer_credential_id)
+        .values(
+            revoked=True,
+            status=IssuerCredentialStatusType.revoked,
+            state=CredentialStateType.credential_revoked,
+            revocation_comment=payload.comment,
+        )
+    )
+    await db.execute(q)
+    await db.commit()
+
+    return await get_issuer_credential(
+        db, tenant_id, wallet_id, issuer_credential_id, acapy=False
     )
