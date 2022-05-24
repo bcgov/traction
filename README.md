@@ -1,6 +1,6 @@
 # traction [![Lifecycle:Maturing](https://img.shields.io/badge/Lifecycle-Maturing-007EC6)](<Redirect-URL>)
 [![Maintainability](https://api.codeclimate.com/v1/badges/e6df50041dd4373c7e15/maintainability)](https://codeclimate.com/github/bcgov/traction/maintainability)
-
+[![Behaviour Driven Tests](https://github.com/bcgov/traction/actions/workflows/run_bdd_tests_dev.yml/badge.svg)](https://github.com/bcgov/traction/actions/workflows/run_bdd_tests_dev.yml)
 
 Hyperledger Aries Traction - a digital wallet solution for organizations. The focus of Traction is for line of businesses to easily integrate Aries (aca-py) into their applications; without having to stand up, maintain and manage and instance of aca-py themselves.
 
