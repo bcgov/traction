@@ -33,6 +33,8 @@ class IssuerCredentialStatusType(str, Enum):
     issued = "Issued"
     # you revoked this previously
     revoked = "Revoked"
+    # item is soft deleted
+    deleted = "Delete"
 
 
 class AcapyCredentialExchangeStateType(str, Enum):
@@ -159,4 +161,15 @@ class OfferNewCredentialPayload(BaseModel):
 
 
 class OfferNewCredentialResponse(GetResponse[IssuedCredentialItem]):
+    pass
+
+
+class UpdateIssuedCredentialPayload(BaseModel):
+    issued_credential_id: UUID | None = None
+    external_reference_id: str | None = None
+    status: IssuerCredentialStatusType | None = None
+    tags: List[str] | None = []
+
+
+class UpdateIssuedCredentialResponse(GetResponse[IssuedCredentialItem]):
     pass

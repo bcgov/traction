@@ -19,7 +19,7 @@ from api.db.models.v1.governance import CredentialTemplate
 from api.db.models.v1.issuer import IssuedCredential, IssuedCredentialTimeline
 
 from api.endpoints.models.credentials import CredentialStateType
-from api.endpoints.models.v1.errors import NotFoundError
+from api.endpoints.models.v1.errors import NotFoundError, IdNotMatchError
 
 from api.endpoints.models.v1.issuer import (
     IssuedCredentialListParameters,
@@ -30,6 +30,7 @@ from api.endpoints.models.v1.issuer import (
     OfferNewCredentialPayload,
     IssuerCredentialStatusType,
     IssuedCredentialTimelineItem,
+    UpdateIssuedCredentialPayload,
 )
 from api.api_client_utils import get_api_client
 
@@ -350,3 +351,99 @@ async def get_issued_credential_timeline(
     for db_item in db_items:
         results.append(IssuedCredentialTimeline(**db_item.dict()))
     return results
+
+
+async def update_issued_credential(
+    db: AsyncSession,
+    tenant_id: UUID,
+    wallet_id: UUID,
+    issued_credential_id: UUID,
+    payload: UpdateIssuedCredentialPayload,
+) -> IssuedCredentialItem:
+    """Update Issued Credential.
+
+    Update a Traction Issued Credential.
+    Note that not all fields can be modified. If they are present in the payload, they
+    will be ignored.
+
+    Args:
+      db: database session
+      tenant_id: Traction ID of tenant making the call
+      wallet_id: AcaPy Wallet ID for tenant
+      issued_credential_id: Traction ID of item
+      payload: data fields to update.
+
+    Returns: The Traction IssuedCredentialItem
+
+    Raises:
+      NotFoundError: if the item cannot be found by ID and deleted flag
+      IdNotMatchError: if the item id parameter and in payload do not match
+    """
+    # verify this contact exists and is not deleted...
+    await IssuedCredential.get_by_id(db, tenant_id, issued_credential_id, False)
+
+    # payload id must match parameter
+    if issued_credential_id != payload.issued_credential_id:
+        raise IdNotMatchError(
+            code="issued_credential.update.id-not-match",
+            title="Issued Credential ID mismatch",
+            detail=f"Issued Credential ID in payload <{payload.issued_credential_id}> does not match Issued Credential ID requested <{issued_credential_id}>",  # noqa: E501
+        )
+
+    payload_dict = payload.dict()
+    # payload isn't the same as the db... move fields around
+    del payload_dict["issued_credential_id"]
+
+    if not payload.status:
+        del payload_dict["status"]
+
+    q = (
+        update(IssuedCredential)
+        .where(IssuedCredential.tenant_id == tenant_id)
+        .where(Contact.issued_credential_id == issued_credential_id)
+        .values(payload_dict)
+    )
+    await db.execute(q)
+    await db.commit()
+
+    return await get_issued_credential(db, tenant_id, wallet_id, issued_credential_id)
+
+
+async def delete_issued_credential(
+    db: AsyncSession,
+    tenant_id: UUID,
+    wallet_id: UUID,
+    issued_credential_id: UUID,
+) -> IssuedCredentialItem:
+    """Delete Issued Credential.
+
+    Delete a Traction Issued Credential.
+    Note that deletes are "soft" in Traction.
+
+    Args:
+      db: database session
+      tenant_id: Traction ID of tenant making the call
+      wallet_id: AcaPy Wallet ID for tenant
+      issued_credential_id: Traction ID of item
+
+    Returns: The Traction IssuedCredentialItem
+
+    Raises:
+      NotFoundError: if the item cannot be found by ID and deleted flag
+    """
+    q = (
+        update(IssuedCredential)
+        .where(IssuedCredential.tenant_id == tenant_id)
+        .where(IssuedCredential.issued_credential_id == issued_credential_id)
+        .values(
+            deleted=True,
+            status=IssuerCredentialStatusType.deleted,
+            state=CredentialStateType.abandoned,
+        )
+    )
+    await db.execute(q)
+    await db.commit()
+
+    return await get_issued_credential(
+        db, tenant_id, wallet_id, issued_credential_id, acapy=False, deleted=True
+    )
