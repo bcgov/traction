@@ -58,6 +58,7 @@ def issuer_credential_to_item(
         credential_template_id=db_item.credential_template.credential_template_id,
         name=db_item.credential_template.name,
         cred_def_id=db_item.credential_template.cred_def_id,
+        revocation_enabled=db_item.credential_template.revocation_enabled,
     )
     contact = IssuerCredentialContact(
         contact_id=db_item.contact.contact_id,
@@ -216,7 +217,7 @@ async def offer_new_credential(
     tenant_id: UUID,
     wallet_id: UUID,
     payload: OfferNewCredentialPayload,
-    credential_persisted: bool | None = False,
+    save_in_traction: bool | None = False,
 ) -> IssuerCredentialItem:
     """Offer new Credential.
 
@@ -227,7 +228,7 @@ async def offer_new_credential(
       tenant_id: Traction ID of tenant making the call
       wallet_id: AcaPy Wallet ID for tenant
       payload: Credential offer payload
-      credential_persisted: when True, store credential data in Traction
+      save_in_traction: when True, store credential data in Traction
     Returns:
       item: The Traction Issuer Credential
 
@@ -280,7 +281,7 @@ async def offer_new_credential(
         external_reference_id=payload.external_reference_id,
         tags=payload.tags,
         comment=payload.comment,
-        credential_persisted=credential_persisted,
+        preview_persisted=save_in_traction,
         credential_preview=credential_preview,
     )
     db.add(db_item)

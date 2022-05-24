@@ -38,6 +38,7 @@ async def list_issuer_credentials(
     credential_template_id: UUID | None = None,
     external_reference_id: str | None = None,
     status: IssuerCredentialStatusType | None = None,
+    acapy: bool | None = None,
     deleted: bool | None = False,
     db: AsyncSession = Depends(get_db),
 ) -> IssuerCredentialListResponse:
@@ -54,6 +55,7 @@ async def list_issuer_credentials(
         credential_template_id=credential_template_id,
         external_reference_id=external_reference_id,
         status=status,
+        acapy=acapy,
     )
     items, total_count = await issuer_service.list_issuer_credentials(
         db, tenant_id, wallet_id, parameters
@@ -92,13 +94,13 @@ async def offer_new_credential(
     tenant_id = get_from_context("TENANT_ID")
 
     item = await issuer_service.offer_new_credential(
-        db, tenant_id, wallet_id, payload=payload, credential_persisted=save_in_traction
+        db, tenant_id, wallet_id, payload=payload, save_in_traction=save_in_traction
     )
     background_tasks.add_task(
         issuer_service.send_credential_offer_task,
         db=db,
         tenant_id=tenant_id,
-        issued_credential_id=item.issuer_credential_id,
+        issuer_credential_id=item.issuer_credential_id,
     )
     links = []  # TODO
 

@@ -107,6 +107,7 @@ class IssuerCredentialTemplate(BaseModel):
     credential_template_id: UUID
     name: str
     cred_def_id: str
+    revocation_enabled: bool
 
 
 class IssuerCredentialContact(BaseModel):

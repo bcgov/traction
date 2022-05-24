@@ -150,11 +150,12 @@ class CredentialTemplateItem(TagsItem[TemplateStatusType, EndorserStateType]):
       schema_id: This will be the ledger schema id - this is not a UUID
       cred_def_id: This will be the ledger cred def id - this is not a UUID
       tenant_id: Traction Tenant ID, owner of this Contact
-      name: a "pretty" name for the schema, this can be different than the name on the
+      name: a "pretty" name for the item, this can be different than the name on the
         ledger (schema_name).
-      status: current state of the Schema - Pending, In Progress, Completed, Deleted
-      tags: Set by tenant for arbitrary grouping of their Schemas
+      status: current state of the item - Pending, In Progress, Completed, Deleted
+      tags: Set by tenant for arbitrary grouping of their credential templates
       deleted: Schema/Tenant "soft" delete indicator.
+      revocation_enabled: whether this template/cred def can be revoked.
       attributes: list of attribute names, on ledger
 
     """
@@ -165,6 +166,7 @@ class CredentialTemplateItem(TagsItem[TemplateStatusType, EndorserStateType]):
     schema_id: str | None = None
     cred_def_id: str | None = None
     name: str
+    revocation_enabled: bool
 
     # ledger data ---
     attributes: List[str] | None = []
