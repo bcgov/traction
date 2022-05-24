@@ -17,9 +17,22 @@ class IssuedCredentialStatusUpdater(DefaultIssueCredentialProtocol):
         self.logger.info(f"after_all({profile.wallet_id}, {payload})")
 
         values = {"state": payload["state"]}
-        # TODO: determine Statuses
-        if CredentialStateType.offer_sent == payload["state"]:
+
+        offered_states = [
+            CredentialStateType.offer_sent,
+            CredentialStateType.request_received,
+        ]
+
+        issued_states = [
+            CredentialStateType.credential_issued,
+            CredentialStateType.credential_acked,
+        ]
+
+        if payload["state"] in offered_states:
             values["status"] = IssuerCredentialStatusType.offer_sent
+
+        if payload["state"] in issued_states:
+            values["status"] = IssuerCredentialStatusType.issued
 
         stmt = (
             update(IssuedCredential)
