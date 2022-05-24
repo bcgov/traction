@@ -16,8 +16,8 @@ from api.endpoints.dependencies.db import get_db
 
 from api.endpoints.models.v1.issuer import (
     IssuerCredentialStatusType,
-    IssuedCredentialListResponse,
-    IssuedCredentialListParameters,
+    IssuerCredentialListResponse,
+    IssuerCredentialListParameters,
     OfferNewCredentialPayload,
     OfferNewCredentialResponse,
 )
@@ -27,9 +27,9 @@ logger = logging.getLogger(__name__)
 
 
 @router.get(
-    "/", status_code=status.HTTP_200_OK, response_model=IssuedCredentialListResponse
+    "/", status_code=status.HTTP_200_OK, response_model=IssuerCredentialListResponse
 )
-async def list_issued_credentials(
+async def list_issuer_credentials(
     request: Request,
     page_num: int | None = 1,
     page_size: int | None = settings.DEFAULT_PAGE_SIZE,
@@ -40,11 +40,11 @@ async def list_issued_credentials(
     status: IssuerCredentialStatusType | None = None,
     deleted: bool | None = False,
     db: AsyncSession = Depends(get_db),
-) -> IssuedCredentialListResponse:
+) -> IssuerCredentialListResponse:
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
-    parameters = IssuedCredentialListParameters(
+    parameters = IssuerCredentialListParameters(
         url=str(request.url),
         page_num=page_num,
         page_size=page_size,
@@ -55,13 +55,13 @@ async def list_issued_credentials(
         external_reference_id=external_reference_id,
         status=status,
     )
-    items, total_count = await issuer_service.list_issued_credentials(
+    items, total_count = await issuer_service.list_issuer_credentials(
         db, tenant_id, wallet_id, parameters
     )
 
     links = build_list_links(total_count, parameters)
 
-    return IssuedCredentialListResponse(
+    return IssuerCredentialListResponse(
         items=items, count=len(items), total=total_count, links=links
     )
 
@@ -75,7 +75,7 @@ async def offer_new_credential(
 ) -> OfferNewCredentialResponse:
     """Offer New Credential.
 
-    This will create a new Issued Credential record and kick off the offer/issuance
+    This will create a new Issuer Credential record and kick off the offer/issuance
     process.
 
     The target Contact for this offer is set with either contact_id (Traction Contact
@@ -98,7 +98,7 @@ async def offer_new_credential(
         issuer_service.send_credential_offer_task,
         db=db,
         tenant_id=tenant_id,
-        issued_credential_id=item.issued_credential_id,
+        issued_credential_id=item.issuer_credential_id,
     )
     links = []  # TODO
 

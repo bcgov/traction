@@ -1,7 +1,7 @@
 from sqlalchemy import update
 
 from api.core.profile import Profile
-from api.db.models.v1.issuer import IssuedCredential
+from api.db.models.v1.issuer import IssuerCredential
 from api.endpoints.models.credentials import CredentialStateType
 from api.endpoints.models.v1.issuer import IssuerCredentialStatusType
 from api.protocols.v1.issuer.issue_credential_protocol import (
@@ -9,7 +9,7 @@ from api.protocols.v1.issuer.issue_credential_protocol import (
 )
 
 
-class IssuedCredentialStatusUpdater(DefaultIssueCredentialProtocol):
+class IssuerCredentialStatusUpdater(DefaultIssueCredentialProtocol):
     def __init__(self):
         super().__init__()
 
@@ -35,10 +35,10 @@ class IssuedCredentialStatusUpdater(DefaultIssueCredentialProtocol):
             values["status"] = IssuerCredentialStatusType.issued
 
         stmt = (
-            update(IssuedCredential)
-            .where(IssuedCredential.tenant_id == profile.tenant_id)
+            update(IssuerCredential)
+            .where(IssuerCredential.tenant_id == profile.tenant_id)
             .where(
-                IssuedCredential.credential_exchange_id
+                IssuerCredential.credential_exchange_id
                 == payload["credential_exchange_id"]
             )
             .values(values)

@@ -305,7 +305,7 @@ class CredentialTemplate(BaseModel, table=True):
     # --- ledger data
 
     # relationships ---
-    issued_credentials: List["IssuedCredential"] = Relationship(  # noqa: F821
+    issuer_credentials: List["IssuerCredential"] = Relationship(  # noqa: F821
         back_populates="credential_template"
     )
     # --- relationships

@@ -94,7 +94,7 @@ class CredentialsListResponse(ListResponse[CredentialItem]):
     pass
 
 
-class IssuedCredentialListParameters(
+class IssuerCredentialListParameters(
     ListAcapyItemParameters[IssuerCredentialStatusType, CredentialStateType]
 ):
     cred_def_id: str | None = None
@@ -103,48 +103,48 @@ class IssuedCredentialListParameters(
     external_reference_id: str | None = None
 
 
-class IssuedCredentialTemplate(BaseModel):
+class IssuerCredentialTemplate(BaseModel):
     credential_template_id: UUID
     name: str
     cred_def_id: str
 
 
-class IssuedCredentialContact(BaseModel):
+class IssuerCredentialContact(BaseModel):
     contact_id: UUID
     alias: str
     external_reference_id: str | None = None
 
 
-class IssuedCredentialAcapy(BaseModel):
+class IssuerCredentialAcapy(BaseModel):
     credential_exchange_id: str | None = None
     revoc_reg_id: str | None = None
     revocation_id: str | None = None
 
 
-class IssuedCredentialItem(
-    AcapyItem[IssuerCredentialStatusType, CredentialStateType, IssuedCredentialAcapy]
+class IssuerCredentialItem(
+    AcapyItem[IssuerCredentialStatusType, CredentialStateType, IssuerCredentialAcapy]
 ):
-    issued_credential_id: UUID
-    credential_template: IssuedCredentialTemplate
-    contact: IssuedCredentialContact
+    issuer_credential_id: UUID
+    credential_template: IssuerCredentialTemplate
+    contact: IssuerCredentialContact
     revoked: bool
     comment: str | None = None
     revocation_comment: str | None = None
     credential_preview: dict | None = {}
 
 
-class IssuedCredentialTimelineItem(
+class IssuerCredentialTimelineItem(
     TimelineItem[IssuerCredentialStatusType, CredentialStateType]
 ):
     pass
 
 
-class IssuedCredentialListResponse(ListResponse[IssuedCredentialItem]):
+class IssuerCredentialListResponse(ListResponse[IssuerCredentialItem]):
     pass
 
 
-class IssuedCredentialGetResponse(
-    GetTimelineResponse[IssuedCredentialItem, IssuedCredentialTimelineItem]
+class IssuerCredentialGetResponse(
+    GetTimelineResponse[IssuerCredentialItem, IssuerCredentialTimelineItem]
 ):
     pass
 
@@ -160,16 +160,16 @@ class OfferNewCredentialPayload(BaseModel):
     attributes: List[AttributePreview]
 
 
-class OfferNewCredentialResponse(GetResponse[IssuedCredentialItem]):
+class OfferNewCredentialResponse(GetResponse[IssuerCredentialItem]):
     pass
 
 
-class UpdateIssuedCredentialPayload(BaseModel):
-    issued_credential_id: UUID | None = None
+class UpdateIssuerCredentialPayload(BaseModel):
+    issuer_credential_id: UUID | None = None
     external_reference_id: str | None = None
     status: IssuerCredentialStatusType | None = None
     tags: List[str] | None = []
 
 
-class UpdateIssuedCredentialResponse(GetResponse[IssuedCredentialItem]):
+class UpdateIssuerCredentialResponse(GetResponse[IssuerCredentialItem]):
     pass

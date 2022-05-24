@@ -18,11 +18,11 @@ branch_labels = None
 depends_on = None
 
 
-create_timeline_func = """CREATE OR REPLACE FUNCTION issued_credential_timeline_func() RETURNS trigger AS $body$
+create_timeline_func = """CREATE OR REPLACE FUNCTION issuer_credential_timeline_func() RETURNS trigger AS $body$
     BEGIN
         IF NEW.status IS DISTINCT FROM OLD.status OR NEW.state IS DISTINCT FROM OLD.state THEN
-            INSERT INTO "issued_credential_timeline" ( "issued_credential_id", "status", "state" )
-            VALUES(NEW."issued_credential_id",NEW."status",NEW."state");
+            INSERT INTO "issuer_credential_timeline" ( "issuer_credential_id", "status", "state" )
+            VALUES(NEW."issuer_credential_id",NEW."status",NEW."state");
             RETURN NEW;
         END IF;
         RETURN null;
@@ -30,14 +30,14 @@ create_timeline_func = """CREATE OR REPLACE FUNCTION issued_credential_timeline_
     $body$ LANGUAGE plpgsql
 """
 
-drop_timeline_func = """DROP FUNCTION issued_credential_timeline_func"""
+drop_timeline_func = """DROP FUNCTION issuer_credential_timeline_func"""
 
-create_timeline_trigger = """CREATE TRIGGER issued_credential_timeline_trigger
-AFTER INSERT OR UPDATE OF status, state ON issued_credential
-FOR EACH ROW EXECUTE PROCEDURE issued_credential_timeline_func();"""
+create_timeline_trigger = """CREATE TRIGGER issuer_credential_timeline_trigger
+AFTER INSERT OR UPDATE OF status, state ON issuer_credential
+FOR EACH ROW EXECUTE PROCEDURE issuer_credential_timeline_func();"""
 
 drop_timeline_trigger = (
-    """DROP TRIGGER issued_credential_timeline_trigger ON issued_credential"""
+    """DROP TRIGGER issuer_credential_timeline_trigger ON issuer_credential"""
 )
 
 
@@ -161,9 +161,9 @@ def upgrade():
         unique=False,
     )
     op.create_table(
-        "issued_credential",
+        "issuer_credential",
         sa.Column(
-            "issued_credential_id",
+            "issuer_credential_id",
             postgresql.UUID(as_uuid=True),
             server_default=sa.text("gen_random_uuid()"),
             nullable=False,
@@ -193,7 +193,7 @@ def upgrade():
         ),
         sa.Column("revoked", sa.Boolean(), nullable=False),
         sa.Column("deleted", sa.Boolean(), nullable=False),
-        sa.Column("credential_persisted", sa.Boolean(), nullable=False),
+        sa.Column("preview_persisted", sa.Boolean(), nullable=False),
         sa.Column("comment", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
         sa.Column(
             "revocation_comment", sqlmodel.sql.sqltypes.AutoString(), nullable=True
@@ -218,36 +218,36 @@ def upgrade():
             ["tenant_id"],
             ["tenant.id"],
         ),
-        sa.PrimaryKeyConstraint("issued_credential_id"),
+        sa.PrimaryKeyConstraint("issuer_credential_id"),
     )
     op.create_index(
-        op.f("ix_issued_credential_contact_id"),
-        "issued_credential",
+        op.f("ix_issuer_credential_contact_id"),
+        "issuer_credential",
         ["contact_id"],
         unique=False,
     )
     op.create_index(
-        op.f("ix_issued_credential_cred_def_id"),
-        "issued_credential",
+        op.f("ix_issuer_credential_cred_def_id"),
+        "issuer_credential",
         ["cred_def_id"],
         unique=False,
     )
     op.create_index(
-        op.f("ix_issued_credential_credential_template_id"),
-        "issued_credential",
+        op.f("ix_issuer_credential_credential_template_id"),
+        "issuer_credential",
         ["credential_template_id"],
         unique=False,
     )
     op.create_index(
-        op.f("ix_issued_credential_tenant_id"),
-        "issued_credential",
+        op.f("ix_issuer_credential_tenant_id"),
+        "issuer_credential",
         ["tenant_id"],
         unique=False,
     )
     op.create_table(
-        "issued_credential_timeline",
+        "issuer_credential_timeline",
         sa.Column(
-            "issued_credential_timeline_id",
+            "issuer_credential_timeline_id",
             postgresql.UUID(as_uuid=True),
             server_default=sa.text("gen_random_uuid()"),
             nullable=False,
@@ -258,21 +258,22 @@ def upgrade():
             server_default=sa.text("now()"),
             nullable=False,
         ),
-        sa.Column("issued_credential_id", sqlmodel.sql.sqltypes.GUID(), nullable=False),
+        sa.Column("issuer_credential_id", sqlmodel.sql.sqltypes.GUID(), nullable=False),
         sa.Column("status", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
         sa.Column("state", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
         sa.ForeignKeyConstraint(
-            ["issued_credential_id"],
-            ["issued_credential.issued_credential_id"],
+            ["issuer_credential_id"],
+            ["issuer_credential.issuer_credential_id"],
         ),
-        sa.PrimaryKeyConstraint("issued_credential_timeline_id"),
+        sa.PrimaryKeyConstraint("issuer_credential_timeline_id"),
     )
     op.create_index(
-        op.f("ix_issued_credential_timeline_issued_credential_id"),
-        "issued_credential_timeline",
-        ["issued_credential_id"],
+        op.f("ix_issuer_credential_timeline_issuer_credential_id"),
+        "issuer_credential_timeline",
+        ["issuer_credential_id"],
         unique=False,
     )
+
     op.drop_index(
         "ix_connection_invitation_invitation_key", table_name="connection_invitation"
     )
@@ -292,24 +293,24 @@ def downgrade():
         unique=False,
     )
     op.drop_index(
-        op.f("ix_issued_credential_timeline_issued_credential_id"),
-        table_name="issued_credential_timeline",
+        op.f("ix_issuer_credential_timeline_issuer_credential_id"),
+        table_name="issuer_credential_timeline",
     )
-    op.drop_table("issued_credential_timeline")
+    op.drop_table("issuer_credential_timeline")
     op.drop_index(
-        op.f("ix_issued_credential_tenant_id"), table_name="issued_credential"
-    )
-    op.drop_index(
-        op.f("ix_issued_credential_credential_template_id"),
-        table_name="issued_credential",
+        op.f("ix_issuer_credential_tenant_id"), table_name="issuer_credential"
     )
     op.drop_index(
-        op.f("ix_issued_credential_cred_def_id"), table_name="issued_credential"
+        op.f("ix_issuer_credential_credential_template_id"),
+        table_name="issuer_credential",
     )
     op.drop_index(
-        op.f("ix_issued_credential_contact_id"), table_name="issued_credential"
+        op.f("ix_issuer_credential_cred_def_id"), table_name="issuer_credential"
     )
-    op.drop_table("issued_credential")
+    op.drop_index(
+        op.f("ix_issuer_credential_contact_id"), table_name="issuer_credential"
+    )
+    op.drop_table("issuer_credential")
     op.drop_index(
         op.f("ix_credential_template_tenant_id"), table_name="credential_template"
     )

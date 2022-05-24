@@ -9,9 +9,9 @@ from starlette.requests import Request
 from api.endpoints.dependencies.db import get_db
 from api.endpoints.dependencies.tenant_security import get_from_context
 from api.endpoints.models.v1.issuer import (
-    IssuedCredentialGetResponse,
-    UpdateIssuedCredentialPayload,
-    UpdateIssuedCredentialResponse,
+    IssuerCredentialGetResponse,
+    UpdateIssuerCredentialPayload,
+    UpdateIssuerCredentialResponse,
 )
 from api.endpoints.routes.v1.link_utils import build_item_links
 from api.services.v1 import issuer_service
@@ -21,26 +21,26 @@ logger = logging.getLogger(__name__)
 
 
 @router.get(
-    "/{issued_credential_id}",
+    "/{issuer_credential_id}",
     status_code=status.HTTP_200_OK,
-    response_model=IssuedCredentialGetResponse,
+    response_model=IssuerCredentialGetResponse,
 )
-async def get_issued_credential(
+async def get_issuer_credential(
     request: Request,
-    issued_credential_id: UUID,
+    issuer_credential_id: UUID,
     acapy: bool | None = False,
     deleted: bool | None = False,
     timeline: bool | None = False,
     db: AsyncSession = Depends(get_db),
-) -> IssuedCredentialGetResponse:
+) -> IssuerCredentialGetResponse:
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
-    item = await issuer_service.get_issued_credential(
+    item = await issuer_service.get_issuer_credential(
         db,
         tenant_id,
         wallet_id,
-        issued_credential_id=issued_credential_id,
+        issuer_credential_id=issuer_credential_id,
         acapy=acapy,
         deleted=deleted,
     )
@@ -49,68 +49,60 @@ async def get_issued_credential(
 
     timeline_items = []
     if timeline:
-        timeline_items = await issuer_service.get_issued_credential_timeline(
-            db, issued_credential_id
+        timeline_items = await issuer_service.get_issuer_credential_timeline(
+            db, issuer_credential_id
         )
 
-    return IssuedCredentialGetResponse(item=item, links=links, timeline=timeline_items)
+    return IssuerCredentialGetResponse(item=item, links=links, timeline=timeline_items)
 
 
 @router.put(
-    "/{issued_credential_id}",
+    "/{issuer_credential_id}",
     status_code=status.HTTP_200_OK,
-    response_model=UpdateIssuedCredentialResponse,
+    response_model=UpdateIssuerCredentialResponse,
 )
-async def update_issued_credential(
+async def update_issuer_credential(
     request: Request,
-    issued_credential_id: UUID,
-    payload: UpdateIssuedCredentialPayload,
+    issuer_credential_id: UUID,
+    payload: UpdateIssuerCredentialPayload,
     db: AsyncSession = Depends(get_db),
-) -> UpdateIssuedCredentialResponse:
+) -> UpdateIssuerCredentialResponse:
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
-    item = await issuer_service.update_issued_credential(
+    item = await issuer_service.update_issuer_credential(
         db,
         tenant_id,
         wallet_id,
-        issued_credential_id=issued_credential_id,
+        issuer_credential_id=issuer_credential_id,
         payload=payload,
     )
 
     links = build_item_links(str(request.url), item)
 
-    return UpdateIssuedCredentialResponse(item=item, link=links)
+    return UpdateIssuerCredentialResponse(item=item, link=links)
 
 
 @router.delete(
-    "/{issued_credential_id}",
+    "/{issuer_credential_id}",
     status_code=status.HTTP_200_OK,
-    response_model=IssuedCredentialGetResponse,
+    response_model=IssuerCredentialGetResponse,
 )
-async def delete_issued_credential(
+async def delete_issuer_credential(
     request: Request,
-    issued_credential_id: UUID,
+    issuer_credential_id: UUID,
     db: AsyncSession = Depends(get_db),
-) -> IssuedCredentialGetResponse:
-    """Delete Issued Credential.
-
-    This will delete an Issued Credential record
-
-    Issued Credentials are also in the tenant's wallet. To remove the item from the
-    wallet pass delete_from_wallet = true. The Traction data will be soft deleted and
-    the actual credential will be removed from the wallet.
-    """
+) -> IssuerCredentialGetResponse:
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
-    item = await issuer_service.delete_issued_credential(
+    item = await issuer_service.delete_issuer_credential(
         db,
         tenant_id,
         wallet_id,
-        issued_credential_id=issued_credential_id,
+        issuer_credential_id=issuer_credential_id,
     )
 
     links = build_item_links(str(request.url), item)
 
-    return IssuedCredentialGetResponse(item=item, link=links)
+    return IssuerCredentialGetResponse(item=item, link=links)
