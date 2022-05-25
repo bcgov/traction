@@ -11,7 +11,7 @@ from starlette import status
 @when('"{tenant}" registers as an issuer')
 def step_impl(context, tenant: str):
     response = requests.post(
-        context.config.userdata.get("traction_host") + "/tenant/v0/admin/issuer",
+        context.config.userdata.get("traction_host") + "/tenant/v1/admin/make-issuer",
         headers=context.config.userdata[tenant]["auth_headers"],
     )
     assert response.status_code == status.HTTP_200_OK, response.__dict__
