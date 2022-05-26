@@ -4,7 +4,6 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
-from starlette.background import BackgroundTasks
 from starlette.requests import Request
 
 from api.core.config import settings
@@ -69,7 +68,6 @@ async def list_schema_templates(
 @router.post("/", status_code=status.HTTP_200_OK)
 async def create_schema_template(
     payload: CreateSchemaTemplatePayload,
-    background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db),
 ) -> CreateSchemaTemplateResponse:
     """
@@ -88,9 +86,10 @@ async def create_schema_template(
 
     # this will kick off the call to the ledger and then event listeners will finish
     # populating the schema (and cred def) data.
-    background_tasks.add_task(
-        governance_service.send_schema_request_task, db=db, payload=payload, item=item
+    await governance_service.notify_create_schema(
+        tenant_id, wallet_id, payload.schema_definition, item.schema_template_id
     )
+
     return CreateSchemaTemplateResponse(
         item=item, credential_template=c_t_item, links=links
     )
@@ -99,7 +98,6 @@ async def create_schema_template(
 @router.post("/import", status_code=status.HTTP_200_OK)
 async def import_schema_template(
     payload: ImportSchemaTemplatePayload,
-    background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db),
 ) -> ImportSchemaTemplateResponse:
     """
@@ -119,11 +117,8 @@ async def import_schema_template(
     # this will kick off the call to the ledger and then event listeners will finish
     # populating the cred def
     if c_t_item:
-        background_tasks.add_task(
-            governance_service.send_cred_def_request_task,
-            db=db,
-            tenant_id=tenant_id,
-            credential_template_id=c_t_item.credential_template_id,
+        await governance_service.notify_create_cred_def(
+            tenant_id, wallet_id, credential_template_id=c_t_item.credential_template_id
         )
 
     return ImportSchemaTemplateResponse(

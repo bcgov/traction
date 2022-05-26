@@ -4,7 +4,6 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
-from starlette.background import BackgroundTasks
 from starlette.requests import Request
 
 from api.core.config import settings
@@ -71,7 +70,6 @@ async def list_issuer_credentials(
 @router.post("/", status_code=status.HTTP_200_OK)
 async def offer_new_credential(
     payload: OfferNewCredentialPayload,
-    background_tasks: BackgroundTasks,
     save_in_traction: bool | None = False,
     db: AsyncSession = Depends(get_db),
 ) -> OfferNewCredentialResponse:
@@ -96,12 +94,8 @@ async def offer_new_credential(
     item = await issuer_service.offer_new_credential(
         db, tenant_id, wallet_id, payload=payload, save_in_traction=save_in_traction
     )
-    background_tasks.add_task(
-        issuer_service.send_credential_offer_task,
-        db=db,
-        tenant_id=tenant_id,
-        issuer_credential_id=item.issuer_credential_id,
-    )
     links = []  # TODO
-
+    await issuer_service.notify_offer_credential(
+        tenant_id, wallet_id, item.issuer_credential_id
+    )
     return OfferNewCredentialResponse(item=item, links=links)

@@ -3,6 +3,7 @@ import json
 from api.core.config import settings
 from api.core.profile import Profile
 from api.db.models.v1.governance import CredentialTemplate
+from api.db.session import async_session
 from api.endpoints.models.v1.errors import NotFoundError
 from api.protocols.v1.endorser import CreateCredDefProcessor
 
@@ -16,9 +17,10 @@ class CreateCredDefRevocationProcessor(CreateCredDefProcessor):
     ) -> CredentialTemplate:
         cred_def_id = self.get_cred_def_id(payload=payload)
         try:
-            return await CredentialTemplate.get_by_cred_def_id(
-                profile.db, profile.tenant_id, cred_def_id
-            )
+            async with async_session() as db:
+                return await CredentialTemplate.get_by_cred_def_id(
+                    db, profile.tenant_id, cred_def_id
+                )
         except NotFoundError:
             return None
 

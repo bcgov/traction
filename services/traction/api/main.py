@@ -13,6 +13,7 @@ from api.protocols.v1 import subscribe_protocol_listeners
 from api.services.tenant_webhook_publisher import subscribe_all_events
 from api.services.tenant_workflows import subscribe_workflow_events
 from api.innkeeper_main import get_innkeeperapp
+from api.tasks.tasks import subscribe_task_listeners
 from api.tenant_main import get_tenantapp
 from acapy_wrapper.acapy_wrapper_main import get_acapy_wrapper_app
 
@@ -65,6 +66,7 @@ async def on_tenant_startup():
     subscribe_workflow_events()
     subscribe_all_events()
     subscribe_protocol_listeners()
+    subscribe_task_listeners()
 
 
 @app.on_event("shutdown")

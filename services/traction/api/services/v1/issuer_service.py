@@ -8,22 +8,21 @@ from sqlalchemy.orm import selectinload
 
 from acapy_client.api.revocation_api import RevocationApi
 from acapy_client.model.revoke_request import RevokeRequest
+from api.core.profile import Profile
+from api.db.session import async_session
 from api.endpoints.models.v1.governance import TemplateStatusType
+from api.endpoints.models.webhooks import TRACTION_EVENT_PREFIX
 from api.services.v1.governance_service import get_public_did
 
 from acapy_client.api.issue_credential_v1_0_api import IssueCredentialV10Api
 from acapy_client.model.cred_attr_spec import CredAttrSpec
 from acapy_client.model.credential_preview import CredentialPreview
-from acapy_client.model.v10_credential_free_offer_request import (
-    V10CredentialFreeOfferRequest,
-)
 from api.db.models.v1.contact import Contact
 from api.db.models.v1.governance import CredentialTemplate
 from api.db.models.v1.issuer import IssuerCredential, IssuerCredentialTimeline
 
 from api.endpoints.models.credentials import CredentialStateType
 from api.endpoints.models.v1.errors import (
-    NotFoundError,
     IdNotMatchError,
     IncorrectStatusError,
 )
@@ -89,47 +88,20 @@ def issuer_credential_to_item(
     return item
 
 
-async def send_credential_offer_task(
-    db: AsyncSession, tenant_id: UUID, issuer_credential_id: UUID
+async def notify_offer_credential(
+    tenant_id: UUID, wallet_id: UUID, issuer_credential_id: UUID
 ):
-    public_did = await get_public_did(db, tenant_id)
-    if not public_did:
-        return
-    try:
-        item = await IssuerCredential.get_by_id(db, tenant_id, issuer_credential_id)
-        cred_preview = credential_preview_conversion(item)
+    async with async_session() as db:
+        profile = Profile(wallet_id, tenant_id, db)
+        event_topic = TRACTION_EVENT_PREFIX + "offer_credential"
+        logger.info(f"profile.notify {event_topic}")
 
-        cred_offer = V10CredentialFreeOfferRequest(
-            connection_id=str(item.contact.connection_id),
-            cred_def_id=item.credential_template.cred_def_id,
-            credential_preview=cred_preview,
-            comment=item.comment,
-            auto_issue=True,
-            auto_remove=False,
-        )
-        data = {"body": cred_offer}
-        cred_response = issue_cred_v10_api.issue_credential_send_offer_post(**data)
-
-        values = {
-            "credential_exchange_id": cred_response.credential_exchange_id,
-            "thread_id": cred_response.thread_id,
+        payload = {
+            "issuer_credential_id": issuer_credential_id,
         }
-        if not item.preview_persisted:
-            # remove the preview/attributes...
-            values["credential_preview"] = {}
 
-        logger.info(values)
-        q = (
-            update(IssuerCredential)
-            .where(IssuerCredential.issuer_credential_id == item.issuer_credential_id)
-            .values(values)
-        )
-        await db.execute(q)
-        await db.commit()
-
-    except NotFoundError:
-        logger.error(
-            f"No Issuer Credential found for id<{issuer_credential_id}>. Cannot offer credential."  # noqa: E501
+        await profile.notify(
+            event_topic, {"topic": "offer_credential", "payload": payload}
         )
 
 

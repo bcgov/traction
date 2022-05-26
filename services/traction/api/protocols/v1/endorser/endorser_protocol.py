@@ -7,6 +7,7 @@ from api.core.config import settings
 from api.core.event_bus import Event
 from api.core.profile import Profile
 from api.db.models import Tenant
+from api.db.session import async_session
 from api.endpoints.models.webhooks import WEBHOOK_ENDORSE_LISTENER_PATTERN
 
 
@@ -145,10 +146,11 @@ class EndorserProtocol(ABC):
 
 class DefaultEndorserProtocol(EndorserProtocol):
     async def get_tenant(self, profile: Profile) -> Tenant:
-        q = select(Tenant).where(Tenant.id == profile.tenant_id)
-        q_result = await profile.db.execute(q)
-        db_rec = q_result.scalar_one_or_none()
-        return db_rec
+        async with async_session() as db:
+            q = select(Tenant).where(Tenant.id == profile.tenant_id)
+            q_result = await db.execute(q)
+            db_rec = q_result.scalar_one_or_none()
+            return db_rec
 
     async def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
         return False

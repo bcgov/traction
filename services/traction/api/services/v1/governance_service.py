@@ -7,12 +7,11 @@ from sqlalchemy import select, update, desc, func
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from acapy_client import OpenApiException
-from acapy_client.model.credential_definition_send_request import (
-    CredentialDefinitionSendRequest,
-)
+from api.core.profile import Profile
 from api.db.errors import DoesNotExist
 from api.db.models.v1.governance import SchemaTemplate, CredentialTemplate
 from api.db.repositories.tenant_issuers import TenantIssuersRepository
+from api.db.session import async_session
 from api.endpoints.models.tenant_issuer import PublicDIDStateType
 from api.endpoints.models.v1.errors import (
     IdNotMatchError,
@@ -35,9 +34,9 @@ from api.endpoints.models.v1.governance import (
 from acapy_client.api.endorse_transaction_api import EndorseTransactionApi
 from acapy_client.api.schema_api import SchemaApi
 from acapy_client.api.credential_definition_api import CredentialDefinitionApi
-from acapy_client.model.schema_send_request import SchemaSendRequest
 
 from api.api_client_utils import get_api_client
+from api.endpoints.models.webhooks import TRACTION_EVENT_PREFIX
 from api.protocols.v1.endorser.endorser_protocol import EndorserStateType
 
 endorse_api = EndorseTransactionApi(api_client=get_api_client())
@@ -83,80 +82,35 @@ def fetch_schema_from_ledger(schema_id: str):
     return None
 
 
-async def send_schema_request_task(
-    db: AsyncSession, payload: CreateSchemaTemplatePayload, item: SchemaTemplateItem
+async def notify_create_schema(
+    tenant_id: UUID, wallet_id: UUID, schema_definition: dict, schema_template_id: UUID
 ):
-    public_did = await get_public_did(db, item.tenant_id)
-    if not public_did:
-        return
+    async with async_session() as db:
+        profile = Profile(wallet_id, tenant_id, db)
+    event_topic = TRACTION_EVENT_PREFIX + "create_schema"
+    logger.info(f"profile.notify {event_topic}")
 
-    schema_request = SchemaSendRequest(
-        schema_name=payload.schema_definition.schema_name,
-        schema_version=payload.schema_definition.schema_version,
-        attributes=payload.schema_definition.attributes,
-    )
-    data = {"body": schema_request}
-    resp = schema_api.schemas_post(**data)
-    try:
-        if resp["txn"]:
-            values = {
-                "schema_id": resp["txn"]["meta_data"]["context"]["schema_id"],
-                "transaction_id": resp["txn"]["transaction_id"],
-            }
-            q = (
-                update(SchemaTemplate)
-                .where(SchemaTemplate.schema_template_id == item.schema_template_id)
-                .values(values)
-            )
-            await db.execute(q)
-            await db.commit()
-    except AttributeError:
-        # we didn't create one, one exists...
-        # go through the import process...
-        import_payload = ImportSchemaTemplatePayload(**payload.dict())
-        import_payload.schema_id = resp["sent"]["schema_id"]
-        st, ct = await import_schema_template(db, item.tenant_id, None, import_payload)
-        if ct:
-            # we need to kick off a cred def endorsement
-            await send_cred_def_request_task(
-                db, item.tenant_id, ct.credential_template_id
-            )
+    payload = {
+        "schema_definition": schema_definition,
+        "schema_template_id": schema_template_id,
+    }
+
+    await profile.notify(event_topic, {"topic": "create_schema", "payload": payload})
 
 
-async def send_cred_def_request_task(
-    db: AsyncSession, tenant_id: UUID, credential_template_id: UUID
+async def notify_create_cred_def(
+    tenant_id: UUID, wallet_id: UUID, credential_template_id: UUID
 ):
-    public_did = await get_public_did(db, tenant_id)
-    if not public_did:
-        return
-    try:
-        item = await CredentialTemplate.get_by_id(db, tenant_id, credential_template_id)
+    async with async_session() as db:
+        profile = Profile(wallet_id, tenant_id, db)
+    event_topic = TRACTION_EVENT_PREFIX + "create_cred_def"
+    logger.info(f"profile.notify {event_topic}")
 
-        cred_def_request = CredentialDefinitionSendRequest(
-            schema_id=item.schema_id,
-            tag=item.tag,
-        )
-        if item.revocation_enabled:
-            cred_def_request.support_revocation = True
-            cred_def_request.revocation_registry_size = item.revocation_registry_size
+    payload = {
+        "credential_template_id": credential_template_id,
+    }
 
-        data = {"body": cred_def_request}
-        cred_def_response = cred_def_api.credential_definitions_post(**data)
-
-        values = {"transaction_id": cred_def_response.txn["transaction_id"]}
-        q = (
-            update(CredentialTemplate)
-            .where(
-                CredentialTemplate.credential_template_id == item.credential_template_id
-            )
-            .values(values)
-        )
-        await db.execute(q)
-        await db.commit()
-    except NotFoundError:
-        logger.error(
-            f"No Credential Template for id<{credential_template_id}>. Cannot send request to ledger."  # noqa: E501
-        )
+    await profile.notify(event_topic, {"topic": "create_cred_def", "payload": payload})
 
 
 async def list_schema_templates(

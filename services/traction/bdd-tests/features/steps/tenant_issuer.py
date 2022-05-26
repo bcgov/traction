@@ -1,6 +1,4 @@
 import json, random, string
-import uuid
-from pprint import pp
 import requests
 import time
 from behave import *
@@ -17,28 +15,28 @@ def step_impl(context, tenant: str):
     assert response.status_code == status.HTTP_200_OK, response.__dict__
     resp_json = json.loads(response.content)
     # wait for endorser signatures and ledger writes
-    time.sleep(2)
+    time.sleep(20)
 
 
 @when('"{issuer}" issues "{holder}" a "{schema_name}" credential')
 def step_impl(context, issuer: str, holder: str, schema_name: str):
 
-    schema = context.config.userdata["governance"]["schemas"][schema_name]
+    schema_template = context.config.userdata[issuer]["schema_template"]
+    credential_template = context.config.userdata[issuer]["credential_template"]
     contact_id = context.config.userdata[issuer]["connections"][holder]["contact_id"]
 
+    schema_attrs = schema_template["attributes"]
+    credential_template_id = credential_template["credential_template_id"]
     data = {
-        "cred_protocol": "v1.0",
-        "credential": {
-            "attributes": [
-                {
-                    "name": attr_name,
-                    "value": "".join(random.choice(string.ascii_letters)),
-                }
-                for attr_name in json.loads(schema["schema_attrs"])
-            ]
-        },
-        "cred_def_id": schema["cred_def_id"],
         "contact_id": contact_id,
+        "credential_template_id": credential_template_id,
+        "attributes": [
+            {
+                "name": attr_name,
+                "value": "".join(random.choice(string.ascii_letters)),
+            }
+            for attr_name in schema_attrs
+        ],
     }
 
     response = requests.post(
@@ -46,7 +44,7 @@ def step_impl(context, issuer: str, holder: str, schema_name: str):
         headers=context.config.userdata[issuer]["auth_headers"],
         json=data,
     )
-    assert response.status_code == status.HTTP_201_CREATED, response.__dict__
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
 
 
 @then('"{issuer}" will have an acked credential_offer')
@@ -54,7 +52,7 @@ def step_impl(context, issuer):
     response = requests.get(
         context.config.userdata.get("traction_host")
         + "/tenant/v1/issuer/credentials"
-        + "?state=completed",
+        + "?status=Issued",
         headers=context.config.userdata[issuer]["auth_headers"],
     )
     assert response.status_code == status.HTTP_200_OK, response.status
@@ -69,7 +67,7 @@ def step_impl(context, tenant):
         f"""
     Given "{tenant}" is allowed to be an issuer by the innkeeper
     And "{tenant}" registers as an issuer
-    And we sadly wait for {3} seconds because we have not figured out how to listen for events
+    And we sadly wait for {5} seconds because we have not figured out how to listen for events
     And "{tenant}" will have a public did   
     """
     )

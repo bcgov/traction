@@ -2,6 +2,7 @@ from sqlalchemy import update
 
 from api.core.profile import Profile
 from api.db.models.v1.issuer import IssuerCredential
+from api.db.session import async_session
 from api.protocols.v1.issuer.issue_credential_protocol import (
     DefaultIssueCredentialProtocol,
 )
@@ -30,8 +31,9 @@ class IssuerCredentialRevocationUpdater(DefaultIssueCredentialProtocol):
                 )
                 .values(values)
             )
-            await profile.db.execute(stmt)
-            await profile.db.commit()
+            async with async_session() as db:
+                await db.execute(stmt)
+                await db.commit()
 
     async def on_done(self, profile: Profile, payload: dict):
         return await self.update_revocation_info(profile, payload)

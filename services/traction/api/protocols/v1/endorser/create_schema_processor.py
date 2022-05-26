@@ -5,6 +5,7 @@ from sqlalchemy import update
 from starlette_context import context
 from api.core.profile import Profile
 from api.db.models.v1.governance import SchemaTemplate, CredentialTemplate
+from api.db.session import async_session
 from api.endpoints.models.v1.errors import NotFoundError
 from api.endpoints.models.v1.governance import TemplateStatusType
 from api.protocols.v1.endorser.endorser_protocol import (
@@ -33,21 +34,23 @@ class CreateSchemaProcessor(DefaultEndorserProtocol):
     ) -> SchemaTemplate:
         transaction_id = self.get_transaction_id(payload=payload)
         try:
-            return await SchemaTemplate.get_by_transaction_id(
-                profile.db, profile.tenant_id, transaction_id
-            )
+            async with async_session() as db:
+                return await SchemaTemplate.get_by_transaction_id(
+                    db, profile.tenant_id, transaction_id
+                )
         except NotFoundError:
             return None
 
     async def get_credential_templates(
         self, profile: Profile, schema_template: SchemaTemplate
     ) -> List[CredentialTemplate]:
-        return await CredentialTemplate.list_by_schema_template_id(
-            db=profile.db,
-            tenant_id=profile.tenant_id,
-            schema_template_id=schema_template.schema_template_id,
-            status=TemplateStatusType.pending,
-        )
+        async with async_session() as db:
+            return await CredentialTemplate.list_by_schema_template_id(
+                db=db,
+                tenant_id=profile.tenant_id,
+                schema_template_id=schema_template.schema_template_id,
+                status=TemplateStatusType.pending,
+            )
 
     async def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
         has_schema_id = "schema_id" in payload["meta_data"]["context"]
@@ -106,8 +109,9 @@ class CreateSchemaProcessor(DefaultEndorserProtocol):
                 .where(SchemaTemplate.schema_template_id == o.schema_template_id)
                 .values(values)
             )
-            await profile.db.execute(stmt)
-            await profile.db.commit()
+            async with async_session() as db:
+                await db.execute(stmt)
+                await db.commit()
 
     async def on_transaction_acked(self, profile: Profile, payload: dict):
         tenant = await self.get_tenant(profile)
@@ -116,8 +120,8 @@ class CreateSchemaProcessor(DefaultEndorserProtocol):
         o = await self.get_schema_template(profile, payload)
         cred_templates = await self.get_credential_templates(profile, o)
         for c_t in cred_templates:
-            await governance_service.send_cred_def_request_task(
-                profile.db,
-                tenant_id=c_t.tenant_id,
+            await governance_service.notify_create_cred_def(
+                tenant.id,
+                tenant.wallet_id,
                 credential_template_id=c_t.credential_template_id,
             )

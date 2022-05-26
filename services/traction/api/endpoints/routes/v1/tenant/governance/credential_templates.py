@@ -4,7 +4,6 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
-from starlette.background import BackgroundTasks
 from starlette.requests import Request
 
 from api.core.config import settings
@@ -71,7 +70,6 @@ async def list_credential_templates(
 @router.post("/", status_code=status.HTTP_200_OK)
 async def create_credential_template(
     payload: CreateCredentialTemplatePayload,
-    background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db),
 ) -> CreateCredentialTemplateResponse:
     """Create  Credential Template.
@@ -94,11 +92,7 @@ async def create_credential_template(
 
     # this will kick off the call to the ledger and then event listeners will finish
     # populating the schema (and cred def) data.
-    background_tasks.add_task(
-        governance_service.send_cred_def_request_task,
-        db=db,
-        tenant_id=tenant_id,
-        credential_template_id=item.credential_template_id,
+    await governance_service.notify_create_cred_def(
+        tenant_id, wallet_id, credential_template_id=item.credential_template_id
     )
-
     return CreateCredentialTemplateResponse(item=item, links=links)

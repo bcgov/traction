@@ -4,6 +4,7 @@ from sqlalchemy import update
 
 from api.core.profile import Profile
 from api.db.models.v1.governance import CredentialTemplate
+from api.db.session import async_session
 from api.endpoints.models.v1.errors import NotFoundError
 from api.endpoints.models.v1.governance import TemplateStatusType
 from api.protocols.v1.endorser.endorser_protocol import (
@@ -40,9 +41,10 @@ class CreateCredDefProcessor(DefaultEndorserProtocol):
     ) -> CredentialTemplate:
         transaction_id = self.get_transaction_id(payload=payload)
         try:
-            return await CredentialTemplate.get_by_transaction_id(
-                profile.db, profile.tenant_id, transaction_id
-            )
+            async with async_session() as db:
+                return await CredentialTemplate.get_by_transaction_id(
+                    db, profile.tenant_id, transaction_id
+                )
         except NotFoundError:
             return None
 
@@ -98,8 +100,9 @@ class CreateCredDefProcessor(DefaultEndorserProtocol):
             )
             .values(values)
         )
-        await profile.db.execute(stmt)
-        await profile.db.commit()
+        async with async_session() as db:
+            await db.execute(stmt)
+            await db.commit()
 
     async def set_active(self, profile, item):
         stmt = (
@@ -109,5 +112,6 @@ class CreateCredDefProcessor(DefaultEndorserProtocol):
             )
             .values({"status": TemplateStatusType.active})
         )
-        await profile.db.execute(stmt)
-        await profile.db.commit()
+        async with async_session() as db:
+            await db.execute(stmt)
+            await db.commit()

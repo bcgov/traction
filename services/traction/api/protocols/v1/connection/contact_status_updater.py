@@ -2,6 +2,7 @@ from sqlalchemy import update
 
 from api.core.profile import Profile
 from api.db.models.v1.contact import Contact
+from api.db.session import async_session
 from api.endpoints.models.connections import ConnectionStateType
 from api.endpoints.models.v1.contacts import ContactStatusType
 from api.protocols.v1.connection.connection_protocol import DefaultConnectionProtocol
@@ -30,5 +31,6 @@ class ContactStatusUpdater(DefaultConnectionProtocol):
             .where(Contact.connection_id == payload["connection_id"])
             .values(values)
         )
-        await profile.db.execute(stmt)
-        await profile.db.commit()
+        async with async_session() as db:
+            await db.execute(stmt)
+            await db.commit()

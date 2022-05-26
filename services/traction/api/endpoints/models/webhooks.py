@@ -78,3 +78,12 @@ TRACTION_ISSUER_LISTENER_PATTERN = re.compile(
 TRACTION_SCHEMA_LISTENER_PATTERN = re.compile(
     f"^{TRACTION_EVENT_PREFIX}{TenantEventTopicType.schema}(.*)?$"
 )
+TRACTION_CREATE_SCHEMA_PATTERN = re.compile(
+    f"^{TRACTION_EVENT_PREFIX}create_schema(.*)?$"
+)
+TRACTION_CREATE_CRED_DEF_PATTERN = re.compile(
+    f"^{TRACTION_EVENT_PREFIX}create_cred_def(.*)?$"
+)
+TRACTION_OFFER_CREDENTIAL_PATTERN = re.compile(
+    f"^{TRACTION_EVENT_PREFIX}offer_credential(.*)?$"
+)

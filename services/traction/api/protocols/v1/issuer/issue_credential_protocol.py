@@ -5,6 +5,7 @@ from api.core.config import settings
 from api.core.event_bus import Event
 from api.core.profile import Profile
 from api.db.models.v1.issuer import IssuerCredential
+from api.db.session import async_session
 from api.endpoints.models.credentials import CredentialRoleType, CredentialStateType
 from api.endpoints.models.v1.errors import NotFoundError
 from api.endpoints.models.webhooks import WEBHOOK_ISSUE_LISTENER_PATTERN
@@ -127,9 +128,10 @@ class DefaultIssueCredentialProtocol(IssueCredentialProtocol):
     ) -> IssuerCredential:
         cred_ex_id = self.get_credential_exchange_id(payload=payload)
         try:
-            return await IssuerCredential.get_by_credential_exchange_id(
-                profile.db, profile.tenant_id, cred_ex_id
-            )
+            async with async_session() as db:
+                return await IssuerCredential.get_by_credential_exchange_id(
+                    db, profile.tenant_id, cred_ex_id
+                )
         except NotFoundError:
             return None
 
