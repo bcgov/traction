@@ -20,6 +20,7 @@ from api.endpoints.models.v1.governance import (
     CreateCredentialTemplatePayload,
     CreateCredentialTemplateResponse,
 )
+from api.tasks import SendCredDefRequestTask
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -92,7 +93,8 @@ async def create_credential_template(
 
     # this will kick off the call to the ledger and then event listeners will finish
     # populating the schema (and cred def) data.
-    await governance_service.notify_create_cred_def(
-        tenant_id, wallet_id, credential_template_id=item.credential_template_id
+    await SendCredDefRequestTask.assign(
+        tenant_id, wallet_id, item.credential_template_id
     )
+
     return CreateCredentialTemplateResponse(item=item, links=links)

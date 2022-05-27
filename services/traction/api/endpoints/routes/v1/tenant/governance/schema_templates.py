@@ -22,6 +22,7 @@ from api.endpoints.models.v1.governance import (
     ImportSchemaTemplateResponse,
     TemplateStatusType,
 )
+from api.tasks import SendCredDefRequestTask, SendSchemaRequestTask
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -86,7 +87,7 @@ async def create_schema_template(
 
     # this will kick off the call to the ledger and then event listeners will finish
     # populating the schema (and cred def) data.
-    await governance_service.notify_create_schema(
+    await SendSchemaRequestTask.assign(
         tenant_id, wallet_id, payload.schema_definition, item.schema_template_id
     )
 
@@ -117,8 +118,8 @@ async def import_schema_template(
     # this will kick off the call to the ledger and then event listeners will finish
     # populating the cred def
     if c_t_item:
-        await governance_service.notify_create_cred_def(
-            tenant_id, wallet_id, credential_template_id=c_t_item.credential_template_id
+        await SendCredDefRequestTask.assign(
+            tenant_id, wallet_id, c_t_item.credential_template_id
         )
 
     return ImportSchemaTemplateResponse(

@@ -20,6 +20,7 @@ from api.endpoints.models.v1.issuer import (
     OfferNewCredentialPayload,
     OfferNewCredentialResponse,
 )
+from api.tasks import SendCredentialOfferTask
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -95,7 +96,7 @@ async def offer_new_credential(
         db, tenant_id, wallet_id, payload=payload, save_in_traction=save_in_traction
     )
     links = []  # TODO
-    await issuer_service.notify_offer_credential(
+    await SendCredentialOfferTask.assign(
         tenant_id, wallet_id, item.issuer_credential_id
     )
     return OfferNewCredentialResponse(item=item, links=links)

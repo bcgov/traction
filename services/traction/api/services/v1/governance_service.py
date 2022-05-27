@@ -7,11 +7,9 @@ from sqlalchemy import select, update, desc, func
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from acapy_client import OpenApiException
-from api.core.profile import Profile
 from api.db.errors import DoesNotExist
 from api.db.models.v1.governance import SchemaTemplate, CredentialTemplate
 from api.db.repositories.tenant_issuers import TenantIssuersRepository
-from api.db.session import async_session
 from api.endpoints.models.tenant_issuer import PublicDIDStateType
 from api.endpoints.models.v1.errors import (
     IdNotMatchError,
@@ -36,7 +34,6 @@ from acapy_client.api.schema_api import SchemaApi
 from acapy_client.api.credential_definition_api import CredentialDefinitionApi
 
 from api.api_client_utils import get_api_client
-from api.endpoints.models.webhooks import TRACTION_EVENT_PREFIX
 from api.protocols.v1.endorser.endorser_protocol import EndorserStateType
 
 endorse_api = EndorseTransactionApi(api_client=get_api_client())
@@ -80,37 +77,6 @@ def fetch_schema_from_ledger(schema_id: str):
         pass
 
     return None
-
-
-async def notify_create_schema(
-    tenant_id: UUID, wallet_id: UUID, schema_definition: dict, schema_template_id: UUID
-):
-    async with async_session() as db:
-        profile = Profile(wallet_id, tenant_id, db)
-    event_topic = TRACTION_EVENT_PREFIX + "create_schema"
-    logger.info(f"profile.notify {event_topic}")
-
-    payload = {
-        "schema_definition": schema_definition,
-        "schema_template_id": schema_template_id,
-    }
-
-    await profile.notify(event_topic, {"topic": "create_schema", "payload": payload})
-
-
-async def notify_create_cred_def(
-    tenant_id: UUID, wallet_id: UUID, credential_template_id: UUID
-):
-    async with async_session() as db:
-        profile = Profile(wallet_id, tenant_id, db)
-    event_topic = TRACTION_EVENT_PREFIX + "create_cred_def"
-    logger.info(f"profile.notify {event_topic}")
-
-    payload = {
-        "credential_template_id": credential_template_id,
-    }
-
-    await profile.notify(event_topic, {"topic": "create_cred_def", "payload": payload})
 
 
 async def list_schema_templates(

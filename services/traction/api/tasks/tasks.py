@@ -1,12 +1,20 @@
 import logging
+import re
+from abc import ABC, abstractmethod
+from enum import Enum
+from re import Pattern
+from uuid import UUID
 
 from sqlalchemy import select, update
+from sqlalchemy.exc import DBAPIError
 from starlette_context import context
 
 from acapy_client.api.issue_credential_v1_0_api import IssueCredentialV10Api
+from acapy_client.model.cred_attr_spec import CredAttrSpec
 from acapy_client.model.credential_definition_send_request import (
     CredentialDefinitionSendRequest,
 )
+from acapy_client.model.credential_preview import CredentialPreview
 from acapy_client.model.v10_credential_free_offer_request import (
     V10CredentialFreeOfferRequest,
 )
@@ -18,18 +26,13 @@ from api.db.models.v1.governance import SchemaTemplate, CredentialTemplate
 from api.db.models.v1.issuer import IssuerCredential
 from api.db.session import async_session
 from api.endpoints.models.v1.errors import NotFoundError
-from api.endpoints.models.webhooks import (
-    TRACTION_CREATE_SCHEMA_PATTERN,
-    TRACTION_CREATE_CRED_DEF_PATTERN,
-    TRACTION_OFFER_CREDENTIAL_PATTERN,
-)
+from api.endpoints.models.v1.governance import SchemaDefinitionPayload
 from acapy_client.api.endorse_transaction_api import EndorseTransactionApi
 from acapy_client.api.schema_api import SchemaApi
 from acapy_client.api.credential_definition_api import CredentialDefinitionApi
 from acapy_client.model.schema_send_request import SchemaSendRequest
 
 from api.api_client_utils import get_api_client
-from api.services.v1 import issuer_service
 
 endorse_api = EndorseTransactionApi(api_client=get_api_client())
 schema_api = SchemaApi(api_client=get_api_client())
@@ -37,34 +40,124 @@ cred_def_api = CredentialDefinitionApi(api_client=get_api_client())
 issue_cred_v10_api = IssueCredentialV10Api(api_client=get_api_client())
 
 
-logger = logging.getLogger(__name__)
+class TractionTaskType(str, Enum):
+    send_schema_request = "send_schema_request"
+    send_cred_def_request = "send_cred_def_request"
+    send_credential_offer = "send_credential_offer"
 
 
-def subscribe_task_listeners():
-    TaskMaster()
+TRACTION_TASK_PREFIX = "traction::TASK::"
+TRACTION_TASK_LISTENER_PATTERN = re.compile(f"^{TRACTION_TASK_PREFIX}(.*)?$")
+
+TRACTION_SEND_SCHEMA_REQUEST_LISTENER_PATTERN = re.compile(
+    f"^{TRACTION_TASK_PREFIX}{TractionTaskType.send_schema_request}(.*)?$"
+)
+
+TRACTION_SEND_CRED_DEF_REQUEST_LISTENER_PATTERN = re.compile(
+    f"^{TRACTION_TASK_PREFIX}{TractionTaskType.send_cred_def_request}(.*)?$"
+)
+
+TRACTION_SEND_CREDENTIAL_OFFER_LISTENER_PATTERN = re.compile(
+    f"^{TRACTION_TASK_PREFIX}{TractionTaskType.send_credential_offer}(.*)?$"
+)
 
 
-class TaskMaster:
+class Task(ABC):
+    """Task (Abstract).
+
+    The Task class is for offloading work to the event bus. There are many long running
+    actions in AcaPy/Ledger etc. Use tasks to perform background work. In general, these
+     tasks will call AcaPy or the ledger and the flow will be handled in protocol
+    listeners as the conversations flow between the various states. Tasks will be the
+    kickoff/starting point of those conversations.
+
+    Implementing classes will specify the event bus topics and listener pattern and
+    will implement the actual work (_perform_task).
+
+    Implementing classes should create a specific class method to trigger the work.
+    These methods should build the payload and call _assign (which places the task on
+    the event bus).
+
+    In this way, the Task class can provide an easy way for callers to assign the task
+    to the event bus and do the work once it comes off the bus.
+
+    To facilitate calls to AcaPy, the tenant's wallet token is added to the context
+    before _perform_task is called.
+
+    Although the event profile contains a db session object, do NOT use this. Open a
+    session in _perform_task if/when needed.
+
+    """
+
     def __init__(self):
-        settings.EVENT_BUS.subscribe(TRACTION_CREATE_SCHEMA_PATTERN, self.create_schema)
-        settings.EVENT_BUS.subscribe(
-            TRACTION_CREATE_CRED_DEF_PATTERN, self.create_cred_def
-        )
-        settings.EVENT_BUS.subscribe(
-            TRACTION_OFFER_CREDENTIAL_PATTERN, self.offer_credential
-        )
+        self._logger = logging.getLogger(type(self).__name__)
+        self._pattern = self._listener_pattern()
+        settings.EVENT_BUS.subscribe(self._pattern, self._notify)
 
-    async def get_tenant(self, profile: Profile) -> Tenant:
+    @staticmethod
+    @abstractmethod
+    def _listener_pattern() -> Pattern[str]:
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def _event_topic() -> str:
+        pass
+
+    @property
+    def logger(self):
+        return self._logger
+
+    async def _get_tenant(self, profile: Profile) -> Tenant:
         async with async_session() as db:
             q = select(Tenant).where(Tenant.id == profile.tenant_id)
             q_result = await db.execute(q)
             db_rec = q_result.scalar_one_or_none()
             return db_rec
 
-    async def create_schema(self, profile: Profile, event: Event):
-        tenant = await self.get_tenant(profile)
+    async def _notify(self, profile: Profile, event: Event):
+        tenant = await self._get_tenant(profile)
         context["TENANT_WALLET_TOKEN"] = tenant.wallet_token
         payload = event.payload["payload"]
+        await self._perform_task(tenant=tenant, payload=payload)
+
+    @abstractmethod
+    async def _perform_task(self, tenant: Tenant, payload: dict):
+        pass
+
+    @classmethod
+    async def _assign(cls, tenant_id: UUID, wallet_id: UUID, payload):
+        """Assign Task.
+
+        Assign a task to be performed.
+        Payload will be dependent on the task implementation
+
+        Args:
+          tenant_id: Traction ID of tenant making the call
+          wallet_id: AcaPy Wallet ID for tenant
+          payload: data for the task to run (parsed in _perform_task)
+        """
+        # create the profile passed to listener/handler
+        async with async_session() as db:
+            # db is only to satisfy Profile requirements.
+            # do NOT use this db anywhere, get a db session when needed in _perform_task
+            profile = Profile(wallet_id, tenant_id, db)
+
+        event_topic = cls._event_topic()
+
+        await profile.notify(event_topic, {"topic": "task", "payload": payload})
+
+
+class SendSchemaRequestTask(Task):
+    @staticmethod
+    def _listener_pattern() -> Pattern[str]:
+        return TRACTION_SEND_SCHEMA_REQUEST_LISTENER_PATTERN
+
+    @staticmethod
+    def _event_topic() -> str:
+        return TRACTION_TASK_PREFIX + TractionTaskType.send_schema_request
+
+    async def _perform_task(self, tenant: Tenant, payload: dict):
         schema_definition = payload["schema_definition"]
         schema_template_id = payload["schema_template_id"]
         schema_request = SchemaSendRequest(
@@ -86,19 +179,59 @@ class TaskMaster:
                     .values(values)
                 )
                 async with async_session() as db:
-                    await db.execute(q)
-                    await db.commit()
+                    try:
+                        await db.execute(q)
+                    except DBAPIError:
+                        await db.rollback()
+                        self.logger.error(exc_info=1)
+                    else:
+                        await db.commit()
         except AttributeError:
-            logger.error()
+            self.logger.error()
 
-    async def create_cred_def(self, profile: Profile, event: Event):
-        tenant = await self.get_tenant(profile)
-        context["TENANT_WALLET_TOKEN"] = tenant.wallet_token
-        payload = event.payload["payload"]
+    @classmethod
+    async def assign(
+        cls,
+        tenant_id: UUID,
+        wallet_id: UUID,
+        schema_definition: SchemaDefinitionPayload,
+        schema_template_id: UUID,
+    ):
+        """Assign Send Schema Request Task.
+
+        Send a schema request to the endorser/ledger. This assumes that all checks have
+        been made that the tenant is an issuer and the schema defined is not already
+        on the ledger.
+
+        Args:
+          tenant_id: Traction ID of tenant making the call
+          wallet_id: AcaPy Wallet ID for tenant
+          schema_definition: SchemaDefinitionPayload
+          schema_template_id: UUID of schema template id
+        """
+        # create the profile passed to listener/handler
+        payload = {
+            "schema_definition": schema_definition,
+            "schema_template_id": schema_template_id,
+        }
+
+        await cls._assign(tenant_id, wallet_id, payload)
+
+
+class SendCredDefRequestTask(Task):
+    @staticmethod
+    def _listener_pattern() -> Pattern[str]:
+        return TRACTION_SEND_CRED_DEF_REQUEST_LISTENER_PATTERN
+
+    @staticmethod
+    def _event_topic() -> str:
+        return TRACTION_TASK_PREFIX + TractionTaskType.send_cred_def_request
+
+    async def _perform_task(self, tenant: Tenant, payload: dict):
         c_t_id = payload["credential_template_id"]
         try:
             async with async_session() as db:
-                item = await CredentialTemplate.get_by_id(db, profile.tenant_id, c_t_id)
+                item = await CredentialTemplate.get_by_id(db, tenant.id, c_t_id)
 
             cred_def_request = CredentialDefinitionSendRequest(
                 schema_id=item.schema_id,
@@ -120,25 +253,68 @@ class TaskMaster:
                 .values(values)
             )
             async with async_session() as db:
-                await db.execute(q)
-                await db.commit()
-
+                try:
+                    await db.execute(q)
+                except DBAPIError:
+                    await db.rollback()
+                    self.logger.error(exc_info=1)
+                else:
+                    await db.commit()
         except NotFoundError:
-            logger.error(
+            self.logger.error(
                 f"No Credential Template for id<{c_t_id}>. Cannot send request to ledger."  # noqa: E501
             )
 
-    async def offer_credential(self, profile: Profile, event: Event):
-        tenant = await self.get_tenant(profile)
-        context["TENANT_WALLET_TOKEN"] = tenant.wallet_token
-        payload = event.payload["payload"]
+    @classmethod
+    async def assign(
+        cls, tenant_id: UUID, wallet_id: UUID, credential_template_id: UUID
+    ):
+        """Assign Cred Def Request Task.
+
+        Send a Cred Def request to the endorser/ledger. This assumes that all checks
+        have been made that the tenant is an issuer and the cred def is not already on
+        the ledger.
+
+        Args:
+          tenant_id: Traction ID of tenant making the call
+          wallet_id: AcaPy Wallet ID for tenant
+          credential_template_id: UUID for credential template
+        """
+        payload = {
+            "credential_template_id": credential_template_id,
+        }
+
+        await cls._assign(tenant_id, wallet_id, payload)
+
+
+class SendCredentialOfferTask(Task):
+    @staticmethod
+    def _listener_pattern():
+        return TRACTION_SEND_CREDENTIAL_OFFER_LISTENER_PATTERN
+
+    @staticmethod
+    def _event_topic() -> str:
+        return TRACTION_TASK_PREFIX + TractionTaskType.send_credential_offer
+
+    def _credential_preview_conversion(self, item: IssuerCredential):
+        if item.credential_preview and "attributes" in item.credential_preview:
+            attrs = item.credential_preview["attributes"]
+            cred_attrs = []
+            for a in attrs:
+                cred_attr = CredAttrSpec(**a)
+                cred_attrs.append(cred_attr)
+            return CredentialPreview(attributes=cred_attrs)
+
+        return None
+
+    async def _perform_task(self, tenant: Tenant, payload: dict):
         issuer_credential_id = payload["issuer_credential_id"]
         try:
             async with async_session() as db:
                 item = await IssuerCredential.get_by_id(
                     db, tenant.id, issuer_credential_id
                 )
-            cred_preview = issuer_service.credential_preview_conversion(item)
+            cred_preview = self._credential_preview_conversion(item)
 
             cred_offer = V10CredentialFreeOfferRequest(
                 connection_id=str(item.contact.connection_id),
@@ -159,7 +335,6 @@ class TaskMaster:
                 # remove the preview/attributes...
                 values["credential_preview"] = {}
 
-            logger.info(values)
             q = (
                 update(IssuerCredential)
                 .where(
@@ -168,10 +343,32 @@ class TaskMaster:
                 .values(values)
             )
             async with async_session() as db:
-                await db.execute(q)
-                await db.commit()
-
+                try:
+                    await db.execute(q)
+                except DBAPIError:
+                    await db.rollback()
+                    self.logger.error(exc_info=1)
+                else:
+                    await db.commit()
         except NotFoundError:
-            logger.error(
+            self.logger.error(
                 f"No Issuer Credential found for id<{issuer_credential_id}>. Cannot offer credential."  # noqa: E501
             )
+
+    @classmethod
+    async def assign(cls, tenant_id: UUID, wallet_id: UUID, issuer_credential_id: UUID):
+        """Assign Cred Def Request Task.
+
+        Send a Credential Offer. The Issuer Credential will specify the Contact and
+        Credential Template (connection and cred def) for the offer.
+
+        Args:
+          tenant_id: Traction ID of tenant making the call
+          wallet_id: AcaPy Wallet ID for tenant
+          issuer_credential_id: UUID for issuer credential to offer
+        """
+        payload = {
+            "issuer_credential_id": issuer_credential_id,
+        }
+
+        await cls._assign(tenant_id, wallet_id, payload)

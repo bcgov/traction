@@ -14,7 +14,7 @@ from api.protocols.v1.endorser.endorser_protocol import (
 )
 from api.api_client_utils import get_api_client
 from acapy_client.api.credential_definition_api import CredentialDefinitionApi
-from api.services.v1 import governance_service
+from api.tasks import SendCredDefRequestTask
 
 cred_def_api = CredentialDefinitionApi(api_client=get_api_client())
 
@@ -120,8 +120,6 @@ class CreateSchemaProcessor(DefaultEndorserProtocol):
         o = await self.get_schema_template(profile, payload)
         cred_templates = await self.get_credential_templates(profile, o)
         for c_t in cred_templates:
-            await governance_service.notify_create_cred_def(
-                tenant.id,
-                tenant.wallet_id,
-                credential_template_id=c_t.credential_template_id,
+            await SendCredDefRequestTask.assign(
+                tenant.id, tenant.wallet_id, c_t.credential_template_id
             )
