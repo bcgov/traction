@@ -1,6 +1,5 @@
 import json
 
-from api.core.config import settings
 from api.core.profile import Profile
 from api.db.models.v1.governance import CredentialTemplate
 from api.db.session import async_session
@@ -81,13 +80,7 @@ class CreateCredDefRevocationProcessor(CreateCredDefProcessor):
     async def on_transaction_acked(self, profile: Profile, payload: dict):
         self.logger.info("> on_transaction_acked()")
         # check the signature to confirm we are truly acked...
-        endorser_public_did = settings.ACAPY_ENDORSER_PUBLIC_DID
-        self.logger.debug(f"endorser_public_did = {endorser_public_did}")
-
-        signature_json = payload["signature_response"][0]["signature"][
-            endorser_public_did
-        ]
-        signature = json.loads(signature_json)
+        signature = self.get_signature(payload)
 
         is_operation_type_114 = signature["operation"]["type"] == "114"
         self.logger.debug(f"is_operation_type_114 = {is_operation_type_114}")

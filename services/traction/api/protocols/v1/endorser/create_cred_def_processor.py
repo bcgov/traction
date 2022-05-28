@@ -2,6 +2,7 @@ import json
 
 from sqlalchemy import update
 
+from api.core.config import settings
 from api.core.profile import Profile
 from api.db.models.v1.governance import CredentialTemplate
 from api.db.session import async_session
@@ -24,17 +25,20 @@ class CreateCredDefProcessor(DefaultEndorserProtocol):
         except KeyError:
             return None
 
-    def get_cred_def_id(self, payload: dict) -> str:
-        try:
-            return payload["meta_data"]["context"]["cred_def_id"]
-        except KeyError:
-            return None
-
     def get_transaction_id(self, payload: dict) -> str:
         try:
             return payload["transaction_id"]
         except KeyError:
             return None
+
+    def get_signature(self, payload: dict) -> dict:
+        endorser_public_did = settings.ACAPY_ENDORSER_PUBLIC_DID
+        self.logger.debug(f"endorser_public_did = {endorser_public_did}")
+        signature_json = payload["signature_response"][0]["signature"][
+            endorser_public_did
+        ]
+        signature = json.loads(signature_json)
+        return signature
 
     async def get_credential_template(
         self, profile: Profile, payload: dict
@@ -51,21 +55,14 @@ class CreateCredDefProcessor(DefaultEndorserProtocol):
     async def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
         self.logger.info("> approve_for_processing()")
         has_schema_id = "schema_id" in payload["meta_data"]["context"]
-        has_cred_def_id = "cred_def_id" in payload["meta_data"]["context"]
         data_json = json.loads(payload["messages_attach"][0]["data"]["json"])
         is_operation_type_102 = data_json and data_json["operation"]["type"] == "102"
 
         template = await self.get_credential_template(profile, payload)
         template_exists = template is not None
 
-        approved = (
-            has_schema_id
-            and has_cred_def_id
-            and is_operation_type_102
-            and template_exists
-        )
+        approved = has_schema_id and is_operation_type_102 and template_exists
         self.logger.debug(f"has_schema_id={has_schema_id}")
-        self.logger.debug(f"has_cred_def_id={has_cred_def_id}")
         self.logger.debug(f"is_operation_type_102={is_operation_type_102}")
         self.logger.debug(f"template_exists={template_exists}")
         self.logger.info(f"< approve_for_processing({approved})")
@@ -75,15 +72,12 @@ class CreateCredDefProcessor(DefaultEndorserProtocol):
         self.logger.info("> before_any()")
         o = await self.get_credential_template(profile, payload)
         schema_id = self.get_schema_id(payload)
-        cred_def_id = self.get_cred_def_id(payload)
         self.logger.debug(f"credential_template = {o}")
         self.logger.debug(f"schema_id = {schema_id}")
-        self.logger.debug(f"cred_def_id = {cred_def_id}")
 
         if o:
             values = {
                 "state": payload["state"],
-                "cred_def_id": cred_def_id,
                 "schema_id": schema_id,
             }
             self.logger.debug(f"update values = {values}")
@@ -93,11 +87,37 @@ class CreateCredDefProcessor(DefaultEndorserProtocol):
 
     async def on_transaction_acked(self, profile: Profile, payload: dict):
         self.logger.info("> on_transaction_acked()")
-        # set Status to Active if we are not allowing revocation
-        # otherwise, the revocation processor will set active when appropriate
-        o = await self.get_credential_template(profile, payload)
-        if not o.revocation_enabled:
-            await self.set_active(profile, o)
+        item = await self.get_credential_template(profile, payload)
+
+        # it is here that we get the cred def id...
+        # pull it out of the signature
+        signature = self.get_signature(payload)
+        public_did = signature["identifier"]
+        sig_type = signature["operation"]["signature_type"]
+        schema_ref = signature["operation"]["ref"]
+        tag = signature["operation"]["tag"]
+
+        cred_def_id = f"{public_did}:3:{sig_type}:{schema_ref}:{tag}"
+
+        values = {"cred_def_id": cred_def_id}
+        if not item.revocation_enabled:
+            # set Status to Active if we are not allowing revocation
+            # otherwise, the revocation processor will set active when appropriate
+            values["status"] = TemplateStatusType.active
+
+        self.logger.debug(f"update values = {values}")
+
+        stmt = (
+            update(CredentialTemplate)
+            .where(
+                CredentialTemplate.credential_template_id == item.credential_template_id
+            )
+            .values(values)
+        )
+        async with async_session() as db:
+            await db.execute(stmt)
+            await db.commit()
+
         self.logger.info("< on_transaction_acked()")
 
     async def update_state(self, payload, profile, values, item):
