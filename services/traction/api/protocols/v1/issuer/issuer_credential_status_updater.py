@@ -15,7 +15,7 @@ class IssuerCredentialStatusUpdater(DefaultIssueCredentialProtocol):
         super().__init__()
 
     async def before_any(self, profile: Profile, payload: dict):
-        self.logger.debug(f"before_any({profile.wallet_id}, {payload})")
+        self.logger.info("> before_any()")
 
         values = {"state": payload["state"]}
 
@@ -34,7 +34,7 @@ class IssuerCredentialStatusUpdater(DefaultIssueCredentialProtocol):
 
         if payload["state"] in issued_states:
             values["status"] = IssuerCredentialStatusType.issued
-
+        self.logger.debug(f"update values = {values}")
         stmt = (
             update(IssuerCredential)
             .where(IssuerCredential.tenant_id == profile.tenant_id)
@@ -47,3 +47,4 @@ class IssuerCredentialStatusUpdater(DefaultIssueCredentialProtocol):
         async with async_session() as db:
             await db.execute(stmt)
             await db.commit()
+        self.logger.info("< before_any()")

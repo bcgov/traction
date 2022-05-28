@@ -15,11 +15,18 @@ class IssueCredentialProtocol(ABC):
     def __init__(self):
         settings.EVENT_BUS.subscribe(WEBHOOK_ISSUE_LISTENER_PATTERN, self.notify)
         self.role = CredentialRoleType.issuer
-        self.logger = logging.getLogger(type(self).__name__)
+        self._logger = logging.getLogger(type(self).__name__)
+
+    @property
+    def logger(self):
+        return self._logger
 
     async def notify(self, profile: Profile, event: Event):
+        self.logger.info("> notify()")
         payload = event.payload["payload"]
-        self.logger.info(f" role = {payload['role']}")
+        self.logger.debug(f"payload={payload}")
+        self.logger.debug(f"role={payload['role']}")
+        self.logger.debug(f"state={payload['state']}")
         if CredentialRoleType.issuer == payload["role"]:
             await self.before_all(profile=profile, payload=payload)
 
@@ -51,6 +58,7 @@ class IssueCredentialProtocol(ABC):
                 await self.after_any(profile=profile, payload=payload)
 
             await self.after_all(profile=profile, payload=payload)
+        self.logger.info("< notify()")
 
     @abstractmethod
     def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
@@ -136,8 +144,11 @@ class DefaultIssueCredentialProtocol(IssueCredentialProtocol):
             return None
 
     async def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
+        self.logger.info("> approve_for_processing()")
         issuer_credential = await self.get_issuer_credential(profile, payload)
-        return issuer_credential is not None
+        approved = issuer_credential is not None
+        self.logger.info(f"< approve_for_processing({approved})")
+        return approved
 
     async def before_all(self, profile: Profile, payload: dict):
         pass

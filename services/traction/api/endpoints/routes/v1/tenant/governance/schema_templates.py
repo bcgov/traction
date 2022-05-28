@@ -77,8 +77,11 @@ async def create_schema_template(
     "schema_definition", defines the new schema.
     If "credential_definition" is provided, create a credential definition.
     """
+    logger.info("> create_schema_template()")
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
+    logger.debug(f"wallet_id = {wallet_id}")
+    logger.debug(f"tenant_id = {tenant_id}")
 
     item, c_t_item = await governance_service.create_schema_template(
         db, tenant_id, wallet_id, payload=payload
@@ -87,10 +90,14 @@ async def create_schema_template(
 
     # this will kick off the call to the ledger and then event listeners will finish
     # populating the schema (and cred def) data.
+    logger.debug("> > SendSchemaRequestTask.assign()")
     await SendSchemaRequestTask.assign(
         tenant_id, wallet_id, payload.schema_definition, item.schema_template_id
     )
-
+    logger.debug("< < SendSchemaRequestTask.assign()")
+    logger.debug(f"item = {item}")
+    logger.debug(f"credential_template = {c_t_item}")
+    logger.info("< create_schema_template()")
     return CreateSchemaTemplateResponse(
         item=item, credential_template=c_t_item, links=links
     )
@@ -107,8 +114,11 @@ async def import_schema_template(
     "schema_id" is the ledger's schema id.
     If "credential_definition" is provided, create a credential definition.
     """
+    logger.info("> import_schema_template()")
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
+    logger.debug(f"wallet_id = {wallet_id}")
+    logger.debug(f"tenant_id = {tenant_id}")
 
     item, c_t_item = await governance_service.import_schema_template(
         db, tenant_id, wallet_id, payload=payload
@@ -118,10 +128,15 @@ async def import_schema_template(
     # this will kick off the call to the ledger and then event listeners will finish
     # populating the cred def
     if c_t_item:
+        logger.debug("> > SendCredDefRequestTask.assign()")
         await SendCredDefRequestTask.assign(
             tenant_id, wallet_id, c_t_item.credential_template_id
         )
+        logger.debug("< < SendCredDefRequestTask.assign()")
 
+    logger.debug(f"item = {item}")
+    logger.debug(f"credential_template = {c_t_item}")
+    logger.info("< import_schema_template()")
     return ImportSchemaTemplateResponse(
         item=item, credential_template=c_t_item, links=links
     )

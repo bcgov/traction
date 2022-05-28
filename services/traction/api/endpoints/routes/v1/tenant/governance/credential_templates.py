@@ -83,8 +83,11 @@ async def create_credential_template(
     then it will be imported and Schema Template will be created.
 
     """
+    logger.info("> create_credential_template()")
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
+    logger.debug(f"wallet_id = {wallet_id}")
+    logger.debug(f"tenant_id = {tenant_id}")
 
     item = await governance_service.create_credential_template(
         db, tenant_id, wallet_id, payload=payload
@@ -93,8 +96,11 @@ async def create_credential_template(
 
     # this will kick off the call to the ledger and then event listeners will finish
     # populating the schema (and cred def) data.
+    logger.debug("> > SendCredDefRequestTask.assign()")
     await SendCredDefRequestTask.assign(
         tenant_id, wallet_id, item.credential_template_id
     )
-
+    logger.debug("< < SendCredDefRequestTask.assign()")
+    logger.debug(f"item = {item}")
+    logger.info("< create_credential_template()")
     return CreateCredentialTemplateResponse(item=item, links=links)

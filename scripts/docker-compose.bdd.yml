@@ -5,7 +5,7 @@ services:
       context: ../services/traction/bdd-tests
       dockerfile: Dockerfile  
     environment:
-      - TRACTION_HOST=${TRACTION_HOST_URL}
-      - INNKEEPER_PASSWORD=${TRACTION_API_ADMIN_KEY}
+      - TRACTION_HOST=https://pr-186-traction-api-dev.apps.silver.devops.gov.bc.ca
+      - INNKEEPER_PASSWORD=hmMZK0W3zBOyv79lzwQQ7AkRyIueBGZn
     extra_hosts:
       - host.docker.internal:host-gateway

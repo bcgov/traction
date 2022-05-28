@@ -29,7 +29,7 @@ class ReusableInvitationProcessor(DefaultConnectionProtocol):
         super().__init__(role=ConnectionRoleType.inviter)
 
     async def on_request(self, profile: Profile, payload: dict):
-        self.logger.debug(f"on_request({profile.wallet_id} {payload})")
+        self.logger.info("> on_request()")
         invitation = await is_reusable_invitation(profile, payload)
         if invitation:
             self.logger.debug(
@@ -55,9 +55,10 @@ class ReusableInvitationProcessor(DefaultConnectionProtocol):
                 await db.commit()
         else:
             self.logger.debug("on_request >> not a reusable invitation")
+        self.logger.info("< on_request()")
 
     async def on_response(self, profile: Profile, payload: dict):
-        self.logger.debug(f"on_response({profile.wallet_id} {payload})")
+        self.logger.info("> on_response()")
         invitation = await is_reusable_invitation(profile, payload)
         if invitation:
             self.logger.debug(
@@ -69,6 +70,7 @@ class ReusableInvitationProcessor(DefaultConnectionProtocol):
             # update the alias, connection alias...
             label = payload["their_label"]
             values = {"alias": label, "connection_alias": label}
+            self.logger.debug(f"update values = {values}")
             stmt = (
                 update(Contact)
                 .where(Contact.connection_id == payload["connection_id"])
@@ -79,3 +81,4 @@ class ReusableInvitationProcessor(DefaultConnectionProtocol):
                 await db.commit()
         else:
             self.logger.debug("on_response >> not a reusable invitation")
+        self.logger.info("< on_response()")

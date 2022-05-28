@@ -62,6 +62,10 @@ TRACTION_SEND_CREDENTIAL_OFFER_LISTENER_PATTERN = re.compile(
 )
 
 
+def get_logger(cls):
+    return logging.getLogger(cls.__name__)
+
+
 class Task(ABC):
     """Task (Abstract).
 
@@ -137,6 +141,10 @@ class Task(ABC):
           wallet_id: AcaPy Wallet ID for tenant
           payload: data for the task to run (parsed in _perform_task)
         """
+        get_logger(cls).info("> _assign()")
+        get_logger(cls).debug(f"tenant_id = {tenant_id}")
+        get_logger(cls).debug(f"wallet_id = {wallet_id}")
+        get_logger(cls).debug(f"payload = {payload}")
         # create the profile passed to listener/handler
         async with async_session() as db:
             # db is only to satisfy Profile requirements.
@@ -144,8 +152,10 @@ class Task(ABC):
             profile = Profile(wallet_id, tenant_id, db)
 
         event_topic = cls._event_topic()
+        get_logger(cls).debug(f"event_topic = {event_topic}")
 
         await profile.notify(event_topic, {"topic": "task", "payload": payload})
+        get_logger(cls).info(f"< _assign()")
 
 
 class SendSchemaRequestTask(Task):
@@ -158,6 +168,7 @@ class SendSchemaRequestTask(Task):
         return TRACTION_TASK_PREFIX + TractionTaskType.send_schema_request
 
     async def _perform_task(self, tenant: Tenant, payload: dict):
+        self.logger.info("> _perform_task()")
         schema_definition = payload["schema_definition"]
         schema_template_id = payload["schema_template_id"]
         schema_request = SchemaSendRequest(
@@ -166,13 +177,19 @@ class SendSchemaRequestTask(Task):
             attributes=schema_definition.attributes,
         )
         data = {"body": schema_request}
+        self.logger.debug(f"schema_definition = {schema_definition}")
+        self.logger.debug(f"schema_template_id = {schema_template_id}")
+        self.logger.debug(f"data = {data}")
+        self.logger.debug("> > schema_api.schemas_post()")
         resp = schema_api.schemas_post(**data)
+        self.logger.debug(f"< < schema_api.schemas_post({resp})")
         try:
             if resp["txn"]:
                 values = {
                     "schema_id": resp["txn"]["meta_data"]["context"]["schema_id"],
                     "transaction_id": resp["txn"]["transaction_id"],
                 }
+                self.logger.debug(f"update values = {values}")
                 q = (
                     update(SchemaTemplate)
                     .where(SchemaTemplate.schema_template_id == schema_template_id)
@@ -188,6 +205,7 @@ class SendSchemaRequestTask(Task):
                         await db.commit()
         except AttributeError:
             self.logger.error()
+        self.logger.info("< _perform_task()")
 
     @classmethod
     async def assign(
@@ -210,12 +228,14 @@ class SendSchemaRequestTask(Task):
           schema_template_id: UUID of schema template id
         """
         # create the profile passed to listener/handler
+        get_logger(cls).info("> assign()")
         payload = {
             "schema_definition": schema_definition,
             "schema_template_id": schema_template_id,
         }
-
+        get_logger(cls).debug(f"payload = {payload}")
         await cls._assign(tenant_id, wallet_id, payload)
+        get_logger(cls).info("< assign()")
 
 
 class SendCredDefRequestTask(Task):
@@ -228,6 +248,7 @@ class SendCredDefRequestTask(Task):
         return TRACTION_TASK_PREFIX + TractionTaskType.send_cred_def_request
 
     async def _perform_task(self, tenant: Tenant, payload: dict):
+        self.logger.info("> _perform_task()")
         c_t_id = payload["credential_template_id"]
         try:
             async with async_session() as db:
@@ -244,9 +265,15 @@ class SendCredDefRequestTask(Task):
                 )
 
             data = {"body": cred_def_request}
+            self.logger.debug(f"data = {data}")
+            self.logger.debug("> > cred_def_api.credential_definitions_post()")
             cred_def_response = cred_def_api.credential_definitions_post(**data)
+            self.logger.debug(
+                f"< < cred_def_api.credential_definitions_post({cred_def_response})"
+            )
 
             values = {"transaction_id": cred_def_response.txn["transaction_id"]}
+            self.logger.debug(f"update values = {values}")
             q = (
                 update(CredentialTemplate)
                 .where(CredentialTemplate.credential_template_id == c_t_id)
@@ -264,6 +291,7 @@ class SendCredDefRequestTask(Task):
             self.logger.error(
                 f"No Credential Template for id<{c_t_id}>. Cannot send request to ledger."  # noqa: E501
             )
+        self.logger.info("< _perform_task()")
 
     @classmethod
     async def assign(
@@ -280,11 +308,13 @@ class SendCredDefRequestTask(Task):
           wallet_id: AcaPy Wallet ID for tenant
           credential_template_id: UUID for credential template
         """
+        get_logger(cls).info("> assign()")
         payload = {
             "credential_template_id": credential_template_id,
         }
-
+        get_logger(cls).debug(f"payload = {payload}")
         await cls._assign(tenant_id, wallet_id, payload)
+        get_logger(cls).info("< assign()")
 
 
 class SendCredentialOfferTask(Task):
@@ -308,6 +338,7 @@ class SendCredentialOfferTask(Task):
         return None
 
     async def _perform_task(self, tenant: Tenant, payload: dict):
+        self.logger.info("> _perform_task()")
         issuer_credential_id = payload["issuer_credential_id"]
         try:
             async with async_session() as db:
@@ -325,7 +356,12 @@ class SendCredentialOfferTask(Task):
                 auto_remove=False,
             )
             data = {"body": cred_offer}
+            self.logger.debug(f"data = {data}")
+            self.logger.debug("> > issue_cred_v10_api.issue_credential_send_offer_post")
             cred_response = issue_cred_v10_api.issue_credential_send_offer_post(**data)
+            self.logger.debug(
+                f"< < issue_cred_v10_api.issue_credential_send_offer_post({cred_response})"  # noqa: E501
+            )
 
             values = {
                 "credential_exchange_id": cred_response.credential_exchange_id,
@@ -334,6 +370,8 @@ class SendCredentialOfferTask(Task):
             if not item.preview_persisted:
                 # remove the preview/attributes...
                 values["credential_preview"] = {}
+
+            self.logger.debug(f"update values = {values}")
 
             q = (
                 update(IssuerCredential)
@@ -354,6 +392,7 @@ class SendCredentialOfferTask(Task):
             self.logger.error(
                 f"No Issuer Credential found for id<{issuer_credential_id}>. Cannot offer credential."  # noqa: E501
             )
+        self.logger.info("< _perform_task()")
 
     @classmethod
     async def assign(cls, tenant_id: UUID, wallet_id: UUID, issuer_credential_id: UUID):
@@ -367,8 +406,11 @@ class SendCredentialOfferTask(Task):
           wallet_id: AcaPy Wallet ID for tenant
           issuer_credential_id: UUID for issuer credential to offer
         """
+        get_logger(cls).info("> assign()")
         payload = {
             "issuer_credential_id": issuer_credential_id,
         }
-
+        get_logger(cls).debug(f"payload = {payload}")
         await cls._assign(tenant_id, wallet_id, payload)
+        get_logger(cls).info("< assign()")
+

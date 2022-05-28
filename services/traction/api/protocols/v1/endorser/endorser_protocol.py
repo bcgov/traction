@@ -44,10 +44,16 @@ cancelled_states = [
 class EndorserProtocol(ABC):
     def __init__(self):
         settings.EVENT_BUS.subscribe(WEBHOOK_ENDORSE_LISTENER_PATTERN, self.notify)
-        self.logger = logging.getLogger(type(self).__name__)
+        self._logger = logging.getLogger(type(self).__name__)
+
+    @property
+    def logger(self):
+        return self._logger
 
     async def notify(self, profile: Profile, event: Event):
+        self.logger.info("> notify()")
         payload = event.payload["payload"]
+        self.logger.debug(f"payload={payload}")
 
         await self.before_all(profile=profile, payload=payload)
 
@@ -82,6 +88,7 @@ class EndorserProtocol(ABC):
             await self.after_any(profile=profile, payload=payload)
 
         await self.after_all(profile=profile, payload=payload)
+        self.logger.info("< notify()")
 
     @abstractmethod
     def approve_for_processing(self, profile: Profile, payload: dict) -> bool:

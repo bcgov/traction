@@ -13,7 +13,7 @@ class ContactStatusUpdater(DefaultConnectionProtocol):
         super().__init__(role=None)
 
     async def after_all(self, profile: Profile, payload: dict):
-        self.logger.info(f"after_all({profile.wallet_id}, {payload})")
+        self.logger.info("> after_all()")
 
         # response is included here for estatus
         # not all agents will send messages after they send response
@@ -26,6 +26,7 @@ class ContactStatusUpdater(DefaultConnectionProtocol):
         values = {"state": payload["state"], "connection": payload}
         if payload["state"] in active_states:
             values["status"] = ContactStatusType.active
+        self.logger.debug(f"update values = {values}")
         stmt = (
             update(Contact)
             .where(Contact.connection_id == payload["connection_id"])
@@ -34,3 +35,4 @@ class ContactStatusUpdater(DefaultConnectionProtocol):
         async with async_session() as db:
             await db.execute(stmt)
             await db.commit()
+        self.logger.info("< after_all()")

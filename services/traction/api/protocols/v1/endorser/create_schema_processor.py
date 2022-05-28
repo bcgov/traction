@@ -53,6 +53,7 @@ class CreateSchemaProcessor(DefaultEndorserProtocol):
             )
 
     async def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
+        self.logger.info("> approve_for_processing()")
         has_schema_id = "schema_id" in payload["meta_data"]["context"]
         has_no_cred_def_id = "cred_def_id" not in payload["meta_data"]["context"]
         data_json = json.loads(payload["messages_attach"][0]["data"]["json"])
@@ -67,11 +68,15 @@ class CreateSchemaProcessor(DefaultEndorserProtocol):
             and is_operation_type_101
             and template_exists
         )
-
-        self.logger.debug(f"approved = {approved}")
+        self.logger.debug(f"has_schema_id = {has_schema_id}")
+        self.logger.debug(f"has_no_cred_def_id = {has_no_cred_def_id}")
+        self.logger.debug(f"is_operation_type_101 = {is_operation_type_101}")
+        self.logger.debug(f"template_exists = {template_exists}")
+        self.logger.info(f"< approve_for_processing({approved})")
         return approved
 
     async def before_any(self, profile: Profile, payload: dict):
+        self.logger.info("> before_any()")
         o = await self.get_schema_template(profile, payload)
         schema_id = self.get_schema_id(payload)
         active_states = [
@@ -103,7 +108,7 @@ class CreateSchemaProcessor(DefaultEndorserProtocol):
 
             if payload["state"] in cancelled_states:
                 values["status"] = TemplateStatusType.cancelled
-
+            self.logger.debug(f"update values = {values}")
             stmt = (
                 update(SchemaTemplate)
                 .where(SchemaTemplate.schema_template_id == o.schema_template_id)
@@ -112,14 +117,24 @@ class CreateSchemaProcessor(DefaultEndorserProtocol):
             async with async_session() as db:
                 await db.execute(stmt)
                 await db.commit()
+        self.logger.info("< before_any()")
 
     async def on_transaction_acked(self, profile: Profile, payload: dict):
+        self.logger.info("> on_transaction_acked()")
         tenant = await self.get_tenant(profile)
         context["TENANT_WALLET_TOKEN"] = tenant.wallet_token
 
         o = await self.get_schema_template(profile, payload)
         cred_templates = await self.get_credential_templates(profile, o)
         for c_t in cred_templates:
+            self.logger.debug(
+                f"> > SendCredDefRequestTask.assign({tenant.id},{tenant.wallet_id},{c_t.credential_template_id})"  # noqa: E501
+            )
             await SendCredDefRequestTask.assign(
                 tenant.id, tenant.wallet_id, c_t.credential_template_id
             )
+            self.logger.debug(
+                f"< < SendCredDefRequestTask.assign({tenant.id},{tenant.wallet_id},{c_t.credential_template_id})"  # noqa: E501
+            )
+
+        self.logger.info("< on_transaction_acked()")
