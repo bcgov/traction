@@ -155,7 +155,7 @@ class Task(ABC):
         get_logger(cls).debug(f"event_topic = {event_topic}")
 
         await profile.notify(event_topic, {"topic": "task", "payload": payload})
-        get_logger(cls).info(f"< _assign()")
+        get_logger(cls).info("< _assign()")
 
 
 class SendSchemaRequestTask(Task):
@@ -413,4 +413,3 @@ class SendCredentialOfferTask(Task):
         get_logger(cls).debug(f"payload = {payload}")
         await cls._assign(tenant_id, wallet_id, payload)
         get_logger(cls).info("< assign()")
-
