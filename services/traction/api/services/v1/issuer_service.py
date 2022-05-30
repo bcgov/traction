@@ -2,340 +2,465 @@ import logging
 from uuid import UUID
 from typing import List
 
-from fastapi import HTTPException
+from sqlalchemy import select, func, desc, update
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette import status
-from pydantic import BaseModel
+from sqlalchemy.orm import selectinload
 
+from acapy_client.api.revocation_api import RevocationApi
+from acapy_client.model.revoke_request import RevokeRequest
+from api.endpoints.models.v1.governance import TemplateStatusType
+from api.services.v1.governance_service import get_public_did
 
+from acapy_client.api.issue_credential_v1_0_api import IssueCredentialV10Api
+from api.db.models.v1.contact import Contact
+from api.db.models.v1.governance import CredentialTemplate
+from api.db.models.v1.issuer import IssuerCredential, IssuerCredentialTimeline
+
+from api.endpoints.models.credentials import CredentialStateType
+from api.endpoints.models.v1.errors import (
+    IdNotMatchError,
+    IncorrectStatusError,
+)
+
+from api.endpoints.models.v1.issuer import (
+    IssuerCredentialListParameters,
+    IssuerCredentialItem,
+    IssuerCredentialContact,
+    IssuerCredentialAcapy,
+    IssuerCredentialTemplate,
+    OfferNewCredentialPayload,
+    IssuerCredentialStatusType,
+    IssuerCredentialTimelineItem,
+    UpdateIssuerCredentialPayload,
+    RevokeCredentialPayload,
+)
 from api.api_client_utils import get_api_client
 
-from api.endpoints.dependencies.tenant_security import get_from_context
-from api.services.tenant_workflows import create_workflow
-
-from api.db.models.v1.contact import Contact
-
-
-from api.db.errors import DoesNotExist
-from api.db.repositories.tenant_workflows import TenantWorkflowsRepository
-from api.db.models.tenant_workflow import TenantWorkflowRead
-from api.db.models.issue_credential import (
-    IssueCredentialCreate,
-    IssueCredentialRead,
-    IssueCredentialUpdate,
-)
-from api.db.repositories.issue_credentials import IssueCredentialsRepository
-from api.endpoints.models.credentials import (
-    IssueCredentialProtocolType,
-    CredentialType,
-    CredentialStateType,
-    CredentialRoleType,
-    CredentialPreview,
-)
-from api.endpoints.models.tenant_workflow import (
-    TenantWorkflowTypeType,
-    TenantWorkflowStateType,
-)
-
-from api.endpoints.models.v1.errors import NotFoundError
-from api.endpoints.models.v1.issuer import (
-    CredentialItem,
-    IssueCredentialPayload,
-    RevokeSchemaPayload,
-)
-from acapy_client.model.revoke_request import RevokeRequest
-from acapy_client.api.revocation_api import RevocationApi
-from api.services.connections import (
-    get_connection_with_alias,
-)
-from api.services.base import BaseWorkflow
-
-logger = logging.getLogger(__name__)
+issue_cred_v10_api = IssueCredentialV10Api(api_client=get_api_client())
 revoc_api = RevocationApi(api_client=get_api_client())
 
-
-class IssueCredentialData(BaseModel):
-    credential: IssueCredentialRead | None = None
-    workflow: TenantWorkflowRead | None = None
+logger = logging.getLogger(__name__)
 
 
-async def list_issued_credentials(
+def issuer_credential_to_item(
+    db_item: IssuerCredential, acapy: bool | None = False
+) -> IssuerCredentialItem:
+    """IssuerCredential to IssuerCredentialItem.
+
+    Transform a IssuerCredential Table record to a IssuerCredentialItem object.
+
+    Args:
+      db_item: The Traction database IssuerCredential
+      acapy: When True, populate the IssuerCredentialItem acapy field.
+
+    Returns: The Traction IssuerCredentialItem
+
+    """
+    credential_template = IssuerCredentialTemplate(
+        credential_template_id=db_item.credential_template.credential_template_id,
+        name=db_item.credential_template.name,
+        cred_def_id=db_item.credential_template.cred_def_id,
+        revocation_enabled=db_item.credential_template.revocation_enabled,
+    )
+    contact = IssuerCredentialContact(
+        contact_id=db_item.contact.contact_id,
+        alias=db_item.contact.alias,
+        external_reference_id=db_item.contact.external_reference_id,
+    )
+
+    item = IssuerCredentialItem(
+        **db_item.dict(),
+        credential_template=credential_template,
+        contact=contact,
+    )
+    if acapy:
+        item.acapy = IssuerCredentialAcapy(
+            credential_exchange_id=db_item.credential_exchange_id,
+            revoc_reg_id=db_item.revoc_reg_id,
+            revocation_id=db_item.revocation_id,
+        )
+
+    return item
+
+
+async def list_issuer_credentials(
     db: AsyncSession,
     tenant_id: UUID,
     wallet_id: UUID,
-) -> [List[CredentialItem], int]:
-    # TODO: add parameters, query to get total count and return page data only
-    # TODO v0 decomission and merge with natural endpoint
-    data = await _v0_get_issued_credentials(db, tenant_id, wallet_id, None, None, None)
-    resp_data = [
-        CredentialItem(
-            **d.__dict__,
-            contact_id=d.credential.contact_id,
-            credential_id=d.credential.id,
-            status="v0",  # v0
-            state=d.credential.issue_state,  # v0
-            created_at=d.workflow.created_at,
-            updated_at=d.workflow.updated_at,
-        )
-        for d in data
+    parameters: IssuerCredentialListParameters,
+) -> [List[IssuerCredentialItem], int]:
+    """List Issuer Credentials.
+
+    Return a page of issuer credentials filtered by given parameters.
+
+    Args:
+      db: database session
+      tenant_id: Traction ID of tenant making the call
+      wallet_id: AcaPy Wallet ID for tenant
+      parameters: filters for Items
+
+    Returns:
+      items: The page of items
+      total_count: Total number of items matching criteria
+    """
+
+    limit = parameters.page_size
+    skip = (parameters.page_num - 1) * limit
+
+    filters = [
+        IssuerCredential.tenant_id == tenant_id,
+        IssuerCredential.deleted == parameters.deleted,
     ]
-
-    return resp_data, len(resp_data)
-
-
-# TODO v0 decomission and merge with natural endpoint
-async def _v0_get_issued_credentials(
-    db: AsyncSession,
-    tenant_id: UUID,
-    wallet_id: UUID,
-    workflow_id: UUID,
-    cred_issue_id: UUID,
-    state: TenantWorkflowStateType | None = None,
-) -> List[IssueCredentialData]:
-    issue_repo = IssueCredentialsRepository(db_session=db)
-    workflow_repo = TenantWorkflowsRepository(db_session=db)
-
-    issue_creds = []
-    if workflow_id:
-        issue_cred = await issue_repo.get_by_workflow_id(wallet_id, workflow_id)
-        issue_creds = [
-            issue_cred,
-        ]
-    elif cred_issue_id:
-        issue_cred = await issue_repo.get_by_id(cred_issue_id)
-        issue_creds = [
-            issue_cred,
-        ]
-    else:
-        issue_creds = await issue_repo.find_by_wallet_id_and_role(
-            wallet_id, CredentialRoleType.issuer
+    if parameters.status:
+        filters.append(IssuerCredential.status == parameters.status)
+    if parameters.state:
+        filters.append(IssuerCredential.state == parameters.state)
+    if parameters.contact_id:
+        filters.append(IssuerCredential.contact_id == parameters.contact_id)
+    if parameters.cred_def_id:
+        filters.append(IssuerCredential.cred_def_id == parameters.cred_def_id)
+    if parameters.credential_template_id:
+        filters.append(
+            IssuerCredential.credential_template_id == parameters.credential_template_id
+        )
+    if parameters.external_reference_id:
+        filters.append(
+            IssuerCredential.external_reference_id == parameters.external_reference_id
         )
 
-    issues = []
+    # build out a base query with all filters
+    base_q = select(IssuerCredential).filter(*filters)
 
-    for issue_cred in issue_creds:
+    # get a count of ALL records matching our base query
+    count_q = select([func.count()]).select_from(base_q)
+    count_q_rec = await db.execute(count_q)
+    total_count = count_q_rec.scalar()
 
-        tenant_workflow = None
-        if issue_cred.workflow_id:
-            try:
-                tenant_workflow = await workflow_repo.get_by_id(issue_cred.workflow_id)
-            except DoesNotExist:
-                pass
-        if (
-            (not state)
-            or (not tenant_workflow and state == TenantWorkflowStateType.pending)
-            or (tenant_workflow and state == tenant_workflow.workflow_state)
-        ):
-            issue = IssueCredentialData(
-                credential=issue_cred,
-                workflow=tenant_workflow,
-            )
-            issues.append(issue)
+    # TODO: should we raise an exception if paging is invalid?
+    # ie. is negative, or starts after available records
 
-    return issues
+    # add in our paging and ordering to get the result set
+    results_q = (
+        base_q.limit(limit)
+        .offset(skip)
+        .options(
+            selectinload(IssuerCredential.contact),
+            selectinload(IssuerCredential.credential_template),
+        )
+        .order_by(desc(IssuerCredential.updated_at))
+    )
+
+    results_q_recs = await db.execute(results_q)
+    db_items = results_q_recs.scalars()
+
+    items = []
+    for db_item in db_items:
+        item = issuer_credential_to_item(db_item, parameters.acapy)
+        items.append(item)
+
+    return items, total_count
 
 
-async def issue_new_credential(
+async def offer_new_credential(
     db: AsyncSession,
     tenant_id: UUID,
     wallet_id: UUID,
-    payload: IssueCredentialPayload,
-) -> CredentialItem:
+    payload: OfferNewCredentialPayload,
+    save_in_traction: bool | None = False,
+) -> IssuerCredentialItem:
+    """Offer new Credential.
 
-    contact = await Contact.get_by_id(
-        db,
-        tenant_id,
-        contact_id=payload.contact_id,
-        deleted=False,
-    )
-    # TODO v0 decomission and merge with natural endpoint
-    data = await _v0_issue_new_credential(
-        db,
-        tenant_id,
-        wallet_id,
-        payload.cred_protocol,
-        payload.credential,
-        payload.cred_def_id,
-        contact.connection_id,
-        None,
-    )
+    Create an Credential and Offer it.
 
-    return CredentialItem(
-        **data.__dict__,
-        credential_id=data.credential.id,
-        status="v0",  # v0
-        state=data.credential.issue_state,  # v0
-        created_at=data.workflow.created_at,
-        updated_at=data.workflow.updated_at,
-        contact_id=payload.contact_id,  # v0
-    )
+    Args:
+      db: database session
+      tenant_id: Traction ID of tenant making the call
+      wallet_id: AcaPy Wallet ID for tenant
+      payload: Credential offer payload
+      save_in_traction: when True, store credential data in Traction
+    Returns:
+      item: The Traction Issuer Credential
 
+    Raises:
 
-# TODO v0 decomission and merge with natural endpoint
-async def _v0_issue_new_credential(
-    db: AsyncSession,
-    tenant_id: UUID,
-    wallet_id: UUID,
-    cred_protocol: IssueCredentialProtocolType,
-    credential: CredentialPreview,
-    cred_def_id: str | None = None,
-    connection_id: str | None = None,
-    alias: str | None = None,
-) -> IssueCredentialData:
-    if not connection_id:
-        existing_connection = get_connection_with_alias(alias)
-        if not existing_connection:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Error alias {alias} does not exist",
-            )
-        connection_id = existing_connection.connection_id
+    """
+    # see if we are an issuer...
+    await get_public_did(db, tenant_id)
 
-    if cred_protocol == IssueCredentialProtocolType.v20:
-        raise NotImplementedError()  # TODO
-    cred_type = CredentialType.anoncreds
+    # need to find the contact/connection
+    # need to find the credential template/cred def
+    db_contact = None
+    db_credential_template = None
 
-    wallet_id = get_from_context("TENANT_WALLET_ID")
-    tenant_id = get_from_context("TENANT_ID")
-    issue_repo = IssueCredentialsRepository(db_session=db)
+    if payload.contact_id:
+        db_contact = await Contact.get_by_id(db, tenant_id, payload.contact_id)
+    elif payload.connection_id:
+        db_contact = await Contact.get_by_connection_id(
+            db, tenant_id, payload.connection_id
+        )
 
-    # TODO: pass in contact id from v1 endpoint
-    contact = None
-    try:
-        contact = await Contact.get_by_connection_id(db, tenant_id, connection_id)
-    except NotFoundError:
-        # suppress not found for v0 compatabilty
-        pass
+    if payload.credential_template_id:
+        db_credential_template = await CredentialTemplate.get_by_id(
+            db, tenant_id, payload.credential_template_id
+        )
+    elif payload.cred_def_id:
+        db_credential_template = await CredentialTemplate.get_by_cred_def_id(
+            db, tenant_id, payload.cred_def_id
+        )
 
-    issue_cred = IssueCredentialCreate(
-        contact_id=contact.contact_id if contact else None,
+    if db_credential_template.status != TemplateStatusType.active:
+        raise IncorrectStatusError(
+            code="issuer_credential.template.not-active",
+            title="Issuer Credential - Template not active",
+            detail=f"Cannot offer credential unless template status is {TemplateStatusType.active}.",  # noqa: E501
+        )
+
+    # convert list of name/value tuples to an object
+    attributes = {}
+    credential_preview = {"attributes": []}
+    for attr in payload.attributes:
+        attributes[attr.name] = attr.value
+        credential_preview["attributes"].append(
+            {"name": attr.name, "value": attr.value}
+        )
+
+    # TODO: verify attributes match the cred def
+
+    # create a new "issued" credential record
+    db_item = IssuerCredential(
         tenant_id=tenant_id,
-        wallet_id=wallet_id,
-        connection_id=connection_id,
-        cred_type=cred_type,
-        cred_protocol=cred_protocol,
-        cred_def_id=cred_def_id,
-        credential=credential.toJSON(),
-        issue_role=CredentialRoleType.issuer,
-        issue_state=CredentialStateType.pending,
+        credential_template_id=db_credential_template.credential_template_id,
+        cred_def_id=db_credential_template.cred_def_id,
+        contact_id=db_contact.contact_id,
+        status=IssuerCredentialStatusType.pending,
+        state=CredentialStateType.pending,
+        external_reference_id=payload.external_reference_id,
+        tags=payload.tags,
+        comment=payload.comment,
+        preview_persisted=save_in_traction,
+        credential_preview=credential_preview,
     )
-    issue_cred = await issue_repo.create(issue_cred)
-
-    tenant_workflow = await create_workflow(
-        wallet_id,
-        TenantWorkflowTypeType.issue_cred,
-        db,
-        error_if_wf_exists=False,
-        start_workflow=False,
+    db.add(db_item)
+    await db.commit()
+    db_item = await IssuerCredential.get_by_id(
+        db, tenant_id, db_item.issuer_credential_id
     )
-    logger.debug(f">>> Created tenant_workflow: {tenant_workflow}")
-    issue_update = IssueCredentialUpdate(
-        id=issue_cred.id,
-        workflow_id=tenant_workflow.id,
-        issue_state=issue_cred.issue_state,
-    )
-    issue_cred = await issue_repo.update(issue_update)
-    logger.debug(f">>> Updated issue_cred: {issue_cred}")
+    item = issuer_credential_to_item(db_item, True)
 
-    # start workflow
-    tenant_workflow = await BaseWorkflow.next_workflow_step(
-        db, tenant_workflow=tenant_workflow
-    )
-    logger.debug(f">>> Updated tenant_workflow: {tenant_workflow}")
-
-    # get updated issuer info (should have workflow id etc.)
-    issue_cred = await issue_repo.get_by_id(issue_cred.id)
-    logger.debug(f">>> Updated (final) issue_cred: {issue_cred}")
-
-    issue = IssueCredentialData(
-        credential=issue_cred,
-        workflow=tenant_workflow,
-    )
-
-    return issue
+    return item
 
 
-async def revoke_issued_credential(
+async def get_issuer_credential(
     db: AsyncSession,
     tenant_id: UUID,
     wallet_id: UUID,
-    credential_id: UUID,
-    payload: RevokeSchemaPayload,
-) -> CredentialItem:
-    issue_repo = IssueCredentialsRepository(db_session=db)
-    cred = await issue_repo.get_by_id(credential_id)
+    issuer_credential_id: UUID,
+    acapy: bool | None = False,
+    deleted: bool | None = False,
+) -> IssuerCredentialItem:
+    """Get Issuer Credential.
 
-    data = await _v0_revoke_issued_credential(
-        db,
-        tenant_id,
-        wallet_id,
-        credential_id,
-        cred.rev_reg_id,
-        cred.cred_rev_id,
-        payload.comment,
+    Find and return a Traction Issuer Credential by ID.
+
+    Args:
+      db: database session
+      tenant_id: Traction ID of tenant making the call
+      wallet_id: AcaPy Wallet ID for tenant
+      issuer_credential_id: Traction ID of Issuer Credential
+      acapy: When True, populate the Issuer Credential acapy field
+      deleted: When True, return Issuer Credential if marked as deleted
+
+    Returns: The Traction Issuer Credential
+
+    Raises:
+      NotFoundError: if the item cannot be found by ID and deleted flag
+    """
+    db_contact = await IssuerCredential.get_by_id(
+        db, tenant_id, issuer_credential_id, deleted
     )
 
-    return CredentialItem(
-        **data.__dict__,
-        credential_id=data.credential.id,
-        status="v0",  # v0
-        state=data.credential.issue_state,  # v0
-        created_at=data.workflow.created_at,
-        updated_at=data.workflow.updated_at,
-        contact_id=cred.contact_id,  # v0
+    item = issuer_credential_to_item(db_contact, acapy)
+
+    return item
+
+
+async def get_issuer_credential_timeline(
+    db: AsyncSession,
+    issuer_credential_id: UUID,
+) -> List[IssuerCredentialTimelineItem]:
+    """Get Issuer Credential Timeline items.
+
+    Find and return the Traction Issuer Credential Timeline items. Timeline items
+    represent history of changes to Status and/or State. They will be sorted in
+    descending order of creation (newest first).
+
+    Args:
+      db: database session
+      issuer_credential_id: Traction ID of Issuer Credential
+
+    Returns: List of Issuer Credential Timeline items
+    """
+    db_items = await IssuerCredentialTimeline.list_by_issuer_credential_id(
+        db, issuer_credential_id
     )
 
+    results = []
+    for db_item in db_items:
+        results.append(IssuerCredentialTimeline(**db_item.dict()))
+    return results
 
-async def _v0_revoke_issued_credential(
+
+async def update_issuer_credential(
     db: AsyncSession,
     tenant_id: UUID,
     wallet_id: UUID,
-    cred_issue_id: UUID,
-    rev_reg_id: UUID,
-    cred_rev_id: UUID,
-    comment: str,
-) -> IssueCredentialData:
-    issue_repo = IssueCredentialsRepository(db_session=db)
-    workflow_repo = TenantWorkflowsRepository(db_session=db)
-    issue_cred = None
-    if cred_issue_id:
-        issue_cred = await issue_repo.get_by_id(cred_issue_id)
-    else:
-        issue_cred = await issue_repo.get_by_cred_rev_reg_id(
-            wallet_id, rev_reg_id, cred_rev_id
+    issuer_credential_id: UUID,
+    payload: UpdateIssuerCredentialPayload,
+) -> IssuerCredentialItem:
+    """Update Issuer Credential.
+
+    Update a Traction Issuer Credential.
+    Note that not all fields can be modified. If they are present in the payload, they
+    will be ignored.
+
+    Args:
+      db: database session
+      tenant_id: Traction ID of tenant making the call
+      wallet_id: AcaPy Wallet ID for tenant
+      issuer_credential_id: Traction ID of item
+      payload: data fields to update.
+
+    Returns: The Traction IssuerCredentialItem
+
+    Raises:
+      NotFoundError: if the item cannot be found by ID and deleted flag
+      IdNotMatchError: if the item id parameter and in payload do not match
+    """
+    # verify this item exists and is not deleted...
+    await IssuerCredential.get_by_id(db, tenant_id, issuer_credential_id, False)
+
+    # payload id must match parameter
+    if issuer_credential_id != payload.issuer_credential_id:
+        raise IdNotMatchError(
+            code="issuer_credential.update.id-not-match",
+            title="Issuer Credential ID mismatch",
+            detail=f"Issuer Credential ID in payload <{payload.issuer_credential_id}> does not match Issuer Credential ID requested <{issuer_credential_id}>",  # noqa: E501
         )
-    if not (
-        issue_cred.issue_state == CredentialStateType.done
-        or issue_cred.issue_state == CredentialStateType.credential_acked
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Cannot revoke, credential is in state {issue_cred.issue_state}.",
+
+    payload_dict = payload.dict()
+    # payload isn't the same as the db... move fields around
+    del payload_dict["issuer_credential_id"]
+
+    if not payload.status:
+        del payload_dict["status"]
+
+    q = (
+        update(IssuerCredential)
+        .where(IssuerCredential.tenant_id == tenant_id)
+        .where(IssuerCredential.issuer_credential_id == issuer_credential_id)
+        .values(payload_dict)
+    )
+    await db.execute(q)
+    await db.commit()
+
+    return await get_issuer_credential(db, tenant_id, wallet_id, issuer_credential_id)
+
+
+async def delete_issuer_credential(
+    db: AsyncSession,
+    tenant_id: UUID,
+    wallet_id: UUID,
+    issuer_credential_id: UUID,
+) -> IssuerCredentialItem:
+    """Delete Issuer Credential.
+
+    Delete a Traction Issuer Credential.
+    Note that deletes are "soft" in Traction.
+
+    Args:
+      db: database session
+      tenant_id: Traction ID of tenant making the call
+      wallet_id: AcaPy Wallet ID for tenant
+      issuer_credential_id: Traction ID of item
+
+    Returns: The Traction IssuerCredentialItem
+
+    Raises:
+      NotFoundError: if the item cannot be found by ID and deleted flag
+    """
+    q = (
+        update(IssuerCredential)
+        .where(IssuerCredential.tenant_id == tenant_id)
+        .where(IssuerCredential.issuer_credential_id == issuer_credential_id)
+        .values(
+            deleted=True,
+            status=IssuerCredentialStatusType.deleted,
+            state=CredentialStateType.abandoned,
+        )
+    )
+    await db.execute(q)
+    await db.commit()
+
+    return await get_issuer_credential(
+        db, tenant_id, wallet_id, issuer_credential_id, acapy=False, deleted=True
+    )
+
+
+async def revoke_issuer_credential(
+    db: AsyncSession,
+    tenant_id: UUID,
+    wallet_id: UUID,
+    issuer_credential_id: UUID,
+    payload: RevokeCredentialPayload,
+) -> IssuerCredentialItem:
+    # TODO: need to check permissions and status
+    # verify this item exists and is not deleted...
+    # payload id must match parameter
+    if issuer_credential_id != payload.issuer_credential_id:
+        raise IdNotMatchError(
+            code="issuer_credential.revoke.id-not-match",
+            title="Issuer Credential ID mismatch",
+            detail=f"Issuer Credential ID in payload <{payload.issuer_credential_id}> does not match Issuer Credential ID requested <{issuer_credential_id}>",  # noqa: E501
+        )
+
+    db_item = await IssuerCredential.get_by_id(
+        db, tenant_id, issuer_credential_id, False
+    )
+
+    if db_item.status != IssuerCredentialStatusType.issued:
+        raise IncorrectStatusError(
+            code="issuer_credential.revoke.not-issued",
+            title="Issuer Credential not issued",
+            detail=f"Issuer Credential cannot be revoked unless status is {IssuerCredentialStatusType.issued}.",  # noqa: E501
         )
 
     # no fancy workflow stuff, just revoke
     rev_req = RevokeRequest(
-        comment=comment if comment else "",
-        connection_id=str(issue_cred.connection_id),
-        rev_reg_id=issue_cred.rev_reg_id,
-        cred_rev_id=issue_cred.cred_rev_id,
+        comment=payload.comment if payload.comment else "",
+        connection_id=str(db_item.contact.connection_id),
+        rev_reg_id=db_item.revoc_reg_id,
+        cred_rev_id=db_item.revocation_id,
         publish=True,
         notify=True,
     )
     data = {"body": rev_req}
     revoc_api.revocation_revoke_post(**data)
 
-    update_issue = IssueCredentialUpdate(
-        id=issue_cred.id,
-        workflow_id=issue_cred.workflow_id,
-        cred_exch_id=issue_cred.cred_exch_id,
-        issue_state=CredentialStateType.credential_revoked,
+    # update our status
+    q = (
+        update(IssuerCredential)
+        .where(IssuerCredential.tenant_id == tenant_id)
+        .where(IssuerCredential.issuer_credential_id == issuer_credential_id)
+        .values(
+            revoked=True,
+            status=IssuerCredentialStatusType.revoked,
+            state=CredentialStateType.credential_revoked,
+            revocation_comment=payload.comment,
+        )
     )
-    issue_cred = await issue_repo.update(update_issue)
-    tenant_workflow = await workflow_repo.get_by_id(issue_cred.workflow_id)
+    await db.execute(q)
+    await db.commit()
 
-    issue = IssueCredentialData(
-        credential=issue_cred,
-        workflow=tenant_workflow,
+    return await get_issuer_credential(
+        db, tenant_id, wallet_id, issuer_credential_id, acapy=False
     )
-    return issue

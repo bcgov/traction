@@ -71,8 +71,8 @@ class Item(GenericModel, Generic[StatusType, StateType]):
       updated_at: timestamp when object last modified
     """
 
-    status: StatusType
-    state: StateType
+    status: StatusType | None = None
+    state: StateType | None = None
     deleted: bool = False
     created_at: datetime
     updated_at: datetime

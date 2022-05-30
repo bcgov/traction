@@ -7,7 +7,7 @@ import uuid
 from datetime import datetime
 from typing import List
 
-from sqlmodel import Field
+from sqlmodel import Field, Relationship
 from sqlalchemy import Column, func, text, String, select, desc
 from sqlalchemy.dialects.postgresql import UUID, TIMESTAMP, JSON, ARRAY
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -80,6 +80,12 @@ class Contact(BaseModel, table=True):
     connection: dict = Field(default={}, sa_column=Column(JSON))
     invitation: dict = Field(default={}, sa_column=Column(JSON))
     # --- acapy data
+
+    # relationships ---
+    issuer_credentials: List["IssuerCredential"] = Relationship(  # noqa: F821
+        back_populates="contact"
+    )
+    # --- relationships
 
     created_at: datetime = Field(
         sa_column=Column(TIMESTAMP, nullable=False, server_default=func.now())

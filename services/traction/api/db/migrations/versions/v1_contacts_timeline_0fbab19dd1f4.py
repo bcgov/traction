@@ -29,7 +29,7 @@ create_contact_timeline_func = """CREATE OR REPLACE FUNCTION contact_timeline_fu
     $body$ LANGUAGE plpgsql
 """
 
-drop_contact_timeline_func = """DROP FUNCTION contact_timeline_trigger"""
+drop_contact_timeline_func = """DROP FUNCTION contact_timeline_func"""
 
 create_contact_timeline_trigger = """CREATE TRIGGER contact_timeline_trigger
 AFTER INSERT OR UPDATE OF status, state ON contact

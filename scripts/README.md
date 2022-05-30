@@ -70,3 +70,18 @@ run only integration tests like this
 ```
 docker exec scripts_traction-api_1 pytest --asyncio-mode=strict -m integtest
 ```
+
+
+##### run bdd tests
+
+in one terminal, start traction api
+
+```sh
+docker-compose up
+```
+
+once api is fully running, open a second terminal and run the bdd tests
+
+```sh
+docker-compose -f docker-compose.bdd.yml up
+```
