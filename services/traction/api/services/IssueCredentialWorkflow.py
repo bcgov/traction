@@ -55,7 +55,7 @@ class IssueCredentialWorkflow(BaseWorkflow):
     @classmethod
     async def handle_workflow_events(cls, profile: Profile, event: Event):
         # find related workflow
-        logger.warn(f">>> handling event: {event}")
+        logger.debug(f">>> handling event: {event}")
         try:
             workflow_id = await cls.find_workflow_id(profile, event.payload)
             if workflow_id:
@@ -82,12 +82,12 @@ class IssueCredentialWorkflow(BaseWorkflow):
                 issue_cred = await issue_repo.get_by_cred_exch_id(
                     wallet_id, cred_exch_id
                 )
-                logger.warn(f">>> found corresponding cred issue: {issue_cred}")
+                logger.debug(f">>> found corresponding cred issue: {issue_cred}")
                 return issue_cred.workflow_id
             except DoesNotExist:
                 # no related workflow, check if we (holder) are receiving an offer
                 cred_state = webhook_message["payload"]["state"]
-                logger.warn(f">>> check for cred issue event for: {cred_state}")
+                logger.debug(f">>> check for cred issue event for: {cred_state}")
                 if cred_state == CredentialStateType.offer_received:
                     wallet_id = get_from_context("TENANT_WALLET_ID")
                     tenant_id = get_from_context("TENANT_ID")
@@ -119,7 +119,7 @@ class IssueCredentialWorkflow(BaseWorkflow):
                         cred_exch_id=cred_exch_id,
                     )
                     issue_cred = await issue_repo.create(issue_cred)
-                    logger.warn(f">>> created new cred issue: {issue_cred}")
+                    logger.debug(f">>> created new cred issue: {issue_cred}")
 
                     # if new, and offer_received, send webhook to tenant
                     logger.info(f">>> sending webhook with cred offer: {issue_cred}")
@@ -133,7 +133,7 @@ class IssueCredentialWorkflow(BaseWorkflow):
 
         elif webhook_message["topic"] == WebhookTopicType.revocation_notification:
             # update credential status to revoked
-            logger.warn(f">>> got a revocation notification: {webhook_message}")
+            logger.debug(f">>> got a revocation notification: {webhook_message}")
             wallet_id = get_from_context("TENANT_WALLET_ID")
             comment = webhook_message["payload"].get("comment")
             thread_id = webhook_message["payload"].get("thread_id")
@@ -241,7 +241,7 @@ class IssueCredentialWorkflow(BaseWorkflow):
                     logger.debug(f">>> cancelling workflow with error_msg: {error_msg}")
                     await self.run_cancel_step(webhook_message, error_msg)
             else:
-                logger.warn(f">>> ignoring topic for now: {webhook_topic}")
+                logger.debug(f">>> ignoring topic for now: {webhook_topic}")
 
         # if workflow is "completed" or "error" then we are done
         else:

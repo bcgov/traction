@@ -251,7 +251,7 @@ async def list_contacts(
     # ie. is negative, or starts after available records
 
     # add in our paging and ordering to get the result set
-    results_q = base_q.limit(limit).offset(skip).order_by(desc(Contact.created_at))
+    results_q = base_q.limit(limit).offset(skip).order_by(desc(Contact.updated_at))
 
     results_q_recs = await db.execute(results_q)
     db_contacts = results_q_recs.scalars()

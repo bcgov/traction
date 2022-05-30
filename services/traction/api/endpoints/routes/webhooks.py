@@ -14,6 +14,7 @@ from starlette_context.middleware import RawContextMiddleware
 from api.core.config import settings
 from api.core.profile import Profile
 from api.db.repositories.tenants import TenantsRepository
+from api.db.session import async_session
 from api.endpoints.dependencies.db import get_db
 from api.endpoints.models.webhooks import (
     WEBHOOK_EVENT_PREFIX,
@@ -81,24 +82,26 @@ async def process_tenant_webhook(
     x_wallet_id: Optional[str] = Header(None),
     db: AsyncSession = Depends(get_db),
 ):
+    logger.info(f"> process_tenant_webhook({topic})")
+    logger.debug(f"wallet_id = {x_wallet_id}")
+    logger.debug(f"payload = {payload}")
     """Called by aca-py agent."""
     try:
-        logger.debug(f"Received webhook for topic: {topic} wallet id: {x_wallet_id}")
-        wallet_id = uuid.UUID(str(x_wallet_id))
-        context["TENANT_WALLET_ID"] = wallet_id
-        tenant_repo = TenantsRepository(db)
-        tnt = await tenant_repo.get_by_wallet_id(wallet_id)
-        context["TENANT_ID"] = tnt.id
+        async with async_session() as session:
+            wallet_id = uuid.UUID(str(x_wallet_id))
+            context["TENANT_WALLET_ID"] = wallet_id
+            tenant_repo = TenantsRepository(session)
+            tnt = await tenant_repo.get_by_wallet_id(wallet_id)
+            context["TENANT_ID"] = tnt.id
 
-        # emit an event for any interested listeners
-        profile = Profile(wallet_id, tnt.id, db)
-        event_topic = WEBHOOK_EVENT_PREFIX + topic
-        logger.debug(
-            f">>> sending notification for recvd hook {event_topic} {topic} {payload}"
-        )
-        await profile.notify(event_topic, {"topic": topic, "payload": payload})
+            # emit an event for any interested listeners
+            profile = Profile(wallet_id, tnt.id, session)
+            event_topic = WEBHOOK_EVENT_PREFIX + topic
+            logger.debug(f"> > notify({event_topic},{topic},{payload})")
+            await profile.notify(event_topic, {"topic": topic, "payload": payload})
     except Exception:
         # don't propagate errors or else aca-py will just retry :-S
         logger.exception("Error posting to traction webhook")
+    logger.info(f"< process_tenant_webhook({topic})")
 
     return {}

@@ -15,20 +15,33 @@ from starlette import status
 def step_impl(context, issuer: str, schema_name: str, cred_def_tag: str):
 
     payload = {
-        "schema_request": {
+        "schema_definition": {
             "schema_name": schema_name,
             "schema_version": "0.1",
             "attributes": [row["attr"] for row in context.table],
         },
-        "cred_def_tag": cred_def_tag,
-        "revocable": False,
+        "name": schema_name,
+        "tags": [],
+        "credential_definition": {
+            "tag": cred_def_tag,
+            "revocation_enabled": False,
+            "revocation_registry_size": 0,
+        },
     }
 
     response = requests.post(
-        context.config.userdata.get("traction_host") + "/tenant/v1/governance/schemas/",
+        context.config.userdata.get("traction_host")
+        + "/tenant/v1/governance/schema_templates/",
         json=payload,
         headers=context.config.userdata[issuer]["auth_headers"],
     )
+    resp_json = json.loads(response.content)
+
+    context.config.userdata[issuer].setdefault("schema_template", resp_json["item"])
+    context.config.userdata[issuer].setdefault(
+        "credential_template", resp_json["credential_template"]
+    )
+
     assert response.status_code == status.HTTP_200_OK, response.__dict__
 
 
@@ -55,45 +68,32 @@ def step_impl(
         time.sleep(check_period)
         time_passed = time_passed + check_period
 
-        response_data = get_governance_schemas(
-            context, tenant, cred_def_state, schema_name
-        )
-        if any(
-            schema["cred_def_state"] == cred_def_state
-            and schema["schema_name"] == schema_name
-            for schema in response_data["items"]
-        ):
-            ex_result_found = True
+        response_data = get_credential_template(context, tenant)
+        ex_result_found = response_data["state"] == cred_def_state
+        if ex_result_found:
             break
 
     assert (
         ex_result_found
-    ), f"after {timeout} seconds, tenant_schema found was {response_data}"
+    ), f"after {time_passed} seconds, credential_template found was {response_data}"
 
-    # while we are here, update context.governance
-    context.config.userdata.setdefault("governance", {})
-
-    context.config.userdata["governance"]["schemas"] = {
-        i["schema_name"]: i for i in response_data["items"]
-    }
-    print(f"Polled for {tenant} seconds")
+    print(f"Polled for {timeout} seconds")
 
 
-# @given(
-#     '"{tenant}" has a tenant_schema record with a cred_def status of "{cred_def_state}" for "{schema_name}"'
-# )
-# @then(
-#     '"{tenant}" will have a tenant_schema record with a cred_def status of "{cred_def_state}" for "{schema_name}"'
-# )
-def get_governance_schemas(context, tenant: str, cred_def_state: str, schema_name: str):
+def get_credential_template(context, tenant: str):
 
+    credential_template_id = context.config.userdata[tenant]["credential_template"][
+        "credential_template_id"
+    ]
     response = requests.get(
-        context.config.userdata.get("traction_host") + "/tenant/v1/governance/schemas",
+        context.config.userdata.get("traction_host")
+        + f"/tenant/v1/governance/credential_templates/{credential_template_id}",
         headers=context.config.userdata[tenant]["auth_headers"],
     )
     assert response.status_code == status.HTTP_200_OK, response.__dict__
 
     content = json.loads(response.content)
 
-    assert len(content["items"]) > 0, content
-    return content
+    assert content["item"] is not None
+    context.config.userdata[tenant]["credential_template"] = content["item"]
+    return content["item"]

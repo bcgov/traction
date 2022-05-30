@@ -7,6 +7,11 @@ from api.db.models.tenant_webhook_msg import TenantWebhookMsg  # noqa: F401
 
 from api.db.models.v1.contact import Contact, ContactTimeline  # noqa: F401
 from api.db.models.v1.connection_invitation import ConnectionInvitation  # noqa: F401
+from api.db.models.v1.governance import SchemaTemplate, CredentialTemplate  # noqa: F401
+from api.db.models.v1.issuer import (
+    IssuerCredential,
+    IssuerCredentialTimeline,
+)  # noqa: F401
 
 __all__ = [
     "BaseTable",
@@ -16,4 +21,8 @@ __all__ = [
     "Contact",
     "ContactTimeline",
     "ConnectionInvitation",
+    "SchemaTemplate",
+    "CredentialTemplate",
+    "IssuerCredential",
+    "IssuerCredentialTimeline",
 ]

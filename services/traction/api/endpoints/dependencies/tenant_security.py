@@ -2,7 +2,8 @@ import logging
 import uuid
 
 from fastapi.security import OAuth2PasswordRequestForm
-from jose import jwt
+from jose import jwt, ExpiredSignatureError
+from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 from starlette.exceptions import HTTPException
@@ -12,7 +13,8 @@ from starlette.middleware.base import (
     RequestResponseEndpoint,
 )
 from starlette.requests import Request
-from starlette.responses import Response
+from starlette.responses import Response, JSONResponse
+from starlette_context.header_keys import HeaderKeys
 
 from acapy_client.api.multitenancy_api import MultitenancyApi
 from acapy_client.model.create_wallet_token_request import CreateWalletTokenRequest
@@ -21,6 +23,7 @@ from api.api_client_utils import get_api_client
 
 from api.core.config import settings
 from api.db.errors import DoesNotExist
+from api.db.models import Tenant
 from api.db.repositories.tenants import TenantsRepository
 from api.endpoints.dependencies.jwt_security import create_access_token
 
@@ -50,17 +53,33 @@ class JWTTFetchingMiddleware(BaseHTTPMiddleware):
         auth_header = request.headers.get("Authorization")
         if auth_header and auth_header.startswith("Bearer "):
             token = auth_header.replace("Bearer ", "")
-            payload = jwt.decode(
-                token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
-            )
-            wallet_token: str = payload.get("key")
-            wallet_id: str = payload.get("sub")
-            tenant_id: str = payload.get("t_id")
+            try:
+                payload = jwt.decode(
+                    token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
+                )
+                wallet_token: str = payload.get("key")
+                wallet_id: str = payload.get("sub")
+                tenant_id: str = payload.get("t_id")
 
-            # pass this via starlette context
-            context["TENANT_WALLET_TOKEN"] = wallet_token
-            context["TENANT_WALLET_ID"] = uuid.UUID(wallet_id)
-            context["TENANT_ID"] = uuid.UUID(tenant_id)
+                # pass this via starlette context
+                context["TENANT_WALLET_TOKEN"] = wallet_token
+                context["TENANT_WALLET_ID"] = uuid.UUID(wallet_id)
+                context["TENANT_ID"] = uuid.UUID(tenant_id)
+            except ExpiredSignatureError:
+                # would like this in with the other exception handlers but need to
+                # return a response, so don't raise/throw...
+                status_code = status.HTTP_401_UNAUTHORIZED
+                return JSONResponse(
+                    status_code=status_code,
+                    content={
+                        "request_id": context.data[HeaderKeys.request_id],
+                        "status": status_code,
+                        "code": "token.expired",
+                        "title": "Token Expired",
+                        "detail": "Token has expired, must fetch a new token.",
+                        "links": [],
+                    },
+                )
 
         response = await call_next(request)
         return response
@@ -92,6 +111,15 @@ async def authenticate_tenant(username: str, password: str, db: AsyncSession):
                 "wallet_id": wallet_id,
                 "wallet_token": jwt_token,
             }
+
+            # update the wallet token so we can use it for automated processes
+            q = (
+                update(Tenant)
+                .where(Tenant.id == tnt.id)
+                .values({"wallet_token": jwt_token})
+            )
+            await db.execute(q)
+            await db.commit()
 
             return tenant
         except DoesNotExist:
