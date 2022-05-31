@@ -40,8 +40,52 @@ def step_impl(context):
         resp_json = json.loads(response.content)
 
         context.config.userdata[issuer].setdefault(schema_name, {})
-        context.config.userdata[issuer][schema_name].setdefault("schema_template", resp_json["item"])
-        context.config.userdata[issuer][schema_name].setdefault("credential_template", resp_json["credential_template"])
+        context.config.userdata[issuer][schema_name].setdefault(
+            "schema_template", resp_json["item"]
+        )
+        context.config.userdata[issuer][schema_name].setdefault(
+            "credential_template", resp_json["credential_template"]
+        )
+
+        assert response.status_code == status.HTTP_200_OK, response.__dict__
+
+
+@given("issuer imports schema(s)")
+def step_impl(context):
+    for row in context.table:
+        issuer = row["issuer"]
+        schema_id = row["schema_id"]
+        name = row["name"]
+        cred_def_tag = row["cred_def_tag"]
+        revocation_registry_size = int(row["rev_reg_size"])
+        revocation_enabled = revocation_registry_size > 0
+
+        payload = {
+            "schema_id": schema_id,
+            "name": name,
+            "tags": [],
+            "credential_definition": {
+                "tag": cred_def_tag,
+                "revocation_enabled": revocation_enabled,
+                "revocation_registry_size": revocation_registry_size,
+            },
+        }
+
+        response = requests.post(
+            context.config.userdata.get("traction_host")
+            + "/tenant/v1/governance/schema_templates/import",
+            json=payload,
+            headers=context.config.userdata[issuer]["auth_headers"],
+        )
+        resp_json = json.loads(response.content)
+
+        context.config.userdata[issuer].setdefault(name, {})
+        context.config.userdata[issuer][name].setdefault(
+            "schema_template", resp_json["item"]
+        )
+        context.config.userdata[issuer][name].setdefault(
+            "credential_template", resp_json["credential_template"]
+        )
 
         assert response.status_code == status.HTTP_200_OK, response.__dict__
 

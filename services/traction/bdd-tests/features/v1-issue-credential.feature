@@ -44,3 +44,9 @@ Feature: issuing credentials
         And "alice" will have an "Issued" issuer credential
         When "alice" revokes credential from "faber"
         Then "alice" will have an "Revoked" issuer credential
+
+    Scenario: issuer can import schema
+        Given issuer imports schema(s)
+        |issuer|schema_id|name|cred_def_tag|rev_reg_size|
+        |alice|9vnQTCy6NQ7mxUVhLtaPZY:2:registration.registries.ca:1.0.42|registration-schema|test|4|
+        And check "alice" for 120 seconds for a status of "Active" for "registration-schema"
