@@ -14,6 +14,21 @@ Feature: issuing credentials
         |alice|useless-schema|name,title|test|0|
         And check "alice" for 120 seconds for a status of "Active" for "useless-schema"
 
+    Scenario: offer a credential to an active contact
+        When "alice" issues "faber" a "useless-schema" credential
+        And we sadly wait for 10 seconds because we have not figured out how to listen for events
+        Then "faber" will have a credential_offer from "alice"
+
+    Scenario: holder will accept an offered credential to an active contact
+        When "alice" issues "faber" a "useless-schema" credential
+        And we sadly wait for 10 seconds because we have not figured out how to listen for events
+        And "faber" will have a credential_offer from "alice"
+        # this loads data into context.config
+        And "faber" will accept credential_offer from "alice"
+        And we sadly wait for 10 seconds because we have not figured out how to listen for events
+        Then "faber" will have a credential
+        And "alice" will have an "Issued" issuer credential
+
     Scenario: issuer will revoke an accepted credential
         Given issuer creates new schema(s) and cred def(s)
         |issuer|schema_name|attrs|cred_def_tag|rev_reg_size|
