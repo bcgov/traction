@@ -1,7 +1,7 @@
 import json
-import requests
 from behave import *
 from starlette import status
+from v1_api import *
 
 
 @when('"{tenant}" creates invitation(s)')
@@ -30,7 +30,7 @@ def step_impl(context, tenant: str, count: int):
     assert resp_json["total"] == count, resp_json
 
 
-@then('"{tenant}" can find "{contact}" by alias')
+@then('"{tenant}" can find contact "{contact}" by alias')
 def step_impl(context, tenant: str, contact: str):
     params = {"alias": contact}
     response = list_contacts(context, tenant, params)
@@ -40,7 +40,7 @@ def step_impl(context, tenant: str, contact: str):
     assert resp_json["items"][0]["alias"] == contact
 
 
-@then('"{tenant}" cannot find "{contact}" by alias')
+@then('"{tenant}" cannot find contact "{contact}" by alias')
 def step_impl(context, tenant: str, contact: str):
     params = {"alias": contact}
     response = list_contacts(context, tenant, params)
@@ -49,7 +49,7 @@ def step_impl(context, tenant: str, contact: str):
     assert len(resp_json["items"]) == 0, resp_json
 
 
-@then('"{tenant}" can find "{contact}" with deleted flag')
+@then('"{tenant}" can find contact "{contact}" with deleted flag')
 def step_impl(context, tenant: str, contact: str):
     params = {"alias": contact, "deleted": True}
     response = list_contacts(context, tenant, params)
@@ -61,7 +61,7 @@ def step_impl(context, tenant: str, contact: str):
     assert resp_json["items"][0]["status"] == "Deleted"
 
 
-@then('"{tenant}" can get "{contact_alias}" by id')
+@then('"{tenant}" can get contact "{contact_alias}" by contact_id')
 def step_impl(context, tenant: str, contact_alias: str):
     contact = context.config.userdata[tenant]["contacts"][contact_alias]
     response = get_contact(context, tenant, contact["contact_id"])
@@ -70,7 +70,7 @@ def step_impl(context, tenant: str, contact_alias: str):
     assert resp_json["item"]["contact_id"] == contact["contact_id"]
 
 
-@then('"{tenant}" can get "{contact_alias}" with timeline')
+@then('"{tenant}" can get contact "{contact_alias}" with timeline')
 def step_impl(context, tenant: str, contact_alias: str):
     contact = context.config.userdata[tenant]["contacts"][contact_alias]
     params = {"timeline": True}
@@ -81,7 +81,7 @@ def step_impl(context, tenant: str, contact_alias: str):
     assert len(resp_json["timeline"]) > 0
 
 
-@then('"{tenant}" can get "{contact_alias}" with acapy')
+@then('"{tenant}" can get contact "{contact_alias}" with acapy')
 def step_impl(context, tenant: str, contact_alias: str):
     contact = context.config.userdata[tenant]["contacts"][contact_alias]
     params = {"acapy": True}
@@ -94,14 +94,14 @@ def step_impl(context, tenant: str, contact_alias: str):
     assert resp_json["item"]["acapy"]["connection"]["connection_id"] is not None
 
 
-@then('"{tenant}" cannot get "{contact_alias}" by id')
+@then('"{tenant}" cannot get contact "{contact_alias}" by contact_id')
 def step_impl(context, tenant: str, contact_alias: str):
     contact = context.config.userdata[tenant]["contacts"][contact_alias]
     response = get_contact(context, tenant, contact["contact_id"])
     assert response.status_code == status.HTTP_404_NOT_FOUND, response.__dict__
 
 
-@then('"{tenant}" can get "{contact_alias}" with deleted flag')
+@then('"{tenant}" can get contact "{contact_alias}" with deleted flag')
 def step_impl(context, tenant: str, contact_alias: str):
     contact = context.config.userdata[tenant]["contacts"][contact_alias]
     params = {"deleted": True}
@@ -128,7 +128,7 @@ def step_impl(context, tenant: str):
     assert found_rel_next
 
 
-@then('"{tenant}" can update "{contact_alias}"')
+@then('"{tenant}" can update contact "{contact_alias}"')
 def step_impl(context, tenant: str, contact_alias: str):
     contact = context.config.userdata[tenant]["contacts"][contact_alias]
     payload = {"contact_id": contact["contact_id"]}
@@ -155,7 +155,7 @@ def step_impl(context, tenant: str, contact_alias: str):
         assert item[attribute] == value
 
 
-@then('"{tenant}" can delete "{contact_alias}"')
+@then('"{tenant}" can delete contact "{contact_alias}"')
 def step_impl(context, tenant: str, contact_alias: str):
     contact = context.config.userdata[tenant]["contacts"][contact_alias]
     response = delete_contact(context, tenant, contact["contact_id"])
@@ -165,52 +165,3 @@ def step_impl(context, tenant: str, contact_alias: str):
     assert item["contact_id"] == contact["contact_id"]
     assert item["deleted"]
     assert item["status"] == "Deleted"
-
-
-def create_invitation(context, tenant, alias, invitation_type):
-    data = {"alias": alias, "invitation_type": invitation_type}
-    response = requests.post(
-        context.config.userdata.get("traction_host")
-        + "/tenant/v1/contacts/create-invitation",
-        json=data,
-        headers=context.config.userdata[tenant]["auth_headers"],
-    )
-    return response
-
-
-def list_contacts(context, tenant, params):
-    response = requests.get(
-        context.config.userdata.get("traction_host") + "/tenant/v1/contacts",
-        params=params,
-        headers=context.config.userdata[tenant]["auth_headers"],
-    )
-    return response
-
-
-def get_contact(context, tenant, contact_id, params: dict | None = {}):
-    response = requests.get(
-        context.config.userdata.get("traction_host")
-        + f"/tenant/v1/contacts/{contact_id}",
-        params=params,
-        headers=context.config.userdata[tenant]["auth_headers"],
-    )
-    return response
-
-
-def update_contact(context, tenant, contact_id, payload):
-    response = requests.put(
-        context.config.userdata.get("traction_host")
-        + f"/tenant/v1/contacts/{contact_id}",
-        json=payload,
-        headers=context.config.userdata[tenant]["auth_headers"],
-    )
-    return response
-
-
-def delete_contact(context, tenant, contact_id):
-    response = requests.delete(
-        context.config.userdata.get("traction_host")
-        + f"/tenant/v1/contacts/{contact_id}",
-        headers=context.config.userdata[tenant]["auth_headers"],
-    )
-    return response

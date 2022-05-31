@@ -20,7 +20,7 @@ Feature: contacts crud functionality
         | neptune | didexchange/1.0 |
         | pluto | connections/1.0 |
         Then "alice" will have 11 contact(s)
-        And "alice" can find "faber" by alias
+        And "alice" can find contact "faber" by alias
         And "alice" will have a next page link in contact list
 
     Scenario: tenant can update contact information
@@ -28,9 +28,9 @@ Feature: contacts crud functionality
         | alias  | invitation_type    |
         | faber | connections/1.0 |
         Then "alice" will have 1 contact(s)
-        And "alice" can find "faber" by alias
-        And "alice" can get "faber" by id
-        And "alice" can update "faber"
+        And "alice" can find contact "faber" by alias
+        And "alice" can get contact "faber" by contact_id
+        And "alice" can update contact "faber"
         | attribute  | value    |
         | alias | new faber |
         | external_reference_id | new ext ref id |
@@ -42,21 +42,21 @@ Feature: contacts crud functionality
         | alias  | invitation_type    |
         | faber | connections/1.0 |
         Then "alice" will have 1 contact(s)
-        And "alice" can find "faber" by alias
-        And "alice" can delete "faber"
-        Then "alice" cannot find "faber" by alias
-        And "alice" cannot get "faber" by id
-        But "alice" can find "faber" with deleted flag
-        And "alice" can get "faber" with deleted flag
+        And "alice" can find contact "faber" by alias
+        And "alice" can delete contact "faber"
+        Then "alice" cannot find contact "faber" by alias
+        And "alice" cannot get contact "faber" by contact_id
+        But "alice" can find contact "faber" with deleted flag
+        And "alice" can get contact "faber" with deleted flag
 
     Scenario: tenant can get contact with extra attributes
         When "alice" creates invitation(s)
         | alias  | invitation_type    |
         | faber | connections/1.0 |
         Then "alice" will have 1 contact(s)
-        And "alice" can get "faber" by id
-        And "alice" can get "faber" with timeline
-        And "alice" can get "faber" with acapy
+        And "alice" can get contact "faber" by contact_id
+        And "alice" can get contact "faber" with timeline
+        And "alice" can get contact "faber" with acapy
 
 
 
