@@ -6,56 +6,57 @@ from behave import *
 from starlette import status
 
 
+@given("issuer creates new schema(s) and cred def(s)")
+def step_impl(context):
+    for row in context.table:
+        issuer = row["issuer"]
+        schema_name = row["schema_name"]
+        attributes = row["attrs"].split(",")
+        cred_def_tag = row["cred_def_tag"]
+        revocation_registry_size = int(row["rev_reg_size"])
+        revocation_enabled = revocation_registry_size > 0
+
+        payload = {
+            "schema_definition": {
+                "schema_name": schema_name,
+                "schema_version": "0.1",
+                "attributes": attributes,
+            },
+            "name": schema_name,
+            "tags": [],
+            "credential_definition": {
+                "tag": cred_def_tag,
+                "revocation_enabled": revocation_enabled,
+                "revocation_registry_size": revocation_registry_size,
+            },
+        }
+
+        response = requests.post(
+            context.config.userdata.get("traction_host")
+            + "/tenant/v1/governance/schema_templates/",
+            json=payload,
+            headers=context.config.userdata[issuer]["auth_headers"],
+        )
+        resp_json = json.loads(response.content)
+
+        context.config.userdata[issuer].setdefault(schema_name, {})
+        context.config.userdata[issuer][schema_name].setdefault("schema_template", resp_json["item"])
+        context.config.userdata[issuer][schema_name].setdefault("credential_template", resp_json["credential_template"])
+
+        assert response.status_code == status.HTTP_200_OK, response.__dict__
+
+
 @given(
-    '"{issuer}" writes a new schema "{schema_name}" and cred def tagged "{cred_def_tag}"'
-)
-@when(
-    '"{issuer}" writes a new schema "{schema_name}" and cred def tagged "{cred_def_tag}"'
-)
-def step_impl(context, issuer: str, schema_name: str, cred_def_tag: str):
-
-    payload = {
-        "schema_definition": {
-            "schema_name": schema_name,
-            "schema_version": "0.1",
-            "attributes": [row["attr"] for row in context.table],
-        },
-        "name": schema_name,
-        "tags": [],
-        "credential_definition": {
-            "tag": cred_def_tag,
-            "revocation_enabled": False,
-            "revocation_registry_size": 0,
-        },
-    }
-
-    response = requests.post(
-        context.config.userdata.get("traction_host")
-        + "/tenant/v1/governance/schema_templates/",
-        json=payload,
-        headers=context.config.userdata[issuer]["auth_headers"],
-    )
-    resp_json = json.loads(response.content)
-
-    context.config.userdata[issuer].setdefault("schema_template", resp_json["item"])
-    context.config.userdata[issuer].setdefault(
-        "credential_template", resp_json["credential_template"]
-    )
-
-    assert response.status_code == status.HTTP_200_OK, response.__dict__
-
-
-@given(
-    'check "{tenant}" for {timeout} seconds for a cred_def status of "{cred_def_state}" for "{schema_name}"'
+    'check "{tenant}" for {timeout} seconds for a status of "{cred_template_state}" for "{schema_name}"'
 )
 @then(
-    'check "{tenant}" for {timeout} seconds for a cred_def status of "{cred_def_state}" for "{schema_name}"'
+    'check "{tenant}" for {timeout} seconds for a status of "{cred_template_state}" for "{schema_name}"'
 )
 def step_impl(
     context,
     tenant: str,
     timeout: str,  # don't know how to make an int natively
-    cred_def_state: str,
+    cred_template_state: str,
     schema_name: str,
 ):
     ex_result_found = False
@@ -68,8 +69,8 @@ def step_impl(
         time.sleep(check_period)
         time_passed = time_passed + check_period
 
-        response_data = get_credential_template(context, tenant)
-        ex_result_found = response_data["state"] == cred_def_state
+        response_data = get_credential_template(context, schema_name, tenant)
+        ex_result_found = response_data["status"] == cred_template_state
         if ex_result_found:
             break
 
@@ -80,11 +81,11 @@ def step_impl(
     print(f"Polled for {timeout} seconds")
 
 
-def get_credential_template(context, tenant: str):
+def get_credential_template(context, schema_name: str, tenant: str):
 
-    credential_template_id = context.config.userdata[tenant]["credential_template"][
-        "credential_template_id"
-    ]
+    credential_template_id = context.config.userdata[tenant][schema_name][
+        "credential_template"
+    ]["credential_template_id"]
     response = requests.get(
         context.config.userdata.get("traction_host")
         + f"/tenant/v1/governance/credential_templates/{credential_template_id}",
@@ -95,5 +96,7 @@ def get_credential_template(context, tenant: str):
     content = json.loads(response.content)
 
     assert content["item"] is not None
-    context.config.userdata[tenant]["credential_template"] = content["item"]
+    context.config.userdata[tenant][schema_name]["credential_template"] = content[
+        "item"
+    ]
     return content["item"]
