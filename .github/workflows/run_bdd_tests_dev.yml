@@ -10,7 +10,6 @@ on:
 jobs:
   setup_behave:
     name: "Build and Run Behave"
-    environment: ${{ github.event.inputs.config_env }}
     runs-on: ubuntu-20.04
     if: github.repository_owner == 'bcgov'
     steps:
@@ -18,8 +17,10 @@ jobs:
         with:
           ref: ${{ github.event.inputs.ref }}
 
-      - name: run bdd
-        working-directory: scripts        
+      - name: install libraries
+        working-directory: services/traction/bdd-tests
+        run: pip install -r ./requirements.txt
+      - name: run behave
+        working-directory: services/traction/bdd-tests
         run: |
-          docker-compose -f docker-compose.bdd.yml build
-          docker-compose -f docker-compose.bdd.yml run bdd-tests -e TRACTION_HOST=${{secrets.BDD_TRACTION_HOST}} -e INNKEEPER_PASSWORD=${{secrets.BDD_TRACTION_INNKEEPER_PWD}}
+          behave --define traction_host=${{secrets.BDD_TRACTION_HOST}} --define innkeeper_password=${{secrets.BDD_TRACTION_INNKEEPER_PWD}}
