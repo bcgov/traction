@@ -16,11 +16,21 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: ${{ github.event.inputs.ref }}
-
-      - name: install libraries
-        working-directory: services/traction/
-        run: pip install -r ./requirements-bdd.txt
-      - name: run behave
-        working-directory: services/traction/bdd-tests
+      
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+          
+      - name: Install dependencies
+        shell: bash      
         run: |
-          behave --define traction_host=https://traction-api-dev.apps.silver.devops.gov.bc.ca --define innkeeper_password=${{secrets.OPENSHIFT_TRACTION_DEV_INNKEEPER_PASSWORD}}
+          cd services/traction/bdd-tests
+          python -m pip install --upgrade pip
+          python -m pip install -r ./requirements.txt
+
+      - name: run behave
+        shell: bash      
+        run: |
+          cd services/traction/bdd-tests
+          behave --define traction_host=${{secrets.BDD_TRACTION_HOST}} --define innkeeper_password=${{secrets.BDD_TRACTION_INNKEEPER_PWD}}
