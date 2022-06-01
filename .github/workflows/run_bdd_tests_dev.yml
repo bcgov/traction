@@ -23,14 +23,15 @@ jobs:
           python-version: "3.10"
           
       - name: Install dependencies
-        working-directory: services/traction/bdd-test
         shell: bash      
         run: |
+          ls -al
+          cd services/traction/bdd-test
           python -m pip install --upgrade pip
           python -m pip install -r ./requirements.txt
 
       - name: run behave
-        working-directory: services/traction/bdd-test
         shell: bash      
         run: |
+          cd services/traction/bdd-test
           behave --define traction_host=${{secrets.BDD_TRACTION_HOST}} --define innkeeper_password=${{secrets.BDD_TRACTION_INNKEEPER_PWD}}
