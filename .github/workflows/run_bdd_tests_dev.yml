@@ -18,9 +18,8 @@ jobs:
           ref: ${{ github.event.inputs.ref }}
 
       - name: install libraries
-        working-directory: services/traction/
-        run: pip install -r ./requirements-bdd.txt
-      - name: run behave
         working-directory: services/traction/bdd-tests
         run: |
-          behave --define traction_host=https://traction-api-dev.apps.silver.devops.gov.bc.ca --define innkeeper_password=${{secrets.OPENSHIFT_TRACTION_DEV_INNKEEPER_PASSWORD}}
+          export $TRACTION_HOST=https://traction-api-dev.apps.silver.devops.gov.bc.ca
+          export $INNKEEPER_PASSWORD=${{secrets.OPENSHIFT_TRACTION_DEV_INNKEEPER_PASSWORD}}
+          docker-compose -f docker-compose.bdd.yml up --build
