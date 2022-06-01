@@ -44,6 +44,7 @@ class TractionTaskType(str, Enum):
     send_schema_request = "send_schema_request"
     send_cred_def_request = "send_cred_def_request"
     send_credential_offer = "send_credential_offer"
+    send_present_proof_req = "send_present_proof_req"
 
 
 TRACTION_TASK_PREFIX = "traction::TASK::"
