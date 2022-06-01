@@ -14,7 +14,7 @@ class CreateCredDefRevocationProcessor(CreateCredDefProcessor):
     async def get_credential_template(
         self, profile: Profile, payload: dict
     ) -> CredentialTemplate:
-        cred_def_id = self.get_cred_def_id(payload=payload)
+        cred_def_id = payload["meta_data"]["context"]["cred_def_id"]
         try:
             async with async_session() as db:
                 return await CredentialTemplate.get_by_cred_def_id(

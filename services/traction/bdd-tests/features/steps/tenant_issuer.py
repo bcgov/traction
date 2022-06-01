@@ -21,8 +21,10 @@ def step_impl(context, tenant: str):
 @when('"{issuer}" issues "{holder}" a "{schema_name}" credential')
 def step_impl(context, issuer: str, holder: str, schema_name: str):
 
-    schema_template = context.config.userdata[issuer]["schema_template"]
-    credential_template = context.config.userdata[issuer]["credential_template"]
+    schema_template = context.config.userdata[issuer][schema_name]["schema_template"]
+    credential_template = context.config.userdata[issuer][schema_name][
+        "credential_template"
+    ]
     contact_id = context.config.userdata[issuer]["connections"][holder]["contact_id"]
 
     schema_attrs = schema_template["attributes"]
@@ -47,17 +49,43 @@ def step_impl(context, issuer: str, holder: str, schema_name: str):
     assert response.status_code == status.HTTP_200_OK, response.__dict__
 
 
-@then('"{issuer}" will have an acked credential_offer')
-def step_impl(context, issuer):
+@then('"{issuer}" will have an "{cred_status}" issuer credential')
+def step_impl(context, issuer, cred_status: str):
     response = requests.get(
         context.config.userdata.get("traction_host")
         + "/tenant/v1/issuer/credentials"
-        + "?status=Issued",
+        + f"?status={cred_status}",
         headers=context.config.userdata[issuer]["auth_headers"],
     )
     assert response.status_code == status.HTTP_200_OK, response.status
     resp_json = json.loads(response.content)
     assert len(resp_json["items"]) == 1, resp_json
+    context.config.userdata[issuer]["issuer_credential"] = resp_json["items"][0]
+
+
+@when('"{issuer}" revokes credential from "{holder}"')
+def step_impl(context, issuer, holder):
+    issuer_credential = context.config.userdata[issuer]["issuer_credential"]
+    issuer_credential_id = issuer_credential["issuer_credential_id"]
+
+    revocation_comment = "revoking for bdd test"
+    data = {
+        "issuer_credential_id": issuer_credential_id,
+        "comment": revocation_comment,
+    }
+
+    response = requests.post(
+        context.config.userdata.get("traction_host")
+        + f"/tenant/v1/issuer/credentials/{issuer_credential_id}/revoke-credential",
+        headers=context.config.userdata[issuer]["auth_headers"],
+        json=data
+    )
+    assert response.status_code == status.HTTP_200_OK, response.status
+    resp_json = json.loads(response.content)
+    assert resp_json["item"] is not None
+    assert resp_json["item"]["status"] == "Revoked"
+    assert resp_json["item"]["contact"]["alias"] == holder
+    assert resp_json["item"]["revocation_comment"] == revocation_comment
 
 
 ## COMPOSED ACTIONS
