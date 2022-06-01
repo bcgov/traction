@@ -24,4 +24,6 @@ jobs:
           TRACTION_HOST: ${{secrets.BDD_TRACTION_HOST}}
           INNKEEPER_PASSWORD: ${{secrets.BDD_TRACTION_INNKEEPER_PWD}}          
         run: |
+          cd ../../../scripts/
+          echo $TRACTION_HOST
           docker-compose -f docker-compose.bdd.yml up --build
