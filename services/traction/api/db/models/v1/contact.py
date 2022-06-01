@@ -85,6 +85,7 @@ class Contact(BaseModel, table=True):
     issuer_credentials: List["IssuerCredential"] = Relationship(  # noqa: F821
         back_populates="contact"
     )
+    messages: List["Message"] = Relationship(back_populates="contact")  # noqa: F821
     # --- relationships
 
     created_at: datetime = Field(

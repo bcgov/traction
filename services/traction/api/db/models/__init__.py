@@ -12,6 +12,8 @@ from api.db.models.v1.issuer import (
     IssuerCredential,
     IssuerCredentialTimeline,
 )  # noqa: F401
+from api.db.models.v1.message import Message
+
 
 __all__ = [
     "BaseTable",
@@ -25,4 +27,5 @@ __all__ = [
     "CredentialTemplate",
     "IssuerCredential",
     "IssuerCredentialTimeline",
+    "Message",
 ]
