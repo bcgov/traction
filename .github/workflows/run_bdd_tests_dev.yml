@@ -20,8 +20,8 @@ jobs:
 
       - name: run bdd
         working-directory: services/traction/bdd-tests
-        env: |
-          TRACTION_HOST=https://traction-api-dev.apps.silver.devops.gov.bc.ca
-          INNKEEPER_PASSWORD=${{secrets.OPENSHIFT_TRACTION_DEV_INNKEEPER_PASSWORD}}          
+        env:
+          TRACTION_HOST: ${{secrets.BDD_TRACTION_HOST}}
+          INNKEEPER_PASSWORD: ${{secrets.BDD_TRACTION_INNKEEPER_PWD}}          
         run: |
           docker-compose -f docker-compose.bdd.yml up --build
