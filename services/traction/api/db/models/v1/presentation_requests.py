@@ -51,9 +51,9 @@ class VerifierPresentationRequest(BaseModel, table=True):
     comment: str = Field(nullable=True)
 
     # acapy data ---
+    # role: str = Field(nullable=False)  # verifier, prover
     state: str = Field(nullable=False)
-    pres_exch_id: str = Field(nullable=False, index=True)
-    thread_id: str = Field(nullable=True)
+    pres_exch_id: uuid.UUID = Field(nullable=False, index=True)
     proof_request: dict = Field(default={}, sa_column=Column(JSON))
     # --- acapy data
 
@@ -61,7 +61,6 @@ class VerifierPresentationRequest(BaseModel, table=True):
     contact: Optional[Contact] = Relationship()  # don't back populate
     # --- relationships
 
-    # role: str = Field(nullable=False)  # verifier, prover
     created_at: datetime = Field(
         sa_column=Column(TIMESTAMP, nullable=False, server_default=func.now())
     )  # TODO why isn't this in base
