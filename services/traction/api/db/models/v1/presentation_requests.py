@@ -135,5 +135,5 @@ class VerifierPresentationRequest(BaseModel, table=True):
             .order_by(desc(cls.updated_at))
         )
         q_result = await db.execute(q)
-        db_recs = q_result.scalars()
+        db_recs = q_result.scalars().all()
         return db_recs
