@@ -19,7 +19,7 @@ jobs:
           ref: ${{ github.event.inputs.ref }}
 
       - name: run bdd
-        working-directory: services/traction/bdd-tests        
+        working-directory: scripts        
         run: |
-          cd ../../../scripts/
-          docker-compose -f docker-compose.bdd.yml up --build -e TRACTION_HOST=${{secrets.BDD_TRACTION_HOST}} -e INNKEEPER_PASSWORD=${{secrets.BDD_TRACTION_INNKEEPER_PWD}}
+          docker-compose -f docker-compose.bdd.yml build
+          docker-compose -f docker-compose.bdd.yml run bdd-tests -e TRACTION_HOST=${{secrets.BDD_TRACTION_HOST}} -e INNKEEPER_PASSWORD=${{secrets.BDD_TRACTION_INNKEEPER_PWD}}
