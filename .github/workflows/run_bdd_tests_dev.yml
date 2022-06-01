@@ -25,14 +25,12 @@ jobs:
       - name: Install dependencies
         shell: bash      
         run: |
-          ls -al
-          ls -al services/traction/bdd-test
-          cd services/traction/bdd-test
+          cd services/traction/bdd-tests
           python -m pip install --upgrade pip
           python -m pip install -r ./requirements.txt
 
       - name: run behave
         shell: bash      
         run: |
-          cd services/traction/bdd-test
+          cd services/traction/bdd-tests
           behave --define traction_host=${{secrets.BDD_TRACTION_HOST}} --define innkeeper_password=${{secrets.BDD_TRACTION_INNKEEPER_PWD}}
