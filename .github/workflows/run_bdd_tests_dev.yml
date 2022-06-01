@@ -22,7 +22,4 @@ jobs:
         working-directory: services/traction/bdd-tests        
         run: |
           cd ../../../scripts/
-          export TRACTION_HOST=${{secrets.BDD_TRACTION_HOST}}
-          export INNKEEPER_PASSWORD=${{secrets.BDD_TRACTION_INNKEEPER_PWD}}
-          printenv
-          docker-compose -f docker-compose.bdd.yml up --build
+          docker-compose -f docker-compose.bdd.yml up --build -e TRACTION_HOST=${{secrets.BDD_TRACTION_HOST}} -e INNKEEPER_PASSWORD=${{secrets.BDD_TRACTION_INNKEEPER_PWD}}
