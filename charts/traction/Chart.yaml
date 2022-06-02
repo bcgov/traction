@@ -15,7 +15,9 @@ maintainers:
     name: Jsyro
     url: https://github.com/Jsyro
 dependencies:
-  - name: postgresql
-    version: 10.16.2
-    repository: https://charts.bitnami.com/bitnami/
+  - name: spilo
+    version: 0.1.0
+    repository: https://bcgov.github.io/spilo-chart
+    # by default, the object created will be named <your-app>-spilo. You can use an alias to override the -spilo suffix
+    alias: postgres
     condition: persistence.deployPostgres
