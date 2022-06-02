@@ -11,6 +11,7 @@ from api.endpoints.models.v1.messages import (
     MessageListParameters,
     SendMessageResponse,
     SendMessagePayload,
+    MessageRole,
 )
 
 from api.endpoints.routes.v1.link_utils import build_list_links
@@ -26,6 +27,7 @@ async def list_messages(
     page_num: int | None = 1,
     page_size: int | None = settings.DEFAULT_PAGE_SIZE,
     contact_id: UUID | None = None,
+    role: MessageRole | None = None,
     deleted: bool | None = False,
 ) -> MessageListResponse:
     wallet_id = get_from_context("TENANT_WALLET_ID")
@@ -36,6 +38,7 @@ async def list_messages(
         page_num=page_num,
         page_size=page_size,
         contact_id=contact_id,
+        role=role,
         deleted=deleted,
     )
     items, total_count = await messages_service.list_messages(

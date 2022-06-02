@@ -54,11 +54,13 @@ class MessageItem(AcapyItem[MessageStatusType, MessageStateType, MessageAcapy]):
     Representation for the Message database record and associated AcaPy data.
 
     Attributes:
+      message_id: Traction ID of message
       contact: Traction contact message was sent to/received from
       content: Actual content of the message
       role: Role tenant played in this message
     """
 
+    message_id: UUID
     contact: MessageContact
     content: str
     role: MessageRole
@@ -110,6 +112,30 @@ class SendMessageResponse(GetResponse[MessageItem]):
     """SendMessageResponse.
 
     Response to Send Message API.
+    """
+
+    pass
+
+
+class UpdateMessagePayload(BaseModel):
+    """UpdateMessagePayload.
+
+    Payload for Update Message API.
+
+    Attributes:
+      message_id: Traction ID of message to update
+      tags: list of tags for categorizing
+
+    """
+
+    message_id: UUID
+    tags: Optional[List[str]] | None = None
+
+
+class UpdateMessageResponse(GetResponse[MessageItem]):
+    """UpdateMessageResponse.
+
+    Response to Update Message API.
     """
 
     pass
