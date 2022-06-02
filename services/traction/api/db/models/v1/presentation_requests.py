@@ -53,7 +53,7 @@ class VerifierPresentationRequest(BaseModel, table=True):
     # acapy data ---
     # role: str = Field(nullable=False)  # verifier, prover
     state: str = Field(nullable=False)
-    pres_exch_id: uuid.UUID = Field(nullable=False, index=True)
+    pres_exch_id: uuid.UUID = Field(nullable=True)
     proof_request: dict = Field(default={}, sa_column=Column(JSON))
     # --- acapy data
 

@@ -35,10 +35,10 @@ def upgrade():
         ),
         sa.Column("deleted", sa.Boolean(), nullable=False),
         sa.Column("tags", postgresql.ARRAY(sa.String()), nullable=True),
-        sa.Column("comment", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+        sa.Column("comment", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
         sa.Column("role", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
         sa.Column("state", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-        sa.Column("pres_exch_id", sqlmodel.sql.sqltypes.GUID(), nullable=False),
+        sa.Column("pres_exch_id", sqlmodel.sql.sqltypes.GUID(), nullable=True),
         sa.Column(
             "proof_request", postgresql.JSON(astext_type=sa.Text()), nullable=True
         ),

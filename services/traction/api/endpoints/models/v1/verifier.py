@@ -27,9 +27,8 @@ from api.endpoints.models.credentials import ProofRequest
 
 
 class CreatePresentationRequestPayload(BaseModel):
-    # pres_protocol: built into path, different endpoints for different protocols6
-    proof_req: ProofRequest
     contact_id: UUID
+    proof_request: ProofRequest
 
 
 class PresentationExchangeAcapy(BaseModel):
@@ -37,7 +36,8 @@ class PresentationExchangeAcapy(BaseModel):
 
 
 class PresentationRequestItem(AcapyItem[str, str, PresentationExchangeAcapy]):
-    pres_exch_id: UUID
+    pres_exch_id: Optional[UUID]
+    proof_request: ProofRequest
 
 
 class PresentationRequestListResponse(ListResponse[PresentationRequestItem]):

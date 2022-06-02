@@ -53,13 +53,14 @@ async def verifer_new_presentation_request(
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
+    # logger.warn(payload)
     item = await verifier_service.make_presentation_request(
         db, tenant_id, wallet_id, PresentCredentialProtocolType.v10, payload
     )
 
-    await SendPresentProofTask.assign(
-        tenant_id, wallet_id, item.v_presentation_request_id
-    )
+    # await SendPresentProofTask.assign(
+    #     tenant_id, wallet_id, item.v_presentation_request_id
+    # )
 
     links = []  # TODO: set the links for issue new credential
 
