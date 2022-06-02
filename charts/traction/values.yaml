@@ -118,7 +118,7 @@ acapy:
   staticArgs:
     autoAcceptInvites: true
     autoAcceptRequests: true
-    autoRespondMessages: true
+    autoRespondMessages: false
     autoRespondCredentialProposal: false
     autoRespondCredentialOffer: false
     autoRespondCredentialRequest: true
