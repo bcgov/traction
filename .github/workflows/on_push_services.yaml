@@ -89,7 +89,7 @@ jobs:
 
   test:
     name: Run integration tests
-    environment: test
+    environment: tools
     runs-on: ubuntu-20.04
     needs: 
       - deploy_test
