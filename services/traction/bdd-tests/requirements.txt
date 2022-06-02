@@ -20,7 +20,7 @@ gunicorn==20.1.0
 h11==0.12.0
 httpcore==0.14.7
 httptools==0.3.0
-httpx==0.22.0
+httpx==0.23.0
 idna==3.3
 iniconfig==1.1.1
 itsdangerous==2.0.1
@@ -30,7 +30,7 @@ Mako==1.1.6
 MarkupSafe==2.0.1
 mypy-extensions==0.4.3
 packaging==21.3
-paramiko==2.9.2
+paramiko==2.10.1
 parse==1.19.0
 parse-type==0.6.0
 passlib==1.7.4
