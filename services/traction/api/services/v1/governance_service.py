@@ -7,14 +7,10 @@ from sqlalchemy import select, update, desc, func
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from acapy_client import OpenApiException
-from api.db.errors import DoesNotExist
 from api.db.models.v1.governance import SchemaTemplate, CredentialTemplate
-from api.db.repositories.tenant_issuers import TenantIssuersRepository
-from api.endpoints.models.tenant_issuer import PublicDIDStateType
 from api.endpoints.models.v1.errors import (
     IdNotMatchError,
     NotFoundError,
-    NotAnIssuerError,
     AlreadyExistsError,
 )
 from api.endpoints.models.v1.governance import (
@@ -35,6 +31,7 @@ from acapy_client.api.credential_definition_api import CredentialDefinitionApi
 
 from api.api_client_utils import get_api_client
 from api.protocols.v1.endorser.endorser_protocol import EndorserStateType
+from api.services.v1 import tenant_service
 
 endorse_api = EndorseTransactionApi(api_client=get_api_client())
 schema_api = SchemaApi(api_client=get_api_client())
@@ -42,30 +39,6 @@ cred_def_api = CredentialDefinitionApi(api_client=get_api_client())
 
 
 logger = logging.getLogger(__name__)
-
-
-async def get_public_did(
-    db: AsyncSession, tenant_id: UUID, raise_error: bool | None = False
-):
-    issuer_repo = TenantIssuersRepository(db)
-    issuer = None
-    try:
-        issuer = await issuer_repo.get_by_tenant_id(tenant_id)
-    except DoesNotExist:
-        pass
-
-    if issuer and issuer.public_did_state == PublicDIDStateType.public:
-        return issuer.public_did
-    else:
-        if raise_error:
-            raise NotAnIssuerError(
-                code="tenant.issuer.not-allowed",
-                title="Tenant is not an Issuer",
-                detail="Tenant is not an Issuer and cannot write schemas or credential definitions to the ledger.",  # noqa: E501
-                links=[],  # TODO: add link to make issuer
-            )
-        else:
-            return None
 
 
 def fetch_schema_from_ledger(schema_id: str):
@@ -156,7 +129,7 @@ async def create_schema_template(
 ) -> (SchemaTemplateItem, CredentialTemplateItem):
     # TODO: verify / validate payload
     # check if schema name/schema version exist here and/or ledger
-    public_did = await get_public_did(db, tenant_id, True)
+    public_did = await tenant_service.is_issuer(tenant_id, wallet_id, True)
 
     # KVLt4iia47yDrafuZxdxEt:2:new-aaa-002:0.0.2
     schema_id = f"{public_did}:2:{payload.schema_definition.schema_name}:{payload.schema_definition.schema_version}"  # noqa: E501
@@ -349,10 +322,12 @@ async def import_schema_template(
     payload: ImportSchemaTemplatePayload,
 ) -> (SchemaTemplateItem, CredentialTemplateItem):
     # TODO: verify / validate payload
+    if payload.credential_definition and payload.credential_definition.tag:
+        # check for public did / issuance permission
+        await tenant_service.is_issuer(tenant_id, wallet_id, True)
+
     # check if schema name/schema version exist here and/or ledger
-
     ledger_schema = fetch_schema_from_ledger(payload.schema_id)
-
     if ledger_schema:
         # create OUR schema template
         db_schema = SchemaTemplate(
@@ -369,10 +344,7 @@ async def import_schema_template(
         )
         db.add(db_schema)
         await db.flush()  # need to get the schema_template_id
-        await db.commit()  # commit this part, in case they cannot create a cred def
 
-        # check for public did / issuance permission
-        await get_public_did(db, tenant_id, True)
         # create OUR cred def template (optional)
         db_cred = None
         if payload.credential_definition and payload.credential_definition.tag:
@@ -491,8 +463,7 @@ async def create_credential_template(
     payload: CreateCredentialTemplatePayload,
 ) -> CredentialTemplateItem:
     # TODO: verify / validate payload
-    # this will check if issuer
-    await get_public_did(db, tenant_id, True)
+    await tenant_service.is_issuer(tenant_id, wallet_id, True)
 
     schema_template = None
     if payload.schema_template_id:

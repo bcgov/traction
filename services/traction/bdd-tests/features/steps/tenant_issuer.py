@@ -94,6 +94,7 @@ def step_impl(context, tenant):
     context.execute_steps(
         f"""
     Given "{tenant}" is allowed to be an issuer by the innkeeper
+    And we sadly wait for {10} seconds because we have not figured out how to listen for events
     And "{tenant}" registers as an issuer
     And we sadly wait for {5} seconds because we have not figured out how to listen for events
     And "{tenant}" will have a public did   

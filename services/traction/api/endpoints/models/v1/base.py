@@ -59,9 +59,8 @@ class Link(BaseModel):
 class Item(GenericModel, Generic[StatusType, StateType]):
     """Item.
 
-    Base class for any individual object/resource.
+    Base class for any individual object/resource with status/state.
     Concrete classes will specify the exact classes to use for Status and State.
-
 
     Attributes:
       status: Represents a business level status for the object

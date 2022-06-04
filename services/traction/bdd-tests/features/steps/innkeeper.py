@@ -2,8 +2,8 @@ import json
 import requests
 from behave import *
 from starlette import status
-from steps.setup import _hard_delete_tenant
-
+from setup import _hard_delete_tenant
+import time
 
 @given('"{tenant}" is allowed to be an issuer by the innkeeper')
 @when('"{tenant}" is allowed to be an issuer by the innkeeper')
@@ -15,6 +15,8 @@ def step_impl(context, tenant: str):
         headers=context.config.userdata["innkeeper_auth_headers"],
     )
     assert response.status_code == status.HTTP_200_OK, response.__dict__
+    # wait for endorser signatures and ledger writes
+    time.sleep(20)
 
 
 @then('"{tenant}" will have a public did')
