@@ -16,6 +16,28 @@ from api.services.tenant_workflows import create_workflow
 logger = logging.getLogger(__name__)
 
 
+def tenant_issuer_to_tenant_fields(tenant_issuer: TenantIssuerRead):
+    issuer = False
+    issuer_status = IssuerStatus.none
+    public_did = tenant_issuer.public_did
+    public_did_status = PublicDIDStatus.none
+    if PublicDIDStateType.public == tenant_issuer.public_did_state:
+        issuer = True
+        issuer_status = IssuerStatus.active
+        public_did_status = PublicDIDStatus.public
+    elif PublicDIDStateType.requested == tenant_issuer.public_did_state:
+        issuer_status = IssuerStatus.requested
+        public_did_status = PublicDIDStatus.requested
+    elif PublicDIDStateType.endorsed == tenant_issuer.public_did_state:
+        issuer_status = IssuerStatus.endorsed
+        public_did_status = PublicDIDStatus.endorsed
+    elif PublicDIDStateType.published == tenant_issuer.public_did_state:
+        issuer_status = IssuerStatus.active
+        public_did_status = PublicDIDStatus.published
+
+    return issuer, issuer_status, public_did, public_did_status
+
+
 def db_to_tenant_item(
     db_tenant: TenantRead, tenant_issuer: TenantIssuerRead | None = None
 ) -> TenantItem:
@@ -39,20 +61,16 @@ def db_to_tenant_item(
         # when we change up the workflow
         # (tenant can request public did, tenant requests issuer)
         # this will get simplified, right now mashup of v0 stuff...
-        result.public_did = tenant_issuer.public_did
-        if PublicDIDStateType.public == tenant_issuer.public_did_state:
-            result.issuer = True
-            result.issuer_status = IssuerStatus.active
-            result.public_did_status = PublicDIDStatus.public
-        elif PublicDIDStateType.requested == tenant_issuer.public_did_state:
-            result.issuer_status = IssuerStatus.requested
-            result.public_did_status = PublicDIDStatus.requested
-        elif PublicDIDStateType.endorsed == tenant_issuer.public_did_state:
-            result.issuer_status = IssuerStatus.endorsed
-            result.public_did_status = PublicDIDStatus.endorsed
-        elif PublicDIDStateType.published == tenant_issuer.public_did_state:
-            result.issuer_status = IssuerStatus.active
-            result.public_did_status = PublicDIDStatus.published
+        (
+            issuer,
+            issuer_status,
+            public_did,
+            public_did_status,
+        ) = tenant_issuer_to_tenant_fields(tenant_issuer)
+        result.issuer = issuer
+        result.issuer_status = issuer_status
+        result.public_did = public_did
+        result.public_did_status = public_did_status
 
     return result
 
