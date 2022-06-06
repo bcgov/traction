@@ -1,0 +1,15 @@
+# Credentials
+.env
+
+# Configurations
+.vscode
+
+# Temporary files
+*.log
+*.swp
+*.zip
+*.tgz
+
+# Temporary Code
+node_modules
+public
