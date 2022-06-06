@@ -156,3 +156,49 @@ def delete_credential_template(context, tenant, item_id):
         headers=context.config.userdata[tenant]["auth_headers"],
     )
     return response
+
+
+def send_message(context, tenant, contact_id, content):
+    data = {"contact_id": contact_id, "content": content}
+    response = requests.post(
+        context.config.userdata.get("traction_host")
+        + "/tenant/v1/messages/send-message",
+        json=data,
+        headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response
+
+
+def list_messages(context, tenant, params):
+    response = requests.get(
+        context.config.userdata.get("traction_host") + "/tenant/v1/messages",
+        params=params,
+        headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response
+
+
+def get_message(context, tenant, item_id, params: dict | None = {}):
+    response = requests.get(
+        context.config.userdata.get("traction_host") + f"/tenant/v1/messages/{item_id}",
+        params=params,
+        headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response
+
+
+def update_message(context, tenant, item_id, payload):
+    response = requests.put(
+        context.config.userdata.get("traction_host") + f"/tenant/v1/messages/{item_id}",
+        json=payload,
+        headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response
+
+
+def delete_message(context, tenant, item_id):
+    response = requests.delete(
+        context.config.userdata.get("traction_host") + f"/tenant/v1/messages/{item_id}",
+        headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response

@@ -275,11 +275,11 @@ async def get_issuer_credential(
     Raises:
       NotFoundError: if the item cannot be found by ID and deleted flag
     """
-    db_contact = await IssuerCredential.get_by_id(
+    db_item = await IssuerCredential.get_by_id(
         db, tenant_id, issuer_credential_id, deleted
     )
 
-    item = issuer_credential_to_item(db_contact, acapy)
+    item = issuer_credential_to_item(db_item, acapy)
 
     return item
 

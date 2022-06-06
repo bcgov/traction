@@ -667,7 +667,7 @@ async def delete_credential_template(
       wallet_id: AcaPy Wallet ID for tenant
       credential_template_id: Traction ID of CredentialTemplate
 
-    Returns: The Traction SchemaTemplate
+    Returns: The Traction CredentialTemplateItem
 
     Raises:
       NotFoundError: if the item cannot be found by ID and deleted flag
