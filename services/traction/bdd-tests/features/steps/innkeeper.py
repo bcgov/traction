@@ -5,8 +5,7 @@ from starlette import status
 from setup import _hard_delete_tenant
 import time
 
-@given('"{tenant}" is allowed to be an issuer by the innkeeper')
-@when('"{tenant}" is allowed to be an issuer by the innkeeper')
+@step('"{tenant}" is allowed to be an issuer by the innkeeper')
 def step_impl(context, tenant: str):
     response = requests.post(
         context.config.userdata.get("traction_host")

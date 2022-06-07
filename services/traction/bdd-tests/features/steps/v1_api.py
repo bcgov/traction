@@ -202,3 +202,18 @@ def delete_message(context, tenant, item_id):
         headers=context.config.userdata[tenant]["auth_headers"],
     )
     return response
+
+
+def get_tenant_self(context, tenant):
+    response = requests.get(
+        context.config.userdata.get("traction_host") + "/tenant/v1/admin/self",
+        headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response
+
+def tenant_make_issuer(context, tenant: str):
+    response = requests.post(
+        context.config.userdata.get("traction_host") + "/tenant/v1/admin/make-issuer",
+        headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response

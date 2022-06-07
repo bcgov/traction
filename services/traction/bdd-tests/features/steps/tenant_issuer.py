@@ -1,21 +1,38 @@
 import json, random, string
-import requests
 import time
 from behave import *
 from starlette import status
+from v1_api import *
 
 
-@given('"{tenant}" registers as an issuer')
-@when('"{tenant}" registers as an issuer')
+@step('"{tenant}" is not an issuer')
 def step_impl(context, tenant: str):
-    response = requests.post(
-        context.config.userdata.get("traction_host") + "/tenant/v1/admin/make-issuer",
-        headers=context.config.userdata[tenant]["auth_headers"],
-    )
+    response = get_tenant_self(context, tenant)
     assert response.status_code == status.HTTP_200_OK, response.__dict__
     resp_json = json.loads(response.content)
-    # wait for endorser signatures and ledger writes
-    time.sleep(20)
+    assert not resp_json["item"]["issuer"]
+    assert resp_json["item"]["issuer_status"] == "N/A"
+
+
+@step('"{tenant}" is an issuer')
+def step_impl(context, tenant: str):
+    response = get_tenant_self(context, tenant)
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    assert resp_json["item"]["issuer"]
+    assert resp_json["item"]["issuer_status"] == "Active"
+
+
+@step('"{tenant}" cannot register as an issuer')
+def step_impl(context, tenant: str):
+    response = tenant_make_issuer(context, tenant)
+    assert response.status_code == status.HTTP_409_CONFLICT, response.__dict__
+
+
+@step('"{tenant}" registers as an issuer')
+def step_impl(context, tenant: str):
+    response = tenant_make_issuer(context, tenant)
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
 
 
 @when('"{issuer}" issues "{holder}" a "{schema_name}" credential')
@@ -78,7 +95,7 @@ def step_impl(context, issuer, holder):
         context.config.userdata.get("traction_host")
         + f"/tenant/v1/issuer/credentials/{issuer_credential_id}/revoke-credential",
         headers=context.config.userdata[issuer]["auth_headers"],
-        json=data
+        json=data,
     )
     assert response.status_code == status.HTTP_200_OK, response.status
     resp_json = json.loads(response.content)
