@@ -1,35 +1,30 @@
 import logging
 
-from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter
 from starlette import status
+from starlette.requests import Request
 
 from api.endpoints.dependencies.tenant_security import get_from_context
-from api.endpoints.dependencies.db import get_db
 
-from api.db.repositories.tenant_issuers import TenantIssuersRepository
-
-from api.endpoints.models.v1.admin import AdminTenantIssueRead
+from api.endpoints.models.v1.tenant import TenantGetResponse
+from api.services.v1 import tenant_service
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-@router.get(
-    "/self", status_code=status.HTTP_200_OK, response_model=AdminTenantIssueRead
-)
-async def get_tenant_information(
-    db: AsyncSession = Depends(get_db),
-) -> AdminTenantIssueRead:
-    # TODO: create a specific model object for this...
-    """
-    check state of tenant and state of public did.
-    """
-    # copied from v0
+@router.get("/{self}", status_code=status.HTTP_200_OK, response_model=TenantGetResponse)
+async def get_tenant(
+    request: Request,
+) -> TenantGetResponse:
     wallet_id = get_from_context("TENANT_WALLET_ID")
-    issuer_repo = TenantIssuersRepository(db_session=db)
-    tenant_issuer = await issuer_repo.get_by_wallet_id(wallet_id)
+    tenant_id = get_from_context("TENANT_ID")
 
-    response = AdminTenantIssueRead(**tenant_issuer.__dict__)
+    item = await tenant_service.get_tenant(
+        tenant_id,
+        wallet_id,
+    )
 
-    return response
+    links = []  # TODO: determine useful links for /self
+
+    return TenantGetResponse(item=item, links=links)

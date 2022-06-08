@@ -4,6 +4,10 @@ Feature: innkeeper tenant management
         And we have "1" traction tenants
         | name  | role    |
         | alice | issuer |
-        When "alice" is allowed to be an issuer by the innkeeper
+        Then "alice" is not an issuer
+        And "alice" cannot register as an issuer
+        Then "alice" is allowed to be an issuer by the innkeeper
         And "alice" registers as an issuer
+        And we sadly wait for 10 seconds because we have not figured out how to listen for events
         Then "alice" will have a public did
+        And "alice" is an issuer
