@@ -1,8 +1,9 @@
 <script setup lang="ts">
+  import {Button} from 'vant'; 
 </script>
 
 <template>
-I'm a template
+<Button>testing</Button>
 </template>
 
 <style scoped>

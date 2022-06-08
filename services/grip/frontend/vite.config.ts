@@ -7,7 +7,6 @@ export default defineConfig({
   plugins: [
     vue(),
     styleImport({
-      // https://vitejs.dev/plugin-style-import
       resolves: [VantResolve()],
     }),
   ],
