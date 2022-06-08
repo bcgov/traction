@@ -7,9 +7,9 @@ from pydantic import BaseModel
 
 from api.endpoints.models.v1.base import (
     ListResponse,
-    ListItemParameters,
     TagsItem,
     GetResponse,
+    ListTagsItemParameters,
 )
 
 from api.endpoints.routes.tenant_admin import TenantSchemaRead
@@ -68,11 +68,11 @@ class TemplateStatusType(str, Enum):
 
 
 class SchemaTemplateListParameters(
-    ListItemParameters[TemplateStatusType, EndorserStateType]
+    ListTagsItemParameters[TemplateStatusType, EndorserStateType]
 ):
     """SchemaTemplateListParameters.
 
-    Inherits from ListItemParameters.
+    Inherits from ListTagsItemParameters.
     Filters for fetching SchemaTemplateItem
 
     Attributes:
@@ -86,11 +86,11 @@ class SchemaTemplateListParameters(
 
 
 class CredentialTemplateListParameters(
-    ListItemParameters[TemplateStatusType, EndorserStateType]
+    ListTagsItemParameters[TemplateStatusType, EndorserStateType]
 ):
     """CredentialTemplateListParameters.
 
-    Inherits from ListItemParameters.
+    Inherits from ListTagsItemParameters.
     Filters for fetching CredentialTemplateItem
 
     Attributes:

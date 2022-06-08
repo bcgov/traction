@@ -211,6 +211,7 @@ def get_tenant_self(context, tenant):
     )
     return response
 
+
 def tenant_make_issuer(context, tenant: str):
     response = requests.post(
         context.config.userdata.get("traction_host") + "/tenant/v1/admin/make-issuer",

@@ -239,6 +239,10 @@ async def list_contacts(
     if parameters.alias:
         filters.append(Contact.alias.contains(parameters.alias))
 
+    if parameters.tags:
+        _filter_tags = [x.strip() for x in parameters.tags.split(",")]
+        filters.append(Contact.tags.comparator.contains(_filter_tags))
+
     # build out a base query with all filters
     base_q = select(Contact).filter(*filters)
 

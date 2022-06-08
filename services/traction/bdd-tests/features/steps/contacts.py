@@ -40,6 +40,19 @@ def step_impl(context, tenant: str, contact: str):
     assert resp_json["items"][0]["alias"] == contact
 
 
+@then('"{tenant}" can find contact "{contact}" by tags "{tags}"')
+def step_impl(context, tenant: str, contact: str, tags: str):
+    params = {"tags": tags, "alias": contact}
+    response = list_contacts(context, tenant, params)
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    assert len(resp_json["items"]) == 1, resp_json
+    assert resp_json["items"][0]["alias"] == contact
+    _tags = [x.strip() for x in tags.split(",")]
+    for t in _tags:
+        assert t in resp_json["items"][0]["tags"]
+
+
 @then('"{tenant}" cannot find contact "{contact}" by alias')
 def step_impl(context, tenant: str, contact: str):
     params = {"alias": contact}

@@ -39,6 +39,7 @@ async def list_schema_templates(
     schema_id: str | None = None,
     schema_template_id: UUID | None = None,
     status: TemplateStatusType | None = None,
+    tags: str | None = None,
     deleted: bool | None = False,
     db: AsyncSession = Depends(get_db),
 ) -> SchemaTemplateListResponse:
@@ -54,6 +55,7 @@ async def list_schema_templates(
         schema_id=schema_id,
         schema_template_id=schema_template_id,
         status=status,
+        tags=tags,
     )
     items, total_count = await governance_service.list_schema_templates(
         db, tenant_id, wallet_id, parameters

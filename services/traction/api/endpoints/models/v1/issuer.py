@@ -8,9 +8,9 @@ from api.endpoints.models.v1.base import (
     AcapyItem,
     GetResponse,
     ListResponse,
-    ListAcapyItemParameters,
     GetTimelineResponse,
     TimelineItem,
+    ListAcapyItemParameters,
 )
 from api.endpoints.models.v1.common import (
     CommentPayload,

@@ -131,6 +131,10 @@ async def list_invitations(
     if parameters.name:
         filters.append(ConnectionInvitation.name.contains(parameters.name))
 
+    if parameters.tags:
+        _filter_tags = [x.strip() for x in parameters.tags.split(",")]
+        filters.append(ConnectionInvitation.tags.comparator.contains(_filter_tags))
+
     # build out a base query with all filters
     base_q = select(ConnectionInvitation).filter(*filters)
 

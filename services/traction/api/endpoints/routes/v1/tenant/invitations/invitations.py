@@ -28,6 +28,7 @@ async def list_invitations(
     page_size: int | None = settings.DEFAULT_PAGE_SIZE,
     acapy: bool | None = False,
     name: str | None = None,
+    tags: str | None = None,
     deleted: bool | None = False,
     db: AsyncSession = Depends(get_db),
 ) -> InvitationListResponse:
@@ -40,6 +41,7 @@ async def list_invitations(
         acapy=acapy,
         name=name,
         deleted=deleted,
+        tags=tags,
     )
     items, total_count = await invitations_service.list_invitations(
         db, tenant_id, wallet_id, parameters

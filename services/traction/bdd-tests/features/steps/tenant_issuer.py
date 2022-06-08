@@ -1,5 +1,4 @@
 import json, random, string
-import time
 from behave import *
 from starlette import status
 from v1_api import *
@@ -74,7 +73,7 @@ def step_impl(context, issuer, cred_status: str):
         + f"?status={cred_status}",
         headers=context.config.userdata[issuer]["auth_headers"],
     )
-    assert response.status_code == status.HTTP_200_OK, response.status
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
     resp_json = json.loads(response.content)
     assert len(resp_json["items"]) == 1, resp_json
     context.config.userdata[issuer]["issuer_credential"] = resp_json["items"][0]
@@ -97,7 +96,7 @@ def step_impl(context, issuer, holder):
         headers=context.config.userdata[issuer]["auth_headers"],
         json=data,
     )
-    assert response.status_code == status.HTTP_200_OK, response.status
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
     resp_json = json.loads(response.content)
     assert resp_json["item"] is not None
     assert resp_json["item"]["status"] == "Revoked"

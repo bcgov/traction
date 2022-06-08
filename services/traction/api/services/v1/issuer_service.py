@@ -128,6 +128,10 @@ async def list_issuer_credentials(
             IssuerCredential.external_reference_id == parameters.external_reference_id
         )
 
+    if parameters.tags:
+        _filter_tags = [x.strip() for x in parameters.tags.split(",")]
+        filters.append(IssuerCredential.tags.comparator.contains(_filter_tags))
+
     # build out a base query with all filters
     base_q = select(IssuerCredential).filter(*filters)
 

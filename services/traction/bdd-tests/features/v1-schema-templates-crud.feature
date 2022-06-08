@@ -31,6 +31,8 @@ Feature: schema templates crud functionality
         | attribute  | value    |
         | name | new bdd-schema |
         | tags | my,template |
+        And "faber" can find schema template "new bdd-schema" by tags "my,template"
+
 
     Scenario: issuer can delete schema template
         Given "faber" creates schema template(s)
