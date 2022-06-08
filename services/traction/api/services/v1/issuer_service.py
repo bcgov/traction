@@ -9,7 +9,7 @@ from sqlalchemy.orm import selectinload
 from acapy_client.api.revocation_api import RevocationApi
 from acapy_client.model.revoke_request import RevokeRequest
 from api.endpoints.models.v1.governance import TemplateStatusType
-from api.services.v1.governance_service import get_public_did
+from api.services.v1 import tenant_service
 
 from acapy_client.api.issue_credential_v1_0_api import IssueCredentialV10Api
 from api.db.models.v1.contact import Contact
@@ -185,7 +185,7 @@ async def offer_new_credential(
 
     """
     # see if we are an issuer...
-    await get_public_did(db, tenant_id)
+    await tenant_service.is_issuer(tenant_id, wallet_id, True)
 
     # need to find the contact/connection
     # need to find the credential template/cred def
