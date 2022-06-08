@@ -1,9 +1,13 @@
 <script setup lang="ts">
-  import {Button} from 'vant'; 
+  let key = 'blah';
+  const clicked = () => {
+    console.log('clicked')
+  }
 </script>
 
 <template>
-<Button>testing</Button>
+  <div>{{key}}</div>
+  <button @click="clicked">testing</button>
 </template>
 
 <style scoped>
