@@ -18,6 +18,7 @@ from api.endpoints.models.v1.verifier import (
 from api.endpoints.models.credentials import PresentCredentialProtocolType
 from api.tasks.present_proof_tasks import SendPresentProofTask
 
+
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
@@ -57,10 +58,12 @@ async def verifer_new_presentation_request(
     item = await verifier_service.make_presentation_request(
         db, tenant_id, wallet_id, PresentCredentialProtocolType.v10, payload
     )
-
-    # await SendPresentProofTask.assign(
-    #     tenant_id, wallet_id, item.v_presentation_request_id
-    # )
+    task_payload = {
+        "v_presentation_request_id": item.v_presentation_request_id,
+        "contact_id": item.contact_id,
+        "proof_request": item.proof_request,
+    }
+    await SendPresentProofTask.assign(tenant_id, wallet_id, task_payload)
 
     links = []  # TODO: set the links for issue new credential
 

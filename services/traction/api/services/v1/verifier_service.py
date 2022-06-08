@@ -7,12 +7,7 @@ from sqlalchemy import select, func, desc, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-
-from acapy_client.api.present_proof_v1_0_api import PresentProofV10Api
 from api.endpoints.models.v1.governance import TemplateStatusType
-from api.services.v1.governance_service import get_public_did
-
-from acapy_client.api.issue_credential_v1_0_api import IssueCredentialV10Api
 
 from api.endpoints.models.v1.errors import (
     IdNotMatchError,
@@ -29,9 +24,6 @@ from api.endpoints.models.v1.verifier import (
 
 from api.db.models.v1.presentation_requests import VerifierPresentationRequest
 
-from api.api_client_utils import get_api_client
-
-present_proof_api = PresentProofV10Api(api_client=get_api_client())
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +65,7 @@ async def make_presentation_request(
         status="pending",
         state="pending",
         protocol=protocol,
-        # role="verifier",
+        role="verifier",
         proof_request=payload.proof_request.dict(),
     )
     db.add(db_item)

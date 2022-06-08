@@ -36,6 +36,8 @@ class PresentationExchangeAcapy(BaseModel):
 
 
 class PresentationRequestItem(AcapyItem[str, str, PresentationExchangeAcapy]):
+    v_presentation_request_id: UUID
+    contact_id: UUID
     pres_exch_id: Optional[UUID]
     proof_request: ProofRequest
 
