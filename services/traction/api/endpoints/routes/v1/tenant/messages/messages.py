@@ -28,6 +28,7 @@ async def list_messages(
     page_size: int | None = settings.DEFAULT_PAGE_SIZE,
     contact_id: UUID | None = None,
     role: MessageRole | None = None,
+    tags: str | None = None,
     deleted: bool | None = False,
 ) -> MessageListResponse:
     wallet_id = get_from_context("TENANT_WALLET_ID")
@@ -40,6 +41,7 @@ async def list_messages(
         contact_id=contact_id,
         role=role,
         deleted=deleted,
+        tags=tags,
     )
     items, total_count = await messages_service.list_messages(
         tenant_id, wallet_id, parameters

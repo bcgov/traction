@@ -136,6 +136,10 @@ async def list_messages(
     if parameters.role:
         filters.append(Message.role == parameters.role)
 
+    if parameters.tags:
+        _filter_tags = [x.strip() for x in parameters.tags.split(",")]
+        filters.append(Message.tags.comparator.contains(_filter_tags))
+
     # build out a base query with all filters
     base_q = select(Message).filter(*filters)
 

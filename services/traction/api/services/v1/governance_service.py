@@ -91,8 +91,13 @@ async def list_schema_templates(
         )
     if parameters.schema_id:
         filters.append(SchemaTemplate.schema_id == parameters.schema_id)
+
     if parameters.name:
         filters.append(SchemaTemplate.name.contains(parameters.name))
+
+    if parameters.tags:
+        _filter_tags = [x.strip() for x in parameters.tags.split(",")]
+        filters.append(SchemaTemplate.tags.comparator.contains(_filter_tags))
 
     # build out a base query with all filters
     base_q = select(SchemaTemplate).filter(*filters)
@@ -428,6 +433,10 @@ async def list_credential_templates(
 
     if parameters.name:
         filters.append(CredentialTemplate.name.contains(parameters.name))
+
+    if parameters.tags:
+        _filter_tags = [x.strip() for x in parameters.tags.split(",")]
+        filters.append(CredentialTemplate.tags.comparator.contains(_filter_tags))
 
     # build out a base query with all filters
     base_q = select(CredentialTemplate).filter(*filters)

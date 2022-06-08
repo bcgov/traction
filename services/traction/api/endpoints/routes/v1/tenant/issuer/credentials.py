@@ -39,6 +39,7 @@ async def list_issuer_credentials(
     external_reference_id: str | None = None,
     status: IssuerCredentialStatusType | None = None,
     acapy: bool | None = None,
+    tags: str | None = None,
     deleted: bool | None = False,
     db: AsyncSession = Depends(get_db),
 ) -> IssuerCredentialListResponse:
@@ -56,6 +57,7 @@ async def list_issuer_credentials(
         external_reference_id=external_reference_id,
         status=status,
         acapy=acapy,
+        tags=tags,
     )
     items, total_count = await issuer_service.list_issuer_credentials(
         db, tenant_id, wallet_id, parameters

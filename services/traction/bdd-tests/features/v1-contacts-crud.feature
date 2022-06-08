@@ -36,6 +36,7 @@ Feature: contacts crud functionality
         | external_reference_id | new ext ref id |
         | public_did | new public did |
         | tags | my,contact |
+        And "alice" can find contact "new faber" by tags "my,contact"
 
     Scenario: tenant can delete contact
         When "alice" creates invitation(s)

@@ -121,6 +121,19 @@ def step_impl(context, tenant: str, name: str):
     assert resp_json["items"][0]["name"] == name
 
 
+@then('"{tenant}" can find credential template "{name}" by tags "{tags}"')
+def step_impl(context, tenant: str, name: str, tags: str):
+    params = {"tags": tags, "name": name}
+    response = list_credential_templates(context, tenant, params)
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    assert len(resp_json["items"]) == 1, resp_json
+    assert resp_json["items"][0]["name"] == name
+    _tags = [x.strip() for x in tags.split(",")]
+    for t in _tags:
+        assert t in resp_json["items"][0]["tags"]
+
+
 @then('"{tenant}" can find credential template "{name}" by schema_id')
 def step_impl(context, tenant: str, name: str):
     schema_template = context.config.userdata[tenant]["governance"]["schema_templates"][
