@@ -1,14 +1,16 @@
 <script setup lang="ts">
-  let key = 'blah';
-  const clicked = () => {
-    console.log('clicked')
-  }
+import { ref } from "vue";
+
+let key = ref(0);
+
+const clicked = () => {
+  key.value++;
+};
 </script>
 
 <template>
-  <div>{{key}}</div>
+  <div>{{ key }}</div>
   <button @click="clicked">testing</button>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
