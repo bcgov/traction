@@ -1,18 +1,30 @@
 <script setup lang="ts">
-import Login from './components/Login.vue'
+import Login from "./components/Login.vue";
 </script>
 
 <template>
-  <Login/>
+  <Login />
 </template>
 
 <style>
+html,
+body {
+  height: 100%;
+}
 #app {
+  height: 100%;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
+  /* text-align: center; */
   color: #2c3e50;
-  margin-top: 60px;
+  /* margin-top: 60px; */
+}
+.login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 </style>
