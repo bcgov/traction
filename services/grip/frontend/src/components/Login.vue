@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-let key = ref(0);
+const key = ref(0);
 
 const clicked = () => {
   key.value++;
