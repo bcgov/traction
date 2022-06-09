@@ -8,11 +8,12 @@ app.mount("#app");
   https://www.primefaces.org/primevue/
   Each component is defined here so
   the tree shaking can be applied.
+
+  There are material themes available that would
+  match the Gov't style.
 */
 import PrimeVue from "primevue/config";
-// import InputText from "primevue/inputtext";
 import "primevue/resources/themes/nova-vue/theme.css";
-
+import "primevue/resources/primevue.min.css";
+import "primeicons/primeicons.css";
 app.use(PrimeVue); // Load the UI framework
-// XXX: This didn't work.
-// app.component("InputText", InputText); // Load the component

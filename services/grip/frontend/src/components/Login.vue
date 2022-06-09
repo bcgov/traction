@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import InputText from "primevue/inputtext";
+import Button from "primevue/button";
 
 const key = ref("");
 const secret = ref("");
@@ -19,17 +20,28 @@ const clear = () => {
 <template>
   <div class="login">
     <div>
-      <InputText type="text" v-model="key" placeholder="Key" />
+      <span class="p-float-label">
+        <InputText type="text" v-model="key" />
+        <label for="key">Key</label>
+      </span>
 
-      <input type="text" v-model="key" placeholder="Key" />
-      <br />
-      <input type="text" v-model="secret" placeholder="Secret" />
+      <span class="p-float-label">
+        <InputText type="text" v-model="secret" />
+        <label for="secret">Secret</label>
+      </span>
     </div>
     <div>
-      <button @click="clear">Clear</button>
-      <button @click="clicked">Submit</button>
+      <Button label="Clear" class="p-button-warning" @click="clear"></Button>
+      <Button label="Submit" @click="clicked"></Button>
     </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+span.p-float-label {
+  margin: 25px;
+}
+button {
+  margin: 0 20px;
+}
+</style>
