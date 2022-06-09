@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-// import InputText from "primevue/inputtext";
+import InputText from "primevue/inputtext";
 
 const key = ref("");
 const secret = ref("");

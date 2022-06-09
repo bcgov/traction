@@ -10,7 +10,9 @@ app.mount("#app");
   the tree shaking can be applied.
 */
 import PrimeVue from "primevue/config";
-import InputText from "primevue/inputtext";
+// import InputText from "primevue/inputtext";
+import "primevue/resources/themes/nova-vue/theme.css";
 
 app.use(PrimeVue); // Load the UI framework
-app.component("InputText", InputText); // Load the component
+// XXX: This didn't work.
+// app.component("InputText", InputText); // Load the component
