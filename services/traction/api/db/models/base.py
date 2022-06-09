@@ -36,3 +36,20 @@ class BaseTable(BaseModel):
             TIMESTAMP, nullable=False, server_default=func.now(), onupdate=func.now()
         )
     )
+
+
+class TimestampModel(BaseModel):
+    created_at: datetime = Field(
+        sa_column=Column(TIMESTAMP, nullable=False, server_default=func.now())
+    )
+    updated_at: datetime = Field(
+        sa_column=Column(
+            TIMESTAMP, nullable=False, server_default=func.now(), onupdate=func.now()
+        )
+    )
+
+
+class StatefulModel(TimestampModel):
+    status: str = Field(nullable=False)
+    state: str = Field(nullable=False)
+    error_status_detail: str = Field(nullable=True)

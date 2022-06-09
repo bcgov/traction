@@ -123,10 +123,19 @@ class Task(ABC):
         tenant = await self._get_tenant(profile)
         context["TENANT_WALLET_TOKEN"] = tenant.wallet_token
         payload = event.payload["payload"]
-        await self._perform_task(tenant=tenant, payload=payload)
+        try:
+            await self._perform_task(tenant=tenant, payload=payload)
+        except Exception as e:
+            await self._handle_perform_task_error(tenant=tenant, payload=payload, exc=e)
 
     @abstractmethod
     async def _perform_task(self, tenant: Tenant, payload: dict):
+        pass
+
+    @abstractmethod
+    async def _handle_perform_task_error(
+        self, tenant: Tenant, payload: dict, exc: Exception
+    ):
         pass
 
     @classmethod
@@ -206,6 +215,27 @@ class SendSchemaRequestTask(Task):
         except AttributeError:
             self.logger.error()
         self.logger.info("< _perform_task()")
+
+    async def _handle_perform_task_error(
+        self, tenant: Tenant, payload: dict, exc: Exception
+    ):
+        self.logger.info("> _handle_perform_task_error()")
+        schema_template_id = payload["schema_template_id"]
+        values = {"status": "Error", "error_status_detail": str(exc)}
+        q = (
+            update(SchemaTemplate)
+            .where(SchemaTemplate.schema_template_id == schema_template_id)
+            .values(values)
+        )
+        async with async_session() as db:
+            try:
+                await db.execute(q)
+            except DBAPIError:
+                await db.rollback()
+                self.logger.error(exc_info=1)
+            else:
+                await db.commit()
+        self.logger.info("< _handle_perform_task_error()")
 
     @classmethod
     async def assign(
@@ -292,6 +322,13 @@ class SendCredDefRequestTask(Task):
                 f"No Credential Template for id<{c_t_id}>. Cannot send request to ledger."  # noqa: E501
             )
         self.logger.info("< _perform_task()")
+
+    async def _handle_perform_task_error(
+        self, tenant: Tenant, payload: dict, exc: Exception
+    ):
+        self.logger.info("> _handle_perform_task_error()")
+        self.logger.warning(exc)
+        self.logger.info("< _handle_perform_task_error()")
 
     @classmethod
     async def assign(
@@ -393,6 +430,13 @@ class SendCredentialOfferTask(Task):
                 f"No Issuer Credential found for id<{issuer_credential_id}>. Cannot offer credential."  # noqa: E501
             )
         self.logger.info("< _perform_task()")
+
+    async def _handle_perform_task_error(
+        self, tenant: Tenant, payload: dict, exc: Exception
+    ):
+        self.logger.info("> _handle_perform_task_error()")
+        self.logger.warning(exc)
+        self.logger.info("< _handle_perform_task_error()")
 
     @classmethod
     async def assign(cls, tenant_id: UUID, wallet_id: UUID, issuer_credential_id: UUID):

@@ -65,6 +65,7 @@ class TemplateStatusType(str, Enum):
     pending = "Pending"
     deleted = "Deleted"
     cancelled = "Cancelled"
+    error = "Error"
 
 
 class SchemaTemplateListParameters(

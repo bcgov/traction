@@ -13,7 +13,7 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-@router.get("/{self}", status_code=status.HTTP_200_OK, response_model=TenantGetResponse)
+@router.get("/self", status_code=status.HTTP_200_OK, response_model=TenantGetResponse)
 async def get_tenant(
     request: Request,
 ) -> TenantGetResponse:

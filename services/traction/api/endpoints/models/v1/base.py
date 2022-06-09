@@ -72,6 +72,7 @@ class Item(GenericModel, Generic[StatusType, StateType]):
 
     status: StatusType | None = None
     state: StateType | None = None
+    error_status_detail: str | None = None
     deleted: bool = False
     created_at: datetime
     updated_at: datetime

@@ -21,14 +21,14 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import TIMESTAMP, ARRAY, UUID
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.models.base import BaseModel
+from api.db.models.base import BaseModel, StatefulModel
 
 from api.endpoints.models.v1.errors import (
     NotFoundError,
 )
 
 
-class SchemaTemplate(BaseModel, table=True):
+class SchemaTemplate(StatefulModel, table=True):
     """SchemaTemplate.
 
     This is the model for the Schema table (postgresql specific dialects in use).
@@ -79,28 +79,15 @@ class SchemaTemplate(BaseModel, table=True):
 
     name: str = Field(nullable=False)
 
-    status: str = Field(nullable=False)
     tags: List[str] = Field(sa_column=Column(ARRAY(String)))
     deleted: bool = Field(nullable=False, default=False)
     imported: bool = Field(nullable=False, default=False)
-
-    state: str = Field(nullable=False)
-
     # ledger data ---
     version: str = Field(nullable=False)
     attributes: List[str] = Field(sa_column=Column(ARRAY(String)))
     schema_name: str = Field(nullable=True)
     transaction_id: str = Field(nullable=True)
     # --- ledger data
-
-    created_at: datetime = Field(
-        sa_column=Column(TIMESTAMP, nullable=False, server_default=func.now())
-    )
-    updated_at: datetime = Field(
-        sa_column=Column(
-            TIMESTAMP, nullable=False, server_default=func.now(), onupdate=func.now()
-        )
-    )
 
     @classmethod
     async def get_by_id(
