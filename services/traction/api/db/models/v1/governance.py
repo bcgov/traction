@@ -5,30 +5,28 @@ related tables for schemas and credential definitions.
 
 """
 import uuid
-from datetime import datetime
 from typing import List
 
 from sqlmodel import Field, Relationship
 from sqlalchemy import (
     Column,
-    func,
     String,
     select,
     desc,
     text,
     UniqueConstraint,
 )
-from sqlalchemy.dialects.postgresql import TIMESTAMP, ARRAY, UUID
+from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.models.base import BaseModel, StatefulModel
+from api.db.models.base import StatefulModel, TimestampModel, TimelineModel
 
 from api.endpoints.models.v1.errors import (
     NotFoundError,
 )
 
 
-class SchemaTemplate(StatefulModel, table=True):
+class SchemaTemplate(StatefulModel, TimestampModel, table=True):
     """SchemaTemplate.
 
     This is the model for the Schema table (postgresql specific dialects in use).
@@ -231,7 +229,7 @@ class SchemaTemplate(StatefulModel, table=True):
         return db_recs
 
 
-class CredentialTemplate(BaseModel, table=True):
+class CredentialTemplate(StatefulModel, TimestampModel, table=True):
     """Credential Template.
 
     Model for the Credential Definition table (postgresql specific dialects in use).
@@ -277,10 +275,8 @@ class CredentialTemplate(BaseModel, table=True):
     schema_id: str = Field(nullable=True)
 
     name: str = Field(nullable=False)
-    status: str = Field(nullable=False)
     tags: List[str] = Field(sa_column=Column(ARRAY(String)))
     deleted: bool = Field(nullable=False, default=False)
-    state: str = Field(nullable=False)
 
     # ledger(ish) data ---
     transaction_id: str = Field(nullable=True)
@@ -296,15 +292,6 @@ class CredentialTemplate(BaseModel, table=True):
         back_populates="credential_template"
     )
     # --- relationships
-
-    created_at: datetime = Field(
-        sa_column=Column(TIMESTAMP, nullable=False, server_default=func.now())
-    )
-    updated_at: datetime = Field(
-        sa_column=Column(
-            TIMESTAMP, nullable=False, server_default=func.now(), onupdate=func.now()
-        )
-    )
 
     @classmethod
     async def get_by_id(
@@ -534,3 +521,115 @@ class CredentialTemplate(BaseModel, table=True):
         q_result = await db.execute(q)
         db_recs = q_result.scalars()
         return db_recs
+
+
+class SchemaTemplateTimeline(TimelineModel, table=True):
+    """Schema Template Timeline.
+
+    Model for Schema Template Timeline table (postgresql specific dialects in use).
+    Timeline represents history of changes to status and/or state.
+
+    Attributes:
+      schema_template_timeline_id: Unique ID in table
+      schema_template_id: Traction Schema Template ID
+      status: Business and Tenant indicator for Schema Template state; independent of
+        AcaPy/Ledger Schema State
+      state: The underlying AcaPy/Ledger Schema state
+      created_at: Timestamp when record was created in Traction
+    """
+
+    __tablename__ = "schema_template_timeline"
+
+    schema_template_timeline_id: uuid.UUID = Field(
+        sa_column=Column(
+            UUID(as_uuid=True),
+            primary_key=True,
+            server_default=text("gen_random_uuid()"),
+        )
+    )
+    schema_template_id: uuid.UUID = Field(
+        foreign_key="schema_template.schema_template_id", index=True
+    )
+
+    @classmethod
+    async def list_by_schema_template_id(
+        cls: "SchemaTemplateTimeline",
+        db: AsyncSession,
+        schema_template_id: UUID,
+    ) -> List:
+        """List by Schema Template ID.
+
+        Find and return list of Timeline records for Schema Template.
+
+        Args:
+          db: database session
+          schema_template_id: Traction ID of Schema Template
+
+        Returns: List of Traction Schema Template Timeline (db) records in descending
+          order
+        """
+
+        q = (
+            select(cls)
+            .where(cls.schema_template_id == schema_template_id)
+            .order_by(desc(cls.created_at))
+        )
+        q_result = await db.execute(q)
+        db_items = q_result.scalars()
+        return db_items
+
+
+class CredentialTemplateTimeline(TimelineModel, table=True):
+    """Credential Template Timeline.
+
+    Model for Credential Template Timeline table (postgresql specific dialects in use).
+    Timeline represents history of changes to status and/or state.
+
+    Attributes:
+      credential_template_timeline_id: Unique ID in table
+      credential_template_id: Traction Credential Template ID
+      status: Business and Tenant indicator for Credential Template state; independent
+        of AcaPy/Ledger Credential State
+      state: The underlying AcaPy/Ledger Credential Definition state
+      created_at: Timestamp when record was created in Traction
+    """
+
+    __tablename__ = "credential_template_timeline"
+
+    credential_template_timeline_id: uuid.UUID = Field(
+        sa_column=Column(
+            UUID(as_uuid=True),
+            primary_key=True,
+            server_default=text("gen_random_uuid()"),
+        )
+    )
+    credential_template_id: uuid.UUID = Field(
+        foreign_key="credential_template.credential_template_id", index=True
+    )
+
+    @classmethod
+    async def list_by_credential_template_id(
+        cls: "CredentialTemplateTimeline",
+        db: AsyncSession,
+        credential_template_id: UUID,
+    ) -> List:
+        """List by Credential Template ID.
+
+        Find and return list of Timeline records for Credential Template.
+
+        Args:
+          db: database session
+          credential_template_id: Traction ID of Credential Template
+
+        Returns: List of Traction Credential Template Timeline (db) records in
+          descending order
+        """
+
+        q = (
+            select(cls)
+            .where(cls.credential_template_id == credential_template_id)
+            .order_by(desc(cls.created_at))
+        )
+        q_result = await db.execute(q)
+        db_items = q_result.scalars()
+        return db_items

@@ -7,7 +7,12 @@ from sqlalchemy import select, update, desc, func
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from acapy_client import OpenApiException
-from api.db.models.v1.governance import SchemaTemplate, CredentialTemplate
+from api.db.models.v1.governance import (
+    SchemaTemplate,
+    CredentialTemplate,
+    SchemaTemplateTimeline,
+    CredentialTemplateTimeline,
+)
 from api.endpoints.models.v1.errors import (
     IdNotMatchError,
     NotFoundError,
@@ -24,6 +29,8 @@ from api.endpoints.models.v1.governance import (
     CredentialTemplateListParameters,
     CreateCredentialTemplatePayload,
     UpdateCredentialTemplatePayload,
+    SchemaTemplateTimelineItem,
+    CredentialTemplateTimelineItem,
 )
 from acapy_client.api.endorse_transaction_api import EndorseTransactionApi
 from acapy_client.api.schema_api import SchemaApi
@@ -221,6 +228,32 @@ async def get_schema_template(
     item = schema_template_to_item(db_rec)
 
     return item
+
+
+async def get_schema_template_timeline(
+    db: AsyncSession,
+    schema_template_id: UUID,
+) -> List[SchemaTemplateTimelineItem]:
+    """Get Schema Template Timeline items.
+
+    Find and return the Traction Schema Template Timeline items. Timeline items
+    represent history of changes to Status and/or State. They will be sorted in
+    descending order of creation (newest first).
+
+    Args:
+      db: database session
+      schema_template_id: Traction ID of Schema Template
+
+    Returns: List of Schema Template Timeline items
+    """
+    db_items = await SchemaTemplateTimeline.list_by_schema_template_id(
+        db, schema_template_id
+    )
+
+    results = []
+    for db_item in db_items:
+        results.append(SchemaTemplateTimelineItem(**db_item.dict()))
+    return results
 
 
 async def update_schema_template(
@@ -567,6 +600,32 @@ async def get_credential_template(
     item = credential_template_to_item(db_rec)
 
     return item
+
+
+async def get_credential_template_timeline(
+    db: AsyncSession,
+    credential_template_id: UUID,
+) -> List[CredentialTemplateTimelineItem]:
+    """Get Credential Template Timeline items.
+
+    Find and return the Traction Credential Template Timeline items. Timeline items
+    represent history of changes to Status and/or State. They will be sorted in
+    descending order of creation (newest first).
+
+    Args:
+      db: database session
+      credential_template_id: Traction ID of Credential Template
+
+    Returns: List of Credential Template Timeline items
+    """
+    db_items = await CredentialTemplateTimeline.list_by_credential_template_id(
+        db, credential_template_id
+    )
+
+    results = []
+    for db_item in db_items:
+        results.append(CredentialTemplateTimelineItem(**db_item.dict()))
+    return results
 
 
 async def update_credential_template(
