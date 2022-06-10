@@ -92,6 +92,8 @@ class Task(ABC):
     Although the event profile contains a db session object, do NOT use this. Open a
     session in _perform_task if/when needed.
 
+    Implementing classes will need to be referenced by a task_listener, found in tasks/
+    __init__.py for the default
     """
 
     def __init__(self):

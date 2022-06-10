@@ -58,7 +58,6 @@ async def make_presentation_request(
     protocol: PresentCredentialProtocolType,
     payload: CreatePresentationRequestPayload,
 ) -> PresentationRequestItem:
-    logger.warning(payload.proof_request.dict())
     db_item = VerifierPresentationRequest(
         tenant_id=tenant_id,
         contact_id=payload.contact_id,

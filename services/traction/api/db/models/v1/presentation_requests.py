@@ -68,11 +68,9 @@ class VerifierPresentationRequest(BaseModel, table=True):
         sa_column=Column(
             TIMESTAMP, nullable=False, server_default=func.now(), onupdate=func.now()
         )
-    )  # TODO why isn't this in base
-    # __mapper_args__ = {"polymorphic_identity": "role", "polymorphic_on": "type"}
+    )
 
-    classmethod
-
+    @classmethod
     async def get_by_id(
         cls: "VerifierPresentationRequest",
         db: AsyncSession,
