@@ -16,6 +16,4 @@ import PrimeVue from "primevue/config";
 import "primevue/resources/themes/nova-vue/theme.css";
 import "primevue/resources/primevue.min.css";
 import "primeicons/primeicons.css";
-import ToastService from 'primevue/toastservice';
 app.use(PrimeVue); // Load the UI framework
-app.use(ToastService); // Load the notifcation service 

@@ -2,7 +2,6 @@
 import { defineComponent, ref } from "vue";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
-import { useToast } from "primevue/usetoast";
 // import axios from "axios";
 
 const key = ref("");
@@ -10,15 +9,8 @@ const secret = ref("");
 
 
 const clicked = () => {
-const toast = useToast();
   console.log("key", key.value);
   console.log("secret", secret.value);
-  toast.add({
-    severity: "info",
-    summary: "Token",
-    detail: `${key.value} ${secret.value}`,
-    life: 3000
-  });
 };
 
 const clear = () => {
