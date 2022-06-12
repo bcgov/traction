@@ -1,14 +1,19 @@
 <script setup lang="ts">
-import { defineComponent, ref } from "vue";
+import { ref } from "vue";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
+import {useToast} from "vue-toastification";
 // import axios from "axios";
 
 const key = ref("");
 const secret = ref("");
 
+const toast = useToast();
+
+
 
 const clicked = () => {
+  toast(`${key.value} ${secret.value}`)
   console.log("key", key.value);
   console.log("secret", secret.value);
 };

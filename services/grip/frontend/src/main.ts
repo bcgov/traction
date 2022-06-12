@@ -17,3 +17,9 @@ import "primevue/resources/themes/nova-vue/theme.css";
 import "primevue/resources/primevue.min.css";
 import "primeicons/primeicons.css";
 app.use(PrimeVue); // Load the UI framework
+
+import Toast, {PluginOptions} from "vue-toastification";
+import "vue-toastification/dist/index.css";
+const options: PluginOptions = {};
+app.use(Toast, options);
+
