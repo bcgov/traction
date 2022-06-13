@@ -5,6 +5,7 @@ from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from api.core.config import settings
 from api.core.exception_handlers import add_exception_handlers
@@ -34,12 +35,26 @@ def get_application() -> FastAPI:
         title=settings.TITLE,
         description=settings.DESCRIPTION,
         debug=settings.DEBUG,
-        middleware=None,
+        # middleware=None,
     )
     return application
 
 
 app = get_application()
+
+origins = [
+    "http://localhost:3000" # Only allow localhost
+]
+
+# Add CORS middleware for developing the UI
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 webhook_app = get_webhookapp()
 app.mount("/webhook", webhook_app)
 

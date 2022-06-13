@@ -15,9 +15,34 @@ const toast = useToast();
 // For state
 let processing = ref(false);
 
+/**
+ * ##clicked
+ *
+ */
 const clicked = () => {
   processing.value = true; // Disable button while processing
-  toast(`${key.value} ${secret.value}`);
+
+  const data = `username=${key.value}&password=${secret.value}`;
+
+  axios({
+    method: "post",
+    url: "http://localhost:5100/tenant/token",
+    headers: {
+      accept: "application/json",
+      "content-type": "application/x-www-form-urlencoded",
+    },
+    data: data,
+  })
+    .then((res) => {
+      const token = res.data.access_token;
+      processing.value = false; // enable button
+      toast(`Access Token: ${token}`);
+    })
+    .catch((err) => {
+      console.error(err);
+      toast.error(`Failure: ${err}`);
+      processing.value = false; // enable button
+    });
 };
 
 const clear = () => {
