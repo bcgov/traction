@@ -32,9 +32,18 @@ async def list_contacts(
     acapy: bool | None = False,
     alias: str | None = None,
     role: ConnectionRoleType | None = None,
+    tags: str | None = None,
     deleted: bool | None = False,
     db: AsyncSession = Depends(get_db),
 ) -> ContactListResponse:
+    """
+    List/Find Contacts
+
+    All criteria will be AND, so return records that match ALL the given criteria.
+
+    Important note about "tags": this is a comma separated string and again, the record
+    will match on ALL the tags provided.
+    """
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
     parameters = ContactListParameters(
@@ -45,6 +54,7 @@ async def list_contacts(
         alias=alias,
         role=role,
         deleted=deleted,
+        tags=tags,
     )
     items, total_count = await contacts_service.list_contacts(
         db, tenant_id, wallet_id, parameters

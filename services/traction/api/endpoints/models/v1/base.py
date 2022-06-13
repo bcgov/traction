@@ -177,10 +177,10 @@ class ListTagsItemParameters(
     Should be used when fetching lists of TagsItem
 
     Attributes:
-      tags: used to filter results based on their tags
+      tags: comma separated string, used to match tags array
     """
 
-    tags: Optional[List[str]] | None = []
+    tags: str | None = None
 
 
 class ListAcapyItemParameters(

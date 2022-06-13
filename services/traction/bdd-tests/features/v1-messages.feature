@@ -20,6 +20,7 @@ Feature: messaging contacts
         And "alice" can update message with "faber"
         | attribute  | value    |
         | tags | my,message |
+        Then "alice" can find 1 message(s) as "Sender" with "faber" and tags "my,message"
         And "alice" can delete message with "faber"
         Then "alice" cannot find message with "faber" by role
         And "alice" cannot get message with "faber"

@@ -36,6 +36,7 @@ Feature: credential templates crud functionality
         | attribute  | value    |
         | name | new bdd-schema |
         | tags | my,template |
+        And "faber" can find credential template "new bdd-schema" by tags "my,template"
 
     Scenario: issuer can delete credential template
         Given "faber" creates credential template for "bdd-schema" by schema_template_id
