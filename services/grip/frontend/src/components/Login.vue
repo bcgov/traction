@@ -2,20 +2,22 @@
 import { ref } from "vue";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
-import {useToast} from "vue-toastification";
-// import axios from "axios";
+import { useToast } from "vue-toastification";
+import axios from "axios";
 
+// To store credentials
 const key = ref("");
 const secret = ref("");
 
+// For notifications
 const toast = useToast();
 
-
+// For state
+let processing = ref(false);
 
 const clicked = () => {
-  toast(`${key.value} ${secret.value}`)
-  console.log("key", key.value);
-  console.log("secret", secret.value);
+  processing.value = true; // Disable button while processing
+  toast(`${key.value} ${secret.value}`);
 };
 
 const clear = () => {
@@ -29,17 +31,21 @@ const clear = () => {
     <div>
       <span class="p-float-label">
         <InputText type="text" v-model="key" />
-        <label for="key">Key</label>
+        <label for="key">Wallet ID</label>
       </span>
 
       <span class="p-float-label">
         <InputText type="text" v-model="secret" />
-        <label for="secret">Secret</label>
+        <label for="secret">Wallet Key</label>
       </span>
     </div>
     <div>
       <Button label="Clear" class="p-button-warning" @click="clear"></Button>
-      <Button label="Submit" @click="clicked"></Button>
+      <Button
+        label="Submit"
+        @click="clicked"
+        :disabled="processing ? true : false"
+      ></Button>
     </div>
   </div>
 </template>
