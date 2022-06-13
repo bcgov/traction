@@ -70,6 +70,7 @@ const clear = () => {
         label="Submit"
         @click="clicked"
         :disabled="processing ? true : false"
+        :loading="processing ? true : false"
       ></Button>
     </div>
   </div>
