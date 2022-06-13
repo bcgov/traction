@@ -17,7 +17,8 @@ let processing = ref(false);
 
 /**
  * ##clicked
- *
+ * Read the form, formulate the request url then
+ * request token from API
  */
 const clicked = () => {
   processing.value = true; // Disable button while processing
@@ -45,6 +46,10 @@ const clicked = () => {
     });
 };
 
+/**
+ * ## clear
+ * Clear the form
+ */
 const clear = () => {
   key.value = "";
   secret.value = "";
