@@ -136,17 +136,19 @@ class SendPresentProofTask(Task):
 
 def convert_to_IndyProofRequest(proof_request: ProofRequest):
     logger.warning(proof_request)
+    conv_request_attrs = {}
+    for i, a in enumerate(proof_request.requested_attributes):
+        attr = IndyProofReqAttrSpec()
+        if a.name:
+            attr.name = a.name
+        if a.names:
+            attr.names = a.names
+        if a.non_revoked:
+            attr.non_revoked = a.non_revoked
+        if a.restrictions:
+            attr.restrictions = a.restrictions
 
-    conv_request_attrs = {
-        a.name: IndyProofReqAttrSpec(
-            name=a.name,
-            # names=a.names,
-            non_revoked=a.non_revoked,
-            restrictions=a.restrictions,
-            _check_type=False,
-        )
-        for a in proof_request.requested_attributes
-    }
+        conv_request_attrs["attr_" + str(i)] = attr
 
     conv_request_preds = {
         a.name: IndyProofReqPredSpec(**a.__dict__)
