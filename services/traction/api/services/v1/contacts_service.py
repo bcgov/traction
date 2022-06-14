@@ -15,7 +15,8 @@ from sqlalchemy import select, update, desc
 from sqlalchemy.sql.functions import func
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.models.v1.contact import Contact, ContactTimeline
+from api.db.models import Timeline
+from api.db.models.v1.contact import Contact
 from api.endpoints.models.connections import ConnectionStateType, ConnectionRoleType
 from api.endpoints.routes.connections import create_invitation as v0_create_invitation
 from api.endpoints.routes.connections import receive_invitation as v0_receive_invitation
@@ -448,7 +449,7 @@ async def get_contact_timeline(
 
     Returns: List of Contact Timeline items
     """
-    db_items = await ContactTimeline.list_by_contact_id(db, contact_id)
+    db_items = await Timeline.list_by_item_id(db, contact_id)
 
     results = []
     for db_item in db_items:

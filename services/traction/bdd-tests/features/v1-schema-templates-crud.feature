@@ -15,6 +15,14 @@ Feature: schema templates crud functionality
         Then "faber" will have 2 schema template(s)
         And "faber" will have 1 credential template(s)
 
+    Scenario: issuer cannot create a bad schema template
+        Given "faber" creates schema template(s)
+        | name  | version | attributes | tag | revocation_enabled |
+        | bdd-schema | bad | first,last |    | 0                  |
+        Then "faber" will have 1 schema template(s)
+        And we sadly wait for 10 seconds because we have not figured out how to listen for events
+        And "faber" can get schema template "bdd-schema" with "Error" status
+
     Scenario: holder cannot create a schema template
         Given "alice" cannot create a schema template
         Then "alice" will have 0 schema template(s)

@@ -35,6 +35,7 @@ class IssuerCredentialStatusType(str, Enum):
     revoked = "Revoked"
     # item is soft deleted
     deleted = "Delete"
+    error = "Error"
 
 
 class AcapyCredentialExchangeStateType(str, Enum):

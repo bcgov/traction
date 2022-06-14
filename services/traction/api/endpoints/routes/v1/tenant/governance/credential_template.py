@@ -28,6 +28,7 @@ async def get_credential_template(
     request: Request,
     credential_template_id: UUID,
     deleted: bool | None = False,
+    timeline: bool | None = False,
     db: AsyncSession = Depends(get_db),
 ) -> CredentialTemplateGetResponse:
     wallet_id = get_from_context("TENANT_WALLET_ID")
@@ -43,7 +44,15 @@ async def get_credential_template(
 
     links = build_item_links(str(request.url), item)
 
-    return CredentialTemplateGetResponse(item=item, links=links)
+    timeline_items = []
+    if timeline:
+        timeline_items = await governance_service.get_credential_template_timeline(
+            db, credential_template_id
+        )
+
+    return CredentialTemplateGetResponse(
+        item=item, links=links, timeline=timeline_items
+    )
 
 
 @router.put(

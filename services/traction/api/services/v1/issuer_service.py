@@ -8,13 +8,14 @@ from sqlalchemy.orm import selectinload
 
 from acapy_client.api.revocation_api import RevocationApi
 from acapy_client.model.revoke_request import RevokeRequest
+from api.db.models import Timeline
 from api.endpoints.models.v1.governance import TemplateStatusType
 from api.services.v1 import tenant_service
 
 from acapy_client.api.issue_credential_v1_0_api import IssueCredentialV10Api
 from api.db.models.v1.contact import Contact
 from api.db.models.v1.governance import CredentialTemplate
-from api.db.models.v1.issuer import IssuerCredential, IssuerCredentialTimeline
+from api.db.models.v1.issuer import IssuerCredential
 
 from api.endpoints.models.credentials import CredentialStateType
 from api.endpoints.models.v1.errors import (
@@ -304,13 +305,11 @@ async def get_issuer_credential_timeline(
 
     Returns: List of Issuer Credential Timeline items
     """
-    db_items = await IssuerCredentialTimeline.list_by_issuer_credential_id(
-        db, issuer_credential_id
-    )
+    db_items = await Timeline.list_by_item_id(db, issuer_credential_id)
 
     results = []
     for db_item in db_items:
-        results.append(IssuerCredentialTimeline(**db_item.dict()))
+        results.append(IssuerCredentialTimelineItem(**db_item.dict()))
     return results
 
 

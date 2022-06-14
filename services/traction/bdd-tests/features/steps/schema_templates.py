@@ -243,3 +243,21 @@ def step_impl(context, tenant: str, name: str):
     )
     assert resp_json["item"]["deleted"]
     assert resp_json["item"]["status"] == "Deleted"
+
+
+@step('"{tenant}" can get schema template "{name}" with "{status_code}" status')
+def step_impl(context, tenant: str, name: str, status_code: str):
+    schema_template = context.config.userdata[tenant]["governance"]["schema_templates"][
+        name
+    ]
+    params = {}
+    response = get_schema_template(
+        context, tenant, schema_template["schema_template_id"], params
+    )
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    assert (
+        resp_json["item"]["schema_template_id"] == schema_template["schema_template_id"]
+    )
+    assert resp_json["item"]["status"] == "Error"
+    assert resp_json["item"]["error_status_detail"] is not None
