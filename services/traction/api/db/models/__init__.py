@@ -1,17 +1,14 @@
 # Import all the models, so that Base has them before being imported by Alembic
 
-from api.db.models.base import BaseTable  # noqa: F401
+from api.db.models.base import BaseTable, Timeline  # noqa: F401
 from api.db.models.tenant import Tenant  # noqa: F401
 from api.db.models.tenant_webhook import TenantWebhook  # noqa: F401
 from api.db.models.tenant_webhook_msg import TenantWebhookMsg  # noqa: F401
 
-from api.db.models.v1.contact import Contact, ContactTimeline  # noqa: F401
+from api.db.models.v1.contact import Contact  # noqa: F401
 from api.db.models.v1.connection_invitation import ConnectionInvitation  # noqa: F401
 from api.db.models.v1.governance import SchemaTemplate, CredentialTemplate  # noqa: F401
-from api.db.models.v1.issuer import (
-    IssuerCredential,
-    IssuerCredentialTimeline,
-)  # noqa: F401
+from api.db.models.v1.issuer import IssuerCredential  # noqa: F401
 from api.db.models.v1.message import Message
 
 
@@ -21,11 +18,10 @@ __all__ = [
     "TenantWebhook",
     "TenantWebhookMsg",
     "Contact",
-    "ContactTimeline",
     "ConnectionInvitation",
     "SchemaTemplate",
     "CredentialTemplate",
     "IssuerCredential",
-    "IssuerCredentialTimeline",
     "Message",
+    "Timeline",
 ]

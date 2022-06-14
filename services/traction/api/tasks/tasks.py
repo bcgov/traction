@@ -5,7 +5,7 @@ from enum import Enum
 from re import Pattern
 from uuid import UUID
 
-from sqlalchemy import select, update
+from sqlalchemy import select
 from sqlalchemy.exc import DBAPIError
 from starlette_context import context
 
@@ -111,6 +111,14 @@ class Task(ABC):
     def _event_topic() -> str:
         pass
 
+    @abstractmethod
+    def _get_id_from_payload(self, payload: dict) -> str:
+        pass
+
+    @abstractmethod
+    def _get_db_model_class(self):
+        pass
+
     @property
     def logger(self):
         return self._logger
@@ -126,11 +134,26 @@ class Task(ABC):
         tenant = await self._get_tenant(profile)
         context["TENANT_WALLET_TOKEN"] = tenant.wallet_token
         payload = event.payload["payload"]
-        await self._perform_task(tenant=tenant, payload=payload)
+        try:
+            await self._perform_task(tenant=tenant, payload=payload)
+        except Exception as e:
+            await self._handle_perform_task_error(tenant=tenant, payload=payload, exc=e)
+            # TODO: send notification via webhook that task errored out
 
     @abstractmethod
     async def _perform_task(self, tenant: Tenant, payload: dict):
         pass
+
+    async def _handle_perform_task_error(
+        self, tenant: Tenant, payload: dict, exc: Exception
+    ):
+        self.logger.info("> _handle_perform_task_error()")
+        item_id = self._get_id_from_payload(payload)
+        values = {"status": "Error", "error_status_detail": str(exc)}
+        self.logger.warning(values)
+        clazz = self._get_db_model_class()
+        await clazz.update_by_id(item_id=item_id, values=values)
+        self.logger.info("< _handle_perform_task_error()")
 
     @classmethod
     async def _assign(cls, tenant_id: UUID, wallet_id: UUID, payload):
@@ -170,10 +193,17 @@ class SendSchemaRequestTask(Task):
     def _event_topic() -> str:
         return TRACTION_TASK_PREFIX + TractionTaskType.send_schema_request
 
+    def _get_id_from_payload(self, payload: dict) -> str:
+        schema_template_id = payload["schema_template_id"]
+        return schema_template_id
+
+    def _get_db_model_class(self):
+        return SchemaTemplate
+
     async def _perform_task(self, tenant: Tenant, payload: dict):
         self.logger.info("> _perform_task()")
         schema_definition = payload["schema_definition"]
-        schema_template_id = payload["schema_template_id"]
+        schema_template_id = self._get_id_from_payload(payload)
         schema_request = SchemaSendRequest(
             schema_name=schema_definition.schema_name,
             schema_version=schema_definition.schema_version,
@@ -193,19 +223,10 @@ class SendSchemaRequestTask(Task):
                     "transaction_id": resp["txn"]["transaction_id"],
                 }
                 self.logger.debug(f"update values = {values}")
-                q = (
-                    update(SchemaTemplate)
-                    .where(SchemaTemplate.schema_template_id == schema_template_id)
-                    .values(values)
-                )
-                async with async_session() as db:
-                    try:
-                        await db.execute(q)
-                    except DBAPIError:
-                        await db.rollback()
-                        self.logger.error(exc_info=1)
-                    else:
-                        await db.commit()
+                try:
+                    await SchemaTemplate.update_by_id(schema_template_id, values)
+                except DBAPIError:
+                    self.logger.error(exc_info=1)
         except AttributeError:
             self.logger.error()
         self.logger.info("< _perform_task()")
@@ -250,16 +271,23 @@ class SendCredDefRequestTask(Task):
     def _event_topic() -> str:
         return TRACTION_TASK_PREFIX + TractionTaskType.send_cred_def_request
 
+    def _get_id_from_payload(self, payload: dict) -> str:
+        c_t_id = payload["credential_template_id"]
+        return c_t_id
+
+    def _get_db_model_class(self):
+        return CredentialTemplate
+
     async def _perform_task(self, tenant: Tenant, payload: dict):
         self.logger.info("> _perform_task()")
-        c_t_id = payload["credential_template_id"]
+        c_t_id = self._get_id_from_payload(payload)
         try:
             async with async_session() as db:
                 item = await CredentialTemplate.get_by_id(db, tenant.id, c_t_id)
 
             cred_def_request = CredentialDefinitionSendRequest(
-                schema_id=item.schema_id,
-                tag=item.tag,
+                schema_id=str(item.schema_id),
+                tag=str(item.tag),
             )
             if item.revocation_enabled:
                 cred_def_request.support_revocation = True
@@ -277,19 +305,10 @@ class SendCredDefRequestTask(Task):
 
             values = {"transaction_id": cred_def_response.txn["transaction_id"]}
             self.logger.debug(f"update values = {values}")
-            q = (
-                update(CredentialTemplate)
-                .where(CredentialTemplate.credential_template_id == c_t_id)
-                .values(values)
-            )
-            async with async_session() as db:
-                try:
-                    await db.execute(q)
-                except DBAPIError:
-                    await db.rollback()
-                    self.logger.error(exc_info=1)
-                else:
-                    await db.commit()
+            try:
+                await CredentialTemplate.update_by_id(c_t_id, values)
+            except DBAPIError:
+                self.logger.error(exc_info=1)
         except NotFoundError:
             self.logger.error(
                 f"No Credential Template for id<{c_t_id}>. Cannot send request to ledger."  # noqa: E501
@@ -329,6 +348,13 @@ class SendCredentialOfferTask(Task):
     def _event_topic() -> str:
         return TRACTION_TASK_PREFIX + TractionTaskType.send_credential_offer
 
+    def _get_id_from_payload(self, payload: dict) -> str:
+        issuer_credential_id = payload["issuer_credential_id"]
+        return issuer_credential_id
+
+    def _get_db_model_class(self):
+        return IssuerCredential
+
     def _credential_preview_conversion(self, item: IssuerCredential):
         if item.credential_preview and "attributes" in item.credential_preview:
             attrs = item.credential_preview["attributes"]
@@ -342,7 +368,7 @@ class SendCredentialOfferTask(Task):
 
     async def _perform_task(self, tenant: Tenant, payload: dict):
         self.logger.info("> _perform_task()")
-        issuer_credential_id = payload["issuer_credential_id"]
+        issuer_credential_id = self._get_id_from_payload(payload)
         try:
             async with async_session() as db:
                 item = await IssuerCredential.get_by_id(
@@ -375,22 +401,10 @@ class SendCredentialOfferTask(Task):
                 values["credential_preview"] = {}
 
             self.logger.debug(f"update values = {values}")
-
-            q = (
-                update(IssuerCredential)
-                .where(
-                    IssuerCredential.issuer_credential_id == item.issuer_credential_id
-                )
-                .values(values)
-            )
-            async with async_session() as db:
-                try:
-                    await db.execute(q)
-                except DBAPIError:
-                    await db.rollback()
-                    self.logger.error(exc_info=1)
-                else:
-                    await db.commit()
+            try:
+                await IssuerCredential.update_by_id(issuer_credential_id, values)
+            except DBAPIError:
+                self.logger.error(exc_info=1)
         except NotFoundError:
             self.logger.error(
                 f"No Issuer Credential found for id<{issuer_credential_id}>. Cannot offer credential."  # noqa: E501

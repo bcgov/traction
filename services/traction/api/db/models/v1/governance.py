@@ -5,30 +5,28 @@ related tables for schemas and credential definitions.
 
 """
 import uuid
-from datetime import datetime
 from typing import List
 
 from sqlmodel import Field, Relationship
 from sqlalchemy import (
     Column,
-    func,
     String,
     select,
     desc,
     text,
     UniqueConstraint,
 )
-from sqlalchemy.dialects.postgresql import TIMESTAMP, ARRAY, UUID
+from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.models.base import BaseModel
+from api.db.models.base import StatefulModel, TimestampModel
 
 from api.endpoints.models.v1.errors import (
     NotFoundError,
 )
 
 
-class SchemaTemplate(BaseModel, table=True):
+class SchemaTemplate(StatefulModel, TimestampModel, table=True):
     """SchemaTemplate.
 
     This is the model for the Schema table (postgresql specific dialects in use).
@@ -79,28 +77,15 @@ class SchemaTemplate(BaseModel, table=True):
 
     name: str = Field(nullable=False)
 
-    status: str = Field(nullable=False)
     tags: List[str] = Field(sa_column=Column(ARRAY(String)))
     deleted: bool = Field(nullable=False, default=False)
     imported: bool = Field(nullable=False, default=False)
-
-    state: str = Field(nullable=False)
-
     # ledger data ---
     version: str = Field(nullable=False)
     attributes: List[str] = Field(sa_column=Column(ARRAY(String)))
     schema_name: str = Field(nullable=True)
     transaction_id: str = Field(nullable=True)
     # --- ledger data
-
-    created_at: datetime = Field(
-        sa_column=Column(TIMESTAMP, nullable=False, server_default=func.now())
-    )
-    updated_at: datetime = Field(
-        sa_column=Column(
-            TIMESTAMP, nullable=False, server_default=func.now(), onupdate=func.now()
-        )
-    )
 
     @classmethod
     async def get_by_id(
@@ -244,7 +229,7 @@ class SchemaTemplate(BaseModel, table=True):
         return db_recs
 
 
-class CredentialTemplate(BaseModel, table=True):
+class CredentialTemplate(StatefulModel, TimestampModel, table=True):
     """Credential Template.
 
     Model for the Credential Definition table (postgresql specific dialects in use).
@@ -290,10 +275,8 @@ class CredentialTemplate(BaseModel, table=True):
     schema_id: str = Field(nullable=True)
 
     name: str = Field(nullable=False)
-    status: str = Field(nullable=False)
     tags: List[str] = Field(sa_column=Column(ARRAY(String)))
     deleted: bool = Field(nullable=False, default=False)
-    state: str = Field(nullable=False)
 
     # ledger(ish) data ---
     transaction_id: str = Field(nullable=True)
@@ -309,15 +292,6 @@ class CredentialTemplate(BaseModel, table=True):
         back_populates="credential_template"
     )
     # --- relationships
-
-    created_at: datetime = Field(
-        sa_column=Column(TIMESTAMP, nullable=False, server_default=func.now())
-    )
-    updated_at: datetime = Field(
-        sa_column=Column(
-            TIMESTAMP, nullable=False, server_default=func.now(), onupdate=func.now()
-        )
-    )
 
     @classmethod
     async def get_by_id(

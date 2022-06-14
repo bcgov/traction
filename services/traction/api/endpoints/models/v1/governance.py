@@ -10,6 +10,8 @@ from api.endpoints.models.v1.base import (
     TagsItem,
     GetResponse,
     ListTagsItemParameters,
+    TimelineItem,
+    GetTimelineResponse,
 )
 
 from api.endpoints.routes.tenant_admin import TenantSchemaRead
@@ -65,6 +67,7 @@ class TemplateStatusType(str, Enum):
     pending = "Pending"
     deleted = "Deleted"
     cancelled = "Cancelled"
+    error = "Error"
 
 
 class SchemaTemplateListParameters(
@@ -138,6 +141,10 @@ class SchemaTemplateItem(TagsItem[TemplateStatusType, EndorserStateType]):
     attributes: List[str] | None = []
 
 
+class SchemaTemplateTimelineItem(TimelineItem[TemplateStatusType, EndorserStateType]):
+    pass
+
+
 class CredentialTemplateItem(TagsItem[TemplateStatusType, EndorserStateType]):
     """CredentialTemplateItem.
 
@@ -173,6 +180,12 @@ class CredentialTemplateItem(TagsItem[TemplateStatusType, EndorserStateType]):
     tag: str | None = None
 
 
+class CredentialTemplateTimelineItem(
+    TimelineItem[TemplateStatusType, EndorserStateType]
+):
+    pass
+
+
 class SchemaTemplateListResponse(ListResponse[SchemaTemplateItem]):
     pass
 
@@ -193,11 +206,15 @@ class CredentialDefinitionPayload(BaseModel):
     revocation_registry_size: int = 0
 
 
-class SchemaTemplateGetResponse(GetResponse[SchemaTemplateItem]):
+class SchemaTemplateGetResponse(
+    GetTimelineResponse[SchemaTemplateItem, SchemaTemplateTimelineItem]
+):
     pass
 
 
-class CredentialTemplateGetResponse(GetResponse[CredentialTemplateItem]):
+class CredentialTemplateGetResponse(
+    GetTimelineResponse[CredentialTemplateItem, CredentialTemplateTimelineItem]
+):
     pass
 
 

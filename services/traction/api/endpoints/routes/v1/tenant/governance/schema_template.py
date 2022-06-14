@@ -28,6 +28,7 @@ async def get_schema_template(
     request: Request,
     schema_template_id: UUID,
     deleted: bool | None = False,
+    timeline: bool | None = False,
     db: AsyncSession = Depends(get_db),
 ) -> SchemaTemplateGetResponse:
     wallet_id = get_from_context("TENANT_WALLET_ID")
@@ -43,7 +44,13 @@ async def get_schema_template(
 
     links = build_item_links(str(request.url), item)
 
-    return SchemaTemplateGetResponse(item=item, links=links)
+    timeline_items = []
+    if timeline:
+        timeline_items = await governance_service.get_schema_template_timeline(
+            db, schema_template_id
+        )
+
+    return SchemaTemplateGetResponse(item=item, links=links, timeline=timeline_items)
 
 
 @router.put(

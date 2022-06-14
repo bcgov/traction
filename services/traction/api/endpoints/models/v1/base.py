@@ -72,6 +72,7 @@ class Item(GenericModel, Generic[StatusType, StateType]):
 
     status: StatusType | None = None
     state: StateType | None = None
+    error_status_detail: str | None = None
     deleted: bool = False
     created_at: datetime
     updated_at: datetime
@@ -94,6 +95,7 @@ class TimelineItem(GenericModel, Generic[StatusType, StateType]):
 
     status: StatusType
     state: StateType
+    error_status_detail: str | None = None
     created_at: datetime
 
 
