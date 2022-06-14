@@ -95,6 +95,7 @@ class TimelineItem(GenericModel, Generic[StatusType, StateType]):
 
     status: StatusType
     state: StateType
+    error_status_detail: str | None = None
     created_at: datetime
 
 

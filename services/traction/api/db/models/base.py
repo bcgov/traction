@@ -1,12 +1,14 @@
+import builtins
 import uuid
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 import pydantic
 from sqlalchemy.exc import DBAPIError
 from sqlmodel import Field, SQLModel
-from sqlalchemy import Column, func, text
-from sqlalchemy.dialects.postgresql import UUID, TIMESTAMP
+from sqlalchemy import Column, func, text, select, desc
+from sqlalchemy.dialects.postgresql import UUID, TIMESTAMP, VARCHAR
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 from api.db.session import async_session
 from api.endpoints.models.v1.errors import NotFoundError
@@ -95,9 +97,59 @@ class TimestampModel(BaseModel):
 
 
 class StatefulModel(BaseModel):
+    def check_error_status_detail(context):
+        try:
+            if context.get_current_parameters()["status"] != "Error":
+                return None
+        except builtins.KeyError:
+            pass
+
     status: str = Field(nullable=False)
     state: str = Field(nullable=False)
-    error_status_detail: str = Field(nullable=True)
+
+    error_status_detail: Optional[str] = Field(
+        sa_column=Column(VARCHAR, nullable=True, onupdate=check_error_status_detail)
+    )
+
+
+class Timeline(StatefulModel, table=True):
+
+    timeline_id: uuid.UUID = Field(
+        sa_column=Column(
+            UUID(as_uuid=True),
+            primary_key=True,
+            server_default=text("gen_random_uuid()"),
+        )
+    )
+
+    item_id: uuid.UUID = Field(nullable=False, index=True)
+
+    created_at: datetime = Field(
+        sa_column=Column(TIMESTAMP, nullable=False, server_default=func.now())
+    )
+
+    @classmethod
+    async def list_by_item_id(
+        cls: "TimelineModel",
+        db: AsyncSession,
+        item_id: UUID,
+    ) -> List:
+        """List by Item ID.
+
+        Find and return list of Timeline records for item.
+
+        Args:
+          db: database session
+          item_id: Traction ID of item (Schema Template, Credential Template etc)
+
+        Returns: List of Traction Schema Template Timeline (db) records in descending
+          order
+        """
+
+        q = select(cls).where(cls.item_id == item_id).order_by(desc(cls.created_at))
+        q_result = await db.execute(q)
+        db_items = q_result.scalars()
+        return db_items
 
 
 class TimelineModel(BaseModel):

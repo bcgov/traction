@@ -7,11 +7,10 @@ from sqlalchemy import select, update, desc, func
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from acapy_client import OpenApiException
+from api.db.models.base import Timeline
 from api.db.models.v1.governance import (
     SchemaTemplate,
     CredentialTemplate,
-    SchemaTemplateTimeline,
-    CredentialTemplateTimeline,
 )
 from api.endpoints.models.v1.errors import (
     IdNotMatchError,
@@ -246,9 +245,7 @@ async def get_schema_template_timeline(
 
     Returns: List of Schema Template Timeline items
     """
-    db_items = await SchemaTemplateTimeline.list_by_schema_template_id(
-        db, schema_template_id
-    )
+    db_items = await Timeline.list_by_item_id(db, schema_template_id)
 
     results = []
     for db_item in db_items:
@@ -618,9 +615,7 @@ async def get_credential_template_timeline(
 
     Returns: List of Credential Template Timeline items
     """
-    db_items = await CredentialTemplateTimeline.list_by_credential_template_id(
-        db, credential_template_id
-    )
+    db_items = await Timeline.list_by_item_id(db, credential_template_id)
 
     results = []
     for db_item in db_items:

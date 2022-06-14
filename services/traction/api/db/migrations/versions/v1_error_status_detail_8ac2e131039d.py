@@ -17,48 +17,11 @@ down_revision = "b01986f67aa3"
 branch_labels = None
 depends_on = None
 
-
-create_error_status_func = """CREATE OR REPLACE FUNCTION error_status_detail_func() RETURNS trigger AS $body$
-    BEGIN
-        IF NEW.status <> 'Error' THEN
-            NEW.error_status_detail = NULL;
-        END IF;
-        RETURN NEW;
-    END;
-    $body$ LANGUAGE plpgsql
-"""
-
-drop_error_status_func = """DROP FUNCTION error_status_detail_func"""
-
-create_error_status_trigger_1 = """CREATE TRIGGER error_status_detail_trigger
-BEFORE UPDATE OF status ON issuer_credential
-FOR EACH ROW EXECUTE PROCEDURE error_status_detail_func();"""
-
-drop_error_status_trigger_1 = (
-    """DROP TRIGGER error_status_detail_trigger ON issuer_credential"""
-)
-
-create_error_status_trigger_2 = """CREATE TRIGGER error_status_detail_trigger
-BEFORE UPDATE OF status ON schema_template
-FOR EACH ROW EXECUTE PROCEDURE error_status_detail_func();"""
-
-drop_error_status_trigger_2 = (
-    """DROP TRIGGER error_status_detail_trigger ON schema_template"""
-)
-create_error_status_trigger_3 = """CREATE TRIGGER error_status_detail_trigger
-BEFORE UPDATE OF status ON credential_template
-FOR EACH ROW EXECUTE PROCEDURE error_status_detail_func();"""
-
-drop_error_status_trigger_3 = (
-    """DROP TRIGGER error_status_detail_trigger ON credential_template"""
-)
-
-
 create_schema_template_timeline_func = """CREATE OR REPLACE FUNCTION schema_template_timeline_func() RETURNS trigger AS $body$
     BEGIN
         IF NEW.status IS DISTINCT FROM OLD.status OR NEW.state IS DISTINCT FROM OLD.state THEN
-            INSERT INTO "schema_template_timeline" ( "schema_template_id", "status", "state" )
-            VALUES(NEW."schema_template_id",NEW."status",NEW."state");
+            INSERT INTO "timeline" ( "item_id", "status", "state", "error_status_detail" )
+            VALUES(NEW."schema_template_id", NEW."status", NEW."state", NEW."error_status_detail");
             RETURN NEW;
         END IF;
         RETURN null;
@@ -80,8 +43,8 @@ drop_schema_template_timeline_trigger = (
 create_credential_template_timeline_func = """CREATE OR REPLACE FUNCTION credential_template_timeline_func() RETURNS trigger AS $body$
     BEGIN
         IF NEW.status IS DISTINCT FROM OLD.status OR NEW.state IS DISTINCT FROM OLD.state THEN
-            INSERT INTO "credential_template_timeline" ( "credential_template_id", "status", "state" )
-            VALUES(NEW."credential_template_id",NEW."status",NEW."state");
+            INSERT INTO "timeline" ( "item_id", "status", "state", "error_status_detail" )
+            VALUES(NEW."credential_template_id", NEW."status", NEW."state", NEW."error_status_detail");
             RETURN NEW;
         END IF;
         RETURN null;
@@ -101,69 +64,79 @@ drop_credential_template_timeline_trigger = (
     """DROP TRIGGER credential_template_timeline_trigger ON credential_template"""
 )
 
+update_contact_timeline_func = """CREATE OR REPLACE FUNCTION contact_timeline_func() RETURNS trigger AS $body$
+    BEGIN
+        IF NEW.status IS DISTINCT FROM OLD.status OR NEW.state IS DISTINCT FROM OLD.state THEN
+            INSERT INTO "timeline" ( "item_id", "status", "state", "error_status_detail" )
+            VALUES(NEW."contact_id", NEW."status", NEW."state", NEW."error_status_detail");
+            RETURN NEW;
+        END IF;
+        RETURN null;
+    END;
+    $body$ LANGUAGE plpgsql
+"""
+
+update_issuer_credential_timeline_func = """CREATE OR REPLACE FUNCTION issuer_credential_timeline_func() RETURNS trigger AS $body$
+    BEGIN
+        IF NEW.status IS DISTINCT FROM OLD.status OR NEW.state IS DISTINCT FROM OLD.state THEN
+            INSERT INTO "timeline" ( "item_id", "status", "state", "error_status_detail" )
+            VALUES(NEW."issuer_credential_id", NEW."status", NEW."state", NEW."error_status_detail");
+            RETURN NEW;
+        END IF;
+        RETURN null;
+    END;
+    $body$ LANGUAGE plpgsql
+"""
+
+restore_issuer_credential_timeline_func = """CREATE OR REPLACE FUNCTION issuer_credential_timeline_func() RETURNS trigger AS $body$
+    BEGIN
+        IF NEW.status IS DISTINCT FROM OLD.status OR NEW.state IS DISTINCT FROM OLD.state THEN
+            INSERT INTO "issuer_credential_timeline" ( "issuer_credential_id", "status", "state" )
+            VALUES(NEW."issuer_credential_id",NEW."status",NEW."state");
+            RETURN NEW;
+        END IF;
+        RETURN null;
+    END;
+    $body$ LANGUAGE plpgsql
+"""
+
+restore_contact_timeline_func = """CREATE OR REPLACE FUNCTION contact_timeline_func() RETURNS trigger AS $body$
+    BEGIN
+        IF NEW.status IS DISTINCT FROM OLD.status OR NEW.state IS DISTINCT FROM OLD.state THEN
+            INSERT INTO "contact_timeline" ( "contact_id", "status", "state" )
+            VALUES(NEW."contact_id",NEW."status",NEW."state");
+            RETURN NEW;
+        END IF;
+        RETURN null;
+    END;
+    $body$ LANGUAGE plpgsql
+"""
+
 
 def upgrade():
-    # ### commands auto generated by Alembic - please adjust! ###
     op.create_table(
-        "schema_template_timeline",
+        "timeline",
+        sa.Column(
+            "error_status_detail", sqlmodel.sql.sqltypes.AutoString(), nullable=True
+        ),
+        sa.Column(
+            "timeline_id",
+            postgresql.UUID(as_uuid=True),
+            server_default=sa.text("gen_random_uuid()"),
+            nullable=False,
+        ),
         sa.Column(
             "created_at",
             postgresql.TIMESTAMP(),
             server_default=sa.text("now()"),
             nullable=False,
         ),
-        sa.Column(
-            "schema_template_timeline_id",
-            postgresql.UUID(as_uuid=True),
-            server_default=sa.text("gen_random_uuid()"),
-            nullable=False,
-        ),
         sa.Column("status", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
         sa.Column("state", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-        sa.Column("schema_template_id", sqlmodel.sql.sqltypes.GUID(), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["schema_template_id"],
-            ["schema_template.schema_template_id"],
-        ),
-        sa.PrimaryKeyConstraint("schema_template_timeline_id"),
+        sa.Column("item_id", sqlmodel.sql.sqltypes.GUID(), nullable=False),
+        sa.PrimaryKeyConstraint("timeline_id"),
     )
-    op.create_index(
-        op.f("ix_schema_template_timeline_schema_template_id"),
-        "schema_template_timeline",
-        ["schema_template_id"],
-        unique=False,
-    )
-    op.create_table(
-        "credential_template_timeline",
-        sa.Column(
-            "created_at",
-            postgresql.TIMESTAMP(),
-            server_default=sa.text("now()"),
-            nullable=False,
-        ),
-        sa.Column(
-            "credential_template_timeline_id",
-            postgresql.UUID(as_uuid=True),
-            server_default=sa.text("gen_random_uuid()"),
-            nullable=False,
-        ),
-        sa.Column("status", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-        sa.Column("state", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-        sa.Column(
-            "credential_template_id", sqlmodel.sql.sqltypes.GUID(), nullable=False
-        ),
-        sa.ForeignKeyConstraint(
-            ["credential_template_id"],
-            ["credential_template.credential_template_id"],
-        ),
-        sa.PrimaryKeyConstraint("credential_template_timeline_id"),
-    )
-    op.create_index(
-        op.f("ix_credential_template_timeline_credential_template_id"),
-        "credential_template_timeline",
-        ["credential_template_id"],
-        unique=False,
-    )
+    op.create_index(op.f("ix_timeline_item_id"), "timeline", ["item_id"], unique=False)
     op.add_column(
         "credential_template",
         sa.Column(
@@ -182,42 +155,113 @@ def upgrade():
             "error_status_detail", sqlmodel.sql.sqltypes.AutoString(), nullable=True
         ),
     )
-    # ### end Alembic commands ###
+
+    op.drop_index("ix_contact_timeline_contact_id", table_name="contact_timeline")
+    op.drop_table("contact_timeline")
+    op.drop_index(
+        "ix_issuer_credential_timeline_issuer_credential_id",
+        table_name="issuer_credential_timeline",
+    )
+    op.drop_table("issuer_credential_timeline")
+    op.add_column(
+        "contact", sa.Column("error_status_detail", sa.VARCHAR(), nullable=True)
+    )
+
     op.execute(create_credential_template_timeline_func)
     op.execute(create_credential_template_timeline_trigger)
 
     op.execute(create_schema_template_timeline_func)
     op.execute(create_schema_template_timeline_trigger)
 
-    op.execute(create_error_status_func)
-    op.execute(create_error_status_trigger_1)
-    op.execute(create_error_status_trigger_2)
-    op.execute(create_error_status_trigger_3)
+    op.execute(update_contact_timeline_func)
+    op.execute(update_issuer_credential_timeline_func)
 
 
 def downgrade():
     op.execute(drop_credential_template_timeline_trigger)
-    op.execute(drop_credential_template_timeline_func)
-
     op.execute(drop_schema_template_timeline_trigger)
+
+    op.execute(drop_credential_template_timeline_func)
     op.execute(drop_schema_template_timeline_func)
 
-    op.execute(drop_error_status_trigger_3)
-    op.execute(drop_error_status_trigger_2)
-    op.execute(drop_error_status_trigger_1)
-    op.execute(drop_error_status_func)
-    # ### commands auto generated by Alembic - please adjust! ###
+    op.execute(restore_contact_timeline_func)
+    op.execute(restore_issuer_credential_timeline_func)
+
+    op.drop_column("contact", "error_status_detail")
+    op.create_table(
+        "issuer_credential_timeline",
+        sa.Column(
+            "issuer_credential_timeline_id",
+            postgresql.UUID(),
+            server_default=sa.text("gen_random_uuid()"),
+            autoincrement=False,
+            nullable=False,
+        ),
+        sa.Column(
+            "created_at",
+            postgresql.TIMESTAMP(),
+            server_default=sa.text("now()"),
+            autoincrement=False,
+            nullable=False,
+        ),
+        sa.Column(
+            "issuer_credential_id",
+            postgresql.UUID(),
+            autoincrement=False,
+            nullable=False,
+        ),
+        sa.Column("status", sa.VARCHAR(), autoincrement=False, nullable=False),
+        sa.Column("state", sa.VARCHAR(), autoincrement=False, nullable=False),
+        sa.ForeignKeyConstraint(
+            ["issuer_credential_id"],
+            ["issuer_credential.issuer_credential_id"],
+            name="issuer_credential_timeline_issuer_credential_id_fkey",
+        ),
+        sa.PrimaryKeyConstraint(
+            "issuer_credential_timeline_id", name="issuer_credential_timeline_pkey"
+        ),
+    )
+    op.create_index(
+        "ix_issuer_credential_timeline_issuer_credential_id",
+        "issuer_credential_timeline",
+        ["issuer_credential_id"],
+        unique=False,
+    )
+    op.create_table(
+        "contact_timeline",
+        sa.Column(
+            "contact_timeline_id",
+            postgresql.UUID(),
+            server_default=sa.text("gen_random_uuid()"),
+            autoincrement=False,
+            nullable=False,
+        ),
+        sa.Column("contact_id", postgresql.UUID(), autoincrement=False, nullable=False),
+        sa.Column("status", sa.VARCHAR(), autoincrement=False, nullable=False),
+        sa.Column("state", sa.VARCHAR(), autoincrement=False, nullable=False),
+        sa.Column(
+            "created_at",
+            postgresql.TIMESTAMP(),
+            server_default=sa.text("now()"),
+            autoincrement=False,
+            nullable=False,
+        ),
+        sa.ForeignKeyConstraint(
+            ["contact_id"],
+            ["contact.contact_id"],
+            name="contact_timeline_contact_id_fkey",
+        ),
+        sa.PrimaryKeyConstraint("contact_timeline_id", name="contact_timeline_pkey"),
+    )
+    op.create_index(
+        "ix_contact_timeline_contact_id",
+        "contact_timeline",
+        ["contact_id"],
+        unique=False,
+    )
+
     op.drop_column("schema_template", "error_status_detail")
     op.drop_column("issuer_credential", "error_status_detail")
     op.drop_column("credential_template", "error_status_detail")
-    op.drop_index(
-        op.f("ix_credential_template_timeline_credential_template_id"),
-        table_name="credential_template_timeline",
-    )
-    op.drop_table("credential_template_timeline")
-    op.drop_index(
-        op.f("ix_schema_template_timeline_schema_template_id"),
-        table_name="schema_template_timeline",
-    )
-    op.drop_table("schema_template_timeline")
-    # ### end Alembic commands ###
+    op.drop_index(op.f("ix_timeline_item_id"), table_name="timeline")
+    op.drop_table("timeline")

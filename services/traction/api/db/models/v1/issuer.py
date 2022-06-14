@@ -19,7 +19,7 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import UUID, ARRAY
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.models.base import StatefulModel, TimestampModel, TimelineModel
+from api.db.models.base import StatefulModel, TimestampModel
 from api.db.models.v1.contact import Contact
 from api.db.models.v1.governance import CredentialTemplate
 
@@ -316,59 +316,3 @@ class IssuerCredential(StatefulModel, TimestampModel, table=True):
         q_result = await db.execute(q)
         db_recs = q_result.scalars()
         return db_recs
-
-
-class IssuerCredentialTimeline(TimelineModel, table=True):
-    """Issuer Credential Timeline.
-
-    Model for Issuer Credential Timeline table (postgresql specific dialects in use).
-    Timeline represents history of changes to status and/or state.
-
-    Attributes:
-      issuer_credential_timeline_id: Unique ID in table
-      issuer_credential_id: Traction Issuer Credential ID
-      status: Business and Tenant indicator for Issuer Credential state; independent of
-        AcaPy Credential State
-      state: The underlying AcaPy Credential state
-      created_at: Timestamp when record was created in Traction
-    """
-
-    __tablename__ = "issuer_credential_timeline"
-
-    issuer_credential_timeline_id: uuid.UUID = Field(
-        sa_column=Column(
-            UUID(as_uuid=True),
-            primary_key=True,
-            server_default=text("gen_random_uuid()"),
-        )
-    )
-    issuer_credential_id: uuid.UUID = Field(
-        foreign_key="issuer_credential.issuer_credential_id", index=True
-    )
-
-    @classmethod
-    async def list_by_issuer_credential_id(
-        cls: "IssuerCredentialTimeline",
-        db: AsyncSession,
-        issuer_credential_id: UUID,
-    ) -> List:
-        """List by Issuer Credential ID.
-
-        Find and return list of Timeline records for Issuer Credential.
-
-        Args:
-          db: database session
-          issuer_credential_id: Traction ID of Issuer Credential
-
-        Returns: List of Traction Issuer Credential Timeline (db) records in descending
-          order
-        """
-
-        q = (
-            select(cls)
-            .where(cls.issuer_credential_id == issuer_credential_id)
-            .order_by(desc(cls.created_at))
-        )
-        q_result = await db.execute(q)
-        db_items = q_result.scalars()
-        return db_items
