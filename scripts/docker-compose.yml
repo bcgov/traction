@@ -48,7 +48,7 @@ services:
       - ACAPY_HTTP_PORT=${ACAPY_HTTP_PORT}
     ports:
       - 4052:4040
-    command: ngrok http --region=na traction-agent:${ACAPY_HTTP_PORT} --log stdout
+    command: ngrok http traction-agent:${ACAPY_HTTP_PORT} --log stdout
 
   traction-agent:
     build:
