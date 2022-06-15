@@ -73,3 +73,30 @@ def step_impl(context, prover: str, schema_name: str):
     resp_json = json.loads(response.content)
     assert len(resp_json) == 1, resp_json
     assert resp_json[0]["presentation"]["present_role"] == "holder", resp_json[0]
+
+    # update presentation_requests list
+    context.config.userdata[prover].setdefault("presentation_requests", resp_json)
+
+
+@step(
+    '"{prover}" will have credentials to satisfy the present-proof request for "{schema_name}"'
+)
+def step_impl(context, prover: str, schema_name: str):
+
+    response = requests.get(
+        context.config.userdata.get("traction_host")
+        + "/tenant/v0/credentials/holder/creds-for-request?pres_req_id="
+        + context.config.userdata[prover]["presentation_requests"][0]["presentation"][
+            "id"
+        ],
+        headers=context.config.userdata[prover]["auth_headers"],
+    )
+
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    assert len(resp_json) == 1, resp_json
+
+
+@step('"{prover}" sends the presentation for the proof from "{verifier}"')
+def step_impl(context, prover: str, verifier: str):
+    raise NotImplemented()

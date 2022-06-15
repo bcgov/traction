@@ -26,3 +26,10 @@ Feature: verfication of ARIES presentations
         When "alice" requests proof of keys in schema "useless-schema" from "faber"
         And we sadly wait for 10 seconds because we have not figured out how to listen for events
         Then "faber" will have a present-proof request for "useless-schema"
+
+
+    Scenario: faber can respond to a present_proof request
+        When "alice" requests proof of keys in schema "useless-schema" from "faber"
+        And we sadly wait for 10 seconds because we have not figured out how to listen for events
+        And "faber" will have a present-proof request for "useless-schema"
+        And "faber" will have credentials to satisfy the present-proof request for "useless-schema"

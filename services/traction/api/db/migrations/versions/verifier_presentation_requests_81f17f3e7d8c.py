@@ -1,8 +1,9 @@
-"""comment
+"""verifier_presentation_requests
 
-Revision ID: e34958c527c3
-Revises: b01986f67aa3
-Create Date: 2022-06-07 20:21:19.674567
+
+Revision ID: 81f17f3e7d8c
+Revises: 8ac2e131039d
+Create Date: 2022-06-15 00:38:37.999764
 
 """
 from alembic import op
@@ -11,8 +12,8 @@ import sqlmodel
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = "e34958c527c3"
-down_revision = "b01986f67aa3"
+revision = "81f17f3e7d8c"
+down_revision = "8ac2e131039d"
 branch_labels = None
 depends_on = None
 

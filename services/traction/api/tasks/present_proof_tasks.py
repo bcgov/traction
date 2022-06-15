@@ -58,6 +58,13 @@ class SendPresentProofTask(Task):
     def _event_topic() -> str:
         return TRACTION_TASK_PREFIX + TractionTaskType.send_present_proof_req
 
+    def _get_db_model_class(self):
+        return VerifierPresentationRequest
+
+    def _get_id_from_payload(self, payload):
+        spp_t_id = payload["v_presentation_request_id"]
+        return spp_t_id
+
     async def _perform_task(self, tenant: Tenant, payload: dict):
         self.logger.info("> _perform_task()")
 
@@ -67,8 +74,8 @@ class SendPresentProofTask(Task):
         contact = None
         async with async_session() as db:
             contact = await Contact.get_by_id(db, tenant.id, payload["contact_id"])
-            vpr = await VerifierPresentationRequest.get_by_id(
-                db, tenant.id, payload["v_presentation_request_id"]
+            vpr = await self._get_db_model_class().get_by_id(
+                db, tenant.id, self._get_id_from_payload(payload)
             )
             vpr.status = "starting"
             db.add(vpr)
@@ -89,7 +96,7 @@ class SendPresentProofTask(Task):
             update(VerifierPresentationRequest)
             .where(
                 VerifierPresentationRequest.v_presentation_request_id
-                == payload["v_presentation_request_id"]
+                == self._get_id_from_payload(self, payload)
             )
             .values(values)
         )
@@ -157,7 +164,11 @@ def convert_to_IndyProofRequest(proof_request: ProofRequest):
 
     logger.warning(conv_request_attrs)
     openapi_proof_request = IndyProofRequest(
-        requested_attributes=conv_request_attrs, requested_predicates=conv_request_preds
+        requested_attributes=conv_request_attrs,
+        requested_predicates=conv_request_preds,
+        name="TBD, will be passed later",
+        version="1.0.0",
+        non_revoked={},
     )
 
     logger.warning(openapi_proof_request)
