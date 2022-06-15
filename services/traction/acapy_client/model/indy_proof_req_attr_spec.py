@@ -98,8 +98,8 @@ class IndyProofReqAttrSpec(ModelNormal):
         """
         lazy_import()
         return {
-            "name": (str, none_type),  # noqa: E501
-            "names": ([str], none_type),  # noqa: E501
+            "name": (str,),  # noqa: E501
+            "names": ([str],),  # noqa: E501
             "non_revoked": (
                 {str: (bool, date, datetime, dict, float, int, list, str, none_type)},
                 none_type,
