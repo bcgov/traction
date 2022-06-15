@@ -1,6 +1,9 @@
 # Ubuntu Long Term Release
 FROM ubuntu:22.04
 
+# Use bash instead of sh
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+
 # Update the package manager database
 RUN apt-get update -y
 
@@ -17,6 +20,8 @@ WORKDIR frontend
 # Install the Node version manager and Node
 # The default Node for this version of Ubuntu is incompatible
 # with the Vite build system.
+# Also run the node install and vite build
+RUN mkdir /usr/local/nvm
 ENV NVM_DIR /usr/local/nvm
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash \
     && . $NVM_DIR/nvm.sh \
