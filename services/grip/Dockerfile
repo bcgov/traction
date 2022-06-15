@@ -4,6 +4,26 @@ FROM ubuntu:22.04
 # Update the package manager database
 RUN apt-get update -y
 
+# Need curl to install Node
+RUN apt-get install -y curl
+
+# Copy over code. Make sure to exclude
+# unwanted things in .dockerignore
+COPY frontend frontend
+
+# Move into project directory 
+WORKDIR frontend
+
+# Install the Node version manager and Node
+# The default Node for this version of Ubuntu is incompatible
+# with the Vite build system.
+ENV NVM_DIR /usr/local/nvm
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash \
+    && . $NVM_DIR/nvm.sh \
+    && nvm install v16.13.0 \
+    && npm ci \
+    && npm run build
+
 # Install Nginx
 RUN apt-get install nginx -y
 

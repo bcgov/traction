@@ -15,3 +15,12 @@ cd frontend
 npm ci
 npm run dev
 ```
+
+## Running Docker
+
+```bash
+docker build -t grip .
+docker run -d --name grip -p 3000:80 grip
+```
+
+The web page will now be hosted [here](localhost:3000).
