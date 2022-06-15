@@ -8,6 +8,7 @@ from api.endpoints.routes.innkeeper import router as innkeeper_router
 from api.endpoints.dependencies.jwt_security import AccessToken, create_access_token
 from api.core.config import settings as s
 
+from api.endpoints.routes.v1.innkeeper import v1_innkeeper_router
 
 middleware = [
     Middleware(
@@ -29,6 +30,12 @@ def get_innkeeperapp() -> FastAPI:
     # mount the token endpoint
     application.include_router(router, prefix="")
     # mount other endpoints, these will be secured by the above token endpoint
+    application.include_router(
+        v1_innkeeper_router,
+        prefix=s.API_V1_STR,
+        tags=[],
+        dependencies=[Depends(OAuth2PasswordBearer(tokenUrl="token"))],
+    )
     application.include_router(
         innkeeper_router,
         prefix=s.API_V0_STR,

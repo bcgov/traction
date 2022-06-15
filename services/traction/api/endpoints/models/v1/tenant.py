@@ -37,3 +37,25 @@ class TenantItem(BaseModel):
 
 class TenantGetResponse(GetResponse[TenantItem]):
     pass
+
+
+class TenantPermissionsItem(BaseModel):
+    tenant_id: UUID
+    store_messages: bool
+    store_issuer_credentials: bool
+    created_at: datetime
+    updated_at: datetime
+
+
+class TenantPermissionsGetResponse(GetResponse[TenantPermissionsItem]):
+    pass
+
+
+class UpdateTenantPermissionsPayload(BaseModel):
+    tenant_id: UUID
+    store_messages: bool | None = False
+    store_issuer_credentials: bool | None = False
+
+
+class UpdateTenantPermissionsResponse(GetResponse[TenantPermissionsItem]):
+    pass
