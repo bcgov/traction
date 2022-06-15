@@ -4,12 +4,11 @@ Models of the Traction tables for Connection Invitation and related data.
 
 """
 import uuid
-from datetime import datetime
 from typing import List, Optional
 from sqlalchemy.orm import selectinload
 from sqlmodel import Field, Relationship, desc
-from sqlalchemy import Column, func, text, String, select
-from sqlalchemy.dialects.postgresql import UUID, TIMESTAMP, JSON, ARRAY
+from sqlalchemy import Column, text, String, select
+from sqlalchemy.dialects.postgresql import UUID, JSON, ARRAY
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from api.db.models.base import StatefulModel, TimestampModel
@@ -20,12 +19,12 @@ from api.endpoints.models.v1.errors import (
     NotFoundError,
 )
 
-# SQL Model doesn't handle single table inheritence well enough....
+
 class VerifierPresentationRequest(StatefulModel, TimestampModel, table=True):
     """Verifier Presentation Request
 
-    Model for the Verifier Presentation Requesttable (postgresql specific dialects in use).
-    This will track verifications of proof for the Tenants.
+    Model for the Verifier Presentation Request table (postgresql specific
+    dialects in use).This will track verifications of proof for the Tenants.
 
     Attributes:
     """
@@ -79,8 +78,8 @@ class VerifierPresentationRequest(StatefulModel, TimestampModel, table=True):
         Returns: The Traction VerifierPresentationRequest (db) record
 
         Raises:
-          NotFoundError: if the VerifierPresentationRequest cannot be found by ID and deleted
-          flag
+          NotFoundError: if the VerifierPresentationRequest cannot be
+          found by ID and deleted flag
         """
 
         q = (

@@ -1,23 +1,16 @@
 import logging
 from re import Pattern, compile
-from enum import Enum
-from ssl import VerifyFlags
 from uuid import UUID
 from acapy_client.model.indy_proof_req_attr_spec import IndyProofReqAttrSpec
 from acapy_client.model.indy_proof_req_pred_spec import IndyProofReqPredSpec
 from acapy_client.model.indy_proof_request import IndyProofRequest
 
-from acapy_client.model.v10_presentation_create_request_request import (
-    V10PresentationCreateRequestRequest,
-)
 from acapy_client.model.v10_presentation_send_request_request import (
     V10PresentationSendRequestRequest,
 )
 
-from pkg_resources import require
-from requests import request
 
-from sqlalchemy import select, update
+from sqlalchemy import update
 from sqlalchemy.exc import DBAPIError
 
 
@@ -27,7 +20,6 @@ from api.db.models.v1.contact import Contact
 from api.endpoints.models.credentials import ProofRequest
 from api.db.session import async_session
 
-from acapy_client.api.issue_credential_v1_0_api import IssueCredentialV10Api
 from acapy_client.api.present_proof_v1_0_api import PresentProofV10Api
 from api.api_client_utils import get_api_client
 
@@ -121,7 +113,7 @@ class SendPresentProofTask(Task):
         get_logger(cls).debug(f"tenant_id = {tenant_id}")
         get_logger(cls).debug(f"wallet_id = {wallet_id}")
         get_logger(cls).debug(
-            f"contact_id = {payload['contact_id']}, payload = {payload['proof_request']}"
+            f"contact_id = {payload['contact_id']}, payload = {payload['proof_request']}"  # noqa: E501
         )
 
         # weak validation of payload
@@ -134,7 +126,7 @@ class SendPresentProofTask(Task):
         payload_keys = payload.keys()
         if not all(req_key in payload_keys for req_key in required_payload_keys):
             raise Exception(
-                f"Invalid payload, {cls.__name__}.assign expects payload with keys={required_payload_keys}"
+                f"Invalid payload, {cls.__name__}.assign expects payload with keys={required_payload_keys}"  # noqa: E501
             )
 
         await cls._assign(tenant_id, wallet_id, payload)

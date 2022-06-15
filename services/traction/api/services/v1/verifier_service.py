@@ -3,20 +3,10 @@ from uuid import UUID
 from typing import List
 from api.endpoints.models.credentials import PresentCredentialProtocolType
 
-from sqlalchemy import select, func, desc, update
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
-from api.endpoints.models.v1.governance import TemplateStatusType
-
-from api.endpoints.models.v1.errors import (
-    IdNotMatchError,
-    IncorrectStatusError,
-)
 
 from api.endpoints.models.v1.verifier import (
-    PresentationRequestListResponse,
-    GetPresentationRequestResponse,
     PresentationRequestItem,
     CreatePresentationRequestPayload,
 )

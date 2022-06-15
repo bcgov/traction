@@ -28,7 +28,7 @@ create_verifier_presentation_request_timeline_func = """CREATE OR REPLACE FUNCTI
         RETURN null;
     END;
     $body$ LANGUAGE plpgsql
-"""
+"""  # noqa: E501
 
 drop_verifier_presentation_request_timeline_func = (
     """DROP FUNCTION verifier_presentation_request_timeline_func"""

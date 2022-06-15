@@ -6,22 +6,15 @@ The underlying data is a combination of Traction specific data stored in Invitat
 table and Connection and Invitation data in AcaPy.
 
 """
-from enum import Enum
-from typing import Optional, List
+from typing import Optional
 from uuid import UUID
-from api.endpoints.models.credentials import PresentCredentialProtocolType
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
-from api.endpoints.models.connections import (
-    ConnectionStateType,
-    ConnectionProtocolType,
-)
 from api.endpoints.models.v1.base import (
     AcapyItem,
     ListResponse,
     GetResponse,
-    ListAcapyItemParameters,
 )
 from api.endpoints.models.credentials import ProofRequest
 
