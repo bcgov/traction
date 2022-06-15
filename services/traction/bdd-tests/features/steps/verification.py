@@ -1,10 +1,6 @@
-from email.base64mime import body_decode
 import json, requests
 from behave import *
-from sqlalchemy import false
 from starlette import status
-from v1_api import *
-from pprint import pp
 
 
 @step('"{verifier}" requests proof of keys in schema "{schema_name}" from "{prover}"')

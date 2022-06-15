@@ -12,7 +12,7 @@ from sqlalchemy import Column, func, text, String, select
 from sqlalchemy.dialects.postgresql import UUID, TIMESTAMP, JSON, ARRAY
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.models.base import BaseModel
+from api.db.models.base import StatefulModel, TimestampModel
 
 from api.db.models.v1.contact import Contact
 
@@ -21,7 +21,7 @@ from api.endpoints.models.v1.errors import (
 )
 
 # SQL Model doesn't handle single table inheritence well enough....
-class VerifierPresentationRequest(BaseModel, table=True):
+class VerifierPresentationRequest(StatefulModel, TimestampModel, table=True):
     """Verifier Presentation Request
 
     Model for the Verifier Presentation Requesttable (postgresql specific dialects in use).
@@ -44,7 +44,6 @@ class VerifierPresentationRequest(BaseModel, table=True):
         foreign_key="tenant.id", index=True
     )  # TODO why isn't this in base
     contact_id: uuid.UUID = Field(foreign_key="contact.contact_id", index=True)
-    status: str = Field(nullable=False)
     external_reference_id: str = Field(nullable=True)
     deleted: bool = Field(nullable=False, default=False)
     tags: List[str] = Field(sa_column=Column(ARRAY(String)))
@@ -52,7 +51,6 @@ class VerifierPresentationRequest(BaseModel, table=True):
 
     # acapy data ---
     role: str = Field(nullable=False)  # verifier, prover
-    state: str = Field(nullable=False)
     pres_exch_id: uuid.UUID = Field(nullable=True)
     proof_request: dict = Field(default={}, sa_column=Column(JSON))
     # --- acapy data
@@ -60,15 +58,6 @@ class VerifierPresentationRequest(BaseModel, table=True):
     # relationships ---
     contact: Optional[Contact] = Relationship()  # don't back populate
     # --- relationships
-
-    created_at: datetime = Field(
-        sa_column=Column(TIMESTAMP, nullable=False, server_default=func.now())
-    )  # TODO why isn't this in base
-    updated_at: datetime = Field(
-        sa_column=Column(
-            TIMESTAMP, nullable=False, server_default=func.now(), onupdate=func.now()
-        )
-    )
 
     @classmethod
     async def get_by_id(

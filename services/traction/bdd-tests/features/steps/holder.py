@@ -99,4 +99,4 @@ def step_impl(context, prover: str, schema_name: str):
 
 @step('"{prover}" sends the presentation for the proof from "{verifier}"')
 def step_impl(context, prover: str, verifier: str):
-    raise NotImplemented()
+    raise NotImplemented("Will build when updated to V1")
