@@ -32,6 +32,10 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | b
 # Install Nginx
 RUN apt-get install nginx -y
 
+# Link nginx to the project directory
+RUN rm -rf /var/www/html
+RUN ln -s /frontend/dist /var/www/html
+
 # Expose the http port
 EXPOSE 80:80
 
