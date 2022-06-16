@@ -17,10 +17,10 @@ COPY frontend frontend
 # Move into project directory 
 WORKDIR frontend
 
-# Install the Node version manager and Node
+# Install the Node version manager and Node.
 # The default Node for this version of Ubuntu is incompatible
 # with the Vite build system.
-# Also run the node install and vite build
+# Also run the node install and vite build.
 RUN mkdir /usr/local/nvm
 ENV NVM_DIR /usr/local/nvm
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash \
