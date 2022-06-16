@@ -22,7 +22,7 @@ create_verifier_presentation_request_timeline_func = """CREATE OR REPLACE FUNCTI
     BEGIN
         IF NEW.status IS DISTINCT FROM OLD.status OR NEW.state IS DISTINCT FROM OLD.state THEN
             INSERT INTO "timeline" ( "item_id", "status", "state", "error_status_detail" )
-            VALUES(NEW."v_presentation_request_id", NEW."status", NEW."state", NEW."error_status_detail");
+            VALUES(NEW."verification_request_id", NEW."status", NEW."state", NEW."error_status_detail");
             RETURN NEW;
         END IF;
         RETURN null;
@@ -40,7 +40,7 @@ def upgrade():
     op.create_table(
         "verifier_presentation_request",
         sa.Column(
-            "v_presentation_request_id",
+            "verification_request_id",
             postgresql.UUID(as_uuid=True),
             server_default=sa.text("gen_random_uuid()"),
             nullable=False,
@@ -54,7 +54,6 @@ def upgrade():
         sa.Column("deleted", sa.Boolean(), nullable=False),
         sa.Column("tags", postgresql.ARRAY(sa.String()), nullable=True),
         sa.Column("comment", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
-        sa.Column("role", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
         sa.Column("state", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
         sa.Column(
             "error_status_detail", sqlmodel.sql.sqltypes.AutoString(), nullable=True
@@ -79,7 +78,7 @@ def upgrade():
             ["contact_id"],
             ["contact.contact_id"],
         ),
-        sa.PrimaryKeyConstraint("v_presentation_request_id"),
+        sa.PrimaryKeyConstraint("verification_request_id"),
     )
     # ### end Alembic commands ###
     op.execute(create_verifier_presentation_request_timeline_func)

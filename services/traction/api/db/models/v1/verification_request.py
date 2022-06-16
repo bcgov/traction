@@ -20,18 +20,18 @@ from api.endpoints.models.v1.errors import (
 )
 
 
-class VerifierPresentationRequest(StatefulModel, TimestampModel, table=True):
-    """Verifier Presentation Request
+class VerificationRequest(StatefulModel, TimestampModel, table=True):
+    """Verification Request
 
-    Model for the Verifier Presentation Request table (postgresql specific
+    Model for the Verification Request table (postgresql specific
     dialects in use).This will track verifications of proof for the Tenants.
 
     Attributes:
     """
 
-    __tablename__ = "verifier_presentation_request"
+    __tablename__ = "verification_request"
 
-    v_presentation_request_id: uuid.UUID = Field(
+    verification_request_id: uuid.UUID = Field(
         sa_column=Column(
             UUID(as_uuid=True),
             primary_key=True,
@@ -39,9 +39,7 @@ class VerifierPresentationRequest(StatefulModel, TimestampModel, table=True):
         )
     )
 
-    tenant_id: uuid.UUID = Field(
-        foreign_key="tenant.id", index=True
-    )  # TODO why isn't this in base
+    tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True)
     contact_id: uuid.UUID = Field(foreign_key="contact.contact_id", index=True)
     external_reference_id: str = Field(nullable=True)
     deleted: bool = Field(nullable=False, default=False)
@@ -49,7 +47,6 @@ class VerifierPresentationRequest(StatefulModel, TimestampModel, table=True):
     comment: str = Field(nullable=True)
 
     # acapy data ---
-    role: str = Field(nullable=False)  # verifier, prover
     pres_exch_id: uuid.UUID = Field(nullable=True)
     proof_request: dict = Field(default={}, sa_column=Column(JSON))
     # --- acapy data
@@ -60,32 +57,32 @@ class VerifierPresentationRequest(StatefulModel, TimestampModel, table=True):
 
     @classmethod
     async def get_by_id(
-        cls: "VerifierPresentationRequest",
+        cls: "VerificationRequest",
         db: AsyncSession,
         tenant_id: uuid.UUID,
-        v_presentation_request_id: uuid.UUID,
+        verification_request_id: uuid.UUID,
         deleted: bool | None = False,
-    ) -> "VerifierPresentationRequest":
-        """Get VerifierPresentationRequest by id.
+    ) -> "VerificationRequest":
+        """Get VerificationRequest by id.
 
         Find and return the database CredentialDefinition record
 
         Args:
           db: database session
           tenant_id: Traction ID of tenant making the call
-          v_presentation_request_id: Traction ID of VerifierPresentationRequest
+          verification_request_id: Traction ID of VerificationRequest
 
-        Returns: The Traction VerifierPresentationRequest (db) record
+        Returns: The Traction VerificationRequest (db) record
 
         Raises:
-          NotFoundError: if the VerifierPresentationRequest cannot be
+          NotFoundError: if the VerificationRequest cannot be
           found by ID and deleted flag
         """
 
         q = (
             select(cls)
             .where(cls.tenant_id == tenant_id)
-            .where(cls.v_presentation_request_id == v_presentation_request_id)
+            .where(cls.verification_request_id == verification_request_id)
             .where(cls.deleted == deleted)
             .options(selectinload(cls.contact))
         )
@@ -93,18 +90,18 @@ class VerifierPresentationRequest(StatefulModel, TimestampModel, table=True):
         db_rec = q_result.scalar_one_or_none()
         if not db_rec:
             raise NotFoundError(
-                code="presentation_request.id_not_found",
-                title="Verifier Presentation Request does not exist",
-                detail=f"Issuer Credential does not exist for id<{v_presentation_request_id}>",  # noqa: E501
+                code="verification_request.id_not_found",
+                title="Verification Request does not exist",
+                detail=f"Verification Request does not exist for id<{verification_request_id}>",  # noqa: E501
             )
         return db_rec
 
     @classmethod
     async def list_by_tenant_id(
-        cls: "VerifierPresentationRequest",
+        cls: "VerificationRequest",
         db: AsyncSession,
         tenant_id: uuid.UUID,
-    ) -> List["VerifierPresentationRequest"]:
+    ) -> List["VerificationRequest"]:
         """List by Tenant ID.
 
         Find and return list of Issuer Credential records for Tenant.

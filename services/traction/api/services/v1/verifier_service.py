@@ -12,7 +12,7 @@ from api.endpoints.models.v1.verifier import (
 )
 
 
-from api.db.models.v1.presentation_requests import VerifierPresentationRequest
+from api.db.models.v1.verification_request import VerificationRequest
 
 
 logger = logging.getLogger(__name__)
@@ -48,7 +48,7 @@ async def make_presentation_request(
     protocol: PresentCredentialProtocolType,
     payload: CreatePresentationRequestPayload,
 ) -> PresentationRequestItem:
-    db_item = VerifierPresentationRequest(
+    db_item = VerificationRequest(
         tenant_id=tenant_id,
         contact_id=payload.contact_id,
         status="pending",
@@ -69,6 +69,6 @@ async def list_presentation_requests(
     wallet_id: UUID,
 ) -> List[PresentationRequestItem]:
 
-    items = await VerifierPresentationRequest.list_by_tenant_id(db, tenant_id)
+    items = await VerificationRequest.list_by_tenant_id(db, tenant_id)
 
     return items, len(items)

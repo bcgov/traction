@@ -58,7 +58,7 @@ async def verifer_new_presentation_request(
         db, tenant_id, wallet_id, PresentCredentialProtocolType.v10, payload
     )
     task_payload = {
-        "v_presentation_request_id": item.v_presentation_request_id,
+        "verification_request_id": item.verification_request_id,
         "contact_id": item.contact_id,
         "proof_request": item.proof_request,
     }

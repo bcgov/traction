@@ -23,7 +23,7 @@ from api.db.session import async_session
 from acapy_client.api.present_proof_v1_0_api import PresentProofV10Api
 from api.api_client_utils import get_api_client
 
-from api.db.models.v1.presentation_requests import VerifierPresentationRequest
+from api.db.models.v1.verification_request import VerificationRequest
 
 TRACTION_TASK_PREFIX = "traction::TASK::"
 
@@ -51,10 +51,10 @@ class SendPresentProofTask(Task):
         return TRACTION_TASK_PREFIX + TractionTaskType.send_present_proof_req
 
     def _get_db_model_class(self):
-        return VerifierPresentationRequest
+        return VerificationRequest
 
     def _get_id_from_payload(self, payload):
-        spp_t_id = payload["v_presentation_request_id"]
+        spp_t_id = payload["verification_request_id"]
         return spp_t_id
 
     async def _perform_task(self, tenant: Tenant, payload: dict):
@@ -85,9 +85,9 @@ class SendPresentProofTask(Task):
         values = {"pres_exch_id": resp["presentation_exchange_id"]}
 
         q = (
-            update(VerifierPresentationRequest)
+            update(VerificationRequest)
             .where(
-                VerifierPresentationRequest.v_presentation_request_id
+                VerificationRequest.verification_request_id
                 == self._get_id_from_payload(self, payload)
             )
             .values(values)
@@ -118,7 +118,7 @@ class SendPresentProofTask(Task):
 
         # weak validation of payload
         required_payload_keys = [
-            "v_presentation_request_id",
+            "verification_request_id",
             "contact_id",
             "proof_request",
         ]
