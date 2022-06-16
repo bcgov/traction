@@ -5,19 +5,15 @@ Tenant level - the tenant sets the data in this table.
 
 """
 import uuid
-from datetime import datetime
 
-from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlmodel import Field
 from sqlalchemy import (
     select,
-    Column,
-    func,
 )
 
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.models.base import TimestampModel, BaseModel
+from api.db.models.base import TimestampModel
 
 
 class TenantConfiguration(TimestampModel, table=True):
@@ -91,7 +87,7 @@ class TenantConfiguration(TimestampModel, table=True):
         return db_rec
 
 
-class TenantAutoResponse(BaseModel, table=True):
+class TenantAutoResponse(TimestampModel, table=True):
     """TenantAutoResponse.
 
     This is the model for the Tenant Auto-response table. We need to track which
@@ -104,6 +100,7 @@ class TenantAutoResponse(BaseModel, table=True):
       connection_id: AcaPy connection_id for the agent we sent a response
       message: store the message we sent as a response
       created_at: Timestamp when record was created in Traction
+      updated_at: Timestamp when record was last modified in Traction
     """
 
     __tablename__ = "tenant_auto_response"
@@ -111,9 +108,6 @@ class TenantAutoResponse(BaseModel, table=True):
     tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True, primary_key=True)
     connection_id: str = Field(nullable=False)
     message: str = Field(nullable=False)
-    created_at: datetime = Field(
-        sa_column=Column(TIMESTAMP, nullable=False, server_default=func.now())
-    )
 
     @classmethod
     async def auto_response_exists(
