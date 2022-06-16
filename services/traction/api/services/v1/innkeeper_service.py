@@ -3,7 +3,7 @@ from uuid import UUID
 from api.db.models.v1.tenant_permissions import TenantPermissions
 from api.db.session import async_session
 from api.endpoints.models.v1.errors import IdNotMatchError
-from api.endpoints.models.v1.tenant import (
+from api.endpoints.models.v1.innkeeper import (
     TenantPermissionsItem,
     UpdateTenantPermissionsPayload,
 )

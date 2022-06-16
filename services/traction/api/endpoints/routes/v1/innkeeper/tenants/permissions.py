@@ -5,7 +5,7 @@ from fastapi import APIRouter
 from starlette import status
 from starlette.requests import Request
 
-from api.endpoints.models.v1.tenant import (
+from api.endpoints.models.v1.innkeeper import (
     TenantPermissionsGetResponse,
     UpdateTenantPermissionsPayload,
     UpdateTenantPermissionsResponse,

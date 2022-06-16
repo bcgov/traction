@@ -39,23 +39,29 @@ class TenantGetResponse(GetResponse[TenantItem]):
     pass
 
 
-class TenantPermissionsItem(BaseModel):
-    tenant_id: UUID
+class TenantConfigurationItem(BaseModel):
+    webhook_url: str | None = None
+    webhook_key: str | None = None
+    auto_respond_messages: bool
+    auto_response_message: str | None = None
     store_messages: bool
     store_issuer_credentials: bool
     created_at: datetime
     updated_at: datetime
 
 
-class TenantPermissionsGetResponse(GetResponse[TenantPermissionsItem]):
+class TenantConfigurationGetResponse(GetResponse[TenantConfigurationItem]):
     pass
 
 
-class UpdateTenantPermissionsPayload(BaseModel):
-    tenant_id: UUID
+class UpdateTenantConfigurationPayload(BaseModel):
+    webhook_url: str | None = None
+    webhook_key: str | None = None
+    auto_respond_messages: bool | None = False
+    auto_response_message: str | None = None
     store_messages: bool | None = False
     store_issuer_credentials: bool | None = False
 
 
-class UpdateTenantPermissionsResponse(GetResponse[TenantPermissionsItem]):
+class UpdateTenantConfigurationResponse(GetResponse[TenantConfigurationItem]):
     pass

@@ -33,6 +33,16 @@ class TenantPermissions(TimestampModel, table=True):
 
     Attributes:
       tenant_id: Traction Tenant ID
+      endorser_approval: when True, the endorser (if configured) has (generally) given
+       this tenant approval. This does not mean ALL subsequent transactions will be
+       approved.
+      create_schema_templates: when True, then tenant can create schema templates
+       (and schemas on the ledger). Requires endorser_approval = True.
+      create_credential_templates: when True, the tenant can created credential
+       templates (and credential definitions on the ledger).
+       Requires endorser_approval = True.
+      issue_credentials: when True, then tenant is allowed to issue credentials.
+        Requires endorser_approval = True.
       store_messages: when True, then tenant can store messages they have sent via
         Traction
       store_issuer_credentials: when True, then tenant can store data for credentials
@@ -45,6 +55,10 @@ class TenantPermissions(TimestampModel, table=True):
 
     tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True, primary_key=True)
 
+    endorser_approval: bool = Field(nullable=False, default=False)
+    create_schema_templates: bool = Field(nullable=False, default=False)
+    create_credential_templates: bool = Field(nullable=False, default=False)
+    issue_credentials: bool = Field(nullable=False, default=False)
     store_messages: bool = Field(nullable=False, default=False)
     store_issuer_credentials: bool = Field(nullable=False, default=False)
 
