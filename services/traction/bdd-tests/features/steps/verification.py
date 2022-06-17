@@ -31,7 +31,7 @@ def step_impl(context, verifier: str, schema_name: str, prover: str):
     }
     response = requests.post(
         context.config.userdata.get("traction_host")
-        + "/tenant/v1/verifier/presentation_requests/v1/",
+        + "/tenant/v1/verifier/presentation_requests/",
         json=body,
         headers=context.config.userdata[verifier]["auth_headers"],
     )

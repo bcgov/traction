@@ -142,16 +142,7 @@ def convert_to_IndyProofRequest(proof_request: ProofRequest):
 def _convert_to_IndyProofReqAttrSpec(attrs: List[ProofReqAttr]):
     conv_request_attrs = {}
     for i, a in enumerate(attrs):
-        attr = IndyProofReqAttrSpec()
-        if a.name:
-            attr.name = a.name
-        if a.names:
-            attr.names = a.names
-        if a.non_revoked:
-            attr.non_revoked = a.non_revoked
-        if a.restrictions:
-            attr.restrictions = a.restrictions
-
+        attr = IndyProofReqAttrSpec(**a.dict(exclude_none=True))
         conv_request_attrs["attr_" + str(i)] = attr
 
     return conv_request_attrs

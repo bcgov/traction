@@ -60,7 +60,7 @@ async def list_verifier_presentations(
 
 
 @router.post(
-    "/default/",
+    "/create-v1-request",
     status_code=status.HTTP_200_OK,
     response_model=GetVerifierPresentationResponse,
 )
