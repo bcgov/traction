@@ -3,14 +3,18 @@ from uuid import UUID
 from typing import List
 from api.endpoints.models.credentials import PresentCredentialProtocolType
 
+from sqlalchemy import select, desc
+from sqlalchemy.sql.functions import func
+
 from sqlalchemy.ext.asyncio import AsyncSession
-
-
+from api.db.session import async_session
+from api.db.models.v1.contact import Contact
 from api.endpoints.models.v1.verifier import (
-    PresentationRequestItem,
+    VerificationRequestItem,
     CreatePresentationRequestPayload,
+    VerificationRequestListParameters,
+    VerificationRequestStatusType,
 )
-
 
 from api.db.models.v1.verification_request import VerificationRequest
 
@@ -18,57 +22,115 @@ from api.db.models.v1.verification_request import VerificationRequest
 logger = logging.getLogger(__name__)
 
 
-def v_presentation_request_to_item(
-    db_item: PresentationRequestItem,
-) -> PresentationRequestItem:
-    """IssuerCredential to IssuerCredentialItem.
+def verification_request_to_item(
+    db_item: VerificationRequest,
+) -> VerificationRequestItem:
+    """VerificationRequest to VerificationRequestItem.
 
-    Transform a IssuerCredential Table record to a IssuerCredentialItem object.
+    Transform a VerificationRequest Table record to a VerificationRequestItem object.
 
     Args:
-      db_item: The Traction database IssuerCredential
-      acapy: When True, populate the IssuerCredentialItem acapy field.
+      db_item: The Traction database VerificationRequest
+      acapy: When True, populate the VerificationRequestItem acapy field.
 
-    Returns: The Traction IssuerCredentialItem
+    Returns: The Traction VerificationRequestItem
 
     """
 
-    logger.warn(db_item.__dict__)
-    item = PresentationRequestItem(
+    item = VerificationRequestItem(
         **db_item.dict(),
     )
-    logger.warn(item)
     return item
 
 
-async def make_presentation_request(
-    db: AsyncSession,
+async def make_verification_request(
     tenant_id: UUID,
     wallet_id: UUID,
     protocol: PresentCredentialProtocolType,
     payload: CreatePresentationRequestPayload,
-) -> PresentationRequestItem:
+) -> VerificationRequestItem:
+
+    if payload.contact_id:
+        db_contact = await Contact.get_by_id(db, tenant_id, payload.contact_id)
+    elif payload.connection_id:
+        db_contact = await Contact.get_by_connection_id(
+            db, tenant_id, payload.connection_id
+        )
+
     db_item = VerificationRequest(
         tenant_id=tenant_id,
-        contact_id=payload.contact_id,
-        status="pending",
+        contact_id=db_contact.contact_id,
+        status=VerificationRequestStatusType.PENDING,
         state="pending",
         protocol=protocol,
-        role="verifier",
         proof_request=payload.proof_request.dict(),
     )
-    db.add(db_item)
-    await db.commit()
 
-    return v_presentation_request_to_item(db_item)
+    async with async_session() as db:
+        db.add(db_item)
+        await db.commit()
+
+    return verification_request_to_item(db_item)
 
 
 async def list_presentation_requests(
-    db: AsyncSession,
     tenant_id: UUID,
     wallet_id: UUID,
-) -> List[PresentationRequestItem]:
+    parameters: VerificationRequestListParameters,
+) -> List[VerificationRequestItem]:
 
-    items = await VerificationRequest.list_by_tenant_id(db, tenant_id)
+    limit = parameters.page_size
+    skip = (parameters.page_num - 1) * limit
 
-    return items, len(items)
+    filters = [
+        VerificationRequest.tenant_id == tenant_id,
+        VerificationRequest.deleted == parameters.deleted,
+    ]
+    if parameters.status:
+        filters.append(VerificationRequest.status == parameters.status)
+    if parameters.state:
+        filters.append(VerificationRequest.state == parameters.state)
+    if parameters.comment:
+        filters.append(VerificationRequest.comment == parameters.comment)
+    if parameters.external_reference_id:
+        filters.append(
+            VerificationRequest.external_reference_id
+            == parameters.external_reference_id
+        )
+    if parameters.alias:
+        filters.append(VerificationRequest.alias.contains(parameters.alias))
+
+    if parameters.tags:
+        _filter_tags = [x.strip() for x in parameters.tags.split(",")]
+        filters.append(VerificationRequest.tags.comparator.contains(_filter_tags))
+
+    # build out a base query with all filters
+    base_q = select(VerificationRequest).filter(*filters)
+
+    # get a count of ALL records matching our base query
+    count_q = select([func.count()]).select_from(base_q)
+
+    async with async_session() as db:
+
+        count_q_rec = await db.execute(count_q)
+        total_count = count_q_rec.scalar()
+
+        # TODO: should we raise an exception if paging is invalid?
+        # ie. is negative, or starts after available records
+
+        # add in our paging and ordering to get the result set
+        results_q = (
+            base_q.limit(limit)
+            .offset(skip)
+            .order_by(desc(VerificationRequest.updated_at))
+        )
+
+        results_q_recs = await db.execute(results_q)
+        db_verification_requests = results_q_recs.scalars()
+
+    items = []
+    for db_verification_request in db_verification_requests:
+        item = verification_request_to_item(db_verification_request, parameters.acapy)
+        items.append(item)
+
+    return items, total_count

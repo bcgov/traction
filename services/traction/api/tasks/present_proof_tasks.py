@@ -1,3 +1,4 @@
+from typing import List
 import logging
 from re import Pattern, compile
 from uuid import UUID
@@ -14,10 +15,16 @@ from sqlalchemy import update
 from sqlalchemy.exc import DBAPIError
 
 
-from api.tasks.tasks import Task, TractionTaskType
+from api.tasks.tasks import (
+    Task,
+    TractionTaskType,
+    TRACTION_TASK_PREFIX,
+    TRACTION_SEND_PRESENT_PROOF_REQ_PATTERN,
+)
 from api.db.models import Tenant
 from api.db.models.v1.contact import Contact
-from api.endpoints.models.credentials import ProofRequest
+from api.endpoints.models.credentials import ProofReqAttr, ProofRequest
+from api.endpoints.models.v1.verifier import VerificationRequestStatusType
 from api.db.session import async_session
 
 from acapy_client.api.present_proof_v1_0_api import PresentProofV10Api
@@ -25,12 +32,6 @@ from api.api_client_utils import get_api_client
 
 from api.db.models.v1.verification_request import VerificationRequest
 
-TRACTION_TASK_PREFIX = "traction::TASK::"
-
-
-TRACTION_SEND_PRESENT_PROOF_REQ_PATTERN = compile(
-    f"^{TRACTION_TASK_PREFIX}{TractionTaskType.send_present_proof_req}(.*)?$"
-)
 
 present_proof_api = PresentProofV10Api(api_client=get_api_client())
 
@@ -61,17 +62,16 @@ class SendPresentProofTask(Task):
         self.logger.info("> _perform_task()")
 
         # update state from pending to 'starting'
-        # vpr =
-        # call acapy
         contact = None
         async with async_session() as db:
             contact = await Contact.get_by_id(db, tenant.id, payload["contact_id"])
-            vpr = await self._get_db_model_class().get_by_id(
+            vpr = await VerificationRequest.get_by_id(
                 db, tenant.id, self._get_id_from_payload(payload)
             )
-            vpr.status = "starting"
-            db.add(vpr)
-            await db.commit()
+            VerificationRequest.update_by_id(
+                vpr.verification_request_id,
+                values={"status": VerificationRequestStatusType.STARTING},
+            )
 
         data = {
             "body": V10PresentationSendRequestRequest(
@@ -81,26 +81,11 @@ class SendPresentProofTask(Task):
         }
 
         resp = present_proof_api.present_proof_send_request_post(**data)
-        self.logger.warn(resp)
         values = {"pres_exch_id": resp["presentation_exchange_id"]}
 
-        q = (
-            update(VerificationRequest)
-            .where(
-                VerificationRequest.verification_request_id
-                == self._get_id_from_payload(self, payload)
-            )
-            .values(values)
+        VerificationRequest.update_by_id(
+            self._get_id_from_payload(self, payload), values=values
         )
-        async with async_session() as db:
-            try:
-                await db.execute(q)
-            except DBAPIError:
-                await db.rollback()
-                self.logger.error(exc_info=1)
-            else:
-                await db.commit()
-        pass
 
     @classmethod
     async def assign(
@@ -135,8 +120,28 @@ class SendPresentProofTask(Task):
 
 def convert_to_IndyProofRequest(proof_request: ProofRequest):
     logger.warning(proof_request)
+
+    conv_request_preds = {
+        a.name: IndyProofReqPredSpec(**a.__dict__)
+        for a in proof_request.requested_predicates
+    }
+    conv_request_attrs = _convert_to_IndyProofReqAttrSpec(
+        proof_request.requested_attributes
+    )
+    openapi_proof_request = IndyProofRequest(
+        requested_attributes=conv_request_attrs,
+        requested_predicates=conv_request_preds,
+        name="TBD, will be passed later",
+        version="1.0.0",
+        non_revoked={},
+    )
+
+    return openapi_proof_request
+
+
+def _convert_to_IndyProofReqAttrSpec(attrs: List[ProofReqAttr]):
     conv_request_attrs = {}
-    for i, a in enumerate(proof_request.requested_attributes):
+    for i, a in enumerate(attrs):
         attr = IndyProofReqAttrSpec()
         if a.name:
             attr.name = a.name
@@ -149,20 +154,4 @@ def convert_to_IndyProofRequest(proof_request: ProofRequest):
 
         conv_request_attrs["attr_" + str(i)] = attr
 
-    conv_request_preds = {
-        a.name: IndyProofReqPredSpec(**a.__dict__)
-        for a in proof_request.requested_predicates
-    }
-
-    logger.warning(conv_request_attrs)
-    openapi_proof_request = IndyProofRequest(
-        requested_attributes=conv_request_attrs,
-        requested_predicates=conv_request_preds,
-        name="TBD, will be passed later",
-        version="1.0.0",
-        non_revoked={},
-    )
-
-    logger.warning(openapi_proof_request)
-
-    return openapi_proof_request
+    return conv_request_attrs

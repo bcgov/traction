@@ -1,4 +1,4 @@
-Feature: verfication of ARIES presentations
+Feature: verification of ARIES presentations
     Background: two tenants are connected, and one has a VC 
         Given we have authenticated at the innkeeper
         And we have "2" traction tenants

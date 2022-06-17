@@ -36,6 +36,6 @@ def step_impl(context, verifier: str, schema_name: str, prover: str):
         headers=context.config.userdata[verifier]["auth_headers"],
     )
 
-    assert response.status_code == status.HTTP_201_CREATED, response.__dict__
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
     resp_json = json.loads(response.content)
     assert resp_json["item"]["status"] == "pending"

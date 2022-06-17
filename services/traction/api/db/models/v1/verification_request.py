@@ -7,7 +7,7 @@ import uuid
 from typing import List, Optional
 from sqlalchemy.orm import selectinload
 from sqlmodel import Field, Relationship, desc
-from sqlalchemy import Column, text, String, select
+from sqlalchemy import Column, null, text, String, select
 from sqlalchemy.dialects.postgresql import UUID, JSON, ARRAY
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -48,6 +48,10 @@ class VerificationRequest(StatefulModel, TimestampModel, table=True):
 
     # acapy data ---
     pres_exch_id: uuid.UUID = Field(nullable=True)
+
+    # all in proof_request, store locally for searching/filtering
+    version: str = Field(nullable=True)
+    name: str = Field(nullable=True)
     proof_request: dict = Field(default={}, sa_column=Column(JSON))
     # --- acapy data
 
@@ -104,11 +108,11 @@ class VerificationRequest(StatefulModel, TimestampModel, table=True):
     ) -> List["VerificationRequest"]:
         """List by Tenant ID.
 
-        Find and return list of Issuer Credential records for Tenant.
+        Find and return list of Verification Request records for Tenant.
 
           tenant_id: Traction ID of tenant making the call
 
-        Returns: List of Traction Issuer Credential (db) records in descending order
+        Returns: List of Traction Verification Request (db) records in descending order
         """
 
         q = (

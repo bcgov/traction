@@ -59,6 +59,8 @@ def upgrade():
             "error_status_detail", sqlmodel.sql.sqltypes.AutoString(), nullable=True
         ),
         sa.Column("pres_exch_id", sqlmodel.sql.sqltypes.GUID(), nullable=True),
+        sa.Column("version", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+        sa.Column("name", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
         sa.Column(
             "proof_request", postgresql.JSON(astext_type=sa.Text()), nullable=True
         ),

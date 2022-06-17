@@ -62,6 +62,10 @@ TRACTION_SEND_CREDENTIAL_OFFER_LISTENER_PATTERN = re.compile(
     f"^{TRACTION_TASK_PREFIX}{TractionTaskType.send_credential_offer}(.*)?$"
 )
 
+TRACTION_SEND_PRESENT_PROOF_REQ_PATTERN = compile(
+    f"^{TRACTION_TASK_PREFIX}{TractionTaskType.send_present_proof_req}(.*)?$"
+)
+
 
 def get_logger(cls):
     return logging.getLogger(cls.__name__)
