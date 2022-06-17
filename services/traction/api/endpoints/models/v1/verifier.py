@@ -31,6 +31,8 @@ class VerificationRequestStatusType(str, Enum):
 
 
 class AcapyPresentProofStateType(str, Enum):
+    PENDING = "pending"  # added for traction event queue
+    # from https://github.com/hyperledger/aries-cloudagent-python/blob/4240fa9b192ea4cdb4026211ea4bec694aec5506/aries_cloudagent/protocols/present_proof/v1_0/models/presentation_exchange.py#L49 #E501
     STATE_PROPOSAL_SENT = "proposal_sent"
     STATE_PROPOSAL_RECEIVED = "proposal_received"
     STATE_REQUEST_SENT = "request_sent"
@@ -59,7 +61,12 @@ class CreatePresentationRequestPayload(BaseModel):
 class VerificationRequestListParameters(
     ListAcapyItemParameters[VerificationRequestStatusType, AcapyPresentProofStateType]
 ):
-    pass
+    contact_id: Optional[UUID]
+    comment: Optional[str]
+    tags: Optional[List[str]]
+    external_reference_id: Optional[str]
+    name: Optional[str]
+    version: Optional[str]  # eg. '1.0.0'
 
 
 # Response Models

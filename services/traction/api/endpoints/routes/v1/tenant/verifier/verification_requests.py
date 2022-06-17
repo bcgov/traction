@@ -1,15 +1,12 @@
 import logging
-from urllib.request import Request
 
-from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, Depends, Request
 from starlette import status
 
 from api.services.v1 import verifier_service
 from api.core.config import settings
 
 from api.endpoints.dependencies.tenant_security import get_from_context
-from api.endpoints.dependencies.db import get_db
 
 from api.endpoints.models.v1.verifier import (
     VerificationRequestListResponse,
@@ -74,7 +71,7 @@ async def new_verification_request(
     tenant_id = get_from_context("TENANT_ID")
 
     # logger.warn(payload)
-    item = await verifier_service.make_presentation_request(
+    item = await verifier_service.make_verification_request(
         tenant_id, wallet_id, PresentCredentialProtocolType.v10, payload
     )
     task_payload = {

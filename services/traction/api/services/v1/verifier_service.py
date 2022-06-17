@@ -1,12 +1,13 @@
 import logging
 from uuid import UUID
 from typing import List
+from starlette import status
+
 from api.endpoints.models.credentials import PresentCredentialProtocolType
 
 from sqlalchemy import select, desc
 from sqlalchemy.sql.functions import func
 
-from sqlalchemy.ext.asyncio import AsyncSession
 from api.db.session import async_session
 from api.db.models.v1.contact import Contact
 from api.endpoints.models.v1.verifier import (
@@ -14,6 +15,7 @@ from api.endpoints.models.v1.verifier import (
     CreatePresentationRequestPayload,
     VerificationRequestListParameters,
     VerificationRequestStatusType,
+    AcapyPresentProofStateType,
 )
 
 from api.db.models.v1.verification_request import VerificationRequest
@@ -50,18 +52,25 @@ async def make_verification_request(
     payload: CreatePresentationRequestPayload,
 ) -> VerificationRequestItem:
 
-    if payload.contact_id:
-        db_contact = await Contact.get_by_id(db, tenant_id, payload.contact_id)
-    elif payload.connection_id:
-        db_contact = await Contact.get_by_connection_id(
-            db, tenant_id, payload.connection_id
-        )
+    db_contact = None
+    async with async_session() as db:
+        if payload.contact_id:
+            db_contact = await Contact.get_by_id(db, tenant_id, payload.contact_id)
+        elif payload.connection_id:
+            db_contact = await Contact.get_by_connection_id(
+                db, tenant_id, payload.connection_id
+            )
 
+    if not db_contact:
+        raise Exception(
+            code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            msg="no contact or connection found",
+        )
     db_item = VerificationRequest(
         tenant_id=tenant_id,
         contact_id=db_contact.contact_id,
         status=VerificationRequestStatusType.PENDING,
-        state="pending",
+        state=AcapyPresentProofStateType.PENDING,
         protocol=protocol,
         proof_request=payload.proof_request.dict(),
     )
@@ -84,26 +93,24 @@ async def list_presentation_requests(
 
     filters = [
         VerificationRequest.tenant_id == tenant_id,
-        VerificationRequest.deleted == parameters.deleted,
     ]
-    if parameters.status:
-        filters.append(VerificationRequest.status == parameters.status)
-    if parameters.state:
-        filters.append(VerificationRequest.state == parameters.state)
-    if parameters.comment:
-        filters.append(VerificationRequest.comment == parameters.comment)
-    if parameters.external_reference_id:
-        filters.append(
-            VerificationRequest.external_reference_id
-            == parameters.external_reference_id
-        )
-    if parameters.alias:
-        filters.append(VerificationRequest.alias.contains(parameters.alias))
+    # handle simple filters
+    # TODO: move this logic to central location
+    for param, v in parameters.dict(exclude_none=True).items():
+        logger.warning("filter parameter found: " + param)
+        if param not in [
+            "url",
+            "page_num",
+            "page_size",
+            "acapy",
+            "tenant_id",
+            "tags",
+        ]:  # special cases
+            filters.append(getattr(VerificationRequest, param) == v)
 
     if parameters.tags:
         _filter_tags = [x.strip() for x in parameters.tags.split(",")]
         filters.append(VerificationRequest.tags.comparator.contains(_filter_tags))
-
     # build out a base query with all filters
     base_q = select(VerificationRequest).filter(*filters)
 

@@ -62,7 +62,7 @@ TRACTION_SEND_CREDENTIAL_OFFER_LISTENER_PATTERN = re.compile(
     f"^{TRACTION_TASK_PREFIX}{TractionTaskType.send_credential_offer}(.*)?$"
 )
 
-TRACTION_SEND_PRESENT_PROOF_REQ_PATTERN = compile(
+TRACTION_SEND_PRESENT_PROOF_REQ_PATTERN = re.compile(
     f"^{TRACTION_TASK_PREFIX}{TractionTaskType.send_present_proof_req}(.*)?$"
 )
 
