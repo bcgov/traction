@@ -83,6 +83,9 @@ async def send_message(
     basicmessage_api.connections_conn_id_send_message_post(
         str(db_contact.connection_id), body=body
     )
+    #
+    # check if we are allowed and have decided to store the message data in traction
+    #
     async with async_session() as db:
         db_item = Message(
             tenant_id=tenant_id,

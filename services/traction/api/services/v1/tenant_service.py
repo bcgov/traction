@@ -4,13 +4,23 @@ from uuid import UUID
 from api.db.errors import DoesNotExist
 from api.db.models.tenant import TenantRead
 from api.db.models.tenant_issuer import TenantIssuerRead
+from api.db.models.v1.tenant_configuration import TenantConfiguration
 from api.db.repositories.tenant_issuers import TenantIssuersRepository
 from api.db.repositories.tenants import TenantsRepository
 from api.db.session import async_session
 from api.endpoints.models.tenant_workflow import TenantWorkflowTypeType
 from api.endpoints.models.v1.admin import PublicDIDStateType
-from api.endpoints.models.v1.errors import IncorrectStatusError, NotAnIssuerError
-from api.endpoints.models.v1.tenant import TenantItem, IssuerStatus, PublicDIDStatus
+from api.endpoints.models.v1.errors import (
+    IncorrectStatusError,
+    NotAnIssuerError,
+)
+from api.endpoints.models.v1.tenant import (
+    TenantItem,
+    IssuerStatus,
+    PublicDIDStatus,
+    TenantConfigurationItem,
+    UpdateTenantConfigurationPayload,
+)
 from api.services.tenant_workflows import create_workflow
 
 logger = logging.getLogger(__name__)
@@ -150,3 +160,38 @@ async def is_issuer(
         )
 
     return public_did
+
+
+def tenant_configuration_to_item(
+    db_item: TenantConfiguration,
+) -> TenantConfigurationItem:
+    item = TenantConfigurationItem(**db_item.dict())
+    return item
+
+
+async def get_tenant_configuration(
+    tenant_id: UUID,
+    wallet_id: UUID,
+) -> TenantConfigurationItem:
+
+    async with async_session() as db:
+        db_item = await TenantConfiguration.get_by_id(db, tenant_id)
+
+    item = tenant_configuration_to_item(db_item)
+    return item
+
+
+async def update_tenant_configuration(
+    tenant_id: UUID,
+    wallet_id: UUID,
+    payload: UpdateTenantConfigurationPayload,
+) -> TenantConfiguration:
+
+    async with async_session() as db:
+        await TenantConfiguration.get_by_id(db, tenant_id)
+
+    payload_dict = payload.dict()
+    # update it...
+    await TenantConfiguration.update_by_id(tenant_id, payload_dict)
+
+    return await get_tenant_configuration(tenant_id, wallet_id)

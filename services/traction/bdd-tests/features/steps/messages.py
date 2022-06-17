@@ -47,8 +47,9 @@ def step_impl(context, tenant: str, count: int, role: str, contact_alias: str):
     response = list_messages(context, tenant, params)
     assert response.status_code == status.HTTP_200_OK, response.__dict__
     resp_json = json.loads(response.content)
-    assert len(resp_json["items"]) == 1, resp_json
-    assert resp_json["items"][0]["contact"]["alias"] == contact_alias
+    assert len(resp_json["items"]) == count, resp_json
+    if count == 1:
+        assert resp_json["items"][0]["contact"]["alias"] == contact_alias
 
 
 @then('"{tenant}" can get message with "{contact_alias}" by message_id')
@@ -147,3 +148,13 @@ def step_impl(context, tenant: str, contact_alias: str):
     assert resp_json["item"]["contact"]["alias"] == contact_alias
     assert resp_json["item"]["deleted"]
     assert resp_json["item"]["status"] == "Deleted"
+
+
+@when('"{tenant}" sets configuration auto_respond_messages to "{flag:bool}"')
+def step_impl(context, tenant: str, flag: bool):
+    payload = {
+        "auto_respond_messages": flag
+    }
+    response = tenant_update_configuration(context, tenant, payload)
+    resp_json = json.loads(response.content)
+    assert resp_json["item"]["auto_respond_messages"] == flag

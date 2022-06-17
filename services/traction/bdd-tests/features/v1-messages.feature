@@ -11,7 +11,24 @@ Feature: messaging contacts
         Then "faber" has a connection to "alice" in status "Active"
         And "alice" has a connection to "faber" in status "Active"
 
-    Scenario: send message to contact, find, update and delete
+    Scenario: send message to contact without auto response
+        When "faber" sets configuration auto_respond_messages to "False"
+        And "alice" sends "faber" a message with content "hello faber"
+        And we sadly wait for 5 seconds because we have not figured out how to listen for events
+        Then "alice" can find 1 message(s) as "Sender" with "faber"
+        And "alice" can find 0 message(s) as "Recipient" with "faber"
+        And "faber" can find 1 message(s) as "Recipient" with "alice"
+
+    Scenario: send message to contact with auto response
+        When "faber" sets configuration auto_respond_messages to "True"
+        And "alice" sends "faber" a message with content "hello faber"
+        And we sadly wait for 5 seconds because we have not figured out how to listen for events
+        Then "alice" can find 1 message(s) as "Sender" with "faber"
+        And "alice" can find 1 message(s) as "Recipient" with "faber"
+
+    Scenario: send message to contact find, update and delete
+        When "alice" sets configuration auto_respond_messages to "False"
+        When "faber" sets configuration auto_respond_messages to "False"
         When "alice" sends "faber" a message with content "hello faber"
         Then "alice" can find 1 message(s) as "Sender" with "faber"
         And we sadly wait for 5 seconds because we have not figured out how to listen for events

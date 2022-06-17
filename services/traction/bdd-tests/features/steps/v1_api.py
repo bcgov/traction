@@ -218,3 +218,11 @@ def tenant_make_issuer(context, tenant: str):
         headers=context.config.userdata[tenant]["auth_headers"],
     )
     return response
+
+def tenant_update_configuration(context, tenant, payload: dict):
+    response = requests.put(
+        context.config.userdata.get("traction_host") + f"/tenant/v1/admin/configuration",
+        json=payload,
+        headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response

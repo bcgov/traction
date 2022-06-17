@@ -37,3 +37,31 @@ class TenantItem(BaseModel):
 
 class TenantGetResponse(GetResponse[TenantItem]):
     pass
+
+
+class TenantConfigurationItem(BaseModel):
+    webhook_url: str | None = None
+    webhook_key: str | None = None
+    auto_respond_messages: bool
+    auto_response_message: str | None = None
+    store_messages: bool
+    store_issuer_credentials: bool
+    created_at: datetime
+    updated_at: datetime
+
+
+class TenantConfigurationGetResponse(GetResponse[TenantConfigurationItem]):
+    pass
+
+
+class UpdateTenantConfigurationPayload(BaseModel):
+    webhook_url: str | None = None
+    webhook_key: str | None = None
+    auto_respond_messages: bool | None = False
+    auto_response_message: str | None = None
+    store_messages: bool | None = False
+    store_issuer_credentials: bool | None = False
+
+
+class UpdateTenantConfigurationResponse(GetResponse[TenantConfigurationItem]):
+    pass
