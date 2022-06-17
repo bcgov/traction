@@ -87,8 +87,8 @@ class TenantConfiguration(TimestampModel, table=True):
         return db_rec
 
 
-class TenantAutoResponse(TimestampModel, table=True):
-    """TenantAutoResponse.
+class TenantAutoResponseLog(TimestampModel, table=True):
+    """TenantAutoResponseLog.
 
     This is the model for the Tenant Auto-response table. We need to track which
     connections we've auto responded to so we don't flood them. Once they've received an
@@ -97,34 +97,34 @@ class TenantAutoResponse(TimestampModel, table=True):
 
     Attributes:
       tenant_id: Traction Tenant ID
-      connection_id: AcaPy connection_id for the agent we sent a response
+      contact_id: Traction Contact ID - who this tenant has sent an auto response
       message: store the message we sent as a response
       created_at: Timestamp when record was created in Traction
       updated_at: Timestamp when record was last modified in Traction
     """
 
-    __tablename__ = "tenant_auto_response"
+    __tablename__ = "tenant_auto_response_log"
 
     tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True, primary_key=True)
-    connection_id: str = Field(nullable=False)
+    contact_id: uuid.UUID = Field(foreign_key="contact.contact_id")
     message: str = Field(nullable=False)
 
     @classmethod
-    async def auto_response_exists(
-        cls: "TenantAutoResponse",
+    async def get_from_tenant_to_contact(
+        cls: "TenantAutoResponseLog",
         db: AsyncSession,
         tenant_id: uuid.UUID,
-        connection_id: str,
-    ) -> bool:
-        """Get TenantConfiguration by tenant id.
+        contact_id: uuid.UUID,
+    ) -> "TenantAutoResponseLog":
+        """Get TenantAutoResponseLog by tenant id and contact id.
 
         Return true if the tenant has sent an auto response to the connection.
 
         Args:
           db: database session
           tenant_id: Traction ID of tenant making the call
-          connection_id: AcaPy connection id of other agent.
-        Returns: True if record exists, False otherwise
+          contact_id: AcaPy connection id of other agent.
+        Returns: The record if record exists, None otherwise.
 
         Raises:
 
@@ -133,8 +133,7 @@ class TenantAutoResponse(TimestampModel, table=True):
         q = (
             select(cls)
             .where(cls.tenant_id == tenant_id)
-            .where(cls.connection_id == connection_id)
+            .where(cls.contact_id == contact_id)
         )
         q_result = await db.execute(q)
-        db_rec = q_result.scalar_one_or_none()
-        return db_rec is not None
+        return q_result.scalar_one_or_none()

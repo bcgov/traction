@@ -13,7 +13,7 @@ from api.db.models.v1.message import Message  # noqa: F401
 from api.db.models.v1.tenant_permissions import TenantPermissions  # noqa: F401
 from api.db.models.v1.tenant_configuration import (
     TenantConfiguration,
-    TenantAutoResponse,
+    TenantAutoResponseLog,
 )  # noqa: F401
 
 
@@ -31,5 +31,5 @@ __all__ = [
     "Timeline",
     "TenantPermissions",
     "TenantConfiguration",
-    "TenantAutoResponse",
+    "TenantAutoResponseLog",
 ]
