@@ -21,7 +21,7 @@ from api.endpoints.models.v1.base import (
 from api.endpoints.models.credentials import ProofRequest
 
 # Enums
-class VerificationRequestStatusType(str, Enum):
+class VerifierPresentationStatusType(str, Enum):
     PENDING = "pending"  # in event queue
     STARTING = "starting"  # being processed in event queue
     ACTIVE = "active"  # happy state waiting for next event
@@ -58,8 +58,8 @@ class CreatePresentationRequestPayload(BaseModel):
     version: Optional[str]  # eg. '1.0.0'
 
 
-class VerificationRequestListParameters(
-    ListAcapyItemParameters[VerificationRequestStatusType, AcapyPresentProofStateType]
+class VerifierPresentationListParameters(
+    ListAcapyItemParameters[VerifierPresentationStatusType, AcapyPresentProofStateType]
 ):
     contact_id: Optional[UUID]
     comment: Optional[str]
@@ -76,21 +76,21 @@ class PresentationExchangeAcapy(BaseModel):
     presentation_exchange: dict = {}
 
 
-class VerificationRequestItem(
+class VerifierPresentationItem(
     AcapyItem[
-        VerificationRequestStatusType,
+        VerifierPresentationStatusType,
         AcapyPresentProofStateType,
         PresentationExchangeAcapy,
     ]
 ):
-    verification_request_id: UUID
+    verifier_presentation_id: UUID
     contact_id: UUID
     proof_request: ProofRequest
 
 
-class VerificationRequestListResponse(ListResponse[VerificationRequestItem]):
+class VerifierPresentationListResponse(ListResponse[VerifierPresentationItem]):
     pass
 
 
-class GetVerificationRequestResponse(GetResponse[VerificationRequestItem]):
+class GetVerifierPresentationResponse(GetResponse[VerifierPresentationItem]):
     pass

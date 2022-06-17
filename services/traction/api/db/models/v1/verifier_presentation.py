@@ -20,7 +20,7 @@ from api.endpoints.models.v1.errors import (
 )
 
 
-class VerificationRequest(StatefulModel, TimestampModel, table=True):
+class VerifierPresentation(StatefulModel, TimestampModel, table=True):
     """Verification Request
 
     Model for the Verification Request table (postgresql specific
@@ -29,9 +29,9 @@ class VerificationRequest(StatefulModel, TimestampModel, table=True):
     Attributes:
     """
 
-    __tablename__ = "verification_request"
+    __tablename__ = "verifier_presentation"
 
-    verification_request_id: uuid.UUID = Field(
+    verifier_presentation_id: uuid.UUID = Field(
         sa_column=Column(
             UUID(as_uuid=True),
             primary_key=True,
@@ -61,32 +61,32 @@ class VerificationRequest(StatefulModel, TimestampModel, table=True):
 
     @classmethod
     async def get_by_id(
-        cls: "VerificationRequest",
+        cls: "VerifierPresentation",
         db: AsyncSession,
         tenant_id: uuid.UUID,
-        verification_request_id: uuid.UUID,
+        verifier_presentation_id: uuid.UUID,
         deleted: bool | None = False,
-    ) -> "VerificationRequest":
-        """Get VerificationRequest by id.
+    ) -> "VerifierPresentation":
+        """Get VerifierPresentation by id.
 
         Find and return the database CredentialDefinition record
 
         Args:
           db: database session
           tenant_id: Traction ID of tenant making the call
-          verification_request_id: Traction ID of VerificationRequest
+          verifier_presentation_id: Traction ID of VerifierPresentation
 
-        Returns: The Traction VerificationRequest (db) record
+        Returns: The Traction VerifierPresentation (db) record
 
         Raises:
-          NotFoundError: if the VerificationRequest cannot be
+          NotFoundError: if the VerifierPresentation cannot be
           found by ID and deleted flag
         """
 
         q = (
             select(cls)
             .where(cls.tenant_id == tenant_id)
-            .where(cls.verification_request_id == verification_request_id)
+            .where(cls.verifier_presentation_id == verifier_presentation_id)
             .where(cls.deleted == deleted)
             .options(selectinload(cls.contact))
         )
@@ -94,18 +94,18 @@ class VerificationRequest(StatefulModel, TimestampModel, table=True):
         db_rec = q_result.scalar_one_or_none()
         if not db_rec:
             raise NotFoundError(
-                code="verification_request.id_not_found",
+                code="verifier_presentation.id_not_found",
                 title="Verification Request does not exist",
-                detail=f"Verification Request does not exist for id<{verification_request_id}>",  # noqa: E501
+                detail=f"Verification Request does not exist for id<{verifier_presentation_id}>",  # noqa: E501
             )
         return db_rec
 
     @classmethod
     async def list_by_tenant_id(
-        cls: "VerificationRequest",
+        cls: "VerifierPresentation",
         db: AsyncSession,
         tenant_id: uuid.UUID,
-    ) -> List["VerificationRequest"]:
+    ) -> List["VerifierPresentation"]:
         """List by Tenant ID.
 
         Find and return list of Verification Request records for Tenant.

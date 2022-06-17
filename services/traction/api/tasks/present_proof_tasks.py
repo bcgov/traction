@@ -24,13 +24,13 @@ from api.tasks.tasks import (
 from api.db.models import Tenant
 from api.db.models.v1.contact import Contact
 from api.endpoints.models.credentials import ProofReqAttr, ProofRequest
-from api.endpoints.models.v1.verifier import VerificationRequestStatusType
+from api.endpoints.models.v1.verifier import VerifierPresentationStatusType
 from api.db.session import async_session
 
 from acapy_client.api.present_proof_v1_0_api import PresentProofV10Api
 from api.api_client_utils import get_api_client
 
-from api.db.models.v1.verification_request import VerificationRequest
+from api.db.models.v1.verifier_presentation import VerifierPresentation
 
 
 present_proof_api = PresentProofV10Api(api_client=get_api_client())
@@ -52,10 +52,10 @@ class SendPresentProofTask(Task):
         return TRACTION_TASK_PREFIX + TractionTaskType.send_present_proof_req
 
     def _get_db_model_class(self):
-        return VerificationRequest
+        return VerifierPresentation
 
     def _get_id_from_payload(self, payload):
-        spp_t_id = payload["verification_request_id"]
+        spp_t_id = payload["verifier_presentation_id"]
         return spp_t_id
 
     async def _perform_task(self, tenant: Tenant, payload: dict):
@@ -65,12 +65,12 @@ class SendPresentProofTask(Task):
         contact = None
         async with async_session() as db:
             contact = await Contact.get_by_id(db, tenant.id, payload["contact_id"])
-            vpr = await VerificationRequest.get_by_id(
+            vpr = await VerifierPresentation.get_by_id(
                 db, tenant.id, self._get_id_from_payload(payload)
             )
-            VerificationRequest.update_by_id(
-                vpr.verification_request_id,
-                values={"status": VerificationRequestStatusType.STARTING},
+            VerifierPresentation.update_by_id(
+                vpr.verifier_presentation_id,
+                values={"status": VerifierPresentationStatusType.STARTING},
             )
 
         data = {
@@ -83,7 +83,7 @@ class SendPresentProofTask(Task):
         resp = present_proof_api.present_proof_send_request_post(**data)
         values = {"pres_exch_id": resp["presentation_exchange_id"]}
 
-        VerificationRequest.update_by_id(
+        VerifierPresentation.update_by_id(
             self._get_id_from_payload(self, payload), values=values
         )
 
@@ -103,7 +103,7 @@ class SendPresentProofTask(Task):
 
         # weak validation of payload
         required_payload_keys = [
-            "verification_request_id",
+            "verifier_presentation_id",
             "contact_id",
             "proof_request",
         ]

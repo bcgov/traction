@@ -11,46 +11,46 @@ from sqlalchemy.sql.functions import func
 from api.db.session import async_session
 from api.db.models.v1.contact import Contact
 from api.endpoints.models.v1.verifier import (
-    VerificationRequestItem,
+    VerifierPresentationItem,
     CreatePresentationRequestPayload,
-    VerificationRequestListParameters,
-    VerificationRequestStatusType,
+    VerifierPresentationListParameters,
+    VerifierPresentationStatusType,
     AcapyPresentProofStateType,
 )
 
-from api.db.models.v1.verification_request import VerificationRequest
+from api.db.models.v1.verifier_presentation import VerifierPresentation
 
 
 logger = logging.getLogger(__name__)
 
 
-def verification_request_to_item(
-    db_item: VerificationRequest,
-) -> VerificationRequestItem:
-    """VerificationRequest to VerificationRequestItem.
+def verifier_presentation_to_item(
+    db_item: VerifierPresentation,
+) -> VerifierPresentationItem:
+    """VerifierPresentation to VerifierPresentationItem.
 
-    Transform a VerificationRequest Table record to a VerificationRequestItem object.
+    Transform a VerifierPresentation Table record to a VerifierPresentationItem object.
 
     Args:
-      db_item: The Traction database VerificationRequest
-      acapy: When True, populate the VerificationRequestItem acapy field.
+      db_item: The Traction database VerifierPresentation
+      acapy: When True, populate the VerifierPresentationItem acapy field.
 
-    Returns: The Traction VerificationRequestItem
+    Returns: The Traction VerifierPresentationItem
 
     """
 
-    item = VerificationRequestItem(
+    item = VerifierPresentationItem(
         **db_item.dict(),
     )
     return item
 
 
-async def make_verification_request(
+async def make_verifier_presentation(
     tenant_id: UUID,
     wallet_id: UUID,
     protocol: PresentCredentialProtocolType,
     payload: CreatePresentationRequestPayload,
-) -> VerificationRequestItem:
+) -> VerifierPresentationItem:
 
     db_contact = None
     async with async_session() as db:
@@ -66,10 +66,10 @@ async def make_verification_request(
             code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             msg="no contact or connection found",
         )
-    db_item = VerificationRequest(
+    db_item = VerifierPresentation(
         tenant_id=tenant_id,
         contact_id=db_contact.contact_id,
-        status=VerificationRequestStatusType.PENDING,
+        status=VerifierPresentationStatusType.PENDING,
         state=AcapyPresentProofStateType.PENDING,
         protocol=protocol,
         proof_request=payload.proof_request.dict(),
@@ -79,20 +79,20 @@ async def make_verification_request(
         db.add(db_item)
         await db.commit()
 
-    return verification_request_to_item(db_item)
+    return verifier_presentation_to_item(db_item)
 
 
 async def list_presentation_requests(
     tenant_id: UUID,
     wallet_id: UUID,
-    parameters: VerificationRequestListParameters,
-) -> List[VerificationRequestItem]:
+    parameters: VerifierPresentationListParameters,
+) -> List[VerifierPresentationItem]:
 
     limit = parameters.page_size
     skip = (parameters.page_num - 1) * limit
 
     filters = [
-        VerificationRequest.tenant_id == tenant_id,
+        VerifierPresentation.tenant_id == tenant_id,
     ]
     # handle simple filters
     # TODO: move this logic to central location
@@ -106,13 +106,13 @@ async def list_presentation_requests(
             "tenant_id",
             "tags",
         ]:  # special cases
-            filters.append(getattr(VerificationRequest, param) == v)
+            filters.append(getattr(VerifierPresentation, param) == v)
 
     if parameters.tags:
         _filter_tags = [x.strip() for x in parameters.tags.split(",")]
-        filters.append(VerificationRequest.tags.comparator.contains(_filter_tags))
+        filters.append(VerifierPresentation.tags.comparator.contains(_filter_tags))
     # build out a base query with all filters
-    base_q = select(VerificationRequest).filter(*filters)
+    base_q = select(VerifierPresentation).filter(*filters)
 
     # get a count of ALL records matching our base query
     count_q = select([func.count()]).select_from(base_q)
@@ -129,15 +129,15 @@ async def list_presentation_requests(
         results_q = (
             base_q.limit(limit)
             .offset(skip)
-            .order_by(desc(VerificationRequest.updated_at))
+            .order_by(desc(VerifierPresentation.updated_at))
         )
 
         results_q_recs = await db.execute(results_q)
-        db_verification_requests = results_q_recs.scalars()
+        db_verifier_presentations = results_q_recs.scalars()
 
     items = []
-    for db_verification_request in db_verification_requests:
-        item = verification_request_to_item(db_verification_request, parameters.acapy)
+    for db_verifier_presentation in db_verifier_presentations:
+        item = verifier_presentation_to_item(db_verifier_presentation, parameters.acapy)
         items.append(item)
 
     return items, total_count
