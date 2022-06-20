@@ -38,6 +38,7 @@ const clicked = () => {
       const token = res.data.access_token;
       processing.value = false; // enable button
       toast(`Access Token: ${token}`);
+      console.log(`Access Token: ${token}`);
     })
     .catch((err) => {
       console.error(err);

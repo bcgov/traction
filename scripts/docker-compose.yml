@@ -199,7 +199,7 @@ services:
       context: ../services/grip
       dockerfile: Dockerfile
     ports:
-      - 3000:80
+      - 3001:80
 
 volumes:
   traction-wallet:
