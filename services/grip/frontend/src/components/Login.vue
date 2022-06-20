@@ -16,7 +16,6 @@ const toast = useToast();
 let processing = ref(false);
 
 // Grab our store
-// TODO: Insert token into the store
 const store: any = inject("store");
 
 /**
