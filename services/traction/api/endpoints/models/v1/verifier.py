@@ -19,7 +19,6 @@ from api.endpoints.models.v1.base import (
     ListAcapyItemParameters,
 )
 from api.endpoints.models.credentials import ProofRequest
-from api.endpoints.models.credentials import PresentCredentialProtocolType
 
 # Enums
 class VerifierPresentationStatusType(str, Enum):
@@ -49,7 +48,6 @@ class AcapyPresentProofStateType(str, Enum):
 class CreatePresentationRequestPayload(BaseModel):
     contact_id: Optional[UUID]
     connection_id: Optional[UUID]
-    protocol: PresentCredentialProtocolType
     proof_request: ProofRequest
 
 
