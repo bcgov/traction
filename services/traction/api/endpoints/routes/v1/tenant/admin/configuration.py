@@ -9,7 +9,7 @@ from api.endpoints.models.v1.tenant import (
     UpdateTenantConfigurationPayload,
     UpdateTenantConfigurationResponse,
 )
-from api.services.v1 import tenant_service
+from api.services.v1 import tenant_configuration_service as service
 from api.endpoints.dependencies.tenant_security import get_from_context
 
 router = APIRouter()
@@ -27,7 +27,7 @@ async def get_tenant_configuration(
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
-    item = await tenant_service.get_tenant_configuration(tenant_id, wallet_id)
+    item = await service.get_tenant_configuration(tenant_id, wallet_id)
 
     links = []  # TODO: determine links
 
@@ -46,9 +46,7 @@ async def update_tenant_configuration(
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
-    item = await tenant_service.update_tenant_configuration(
-        tenant_id, wallet_id, payload
-    )
+    item = await service.update_tenant_configuration(tenant_id, wallet_id, payload)
 
     links = []  # TODO: determine links
 

@@ -1,6 +1,16 @@
 import requests
 
 
+def convert_value(value: str):
+    if value == "None":
+        return None
+    if value == "True":
+        return True
+    if value == "False":
+        return False
+    return value
+
+
 def create_invitation(context, tenant, alias, invitation_type):
     data = {"alias": alias, "invitation_type": invitation_type}
     response = requests.post(
@@ -219,10 +229,43 @@ def tenant_make_issuer(context, tenant: str):
     )
     return response
 
+
+def tenant_get_configuration(context, tenant):
+    response = requests.get(
+        context.config.userdata.get("traction_host")
+        + f"/tenant/v1/admin/configuration",
+        headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response
+
+
 def tenant_update_configuration(context, tenant, payload: dict):
     response = requests.put(
-        context.config.userdata.get("traction_host") + f"/tenant/v1/admin/configuration",
+        context.config.userdata.get("traction_host")
+        + f"/tenant/v1/admin/configuration",
         json=payload,
         headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response
+
+
+def innkeeper_get_permissions(context, tenant):
+    tenant_id = context.config.userdata[tenant]["tenant_id"]
+    response = requests.get(
+        context.config.userdata.get("traction_host")
+        + f"/innkeeper/v1/tenants/{tenant_id}/permissions",
+        headers=context.config.userdata["innkeeper_auth_headers"],
+    )
+    return response
+
+
+def innkeeper_update_permissions(context, tenant, payload: dict):
+    tenant_id = context.config.userdata[tenant]["tenant_id"]
+    payload["tenant_id"] = tenant_id
+    response = requests.put(
+        context.config.userdata.get("traction_host")
+        + f"/innkeeper/v1/tenants/{tenant_id}/permissions",
+        json=payload,
+        headers=context.config.userdata["innkeeper_auth_headers"],
     )
     return response

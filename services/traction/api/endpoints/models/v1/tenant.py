@@ -1,5 +1,6 @@
 from datetime import datetime
 from enum import Enum
+from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -55,12 +56,12 @@ class TenantConfigurationGetResponse(GetResponse[TenantConfigurationItem]):
 
 
 class UpdateTenantConfigurationPayload(BaseModel):
-    webhook_url: str | None = None
-    webhook_key: str | None = None
-    auto_respond_messages: bool | None = False
-    auto_response_message: str | None = None
-    store_messages: bool | None = False
-    store_issuer_credentials: bool | None = False
+    webhook_url: Optional[str]
+    webhook_key: Optional[str]
+    auto_respond_messages: Optional[bool]
+    auto_response_message: Optional[str]
+    store_messages: Optional[bool]
+    store_issuer_credentials: Optional[bool]
 
 
 class UpdateTenantConfigurationResponse(GetResponse[TenantConfigurationItem]):

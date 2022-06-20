@@ -64,7 +64,6 @@ class Message(BaseModel, table=True):
     deleted: bool = Field(nullable=False, default=False)
     tags: List[str] = Field(sa_column=Column(ARRAY(String)))
     content: str = Field(nullable=True)
-    revocation_comment: str = Field(nullable=True)
 
     # acapy data ---
     state: str = Field(nullable=False)
@@ -150,7 +149,7 @@ class Message(BaseModel, table=True):
             .order_by(desc(cls.updated_at))
         )
         q_result = await db.execute(q)
-        db_recs = q_result.scalars()
+        db_recs = q_result.scalars().all()
         return db_recs
 
     @classmethod
@@ -175,5 +174,5 @@ class Message(BaseModel, table=True):
             .order_by(desc(cls.updated_at))
         )
         q_result = await db.execute(q)
-        db_recs = q_result.scalars()
+        db_recs = q_result.scalars().all()
         return db_recs

@@ -22,6 +22,7 @@ from starlette_context import context
 from acapy_client.api.basicmessage_api import BasicmessageApi
 from acapy_client.model.send_message import SendMessage
 from api.api_client_utils import get_api_client
+from api.services.v1 import tenant_configuration_service as config_service
 
 basicmessage_api = BasicmessageApi(api_client=get_api_client())
 
@@ -85,11 +86,16 @@ class BasicMessagesProtocol:
         db_tenant = await self.get_tenant(profile)
         db_contact = await self.get_contact(profile.tenant_id, payload["connection_id"])
         if db_tenant and db_contact:
+            # TODO: when we send notifications of messages, we want to send the content
+            # across no matter what, however, we may not be storing the content.
+            # The only way the tenant would see it is via a push notification/event.
+            content = await config_service.stored_message_content(
+                db_tenant.id, payload["content"]
+            )
             async with async_session() as db:
                 # there only one state (received)
                 # for now just create a message for this tenant from the contact
                 sent_time = dateutil.parser.parse(payload["sent_time"])
-
                 db_item = Message(
                     message_id=payload["message_id"],
                     tenant_id=db_tenant.id,
@@ -97,7 +103,7 @@ class BasicMessagesProtocol:
                     status=MessageStatusType.received,
                     state=payload["state"],
                     role=MessageRole.recipient,
-                    content=payload["content"],
+                    content=content,
                     sent_time=sent_time.replace(tzinfo=None),
                 )
                 db.add(db_item)
