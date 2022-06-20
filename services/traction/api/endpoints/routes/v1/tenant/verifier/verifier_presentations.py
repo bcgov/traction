@@ -14,6 +14,9 @@ from api.endpoints.models.v1.verifier import (
     CreatePresentationRequestPayload,
     VerifierPresentationListParameters,
 )
+from api.endpoints.models.credentials import PresentCredentialProtocolType
+
+
 from api.tasks.present_proof_tasks import SendPresentProofTask
 
 
@@ -70,6 +73,9 @@ async def new_verifier_presentation(
     found here https://github.com/hyperledger/aries-rfcs/tree/main/features/0037-present-proof"""
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
+
+    if payload.protocol != PresentCredentialProtocolType.v10:
+        return 'ONLY PROTOCOL "v1.0" is currently supported, "v2.0" to be built later'
 
     # logger.warn(payload)
     item = await verifier_service.make_verifier_presentation(
