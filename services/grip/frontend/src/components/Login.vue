@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, inject } from "vue";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import { useToast } from "vue-toastification";
@@ -14,6 +14,10 @@ const toast = useToast();
 
 // For state
 let processing = ref(false);
+
+// Grab our store
+// TODO: Insert token into the store
+const store: any = inject("store");
 
 /**
  * ##clicked
@@ -39,11 +43,13 @@ const clicked = () => {
       processing.value = false; // enable button
       toast(`Access Token: ${token}`);
       console.log(`Access Token: ${token}`);
+      store.state.token = token;
     })
     .catch((err) => {
       console.error(err);
       toast.error(`Failure: ${err}`);
       processing.value = false; // enable button
+      store.state.token = null;
     });
 };
 

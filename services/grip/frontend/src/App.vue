@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import Login from "./components/Login.vue";
+import Info from "./components/Info.vue";
+import store from "./store";
+import { provide } from "vue";
+
+provide("store", store); // Allow the entire app to see the store.
 </script>
 
 <template>
-  <Login />
+  <Info v-if="store.state.token" />
+  <Login v-else="store.state.token" />
 </template>
 
 <style>
