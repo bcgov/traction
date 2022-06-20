@@ -51,12 +51,7 @@ async def stored_message_content(tenant_id: UUID, content: str) -> str | None:
     async with async_session() as db:
         config = await TenantConfiguration.get_by_id(db, tenant_id)
         permissions = await TenantPermissions.get_by_id(db, tenant_id)
-    logger.info(f"config = {config}")
-    logger.info(f"permissions = {permissions}")
-    logger.info(f"config store_messages= {config.store_messages}")
-    logger.info(f"permissions store_messages= {permissions.store_messages}")
     if permissions.store_messages and config.store_messages:
-        logger.info(f"returning {content}")
         return content
 
     return None
