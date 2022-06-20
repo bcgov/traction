@@ -62,7 +62,7 @@ async def list_verifier_presentations(
 
 
 @router.post(
-    "/one-time-request",
+    "/adhoc-request",
     status_code=status.HTTP_200_OK,
     response_model=GetVerifierPresentationResponse,
 )
