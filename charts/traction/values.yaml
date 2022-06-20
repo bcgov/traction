@@ -134,7 +134,7 @@ acapy:
     multitenant: true
     multitenantAdmin: true
 
-postgresql:
+patroni:
   # when overriding global.fullnameOverride, you must override this to match.
   fullnameOverride: "traction"
 

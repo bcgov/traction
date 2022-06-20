@@ -11,7 +11,7 @@ acapy:
       memory: 400Mi
   tails:
     enabled: true
-postgresql:
+patroni:
   fullnameOverride: 'pr-00-traction'
   resources:
     limits:

@@ -14,8 +14,11 @@ maintainers:
   - email: jason.syrotuck@nttdata.com
     name: Jsyro
     url: https://github.com/Jsyro
+  - email: lucasoneil@gmail.com
+    name: loneil
+    url: https://github.com/loneil
 dependencies:
-  - name: postgresql
-    version: 10.16.2
-    repository: https://charts.bitnami.com/bitnami/
+  - name: patroni
+    version: ~0.0.2
+    repository: https://bcgov.github.io/nr-patroni-chart
     condition: persistence.deployPostgres
