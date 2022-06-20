@@ -14,7 +14,6 @@ from api.endpoints.models.v1.verifier import (
     CreatePresentationRequestPayload,
     VerifierPresentationListParameters,
 )
-from api.endpoints.models.credentials import PresentCredentialProtocolType
 from api.tasks.present_proof_tasks import SendPresentProofTask
 
 
@@ -60,7 +59,7 @@ async def list_verifier_presentations(
 
 
 @router.post(
-    "/create-v1-request",
+    "/one-time-request",
     status_code=status.HTTP_200_OK,
     response_model=GetVerifierPresentationResponse,
 )
@@ -74,7 +73,7 @@ async def new_verifier_presentation(
 
     # logger.warn(payload)
     item = await verifier_service.make_verifier_presentation(
-        tenant_id, wallet_id, PresentCredentialProtocolType.v10, payload
+        tenant_id, wallet_id, payload.protocol, payload
     )
     task_payload = {
         "verifier_presentation_id": item.verifier_presentation_id,

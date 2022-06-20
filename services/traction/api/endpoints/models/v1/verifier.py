@@ -19,6 +19,7 @@ from api.endpoints.models.v1.base import (
     ListAcapyItemParameters,
 )
 from api.endpoints.models.credentials import ProofRequest
+from api.endpoints.models.credentials import PresentCredentialProtocolType
 
 # Enums
 class VerifierPresentationStatusType(str, Enum):
@@ -48,14 +49,8 @@ class AcapyPresentProofStateType(str, Enum):
 class CreatePresentationRequestPayload(BaseModel):
     contact_id: Optional[UUID]
     connection_id: Optional[UUID]
-
+    protocol: PresentCredentialProtocolType
     proof_request: ProofRequest
-    # TODO: support GET'ing by the following attributes
-    comment: Optional[str]
-    tags: Optional[List[str]]
-    external_reference_id: Optional[str]
-    name: Optional[str]
-    version: Optional[str]  # eg. '1.0.0'
 
 
 class VerifierPresentationListParameters(
