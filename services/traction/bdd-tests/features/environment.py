@@ -1,5 +1,3 @@
-from pprint import PrettyPrinter, pprint
-
 from behave import register_type
 
 from steps.setup import _hard_delete_tenant
@@ -28,7 +26,5 @@ def after_scenario(context, scenario):
 
     for tenant_config in tenants:
         if not tenant_config.get("deleted", False):
-            pp(tenant_config)
-            pass
-            # _hard_delete_tenant(context, tenant_config)
+            _hard_delete_tenant(context, tenant_config)
     pass
