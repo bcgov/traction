@@ -1,9 +1,8 @@
-"""verifier_presentation_requests
+"""v1_verifier_presentations
 
-
-Revision ID: 81f17f3e7d8c
-Revises: 8ac2e131039d
-Create Date: 2022-06-15 00:38:37.999764
+Revision ID: 7c527dcfae03
+Revises: 3092e74e02a4
+Create Date: 2022-06-21 20:07:21.353957
 
 """
 from alembic import op
@@ -12,11 +11,10 @@ import sqlmodel
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = "81f17f3e7d8c"
-down_revision = "8ac2e131039d"
+revision = "7c527dcfae03"
+down_revision = "3092e74e02a4"
 branch_labels = None
 depends_on = None
-
 
 create_verifier_presentation_request_timeline_func = """CREATE OR REPLACE FUNCTION verifier_presentation_request_timeline_func() RETURNS trigger AS $body$
     BEGIN
