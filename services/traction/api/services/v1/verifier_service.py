@@ -46,15 +46,19 @@ def verifier_presentation_to_item(
     """
     acapy_item = None
     if acapy:
+        logger.warning(
+            """NOT IMPLEMENTED: verifier_presentation_to_item was 
+            passed acapy=True, but currently does not work"""
+        )
         # query aacapy for more details to put in payload
         acapy_item = present_proof_api.present_proof_records_pres_ex_id_get(
             pres_ex_id=str(db_item.pres_exch_id)
         )
+        # TODO: loading this response into the VerifierPresentationItem.acapy
+        # (of type acapy_client...V10PresentationExchange) doesn't work.
 
-    pp(acapy_item)
     item = VerifierPresentationItem(
         **db_item.dict(),
-        acapy=acapy_item,
     )
     return item
 
