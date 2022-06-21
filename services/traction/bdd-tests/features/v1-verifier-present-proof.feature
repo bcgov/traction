@@ -40,5 +40,5 @@ Feature: verification of ARIES presentations
         And "faber" will have a present-proof request for "useless-schema"
         And "faber" loads credentials
         Then "faber" sends the presentation in response to the request for "useless-schema"
-        And we sadly wait for 10 seconds because we have not figured out how to listen for events
+        And we sadly wait for 5 seconds because we have not figured out how to listen for events
         And "alice" has a "verified" verifier presentation

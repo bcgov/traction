@@ -115,9 +115,7 @@ def step_impl(context, prover: str, schema_name: str):
     response = requests.post(
         context.config.userdata.get("traction_host")
         + "/tenant/v0/credentials/holder/present-credential?pres_req_id="
-        + context.config.userdata[prover]["presentation_requests"][0]["presentation"][
-            "id"
-        ],
+        + pres["id"],
         json=body,
         headers=context.config.userdata[prover]["auth_headers"],
     )
