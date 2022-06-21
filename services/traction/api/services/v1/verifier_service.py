@@ -1,7 +1,7 @@
 import logging
 from uuid import UUID
 from typing import List
-from starlette import status
+from starlette import status, exceptions
 
 from api.endpoints.models.credentials import PresentCredentialProtocolType
 
@@ -81,9 +81,10 @@ async def make_verifier_presentation(
             )
 
     if not db_contact:
-        raise Exception(
-            code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            msg="no contact or connection found",
+        # TODO refactor this contact GET'ing (and error handling)
+        raise exceptions.HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="no contact or connection found",
         )
     db_item = VerifierPresentation(
         tenant_id=tenant_id,
