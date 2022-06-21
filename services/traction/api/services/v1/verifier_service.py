@@ -1,4 +1,4 @@
-import logging, requests
+import logging
 from pprint import pp
 from uuid import UUID
 from typing import List

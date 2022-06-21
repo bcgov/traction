@@ -1,20 +1,15 @@
-import logging, uuid
+import logging
+import uuid
 
-from fastapi import APIRouter, Request
-from starlette import status
+from fastapi import APIRouter
 
 from api.services.v1 import verifier_service
-from api.core.config import settings
 
 from api.endpoints.dependencies.tenant_security import get_from_context
 
 from api.endpoints.models.v1.verifier import (
-    VerifierPresentationListResponse,
     GetVerifierPresentationResponse,
-    CreatePresentationRequestPayload,
-    VerifierPresentationListParameters,
 )
-from api.endpoints.models.credentials import PresentCredentialProtocolType
 
 
 router = APIRouter()
