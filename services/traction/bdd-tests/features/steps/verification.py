@@ -36,15 +36,20 @@ def step_impl(context, verifier: str, schema_name: str, prover: str):
         json=body,
         headers=context.config.userdata[verifier]["auth_headers"],
     )
-
     assert response.status_code == status.HTTP_200_OK, response.__dict__
     resp_json = json.loads(response.content)
     assert resp_json["item"]["status"] == "pending"
+
+    # update presentation_requests list
+    context.config.userdata[verifier].setdefault(
+        "verifier_presentations", [resp_json["item"]]
+    )
 
 
 @step('"{verifier}" has a "{status_code}" verifier presentation')
 def step_impl(context, verifier: str, status_code: str):
 
+    pp(context.config.userdata[verifier]["verifier_presentations"][0])
     response = requests.get(
         context.config.userdata.get("traction_host")
         + "/tenant/v1/verifier/presentations/",
@@ -53,4 +58,5 @@ def step_impl(context, verifier: str, status_code: str):
 
     assert response.status_code == status.HTTP_200_OK, response.__dict__
     resp_json = json.loads(response.content)
+    assert False
     assert resp_json["items"][0]["status"] == status_code, resp_json["items"]

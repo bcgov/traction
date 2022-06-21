@@ -1,4 +1,5 @@
-import logging
+import logging, requests
+from pprint import pp
 from uuid import UUID
 from typing import List
 from starlette import status
@@ -19,6 +20,11 @@ from api.endpoints.models.v1.verifier import (
 )
 
 from api.db.models.v1.verifier_presentation import VerifierPresentation
+from api.api_client_utils import get_api_client
+from acapy_client.api.present_proof_v1_0_api import PresentProofV10Api
+
+
+present_proof_api = PresentProofV10Api(api_client=get_api_client())
 
 
 logger = logging.getLogger(__name__)
@@ -38,9 +44,17 @@ def verifier_presentation_to_item(
     Returns: The Traction VerifierPresentationItem
 
     """
-    print(db_item)
+    acapy_item = None
+    if acapy:
+        # query aacapy for more details to put in payload
+        acapy_item = present_proof_api.present_proof_records_pres_ex_id_get(
+            pres_ex_id=str(db_item.pres_exch_id)
+        )
+
+    pp(acapy_item)
     item = VerifierPresentationItem(
         **db_item.dict(),
+        acapy=acapy_item,
     )
     return item
 
@@ -141,3 +155,38 @@ async def list_presentation_requests(
         items.append(item)
 
     return items, total_count
+
+
+async def get_presentation_request(
+    tenant_id: UUID,
+    wallet_id: UUID,
+    verifier_presentation_id: UUID,
+    acapy: bool | None = False,
+    deleted: bool | None = False,
+) -> VerifierPresentationItem:
+
+    """Get Verifier Presentation.
+
+    Find and return a Traction Issuer Credential by ID.
+
+    Args:
+      db: database session
+      tenant_id: Traction ID of tenant making the call
+      wallet_id: AcaPy Wallet ID for tenant
+      issuer_credential_id: Traction ID of Issuer Credential
+      acapy: When True, populate the Issuer Credential acapy field
+      deleted: When True, return Issuer Credential if marked as deleted
+
+    Returns: The Traction Issuer Credential
+
+    Raises:
+      NotFoundError: if the item cannot be found by ID and deleted flag
+    """
+    async with async_session() as db:
+        db_item = await VerifierPresentation.get_by_id(
+            db, tenant_id, verifier_presentation_id, deleted
+        )
+
+    item = verifier_presentation_to_item(db_item, acapy)
+
+    return item
