@@ -111,7 +111,7 @@ class PresentProofProtocol(ABC):
         pass
 
 
-class DefaultPresentProofProtocol(ABC):
+class DefaultPresentProofProtocol(PresentProofProtocol):
     def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
         pass
 
