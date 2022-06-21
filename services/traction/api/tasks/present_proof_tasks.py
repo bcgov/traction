@@ -1,6 +1,6 @@
 from typing import List
 import logging
-from re import Pattern, compile
+from re import Pattern
 from uuid import UUID
 from acapy_client.model.indy_proof_req_attr_spec import IndyProofReqAttrSpec
 from acapy_client.model.indy_proof_req_pred_spec import IndyProofReqPredSpec
@@ -9,10 +9,6 @@ from acapy_client.model.indy_proof_request import IndyProofRequest
 from acapy_client.model.v10_presentation_send_request_request import (
     V10PresentationSendRequestRequest,
 )
-
-
-from sqlalchemy import update
-from sqlalchemy.exc import DBAPIError
 
 
 from api.tasks.tasks import (
@@ -60,15 +56,15 @@ class SendPresentProofTask(Task):
 
     async def _perform_task(self, tenant: Tenant, payload: dict):
         self.logger.info("> _perform_task()")
-
+        verifier_presentation_id = self._get_id_from_payload(payload)
         # update state from pending to 'starting'
         contact = None
         async with async_session() as db:
             contact = await Contact.get_by_id(db, tenant.id, payload["contact_id"])
             vpr = await VerifierPresentation.get_by_id(
-                db, tenant.id, self._get_id_from_payload(payload)
+                db, tenant.id, verifier_presentation_id
             )
-            VerifierPresentation.update_by_id(
+            await VerifierPresentation.update_by_id(
                 vpr.verifier_presentation_id,
                 values={"status": VerifierPresentationStatusType.STARTING},
             )
@@ -79,13 +75,10 @@ class SendPresentProofTask(Task):
                 proof_request=convert_to_IndyProofRequest(payload["proof_request"]),
             )
         }
-
         resp = present_proof_api.present_proof_send_request_post(**data)
         values = {"pres_exch_id": resp["presentation_exchange_id"]}
 
-        VerifierPresentation.update_by_id(
-            self._get_id_from_payload(payload), values=values
-        )
+        await VerifierPresentation.update_by_id(verifier_presentation_id, values=values)
 
     @classmethod
     async def assign(

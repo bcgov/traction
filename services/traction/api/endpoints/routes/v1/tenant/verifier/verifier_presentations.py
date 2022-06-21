@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Request
 from starlette import status
 
 from api.services.v1 import verifier_service
@@ -69,11 +69,11 @@ async def list_verifier_presentations(
 async def new_verifier_presentation(
     payload: CreatePresentationRequestPayload,
 ) -> GetVerifierPresentationResponse:
-    """The Aries protocol for presenting proof to another agent, this endpoint only supports the aries
-    protocol found here https://github.com/hyperledger/aries-rfcs/tree/main/features/0037-present-proof."""
+    """The Aries protocol for presenting proof to another agent, this endpoint only
+    supports the aries protocol found here
+    https://github.com/hyperledger/aries-rfcs/tree/main/features/0037-present-proof."""
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
-
 
     # logger.warn(payload)
     item = await verifier_service.make_verifier_presentation(
