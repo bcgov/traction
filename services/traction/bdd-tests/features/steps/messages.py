@@ -151,20 +151,12 @@ def step_impl(context, tenant: str, contact_alias: str):
     assert resp_json["item"]["status"] == "Deleted"
 
 
-@step('"{tenant}" sets configuration auto_respond_messages to "{flag:bool}"')
-def step_impl(context, tenant: str, flag: bool):
-    payload = {"auto_respond_messages": flag}
+@step('"{tenant}" sets configuration "{configuration_name}" to "{flag:bool}"')
+def step_impl(context, tenant: str, configuration_name: str, flag: bool):
+    payload = {configuration_name: flag}
     response = tenant_update_configuration(context, tenant, payload)
     resp_json = json.loads(response.content)
-    assert resp_json["item"]["auto_respond_messages"] == flag
-
-
-@step('"{tenant}" sets configuration store_messages to "{flag:bool}"')
-def step_impl(context, tenant: str, flag: bool):
-    payload = {"store_messages": flag}
-    response = tenant_update_configuration(context, tenant, payload)
-    resp_json = json.loads(response.content)
-    assert resp_json["item"]["store_messages"] == flag
+    assert resp_json["item"][configuration_name] == flag
 
 
 @step('"{tenant}" messages as "{role}" have no content')

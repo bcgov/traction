@@ -40,3 +40,7 @@ class NotAnIssuerError(BaseError):
 
 class IncorrectStatusError(BaseError):
     pass
+
+
+class StoragePermissionsError(BaseError):
+    pass

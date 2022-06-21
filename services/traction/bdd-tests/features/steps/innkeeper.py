@@ -55,9 +55,9 @@ def step_impl(context, tenant: str):
     assert not json.loads(response.content)["is_active"]
 
 
-@step('innkeeper sets permissions store_messages to "{flag:bool}" for "{tenant}"')
-def step_impl(context, tenant: str, flag: bool):
-    payload = {"store_messages": flag}
+@step('innkeeper sets permissions "{permission_name}" to "{flag:bool}" for "{tenant}"')
+def step_impl(context, tenant: str, permission_name: str, flag: bool):
+    payload = {permission_name: flag}
     response = innkeeper_update_permissions(context, tenant, payload)
     resp_json = json.loads(response.content)
-    assert resp_json["item"]["store_messages"] == flag
+    assert resp_json["item"][permission_name] == flag
