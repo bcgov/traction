@@ -1,4 +1,3 @@
-from enum import Enum
 import logging
 from abc import ABC, abstractmethod
 
@@ -112,6 +111,9 @@ class PresentProofProtocol(ABC):
 
 
 class DefaultPresentProofProtocol(PresentProofProtocol):
+    def __init__(self):
+        super().__init__()
+
     def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
         pass
 

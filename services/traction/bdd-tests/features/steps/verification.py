@@ -42,8 +42,8 @@ def step_impl(context, verifier: str, schema_name: str, prover: str):
     assert resp_json["item"]["status"] == "pending"
 
 
-@step('"{verifier}" has a completed verifier presentation')
-def step_impl(context, verifier: str):
+@step('"{verifier}" has a "{status_code}" verifier presentation')
+def step_impl(context, verifier: str, status_code: str):
 
     response = requests.get(
         context.config.userdata.get("traction_host")
@@ -53,6 +53,4 @@ def step_impl(context, verifier: str):
 
     assert response.status_code == status.HTTP_200_OK, response.__dict__
     resp_json = json.loads(response.content)
-    assert resp_json["items"][0]["status"] == "presentation_received", resp_json[
-        "items"
-    ]
+    assert resp_json["items"][0]["status"] == status_code, resp_json["items"]

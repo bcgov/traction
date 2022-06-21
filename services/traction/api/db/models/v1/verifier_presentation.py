@@ -7,7 +7,7 @@ import uuid
 from typing import List, Optional
 from sqlalchemy.orm import selectinload
 from sqlmodel import Field, Relationship, desc
-from sqlalchemy import Column, null, text, String, select
+from sqlalchemy import Column, text, String, select
 from sqlalchemy.dialects.postgresql import UUID, JSON, ARRAY
 from sqlmodel.ext.asyncio.session import AsyncSession
 
