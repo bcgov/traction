@@ -1,5 +1,4 @@
 import logging
-from pprint import pp
 from uuid import UUID
 from typing import List
 from starlette import status
@@ -44,15 +43,17 @@ def verifier_presentation_to_item(
     Returns: The Traction VerifierPresentationItem
 
     """
-    acapy_item = None
+    acapy_item = None  # noqa: F841
     if acapy:
         logger.warning(
-            """NOT IMPLEMENTED: verifier_presentation_to_item was 
-            passed acapy=True, but currently does not work"""
+            """NOT IMPLEMENTED: verifier_presentation_to_item was
+             passed acapy=True, but currently does not work"""
         )
         # query aacapy for more details to put in payload
-        acapy_item = present_proof_api.present_proof_records_pres_ex_id_get(
-            pres_ex_id=str(db_item.pres_exch_id)
+        acapy_item = (  # noqa: F841
+            present_proof_api.present_proof_records_pres_ex_id_get(
+                pres_ex_id=str(db_item.pres_exch_id)
+            )
         )
         # TODO: loading this response into the VerifierPresentationItem.acapy
         # (of type acapy_client...V10PresentationExchange) doesn't work.
