@@ -62,7 +62,7 @@ class MessageItem(AcapyItem[MessageStatusType, MessageStateType, MessageAcapy]):
 
     message_id: UUID
     contact: MessageContact
-    content: str
+    content: str | None = None
     role: MessageRole
 
 

@@ -41,7 +41,7 @@ async def update_tenant_permissions(
             detail=f"Tenant ID in payload <{payload.tenant_id}> does not match Tenant ID requested <{tenant_id}>",  # noqa: E501
         )
 
-    payload_dict = payload.dict()
+    payload_dict = payload.dict(exclude_unset=True)
     # payload isn't the same as the db... move fields around
     del payload_dict["tenant_id"]
     # update it...

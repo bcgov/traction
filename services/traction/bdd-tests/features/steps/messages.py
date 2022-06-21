@@ -4,7 +4,7 @@ from starlette import status
 from v1_api import *
 
 
-@when('"{tenant}" sends "{contact_alias}" a message with content "{content}"')
+@step('"{tenant}" sends "{contact_alias}" a message with content "{content}"')
 def step_impl(context, tenant: str, contact_alias: str, content: str):
     # find recipient, get contact id
     contact = context.config.userdata[tenant]["connections"][contact_alias]
@@ -20,6 +20,7 @@ def step_impl(context, tenant: str, contact_alias: str, content: str):
     context.config.userdata[tenant]["messages"].setdefault(
         contact_alias, resp_json["item"]
     )
+
 
 @then(
     '"{tenant}" can find {count:d} message(s) as "{role}" with "{contact_alias}" and tags "{tags}"'
@@ -150,11 +151,31 @@ def step_impl(context, tenant: str, contact_alias: str):
     assert resp_json["item"]["status"] == "Deleted"
 
 
-@when('"{tenant}" sets configuration auto_respond_messages to "{flag:bool}"')
-def step_impl(context, tenant: str, flag: bool):
-    payload = {
-        "auto_respond_messages": flag
-    }
+@step('"{tenant}" sets configuration "{configuration_name}" to "{flag:bool}"')
+def step_impl(context, tenant: str, configuration_name: str, flag: bool):
+    payload = {configuration_name: flag}
     response = tenant_update_configuration(context, tenant, payload)
     resp_json = json.loads(response.content)
-    assert resp_json["item"]["auto_respond_messages"] == flag
+    assert resp_json["item"][configuration_name] == flag
+
+
+@step('"{tenant}" messages as "{role}" have no content')
+def step_impl(context, tenant: str, role: str):
+    params = {"role": role}
+    response = list_messages(context, tenant, params)
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    assert resp_json["items"], resp_json
+    for item in resp_json["items"]:
+        assert item["content"] is None, item["content"]
+
+
+@step('"{tenant}" messages as "{role}" will have content')
+def step_impl(context, tenant: str, role: str):
+    params = {"role": role}
+    response = list_messages(context, tenant, params)
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    assert resp_json["items"], resp_json
+    for item in resp_json["items"]:
+        assert item["content"] is not None, item["content"]
