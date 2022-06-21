@@ -74,9 +74,10 @@ async def new_verifier_presentation(
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 
+
     # logger.warn(payload)
     item = await verifier_service.make_verifier_presentation(
-        tenant_id, wallet_id, payload.protocol, payload
+        tenant_id, wallet_id, PresentCredentialProtocolType.v10, payload
     )
     task_payload = {
         "verifier_presentation_id": item.verifier_presentation_id,

@@ -101,6 +101,47 @@ class VerifierPresentation(StatefulModel, TimestampModel, table=True):
         return db_rec
 
     @classmethod
+    async def get_by_pres_exch_id(
+        cls: "VerifierPresentation",
+        db: AsyncSession,
+        tenant_id: uuid.UUID,
+        pres_exch_id: uuid.UUID,
+        deleted: bool | None = False,
+    ) -> "VerifierPresentation":
+        """Get VerifierPresentation by id.
+
+        Find and return the database CredentialDefinition record
+
+        Args:
+          db: database session
+          tenant_id: Traction ID of tenant making the call
+          pres_exch_id: Traction ID of VerifierPresentation
+
+        Returns: The Traction VerifierPresentation (db) record
+
+        Raises:
+          NotFoundError: if the VerifierPresentation cannot be
+          found by ID and deleted flag
+        """
+
+        q = (
+            select(cls)
+            .where(cls.tenant_id == tenant_id)
+            .where(cls.pres_exch_id == pres_exch_id)
+            .where(cls.deleted == deleted)
+            .options(selectinload(cls.contact))
+        )
+        q_result = await db.execute(q)
+        db_rec = q_result.scalar_one_or_none()
+        if not db_rec:
+            raise NotFoundError(
+                code="verifier_presentation.id_not_found",
+                title="Verification Request does not exist",
+                detail=f"Verification Request does not exist for pres_exch_id<{pres_exch_id}>",  # noqa: E501
+            )
+        return db_rec
+
+    @classmethod
     async def list_by_tenant_id(
         cls: "VerifierPresentation",
         db: AsyncSession,

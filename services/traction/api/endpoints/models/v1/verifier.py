@@ -19,6 +19,7 @@ from api.endpoints.models.v1.base import (
     ListAcapyItemParameters,
 )
 from api.endpoints.models.credentials import ProofRequest
+from api.endpoints.models.credentials import PresentCredentialProtocolType
 
 # Enums
 class VerifierPresentationStatusType(str, Enum):
@@ -27,21 +28,21 @@ class VerifierPresentationStatusType(str, Enum):
     ACTIVE = "active"  # happy state waiting for next event
     RECEIVED = "received"  # Verification has been received but not verified
     VERIFIED = "verified"  # Verified and proven to be correct
-    ERROR = "error"
+    ERROR = "Error"  # why is this capitalized?
 
 
 class AcapyPresentProofStateType(str, Enum):
     PENDING = "pending"  # added for traction event queue
     # from https://github.com/hyperledger/aries-cloudagent-python/blob/4240fa9b192ea4cdb4026211ea4bec694aec5506/aries_cloudagent/protocols/present_proof/v1_0/models/presentation_exchange.py#L49 #E501
-    STATE_PROPOSAL_SENT = "proposal_sent"
-    STATE_PROPOSAL_RECEIVED = "proposal_received"
-    STATE_REQUEST_SENT = "request_sent"
-    STATE_REQUEST_RECEIVED = "request_received"
-    STATE_PRESENTATION_SENT = "presentation_sent"
-    STATE_PRESENTATION_RECEIVED = "presentation_received"
-    STATE_VERIFIED = "verified"
-    STATE_PRESENTATION_ACKED = "presentation_acked"
-    STATE_ABANDONED = "abandoned"
+    PROPOSAL_SENT = "proposal_sent"
+    PROPOSAL_RECEIVED = "proposal_received"
+    REQUEST_SENT = "request_sent"
+    REQUEST_RECEIVED = "request_received"
+    PRESENTATION_SENT = "presentation_sent"
+    PRESENTATION_RECEIVED = "presentation_received"
+    VERIFIED = "verified"
+    PRESENTATION_ACKED = "presentation_acked"
+    ABANDONED = "abandoned"
 
 
 # Request Payloads

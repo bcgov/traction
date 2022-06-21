@@ -84,7 +84,7 @@ class SendPresentProofTask(Task):
         values = {"pres_exch_id": resp["presentation_exchange_id"]}
 
         VerifierPresentation.update_by_id(
-            self._get_id_from_payload(self, payload), values=values
+            self._get_id_from_payload(payload), values=values
         )
 
     @classmethod

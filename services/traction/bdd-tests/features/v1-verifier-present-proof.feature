@@ -22,14 +22,23 @@ Feature: verification of ARIES presentations
         Then "faber" will have a credential
         And "alice" will have an "Issued" issuer credential
 
-    Scenario: alice can make present-proof request
-        When "alice" requests proof of keys in schema "useless-schema" from "faber"
-        And we sadly wait for 10 seconds because we have not figured out how to listen for events
-        Then "faber" will have a present-proof request for "useless-schema"
+    # Scenario: alice can make present-proof request
+    #     When "alice" requests proof of keys in schema "useless-schema" from "faber"
+    #     And we sadly wait for 10 seconds because we have not figured out how to listen for events
+    #     Then "faber" will have a present-proof request for "useless-schema"
 
 
-    Scenario: faber can respond to a present_proof request
+    # Scenario: faber can respond to a present_proof request
+    #     When "alice" requests proof of keys in schema "useless-schema" from "faber"
+    #     And we sadly wait for 10 seconds because we have not figured out how to listen for events
+    #     And "faber" will have a present-proof request for "useless-schema"
+    #     And "faber" will have credentials to satisfy the present-proof request for "useless-schema"
+
+    Scenario: faber can present_proof to a present_proof request
         When "alice" requests proof of keys in schema "useless-schema" from "faber"
         And we sadly wait for 10 seconds because we have not figured out how to listen for events
         And "faber" will have a present-proof request for "useless-schema"
-        And "faber" will have credentials to satisfy the present-proof request for "useless-schema"
+        And "faber" loads credentials
+        Then "faber" sends the presentation in response to the request for "useless-schema"
+        And we sadly wait for 10 seconds because we have not figured out how to listen for events
+        And "alice" has a completed verifier presentation 

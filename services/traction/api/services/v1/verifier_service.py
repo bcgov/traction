@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 
 def verifier_presentation_to_item(
-    db_item: VerifierPresentation,
+    db_item: VerifierPresentation, acapy: bool = False
 ) -> VerifierPresentationItem:
     """VerifierPresentation to VerifierPresentationItem.
 
@@ -38,7 +38,7 @@ def verifier_presentation_to_item(
     Returns: The Traction VerifierPresentationItem
 
     """
-
+    print(db_item)
     item = VerifierPresentationItem(
         **db_item.dict(),
     )
@@ -97,7 +97,7 @@ async def list_presentation_requests(
     # handle simple filters
     # TODO: move this logic to central location
     for param, v in parameters.dict(exclude_none=True).items():
-        logger.warning("filter parameter found: " + param)
+        logger.debug("filter parameter found: " + param)
         if param not in [
             "url",
             "page_num",

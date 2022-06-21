@@ -1,4 +1,5 @@
 import json, requests
+from pprint import pp
 from behave import *
 from starlette import status
 
@@ -31,7 +32,7 @@ def step_impl(context, verifier: str, schema_name: str, prover: str):
     }
     response = requests.post(
         context.config.userdata.get("traction_host")
-        + "/tenant/v1/verifier/presentation_requests/",
+        + "/tenant/v1/verifier/presentations/adhoc-request",
         json=body,
         headers=context.config.userdata[verifier]["auth_headers"],
     )
@@ -39,3 +40,19 @@ def step_impl(context, verifier: str, schema_name: str, prover: str):
     assert response.status_code == status.HTTP_200_OK, response.__dict__
     resp_json = json.loads(response.content)
     assert resp_json["item"]["status"] == "pending"
+
+
+@step('"{verifier}" has a completed verifier presentation')
+def step_impl(context, verifier: str):
+
+    response = requests.get(
+        context.config.userdata.get("traction_host")
+        + "/tenant/v1/verifier/presentations/",
+        headers=context.config.userdata[verifier]["auth_headers"],
+    )
+
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    assert resp_json["items"][0]["status"] == "presentation_received", resp_json[
+        "items"
+    ]

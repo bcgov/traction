@@ -97,6 +97,44 @@ def step_impl(context, prover: str, schema_name: str):
     assert len(resp_json) == 1, resp_json
 
 
-@step('"{prover}" sends the presentation for the proof from "{verifier}"')
-def step_impl(context, prover: str, verifier: str):
-    raise NotImplemented("Will build when updated to V1")
+@step(
+    '"{prover}" sends the presentation in response to the request for "{schema_name}"'
+)
+def step_impl(context, prover: str, schema_name: str):
+
+    pres = context.config.userdata[prover]["presentation_requests"][0]["presentation"]
+    cred_id = context.config.userdata[prover]["credentials"][schema_name]["referent"]
+
+    # hard code attr_0,
+    body = {
+        "requested_attributes": {"attr_0": {"cred_id": cred_id, "revealed": True}},
+        "requested_predicates": {},
+        "self_attested_attributes": {},
+    }
+
+    response = requests.post(
+        context.config.userdata.get("traction_host")
+        + "/tenant/v0/credentials/holder/present-credential?pres_req_id="
+        + context.config.userdata[prover]["presentation_requests"][0]["presentation"][
+            "id"
+        ],
+        json=body,
+        headers=context.config.userdata[prover]["auth_headers"],
+    )
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+
+
+@step('"{holder}" loads credentials')
+def step_impl(context, holder: str):
+
+    response = requests.get(
+        context.config.userdata.get("traction_host") + "/tenant/v0/credentials/holder",
+        headers=context.config.userdata[holder]["auth_headers"],
+    )
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+
+    creds = {c["schema_id"].split(":")[2]: c for c in resp_json}
+
+    context.config.userdata[holder].setdefault("credentials", creds)
+    pprint.pp(context.config.userdata[holder]["credentials"])
