@@ -9,8 +9,15 @@ from api.db.repositories.tenants import TenantsRepository
 from api.db.session import async_session
 from api.endpoints.models.tenant_workflow import TenantWorkflowTypeType
 from api.endpoints.models.v1.admin import PublicDIDStateType
-from api.endpoints.models.v1.errors import IncorrectStatusError, NotAnIssuerError
-from api.endpoints.models.v1.tenant import TenantItem, IssuerStatus, PublicDIDStatus
+from api.endpoints.models.v1.errors import (
+    IncorrectStatusError,
+    NotAnIssuerError,
+)
+from api.endpoints.models.v1.tenant import (
+    TenantItem,
+    IssuerStatus,
+    PublicDIDStatus,
+)
 from api.services.tenant_workflows import create_workflow
 
 logger = logging.getLogger(__name__)

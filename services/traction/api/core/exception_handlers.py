@@ -15,6 +15,7 @@ from api.endpoints.models.v1.errors import (
     IdNotMatchError,
     NotAnIssuerError,
     IncorrectStatusError,
+    StoragePermissionsError,
 )
 
 
@@ -126,6 +127,23 @@ def add_exception_handlers(_app: FastAPI):
     @_app.exception_handler(IncorrectStatusError)
     async def incorrect_status_exception_handler(
         request: Request, exc: IncorrectStatusError
+    ):
+        status_code = status.HTTP_409_CONFLICT
+        return JSONResponse(
+            status_code=status_code,
+            content={
+                "request_id": context.data[HeaderKeys.request_id],
+                "status": status_code,
+                "code": exc.code,
+                "title": exc.title,
+                "detail": exc.detail,
+                "links": exc.links,
+            },
+        )
+
+    @_app.exception_handler(StoragePermissionsError)
+    async def storage_permissions_exception_handler(
+        request: Request, exc: StoragePermissionsError
     ):
         status_code = status.HTTP_409_CONFLICT
         return JSONResponse(

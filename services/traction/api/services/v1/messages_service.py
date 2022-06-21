@@ -32,6 +32,8 @@ from api.endpoints.models.v1.messages import (
 from sqlalchemy import select, func, desc, update
 from sqlalchemy.orm import selectinload
 
+from api.services.v1 import tenant_configuration_service as config_service
+
 basicmessage_api = BasicmessageApi(api_client=get_api_client())
 
 logger = logging.getLogger(__name__)
@@ -83,6 +85,10 @@ async def send_message(
     basicmessage_api.connections_conn_id_send_message_post(
         str(db_contact.connection_id), body=body
     )
+    #
+    # check if we are allowed and have decided to store the message data in traction
+    #
+    content = await config_service.stored_message_content(tenant_id, payload.content)
     async with async_session() as db:
         db_item = Message(
             tenant_id=tenant_id,
@@ -91,7 +97,7 @@ async def send_message(
             state=MessageStateType.sent,
             role=MessageRole.sender,
             tags=payload.tags,
-            content=payload.content,
+            content=content,
         )
         db.add(db_item)
         await db.commit()
