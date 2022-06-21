@@ -58,5 +58,4 @@ def step_impl(context, verifier: str, status_code: str):
 
     assert response.status_code == status.HTTP_200_OK, response.__dict__
     resp_json = json.loads(response.content)
-    assert False
     assert resp_json["items"][0]["status"] == status_code, resp_json["items"]
