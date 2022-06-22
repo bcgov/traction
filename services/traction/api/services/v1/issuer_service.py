@@ -159,7 +159,7 @@ async def list_issuer_credentials(
     )
 
     results_q_recs = await db.execute(results_q)
-    db_items = results_q_recs.scalars()
+    db_items = results_q_recs.scalars().all()
 
     items = []
     for db_item in db_items:

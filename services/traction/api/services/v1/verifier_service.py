@@ -146,7 +146,6 @@ async def list_presentation_requests(
     count_q = select([func.count()]).select_from(base_q)
 
     async with async_session() as db:
-
         count_q_rec = await db.execute(count_q)
         total_count = count_q_rec.scalar()
 
@@ -161,7 +160,7 @@ async def list_presentation_requests(
         )
 
         results_q_recs = await db.execute(results_q)
-        db_verifier_presentations = results_q_recs.scalars()
+        db_verifier_presentations = results_q_recs.scalars().all()
 
     items = []
     for db_verifier_presentation in db_verifier_presentations:
