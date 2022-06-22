@@ -259,7 +259,7 @@ async def list_contacts(
     results_q = base_q.limit(limit).offset(skip).order_by(desc(Contact.updated_at))
 
     results_q_recs = await db.execute(results_q)
-    db_contacts = results_q_recs.scalars()
+    db_contacts = results_q_recs.scalars().all()
 
     items = []
     for db_contact in db_contacts:
