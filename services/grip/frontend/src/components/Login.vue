@@ -66,12 +66,22 @@ const clear = () => {
   <div class="login">
     <div>
       <span class="p-float-label">
-        <InputText type="text" v-model="key" />
+        <InputText
+          type="text"
+          v-model="key"
+          autocomplete="username"
+          name="username"
+          autofocus
+        />
         <label for="key">Wallet ID</label>
       </span>
 
       <span class="p-float-label">
-        <InputText type="text" v-model="secret" />
+        <InputText
+          type="password"
+          autocomplete="current-password"
+          v-model="secret"
+          name="password"        />
         <label for="secret">Wallet Key</label>
       </span>
     </div>
