@@ -34,7 +34,7 @@ def step_impl(context, tenant: str):
     assert response.status_code == status.HTTP_200_OK, response.__dict__
 
 
-@when('"{issuer}" issues "{holder}" a "{schema_name}" credential')
+@step('"{issuer}" issues "{holder}" a "{schema_name}" credential')
 def step_impl(context, issuer: str, holder: str, schema_name: str):
 
     schema_template = context.config.userdata[issuer][schema_name]["schema_template"]
@@ -65,7 +65,7 @@ def step_impl(context, issuer: str, holder: str, schema_name: str):
     assert response.status_code == status.HTTP_200_OK, response.__dict__
 
 
-@then('"{issuer}" will have an "{cred_status}" issuer credential')
+@step('"{issuer}" will have an "{cred_status}" issuer credential')
 def step_impl(context, issuer, cred_status: str):
     response = requests.get(
         context.config.userdata.get("traction_host")
@@ -79,7 +79,7 @@ def step_impl(context, issuer, cred_status: str):
     context.config.userdata[issuer]["issuer_credential"] = resp_json["items"][0]
 
 
-@when('"{issuer}" revokes credential from "{holder}"')
+@step('"{issuer}" revokes credential from "{holder}"')
 def step_impl(context, issuer, holder):
     issuer_credential = context.config.userdata[issuer]["issuer_credential"]
     issuer_credential_id = issuer_credential["issuer_credential_id"]

@@ -44,6 +44,7 @@ class TractionTaskType(str, Enum):
     send_schema_request = "send_schema_request"
     send_cred_def_request = "send_cred_def_request"
     send_credential_offer = "send_credential_offer"
+    send_present_proof_req = "send_present_proof_req"
 
 
 TRACTION_TASK_PREFIX = "traction::TASK::"
@@ -59,6 +60,10 @@ TRACTION_SEND_CRED_DEF_REQUEST_LISTENER_PATTERN = re.compile(
 
 TRACTION_SEND_CREDENTIAL_OFFER_LISTENER_PATTERN = re.compile(
     f"^{TRACTION_TASK_PREFIX}{TractionTaskType.send_credential_offer}(.*)?$"
+)
+
+TRACTION_SEND_PRESENT_PROOF_REQ_PATTERN = re.compile(
+    f"^{TRACTION_TASK_PREFIX}{TractionTaskType.send_present_proof_req}(.*)?$"
 )
 
 
@@ -91,6 +96,8 @@ class Task(ABC):
     Although the event profile contains a db session object, do NOT use this. Open a
     session in _perform_task if/when needed.
 
+    Implementing classes will need to be referenced by a task_listener, found in tasks/
+    __init__.py for the default
     """
 
     def __init__(self):

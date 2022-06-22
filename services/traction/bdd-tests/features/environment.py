@@ -1,5 +1,3 @@
-from pprint import PrettyPrinter, pprint
-
 from behave import register_type
 
 from steps.setup import _hard_delete_tenant
