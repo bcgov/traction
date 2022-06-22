@@ -100,8 +100,6 @@ async def create_invitation(
         connection_id=connection.connection_id,
         connection_alias=connection.alias,
         invitation_key=connection.invitation_key,
-        invitation=invitation,
-        connection=connection,
     )
     db.add(db_contact)
     await db.commit()
@@ -189,8 +187,6 @@ async def receive_invitation(
         connection_id=connection.connection_id,
         connection_alias=connection.alias,
         invitation_key=connection.invitation_key,
-        invitation=invitation,
-        connection=connection,
         public_did=payload.their_public_did,
     )
     db.add(db_contact)

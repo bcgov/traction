@@ -9,7 +9,7 @@ from typing import List
 
 from sqlmodel import Field, Relationship
 from sqlalchemy import Column, text, String, select
-from sqlalchemy.dialects.postgresql import UUID, JSON, ARRAY
+from sqlalchemy.dialects.postgresql import UUID, ARRAY
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from api.db.models.base import StatefulModel, TimestampModel
@@ -44,8 +44,6 @@ class Contact(StatefulModel, TimestampModel, table=True):
       connection_alias: Underlying AcaPy connection alias (found in connection)
       invitation_key: Underlying AcaPy connection invitation_key (found in invitation)
       state: The underlying AcaPy connection state
-      connection: Underlying AcaPy connection record
-      invitation: Underlying AcaPy invitation record (if any)
       created_at: Timestamp when record was created in Traction
       updated_at: Timestamp when record was last modified in Traction
     """
@@ -74,8 +72,6 @@ class Contact(StatefulModel, TimestampModel, table=True):
     invitation_key: str = Field(nullable=False)
     public_did: str = Field(nullable=True)
     role: str = Field(nullable=False, index=True)
-    connection: dict = Field(default={}, sa_column=Column(JSON))
-    invitation: dict = Field(default={}, sa_column=Column(JSON))
     # --- acapy data
 
     # relationships ---
