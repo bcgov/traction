@@ -72,7 +72,12 @@ class SendPresentProofTask(Task):
         data = {
             "body": V10PresentationSendRequestRequest(
                 connection_id=str(contact.connection_id),
-                proof_request=convert_to_IndyProofRequest(payload["proof_request"]),
+                proof_request=convert_to_IndyProofRequest(
+                    name=vpr.name,
+                    version=vpr.version,
+                    proof_request=payload["proof_request"],
+                ),
+                comment=vpr.comment,
             )
         }
         resp = present_proof_api.present_proof_send_request_post(**data)
@@ -90,9 +95,7 @@ class SendPresentProofTask(Task):
         get_logger(cls).info("> _assign()")
         get_logger(cls).debug(f"tenant_id = {tenant_id}")
         get_logger(cls).debug(f"wallet_id = {wallet_id}")
-        get_logger(cls).debug(
-            f"contact_id = {payload['contact_id']}, payload = {payload['proof_request']}"  # noqa: E501
-        )
+        get_logger(cls).debug(f"payload = {payload}")
 
         # weak validation of payload
         required_payload_keys = [
@@ -111,7 +114,7 @@ class SendPresentProofTask(Task):
         pass
 
 
-def convert_to_IndyProofRequest(proof_request: ProofRequest):
+def convert_to_IndyProofRequest(name: str, version: str, proof_request: ProofRequest):
     logger.warning(proof_request)
 
     conv_request_preds = {
@@ -124,8 +127,8 @@ def convert_to_IndyProofRequest(proof_request: ProofRequest):
     openapi_proof_request = IndyProofRequest(
         requested_attributes=conv_request_attrs,
         requested_predicates=conv_request_preds,
-        name="TBD, will be passed later",
-        version="1.0.0",
+        name=name,
+        version=version,
         non_revoked={},
     )
 

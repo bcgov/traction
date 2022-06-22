@@ -1,5 +1,7 @@
-from .verifier_present_proof_v10 import VerifierPresentProofV10Protocol
+from .verifier_presentation_request_status_updater import (
+    VerifierPresentationRequestStatusUpdater,
+)
 
 
 def subscribe_present_proof_protocol_listeners():
-    VerifierPresentProofV10Protocol()
+    VerifierPresentationRequestStatusUpdater()

@@ -11,6 +11,10 @@ def step_impl(context, verifier: str, schema_name: str, prover: str):
         "contact_id": context.config.userdata[verifier]["connections"][prover][
             "contact_id"
         ],
+        "name": schema_name,
+        "version": "1.0.0",
+        "comment": "asking for BDD test",
+        "external_reference_id": "bdd-test-1",
         "proof_request": {
             "requested_attributes": [
                 {

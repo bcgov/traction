@@ -25,7 +25,6 @@ from api.endpoints.models.credentials import ProofRequest
 class VerifierPresentationStatusType(str, Enum):
     PENDING = "pending"  # in event queue
     STARTING = "starting"  # being processed in event queue
-    ACTIVE = "active"  # happy state waiting for next event
     RECEIVED = "received"  # Verification has been received but not verified
     VERIFIED = "verified"  # Verified and proven to be correct
     ERROR = "Error"  # why is this capitalized?
@@ -50,17 +49,22 @@ class CreatePresentationRequestPayload(BaseModel):
     contact_id: Optional[UUID]
     connection_id: Optional[UUID]
     proof_request: ProofRequest
+    name: str
+    version: str | None = "1.0.0"
+    external_reference_id: str | None = None
+    comment: str | None = None
+    tags: Optional[List[str]] | None = []
 
 
 class VerifierPresentationListParameters(
     ListAcapyItemParameters[VerifierPresentationStatusType, AcapyPresentProofStateType]
 ):
     contact_id: Optional[UUID]
-    comment: Optional[str]
-    tags: Optional[List[str]]
-    external_reference_id: Optional[str]
     name: Optional[str]
     version: Optional[str]  # eg. '1.0.0'
+    external_reference_id: Optional[str]
+    comment: Optional[str]
+    tags: Optional[List[str]]
 
 
 # Response Models
@@ -80,6 +84,10 @@ class VerifierPresentationItem(
     verifier_presentation_id: UUID
     contact_id: UUID
     proof_request: ProofRequest
+    name: str
+    version: str
+    comment: Optional[str]
+    external_reference_id: Optional[str]
 
 
 class VerifierPresentationListResponse(ListResponse[VerifierPresentationItem]):

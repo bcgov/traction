@@ -8,7 +8,7 @@ from api.endpoints.models.v1.verifier import AcapyPresentProofStateType
 from api.endpoints.models.webhooks import WEBHOOK_PRESENT_LISTENER_PATTERN
 
 
-class PresentProofProtocol(ABC):
+class PresentationRequestProtocol(ABC):
     def __init__(self):
         settings.EVENT_BUS.subscribe(WEBHOOK_PRESENT_LISTENER_PATTERN, self.notify)
         self._logger = logging.getLogger(type(self).__name__)
@@ -110,7 +110,7 @@ class PresentProofProtocol(ABC):
         pass
 
 
-class DefaultPresentProofProtocol(PresentProofProtocol):
+class DefaultPresentationRequestProtocol(PresentationRequestProtocol):
     def __init__(self):
         super().__init__()
 

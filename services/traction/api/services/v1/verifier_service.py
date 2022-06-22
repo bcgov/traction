@@ -93,6 +93,11 @@ async def make_verifier_presentation(
         state=AcapyPresentProofStateType.PENDING,
         protocol=protocol,
         proof_request=payload.proof_request.dict(),
+        name=payload.name,
+        version=payload.version,
+        external_reference_id=payload.external_reference_id,
+        comment=payload.comment,
+        tags=payload.tags,
     )
 
     async with async_session() as db:
@@ -125,12 +130,21 @@ async def list_presentation_requests(
             "acapy",
             "tenant_id",
             "tags",
+            "comment",
+            "name",
         ]:  # special cases
             filters.append(getattr(VerifierPresentation, param) == v)
+
+    if parameters.name:
+        filters.append(VerifierPresentation.name.contains(parameters.name))
+
+    if parameters.comment:
+        filters.append(VerifierPresentation.comment.contains(parameters.comment))
 
     if parameters.tags:
         _filter_tags = [x.strip() for x in parameters.tags.split(",")]
         filters.append(VerifierPresentation.tags.comparator.contains(_filter_tags))
+
     # build out a base query with all filters
     base_q = select(VerifierPresentation).filter(*filters)
 

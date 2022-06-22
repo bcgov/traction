@@ -5,13 +5,13 @@ from api.endpoints.models.v1.verifier import (
     AcapyPresentProofStateType,
 )
 
-from .present_proof_protocol import DefaultPresentProofProtocol
+from .presentation_request_protocol import DefaultPresentationRequestProtocol
 
 from api.core.profile import Profile
 from api.db.models.v1.verifier_presentation import VerifierPresentation
 
 
-class VerifierPresentProofV10Protocol(DefaultPresentProofProtocol):
+class VerifierPresentationRequestStatusUpdater(DefaultPresentationRequestProtocol):
     def __init__(self):
         super().__init__()
 
@@ -49,7 +49,6 @@ class VerifierPresentProofV10Protocol(DefaultPresentProofProtocol):
         values = {"state": payload["state"]}
 
         # what states should be marked as what status?
-        active_states = [AcapyPresentProofStateType.PRESENTATION_ACKED]
         verified_states = [AcapyPresentProofStateType.VERIFIED]
         received_states = [
             AcapyPresentProofStateType.PROPOSAL_RECEIVED,
@@ -57,9 +56,6 @@ class VerifierPresentProofV10Protocol(DefaultPresentProofProtocol):
         ]
 
         # what to do about abandoned?
-
-        if payload["state"] in active_states:
-            values["status"] = VerifierPresentationStatusType.ACTIVE
 
         if payload["state"] in verified_states:
             values["status"] = VerifierPresentationStatusType.VERIFIED
