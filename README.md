@@ -67,3 +67,15 @@ Source code for the traction showcase demo:
 Source code for Endorser controller application.
 
 [Endorser](./services/endorser/README.md)
+
+## Repository workflow
+Currently authorized users can create a branch and run a pull request to merge in changes. Unauthorized can always create a fork.
+
+### Rebasing of a branch
+```bash
+git fetch --all
+git pull
+
+git rebase origin/develop
+git push --force
+```
