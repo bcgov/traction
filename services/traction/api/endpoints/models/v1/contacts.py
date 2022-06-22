@@ -42,11 +42,9 @@ class ContactAcapy(BaseModel):
 
     Attributes:
       connection: AcaPy connection record
-      invitation: AcaPy invitation record (varies depending on invitation method)
     """
 
     connection: dict = {}
-    invitation: dict = {}
 
 
 class ContactPing(BaseModel):

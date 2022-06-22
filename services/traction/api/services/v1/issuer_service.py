@@ -10,7 +10,7 @@ from acapy_client.api.revocation_api import RevocationApi
 from acapy_client.model.revoke_request import RevokeRequest
 from api.db.models import Timeline
 from api.endpoints.models.v1.governance import TemplateStatusType
-from api.services.v1 import tenant_service
+from api.services.v1 import tenant_service, acapy_service
 
 from acapy_client.api.issue_credential_v1_0_api import IssueCredentialV10Api
 from api.db.models.v1.contact import Contact
@@ -80,6 +80,9 @@ def issuer_credential_to_item(
             revoc_reg_id=db_item.revoc_reg_id,
             revocation_id=db_item.revocation_id,
         )
+        if db_item.credential_exchange_id:
+            exch = acapy_service.get_credential_exchange(db_item.credential_exchange_id)
+            item.acapy.credential_exchange = exch
 
     return item
 

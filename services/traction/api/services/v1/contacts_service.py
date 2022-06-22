@@ -36,7 +36,7 @@ from api.endpoints.models.v1.errors import (
     IdNotMatchError,
 )
 from api.services import connections
-from api.services.v1 import invitation_parser
+from api.services.v1 import invitation_parser, acapy_service
 
 logger = logging.getLogger(__name__)
 
@@ -426,9 +426,8 @@ def contact_to_contact_item(
         last_response_at=db_contact.last_response_at,
     )
     if acapy:
-        item.acapy = ContactAcapy(
-            invitation=db_contact.invitation, connection=db_contact.connection
-        )
+        connection = acapy_service.get_connection(db_contact.connection_id)
+        item.acapy = ContactAcapy(connection=connection)
 
     return item
 

@@ -18,6 +18,7 @@ Feature: issuing credentials
         When "alice" issues "faber" a "useless-schema" credential
         And we sadly wait for 10 seconds because we have not figured out how to listen for events
         Then "faber" will have a credential_offer from "alice"
+        And "alice" can get the issuer credential
 
     Scenario: holder will accept an offered credential to an active contact
         When "alice" issues "faber" a "useless-schema" credential
@@ -28,6 +29,7 @@ Feature: issuing credentials
         And we sadly wait for 10 seconds because we have not figured out how to listen for events
         Then "faber" will have a credential
         And "alice" will have an "Issued" issuer credential
+        And "alice" can get the issuer credential
 
     Scenario: issuer will revoke an accepted credential
         Given issuer creates new schema(s) and cred def(s)
@@ -44,6 +46,7 @@ Feature: issuing credentials
         And "alice" will have an "Issued" issuer credential
         When "alice" revokes credential from "faber"
         Then "alice" will have an "Revoked" issuer credential
+        And "alice" can get the issuer credential
 
     Scenario: issuer can import schema
         Given issuer imports schema(s)
