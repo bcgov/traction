@@ -16,13 +16,12 @@ class TenantWebhookMsgBase(BaseModel):
     response: str = Field(nullable=True, default=None)
     # if we re-send, create a new record and increment the sequence no
     sequence: int = Field(nullable=False, default=1)
-    # alembic issue, this should not optional, but this is inherited and side-effects of
-    # changing this is unknown
-    tenant_id: Optional[uuid.UUID] = Field(default=None, foreign_key="tenant.id")
+    tenant_id: uuid.UUID = Field(nullable=False, foreign_key="tenant.id")
 
 
 class TenantWebhookMsg(TenantWebhookMsgBase, BaseTable, table=True):
     # This is the class that represents the table
+    # may be optional in some modelsomes, but not in the db table
     pass
 
 

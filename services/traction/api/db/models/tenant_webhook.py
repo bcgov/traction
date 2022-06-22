@@ -15,20 +15,18 @@ class TenantWebhookConfig(BaseModel):
 class TenantWebhookBase(BaseModel):
     webhook_url: str = Field(nullable=False)
     config: dict = Field(default={}, sa_column=Column(JSON))
+    tenant_id: uuid.UUID = Field(nullable=False, foreign_key="tenant.id")
 
 
 class TenantWebhook(TenantWebhookBase, BaseTable, table=True):
     # This is the class that represents the table
     webhook_key: str = Field(nullable=True)
-    # alembic issue, this should not optional, but this is inherited and side-effects of
-    # changing this is unknown
-    tenant_id: Optional[uuid.UUID] = Field(default=None, foreign_key="tenant.id")
 
 
 class TenantWebhookCreate(TenantWebhookBase):
     webhook_key: Optional[str] = None
     config: Optional[TenantWebhookConfig] = None
-    tenant_id: Optional[uuid.UUID] = None
+    tenant_id: uuid.UUID
 
 
 class TenantWebhookRead(TenantWebhookBase):
