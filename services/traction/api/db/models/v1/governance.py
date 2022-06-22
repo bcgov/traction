@@ -225,7 +225,7 @@ class SchemaTemplate(StatefulModel, TimestampModel, table=True):
 
         q = select(cls).where(cls.tenant_id == tenant_id).order_by(desc(cls.updated_at))
         q_result = await db.execute(q)
-        db_recs = q_result.scalars()
+        db_recs = q_result.scalars().all()
         return db_recs
 
 
@@ -472,7 +472,7 @@ class CredentialTemplate(StatefulModel, TimestampModel, table=True):
 
         q = select(cls).filter(*filters).order_by(desc(cls.updated_at))
         q_result = await db.execute(q)
-        db_recs = q_result.scalars()
+        db_recs = q_result.scalars().all()
         return db_recs
 
     @classmethod
@@ -499,7 +499,7 @@ class CredentialTemplate(StatefulModel, TimestampModel, table=True):
             .order_by(desc(cls.created_at))
         )
         q_result = await db.execute(q)
-        db_recs = q_result.scalars()
+        db_recs = q_result.scalars().all()
         return db_recs
 
     @classmethod
@@ -519,5 +519,5 @@ class CredentialTemplate(StatefulModel, TimestampModel, table=True):
 
         q = select(cls).where(cls.tenant_id == tenant_id).order_by(desc(cls.updated_at))
         q_result = await db.execute(q)
-        db_recs = q_result.scalars()
+        db_recs = q_result.scalars().all()
         return db_recs

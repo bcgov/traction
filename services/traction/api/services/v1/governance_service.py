@@ -122,7 +122,7 @@ async def list_schema_templates(
     )
 
     results_q_recs = await db.execute(results_q)
-    db_recs = results_q_recs.scalars()
+    db_recs = results_q_recs.scalars().all()
 
     items = []
     for db_rec in db_recs:
@@ -485,7 +485,7 @@ async def list_credential_templates(
     )
 
     results_q_recs = await db.execute(results_q)
-    db_recs = results_q_recs.scalars()
+    db_recs = results_q_recs.scalars().all()
 
     items = []
     for db_rec in db_recs:
