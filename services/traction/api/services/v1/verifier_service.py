@@ -47,7 +47,7 @@ def verifier_presentation_to_item(
     """
     acapy_item = None  # noqa: F841
     if acapy:
-        presentation_exchange = acapy_service.get_presentation_exchange(
+        presentation_exchange = acapy_service.get_presentation_exchange_json(
             db_item.pres_exch_id
         )
         acapy_item = PresentationExchangeAcapy(

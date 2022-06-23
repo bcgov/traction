@@ -81,7 +81,9 @@ def issuer_credential_to_item(
             revocation_id=db_item.revocation_id,
         )
         if db_item.credential_exchange_id:
-            exch = acapy_service.get_credential_exchange(db_item.credential_exchange_id)
+            exch = acapy_service.get_credential_exchange_json(
+                db_item.credential_exchange_id
+            )
             item.acapy.credential_exchange = exch
 
     return item

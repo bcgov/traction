@@ -39,45 +39,47 @@ out_of_band_api = OutOfBandApi(api_client=get_api_client())
 logger = logging.getLogger(__name__)
 
 
-def get_connection(connection_id: UUID):
-    logger.info(f"> get_connection({connection_id})")
+def get_connection_json(connection_id: UUID):
+    logger.info(f"> get_connection_json({connection_id})")
     try:
         response = connection_api.connections_conn_id_get(
             conn_id=str(connection_id), _preload_content=False
         )
         result = response_to_json(response, "connections_conn_id_get")
-        logger.info(f"< get_connection({connection_id}): {result is not None}")
+        logger.info(f"< get_connection_json({connection_id}): {result is not None}")
         return result
     except ApiException:
-        logger.error(f"! get_connection({connection_id})", exc_info=True)
+        logger.error(f"! get_connection_json({connection_id})", exc_info=True)
 
 
-def get_presentation_exchange(pres_exch_id: UUID):
-    logger.info(f"> get_presentation_exchange({pres_exch_id})")
+def get_presentation_exchange_json(pres_exch_id: UUID):
+    logger.info(f"> get_presentation_exchange_json({pres_exch_id})")
     try:
         response = present_proof_api.present_proof_records_pres_ex_id_get(
             pres_ex_id=str(pres_exch_id), _preload_content=False
         )
         result = response_to_json(response, "present_proof_records_pres_ex_id_get")
         logger.info(
-            f"< get_presentation_exchange({pres_exch_id}): {result is not None}"
+            f"< get_presentation_exchange_json({pres_exch_id}): {result is not None}"
         )
         return result
     except ApiException:
-        logger.error(f"! get_presentation_exchange({pres_exch_id})", exc_info=True)
+        logger.error(f"! get_presentation_exchange_json({pres_exch_id})", exc_info=True)
 
 
-def get_credential_exchange(cred_ex_id: UUID):
-    logger.info(f"> get_credential_exchange({cred_ex_id})")
+def get_credential_exchange_json(cred_ex_id: UUID):
+    logger.info(f"> get_credential_exchange_json({cred_ex_id})")
     try:
         response = issue_cred_v10_api.issue_credential_records_cred_ex_id_get(
             cred_ex_id=str(cred_ex_id), _preload_content=False
         )
         result = response_to_json(response, "issue_credential_records_cred_ex_id_get")
-        logger.info(f"< get_credential_exchange({cred_ex_id}): {result is not None}")
+        logger.info(
+            f"< get_credential_exchange_json({cred_ex_id}): {result is not None}"
+        )
         return result
     except ApiException:
-        logger.error(f"! get_credential_exchange({cred_ex_id})", exc_info=True)
+        logger.error(f"! get_credential_exchange_json({cred_ex_id})", exc_info=True)
 
 
 def response_to_json(response: HTTPResponse, method_name: str | None = "api"):

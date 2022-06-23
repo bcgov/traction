@@ -422,7 +422,7 @@ def contact_to_contact_item(
         last_response_at=db_contact.last_response_at,
     )
     if acapy:
-        connection = acapy_service.get_connection(db_contact.connection_id)
+        connection = acapy_service.get_connection_json(db_contact.connection_id)
         item.acapy = ContactAcapy(connection=connection)
 
     return item
