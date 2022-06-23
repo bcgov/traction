@@ -63,3 +63,14 @@ def step_impl(context, verifier: str, status_code: str):
     assert response.status_code == status.HTTP_200_OK, response.__dict__
     resp_json = json.loads(response.content)
     assert resp_json["items"][0]["status"] == status_code, resp_json["items"]
+
+    verifier_presentation_id = resp_json["items"][0]["verifier_presentation_id"]
+
+    response = requests.get(
+        context.config.userdata.get("traction_host")
+        + f"/tenant/v1/verifier/presentations/{verifier_presentation_id}?acapy=true",
+        headers=context.config.userdata[verifier]["auth_headers"],
+    )
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    pp(resp_json)

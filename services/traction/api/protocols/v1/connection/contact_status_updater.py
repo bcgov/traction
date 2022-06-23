@@ -23,7 +23,7 @@ class ContactStatusUpdater(DefaultConnectionProtocol):
             ConnectionStateType.response,
         ]
 
-        values = {"state": payload["state"], "connection": payload}
+        values = {"state": payload["state"]}
         if payload["state"] in active_states:
             values["status"] = ContactStatusType.active
         self.logger.debug(f"update values = {values}")

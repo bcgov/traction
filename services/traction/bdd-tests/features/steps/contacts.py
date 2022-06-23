@@ -1,4 +1,6 @@
 import json
+from pprint import pp
+
 from behave import *
 from starlette import status
 from v1_api import *
@@ -81,6 +83,7 @@ def step_impl(context, tenant: str, contact_alias: str):
     assert response.status_code == status.HTTP_200_OK, response.__dict__
     resp_json = json.loads(response.content)
     assert resp_json["item"]["contact_id"] == contact["contact_id"]
+    pp(resp_json)
 
 
 @then('"{tenant}" can get contact "{contact_alias}" with timeline')
@@ -105,6 +108,7 @@ def step_impl(context, tenant: str, contact_alias: str):
     assert resp_json["item"]["acapy"] is not None
     assert resp_json["item"]["acapy"]["connection"] is not None
     assert resp_json["item"]["acapy"]["connection"]["connection_id"] is not None
+    pp(resp_json)
 
 
 @then('"{tenant}" cannot get contact "{contact_alias}" by contact_id')

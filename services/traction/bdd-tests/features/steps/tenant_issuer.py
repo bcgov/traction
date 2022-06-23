@@ -1,4 +1,6 @@
 import json, random, string
+from pprint import pp
+
 from behave import *
 from starlette import status
 from v1_api import *
@@ -63,6 +65,8 @@ def step_impl(context, issuer: str, holder: str, schema_name: str):
         json=data,
     )
     assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    context.config.userdata[issuer]["issuer_credential_id"] = resp_json["item"]["issuer_credential_id"]
 
 
 @step('"{issuer}" will have an "{cred_status}" issuer credential')
@@ -76,7 +80,22 @@ def step_impl(context, issuer, cred_status: str):
     assert response.status_code == status.HTTP_200_OK, response.__dict__
     resp_json = json.loads(response.content)
     assert len(resp_json["items"]) == 1, resp_json
+    pp(resp_json)
     context.config.userdata[issuer]["issuer_credential"] = resp_json["items"][0]
+
+
+@step('"{issuer}" can get the issuer credential')
+def step_impl(context, issuer: str):
+    issuer_credential_id = context.config.userdata[issuer]["issuer_credential_id"]
+    response = requests.get(
+        context.config.userdata.get("traction_host")
+        + f"/tenant/v1/issuer/credentials/{issuer_credential_id}?acapy=true",
+        headers=context.config.userdata[issuer]["auth_headers"],
+    )
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    pp(resp_json)
+    assert resp_json["item"]["issuer_credential_id"] == issuer_credential_id, resp_json
 
 
 @step('"{issuer}" revokes credential from "{holder}"')
