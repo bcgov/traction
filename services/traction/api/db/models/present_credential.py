@@ -18,7 +18,7 @@ class PresentCredentialBase(BaseModel):
     workflow_id: uuid.UUID = Field(nullable=True, default=None)
     pres_exch_id: uuid.UUID = Field(nullable=True, default=None)
     presentation: str = Field(nullable=True, default=None)
-    cred_def_id: uuid.UUID = Field(nullable=True, default=None)
+    cred_def_id: str = Field(nullable=True, default=None)
 
 
 class PresentCredential(PresentCredentialBase, BaseTable, table=True):
