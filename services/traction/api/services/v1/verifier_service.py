@@ -1,6 +1,7 @@
 import logging
 from uuid import UUID
 from typing import List
+
 from starlette import status, exceptions
 
 from api.endpoints.models.credentials import PresentCredentialProtocolType
@@ -16,12 +17,13 @@ from api.endpoints.models.v1.verifier import (
     VerifierPresentationListParameters,
     VerifierPresentationStatusType,
     AcapyPresentProofStateType,
+    PresentationExchangeAcapy,
 )
 
 from api.db.models.v1.verifier_presentation import VerifierPresentation
 from api.api_client_utils import get_api_client
 from acapy_client.api.present_proof_v1_0_api import PresentProofV10Api
-
+from api.services.v1 import acapy_service
 
 present_proof_api = PresentProofV10Api(api_client=get_api_client())
 
@@ -45,22 +47,14 @@ def verifier_presentation_to_item(
     """
     acapy_item = None  # noqa: F841
     if acapy:
-        logger.warning(
-            """NOT IMPLEMENTED: verifier_presentation_to_item was
-             passed acapy=True, but currently does not work"""
+        presentation_exchange = acapy_service.get_presentation_exchange_json(
+            db_item.pres_exch_id
         )
-        # query aacapy for more details to put in payload
-        acapy_item = (  # noqa: F841
-            present_proof_api.present_proof_records_pres_ex_id_get(
-                pres_ex_id=str(db_item.pres_exch_id)
-            )
+        acapy_item = PresentationExchangeAcapy(
+            presentation_exchange=presentation_exchange
         )
-        # TODO: loading this response into the VerifierPresentationItem.acapy
-        # (of type acapy_client...V10PresentationExchange) doesn't work.
 
-    item = VerifierPresentationItem(
-        **db_item.dict(),
-    )
+    item = VerifierPresentationItem(**db_item.dict(), acapy=acapy_item)
     return item
 
 
@@ -152,7 +146,6 @@ async def list_presentation_requests(
     count_q = select([func.count()]).select_from(base_q)
 
     async with async_session() as db:
-
         count_q_rec = await db.execute(count_q)
         total_count = count_q_rec.scalar()
 
@@ -167,7 +160,7 @@ async def list_presentation_requests(
         )
 
         results_q_recs = await db.execute(results_q)
-        db_verifier_presentations = results_q_recs.scalars()
+        db_verifier_presentations = results_q_recs.scalars().all()
 
     items = []
     for db_verifier_presentation in db_verifier_presentations:

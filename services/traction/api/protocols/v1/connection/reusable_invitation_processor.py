@@ -46,8 +46,6 @@ class ReusableInvitationProcessor(DefaultConnectionProtocol):
                 connection_id=payload["connection_id"],
                 connection_alias=label,
                 invitation_key=payload["invitation_key"],
-                invitation=invitation.invitation,
-                connection=payload,
                 tags=invitation.tags,
             )
             async with async_session() as db:

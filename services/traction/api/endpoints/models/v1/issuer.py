@@ -121,6 +121,7 @@ class IssuerCredentialAcapy(BaseModel):
     credential_exchange_id: str | None = None
     revoc_reg_id: str | None = None
     revocation_id: str | None = None
+    credential_exchange: dict | None = {}
 
 
 class IssuerCredentialItem(

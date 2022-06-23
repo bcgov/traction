@@ -36,7 +36,7 @@ from api.endpoints.models.v1.errors import (
     IdNotMatchError,
 )
 from api.services import connections
-from api.services.v1 import invitation_parser
+from api.services.v1 import invitation_parser, acapy_service
 
 logger = logging.getLogger(__name__)
 
@@ -100,8 +100,6 @@ async def create_invitation(
         connection_id=connection.connection_id,
         connection_alias=connection.alias,
         invitation_key=connection.invitation_key,
-        invitation=invitation,
-        connection=connection,
     )
     db.add(db_contact)
     await db.commit()
@@ -189,8 +187,6 @@ async def receive_invitation(
         connection_id=connection.connection_id,
         connection_alias=connection.alias,
         invitation_key=connection.invitation_key,
-        invitation=invitation,
-        connection=connection,
         public_did=payload.their_public_did,
     )
     db.add(db_contact)
@@ -259,7 +255,7 @@ async def list_contacts(
     results_q = base_q.limit(limit).offset(skip).order_by(desc(Contact.updated_at))
 
     results_q_recs = await db.execute(results_q)
-    db_contacts = results_q_recs.scalars()
+    db_contacts = results_q_recs.scalars().all()
 
     items = []
     for db_contact in db_contacts:
@@ -426,9 +422,8 @@ def contact_to_contact_item(
         last_response_at=db_contact.last_response_at,
     )
     if acapy:
-        item.acapy = ContactAcapy(
-            invitation=db_contact.invitation, connection=db_contact.connection
-        )
+        connection = acapy_service.get_connection_json(db_contact.connection_id)
+        item.acapy = ContactAcapy(connection=connection)
 
     return item
 
