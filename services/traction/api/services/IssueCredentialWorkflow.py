@@ -121,11 +121,6 @@ class IssueCredentialWorkflow(BaseWorkflow):
                     issue_cred = await issue_repo.create(issue_cred)
                     logger.debug(f">>> created new cred issue: {issue_cred}")
 
-                    # if new, and offer_received, send webhook to tenant
-                    logger.info(f">>> sending webhook with cred offer: {issue_cred}")
-                    await TenantWorkflowNotifier(profile.db).issuer_workflow_cred_offer(
-                        issue_cred
-                    )
                     # return None - we want the tenant to accept the credential offer
                     return None
 
@@ -217,11 +212,6 @@ class IssueCredentialWorkflow(BaseWorkflow):
                     ):
                         issue_cred = await self.complete_credential(
                             issue_cred, webhook_message
-                        )
-
-                        logger.info(f">>> sending credential acked: {issue_cred}")
-                        await self.workflow_notifier.issuer_workflow_credential_acked(
-                            issue_cred
                         )
 
                         # finish off our workflow

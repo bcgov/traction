@@ -15,7 +15,6 @@ from api.db.repositories import (
     OutOfBandRepository,
 )
 from api.db.repositories.job_applicant import ApplicantRepository
-from api.services.websockets import notifier
 from api.services import traction
 
 logger = logging.getLogger(__name__)
@@ -216,18 +215,6 @@ async def handle_credential_revoked(lob: Lob, payload: dict, db: AsyncSession):
 
 async def handle_webhook(lob: Lob, topic: str, payload: dict, db: AsyncSession):
     logger.info(f"handle_webhook(lob = {lob.name}, topic = {topic})")
-    # TODO - make proper notifications to FE that are useful...
-    await notifier.push(
-        {
-            "topic": topic,
-            "payload": payload,
-            "lob": {
-                "sandbox_id": str(lob.sandbox_id),
-                "id": str(lob.id),
-                "name": lob.name,
-            },
-        }
-    )
     # topic = "connections" is the acapy event, ignore that one
     if "connection" == topic:
         return await handle_connections(lob, payload, db)
@@ -235,11 +222,6 @@ async def handle_webhook(lob: Lob, topic: str, payload: dict, db: AsyncSession):
         return await handle_issuer(lob, payload, db)
     elif "schema" == topic:
         return await handle_schema(lob, payload, db)
-    # topic = "issue_credential" is the acapy event, ignore that one
-    elif "issue_cred" == topic:
-        return await handle_issue_credential(lob, payload, db)
-    elif "present_req" == topic:
-        return await handle_presentation_request(lob, payload, db)
     elif "present_proof" == topic:
         return await handle_present_proof(lob, payload, db)
     elif "issuer_cred_rev" == topic:
