@@ -42,9 +42,7 @@ def get_application() -> FastAPI:
 
 app = get_application()
 
-origins = [
-    "http://localhost:3000" # Only allow localhost
-]
+origins = ["http://localhost:3000"]
 
 # Add CORS middleware for developing the UI
 app.add_middleware(
