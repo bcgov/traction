@@ -21,11 +21,6 @@ export default {
       state.notifications = state.notifications.filter(
         notification => notification.id !== notificationToRemove.id
       );
-    },
-    onNotification(state, notification) {
-      console.log('onNotification()'); // eslint-disable-line no-console
-      console.log(notification); // eslint-disable-line no-console
-      // TODO: this is where the notifications from the ws will end up in this code.
     }
   },
   actions: {

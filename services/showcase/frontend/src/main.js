@@ -35,10 +35,6 @@ Vue.use(VueNativeSock, socketApi, {
     }
     let message = event;
     let target = eventName.toUpperCase();
-    if (target === 'SOCKET_ONMESSAGE' && this.format === 'json' && event.data) {
-      message = JSON.parse(event.data);
-      target = 'notifications/onNotification';
-    }
     this.store.commit(target, message);
   },
 });
