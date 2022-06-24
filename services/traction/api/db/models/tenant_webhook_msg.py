@@ -2,9 +2,8 @@ import uuid
 from datetime import datetime
 from typing import Optional
 
-from sqlmodel import Field
-
 from api.db.models.base import BaseModel, BaseTable
+from sqlmodel import Field
 
 
 class TenantWebhookMsgBase(BaseModel):
@@ -23,6 +22,7 @@ class TenantWebhookMsgBase(BaseModel):
 
 class TenantWebhookMsg(TenantWebhookMsgBase, BaseTable, table=True):
     # This is the class that represents the table
+    # may be optional in some modelsomes, but not in the db table
     pass
 
 
