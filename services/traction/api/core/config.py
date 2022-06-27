@@ -88,6 +88,9 @@ class GlobalConfig(BaseSettings):
 
     DEFAULT_PAGE_SIZE: int = os.environ.get("DEFAULT_PAGE_SIZE", 10)
 
+    # Allow CORS from a comma-separated list of origins
+    TRACTION_CORS_URLS: str = os.environ.get("TRACTION_CORS_URLS", "")
+
     # Api V1 prefix
     API_V0_STR = "/v0"
     API_V1_STR = "/v1"
