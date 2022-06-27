@@ -42,16 +42,17 @@ def get_application() -> FastAPI:
 
 app = get_application()
 
-origins = ["http://localhost:3000"]
+origins = settings.TRACTION_CORS_URLS.split(",")
 
 # Add CORS middleware for developing the UI
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+if origins:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 webhook_app = get_webhookapp()
 app.mount("/webhook", webhook_app)
