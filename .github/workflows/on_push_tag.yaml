@@ -51,7 +51,7 @@ jobs:
         if: ${{ fromJSON(env.CI_IS_PROD) }}
         run: |
           echo "PROMOTE_TO=production" >> $GITHUB_ENV
-          echo "PROMOTE_FROM=teintst" >> $GITHUB_ENV
+          echo "PROMOTE_FROM=test" >> $GITHUB_ENV
 
       - name: print outputs
         run: |
