@@ -5,10 +5,16 @@ Tenant level - the tenant sets the data in this table.
 
 """
 import uuid
+from typing import List
 
+from sqlalchemy.dialects.postgresql import UUID
 from sqlmodel import Field
 from sqlalchemy import (
     select,
+    Column,
+    JSON,
+    text,
+    desc,
 )
 
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -137,3 +143,70 @@ class TenantAutoResponseLog(TimestampModel, table=True):
         )
         q_result = await db.execute(q)
         return q_result.scalar_one_or_none()
+
+
+class TenantWebhookLog(TimestampModel, table=True):
+    """TenantWebhookLog.
+
+    This is the model for the Tenant Webhook Log. This is where we can track what was
+    sent (or attempted) over configured webhook to a tenant. The contents of the payload
+    and the webhook_key should be emptied on success.
+
+    Store the webhook configuration in case we need to track down why this message did
+    not get delivered. It's possible the configuration is changed after to work and we
+    would not know why this message failed.
+
+
+    Attributes:
+      tenant_webhook_log_id: Traction Primary Key for table
+      tenant_id: Traction Tenant ID
+      topic: topic for this message
+      payload: payload to be delivered
+      webhook_url: a url that will receive webhook data pushed from Traction.
+      webhook_url: this will be sent as the X-API-Key header to the webhook_url. This
+       allows the tenant to secure their webhook_url.
+      http_status: HTTP status on attempt to push message to webhook_url/webhook_url
+      http_error_status_detail: additional details if http_status is ERROR
+      attempts: number of attempts made.
+      created_at: Timestamp when record was created in Traction
+      updated_at: Timestamp when record was last modified in Traction
+    """
+
+    __tablename__ = "tenant_webhook_log"
+
+    tenant_webhook_log_id: uuid.UUID = Field(
+        sa_column=Column(
+            UUID(as_uuid=True),
+            primary_key=True,
+            server_default=text("gen_random_uuid()"),
+        )
+    )
+
+    tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True)
+    topic: str = Field(nullable=False)
+    payload: dict = Field(default={}, sa_column=Column(JSON))
+    webhook_url: str = Field(nullable=False, default=None)
+    webhook_key: str = Field(nullable=True, default=None)
+    http_status: int = Field(nullable=True)
+    http_error_status_detail: str = Field(nullable=True)
+    attempts: int = Field(nullable=False, default=1)
+
+    @classmethod
+    async def list_by_tenant_id(
+        cls: "TenantWebhookLog",
+        db: AsyncSession,
+        tenant_id: uuid.UUID,
+    ) -> List["TenantWebhookLog"]:
+        """List by Tenant ID.
+
+        Find and return list of Tenant Webhook Log records for Tenant.
+
+          tenant_id: Traction ID of tenant making the call
+
+        Returns: List of Tenant Webhook Log (db) records in descending order
+        """
+
+        q = select(cls).where(cls.tenant_id == tenant_id).order_by(desc(cls.updated_at))
+        q_result = await db.execute(q)
+        db_recs = q_result.scalars().all()
+        return db_recs

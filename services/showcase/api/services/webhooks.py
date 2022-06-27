@@ -32,14 +32,14 @@ async def handle_connections(lob: Lob, payload: dict, db: AsyncSession):
         if connection["alias"] == "Faber":
             stu_repo = StudentRepository(db_session=db)
             student = await stu_repo.get_by_alias_in_sandbox(lob.sandbox_id, lob.name)
-            student.invitation_state = connection["connection_state"]
+            student.invitation_state = connection["state"]
             await stu_repo.update(student)
 
         # applications will get invitation from Acme
         if connection["alias"] == "Acme":
             a_repo = ApplicantRepository(db_session=db)
             appl = await a_repo.get_by_alias_in_sandbox(lob.sandbox_id, lob.name)
-            appl.invitation_state = connection["connection_state"]
+            appl.invitation_state = connection["state"]
             await a_repo.update(appl)
 
     except KeyError:

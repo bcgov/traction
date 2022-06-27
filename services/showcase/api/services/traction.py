@@ -140,11 +140,10 @@ async def create_tenant_webhook(tenant: Lob):
     data = {
         "webhook_url": f"{settings.SHOWCASE_ENDPOINT}/api/v1/webhook/{tenant.id}",
         "webhook_key": hashed_wallet_key,
-        "config": {"acapy": True},
     }
     # TODO: error handling calling Traction
     async with ClientSession() as client_session:
-        async with await client_session.post(
+        async with await client_session.put(
             url=t_urls.TENANT_ADMIN_WEBHOOK,
             json=data,
             headers=auth_headers,
@@ -321,21 +320,20 @@ async def create_invitation(
 ):
     # call Traction to create an invitation...
     auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
-    # no body...
-    data = {}
-    query_params = {"alias": alias, "invitation_type": "didexchange/1.0"}
+    data = {"alias": alias, "invitation_type": "didexchange/1.0"}
     # TODO: error handling calling Traction
     async with ClientSession() as client_session:
         async with await client_session.post(
             url=t_urls.TENANT_CREATE_INVITATION,
-            params=query_params,
             json=data,
             headers=auth_headers,
         ) as response:
             try:
                 resp = await response.json()
-                connection = resp["connection"]
-                return connection
+                logger.info(resp)
+                connection = resp["item"]["acapy"]["connection"]
+                invitation = resp["invitation"]
+                return connection, invitation
             except ContentTypeError:
                 logger.exception("Error creating invitation", exc_info=True)
                 text = await response.text()
@@ -350,18 +348,18 @@ async def accept_invitation(
 ):
     # call Traction to accept an invitation...
     auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
-    query_params = {"alias": alias}
+    data = {"alias": alias, "invitation": invitation}
     # TODO: error handling calling Traction
     async with ClientSession() as client_session:
         async with await client_session.post(
             url=t_urls.TENANT_RECEIVE_INVITATION,
-            params=query_params,
-            json=invitation,
+            json=data,
             headers=auth_headers,
         ) as response:
             try:
                 resp = await response.json()
-                connection = resp["connection"]
+                logger.info(resp)
+                connection = resp["item"]["acapy"]["connection"]
                 return connection
             except ContentTypeError:
                 logger.exception("Error accepting invitation", exc_info=True)

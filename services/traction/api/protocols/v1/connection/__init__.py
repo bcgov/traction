@@ -1,3 +1,6 @@
+from api.protocols.v1.connection.connection_notifier import (
+    ConnectionNotifier,
+)
 from api.protocols.v1.connection.contact_status_updater import ContactStatusUpdater
 from api.protocols.v1.connection.reusable_invitation_processor import (
     ReusableInvitationProcessor,
@@ -7,3 +10,4 @@ from api.protocols.v1.connection.reusable_invitation_processor import (
 def subscribe_connection_protocol_listeners():
     ReusableInvitationProcessor()
     ContactStatusUpdater()
+    ConnectionNotifier()
