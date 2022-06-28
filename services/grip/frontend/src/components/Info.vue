@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { inject } from "vue";
 import Fieldset from "primevue/fieldset";
+import Card from "primevue/card";
 import ProgressSpinner from "primevue/progressspinner";
 import axios from "axios";
 
@@ -37,9 +38,55 @@ const toggled = (e: any) => {
     @toggle="toggled"
   >
     <template #legend> Wallet Info </template>
-    <!-- Token: {{ store.state.token }} -->
+
+    <!--
+      If there is no data, show a spinner.
+      Otherwise show the data.
+    -->
     <ProgressSpinner v-if="!store.state.walletInfo.data" />
-    <div v-else>hey there</div>
+    <div v-else>
+      <card>
+        <template #title>{{ store.state.walletInfo.data.name }}</template>
+        <template #content>
+          <div>
+            <span>Tenant ID: &nbsp;</span>
+            <span>{{ store.state.walletInfo.data.tenant_id }}</span>
+          </div>
+          <div>
+            <span>Wallet ID: &nbsp;</span>
+            <span>{{ store.state.walletInfo.data.wallet_id }}</span>
+          </div>
+          <div>
+            <span>Issuer: &nbsp;</span>
+            <span>{{ store.state.walletInfo.data.issuer }}</span>
+          </div>
+          <div>
+            <span>Issuer Status: &nbsp;</span>
+            <span>{{ store.state.walletInfo.data.issuer_status }}</span>
+          </div>
+          <div>
+            <span>Public DID: &nbsp;</span>
+            <span>{{ store.state.walletInfo.data.public_did }}</span>
+          </div>
+          <div>
+            <span>Public DID Status: &nbsp;</span>
+            <span>{{ store.state.walletInfo.data.public_did_status }}</span>
+          </div>
+          <div>
+            <span>Date Created: &nbsp;</span>
+            <span>{{ store.state.walletInfo.data.created_at }}</span>
+          </div>
+          <div>
+            <span>Date Last Updated: &nbsp;</span>
+            <span>{{ store.state.walletInfo.data.updated_at }}</span>
+          </div>
+          <div>
+            <span>Deleted: &nbsp;</span>
+            <span>{{ store.state.walletInfo.data.deleted }}</span>
+          </div>
+        </template>
+      </card>
+    </div>
   </Fieldset>
 </template>
 
