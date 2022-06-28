@@ -5,7 +5,6 @@ Service classes should not have any knowledge or dependence on Http Request, Res
 or Sessions; nor should it return API response models directly.
 
 """
-import json
 import logging
 
 from typing import List
@@ -18,8 +17,6 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from api.db.models import Timeline
 from api.db.models.v1.contact import Contact
 from api.endpoints.models.connections import ConnectionStateType, ConnectionRoleType
-from api.endpoints.routes.connections import create_invitation as v0_create_invitation
-from api.endpoints.routes.connections import receive_invitation as v0_receive_invitation
 from api.endpoints.models.v1.contacts import (
     CreateInvitationPayload,
     ReceiveInvitationPayload,
@@ -73,21 +70,14 @@ async def create_invitation(
             title="Create Invitation alias in use",
             detail=f"Error alias {payload.alias} already in use.",
         )
-    # This should get removed when v0 is phased out...
-    # we need to do this to keep v0 working and kick off that connection workflow
-    v0_tenant_invitation = await v0_create_invitation(
-        tenant_id=tenant_id,
-        wallet_id=wallet_id,
+
+    acapy_invitation = connections.create_invitation(
         alias=payload.alias,
         invitation_type=payload.invitation_type,
-        db=db,
+        multi_use=False,
     )
-
-    # we should be creating our own invitations and connections,
-    # but they are done in the v0 code
-    # invitation = connections.create_invitation(payload.alias, payload.invitation_type)
-    invitation = json.loads(v0_tenant_invitation.connection.invitation)
-    invitation_url = v0_tenant_invitation.connection.invitation_url
+    invitation = acapy_invitation.invitation
+    invitation_url = acapy_invitation.invitation_url
     connection = connections.get_connection_with_alias(payload.alias)
 
     # create a new contact record
@@ -159,23 +149,14 @@ async def receive_invitation(
             detail=f"Error alias {label} already in use.",
         )
 
-    # This should get removed when v0 is phased out...
-    # we need to do this to keep v0 working and kick off that connection workflow
-    await v0_receive_invitation(
-        tenant_id=tenant_id,
-        wallet_id=wallet_id,
+    conn = connections.receive_invitation(
         alias=label,
         payload=invitation,
         their_public_did=payload.their_public_did,
-        db=db,
     )
-
-    # connection = connections.receive_invitation(
-    #     label,
-    #     payload=invitation,
-    #     their_public_did=payload.their_public_did,
-    # )
+    logger.info(conn)
     connection = connections.get_connection_with_alias(label)
+    logger.info(connection)
 
     # create a new contact record
     db_contact = Contact(
@@ -194,7 +175,7 @@ async def receive_invitation(
 
     item = contact_to_contact_item(db_contact, True)
 
-    item.acapy = ContactAcapy(invitation=invitation, connection=connection)
+    item.acapy = ContactAcapy(connection=connection)
     return item
 
 

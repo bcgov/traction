@@ -169,17 +169,16 @@ async def connect_tenants(
 
     data = {"alias": t1_alias, "invitation_type": invitation_type}
     resp_invitation = await app_client.post(
-        "/tenant/v0/connections/create-invitation", params=data, headers=t1_headers
+        "/tenant/v1/contacts/create-invitation", json=data, headers=t1_headers
     )
     assert resp_invitation.status_code == 200, resp_invitation.content
 
-    invitation = json.loads(resp_invitation.content)
+    item = json.loads(resp_invitation.content)
 
-    data = {"alias": t2_alias}
+    data = {"alias": t2_alias, "invitation": item["invitation"]}
     resp_connection = await app_client.post(
-        "/tenant/v0/connections/receive-invitation",
-        params=data,
-        json=json.loads(invitation["connection"]["invitation"]),
+        "/tenant/v1/contacts/receive-invitation",
+        json=data,
         headers=t2_headers,
     )
     assert resp_connection.status_code == 200, resp_connection.content
@@ -188,28 +187,30 @@ async def connect_tenants(
     completed = False
     while 0 < i and not completed:
         t1_connections_resp = await app_client.get(
-            "/tenant/v0/connections/", headers=t1_headers, params={"alias": t1_alias}
+            "/tenant/v1/contacts/", headers=t1_headers, params={"alias": t1_alias}
         )
         assert t1_connections_resp.status_code == 200, t1_connections_resp.content
         t1_connections = json.loads(t1_connections_resp.content)
-        assert 1 == len(t1_connections), t1_connections
+        assert 1 == t1_connections["count"], t1_connections
 
         t2_connections_resp = await app_client.get(
-            "/tenant/v0/connections/", headers=t2_headers, params={"alias": t2_alias}
+            "/tenant/v1/contacts/", headers=t2_headers, params={"alias": t2_alias}
         )
         assert t2_connections_resp.status_code == 200, t2_connections_resp.content
         t2_connections = json.loads(t2_connections_resp.content)
-        assert 1 == len(t2_connections), t2_connections
+        assert 1 == t1_connections["count"], t2_connections
 
+        t1_item = t1_connections["items"][0]
+        t2_item = t2_connections["items"][0]
         completed = (
-            t1_connections[0]["state"] == "active"
-            and t2_connections[0]["state"] == "active"
+            t1_item["status"] == "Active"
+            and t2_item["status"] == "Active"
         )
         if not completed:
             await asyncio.sleep(default_pause_between_attempts)
         i -= 1
 
-    assert completed, t1_connections[0]["state"] + ":" + t2_connections[0]["state"]
+    assert completed, t1_item["status"] + ":" + t2_item[0]["status"]
 
 
 async def issue_credential(

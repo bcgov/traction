@@ -8,7 +8,6 @@ from api.db.models.tenant_schema import TenantSchema  # noqa: F401
 from api.db.models.issue_credential import IssueCredential  # noqa: F401
 from api.db.models.present_credential import PresentCredential  # noqa: F401
 from api.db.models.tenant_issuer import TenantIssuer  # noqa: F401
-from api.db.models.tenant_connection import TenantConnection  # noqa: F401
 from api.db.models.tenant_workflow import TenantWorkflow  # noqa: F401
 
 from api.db.models.v1.contact import Contact  # noqa: F401
@@ -21,6 +20,7 @@ from api.db.models.v1.tenant_permissions import TenantPermissions  # noqa: F401
 from api.db.models.v1.tenant_configuration import (
     TenantConfiguration,
     TenantAutoResponseLog,
+    TenantWebhookLog,
 )  # noqa: F401
 
 
@@ -39,4 +39,5 @@ __all__ = [
     "TenantPermissions",
     "TenantConfiguration",
     "TenantAutoResponseLog",
+    "TenantWebhookLog",
 ]

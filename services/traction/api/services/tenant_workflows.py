@@ -24,7 +24,6 @@ from api.endpoints.models.webhooks import (
     WEBHOOK_REVOC_NOTIFY_LISTENER_PATTERN,
 )
 from api.services.base import BaseWorkflow
-from api.services.ConnectionWorkflow import ConnectionWorkflow
 from api.services.IssuerWorkflow import IssuerWorkflow
 from api.services.SchemaWorkflow import SchemaWorkflow
 from api.services.IssueCredentialWorkflow import IssueCredentialWorkflow
@@ -75,9 +74,6 @@ async def create_workflow(
 
 
 def subscribe_workflow_events():
-    settings.EVENT_BUS.subscribe(
-        WEBHOOK_CONNECTIONS_LISTENER_PATTERN, ConnectionWorkflow.handle_workflow_events
-    )
     settings.EVENT_BUS.subscribe(
         WEBHOOK_CONNECTIONS_LISTENER_PATTERN, IssuerWorkflow.handle_workflow_events
     )

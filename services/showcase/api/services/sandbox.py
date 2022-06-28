@@ -1,7 +1,7 @@
+import logging
 import uuid
 import datetime
 from typing import Optional
-import json
 
 import pydantic
 from fastapi import HTTPException
@@ -26,6 +26,8 @@ from api.db.repositories.job_applicant import ApplicantRepository
 from api.db.repositories.out_of_band import OutOfBandRepository
 
 from api.services import traction
+
+logger = logging.getLogger(__name__)
 
 
 class CheckInResponse(pydantic.BaseModel):
@@ -179,8 +181,7 @@ async def create_new_line_of_business(
     lob = await repo.create(new_lob)
 
     resp = await traction.create_tenant_webhook(lob)
-    read = TenantWebhookRead(**resp)
-    lob.webhook_url = read.webhook_url
+    lob.webhook_url = resp["item"]["webhook_url"]
 
     if issuer:
         await traction.innkeeper_make_issuer(traction_tenant.id)
@@ -212,7 +213,7 @@ async def create_invitation_for_student(
         )
 
     # we create an invitation for the student's wallet (traction tenant)
-    resp = await traction.create_invitation(
+    connection, invitation = await traction.create_invitation(
         lob.wallet_id, lob.wallet_key, student.alias
     )
 
@@ -233,18 +234,18 @@ async def create_invitation_for_student(
             sender_id=lob.id,
             recipient_id=recipient_lob.id,
             msg_type="Invitation",
-            msg=json.loads(resp["invitation"]),
+            msg=invitation,
         )
         await oob_repo.create(oob)
 
-    student.connection_id = uuid.UUID(resp["connection_id"])
+    student.connection_id = uuid.UUID(connection["connection_id"])
     student.invitation_state = "invitation"
     await student_repo.update(student)
 
     return InviteStudentResponse(
         student_id=student.id,
-        connection_id=uuid.UUID(resp["connection_id"]),
-        invitation=json.loads(resp["invitation"]),
+        connection_id=uuid.UUID(connection["connection_id"]),
+        invitation=invitation,
     )
 
 
@@ -272,7 +273,9 @@ async def create_invitation_for_applicant(
         )
 
     # we create an invitation for the applicant's wallet (traction tenant)
-    resp = await traction.create_invitation(lob.wallet_id, lob.wallet_key, appl.alias)
+    connection, invitation = await traction.create_invitation(
+        lob.wallet_id, lob.wallet_key, appl.alias
+    )
 
     # bit of a hack here...
     # we've set the applicant to track their matching traction tenant
@@ -291,18 +294,18 @@ async def create_invitation_for_applicant(
             sender_id=lob.id,
             recipient_id=recipient_lob.id,
             msg_type="Invitation",
-            msg=json.loads(resp["invitation"]),
+            msg=invitation,
         )
         await oob_repo.create(oob)
 
-    appl.connection_id = uuid.UUID(resp["connection_id"])
+    appl.connection_id = uuid.UUID(connection["connection_id"])
     appl.invitation_state = "invitation"
     await _repo.update(appl)
 
     return InviteApplicantResponse(
         applicant_id=appl.id,
-        connection_id=uuid.UUID(resp["connection_id"]),
-        invitation=json.loads(resp["invitation"]),
+        connection_id=uuid.UUID(connection["connection_id"]),
+        invitation=invitation,
     )
 
 
@@ -324,16 +327,16 @@ async def accept_invitation(
     check_resp = await traction.get_connections(
         recipient.wallet_id, recipient.wallet_key, sender.name
     )
-    if len(check_resp) > 0:
+    if len(check_resp["items"]) > 0:
         detail = f"{recipient.name} has an existing connection with {sender.name}."
-        if check_resp[0]["state"] == "invitation":
+        if check_resp["items"][0]["state"] == "invitation":
             detail = f"{recipient.name} has created and invitation for {sender.name}."
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=detail,
         )
 
-    resp = await traction.accept_invitation(
+    connection = await traction.accept_invitation(
         recipient.wallet_id, recipient.wallet_key, sender.name, payload.invitation
     )
 
@@ -342,7 +345,7 @@ async def accept_invitation(
 
     return AcceptInvitationResponse(
         sender_id=sender.id,
-        connection_id=uuid.UUID(resp["connection_id"]),
+        connection_id=uuid.UUID(connection["connection_id"]),
     )
 
 
