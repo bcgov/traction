@@ -8,9 +8,21 @@ const store: any = inject("store");
 
 // Vite passes the api url to here
 const api = import.meta.env.VITE_TRACTION_ENDPOINT;
+
+const toggled = () => {
+  console.log("toggled");
+};
 </script>
 
-<template>yo</template>
+<template>
+  <Fieldset
+    :toggleable="true"
+    :collapsed="!store.state.contacts.open"
+    @toggle="toggled"
+  >
+    <template #legend>Contacts</template>
+  </Fieldset>
+</template>
 
 <style scoped>
 fieldset {

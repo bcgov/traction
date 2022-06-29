@@ -4,8 +4,12 @@ import Contacts from "../components/Contacts.vue";
 </script>
 
 <template>
-  <Info />
-  <Contacts />
+  <Info class="information" />
+  <Contacts class="information" />
 </template>
 
-<style></style>
+<style scoped>
+.information {
+  margin: 1rem 0;
+}
+</style>
