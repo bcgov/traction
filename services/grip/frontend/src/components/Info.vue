@@ -7,20 +7,20 @@ import axios from "axios";
 
 const store: any = inject("store");
 
+// Vite passes the api url to here
+const api = import.meta.env.VITE_TRACTION_ENDPOINT;
+
 const toggled = (e: any) => {
-  console.log("toggled");
   store.state.walletInfo.open = !e.value;
   if (store.state.walletInfo.open && !store.state.walletInfo.data) {
-    console.log("Fetching wallet info");
     axios
-      .get("http://localhost:5100/tenant/v1/admin/self", {
+      .get(`${api}/tenant/v1/admin/self`, {
         headers: {
           accept: "application/json",
           Authorization: `Bearer ${store.state.token}`,
         },
       })
       .then((res) => {
-        console.log("res", res);
         store.state.walletInfo.data = res.data.item;
       })
       .catch((err) => {
