@@ -95,16 +95,15 @@ async def handle_issuer(lob: Lob, payload: dict, db: AsyncSession):
     return True
 
 
-async def handle_schema(lob: Lob, payload: dict, db: AsyncSession):
-    logger.info(f"handle_schema({payload})")
+async def handle_cred_def(lob: Lob, payload: dict, db: AsyncSession):
+    logger.info(f"handle_cred_def({payload})")
     # {
-    # 'status': 'completed',
+    # 'status': 'Active',
     # 'schema_id': 'MS614YmscauME1eqjFCioa:2:sherman_002:0.0.2',
     # 'cred_def_id': 'MS614YmscauME1eqjFCioa:3:CL:160656:demo_002',
-    # 'cred_def_state': 'completed',
     # 'cred_def_tag': 'demo_002'
     # }
-    if payload["status"] == "completed" and payload["cred_def_state"] == "completed":
+    if payload["status"] == "Active":
         cred_def_id = payload["cred_def_id"]
         repo = LobRepository(db_session=db)
         lob.cred_def_id = cred_def_id
@@ -220,8 +219,8 @@ async def handle_webhook(lob: Lob, topic: str, payload: dict, db: AsyncSession):
         return await handle_connections(lob, payload, db)
     elif "issuer" == topic:
         return await handle_issuer(lob, payload, db)
-    elif "schema" == topic:
-        return await handle_schema(lob, payload, db)
+    elif "cred_def" == topic:
+        return await handle_cred_def(lob, payload, db)
     elif "present_proof" == topic:
         return await handle_present_proof(lob, payload, db)
     elif "issuer_cred_rev" == topic:

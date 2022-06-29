@@ -167,7 +167,8 @@ async def create_new_line_of_business(
 ):
     # create tenant in traction, then we use their wallet id and key
     resp = await traction.create_tenant(name=f"{name.lower()}-{str(sandbox.id)[0:7]}")
-    traction_tenant = CheckInResponse(**resp)
+    logger.info(resp)
+    traction_tenant = CheckInResponse(**resp["item"])
 
     # create our lob in db
     new_lob = LobCreate(

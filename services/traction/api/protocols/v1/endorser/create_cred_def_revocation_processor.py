@@ -86,6 +86,5 @@ class CreateCredDefRevocationProcessor(CreateCredDefProcessor):
         self.logger.debug(f"is_operation_type_114 = {is_operation_type_114}")
 
         if is_operation_type_114:
-            o = await self.get_credential_template(profile, payload)
-            await self.set_active(profile, o)
+            await self.set_active(profile, payload)
         self.logger.info("< on_transaction_acked()")
