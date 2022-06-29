@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Login from "./components/Login.vue";
-import Info from "./components/Info.vue";
+import Dashboard from "./pages/Dashboard.vue";
 import store from "./store";
 import { provide } from "vue";
 
@@ -8,7 +8,7 @@ provide("store", store); // Allow the entire app to see the store.
 </script>
 
 <template>
-  <Info v-if="store.state.token" />
+  <Dashboard v-if="store.state.token" />
   <Login v-else="store.state.token" />
 </template>
 
