@@ -34,3 +34,18 @@ class UpdateTenantPermissionsPayload(BaseModel):
 
 class UpdateTenantPermissionsResponse(GetResponse[TenantPermissionsItem]):
     pass
+
+
+class CheckInPayload(BaseModel):
+    name: str
+
+
+class CheckInItem(BaseModel):
+    id: UUID
+    name: str
+    wallet_id: UUID
+    wallet_key: UUID
+
+
+class CheckInResponse(GetResponse[CheckInItem]):
+    pass

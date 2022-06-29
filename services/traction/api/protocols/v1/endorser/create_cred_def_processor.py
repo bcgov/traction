@@ -8,6 +8,7 @@ from api.db.models.v1.governance import CredentialTemplate
 from api.db.session import async_session
 from api.endpoints.models.v1.errors import NotFoundError
 from api.endpoints.models.v1.governance import TemplateStatusType
+from api.endpoints.models.webhooks import TenantEventTopicType, TRACTION_EVENT_PREFIX
 from api.protocols.v1.endorser.endorser_protocol import (
     DefaultEndorserProtocol,
     processing_states,
@@ -118,6 +119,11 @@ class CreateCredDefProcessor(DefaultEndorserProtocol):
             await db.execute(stmt)
             await db.commit()
 
+        if not item.revocation_enabled:
+            # set Status to Active if we are not allowing revocation
+            # otherwise, the revocation processor will set active when appropriate
+            await self.set_active(profile, payload)
+
         self.logger.info("< on_transaction_acked()")
 
     async def update_state(self, payload, profile, values, item):
@@ -139,8 +145,9 @@ class CreateCredDefProcessor(DefaultEndorserProtocol):
             await db.commit()
         self.logger.info("< update_state()")
 
-    async def set_active(self, profile, item):
+    async def set_active(self, profile, payload):
         self.logger.info("> set_active()")
+        item = await self.get_credential_template(profile, payload)
         values = {"status": TemplateStatusType.active}
         self.logger.debug(f"update values = {values}")
         stmt = (
@@ -153,4 +160,26 @@ class CreateCredDefProcessor(DefaultEndorserProtocol):
         async with async_session() as db:
             await db.execute(stmt)
             await db.commit()
+
+        # we are able to use this cred def now, notify tenant
+        await self.push_notification(profile, payload)
         self.logger.info("< set_active()")
+
+    async def push_notification(self, profile: Profile, payload: dict):
+        self.logger.info("> push_notification")
+        item = await self.get_credential_template(profile, payload)
+        topic = TenantEventTopicType.cred_def
+        event_topic = TRACTION_EVENT_PREFIX + topic
+        # TODO: what should be in this payload?
+        payload = {
+            "status": item.status,
+            "schema_template_id": str(item.schema_template_id),
+            "schema_id": str(item.schema_id),
+            "credential_template_id": str(item.credential_template_id),
+            "cred_def_id": item.cred_def_id,
+            "state": item.state,
+            "tag": item.tag,
+        }
+        self.logger.info(f"profile.notify(topic={event_topic}, payload={payload})")
+        await profile.notify(event_topic, {"topic": topic, "payload": payload})
+        self.logger.info("< push_notification")
