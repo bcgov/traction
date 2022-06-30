@@ -376,7 +376,7 @@ async def innkeeper_make_issuer(tenant_id: UUID):
     # TODO: error handling calling Traction
     async with ClientSession() as client_session:
         async with await client_session.post(
-            url=t_urls.INNKEEPER_MAKE_ISSUER + f"/{tenant_id}",
+            url=f"{t_urls.INNKEEPER_TENANTS}/{tenant_id}/{t_urls.MAKE_ISSUER}",
             headers=innkeeper_auth_headers,
         ) as response:
             try:
@@ -421,25 +421,29 @@ async def tenant_create_schema(
     revoc_reg_size: int = 10,
 ):
     auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
-    data = schema
-    params = {}
-    if schema_id is not None:
-        params["schema_id"] = schema_id
-    if cred_def_tag is not None:
-        params["cred_def_tag"] = cred_def_tag
-    if revocable:
-        params["revocable"] = str(revocable)
-        params["revoc_reg_size"] = revoc_reg_size
+    payload = {
+        "schema_definition": schema,
+        "name": schema["schema_name"],
+        "tags": [],
+    }
+
+    if cred_def_tag:
+        # API will set lowest value for registry size if revocation enabled
+        payload["credential_definition"] = {
+            "tag": cred_def_tag,
+            "revocation_enabled": str(revocable),
+            "revocation_registry_size": revoc_reg_size if revocable else 0,
+        }
 
     async with ClientSession() as client_session:
         async with await client_session.post(
             url=t_urls.TENANT_CREATE_SCHEMA,
             headers=auth_headers,
-            params=params,
-            json=data,
+            json=payload,
         ) as response:
             try:
                 resp = await response.json()
+                logger.info(resp)
                 return resp
             except ContentTypeError:
                 logger.exception(

@@ -34,7 +34,7 @@ from test_tenant_utils import (
 pytestmark = pytest.mark.asyncio
 
 
-@pytest.mark.integtest
+# @pytest.mark.integtest
 @pytest.mark.parametrize(
     "prove_non_revocation",
     [
@@ -42,7 +42,7 @@ pytestmark = pytest.mark.asyncio
         True,
     ],
 )
-async def test_tenants_issue_cred_req_proof_revoke(
+async def x_test_tenants_issue_cred_req_proof_revoke(
     prove_non_revocation, app_client: AsyncClient
 ) -> None:
     # get a token

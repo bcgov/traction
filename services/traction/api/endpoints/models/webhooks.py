@@ -62,6 +62,7 @@ class TenantEventTopicType(str, Enum):
     connection = "connection"
     issuer = "issuer"
     schema = "schema"
+    cred_def = "cred_def"
     issuer_cred_rev = "issuer_cred_rev"
 
 

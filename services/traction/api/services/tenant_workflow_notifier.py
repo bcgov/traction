@@ -4,7 +4,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.core.profile import Profile
 from api.db.models.tenant_issuer import TenantIssuerRead
-from api.db.models.tenant_schema import TenantSchemaRead
 from api.endpoints.models.webhooks import (
     TenantEventTopicType,
     TRACTION_EVENT_PREFIX,
@@ -57,24 +56,6 @@ class TenantWorkflowNotifier:
             "status": "completed",
             "public_did": tenant_issuer.public_did,
             "public_did_state": tenant_issuer.public_did_state,
-        }
-
-        await profile.notify(event_topic, {"topic": topic, "payload": payload})
-
-    async def schema_workflow_completed(self, tenant_schema: TenantSchemaRead):
-        logger.info("schema workflow complete")
-        # emit an event for any interested listeners
-        profile = Profile(tenant_schema.wallet_id, tenant_schema.tenant_id, self.db)
-        topic = TenantEventTopicType.schema
-        event_topic = TRACTION_EVENT_PREFIX + topic
-        logger.info(f"profile.notify {event_topic}")
-        # TODO: what should be in this payload?
-        payload = {
-            "status": "completed",
-            "schema_id": tenant_schema.schema_id,
-            "cred_def_id": tenant_schema.cred_def_id,
-            "cred_def_state": tenant_schema.cred_def_state,
-            "cred_def_tag": tenant_schema.cred_def_tag,
         }
 
         await profile.notify(event_topic, {"topic": topic, "payload": payload})
