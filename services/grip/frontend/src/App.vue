@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Login from "./components/Login.vue";
-import Info from "./components/Info.vue";
+import TenantDashboard from "./components/TenantDashboard.vue";
+
 import store from "./store";
 import { provide } from "vue";
 
@@ -8,8 +9,8 @@ provide("store", store); // Allow the entire app to see the store.
 </script>
 
 <template>
-  <Info v-if="store.state.token" />
-  <Login v-else="store.state.token" />
+  <Login v-if="!store.state.token" />
+  <TenantDashboard v-else />
 </template>
 
 <style>
@@ -32,3 +33,4 @@ body {
   height: 100%;
 }
 </style>
+
