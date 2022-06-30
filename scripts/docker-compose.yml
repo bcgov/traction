@@ -35,6 +35,7 @@ services:
       - ACAPY_GENESIS_URL=${ACAPY_GENESIS_URL}
       - DEFAULT_RETRY_ATTEMPTS=${DEFAULT_RETRY_ATTEMPTS:-10}
       - DEFAULT_PAUSE_BETWEEN_ATTEMPTS=${DEFAULT_PAUSE_BETWEEN_ATTEMPTS:-2}
+      - TRACTION_CORS_URLS=${TRACTION_CORS_URLS}
     ports:
       - ${TRACTION_SERVICE_PORT}:5000
     extra_hosts:
@@ -151,28 +152,7 @@ services:
     command:
       [
         "-c",
-        "sleep 5; 
-        aca-py start \
-        --auto-provision
-        --arg-file endorser-acapy-args.yml \
-        --inbound-transport http '0.0.0.0' ${ACAPY_ENDORSER_HTTP_PORT} \
-        --webhook-url '${ENDORSER_WEBHOOK_URL}' \
-        --genesis-url '${ACAPY_GENESIS_URL}' \
-        --endpoint ${ACAPY_ENDORSER_ENDPOINT} \
-        --wallet-name '${ACAPY_WALLET_DATABASE}' \
-        --wallet-key '${ACAPY_WALLET_ENCRYPTION_KEY}' \
-        --wallet-storage-type '${ACAPY_WALLET_TYPE}' \
-        --wallet-storage-config '{\"url\":\"${ENDORSER_POSTGRESQL_HOST}:5432\",\"max_connections\":5}' \
-        --wallet-storage-creds '{\"account\":\"${ENDORSER_POSTGRESQL_USER}\",\"password\":\"${ENDORSER_POSTGRESQL_PASSWORD}\",\"admin_account\":\"${ENDORSER_POSTGRESQL_USER}\",\"admin_password\":\"${ENDORSER_POSTGRESQL_PASSWORD}\"}' \
-        --wallet-name endorser-wallet  \
-        --seed '${ACAPY_ENDORSER_SEED}' \
-        --admin '0.0.0.0' ${ACAPY_ENDORSER_ADMIN_PORT} \
-        --label '${ENDORSER_AGENT_NAME}' \
-        ${ACAPY_ADMIN_CONFIG} \
-        ${ACAPY_READ_ONLY_MODE} \
-        --endorser-protocol-role endorser \
-        --auto-endorse-transactions \
-        ",
+        "sleep 5; aca-py start --auto-provision --arg-file endorser-acapy-args.yml --inbound-transport http '0.0.0.0' ${ACAPY_ENDORSER_HTTP_PORT} --webhook-url '${ENDORSER_WEBHOOK_URL}' --genesis-url '${ACAPY_GENESIS_URL}' --endpoint ${ACAPY_ENDORSER_ENDPOINT} --wallet-name '${ACAPY_WALLET_DATABASE}' --wallet-key '${ACAPY_WALLET_ENCRYPTION_KEY}' --wallet-storage-type '${ACAPY_WALLET_TYPE}' --wallet-storage-config '{\"url\":\"${ENDORSER_POSTGRESQL_HOST}:5432\",\"max_connections\":5}' --wallet-storage-creds '{\"account\":\"${ENDORSER_POSTGRESQL_USER}\",\"password\":\"${ENDORSER_POSTGRESQL_PASSWORD}\",\"admin_account\":\"${ENDORSER_POSTGRESQL_USER}\",\"admin_password\":\"${ENDORSER_POSTGRESQL_PASSWORD}\"}' --wallet-name endorser-wallet  --seed '${ACAPY_ENDORSER_SEED}' --admin '0.0.0.0' ${ACAPY_ENDORSER_ADMIN_PORT} --label '${ENDORSER_AGENT_NAME}' ${ACAPY_ADMIN_CONFIG} ${ACAPY_READ_ONLY_MODE} --endorser-protocol-role endorser --auto-endorse-transactions "
       ]
     volumes:
       - "./endorser-acapy-args.yml:/home/indy/endorser-acapy-args.yml"
@@ -193,7 +173,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
   tenant-ui:
     build:
       context: ../services/grip

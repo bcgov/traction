@@ -137,7 +137,6 @@ async def get_tenant_access_token(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect wallet_id or wallet_key",
-            headers={"WWW-Authenticate": "Bearer"},
         )
     return create_access_token(
         data={
