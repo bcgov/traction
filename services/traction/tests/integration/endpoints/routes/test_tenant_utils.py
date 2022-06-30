@@ -6,6 +6,7 @@ import os
 from httpx import AsyncClient, ReadTimeout
 from pydantic import parse_obj_as
 
+from api.endpoints.models.v1.innkeeper import CheckInResponse
 from tests.test_utils import (
     random_string,
     innkeeper_auth,
@@ -14,9 +15,7 @@ from tests.test_utils import (
     tenant_headers,
 )
 
-from api.db.models.tenant import TenantRead
-from api.db.models.tenant_issuer import TenantIssuerRead
-from api.endpoints.models.innkeeper import CheckInResponse
+
 from api.endpoints.models.credentials import (
     CredPrecisForProof,
     CredentialStateType,
@@ -86,26 +85,30 @@ async def create_tenant(
     tenant1_name = random_string(tenant_name, 12)
     data = {"name": tenant1_name}
     resp_tenant1 = await app_client.post(
-        "/innkeeper/v0/check-in", json=data, headers=ik_headers
+        "/innkeeper/v1/tenants/check-in", json=data, headers=ik_headers
     )
-    assert resp_tenant1.status_code == 201, resp_tenant1.content
+    assert resp_tenant1.status_code == 200, resp_tenant1.content
     c1_resp = CheckInResponse(**resp_tenant1.json())
 
-    t1_token = await tenant_auth(app_client, c1_resp.wallet_id, c1_resp.wallet_key)
+    t1_token = await tenant_auth(
+        app_client, c1_resp.item.wallet_id, c1_resp.item.wallet_key
+    )
     t1_headers = tenant_headers(t1_token)
 
     if not make_issuer:
         return t1_headers
 
     resp_issuer1 = await app_client.post(
-        f"/innkeeper/v0/issuers/{c1_resp.id}", headers=ik_headers
+        f"/innkeeper/v1/tenants/{c1_resp.id}/make-issuer", headers=ik_headers
     )
     assert resp_issuer1.status_code == 200, resp_issuer1.content
 
-    resp_issuer1 = await app_client.post("/tenant/v0/admin/issuer", headers=t1_headers)
+    resp_issuer1 = await app_client.post(
+        "/tenant/v1/admin/make-issuer", headers=t1_headers
+    )
     assert resp_issuer1.status_code == 200, resp_issuer1.content
 
-    await check_workflow_state(app_client, t1_headers, "/tenant/v0/admin/issuer")
+    # await check_workflow_state(app_client, t1_headers, "/tenant/v0/admin/issuer")
 
     return t1_headers
 
@@ -202,10 +205,7 @@ async def connect_tenants(
 
         t1_item = t1_connections["items"][0]
         t2_item = t2_connections["items"][0]
-        completed = (
-            t1_item["status"] == "Active"
-            and t2_item["status"] == "Active"
-        )
+        completed = t1_item["status"] == "Active" and t2_item["status"] == "Active"
         if not completed:
             await asyncio.sleep(default_pause_between_attempts)
         i -= 1

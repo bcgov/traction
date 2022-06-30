@@ -59,7 +59,7 @@ async def test_tenants_connect(app_client: AsyncClient) -> None:
     await connect_tenants(app_client, t1_headers, "alice", t2_headers, "faber")
 
 
-@pytest.mark.integtest
+# @pytest.mark.integtest
 @pytest.mark.parametrize(
     "support_revocation",
     [
@@ -67,7 +67,7 @@ async def test_tenants_connect(app_client: AsyncClient) -> None:
         True,
     ],
 )
-async def test_tenant_issuer(support_revocation, app_client: AsyncClient) -> None:
+async def x_test_tenant_issuer(support_revocation, app_client: AsyncClient) -> None:
     # get a token
     bearer_token = await innkeeper_auth(app_client)
     ik_headers = innkeeper_headers(bearer_token)
@@ -93,7 +93,7 @@ async def test_tenant_issuer(support_revocation, app_client: AsyncClient) -> Non
     assert cred_def_id, "No cred def id returned"
 
 
-@pytest.mark.integtest
+# @pytest.mark.integtest
 @pytest.mark.parametrize(
     "support_revocation",
     [
@@ -101,7 +101,7 @@ async def test_tenant_issuer(support_revocation, app_client: AsyncClient) -> Non
         True,
     ],
 )
-async def test_tenants_issue_credential(
+async def x_test_tenants_issue_credential(
     support_revocation, app_client: AsyncClient
 ) -> None:
     # get a token
@@ -166,7 +166,7 @@ async def test_tenants_issue_credential(
     assert 1 == len(json.loads(creds_resp.content)), creds_resp.content
 
 
-@pytest.mark.integtest
+# @pytest.mark.integtest
 @pytest.mark.parametrize(
     "support_revocation",
     [
@@ -174,7 +174,7 @@ async def test_tenants_issue_credential(
         True,
     ],
 )
-async def test_tenants_issue_credential_request_proof(
+async def x_test_tenants_issue_credential_request_proof(
     support_revocation, app_client: AsyncClient
 ) -> None:
     # get a token

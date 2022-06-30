@@ -32,8 +32,8 @@ from test_tenant_utils import (
 pytestmark = pytest.mark.asyncio
 
 
-@pytest.mark.integtest
-async def test_tenants_issue_cred_holder_reject(app_client: AsyncClient) -> None:
+# @pytest.mark.integtest
+async def x_test_tenants_issue_cred_holder_reject(app_client: AsyncClient) -> None:
     # get a token
     bearer_token = await innkeeper_auth(app_client)
     ik_headers = innkeeper_headers(bearer_token)
