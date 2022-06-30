@@ -40,7 +40,6 @@ const submit_new_contact = () => {
     .then((res) => {
       invitation_url = res.data.invitation_url;
       console.log(`invitation_url: ${invitation_url}`);
-
       processing.value = false; // enable button
       toast(`Contact Created!`);
     })
@@ -71,6 +70,7 @@ const submit_new_contact = () => {
       label="Submit"
       @click="submit_new_contact"
       :disabled="processing ? true : false"
+      :hidden="invitation_url === ''"
       :loading="processing ? true : false"
     ></Button>
   </div>
