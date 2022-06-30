@@ -39,6 +39,7 @@ export default {
 <style>
 .qr-image {
   display: flex;
+  margin: 20;
 }
 .qr-container {
   max-width: 400px;
