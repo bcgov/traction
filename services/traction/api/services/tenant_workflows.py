@@ -25,7 +25,6 @@ from api.endpoints.models.webhooks import (
 )
 from api.services.base import BaseWorkflow
 from api.services.IssuerWorkflow import IssuerWorkflow
-from api.services.SchemaWorkflow import SchemaWorkflow
 from api.services.IssueCredentialWorkflow import IssueCredentialWorkflow
 from api.services.PresentCredentialWorkflow import PresentCredentialWorkflow
 
@@ -79,9 +78,6 @@ def subscribe_workflow_events():
     )
     settings.EVENT_BUS.subscribe(
         WEBHOOK_ENDORSE_LISTENER_PATTERN, IssuerWorkflow.handle_workflow_events
-    )
-    settings.EVENT_BUS.subscribe(
-        WEBHOOK_ENDORSE_LISTENER_PATTERN, SchemaWorkflow.handle_workflow_events
     )
     settings.EVENT_BUS.subscribe(
         WEBHOOK_ISSUE_LISTENER_PATTERN, IssueCredentialWorkflow.handle_workflow_events

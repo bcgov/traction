@@ -4,7 +4,6 @@ from api.db.models.base import BaseTable, Timeline  # noqa: F401
 from api.db.models.tenant import Tenant  # noqa: F401
 from api.db.models.tenant_webhook import TenantWebhook  # noqa: F401
 from api.db.models.tenant_webhook_msg import TenantWebhookMsg  # noqa: F401
-from api.db.models.tenant_schema import TenantSchema  # noqa: F401
 from api.db.models.issue_credential import IssueCredential  # noqa: F401
 from api.db.models.present_credential import PresentCredential  # noqa: F401
 from api.db.models.tenant_issuer import TenantIssuer  # noqa: F401
