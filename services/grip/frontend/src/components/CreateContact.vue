@@ -70,7 +70,6 @@ const submit_new_contact = () => {
       label="Submit"
       @click="submit_new_contact"
       :disabled="processing ? true : false"
-      :hidden="invitation_url === ''"
       :loading="processing ? true : false"
     ></Button>
   </div>
