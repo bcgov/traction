@@ -50,12 +50,12 @@ export default {
 <style>
 .qr-image {
   display: flex;
-  margin: 20;
+  margin-bottom: 25px;
 }
 .qr-container {
   max-width: 400px;
 }
 i {
-  margin: 10;
+  margin: 10px;
 }
 </style>
