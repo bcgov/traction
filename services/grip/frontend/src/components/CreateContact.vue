@@ -53,8 +53,9 @@ const submit_new_contact = () => {
 
 <template>
   <div class="create-contact">
+    <h1>Contacts</h1>
     <div>
-      <H2>Make connection QR code</H2>
+      <h2>Create Connection Invitation</h2>
       <span class="p-float-label">
         <InputText
           type="text"
@@ -67,6 +68,7 @@ const submit_new_contact = () => {
     </div>
     <QRCode v-if="invitation_url" :qr_content="invitation_url" />
     <Button
+      v-else
       label="Submit"
       @click="submit_new_contact"
       :disabled="processing ? true : false"
@@ -88,6 +90,10 @@ export default {
   align-items: center;
   justify-content: center;
   height: 100%;
+  margin: 10px;
+  padding: 15px;
+  border: 3px solid grey;
+  border-radius: 8px;
 }
 
 span.p-float-label {
