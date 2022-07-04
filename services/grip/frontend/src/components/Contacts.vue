@@ -54,6 +54,8 @@ const toggled = (e: any) => {
         :paginator="true"
         :rows="5"
         striped-rows
+        v-model:selection="store.state.contacts.selection"
+        selection-mode="single"
       >
         <Column :sortable="true" field="alias" header="Name" />
         <Column field="roll" header="Roll" />
