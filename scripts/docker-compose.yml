@@ -193,7 +193,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
   tenant-ui:
     build:
       context: ../services/grip
