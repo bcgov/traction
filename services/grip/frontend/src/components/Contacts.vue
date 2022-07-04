@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { inject } from "vue";
 import Fieldset from "primevue/fieldset";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
 import ProgressSpinner from "primevue/progressspinner";
 import axios from "axios";
 
@@ -22,8 +24,8 @@ const toggled = (e: any) => {
         },
       })
       .then((res) => {
-        console.log(res);
         store.state.contacts.data = res.data.items;
+        console.log(store.state.contacts.data);
       })
       .catch((err) => {
         store.state.contacts.data = null;
@@ -41,7 +43,26 @@ const toggled = (e: any) => {
   >
     <template #legend>Contacts</template>
 
-    <ProgressSpinner />
+    <!--
+      If there is no data, show a spinner.
+      Otherwise show the data.
+    -->
+    <ProgressSpinner v-if="!store.state.contacts.data" />
+    <div v-else>
+      <DataTable
+        :value="store.state.contacts.data"
+        :paginator="true"
+        :rows="5"
+        striped-rows
+      >
+        <Column :sortable="true" field="alias" header="Name" />
+        <Column field="roll" header="Roll" />
+        <Column field="state" header="State" />
+        <Column field="status" header="Status" />
+        <Column field="created_at" header="Created at" />
+        <Column field="contact_id" header="ID" />
+      </DataTable>
+    </div>
   </Fieldset>
 </template>
 
