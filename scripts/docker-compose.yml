@@ -35,6 +35,7 @@ services:
       - ACAPY_GENESIS_URL=${ACAPY_GENESIS_URL}
       - DEFAULT_RETRY_ATTEMPTS=${DEFAULT_RETRY_ATTEMPTS:-10}
       - DEFAULT_PAUSE_BETWEEN_ATTEMPTS=${DEFAULT_PAUSE_BETWEEN_ATTEMPTS:-2}
+      - TRACTION_CORS_URLS=${TRACTION_CORS_URLS}
     ports:
       - ${TRACTION_SERVICE_PORT}:5000
     extra_hosts:
@@ -86,7 +87,7 @@ services:
       - ${ACAPY_ADMIN_PORT}:${ACAPY_ADMIN_PORT}
       - ${ACAPY_HTTP_PORT}:${ACAPY_HTTP_PORT}
     entrypoint: /bin/bash
-    command: [ "-c", "sleep 5; ./ngrok-wait.sh" ]
+    command: ["-c", "sleep 5; ./ngrok-wait.sh"]
     volumes:
       - "./acapy-static-args.yml:/home/indy/acapy-static-args.yml"
     extra_hosts:
@@ -102,7 +103,7 @@ services:
       - traction-wallet:/var/lib/postgresql/data
       - ./db_init.sql:/docker-entrypoint-initdb.d/1-init.sql
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -148,10 +149,9 @@ services:
       - ${ACAPY_ENDORSER_ADMIN_PORT}:${ACAPY_ENDORSER_ADMIN_PORT}
       - ${ACAPY_ENDORSER_HTTP_PORT}:${ACAPY_ENDORSER_HTTP_PORT}
     entrypoint: /bin/bash
-    command:
-      [
+    command: [
         "-c",
-        "sleep 5; 
+        "sleep 5;
         aca-py start \
         --auto-provision
         --arg-file endorser-acapy-args.yml \
@@ -189,11 +189,10 @@ services:
       - endorser-wallet:/var/lib/postgresql/data
       - ./db_init.sql:/docker-entrypoint-initdb.d/1-init.sql
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
-
   tenant-ui:
     build:
       context: ../services/grip
