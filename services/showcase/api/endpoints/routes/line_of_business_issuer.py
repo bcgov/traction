@@ -73,23 +73,24 @@ async def revoke_degree(
     issued_credentials = await traction.tenant_get_issued_credentials(
         issuer.wallet_id, issuer.wallet_key
     )
-    # find the credential for this student's connection id
+    # find the credential for this student
     # and the issuer's cred def id.
     cred = next(
         (
             x
-            for x in issued_credentials
-            if str(x["credential"]["connection_id"]) == str(student.connection_id)
-            and str(x["credential"]["cred_def_id"]) == str(issuer.cred_def_id)
+            for x in issued_credentials["items"]
+            if x["status"] == "Issued"
+            and str(x["credential_template"]["cred_def_id"]) == str(issuer.cred_def_id)
+            and str(x["contact"]["alias"]) == str(student.alias)
         ),
         None,
     )
+    logger.info(cred)
     if cred:
         await traction.tenant_revoke_credential(
             issuer.wallet_id,
             issuer.wallet_key,
-            cred["credential"]["rev_reg_id"],
-            cred["credential"]["cred_rev_id"],
+            cred["issuer_credential_id"],
             f"Revoked by {issuer.name}.",
         )
 
@@ -114,4 +115,4 @@ async def get_issued_credentials(
         lob.wallet_key,
     )
 
-    return resp
+    return resp["items"]

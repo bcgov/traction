@@ -29,12 +29,10 @@ from api.services.connections import (
 from api.endpoints.dependencies.db import get_db
 from api.endpoints.dependencies.tenant_security import get_from_context
 from api.endpoints.models.credentials import (
-    IssueCredentialProtocolType,
     CredentialRoleType,
     PresentCredentialProtocolType,
     PresentationStateType,
     PresentationRoleType,
-    CredentialPreview,
     ProofRequest,
     CredPrecisForProof,
     CredPresentation,
@@ -49,12 +47,7 @@ from api.services.base import BaseWorkflow
 from acapy_client.api.credentials_api import CredentialsApi
 from acapy_client.api.present_proof_v1_0_api import PresentProofV10Api
 from acapy_client.api.revocation_api import RevocationApi
-from api.services.v0.issuer_service import (
-    IssueCredentialData,
-    revoke_issued_credential,
-    get_issued_credentials,
-    issue_new_credential,
-)
+from api.services.v0.issuer_service import IssueCredentialData
 
 
 router = APIRouter()
@@ -68,71 +61,6 @@ revoc_api = RevocationApi(api_client=get_api_client())
 class PresentCredentialData(BaseModel):
     presentation: PresentCredentialRead | None = None
     workflow: TenantWorkflowRead | None = None
-
-
-@router.get("/issuer/issue", response_model=List[IssueCredentialData])
-async def issuer_get_issue_credentials(
-    state: TenantWorkflowStateType | None = None,
-    workflow_id: str | None = None,
-    cred_issue_id: str | None = None,
-    db: AsyncSession = Depends(get_db),
-) -> List[IssueCredentialData]:
-    tenant_id = get_from_context("TENANT_ID")
-    wallet_id = get_from_context("TENANT_WALLET_ID")
-
-    return await get_issued_credentials(
-        db, tenant_id, wallet_id, workflow_id, cred_issue_id, state
-    )
-
-
-@router.post("/issuer/issue", response_model=IssueCredentialData)
-async def issuer_issue_credential(
-    cred_protocol: IssueCredentialProtocolType,
-    credential: CredentialPreview,
-    cred_def_id: str | None = None,
-    connection_id: str | None = None,
-    alias: str | None = None,
-    db: AsyncSession = Depends(get_db),
-) -> IssueCredentialData:
-    tenant_id = get_from_context("TENANT_ID")
-    wallet_id = get_from_context("TENANT_WALLET_ID")
-
-    return await issue_new_credential(
-        db,
-        tenant_id,
-        wallet_id,
-        cred_protocol,
-        credential,
-        cred_def_id,
-        connection_id,
-        alias,
-    )
-
-
-@router.post("/issuer/revoke", response_model=IssueCredentialData)
-async def issuer_revoke_credential(
-    cred_issue_id: str | None = None,
-    rev_reg_id: str | None = None,
-    cred_rev_id: str | None = None,
-    comment: str | None = None,
-    db: AsyncSession = Depends(get_db),
-) -> IssueCredentialData:
-    """
-    write an entry to the revocation registry
-    and notify the holder if an active connection exists
-    """
-    tenant_id = get_from_context("TENANT_ID")
-    wallet_id = get_from_context("TENANT_WALLET_ID")
-
-    return await revoke_issued_credential(
-        db,
-        tenant_id,
-        wallet_id,
-        cred_issue_id,
-        rev_reg_id,
-        cred_rev_id,
-        comment,
-    )
 
 
 @router.get("/holder/offer", response_model=List[IssueCredentialData])

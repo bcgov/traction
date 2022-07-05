@@ -121,17 +121,6 @@ async def handle_cred_def(lob: Lob, payload: dict, db: AsyncSession):
     return True
 
 
-async def handle_issue_credential(lob: Lob, payload: dict, db: AsyncSession):
-    logger.info(f"handle_issue_credential({payload})")
-    # await traction.tenant_accept_cred_offer(
-    #     wallet_id=lob.wallet_id,
-    #     wallet_key=lob.wallet_key,
-    #     cred_issue_id=payload["cred_issue_id"],
-    # )
-
-    return True
-
-
 async def handle_presentation_request(lob: Lob, payload: dict, db: AsyncSession):
     logger.info(f"handle_presentation_request({payload})")
     try:
