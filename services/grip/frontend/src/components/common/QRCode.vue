@@ -33,7 +33,7 @@ const copy_to_clipboard = (content: string) => {
     ></Button>
     <Accordion class="qr-accordion">
       <AccordionTab header="View Raw Content">
-        {{ qr_content }}
+        <p style="word-wrap: break-word">{{ qr_content }}</p>
       </AccordionTab>
     </Accordion>
   </div>
