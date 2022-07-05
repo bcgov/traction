@@ -40,7 +40,6 @@ const clicked = () => {
     .then((res) => {
       const token = res.data.access_token;
       processing.value = false; // enable button
-      // toast(`Access Token: ${token}`);
       console.log(`Access Token: ${token}`);
       store.state.token = token;
     })
