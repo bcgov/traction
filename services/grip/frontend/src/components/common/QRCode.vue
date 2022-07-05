@@ -26,11 +26,12 @@ const copy_to_clipboard = (content: string) => {
       level="H"
     />
     <Button
-      v-else
+      class="clipboard-button"
       label="Copy to Clipboard"
+      icon="pi pi-paperclip"
       @click="copy_to_clipboard(qr_content)"
     ></Button>
-    <Accordion>
+    <Accordion class="qr-accordion">
       <AccordionTab header="View Raw Content">
         {{ qr_content }}
       </AccordionTab>
@@ -51,6 +52,10 @@ export default {
 </script>
 
 <style>
+.qr-accordion {
+  margin-top: 10px;
+}
+
 .qr-image {
   display: flex;
   margin-bottom: 25px;

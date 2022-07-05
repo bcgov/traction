@@ -40,7 +40,7 @@ const clicked = () => {
     .then((res) => {
       const token = res.data.access_token;
       processing.value = false; // enable button
-      toast(`Access Token: ${token}`);
+      toast(`Login Success!`);
       console.log(`Access Token: ${token}`);
       store.state.token = token;
     })
@@ -81,7 +81,8 @@ const clear = () => {
           type="password"
           autocomplete="current-password"
           v-model="secret"
-          name="password"        />
+          name="password"
+        />
         <label for="secret">Wallet Key</label>
       </span>
     </div>
