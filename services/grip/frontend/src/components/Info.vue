@@ -4,6 +4,8 @@ import { inject } from "vue";
 const store: any = inject("store");
 </script>
 
-<template>Here isss our token {{ store.state.token }}</template>
+<template>
+  <h3>Login Successful!</h3>
+</template>
 
 <style></style>
