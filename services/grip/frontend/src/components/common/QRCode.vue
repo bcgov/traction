@@ -1,6 +1,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import Button from "primevue/button";
 import QrcodeVue from "qrcode.vue";
 import Accordion from "primevue/accordion";
 import AccordionTab from "primevue/accordiontab";
@@ -15,8 +16,6 @@ const copy_to_clipboard = (content: string) => {
 };
 </script>
 
-
-
 <template>
   <div class="qr-container" v-if="qr_content">
     <qrcode-vue
@@ -26,10 +25,15 @@ const copy_to_clipboard = (content: string) => {
       :size="400"
       level="H"
     />
-    <Accordion>
+    <Button
+      class="clipboard-button"
+      label="Copy to Clipboard"
+      icon="pi pi-paperclip"
+      @click="copy_to_clipboard(qr_content)"
+    ></Button>
+    <Accordion class="qr-accordion">
       <AccordionTab header="View Raw Content">
-        <i @click="copy_to_clipboard(qr_content)" class="pi pi-paperclip"></i>
-        <!-- {{ qr_content }} -->
+        <p style="word-wrap: break-word">{{ qr_content }}</p>
       </AccordionTab>
     </Accordion>
   </div>
@@ -48,6 +52,10 @@ export default {
 </script>
 
 <style>
+.qr-accordion {
+  margin-top: 10px;
+}
+
 .qr-image {
   display: flex;
   margin-bottom: 25px;
