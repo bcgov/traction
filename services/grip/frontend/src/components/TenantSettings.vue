@@ -3,6 +3,7 @@ import { ref, inject } from "vue";
 import axios from "axios";
 import { useToast } from "vue-toastification";
 import Fieldset from "primevue/fieldset";
+import Button from "primevue/button";
 import ProgressSpinner from "primevue/progressspinner";
 
 const store: any = inject("store");
@@ -36,6 +37,25 @@ const toggled = (e: any) => {
       });
   }
 };
+
+const make_issuer = () => {
+  axios({
+    method: "post",
+    url: "http://localhost:5100/tenant/v1/admin/make-issuer",
+    headers: {
+      accept: "application/json",
+      "content-type": "application/x-www-form-urlencoded",
+      Authorization: `Bearer ${store.state.token}`,
+    },
+  })
+    .then((res) => {
+      toast(`Starting Issuer Process! Check back later`);
+    })
+    .catch((err) => {
+      console.error(err);
+      toast.error(`Failure: ${err}`);
+    });
+};
 </script>
 
 <template>
@@ -46,9 +66,16 @@ const toggled = (e: any) => {
   >
     <template #legend>Settings</template>
     <ProgressSpinner v-if="!store.state.settings.self" />
-    <div v-else>
-      {{ store.state.settings.self }}
+    <div v-else v-for="(v, k) in store.state.settings.self" :key="k">
+      <span>{{ k }}:{{ typeof k }}:{{ v }} </span>
     </div>
+
+    <Button
+      label="Become an Issuer"
+      v-if="store.state.settings.self.public_did_status !== 'Public'"
+      @click="make_issuer"
+      :disabled="store.state.settings.issuer === ''"
+    ></Button>
   </Fieldset>
 </template>
 
