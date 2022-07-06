@@ -12,7 +12,7 @@ const toast = useToast();
 let setting_open_toggle: boolean = false;
 
 // Vite passes the api url to here
-const api = import.meta.env.VITE_TRACTION_ENDPOINT;
+// const api = import.meta.env.VITE_TRACTION_ENDPOINT;
 
 const toggled = (e: any) => {
   setting_open_toggle = !e.value;
@@ -20,7 +20,7 @@ const toggled = (e: any) => {
 
   if (setting_open_toggle && !store.state.settings.self) {
     axios
-      .get(`${api}/v1/tenant/admin/self`, {
+      .get(`http://localhost:5100/tenant/v1/admin/self`, {
         headers: {
           accept: "application/json",
           Authorization: `Bearer ${store.state.token}`,
@@ -47,7 +47,7 @@ const toggled = (e: any) => {
     <template #legend>Settings</template>
     <ProgressSpinner v-if="!store.state.settings.self" />
     <div v-else>
-      {{ store.state.admin_settings }}
+      {{ store.state.settings.self }}
     </div>
   </Fieldset>
 </template>
