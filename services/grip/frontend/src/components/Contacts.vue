@@ -7,6 +7,7 @@ import ProgressSpinner from "primevue/progressspinner";
 import axios from "axios";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
+import CreateContact from "./CreateContact.vue";
 
 const store: any = inject("store");
 
@@ -39,8 +40,6 @@ const toggled = (e: any) => {
 };
 
 const createContact = () => {
-  console.log("createContact");
-  console.log(displayAddContact.value);
   displayAddContact.value = !displayAddContact.value;
 };
 </script>
@@ -83,8 +82,12 @@ const createContact = () => {
     ></Button>
   </Fieldset>
 
-  <Dialog header="Create a new contact" v-model:visible="displayAddContact">
-    Hey model
+  <Dialog
+    header="Create a new contact"
+    v-model:visible="displayAddContact"
+    :modal="true"
+  >
+    <CreateContact />
   </Dialog>
 </template>
 
