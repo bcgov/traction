@@ -5,6 +5,7 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import ProgressSpinner from "primevue/progressspinner";
 import axios from "axios";
+import Button from "primevue/button";
 
 const store: any = inject("store");
 
@@ -32,6 +33,10 @@ const toggled = (e: any) => {
         console.error("error", err);
       });
   }
+};
+
+const createContact = () => {
+  console.log("createContact");
 };
 </script>
 
@@ -65,6 +70,12 @@ const toggled = (e: any) => {
         <Column field="contact_id" header="ID" />
       </DataTable>
     </div>
+    <Button
+      class="create-contact"
+      icon="pi pi-plus"
+      label="Create Contact"
+      @click="createContact"
+    ></Button>
   </Fieldset>
 </template>
 
@@ -73,5 +84,9 @@ fieldset {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.create-contact {
+  float: right;
+  margin-top: 10px;
 }
 </style>
