@@ -20,7 +20,7 @@ const toggled = (e: any) => {
 
   if (setting_open_toggle && !store.state.settings.self) {
     axios
-      .get(`${api}/tenant/admin/self`, {
+      .get(`${api}/v1/tenant/admin/self`, {
         headers: {
           accept: "application/json",
           Authorization: `Bearer ${store.state.token}`,

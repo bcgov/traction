@@ -8,6 +8,7 @@ import { reactive } from "vue";
 
 const state = reactive({
   token: null, // API Token
+  settings: {},
 });
 
 export default {
