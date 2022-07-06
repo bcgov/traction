@@ -4,3 +4,5 @@ devops/helm/charts/traction/charts/**
 .DS_Store
 
 traction-venv
+
+services/traction/docs/_build/**
