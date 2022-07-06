@@ -1,16 +1,19 @@
 <script setup lang="ts">
-import { inject } from "vue";
+import { inject, ref } from "vue";
 import Fieldset from "primevue/fieldset";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import ProgressSpinner from "primevue/progressspinner";
 import axios from "axios";
 import Button from "primevue/button";
+import Dialog from "primevue/dialog";
 
 const store: any = inject("store");
 
 // Vite passes the api url to here
 const api = import.meta.env.VITE_TRACTION_ENDPOINT;
+
+let displayAddContact = ref(false);
 
 const toggled = (e: any) => {
   store.state.contacts.open = !e.value;
@@ -37,6 +40,8 @@ const toggled = (e: any) => {
 
 const createContact = () => {
   console.log("createContact");
+  console.log(displayAddContact.value);
+  displayAddContact.value = !displayAddContact.value;
 };
 </script>
 
@@ -77,6 +82,10 @@ const createContact = () => {
       @click="createContact"
     ></Button>
   </Fieldset>
+
+  <Dialog header="Create a new contact" v-model:visible="displayAddContact">
+    Hey model
+  </Dialog>
 </template>
 
 <style scoped>
