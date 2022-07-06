@@ -625,17 +625,24 @@ async def tenant_request_credential_presentation(
     proof_req: dict,
 ):
     auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
-    data = proof_req
-    params = {"pres_protocol": "v1.0", "alias": alias, "connection_id": connection_id}
+    # TODO: should be using contact id not connection id
+    data = {
+        "name": alias,
+        "version": "1.0.0",
+        "comment": "requesting degree credential",
+        "connection_id": connection_id,
+        "proof_request": proof_req,
+    }
+    logger.info(f"tenant_request_credential_presentation data = {data}")
     async with ClientSession() as client_session:
         async with await client_session.post(
             url=t_urls.TENANT_VERIFIER_REQUEST_CREDENTIALS,
             headers=auth_headers,
-            params=params,
             json=data,
         ) as response:
             try:
                 resp = await response.json()
+                logger.info(f"response = {resp}")
                 return resp
             except ContentTypeError:
                 logger.exception(
