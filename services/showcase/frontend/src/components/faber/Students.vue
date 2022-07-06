@@ -174,22 +174,22 @@ export default {
       const credentials = this.issuedCredentials.map((cred) => {
         // transforming the raw traction data to something reasonable
         // TODO: update traction api responses to be business friendly
-        const c = cred.credential;
-        const w = cred.workflow;
-        const credential = JSON.parse(c.credential);
+        const ct = cred.credential_template;
+        const acapy = cred.acapy;
+        const cp = acapy.credential_exchange.credential_offer_dict.credential_preview;
         const data = {};
-        credential.attributes.forEach((attr) => {
+        cp.attributes.forEach((attr) => {
           data[attr.name] = attr.value;
         });
         return {
-          'id': c.id,
-          'cred_def_id': c.cred_def_id,
+          'id': cred.issuer_credential_id,
+          'cred_def_id': ct.cred_def_id,
           'data': data,
-          'revocable': c.rev_reg_id !== null,
-          'issue_state': c.issue_state,
-          'workflow_state': w.workflow_state,
-          'created_at': c.created_at,
-          'updated_at': c.updated_at
+          'revocable': acapy.revoc_reg_id !== null,
+          'issue_state': cred.state,
+          'workflow_state': cred.status,
+          'created_at': cred.created_at,
+          'updated_at': cred.updated_at
         };
       });
       return credentials;
@@ -224,7 +224,7 @@ export default {
       return result;
     },
     canRevokeCredential(cred) {
-      return cred.revocable && cred.issue_state == 'credential_acked' && cred.workflow_state == 'completed';
+      return cred.revocable && cred.issue_state == 'credential_acked' && cred.workflow_state == 'Issued';
     }
   },
   async mounted() {

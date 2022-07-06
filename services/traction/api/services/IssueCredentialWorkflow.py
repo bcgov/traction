@@ -20,7 +20,7 @@ from api.endpoints.dependencies.tenant_security import get_from_context
 from api.endpoints.models.tenant_workflow import (
     TenantWorkflowStateType,
 )
-from api.services.tenant_workflow_notifier import TenantWorkflowNotifier
+
 from api.endpoints.models.credentials import (
     IssueCredentialProtocolType,
     CredentialType,
@@ -130,7 +130,7 @@ class IssueCredentialWorkflow(BaseWorkflow):
             # update credential status to revoked
             logger.debug(f">>> got a revocation notification: {webhook_message}")
             wallet_id = get_from_context("TENANT_WALLET_ID")
-            comment = webhook_message["payload"].get("comment")
+            # comment = webhook_message["payload"].get("comment")
             thread_id = webhook_message["payload"].get("thread_id")
             # should be "indy::<rev_reg_id>::<cred_rev_id>"
             thread_id_parts = thread_id.split("::")
@@ -148,10 +148,6 @@ class IssueCredentialWorkflow(BaseWorkflow):
                 )
                 issue_cred = await issue_repo.update(update_issue)
 
-                logger.info(f">>> sending webhook with cred revoc: {issue_cred}")
-                await TenantWorkflowNotifier(profile.db).issuer_workflow_cred_revoc(
-                    issue_cred, comment
-                )
             return None
 
         else:
