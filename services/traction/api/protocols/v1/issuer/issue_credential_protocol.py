@@ -27,7 +27,7 @@ class IssueCredentialProtocol(ABC):
         self.logger.debug(f"payload={payload}")
         self.logger.debug(f"role={payload['role']}")
         self.logger.debug(f"state={payload['state']}")
-        if CredentialRoleType.issuer == payload["role"]:
+        if self.role == payload["role"]:
             await self.before_all(profile=profile, payload=payload)
 
             if await self.approve_for_processing(profile=profile, payload=payload):
@@ -38,12 +38,18 @@ class IssueCredentialProtocol(ABC):
                     await self.on_proposal_received(profile=profile, payload=payload)
                 elif CredentialStateType.offer_sent == payload["state"]:
                     await self.on_offer_sent(profile=profile, payload=payload)
+                elif CredentialStateType.offer_received == payload["state"]:
+                    await self.on_offer_received(profile=profile, payload=payload)
                 elif CredentialStateType.request_received == payload["state"]:
                     await self.on_request_received(profile=profile, payload=payload)
+                elif CredentialStateType.request_sent == payload["state"]:
+                    await self.on_request_sent(profile=profile, payload=payload)
                 elif CredentialStateType.credential_issued == payload["state"]:
                     await self.on_credential_issued(profile=profile, payload=payload)
                 elif CredentialStateType.credential_acked == payload["state"]:
                     await self.on_credential_acked(profile=profile, payload=payload)
+                elif CredentialStateType.credential_received == payload["state"]:
+                    await self.on_credential_received(profile=profile, payload=payload)
                 elif CredentialStateType.done == payload["state"]:
                     await self.on_done(profile=profile, payload=payload)
                 elif CredentialStateType.abandoned == payload["state"]:
@@ -89,6 +95,10 @@ class IssueCredentialProtocol(ABC):
         pass
 
     @abstractmethod
+    async def on_offer_received(self, profile: Profile, payload: dict):
+        pass
+
+    @abstractmethod
     async def on_offer_sent(self, profile: Profile, payload: dict):
         pass
 
@@ -97,11 +107,19 @@ class IssueCredentialProtocol(ABC):
         pass
 
     @abstractmethod
+    async def on_request_sent(self, profile: Profile, payload: dict):
+        pass
+
+    @abstractmethod
     async def on_credential_issued(self, profile: Profile, payload: dict):
         pass
 
     @abstractmethod
     async def on_credential_acked(self, profile: Profile, payload: dict):
+        pass
+
+    @abstractmethod
+    async def on_credential_received(self, profile: Profile, payload: dict):
         pass
 
     @abstractmethod
@@ -168,16 +186,25 @@ class DefaultIssueCredentialProtocol(IssueCredentialProtocol):
     async def on_proposal_received(self, profile: Profile, payload: dict):
         pass
 
+    async def on_offer_received(self, profile: Profile, payload: dict):
+        pass
+
     async def on_offer_sent(self, profile: Profile, payload: dict):
         pass
 
     async def on_request_received(self, profile: Profile, payload: dict):
         pass
 
+    async def on_request_sent(self, profile: Profile, payload: dict):
+        pass
+
     async def on_credential_issued(self, profile: Profile, payload: dict):
         pass
 
     async def on_credential_acked(self, profile: Profile, payload: dict):
+        pass
+
+    async def on_credential_received(self, profile: Profile, payload: dict):
         pass
 
     async def on_done(self, profile: Profile, payload: dict):

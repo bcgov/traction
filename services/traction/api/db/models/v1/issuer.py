@@ -160,8 +160,7 @@ class IssuerCredential(StatefulModel, TimestampModel, table=True):
         Returns: The Traction IssuerCredential (db) record
 
         Raises:
-          NotFoundError: if the IssuerCredential cannot be found by ID and deleted
-          flag
+          NotFoundError: if the IssuerCredential cannot be found by ID
         """
 
         q = (

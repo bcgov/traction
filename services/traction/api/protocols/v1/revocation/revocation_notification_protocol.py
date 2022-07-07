@@ -1,19 +1,19 @@
+import json
 import logging
 from abc import ABC, abstractmethod
 
 from api.core.config import settings
 from api.core.event_bus import Event
 from api.core.profile import Profile
-from api.db.models.v1.issuer import IssuerCredential
+from api.db.models.v1.holder import HolderCredential
 from api.db.session import async_session
 from api.endpoints.models.v1.errors import NotFoundError
-from api.endpoints.models.v1.issuer import IssuerCredentialItem
+from api.endpoints.models.v1.holder import HolderCredentialStatusType
 from api.endpoints.models.webhooks import (
     WEBHOOK_REVOC_NOTIFY_LISTENER_PATTERN,
     TenantEventTopicType,
     TRACTION_EVENT_PREFIX,
 )
-from api.services.v1 import issuer_service
 
 
 class RevocationNotificationProtocol(ABC):
@@ -55,49 +55,61 @@ class RevocationNotificationProcessor(RevocationNotificationProtocol):
     def __init__(self):
         super().__init__()
 
-    async def get_issuer_credential(
+    async def get_holder_credential(
         self, profile: Profile, revoc_reg_id: str, revocation_id: str
-    ) -> IssuerCredentialItem:
-        self.logger.info(f"> get_issuer_credential({revoc_reg_id},{revocation_id})")
+    ) -> HolderCredential:
+        self.logger.info(f"> get_holder_credential({revoc_reg_id},{revocation_id})")
         try:
             async with async_session() as db:
-                rec = await IssuerCredential.get_by_revocation_ids(
-                    db, revoc_reg_id, revocation_id
+                return await HolderCredential.get_by_revocation_ids(
+                    db, profile.tenant_id, revoc_reg_id, revocation_id
                 )
-                if rec:
-                    self.logger.info(
-                        f"issuer_credential_id = {rec.issuer_credential_id}"
-                    )
-                    result = await issuer_service.get_issuer_credential(
-                        db,
-                        rec.tenant_id,
-                        None,
-                        rec.issuer_credential_id,
-                        True,
-                    )
         except NotFoundError:
-            self.logger.error("Error finding cred", exc_info=True)
+            self.logger.error("Error finding credential", exc_info=True)
             result = None
-        self.logger.info(f"< get_issuer_credential(result = {result})")
+        self.logger.info(f"< get_holder_credential(result = {result})")
         return result
+
+    async def update_holder_credential(
+        self, item: HolderCredential, data: dict
+    ) -> HolderCredential:
+        values = {
+            "revocation_comment": data["comment"],
+            "revoked": True,
+            "status": HolderCredentialStatusType.revoked,
+        }
+        return await HolderCredential.update_by_id(
+            item_id=item.holder_credential_id, values=values
+        )
 
     async def on_credential_revoked(self, profile: Profile, payload: dict):
         self.logger.info("> on_credential_revoked()")
         data = self.parse_payload(payload)
         self.logger.debug(f"parsed payload = {data}")
-        # TODO: this is supposed to be for holder, but we aren't tracking that in v1
-        # TODO: fix this when we track credentials for holder
-        issuer_credential = await self.get_issuer_credential(
+        item = await self.get_holder_credential(
             profile, data["revoc_reg_id"], data["revocation_id"]
         )
 
-        if issuer_credential:
+        if item:
+            # update item to revoked!
+            cred = await self.update_holder_credential(item, data)
+            # TODO: what should this payload really contain?
+            revocation_data = {
+                "connection_id": cred.connection_id,
+                "credential_exchange_id": cred.credential_exchange_id,
+                "schema_id": cred.schema_id,
+                "cred_def_id": cred.cred_def_id,
+                "credential_id": cred.credential_id,
+                "revoc_reg_id": cred.revoc_reg_id,
+                "revocation_id": cred.revocation_id,
+                "comment": cred.revocation_comment,
+            }
             topic = TenantEventTopicType.issuer_cred_rev
             event_topic = TRACTION_EVENT_PREFIX + topic
 
             payload = {
                 "status": "credential_revoked",
-                "credential": issuer_credential.acapy.json(),
+                "credential": json.dumps(revocation_data),
                 "comment": data["comment"],
             }
 
