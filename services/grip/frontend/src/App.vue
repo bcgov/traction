@@ -9,7 +9,7 @@ provide("store", store); // Allow the entire app to see the store.
 
 <template>
   <Dashboard v-if="store.state.token" />
-  <Login v-else="store.state.token" />
+  <Login v-else />
 </template>
 
 <style>
