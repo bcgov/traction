@@ -10,16 +10,15 @@ from sqlalchemy.orm import selectinload
 from sqlmodel import Field, Relationship
 from sqlalchemy import (
     Column,
-    String,
     select,
     desc,
     JSON,
     text,
 )
-from sqlalchemy.dialects.postgresql import UUID, ARRAY
+from sqlalchemy.dialects.postgresql import UUID
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.models.base import StatefulModel, TimestampModel
+from api.db.models.base import StatefulModel, TimestampModel, TrackingModel
 from api.db.models.v1.contact import Contact
 from api.db.models.v1.governance import CredentialTemplate
 
@@ -28,7 +27,7 @@ from api.endpoints.models.v1.errors import (
 )
 
 
-class IssuerCredential(StatefulModel, TimestampModel, table=True):
+class IssuerCredential(StatefulModel, TrackingModel, TimestampModel, table=True):
     """Issuer Credential.
 
     Model for the Issuer Credential table (postgresql specific dialects in use).
@@ -75,10 +74,8 @@ class IssuerCredential(StatefulModel, TimestampModel, table=True):
     )
     tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True)
     contact_id: uuid.UUID = Field(foreign_key="contact.contact_id", index=True)
-    external_reference_id: str = Field(nullable=True)
     revoked: bool = Field(nullable=False, default=False)
     deleted: bool = Field(nullable=False, default=False)
-    tags: List[str] = Field(sa_column=Column(ARRAY(String)))
     preview_persisted: bool = Field(nullable=False, default=False)
 
     comment: str = Field(nullable=True)
