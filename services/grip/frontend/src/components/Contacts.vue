@@ -22,7 +22,7 @@ const toggled = (e: any) => {
 
   if (store.state.contacts.open && !store.state.contacts.data) {
     axios
-      .get(`${api}/tenant/v1/contacts`, {
+      .get(`${api}/tenant/v1/contacts?page_size=1000`, {
         headers: {
           accept: "application/json",
           Authorization: `Bearer ${store.state.token}`,
@@ -61,7 +61,7 @@ const createContact = () => {
       <DataTable
         :value="store.state.contacts.data"
         :paginator="true"
-        :rows="5"
+        :rows="10"
         striped-rows
         v-model:selection="store.state.contacts.selection"
         selection-mode="single"
@@ -75,6 +75,7 @@ const createContact = () => {
       </DataTable>
     </div>
     <Button
+      v-if="store.state.contacts.data"
       class="create-contact"
       icon="pi pi-plus"
       label="Create Contact"
