@@ -83,7 +83,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .create-contact {
   display: flex;
   flex-direction: column;
