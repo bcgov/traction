@@ -8,6 +8,8 @@ import { reactive } from "vue";
 
 const state = reactive({
   token: null, // API Token
+  walletInfo: {},
+  contacts: {},
 });
 
 export default {
