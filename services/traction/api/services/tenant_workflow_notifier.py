@@ -8,9 +8,6 @@ from api.endpoints.models.webhooks import (
     TenantEventTopicType,
     TRACTION_EVENT_PREFIX,
 )
-from api.db.models.issue_credential import (
-    IssueCredentialRead,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -23,26 +20,6 @@ class TenantWorkflowNotifier:
     def db(self) -> AsyncSession:
         """Accessor for db session instance."""
         return self._db
-
-    async def issuer_workflow_cred_revoc(
-        self, cred_info: IssueCredentialRead, comment: str
-    ):
-        logger.info("received cred revoc")
-        # emit an event for any interested listeners
-        profile = Profile(cred_info.wallet_id, cred_info.tenant_id, self.db)
-        topic = TenantEventTopicType.issuer_cred_rev
-        event_topic = TRACTION_EVENT_PREFIX + topic
-        logger.info(f"profile.notify {event_topic}")
-
-        # TODO: Webhook payload schema's should become pydantic models?
-        payload = {
-            "status": "credential_revoked",
-            "credential": cred_info.json(),
-            "cred_issue_id": str(cred_info.id),
-            "comment": comment,
-        }
-
-        await profile.notify(event_topic, {"topic": topic, "payload": payload})
 
     async def issuer_workflow_completed(self, tenant_issuer: TenantIssuerRead):
         logger.info("issuer workflow complete")

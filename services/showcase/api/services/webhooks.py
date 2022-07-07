@@ -121,17 +121,6 @@ async def handle_cred_def(lob: Lob, payload: dict, db: AsyncSession):
     return True
 
 
-async def handle_issue_credential(lob: Lob, payload: dict, db: AsyncSession):
-    logger.info(f"handle_issue_credential({payload})")
-    # await traction.tenant_accept_cred_offer(
-    #     wallet_id=lob.wallet_id,
-    #     wallet_key=lob.wallet_key,
-    #     cred_issue_id=payload["cred_issue_id"],
-    # )
-
-    return True
-
-
 async def handle_presentation_request(lob: Lob, payload: dict, db: AsyncSession):
     logger.info(f"handle_presentation_request({payload})")
     try:
@@ -156,28 +145,40 @@ async def handle_presentation_request(lob: Lob, payload: dict, db: AsyncSession)
 
 
 async def handle_present_proof(lob: Lob, payload: dict, db: AsyncSession):
-    logger.info(f"handle_present_proof({payload})")
+    logger.info(
+        f"handle_present_proof(state={payload['state']}, role={payload['role']})"
+    )
     try:
-        presentation = payload["presentation"]
         if payload["state"] == "verified" and payload["role"] == "verifier":
+            logger.info("update applicant to verified")
             # for now, we know this is verified degree credential
             # just want to update the applicant data...
             a_repo = ApplicantRepository(db_session=db)
             applicant = await a_repo.get_by_alias_in_sandbox(lob.sandbox_id, "Alice")
 
+            presentation_request = payload["presentation_request"]
+            requested_attributes = presentation_request["requested_attributes"]
+
+            presentation = payload["presentation"]
             requested_proof = presentation["requested_proof"]
             revealed_attrs = requested_proof["revealed_attrs"]
-            attr_1 = revealed_attrs["attr_1"]
-            attr_2 = revealed_attrs["attr_2"]
 
-            applicant.degree = attr_1["raw"]
-            applicant.date = datetime.strptime(attr_2["raw"], "%d-%m-%Y")
+            for k in requested_attributes:
+                if requested_attributes[k]["name"] == "degree":
+                    degree_raw = revealed_attrs[k]["raw"]
+                    applicant.degree = degree_raw
+                elif requested_attributes[k]["name"] == "date":
+                    date_raw = revealed_attrs[k]["raw"]
+                    applicant.date = datetime.strptime(date_raw, "%d-%m-%Y")
+
             applicant.verified = payload["verified"]
             await a_repo.update(applicant)
+            logger.info(applicant)
 
             # notify frontend?
 
     except KeyError:
+        logger.error("KeyError", exc_info=True)
         pass
     return True
 

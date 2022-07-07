@@ -181,6 +181,44 @@ class IssuerCredential(StatefulModel, TimestampModel, table=True):
         return db_rec
 
     @classmethod
+    async def get_by_revocation_ids(
+        cls: "IssuerCredential",
+        db: AsyncSession,
+        revoc_reg_id: str,
+        revocation_id: str,
+    ) -> "IssuerCredential":
+        """Get IssuerCredential by Revocation IDs.
+
+        Find and return the database IssuerCredential record by the revocation ids.
+
+        Args:
+          db: database session
+          revoc_reg_id: acapy revocation message Revocation Registry ID
+          revocation_id: acapy revocation message Revocation ID
+
+        Returns: The Traction IssuerCredential (db) record
+
+        Raises:
+          NotFoundError: if the IssuerCredential cannot be found by IDs
+        """
+
+        q = (
+            select(cls)
+            .where(cls.revoc_reg_id == revoc_reg_id)
+            .where(cls.revocation_id == revocation_id)
+            .options(selectinload(cls.contact), selectinload(cls.credential_template))
+        )
+        q_result = await db.execute(q)
+        db_rec = q_result.scalar_one_or_none()
+        if not db_rec:
+            raise NotFoundError(
+                code="issuer_credential.revocation_ids_not_found",
+                title="Issuer Credential does not exist",
+                detail=f"Issuer Credential does not exist for revocation registration id<{revoc_reg_id}> / revocation id<{revocation_id}>",  # noqa: E501
+            )
+        return db_rec
+
+    @classmethod
     async def list_by_credential_template_id(
         cls: "IssuerCredential",
         db: AsyncSession,
