@@ -6,8 +6,8 @@ from typing import Optional, List
 import pydantic
 from sqlalchemy.exc import DBAPIError
 from sqlmodel import Field, SQLModel
-from sqlalchemy import Column, func, text, select, desc
-from sqlalchemy.dialects.postgresql import UUID, TIMESTAMP, VARCHAR
+from sqlalchemy import Column, func, text, select, desc, String
+from sqlalchemy.dialects.postgresql import UUID, TIMESTAMP, VARCHAR, ARRAY
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from api.db.session import async_session
@@ -158,3 +158,8 @@ class TimelineModel(BaseModel):
     created_at: datetime = Field(
         sa_column=Column(TIMESTAMP, nullable=False, server_default=func.now())
     )
+
+
+class TrackingModel(BaseModel):
+    tags: List[str] = Field(sa_column=Column(ARRAY(String)))
+    external_reference_id: str = Field(nullable=True)

@@ -1,17 +1,17 @@
-"""Verification requests for proof.
+"""Verification Presentation for proof.
 
-Models of the Traction tables for Connection Invitation and related data.
+Models of the Traction tables for Verification Presentation and related data.
 
 """
 import uuid
 from typing import List, Optional
 from sqlalchemy.orm import selectinload
 from sqlmodel import Field, Relationship, desc
-from sqlalchemy import Column, text, String, select
-from sqlalchemy.dialects.postgresql import UUID, JSON, ARRAY
+from sqlalchemy import Column, text, select
+from sqlalchemy.dialects.postgresql import UUID, JSON
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.models.base import StatefulModel, TimestampModel
+from api.db.models.base import StatefulModel, TimestampModel, TrackingModel
 
 from api.db.models.v1.contact import Contact
 
@@ -20,10 +20,10 @@ from api.endpoints.models.v1.errors import (
 )
 
 
-class VerifierPresentation(StatefulModel, TimestampModel, table=True):
-    """Verification Request
+class VerifierPresentation(StatefulModel, TrackingModel, TimestampModel, table=True):
+    """Verification Presentation
 
-    Model for the Verification Request table (postgresql specific
+    Model for the Verification Presentation table (postgresql specific
     dialects in use).This will track verifications of proof for the Tenants.
 
     Attributes:
@@ -41,9 +41,7 @@ class VerifierPresentation(StatefulModel, TimestampModel, table=True):
 
     tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True)
     contact_id: uuid.UUID = Field(foreign_key="contact.contact_id", index=True)
-    external_reference_id: str = Field(nullable=True)
     deleted: bool = Field(nullable=False, default=False)
-    tags: List[str] = Field(sa_column=Column(ARRAY(String)))
     comment: str = Field(nullable=True)
 
     # acapy data ---
@@ -69,7 +67,7 @@ class VerifierPresentation(StatefulModel, TimestampModel, table=True):
     ) -> "VerifierPresentation":
         """Get VerifierPresentation by id.
 
-        Find and return the database CredentialDefinition record
+        Find and return the database VerifierPresentation record
 
         Args:
           db: database session
@@ -95,8 +93,8 @@ class VerifierPresentation(StatefulModel, TimestampModel, table=True):
         if not db_rec:
             raise NotFoundError(
                 code="verifier_presentation.id_not_found",
-                title="Verification Request does not exist",
-                detail=f"Verification Request does not exist for id<{verifier_presentation_id}>",  # noqa: E501
+                title="Verification Presentation does not exist",
+                detail=f"Verification Presentation does not exist for id<{verifier_presentation_id}>",  # noqa: E501
             )
         return db_rec
 
@@ -110,7 +108,7 @@ class VerifierPresentation(StatefulModel, TimestampModel, table=True):
     ) -> "VerifierPresentation":
         """Get VerifierPresentation by id.
 
-        Find and return the database CredentialDefinition record
+        Find and return the database VerifierPresentation record
 
         Args:
           db: database session
@@ -136,8 +134,8 @@ class VerifierPresentation(StatefulModel, TimestampModel, table=True):
         if not db_rec:
             raise NotFoundError(
                 code="verifier_presentation.id_not_found",
-                title="Verification Request does not exist",
-                detail=f"Verification Request does not exist for pres_exch_id<{pres_exch_id}>",  # noqa: E501
+                title="Verification Presentation does not exist",
+                detail=f"Verification Presentation does not exist for pres_exch_id<{pres_exch_id}>",  # noqa: E501
             )
         return db_rec
 
