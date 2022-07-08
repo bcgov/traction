@@ -254,7 +254,7 @@ async def tenant_get_credentials(
     wallet_key: UUID,
 ):
     auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
-    query_params = {}
+    query_params = {"acapy": "true"}
 
     # TODO: error handling calling Traction
     async with ClientSession() as client_session:
@@ -465,18 +465,17 @@ async def tenant_issue_credential(
     attributes: list = [],
 ):
     auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
-    data = {"attributes": attributes}
-    params = {
-        "cred_protocol": "v1.0",
-        "cred_def_id": cred_def_id,
+    # This should really be using contact id and credential template id
+    # but showcase was written long ago and this is what we stored in the sandbox...
+    data = {
         "connection_id": connection_id,
-        "alias": alias,
+        "cred_def_id": cred_def_id,
+        "attributes": attributes,
     }
     async with ClientSession() as client_session:
         async with await client_session.post(
             url=t_urls.TENANT_CREDENTIAL_ISSUE,
             headers=auth_headers,
-            params=params,
             json=data,
         ) as response:
             try:
@@ -494,22 +493,19 @@ async def tenant_issue_credential(
 async def tenant_revoke_credential(
     wallet_id: UUID,
     wallet_key: UUID,
-    rev_reg_id: str,
-    cred_rev_id: str,
+    issuer_credential_id: str,
     comment: str,
 ):
     auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
-    data = {}
-    params = {
-        "rev_reg_id": rev_reg_id,
-        "cred_rev_id": cred_rev_id,
+    data = {
+        "issuer_credential_id": issuer_credential_id,
         "comment": comment,
     }
+    url = f"{t_urls.TENANT_CREDENTIAL_ISSUE}/{issuer_credential_id}/{t_urls.TENANT_CREDENTIAL_REVOKE}"  # noqa: E501
     async with ClientSession() as client_session:
         async with await client_session.post(
-            url=t_urls.TENANT_CREDENTIAL_REVOKE,
+            url=url,
             headers=auth_headers,
-            params=params,
             json=data,
         ) as response:
             try:
@@ -530,7 +526,7 @@ async def tenant_get_issued_credentials(
 ):
     auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
     data = {}
-    params = {}
+    params = {"acapy": "true"}
     async with ClientSession() as client_session:
         async with await client_session.get(
             url=t_urls.TENANT_CREDENTIAL_ISSUE,
@@ -629,17 +625,24 @@ async def tenant_request_credential_presentation(
     proof_req: dict,
 ):
     auth_headers = await get_auth_headers(wallet_id=wallet_id, wallet_key=wallet_key)
-    data = proof_req
-    params = {"pres_protocol": "v1.0", "alias": alias, "connection_id": connection_id}
+    # TODO: should be using contact id not connection id
+    data = {
+        "name": alias,
+        "version": "1.0.0",
+        "comment": "requesting degree credential",
+        "connection_id": connection_id,
+        "proof_request": proof_req,
+    }
+    logger.info(f"tenant_request_credential_presentation data = {data}")
     async with ClientSession() as client_session:
         async with await client_session.post(
             url=t_urls.TENANT_VERIFIER_REQUEST_CREDENTIALS,
             headers=auth_headers,
-            params=params,
             json=data,
         ) as response:
             try:
                 resp = await response.json()
+                logger.info(f"response = {resp}")
                 return resp
             except ContentTypeError:
                 logger.exception(
