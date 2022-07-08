@@ -11,6 +11,7 @@ const state = reactive({
   walletInfo: {},
   contacts: {},
   settings: {},
+  schemas: {},
 });
 
 export default {
