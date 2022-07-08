@@ -67,7 +67,7 @@ const createContact = () => {
         selection-mode="single"
       >
         <Column :sortable="true" field="alias" header="Name" />
-        <Column field="roll" header="Roll" />
+        <Column field="role" header="Role" />
         <Column field="state" header="State" />
         <Column field="status" header="Status" />
         <Column field="created_at" header="Created at" />
