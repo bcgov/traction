@@ -1,14 +1,37 @@
 <script setup lang="ts">
 import { inject } from "vue";
+import { useToast } from "vue-toastification";
+import Button from "primevue/button";
+
 import Fieldset from "primevue/fieldset";
 import Card from "primevue/card";
 import ProgressSpinner from "primevue/progressspinner";
 import axios from "axios";
 
 const store: any = inject("store");
+const toast = useToast();
 
 // Vite passes the api url to here
 const api = import.meta.env.VITE_TRACTION_ENDPOINT;
+
+const make_issuer = () => {
+  axios({
+    method: "post",
+    url: `${api}/tenant/v1/admin/make-issuer`,
+    headers: {
+      accept: "application/json",
+      "content-type": "application/x-www-form-urlencoded",
+      Authorization: `Bearer ${store.state.token}`,
+    },
+  })
+    .then(() => {
+      toast(`Starting Issuer Process! Check back later`);
+    })
+    .catch((err) => {
+      console.error(err);
+      toast.error(`Failure: ${err}`);
+    });
+};
 
 const toggled = (e: any) => {
   store.state.walletInfo.open = !e.value;
@@ -86,6 +109,12 @@ const toggled = (e: any) => {
           </div>
         </template>
       </card>
+      <Button
+        label="Become an Issuer"
+        v-if="store.state.walletInfo.data.public_did_status === 'N/A'"
+        @click="make_issuer"
+      ></Button>
+      <Button label="Already an Issuer" v-else :disabled="true"></Button>
     </div>
   </Fieldset>
 </template>
@@ -95,5 +124,9 @@ fieldset {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+button {
+  margin-top: 10px;
 }
 </style>
