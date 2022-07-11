@@ -8,17 +8,17 @@ from datetime import datetime
 from typing import List
 
 from sqlmodel import Field, Relationship
-from sqlalchemy import Column, text, String, select
-from sqlalchemy.dialects.postgresql import UUID, ARRAY
+from sqlalchemy import Column, text, select
+from sqlalchemy.dialects.postgresql import UUID
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.models.base import StatefulModel, TimestampModel
+from api.db.models.base import StatefulModel, TimestampModel, TrackingModel
 from api.endpoints.models.v1.errors import (
     NotFoundError,
 )
 
 
-class Contact(StatefulModel, TimestampModel, table=True):
+class Contact(StatefulModel, TrackingModel, TimestampModel, table=True):
     """Contact.
 
     This is the model for the Contact table (postgresql specific dialects in use).
@@ -61,9 +61,6 @@ class Contact(StatefulModel, TimestampModel, table=True):
 
     ping_enabled: bool = Field(nullable=False, default=False)
     last_response_at: datetime = Field(nullable=True)
-
-    external_reference_id: str = Field(nullable=True)
-    tags: List[str] = Field(sa_column=Column(ARRAY(String)))
 
     deleted: bool = Field(nullable=False, default=False)
     # acapy data ---
