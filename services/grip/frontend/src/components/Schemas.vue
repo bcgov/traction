@@ -30,6 +30,7 @@ const toggled = (e: any) => {
       })
       .then((res) => {
         store.state.schemas.data = res.data.items;
+        console.log(res.data.items);
       })
       .catch((err) => {
         store.state.schemas.data = null;
