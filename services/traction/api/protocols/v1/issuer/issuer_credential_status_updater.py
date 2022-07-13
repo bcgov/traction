@@ -58,19 +58,21 @@ class IssuerCredentialStatusUpdater(DefaultIssueCredentialProtocol):
         issuer_credential = await self.get_issuer_credential(profile, payload)
         if issuer_credential:
             # look for an error message
-            if "error_msg" in payload:
-                self.logger.info(f"payload error_msg = {payload['error_msg']}")
-                if payload["error_msg"] is not None:
-                    if str(payload["error_msg"]).startswith("issuance - abandoned"):
-                        values = {
-                            "state": CredentialStateType.abandoned,
-                            "status": IssuerCredentialStatusType.offer_not_accepted,
-                        }
-                        self.logger.info(f"updating issuer credential = {values}")
-                        async with async_session() as db:
-                            await IssuerCredential.update_by_id(
-                                issuer_credential.issuer_credential_id, values
-                            )
-                            await db.commit()
+            await self.handle_issuance_abandoned(issuer_credential, payload)
 
         self.logger.info("< on_unknown_state()")
+
+    async def handle_issuance_abandoned(self, issuer_credential, payload):
+        if "error_msg" in payload:
+            self.logger.info(f"payload error_msg = {payload['error_msg']}")
+            if str(payload["error_msg"]).startswith("issuance - abandoned"):
+                values = {
+                    "state": CredentialStateType.abandoned,
+                    "status": IssuerCredentialStatusType.offer_not_accepted,
+                }
+                self.logger.info(f"updating issuer credential = {values}")
+                async with async_session() as db:
+                    await IssuerCredential.update_by_id(
+                        issuer_credential.issuer_credential_id, values
+                    )
+                    await db.commit()
