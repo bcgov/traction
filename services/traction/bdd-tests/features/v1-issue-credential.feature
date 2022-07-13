@@ -27,7 +27,7 @@ Feature: issuing credentials
         # this loads data into context.config
         And "faber" will accept credential_offer from "alice"
         And we sadly wait for 10 seconds because we have not figured out how to listen for events
-        Then "faber" will have a credential
+        Then "faber" will have a holder credential with status "Accepted"
         And "alice" will have an "Issued" issuer credential
         And "alice" can get the issuer credential
 
@@ -42,7 +42,7 @@ Feature: issuing credentials
         # this loads data into context.config
         And "faber" will accept credential_offer from "alice"
         And we sadly wait for 10 seconds because we have not figured out how to listen for events
-        Then "faber" will have a credential
+        Then "faber" will have a holder credential with status "Accepted"
         And "alice" will have an "Issued" issuer credential
         When "alice" revokes credential from "faber"
         Then "alice" will have an "Revoked" issuer credential
