@@ -29,7 +29,7 @@ class HolderCredentialStatusType(str, Enum):
     # this has been revoked by the issuer
     revoked = "Revoked"
     # item is soft deleted
-    deleted = "Delete"
+    deleted = "Deleted"
     error = "Error"
 
 
@@ -65,6 +65,7 @@ class HolderCredentialItem(
     revoked: bool
     revocation_comment: str | None = None
     rejection_comment: str | None = None
+    external_reference_id: str | None = None
 
 
 class HolderCredentialTimelineItem(

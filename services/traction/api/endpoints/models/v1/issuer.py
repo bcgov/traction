@@ -29,6 +29,8 @@ class IssuerCredentialStatusType(str, Enum):
     pending = "Pending"
     # offer sent, waiting for response
     offer_sent = "Offer Sent"
+    # offer not accepted...
+    offer_not_accepted = "Offer not Accepted"
     # successfully issuer into the holder's wallet
     issued = "Issued"
     # you revoked this previously

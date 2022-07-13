@@ -34,6 +34,10 @@ class IssuerCredentialStatusUpdater(DefaultIssueCredentialProtocol):
 
         if payload["state"] in issued_states:
             values["status"] = IssuerCredentialStatusType.issued
+
+        if payload["state"] == CredentialStateType.abandoned:
+            values["status"] = IssuerCredentialStatusType.offer_not_accepted
+
         self.logger.debug(f"update values = {values}")
         stmt = (
             update(IssuerCredential)

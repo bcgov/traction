@@ -324,8 +324,13 @@ async def reject_credential_offer(
             detail=f"Holder Credential must be have status '{HolderCredentialStatusType.offer_received}' to be rejected. Current status is '{hc.status}'",  # noqa: E501
         )
 
+    problem_description = (
+        payload.rejection_comment
+        if payload.rejection_comment
+        else "Credential Offer rejected."
+    )
     problem_report = V10CredentialProblemReportRequest(
-        description=payload.rejection_comment,
+        description=problem_description,
     )
     data = {"body": problem_report}
     issue_cred_v10_api.issue_credential_records_cred_ex_id_problem_report_post(

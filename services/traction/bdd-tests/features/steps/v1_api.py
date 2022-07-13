@@ -280,12 +280,27 @@ def list_holder_credentials(context, tenant, params: dict | None = {}):
     return response
 
 
-def accept_holder_credential(context, tenant, holder_credential_id):
-    data = {"holder_credential_id": holder_credential_id}
+def accept_holder_credential(
+    context, tenant, holder_credential_id, payload: dict | None = {}
+):
+    payload["holder_credential_id"] = holder_credential_id
     response = requests.post(
         context.config.userdata.get("traction_host")
         + f"/tenant/v1/holder/credentials/{holder_credential_id}/accept-offer",
-        json=data,
+        json=payload,
+        headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response
+
+
+def reject_holder_credential(
+    context, tenant, holder_credential_id, payload: dict | None = {}
+):
+    payload["holder_credential_id"] = holder_credential_id
+    response = requests.post(
+        context.config.userdata.get("traction_host")
+        + f"/tenant/v1/holder/credentials/{holder_credential_id}/reject-offer",
+        json=payload,
         headers=context.config.userdata[tenant]["auth_headers"],
     )
     return response
@@ -293,6 +308,26 @@ def accept_holder_credential(context, tenant, holder_credential_id):
 
 def get_holder_credential(context, tenant, item_id, params: dict | None = {}):
     response = requests.get(
+        context.config.userdata.get("traction_host")
+        + f"/tenant/v1/holder/credentials/{item_id}",
+        params=params,
+        headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response
+
+
+def update_holder_credential(context, tenant, item_id, payload: dict | None = {}):
+    response = requests.put(
+        context.config.userdata.get("traction_host")
+        + f"/tenant/v1/holder/credentials/{item_id}",
+        json=payload,
+        headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response
+
+
+def delete_holder_credential(context, tenant, item_id, params: dict | None = {}):
+    response = requests.delete(
         context.config.userdata.get("traction_host")
         + f"/tenant/v1/holder/credentials/{item_id}",
         params=params,
