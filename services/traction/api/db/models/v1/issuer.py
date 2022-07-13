@@ -18,7 +18,12 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import UUID
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.models.base import StatefulModel, TimestampModel, TrackingModel
+from api.db.models.base import (
+    StatefulModel,
+    TimestampModel,
+    TrackingModel,
+    TenantScopedModel,
+)
 from api.db.models.v1.contact import Contact
 from api.db.models.v1.governance import CredentialTemplate
 
@@ -27,7 +32,9 @@ from api.endpoints.models.v1.errors import (
 )
 
 
-class IssuerCredential(StatefulModel, TrackingModel, TimestampModel, table=True):
+class IssuerCredential(
+    StatefulModel, TrackingModel, TimestampModel, TenantScopedModel, table=True
+):
     """Issuer Credential.
 
     Model for the Issuer Credential table (postgresql specific dialects in use).
@@ -72,7 +79,6 @@ class IssuerCredential(StatefulModel, TrackingModel, TimestampModel, table=True)
     credential_template_id: uuid.UUID = Field(
         foreign_key="credential_template.credential_template_id", index=True
     )
-    tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True)
     contact_id: uuid.UUID = Field(foreign_key="contact.contact_id", index=True)
     revoked: bool = Field(nullable=False, default=False)
     deleted: bool = Field(nullable=False, default=False)

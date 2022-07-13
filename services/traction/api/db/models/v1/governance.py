@@ -19,14 +19,14 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.models.base import StatefulModel, TimestampModel
+from api.db.models.base import StatefulModel, TimestampModel, TenantScopedModel
 
 from api.endpoints.models.v1.errors import (
     NotFoundError,
 )
 
 
-class SchemaTemplate(StatefulModel, TimestampModel, table=True):
+class SchemaTemplate(StatefulModel, TimestampModel, TenantScopedModel, table=True):
     """SchemaTemplate.
 
     This is the model for the Schema table (postgresql specific dialects in use).
@@ -72,7 +72,6 @@ class SchemaTemplate(StatefulModel, TimestampModel, table=True):
             server_default=text("gen_random_uuid()"),
         )
     )
-    tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True)
     schema_id: str = Field(nullable=True, index=True)
 
     name: str = Field(nullable=False)
@@ -229,7 +228,7 @@ class SchemaTemplate(StatefulModel, TimestampModel, table=True):
         return db_recs
 
 
-class CredentialTemplate(StatefulModel, TimestampModel, table=True):
+class CredentialTemplate(StatefulModel, TimestampModel, TenantScopedModel, table=True):
     """Credential Template.
 
     Model for the Credential Definition table (postgresql specific dialects in use).
@@ -267,7 +266,6 @@ class CredentialTemplate(StatefulModel, TimestampModel, table=True):
             server_default=text("gen_random_uuid()"),
         )
     )
-    tenant_id: uuid.UUID = Field(foreign_key="tenant.id", nullable=False, index=True)
     schema_template_id: uuid.UUID = Field(
         foreign_key="schema_template.schema_template_id", nullable=False, index=True
     )

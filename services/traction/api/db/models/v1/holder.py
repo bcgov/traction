@@ -17,7 +17,12 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import UUID
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.models.base import StatefulModel, TimestampModel, TrackingModel
+from api.db.models.base import (
+    StatefulModel,
+    TimestampModel,
+    TrackingModel,
+    TenantScopedModel,
+)
 from api.db.models.v1.contact import Contact
 
 from api.endpoints.models.v1.errors import (
@@ -25,7 +30,9 @@ from api.endpoints.models.v1.errors import (
 )
 
 
-class HolderCredential(StatefulModel, TrackingModel, TimestampModel, table=True):
+class HolderCredential(
+    StatefulModel, TrackingModel, TimestampModel, TenantScopedModel, table=True
+):
     """Holder Credential.
 
     Model for the Holder Credential table (postgresql specific dialects in use).
@@ -59,7 +66,6 @@ class HolderCredential(StatefulModel, TrackingModel, TimestampModel, table=True)
             server_default=text("gen_random_uuid()"),
         )
     )
-    tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True)
     contact_id: uuid.UUID = Field(foreign_key="contact.contact_id", index=True)
     deleted: bool = Field(nullable=False, default=False)
 

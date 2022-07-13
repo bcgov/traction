@@ -19,7 +19,7 @@ from sqlalchemy import (
 
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.models.base import TimestampModel
+from api.db.models.base import TimestampModel, TenantScopedModel
 
 
 class TenantConfiguration(TimestampModel, table=True):
@@ -110,7 +110,6 @@ class TenantAutoResponseLog(TimestampModel, table=True):
     """
 
     __tablename__ = "tenant_auto_response_log"
-
     tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True, primary_key=True)
     contact_id: uuid.UUID = Field(foreign_key="contact.contact_id")
     message: str = Field(nullable=False)
@@ -145,7 +144,7 @@ class TenantAutoResponseLog(TimestampModel, table=True):
         return q_result.scalar_one_or_none()
 
 
-class TenantWebhookLog(TimestampModel, table=True):
+class TenantWebhookLog(TimestampModel, TenantScopedModel, table=True):
     """TenantWebhookLog.
 
     This is the model for the Tenant Webhook Log. This is where we can track what was
@@ -182,7 +181,6 @@ class TenantWebhookLog(TimestampModel, table=True):
         )
     )
 
-    tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True)
     topic: str = Field(nullable=False)
     payload: dict = Field(default={}, sa_column=Column(JSON))
     webhook_url: str = Field(nullable=False, default=None)

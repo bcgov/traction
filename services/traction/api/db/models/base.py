@@ -65,6 +65,19 @@ class BaseModel(SQLModel, BaseSchema):
                 raise e
 
 
+class Context(object):
+    tenant_id = uuid.uuid4()
+
+
+class TenantScopedModel(BaseModel):
+    tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True)
+
+    # def __init__(self):
+    #     return select(self.__class__).where(
+    #         self.__class__.tenant_id == Context.tenant_id
+    #     )  # TODO Make Context Class that is accessible by this.
+
+
 class BaseTable(BaseModel):
     # the following are marked optional because they are generated on the server
     # these will be included in each class where we set table=true (our table classes)
