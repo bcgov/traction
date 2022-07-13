@@ -65,7 +65,7 @@ class IssuerCredentialStatusUpdater(DefaultIssueCredentialProtocol):
     async def handle_issuance_abandoned(self, issuer_credential, payload):
         if "error_msg" in payload:
             self.logger.info(f"payload error_msg = {payload['error_msg']}")
-            if str(payload["error_msg"]).startswith("issuance - abandoned"):
+            if str(payload["error_msg"]).startswith("issuance-abandoned"):
                 values = {
                     "state": CredentialStateType.abandoned,
                     "status": IssuerCredentialStatusType.offer_not_accepted,
