@@ -24,7 +24,7 @@ class IssueCredentialProtocol(ABC):
     async def notify(self, profile: Profile, event: Event):
         self.logger.info("> notify()")
         payload = event.payload["payload"]
-        self.logger.debug(f"payload={payload}")
+        self.logger.info(f"payload={payload}")
         self.logger.debug(f"role={payload['role']}")
         self.logger.debug(f"state={payload['state']}")
         if self.role == payload["role"]:
