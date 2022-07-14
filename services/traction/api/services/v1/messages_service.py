@@ -146,7 +146,7 @@ async def list_messages(
         filters.append(Message.tags.comparator.contains(_filter_tags))
 
     # build out a base query with all filters
-    base_q = Message.safe_select().filter(*filters)
+    base_q = Message.tenant_select().filter(*filters)
 
     # get a count of ALL records matching our base query
     count_q = select([func.count()]).select_from(base_q)

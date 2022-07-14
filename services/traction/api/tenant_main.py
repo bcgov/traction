@@ -14,7 +14,6 @@ from api.endpoints.dependencies.jwt_security import AccessToken
 from api.endpoints.dependencies.tenant_security import (
     JWTTFetchingMiddleware,
     get_tenant_access_token,
-    get_from_context,
 )
 
 from api.endpoints.routes.v1.tenant import v1_tenant_router

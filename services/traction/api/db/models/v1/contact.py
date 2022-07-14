@@ -8,17 +8,24 @@ from datetime import datetime
 from typing import List
 
 from sqlmodel import Field, Relationship
-from sqlalchemy import Column, text, select
+from sqlalchemy import Column, text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.models.base import StatefulModel, TimestampModel, TrackingModel
+from api.db.models.base import (
+    StatefulModel,
+    TimestampModel,
+    TrackingModel,
+    TenantScopedModel,
+)
 from api.endpoints.models.v1.errors import (
     NotFoundError,
 )
 
 
-class Contact(StatefulModel, TrackingModel, TimestampModel, table=True):
+class Contact(
+    StatefulModel, TrackingModel, TimestampModel, TenantScopedModel, table=True
+):
     """Contact.
 
     This is the model for the Contact table (postgresql specific dialects in use).
@@ -55,8 +62,6 @@ class Contact(StatefulModel, TrackingModel, TimestampModel, table=True):
             server_default=text("gen_random_uuid()"),
         )
     )
-    tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True)
-
     alias: str = Field(nullable=False, index=True)
 
     ping_enabled: bool = Field(nullable=False, default=False)
@@ -102,8 +107,7 @@ class Contact(StatefulModel, TrackingModel, TimestampModel, table=True):
         """
 
         q = (
-            select(cls)
-            .where(cls.tenant_id == tenant_id)
+            cls.tenant_select(fallback_tenant_id=tenant_id)
             .where(cls.contact_id == contact_id)
             .where(cls.deleted == deleted)
         )
@@ -141,8 +145,7 @@ class Contact(StatefulModel, TrackingModel, TimestampModel, table=True):
         """
 
         q = (
-            select(cls)
-            .where(cls.tenant_id == tenant_id)
+            cls.tenant_select(fallback_tenant_id=tenant_id)
             .where(cls.connection_id == connection_id)
             .where(cls.deleted == deleted)
         )

@@ -10,7 +10,6 @@ from typing import List
 from sqlalchemy.dialects.postgresql import UUID
 from sqlmodel import Field
 from sqlalchemy import (
-    select,
     Column,
     JSON,
     text,
@@ -81,7 +80,7 @@ class TenantConfiguration(TimestampModel, table=True):
 
         """
 
-        q = select(cls).where(cls.tenant_id == tenant_id)
+        q = cls.tenant_select().where(cls.tenant_id == tenant_id)
         q_result = await db.execute(q)
         db_rec = q_result.scalar_one_or_none()
         if not db_rec:
@@ -136,7 +135,7 @@ class TenantAutoResponseLog(TimestampModel, table=True):
         """
 
         q = (
-            select(cls)
+            cls.tenant_select()
             .where(cls.tenant_id == tenant_id)
             .where(cls.contact_id == contact_id)
         )
@@ -204,7 +203,11 @@ class TenantWebhookLog(TimestampModel, TenantScopedModel, table=True):
         Returns: List of Tenant Webhook Log (db) records in descending order
         """
 
-        q = select(cls).where(cls.tenant_id == tenant_id).order_by(desc(cls.updated_at))
+        q = (
+            cls.tenant_select()
+            .where(cls.tenant_id == tenant_id)
+            .order_by(desc(cls.updated_at))
+        )
         q_result = await db.execute(q)
         db_recs = q_result.scalars().all()
         return db_recs

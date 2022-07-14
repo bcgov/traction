@@ -21,6 +21,7 @@ class TenantContext(object):
     tenant_wallet_id: UUID
 
 
+# currently NOT IN USE, safe_select is reading starlette context in realtime
 tenant_context = (
     None  # set elsewhere in http context, task context, or webhook handler context
 )

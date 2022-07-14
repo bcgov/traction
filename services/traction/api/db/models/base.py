@@ -1,17 +1,18 @@
 import builtins
 import uuid
 from datetime import datetime
-from typing import Optional, List, Any
+from typing import Optional, List
 
 import logging
 import pydantic
 from sqlalchemy.exc import DBAPIError
 from sqlmodel import Field, SQLModel
 from sqlalchemy import Column, func, text, select, desc, String
+from sqlalchemy.sql.expression import Select
 from sqlalchemy.dialects.postgresql import UUID, TIMESTAMP, VARCHAR, ARRAY
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.session import async_session, tenant_context
+from api.db.session import async_session
 from api.endpoints.models.v1.errors import NotFoundError
 
 logger = logging.getLogger(__name__)
@@ -27,7 +28,11 @@ class BaseModel(SQLModel, BaseSchema):
     __mapper_args__ = {"eager_defaults": True}
 
     @classmethod
-    def safe_select(cls):
+    def tenant_select(cls, fallback_tenant_id) -> Select:
+        logger.warning(
+            """tenant_select being called on table not using
+            TenantScopedModel, making unsafe call"""
+        )
         return select(cls)
 
     @classmethod
@@ -76,19 +81,18 @@ class TenantScopedModel(BaseModel):
     tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True)
 
     @classmethod
-    def safe_select(cls, tenant_id: UUID = None):
+    def tenant_select(cls, fallback_tenant_id: UUID = None) -> Select:
         from api.endpoints.dependencies.tenant_security import get_from_context
 
         result = None
         tenant_context_id = get_from_context("TENANT_ID")
-        ##manually passed in for now
-        if tenant_id:
-            result = select(cls).where(cls.tenant_id == tenant_id)
-        ##load from starlette context
-        elif tenant_context_id:
+        # load from starlette context
+        if tenant_context_id:
             result = select(cls).where(cls.tenant_id == tenant_context_id)
-
-        ## couldn't load tenant context for some reason
+        # manually passed in fallback for now
+        elif fallback_tenant_id:
+            result = select(cls).where(cls.tenant_id == fallback_tenant_id)
+        # couldn't load tenant context for some reason
         else:
             logger.error("not a http context, no tenant_id, EXECUTING AN UNSAFE QUERY")
             result = select(cls)
@@ -177,7 +181,11 @@ class Timeline(StatefulModel, table=True):
           order
         """
 
-        q = select(cls).where(cls.item_id == item_id).order_by(desc(cls.created_at))
+        q = (
+            cls.tenant_select()
+            .where(cls.item_id == item_id)
+            .order_by(desc(cls.created_at))
+        )
         q_result = await db.execute(q)
         db_items = q_result.scalars()
         return db_items

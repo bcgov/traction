@@ -10,7 +10,6 @@ from sqlalchemy.orm import selectinload
 from sqlmodel import Field, Relationship
 from sqlalchemy import (
     Column,
-    select,
     desc,
     text,
 )
@@ -112,12 +111,12 @@ class HolderCredential(
         """
 
         q = (
-            select(cls)
-            .where(cls.tenant_id == tenant_id)
+            cls.tenant_select(fallback_tenant_id=tenant_id)
             .where(cls.holder_credential_id == holder_credential_id)
             .where(cls.deleted == deleted)
             .options(selectinload(cls.contact), selectinload(cls.credential_template))
         )
+
         q_result = await db.execute(q)
         db_rec = q_result.scalar_one_or_none()
         if not db_rec:
@@ -151,8 +150,7 @@ class HolderCredential(
         """
 
         q = (
-            select(cls)
-            .where(cls.tenant_id == tenant_id)
+            cls.tenant_select(fallback_tenant_id=tenant_id)
             .where(cls.credential_exchange_id == credential_exchange_id)
             .options(selectinload(cls.contact))
         )
@@ -184,9 +182,8 @@ class HolderCredential(
         """
 
         q = (
-            select(cls)
+            cls.tenant_select(fallback_tenant_id=tenant_id)
             .where(cls.contact_id == contact_id)
-            .where(cls.tenant_id == tenant_id)
             .options(selectinload(cls.contact))
             .order_by(desc(cls.updated_at))
         )
@@ -210,8 +207,7 @@ class HolderCredential(
         """
 
         q = (
-            select(cls)
-            .where(cls.tenant_id == tenant_id)
+            cls.tenant_select(fallback_tenant_id=tenant_id)
             .options(selectinload(cls.contact), selectinload(cls.credential_template))
             .order_by(desc(cls.updated_at))
         )
@@ -237,9 +233,8 @@ class HolderCredential(
         """
 
         q = (
-            select(cls)
+            cls.tenant_select(fallback_tenant_id=tenant_id)
             .where(cls.thread_id == thread_id)
-            .where(cls.tenant_id == tenant_id)
             .options(selectinload(cls.contact))
             .order_by(desc(cls.updated_at))
         )
@@ -272,8 +267,7 @@ class HolderCredential(
         """
 
         q = (
-            select(cls)
-            .where(cls.tenant_id == tenant_id)
+            cls.tenant_select(fallback_tenant_id=tenant_id)
             .where(cls.revoc_reg_id == revoc_reg_id)
             .where(cls.revocation_id == revocation_id)
             .options(selectinload(cls.contact))

@@ -4,6 +4,7 @@ Models of the Traction tables for Messages (layer over AcaPy basic messaging).
 
 """
 import uuid
+import logging
 from datetime import datetime
 from typing import List, Optional
 
@@ -13,19 +14,20 @@ from sqlalchemy import (
     Column,
     func,
     String,
-    select,
     desc,
     text,
 )
 from sqlalchemy.dialects.postgresql import UUID, TIMESTAMP, ARRAY
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.models.base import BaseModel, TenantScopedModel
+from api.db.models.base import TenantScopedModel
 from api.db.models.v1.contact import Contact
 
 from api.endpoints.models.v1.errors import (
     NotFoundError,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class Message(TenantScopedModel, table=True):
@@ -107,12 +109,12 @@ class Message(TenantScopedModel, table=True):
         """
 
         q = (
-            select(cls)
-            .where(cls.tenant_id == tenant_id)
+            cls.tenant_select(fallback_tenant_id=tenant_id)
             .where(cls.message_id == message_id)
             .where(cls.deleted == deleted)
             .options(selectinload(cls.contact))
         )
+
         q_result = await db.execute(q)
         db_rec = q_result.scalar_one_or_none()
         if not db_rec:
@@ -141,9 +143,8 @@ class Message(TenantScopedModel, table=True):
         """
 
         q = (
-            select(cls)
+            cls.tenant_select(fallback_tenant_id=tenant_id)
             .where(cls.contact_id == contact_id)
-            .where(cls.tenant_id == tenant_id)
             .options(selectinload(cls.contact))
             .order_by(desc(cls.updated_at))
         )
@@ -167,8 +168,7 @@ class Message(TenantScopedModel, table=True):
         """
 
         q = (
-            select(cls)
-            .where(cls.tenant_id == tenant_id)
+            cls.tenant_select(fallback_tenant_id=tenant_id)
             .options(selectinload(cls.contact))
             .order_by(desc(cls.updated_at))
         )

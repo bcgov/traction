@@ -8,7 +8,7 @@ from datetime import datetime
 from typing import List
 
 from sqlmodel import Field
-from sqlalchemy import Column, func, text, String, select
+from sqlalchemy import Column, func, text, String
 from sqlalchemy.dialects.postgresql import UUID, TIMESTAMP, JSON, ARRAY
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -106,8 +106,7 @@ class ConnectionInvitation(TenantScopedModel, table=True):
         """
 
         q = (
-            select(cls)
-            .where(cls.tenant_id == tenant_id)
+            cls.tenant_select(fallback_tenant_id=tenant_id)
             .where(cls.connection_invitation_id == connection_invitation_id)
             .where(cls.deleted == deleted)
         )
@@ -143,8 +142,7 @@ class ConnectionInvitation(TenantScopedModel, table=True):
         """
 
         q = (
-            select(cls)
-            .where(cls.tenant_id == tenant_id)
+            cls.tenant_select(fallback_tenant_id=tenant_id)
             .where(cls.name == name)
             .where(cls.deleted == deleted)
         )
@@ -168,14 +166,12 @@ class ConnectionInvitation(TenantScopedModel, table=True):
           tenant_id: Traction ID of tenant making the call
           invitation_key: AcaPy Connection Invitation ID
 
-        Returns: The Traction Invitation (db) record or None if not found
+        Return Connection Invitation (db) record or None if not found
 
         """
 
-        q = (
-            select(cls)
-            .where(cls.tenant_id == tenant_id)
-            .where(cls.invitation_key == invitation_key)
+        q = cls.tenant_select(fallback_tenant_id=tenant_id).where(
+            cls.invitation_key == invitation_key
         )
         q_result = await db.execute(q)
         db_item = q_result.scalar_one_or_none()

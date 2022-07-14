@@ -10,7 +10,6 @@ from sqlalchemy.orm import selectinload
 from sqlmodel import Field, Relationship
 from sqlalchemy import (
     Column,
-    select,
     desc,
     JSON,
     text,
@@ -128,8 +127,7 @@ class IssuerCredential(
         """
 
         q = (
-            select(cls)
-            .where(cls.tenant_id == tenant_id)
+            cls.tenant_select(fallback_tenant_id=tenant_id)
             .where(cls.issuer_credential_id == issuer_credential_id)
             .where(cls.deleted == deleted)
             .options(selectinload(cls.contact), selectinload(cls.credential_template))
@@ -167,8 +165,7 @@ class IssuerCredential(
         """
 
         q = (
-            select(cls)
-            .where(cls.tenant_id == tenant_id)
+            cls.tenant_select(fallback_tenant_id=tenant_id)
             .where(cls.credential_exchange_id == credential_exchange_id)
             .options(selectinload(cls.contact), selectinload(cls.credential_template))
         )
@@ -188,6 +185,7 @@ class IssuerCredential(
         db: AsyncSession,
         revoc_reg_id: str,
         revocation_id: str,
+        tenant_id: UUID = None,
     ) -> "IssuerCredential":
         """Get IssuerCredential by Revocation IDs.
 
@@ -205,7 +203,7 @@ class IssuerCredential(
         """
 
         q = (
-            select(cls)
+            cls.tenant_select(fallback_tenant_id=tenant_id)
             .where(cls.revoc_reg_id == revoc_reg_id)
             .where(cls.revocation_id == revocation_id)
             .options(selectinload(cls.contact), selectinload(cls.credential_template))
@@ -238,9 +236,8 @@ class IssuerCredential(
         """
 
         q = (
-            select(cls)
+            cls.tenant_select(fallback_tenant_id=tenant_id)
             .where(cls.credential_template_id == credential_template_id)
-            .where(cls.tenant_id == tenant_id)
             .options(selectinload(cls.contact), selectinload(cls.credential_template))
             .order_by(desc(cls.updated_at))
         )
@@ -266,9 +263,8 @@ class IssuerCredential(
         """
 
         q = (
-            select(cls)
+            cls.tenant_select(fallback_tenant_id=tenant_id)
             .where(cls.cred_def_id == cred_def_id)
-            .where(cls.tenant_id == tenant_id)
             .options(selectinload(cls.contact), selectinload(cls.credential_template))
             .order_by(desc(cls.updated_at))
         )
@@ -294,9 +290,8 @@ class IssuerCredential(
         """
 
         q = (
-            select(cls)
+            cls.tenant_select(fallback_tenant_id=tenant_id)
             .where(cls.contact_id == contact_id)
-            .where(cls.tenant_id == tenant_id)
             .options(selectinload(cls.contact), selectinload(cls.credential_template))
             .order_by(desc(cls.updated_at))
         )
@@ -320,8 +315,7 @@ class IssuerCredential(
         """
 
         q = (
-            select(cls)
-            .where(cls.tenant_id == tenant_id)
+            cls.tenant_select(fallback_tenant_id=tenant_id)
             .options(selectinload(cls.contact), selectinload(cls.credential_template))
             .order_by(desc(cls.updated_at))
         )
@@ -347,9 +341,8 @@ class IssuerCredential(
         """
 
         q = (
-            select(cls)
+            cls.tenant_select(fallback_tenant_id=tenant_id)
             .where(cls.thread_id == thread_id)
-            .where(cls.tenant_id == tenant_id)
             .options(selectinload(cls.contact), selectinload(cls.credential_template))
             .order_by(desc(cls.updated_at))
         )

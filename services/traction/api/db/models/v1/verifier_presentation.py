@@ -7,7 +7,7 @@ import uuid
 from typing import List, Optional
 from sqlalchemy.orm import selectinload
 from sqlmodel import Field, Relationship, desc
-from sqlalchemy import Column, text, select
+from sqlalchemy import Column, text
 from sqlalchemy.dialects.postgresql import UUID, JSON
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -88,8 +88,7 @@ class VerifierPresentation(
         """
 
         q = (
-            select(cls)
-            .where(cls.tenant_id == tenant_id)
+            cls.tenant_select(fallback_tenant_id=tenant_id)
             .where(cls.verifier_presentation_id == verifier_presentation_id)
             .where(cls.deleted == deleted)
             .options(selectinload(cls.contact))
@@ -129,8 +128,7 @@ class VerifierPresentation(
         """
 
         q = (
-            select(cls)
-            .where(cls.tenant_id == tenant_id)
+            cls.tenant_select(fallback_tenant_id=tenant_id)
             .where(cls.pres_exch_id == pres_exch_id)
             .where(cls.deleted == deleted)
             .options(selectinload(cls.contact))
@@ -161,8 +159,7 @@ class VerifierPresentation(
         """
 
         q = (
-            select(cls)
-            .where(cls.tenant_id == tenant_id)
+            cls.tenant_select(fallback_tenant_id=tenant_id)
             .options(selectinload(cls.contact))
             .order_by(desc(cls.updated_at))
         )
