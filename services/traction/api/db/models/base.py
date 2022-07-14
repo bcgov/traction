@@ -1,8 +1,9 @@
 import builtins
 import uuid
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Any
 
+import logging
 import pydantic
 from sqlalchemy.exc import DBAPIError
 from sqlmodel import Field, SQLModel
@@ -10,8 +11,10 @@ from sqlalchemy import Column, func, text, select, desc, String
 from sqlalchemy.dialects.postgresql import UUID, TIMESTAMP, VARCHAR, ARRAY
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.session import async_session
+from api.db.session import async_session, tenant_context
 from api.endpoints.models.v1.errors import NotFoundError
+
+logger = logging.getLogger(__name__)
 
 
 class BaseSchema(pydantic.BaseModel):
@@ -22,6 +25,10 @@ class BaseSchema(pydantic.BaseModel):
 
 class BaseModel(SQLModel, BaseSchema):
     __mapper_args__ = {"eager_defaults": True}
+
+    @classmethod
+    def safe_query(cls):
+        return select(cls)
 
     @classmethod
     async def update_by_id(cls, item_id: UUID, values: dict):
@@ -65,17 +72,21 @@ class BaseModel(SQLModel, BaseSchema):
                 raise e
 
 
-class Context(object):
-    tenant_id = uuid.uuid4()
-
-
 class TenantScopedModel(BaseModel):
     tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True)
 
-    # def __init__(self):
-    #     return select(self.__class__).where(
-    #         self.__class__.tenant_id == Context.tenant_id
-    #     )  # TODO Make Context Class that is accessible by this.
+    @classmethod
+    def safe_query(cls):
+        from api.endpoints.dependencies.tenant_security import get_from_context
+        
+        ##load from starlette context
+        tenant_context_id = get_from_context("TENANT_ID")
+
+        if not tenant_context_id:
+            logger.warn("not a http context, no tenant_id, unsafe query executing")
+            return select(cls)
+
+        return select(cls).where(cls.tenant_id == tenant_context_id)
 
 
 class BaseTable(BaseModel):

@@ -1,3 +1,4 @@
+from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import QueuePool
@@ -13,3 +14,11 @@ engine = create_async_engine(
     poolclass=QueuePool,
 )
 async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+
+
+class TenantContext(object):
+    tenant_id: UUID
+    tenant_wallet_id: UUID
+
+
+tenant_context = None  # set by app middleware in api/tenant_main.py

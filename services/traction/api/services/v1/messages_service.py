@@ -130,7 +130,6 @@ async def list_messages(
     skip = (parameters.page_num - 1) * limit
 
     filters = [
-        Message.tenant_id == tenant_id,
         Message.deleted == parameters.deleted,
     ]
     if parameters.status:
@@ -147,7 +146,7 @@ async def list_messages(
         filters.append(Message.tags.comparator.contains(_filter_tags))
 
     # build out a base query with all filters
-    base_q = select(Message).filter(*filters)
+    base_q = Message.safe_query().filter(*filters)
 
     # get a count of ALL records matching our base query
     count_q = select([func.count()]).select_from(base_q)

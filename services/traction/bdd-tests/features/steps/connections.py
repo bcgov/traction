@@ -37,7 +37,7 @@ def step_impl(context, invitee: str, inviter: str):
     )
     assert response.status_code == status.HTTP_200_OK, response.status
     resp_json = json.loads(response.content)
-    time.sleep(5)
+    time.sleep(10)
 
 
 @given('"{tenant}" has a connection to "{tenant_2}" in status "{contact_status}"')
