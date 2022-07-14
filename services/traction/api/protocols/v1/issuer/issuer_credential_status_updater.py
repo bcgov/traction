@@ -34,6 +34,10 @@ class IssuerCredentialStatusUpdater(DefaultIssueCredentialProtocol):
 
         if payload["state"] in issued_states:
             values["status"] = IssuerCredentialStatusType.issued
+
+        if payload["state"] == CredentialStateType.abandoned:
+            values["status"] = IssuerCredentialStatusType.offer_not_accepted
+
         self.logger.debug(f"update values = {values}")
         stmt = (
             update(IssuerCredential)
@@ -48,3 +52,29 @@ class IssuerCredentialStatusUpdater(DefaultIssueCredentialProtocol):
             await db.execute(stmt)
             await db.commit()
         self.logger.info("< before_any()")
+
+    # TODO: remove this when we update to acapy 7.4, workaround for bug in 7.3
+    async def on_unknown_state(self, profile: Profile, payload: dict):
+        self.logger.info(f"> on_unknown_state({payload})")
+        issuer_credential = await self.get_issuer_credential(profile, payload)
+        if issuer_credential:
+            # look for an error message
+            await self.handle_issuance_abandoned(issuer_credential, payload)
+
+        self.logger.info("< on_unknown_state()")
+
+    async def handle_issuance_abandoned(self, issuer_credential, payload):
+        if "error_msg" in payload:
+            self.logger.debug(f"payload error_msg = {payload['error_msg']}")
+            if str(payload["error_msg"]).startswith("issuance-abandoned"):
+                self.logger.info("credential issuance abandoned, offer not accepted.")
+                values = {
+                    "state": CredentialStateType.abandoned,
+                    "status": IssuerCredentialStatusType.offer_not_accepted,
+                }
+                self.logger.debug(f"updating issuer credential = {values}")
+                async with async_session() as db:
+                    await IssuerCredential.update_by_id(
+                        issuer_credential.issuer_credential_id, values
+                    )
+                    await db.commit()

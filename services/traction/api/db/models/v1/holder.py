@@ -41,6 +41,8 @@ class HolderCredential(
       holder_credential_id: Traction ID for holder credential
       tenant_id: Traction Tenant ID
       contact_id: Traction Contact ID (issuer)
+      alias: tenant provided name/alias to identify the credential
+      rejection_comment: tenant provided comment when rejecting offer (sent to issuer)
       status: Business and Tenant indicator for Credential state; independent of AcaPy
         Credential Exchange state
       state: The underlying AcaPy credential exchange state
@@ -67,6 +69,9 @@ class HolderCredential(
     )
     contact_id: uuid.UUID = Field(foreign_key="contact.contact_id", index=True)
     deleted: bool = Field(nullable=False, default=False)
+
+    alias: str = Field(nullable=True)
+    rejection_comment: str = Field(nullable=True)
 
     revoked: bool = Field(nullable=False, default=False)
     revocation_comment: str = Field(nullable=True)
@@ -114,7 +119,7 @@ class HolderCredential(
             cls.tenant_select(fallback_tenant_id=tenant_id)
             .where(cls.holder_credential_id == holder_credential_id)
             .where(cls.deleted == deleted)
-            .options(selectinload(cls.contact), selectinload(cls.credential_template))
+            .options(selectinload(cls.contact))
         )
 
         q_result = await db.execute(q)
@@ -208,7 +213,7 @@ class HolderCredential(
 
         q = (
             cls.tenant_select(fallback_tenant_id=tenant_id)
-            .options(selectinload(cls.contact), selectinload(cls.credential_template))
+            .options(selectinload(cls.contact))
             .order_by(desc(cls.updated_at))
         )
         q_result = await db.execute(q)

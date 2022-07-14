@@ -15,6 +15,7 @@ from urllib3 import HTTPResponse
 from acapy_client import ApiException
 from acapy_client.api.basicmessage_api import BasicmessageApi
 from acapy_client.api.connection_api import ConnectionApi
+from acapy_client.api.credentials_api import CredentialsApi
 from acapy_client.api.did_exchange_api import DidExchangeApi
 from acapy_client.api.issue_credential_v1_0_api import IssueCredentialV10Api
 from acapy_client.api.out_of_band_api import OutOfBandApi
@@ -35,6 +36,7 @@ basicmessage_api = BasicmessageApi(api_client=get_api_client())
 connection_api = ConnectionApi(api_client=get_api_client())
 did_exchange_api = DidExchangeApi(api_client=get_api_client())
 out_of_band_api = OutOfBandApi(api_client=get_api_client())
+credentials_api = CredentialsApi(api_client=get_api_client())
 
 logger = logging.getLogger(__name__)
 
@@ -80,6 +82,19 @@ def get_credential_exchange_json(cred_ex_id: UUID):
         return result
     except ApiException:
         logger.error(f"! get_credential_exchange_json({cred_ex_id})", exc_info=True)
+
+
+def get_credential_json(credential_id: str):
+    logger.info(f"> get_credential_json({credential_id})")
+    try:
+        response = credentials_api.credential_credential_id_get(
+            credential_id=credential_id, _preload_content=False
+        )
+        result = response_to_json(response, "credential_credential_id_get")
+        logger.info(f"< get_credential_json({credential_id}): {result is not None}")
+        return result
+    except ApiException:
+        logger.error(f"! get_credential_json({credential_id})", exc_info=True)
 
 
 def response_to_json(response: HTTPResponse, method_name: str | None = "api"):

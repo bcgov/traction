@@ -19,7 +19,7 @@ Feature: verification of ARIES presentations
         # this loads data into context.config
         And "faber" will accept credential_offer from "alice"
         And we sadly wait for 10 seconds because we have not figured out how to listen for events
-        Then "faber" will have a credential
+        Then "faber" will have a holder credential with status "Accepted"
         And "alice" will have an "Issued" issuer credential
 
     # Scenario: alice can make present-proof request

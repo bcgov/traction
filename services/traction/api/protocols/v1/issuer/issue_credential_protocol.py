@@ -25,46 +25,62 @@ class IssueCredentialProtocol(ABC):
         self.logger.info("> notify()")
         payload = event.payload["payload"]
         self.logger.debug(f"payload={payload}")
-        self.logger.debug(f"role={payload['role']}")
-        self.logger.debug(f"state={payload['state']}")
         if self.role == payload["role"]:
-            await self.before_all(profile=profile, payload=payload)
+            if "state" in payload:
+                await self.before_all(profile=profile, payload=payload)
 
-            if await self.approve_for_processing(profile=profile, payload=payload):
-                await self.before_any(profile=profile, payload=payload)
-                if CredentialStateType.pending == payload["state"]:
-                    await self.on_pending(profile=profile, payload=payload)
-                elif CredentialStateType.proposal_received == payload["state"]:
-                    await self.on_proposal_received(profile=profile, payload=payload)
-                elif CredentialStateType.offer_sent == payload["state"]:
-                    await self.on_offer_sent(profile=profile, payload=payload)
-                elif CredentialStateType.offer_received == payload["state"]:
-                    await self.on_offer_received(profile=profile, payload=payload)
-                elif CredentialStateType.request_received == payload["state"]:
-                    await self.on_request_received(profile=profile, payload=payload)
-                elif CredentialStateType.request_sent == payload["state"]:
-                    await self.on_request_sent(profile=profile, payload=payload)
-                elif CredentialStateType.credential_issued == payload["state"]:
-                    await self.on_credential_issued(profile=profile, payload=payload)
-                elif CredentialStateType.credential_acked == payload["state"]:
-                    await self.on_credential_acked(profile=profile, payload=payload)
-                elif CredentialStateType.credential_received == payload["state"]:
-                    await self.on_credential_received(profile=profile, payload=payload)
-                elif CredentialStateType.done == payload["state"]:
-                    await self.on_done(profile=profile, payload=payload)
-                elif CredentialStateType.abandoned == payload["state"]:
-                    await self.on_abandoned(profile=profile, payload=payload)
-                elif CredentialStateType.error == payload["state"]:
-                    await self.on_error(profile=profile, payload=payload)
-                elif CredentialStateType.credential_revoked == payload["state"]:
-                    await self.on_credential_revoked(profile=profile, payload=payload)
-                else:
-                    pass
+                if await self.approve_for_processing(profile=profile, payload=payload):
+                    await self.before_any(profile=profile, payload=payload)
+                    if CredentialStateType.pending == payload["state"]:
+                        await self.on_pending(profile=profile, payload=payload)
+                    elif CredentialStateType.proposal_received == payload["state"]:
+                        await self.on_proposal_received(
+                            profile=profile, payload=payload
+                        )
+                    elif CredentialStateType.offer_sent == payload["state"]:
+                        await self.on_offer_sent(profile=profile, payload=payload)
+                    elif CredentialStateType.offer_received == payload["state"]:
+                        await self.on_offer_received(profile=profile, payload=payload)
+                    elif CredentialStateType.request_received == payload["state"]:
+                        await self.on_request_received(profile=profile, payload=payload)
+                    elif CredentialStateType.request_sent == payload["state"]:
+                        await self.on_request_sent(profile=profile, payload=payload)
+                    elif CredentialStateType.credential_issued == payload["state"]:
+                        await self.on_credential_issued(
+                            profile=profile, payload=payload
+                        )
+                    elif CredentialStateType.credential_acked == payload["state"]:
+                        await self.on_credential_acked(profile=profile, payload=payload)
+                    elif CredentialStateType.credential_received == payload["state"]:
+                        await self.on_credential_received(
+                            profile=profile, payload=payload
+                        )
+                    elif CredentialStateType.done == payload["state"]:
+                        await self.on_done(profile=profile, payload=payload)
+                    elif CredentialStateType.abandoned == payload["state"]:
+                        await self.on_abandoned(profile=profile, payload=payload)
+                    elif CredentialStateType.error == payload["state"]:
+                        await self.on_error(profile=profile, payload=payload)
+                    elif CredentialStateType.credential_revoked == payload["state"]:
+                        await self.on_credential_revoked(
+                            profile=profile, payload=payload
+                        )
+                    else:
+                        pass
 
-                await self.after_any(profile=profile, payload=payload)
+                    await self.after_any(profile=profile, payload=payload)
 
-            await self.after_all(profile=profile, payload=payload)
+                await self.after_all(profile=profile, payload=payload)
+            else:
+                # TODO: remove this when we update to acapy 7.4
+                self.logger.info("payload has no key for 'state'")
+                await self.on_unknown_state(profile=profile, payload=payload)
         self.logger.info("< notify()")
+
+    # TODO: remove this when we update to acapy 7.4, workaround for bug in 7.3
+    @abstractmethod
+    async def on_unknown_state(self, profile: Profile, payload: dict):
+        pass
 
     @abstractmethod
     def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
@@ -167,6 +183,10 @@ class DefaultIssueCredentialProtocol(IssueCredentialProtocol):
         approved = issuer_credential is not None
         self.logger.info(f"< approve_for_processing({approved})")
         return approved
+
+    # TODO: remove this when we update to acapy 7.4, workaround for bug in 7.3
+    async def on_unknown_state(self, profile: Profile, payload: dict):
+        pass
 
     async def before_all(self, profile: Profile, payload: dict):
         pass
