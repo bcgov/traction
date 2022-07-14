@@ -20,7 +20,7 @@ from api.db.models.tenant_workflow import TenantWorkflowRead
 from api.db.models.v1.contact import Contact
 from api.db.repositories.issue_credentials import IssueCredentialsRepository
 from api.db.repositories.tenant_workflows import TenantWorkflowsRepository
-from api.endpoints.dependencies.tenant_security import get_from_context
+from api.endpoints.dependencies.tenant_context import get_from_context
 from api.endpoints.models.credentials import (
     CredentialRoleType,
     IssueCredentialProtocolType,

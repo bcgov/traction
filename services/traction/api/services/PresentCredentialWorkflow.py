@@ -15,7 +15,7 @@ from api.db.models.present_credential import (
 )
 from api.db.models.tenant_workflow import TenantWorkflowRead
 
-from api.endpoints.dependencies.tenant_security import get_from_context
+from api.endpoints.dependencies.tenant_context import get_from_context
 from api.endpoints.models.tenant_workflow import (
     TenantWorkflowStateType,
 )

@@ -16,7 +16,7 @@ from api.db.models.issue_credential import (
 from api.db.models.tenant_workflow import TenantWorkflowRead
 from api.endpoints.models.v1.errors import NotFoundError
 
-from api.endpoints.dependencies.tenant_security import get_from_context
+from api.endpoints.dependencies.tenant_context import get_from_context
 from api.endpoints.models.tenant_workflow import (
     TenantWorkflowStateType,
 )

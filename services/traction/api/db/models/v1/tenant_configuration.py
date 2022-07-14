@@ -21,7 +21,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from api.db.models.base import TimestampModel, TenantScopedModel
 
 
-class TenantConfiguration(TimestampModel, table=True):
+class TenantConfiguration(TimestampModel, TenantScopedModel, table=True):
     """TenantConfiguration.
 
     This is the model for the Tenant Configuration table. This is configuration for how
@@ -51,6 +51,7 @@ class TenantConfiguration(TimestampModel, table=True):
 
     __tablename__ = "tenant_configuration"
 
+    # tenant_id is PK, so override the column definition from TenantScopedModel
     tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True, primary_key=True)
     webhook_url: str = Field(nullable=True, default=None)
     webhook_key: str = Field(nullable=True, default=None)
@@ -80,7 +81,7 @@ class TenantConfiguration(TimestampModel, table=True):
 
         """
 
-        q = cls.tenant_select().where(cls.tenant_id == tenant_id)
+        q = cls.tenant_select(fallback_tenant_id=tenant_id)
         q_result = await db.execute(q)
         db_rec = q_result.scalar_one_or_none()
         if not db_rec:
@@ -92,7 +93,7 @@ class TenantConfiguration(TimestampModel, table=True):
         return db_rec
 
 
-class TenantAutoResponseLog(TimestampModel, table=True):
+class TenantAutoResponseLog(TimestampModel, TenantScopedModel, table=True):
     """TenantAutoResponseLog.
 
     This is the model for the Tenant Auto-response table. We need to track which
@@ -109,6 +110,7 @@ class TenantAutoResponseLog(TimestampModel, table=True):
     """
 
     __tablename__ = "tenant_auto_response_log"
+    # tenant_id is PK, so override the column definition from TenantScopedModel
     tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True, primary_key=True)
     contact_id: uuid.UUID = Field(foreign_key="contact.contact_id")
     message: str = Field(nullable=False)
@@ -134,10 +136,8 @@ class TenantAutoResponseLog(TimestampModel, table=True):
 
         """
 
-        q = (
-            cls.tenant_select()
-            .where(cls.tenant_id == tenant_id)
-            .where(cls.contact_id == contact_id)
+        q = cls.tenant_select(fallback_tenant_id=tenant_id).where(
+            cls.contact_id == contact_id
         )
         q_result = await db.execute(q)
         return q_result.scalar_one_or_none()

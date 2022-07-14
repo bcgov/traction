@@ -6,7 +6,7 @@ from starlette import status
 
 from api.core.config import settings
 from api.endpoints.dependencies.db import get_db
-from api.endpoints.dependencies.tenant_security import get_from_context
+from api.endpoints.dependencies.tenant_context import get_from_context
 
 from api.endpoints.routes.v1.link_utils import build_list_links
 from api.endpoints.models.v1.invitations import (

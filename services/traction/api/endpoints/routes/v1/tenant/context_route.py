@@ -4,7 +4,7 @@
 # from fastapi.routing import APIRoute
 
 # from api.db.session import TenantContext, tenant_context
-# from api.endpoints.dependencies.tenant_security import get_from_context
+# from api.endpoints.dependencies.tenant_context import get_from_context
 
 
 # TODO currently unused, but another way to set tenant context for http context

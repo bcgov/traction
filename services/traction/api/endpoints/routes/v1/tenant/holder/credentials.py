@@ -13,7 +13,7 @@ from api.endpoints.models.v1.holder import (
 )
 from api.endpoints.routes.v1.link_utils import build_list_links
 
-from api.endpoints.dependencies.tenant_security import get_from_context
+from api.endpoints.dependencies.tenant_context import get_from_context
 from api.services.v1 import holder_service
 
 router = APIRouter()

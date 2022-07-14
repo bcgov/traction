@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from api.endpoints.dependencies.db import get_db
-from api.endpoints.dependencies.tenant_security import get_from_context
+from api.endpoints.dependencies.tenant_context import get_from_context
 from api.endpoints.models.v1.contacts import (
     ContactGetResponse,
     UpdateContactResponse,

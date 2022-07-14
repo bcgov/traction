@@ -6,7 +6,7 @@ from starlette import status
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from api.endpoints.dependencies.tenant_security import get_from_context
+from api.endpoints.dependencies.tenant_context import get_from_context
 from api.endpoints.models.v1.holder import (
     HolderCredentialGetResponse,
     RejectCredentialOfferPayload,

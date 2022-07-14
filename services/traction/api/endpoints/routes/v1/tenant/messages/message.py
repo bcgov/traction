@@ -5,7 +5,7 @@ from fastapi import APIRouter
 from starlette import status
 from starlette.requests import Request
 
-from api.endpoints.dependencies.tenant_security import get_from_context
+from api.endpoints.dependencies.tenant_context import get_from_context
 from api.endpoints.models.v1.messages import (
     MessageGetResponse,
     UpdateMessageResponse,
