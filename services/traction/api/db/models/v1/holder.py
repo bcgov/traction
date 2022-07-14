@@ -482,7 +482,7 @@ class HolderPresentation(StatefulModel, TrackingModel, TimestampModel, table=Tru
         Find and return list of Holder Presentation records for Thread ID.
 
           tenant_id: Traction ID of tenant making the call
-          thread_id: AcaPy Thread ID of Issuer Presentation
+          thread_id: AcaPy Thread ID of Holder Presentation
 
         Returns: List of Traction HolderPresentation (db) records in descending order
         """
