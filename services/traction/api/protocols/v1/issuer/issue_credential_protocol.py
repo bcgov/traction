@@ -72,10 +72,12 @@ class IssueCredentialProtocol(ABC):
 
                 await self.after_all(profile=profile, payload=payload)
             else:
+                # TODO: remove this when we update to acapy 7.4, workaround for bug in 7.3
                 self.logger.info("payload has no key for 'state'")
                 await self.on_unknown_state(profile=profile, payload=payload)
         self.logger.info("< notify()")
 
+    # TODO: remove this when we update to acapy 7.4, workaround for bug in 7.3
     @abstractmethod
     async def on_unknown_state(self, profile: Profile, payload: dict):
         pass
@@ -182,6 +184,7 @@ class DefaultIssueCredentialProtocol(IssueCredentialProtocol):
         self.logger.info(f"< approve_for_processing({approved})")
         return approved
 
+    # TODO: remove this when we update to acapy 7.4, workaround for bug in 7.3
     async def on_unknown_state(self, profile: Profile, payload: dict):
         pass
 

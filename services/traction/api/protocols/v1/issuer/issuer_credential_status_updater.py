@@ -53,6 +53,7 @@ class IssuerCredentialStatusUpdater(DefaultIssueCredentialProtocol):
             await db.commit()
         self.logger.info("< before_any()")
 
+    # TODO: remove this when we update to acapy 7.4, workaround for bug in 7.3
     async def on_unknown_state(self, profile: Profile, payload: dict):
         self.logger.info(f"> on_unknown_state({payload})")
         issuer_credential = await self.get_issuer_credential(profile, payload)
