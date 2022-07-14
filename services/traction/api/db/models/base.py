@@ -28,21 +28,6 @@ class BaseSchema(pydantic.BaseModel):
 class BaseModel(SQLModel, BaseSchema):
     __mapper_args__ = {"eager_defaults": True}
 
-    def __init__(self):
-        self._logger = logging.getLogger(type(self).__name__)
-
-    @classmethod
-    def tenant_select(cls, fallback_tenant_id: UUID = None) -> Select:
-        logger.warning(
-            """tenant_select being called on table not using
-            TenantScopedModel, making unsafe call"""
-        )
-        return select(cls)
-
-    @property
-    def logger(self):
-        return self._logger
-
     @classmethod
     async def update_by_id(cls, item_id: UUID, values: dict):
         """Update Item by ID.
