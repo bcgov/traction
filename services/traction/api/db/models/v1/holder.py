@@ -1,4 +1,4 @@
-"""Issuer Database Tables/Models.
+"""Holder Database Tables/Models.
 
 Models of the Traction tables for Holder and related data.
 
@@ -286,3 +286,214 @@ class HolderCredential(StatefulModel, TrackingModel, TimestampModel, table=True)
                 detail=f"Holder Credential does not exist for revocation registration id<{revoc_reg_id}> / revocation id<{revocation_id}>",  # noqa: E501
             )
         return db_rec
+
+
+class HolderPresentation(StatefulModel, TrackingModel, TimestampModel, table=True):
+    """Holder Presentation.
+
+    Model for the Holder Presentation table (postgresql specific dialects in use).
+    This will track Holder Presentations/Offers for the Tenants.
+
+    Attributes:
+      holder_presentation_id: Traction ID for holder presentation
+      tenant_id: Traction Tenant ID
+      contact_id: Traction Contact ID (issuer)
+      alias: tenant provided name/alias to identify the presentation
+      status: Business and Tenant indicator for Presentation state; independent of AcaPy
+        Presentation Exchange state
+      state: The underlying AcaPy presentation exchange state
+      external_reference_id: Set by tenant to correlate this Presentation with entity in
+        external system
+      tags: Set by tenant for arbitrary grouping of Presentations
+      deleted: Holder Presentation "soft" delete indicator.
+      thread_id: AcaPy thread id
+      presentation_exchange_id: AcaPy id for the presentation exchange
+      connection_id: AcaPy connection id for the Contact
+      created_at: Timestamp when record was created in Traction
+      updated_at: Timestamp when record was last modified in Traction
+    """
+
+    __tablename__ = "holder_presentation"
+
+    holder_presentation_id: uuid.UUID = Field(
+        sa_column=Column(
+            UUID(as_uuid=True),
+            primary_key=True,
+            server_default=text("gen_random_uuid()"),
+        )
+    )
+    tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True)
+    contact_id: uuid.UUID = Field(foreign_key="contact.contact_id", index=True)
+    deleted: bool = Field(nullable=False, default=False)
+
+    alias: str = Field(nullable=True)
+
+    # acapy data ---
+    thread_id: str = Field(nullable=True)
+    presentation_exchange_id: str = Field(nullable=True)
+    connection_id: str = Field(nullable=True)
+    # --- acapy data
+
+    # relationships ---
+    contact: Optional[Contact] = Relationship()
+    # --- relationships
+
+    @classmethod
+    async def get_by_id(
+        cls: "HolderPresentation",
+        db: AsyncSession,
+        tenant_id: uuid.UUID,
+        holder_presentation_id: uuid.UUID,
+        deleted: bool | None = False,
+    ) -> "HolderPresentation":
+        """Get HolderPresentation by id.
+
+        Find and return the database Holder Presentation record
+
+        Args:
+          db: database session
+          tenant_id: Traction ID of tenant making the call
+          holder_presentation_id: Traction ID of HolderPresentation
+
+        Returns: The Traction HolderPresentation (db) record
+
+        Raises:
+          NotFoundError: if the HolderPresentation cannot be found by ID and deleted
+          flag
+        """
+
+        q = (
+            select(cls)
+            .where(cls.tenant_id == tenant_id)
+            .where(cls.holder_presentation_id == holder_presentation_id)
+            .where(cls.deleted == deleted)
+            .options(selectinload(cls.contact))
+        )
+        q_result = await db.execute(q)
+        db_rec = q_result.scalar_one_or_none()
+        if not db_rec:
+            raise NotFoundError(
+                code="holder_presentation_id.id_not_found",
+                title="Holder Presentation does not exist",
+                detail=f"Holder Presentation does not exist for id<{holder_presentation_id}>",  # noqa: E501
+            )
+        return db_rec
+
+    @classmethod
+    async def get_by_presentation_exchange_id(
+        cls: "HolderPresentation",
+        db: AsyncSession,
+        tenant_id: uuid.UUID,
+        presentation_exchange_id: str,
+    ) -> "HolderPresentation":
+        """Get HolderPresentation by Presentation Exchange ID.
+
+        Find and return the database HolderPresentation record
+
+        Args:
+          db: database session
+          tenant_id: Traction ID of tenant making the call
+          presentation_exchange_id: acapy message Presentation Exchange ID
+
+        Returns: The Traction HolderPresentation (db) record
+
+        Raises:
+          NotFoundError: if the HolderPresentation cannot be found by ID
+        """
+
+        q = (
+            select(cls)
+            .where(cls.tenant_id == tenant_id)
+            .where(cls.presentation_exchange_id == presentation_exchange_id)
+            .options(selectinload(cls.contact))
+        )
+        q_result = await db.execute(q)
+        db_rec = q_result.scalar_one_or_none()
+        if not db_rec:
+            raise NotFoundError(
+                code="holder_presentation.presentation_exchange_id_not_found",
+                title="Holder Presentation does not exist",
+                detail=f"Holder Presentation does not exist for presentation exchange id<{presentation_exchange_id}>",  # noqa: E501
+            )
+        return db_rec
+
+    @classmethod
+    async def list_by_contact_id(
+        cls: "HolderPresentation",
+        db: AsyncSession,
+        tenant_id: uuid.UUID,
+        contact_id: uuid.UUID,
+    ) -> List["HolderPresentation"]:
+        """List by Contact ID.
+
+        Find and return list of Holder Presentation records for Contact.
+
+          tenant_id: Traction ID of tenant making the call
+          contact_id: Traction ID of Contact
+
+        Returns: List of Traction HolderPresentation (db) records in descending order
+        """
+
+        q = (
+            select(cls)
+            .where(cls.contact_id == contact_id)
+            .where(cls.tenant_id == tenant_id)
+            .options(selectinload(cls.contact))
+            .order_by(desc(cls.updated_at))
+        )
+        q_result = await db.execute(q)
+        db_recs = q_result.scalars().all()
+        return db_recs
+
+    @classmethod
+    async def list_by_tenant_id(
+        cls: "HolderPresentation",
+        db: AsyncSession,
+        tenant_id: uuid.UUID,
+    ) -> List["HolderPresentation"]:
+        """List by Tenant ID.
+
+        Find and return list of Holder Presentation records for Tenant.
+
+          tenant_id: Traction ID of tenant making the call
+
+        Returns: List of Traction Holder Presentation (db) records in descending order
+        """
+
+        q = (
+            select(cls)
+            .where(cls.tenant_id == tenant_id)
+            .options(selectinload(cls.contact))
+            .order_by(desc(cls.updated_at))
+        )
+        q_result = await db.execute(q)
+        db_recs = q_result.scalars().all()
+        return db_recs
+
+    @classmethod
+    async def list_by_thread_id(
+        cls: "HolderPresentation",
+        db: AsyncSession,
+        tenant_id: uuid.UUID,
+        thread_id: str,
+    ) -> List["HolderPresentation"]:
+        """List by Thread ID.
+
+        Find and return list of Holder Presentation records for Thread ID.
+
+          tenant_id: Traction ID of tenant making the call
+          thread_id: AcaPy Thread ID of Issuer Presentation
+
+        Returns: List of Traction HolderPresentation (db) records in descending order
+        """
+
+        q = (
+            select(cls)
+            .where(cls.thread_id == thread_id)
+            .where(cls.tenant_id == tenant_id)
+            .options(selectinload(cls.contact))
+            .order_by(desc(cls.updated_at))
+        )
+        q_result = await db.execute(q)
+        db_recs = q_result.scalars().all()
+        return db_recs
