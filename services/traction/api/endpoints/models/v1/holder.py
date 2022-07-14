@@ -13,6 +13,7 @@ from api.endpoints.models.v1.base import (
     GetTimelineResponse,
     GetResponse,
 )
+from api.endpoints.models.v1.verifier import AcapyPresentProofStateType
 
 
 class HolderCredentialStatusType(str, Enum):
@@ -33,6 +34,19 @@ class HolderCredentialStatusType(str, Enum):
     error = "Error"
 
 
+class HolderPresentationStatusType(str, Enum):
+    # pending, nothing happened yet
+    pending = "Pending"
+    # offer received, waiting for action
+    request_received = "Request Received"
+    presentation_sent = "Presentation Sent"
+    # we sent, they got it
+    presentation_acked = "Presentation Received"
+    # item is soft deleted
+    deleted = "Deleted"
+    error = "Error"
+
+
 class HolderCredentialListParameters(
     ListAcapyItemParameters[HolderCredentialStatusType, CredentialStateType]
 ):
@@ -42,7 +56,20 @@ class HolderCredentialListParameters(
     external_reference_id: str | None = None
 
 
+class HolderPresentationListParameters(
+    ListAcapyItemParameters[HolderPresentationStatusType, AcapyPresentProofStateType]
+):
+    contact_id: UUID | None = None
+    external_reference_id: str | None = None
+
+
 class HolderCredentialContact(BaseModel):
+    contact_id: UUID
+    alias: str
+    external_reference_id: str | None = None
+
+
+class HolderPresentationContact(BaseModel):
     contact_id: UUID
     alias: str
     external_reference_id: str | None = None
@@ -54,6 +81,12 @@ class HolderCredentialAcapy(BaseModel):
     revocation_id: str | None = None
     credential_exchange: dict | None = {}
     credential: dict | None = {}
+
+
+class HolderPresentationAcapy(BaseModel):
+    presentation_exchange_id: str | None = None
+    presentation_exchange: dict | None = {}
+    presentation: dict | None = {}
 
 
 class HolderCredentialItem(
@@ -68,8 +101,27 @@ class HolderCredentialItem(
     external_reference_id: str | None = None
 
 
+class HolderPresentationItem(
+    AcapyItem[
+        HolderPresentationStatusType,
+        AcapyPresentProofStateType,
+        HolderPresentationAcapy,
+    ]
+):
+    holder_presentation_id: UUID
+    contact: HolderPresentationContact
+    alias: str | None = None
+    external_reference_id: str | None = None
+
+
 class HolderCredentialTimelineItem(
     TimelineItem[HolderCredentialStatusType, CredentialStateType]
+):
+    pass
+
+
+class HolderPresentationTimelineItem(
+    TimelineItem[HolderPresentationStatusType, AcapyPresentProofStateType]
 ):
     pass
 
@@ -78,8 +130,18 @@ class HolderCredentialListResponse(ListResponse[HolderCredentialItem]):
     pass
 
 
+class HolderPresentationListResponse(ListResponse[HolderPresentationItem]):
+    pass
+
+
 class HolderCredentialGetResponse(
     GetTimelineResponse[HolderCredentialItem, HolderCredentialTimelineItem]
+):
+    pass
+
+
+class HolderPresentationGetResponse(
+    GetTimelineResponse[HolderPresentationItem, HolderPresentationTimelineItem]
 ):
     pass
 

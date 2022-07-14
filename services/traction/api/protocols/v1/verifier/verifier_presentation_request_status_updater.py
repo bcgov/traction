@@ -37,8 +37,7 @@ class VerifierPresentationRequestStatusUpdater(DefaultPresentationRequestProtoco
         self.logger.info("> approve_for_processing()")
         verifier_presentation = await self.get_verifier_presentation(profile, payload)
         has_record = verifier_presentation is not None
-        is_verifier = payload["role"] == "verifier"
-        approved = has_record and is_verifier
+        approved = has_record
         self.logger.info(f"< approve_for_processing({approved})")
         return approved
 
