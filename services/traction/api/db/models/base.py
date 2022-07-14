@@ -28,7 +28,7 @@ class BaseModel(SQLModel, BaseSchema):
     __mapper_args__ = {"eager_defaults": True}
 
     @classmethod
-    def tenant_select(cls, fallback_tenant_id) -> Select:
+    def tenant_select(cls, fallback_tenant_id: UUID = None) -> Select:
         logger.warning(
             """tenant_select being called on table not using
             TenantScopedModel, making unsafe call"""
