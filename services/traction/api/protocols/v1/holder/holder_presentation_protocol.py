@@ -49,7 +49,6 @@ class DefaultHolderPresentationProtocol(DefaultPresentationRequestProtocol):
 
     async def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
         self.logger.info("> approve_for_processing()")
-        self.logger.debug(f"payload={payload}")
         holder_presentation = await self.get_holder_presentation(profile, payload)
         is_new_request = payload["state"] == AcapyPresentProofStateType.REQUEST_RECEIVED
         is_existing_item = holder_presentation is not None
