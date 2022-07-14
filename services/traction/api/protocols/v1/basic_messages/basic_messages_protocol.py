@@ -45,7 +45,7 @@ class BasicMessagesProtocol:
     async def get_contact(self, tenant_id: str, connection_id: str) -> Contact:
         async with async_session() as db:
             try:
-                return await Contact.get_by_connection_id(db, tenant_id, connection_id)
+                return await Contact.get_by_connection_id(db, connection_id)
             except NotFoundError:
                 self.logger.warning(
                     f"No contact found for connection_id<{connection_id}>"
@@ -58,9 +58,7 @@ class BasicMessagesProtocol:
 
     async def auto_response_exists(self, tenant_id: UUID, contact_id: UUID) -> bool:
         async with async_session() as db:
-            rec = await TenantAutoResponseLog.get_from_tenant_to_contact(
-                db, tenant_id, contact_id
-            )
+            rec = await TenantAutoResponseLog.get_from_tenant_to_contact(db, contact_id)
             return rec is not None
 
     async def log_auto_response(

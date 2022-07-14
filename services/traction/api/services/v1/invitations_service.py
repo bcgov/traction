@@ -121,7 +121,6 @@ async def list_invitations(
     skip = (parameters.page_num - 1) * limit
 
     filters = [
-        ConnectionInvitation.tenant_id == tenant_id,
         ConnectionInvitation.deleted == parameters.deleted,
     ]
     if parameters.status:
@@ -136,7 +135,7 @@ async def list_invitations(
         filters.append(ConnectionInvitation.tags.comparator.contains(_filter_tags))
 
     # build out a base query with all filters
-    base_q = select(ConnectionInvitation).filter(*filters)
+    base_q = ConnectionInvitation.tenant_select().filter(*filters)
 
     # get a count of ALL records matching our base query
     count_q = select([func.count()]).select_from(base_q)

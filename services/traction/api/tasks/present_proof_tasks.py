@@ -60,7 +60,7 @@ class SendPresentProofTask(Task):
         # update state from pending to 'starting'
         contact = None
         async with async_session() as db:
-            contact = await Contact.get_by_id(db, tenant.id, payload["contact_id"])
+            contact = await Contact.get_by_id(db, payload["contact_id"])
             vpr = await VerifierPresentation.get_by_id(
                 db, tenant.id, verifier_presentation_id
             )

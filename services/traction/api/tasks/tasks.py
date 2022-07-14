@@ -139,13 +139,19 @@ class Task(ABC):
         context["TENANT_WALLET_TOKEN"] = tenant.wallet_token
         payload = event.payload["payload"]
         try:
-            await self._perform_task(tenant=tenant, payload=payload)
+            await self._perform_task_with_context(tenant=tenant, payload=payload)
         except Exception as e:
             await self._handle_perform_task_error(tenant=tenant, payload=payload, exc=e)
             # TODO: send notification via webhook that task errored out
 
     @abstractmethod
     async def _perform_task(self, tenant: Tenant, payload: dict):
+        pass
+
+    async def _perform_task_with_context(self, tenant: Tenant, payload: dict):
+        context["TENANT_ID"] = tenant.id
+        context["TENANT_WALLET_ID"] = tenant.wallet_id
+        self._perform_task(self, tenant, payload)
         pass
 
     async def _handle_perform_task_error(

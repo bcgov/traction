@@ -74,20 +74,17 @@ class TenantScopedModel(BaseModel):
     tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True)
 
     @classmethod
-    def tenant_select(cls, fallback_tenant_id: UUID = None) -> Select:
-
+    def tenant_select(cls) -> Select:
         result = None
         tenant_context_id = get_from_context("TENANT_ID")
+
         # load from starlette context
         if tenant_context_id:
             result = select(cls).where(cls.tenant_id == tenant_context_id)
-        # manually passed in fallback for now
-        elif fallback_tenant_id:
-            result = select(cls).where(cls.tenant_id == fallback_tenant_id)
         # couldn't load tenant context for some reason
         else:
             logger.warning(
-                f"""QUERY ON {cls.__name__}: no http context on fallback_tenant_id,
+                f"""QUERY ON {cls.__name__}: starlette_context.context["TENANT_ID"] not set,
                 EXECUTING AN UNSAFE QUERY"""
             )
             result = select(cls)

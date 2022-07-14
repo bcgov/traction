@@ -67,7 +67,6 @@ class VerifierPresentation(
     async def get_by_id(
         cls: "VerifierPresentation",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         verifier_presentation_id: uuid.UUID,
         deleted: bool | None = False,
     ) -> "VerifierPresentation":
@@ -88,7 +87,7 @@ class VerifierPresentation(
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .where(cls.verifier_presentation_id == verifier_presentation_id)
             .where(cls.deleted == deleted)
             .options(selectinload(cls.contact))
@@ -107,7 +106,6 @@ class VerifierPresentation(
     async def get_by_pres_exch_id(
         cls: "VerifierPresentation",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         pres_exch_id: uuid.UUID,
         deleted: bool | None = False,
     ) -> "VerifierPresentation":
@@ -128,7 +126,7 @@ class VerifierPresentation(
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .where(cls.pres_exch_id == pres_exch_id)
             .where(cls.deleted == deleted)
             .options(selectinload(cls.contact))
@@ -147,7 +145,6 @@ class VerifierPresentation(
     async def list_by_tenant_id(
         cls: "VerifierPresentation",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
     ) -> List["VerifierPresentation"]:
         """List by Tenant ID.
 
@@ -159,7 +156,7 @@ class VerifierPresentation(
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .options(selectinload(cls.contact))
             .order_by(desc(cls.updated_at))
         )

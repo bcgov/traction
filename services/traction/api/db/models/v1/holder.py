@@ -116,7 +116,7 @@ class HolderCredential(
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .where(cls.holder_credential_id == holder_credential_id)
             .where(cls.deleted == deleted)
             .options(selectinload(cls.contact))
@@ -155,7 +155,7 @@ class HolderCredential(
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .where(cls.credential_exchange_id == credential_exchange_id)
             .options(selectinload(cls.contact))
         )
@@ -187,7 +187,7 @@ class HolderCredential(
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .where(cls.contact_id == contact_id)
             .options(selectinload(cls.contact))
             .order_by(desc(cls.updated_at))
@@ -200,7 +200,6 @@ class HolderCredential(
     async def list_by_tenant_id(
         cls: "HolderCredential",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
     ) -> List["HolderCredential"]:
         """List by Tenant ID.
 
@@ -212,7 +211,7 @@ class HolderCredential(
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .options(selectinload(cls.contact))
             .order_by(desc(cls.updated_at))
         )
@@ -224,7 +223,6 @@ class HolderCredential(
     async def list_by_thread_id(
         cls: "HolderCredential",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         thread_id: str,
     ) -> List["HolderCredential"]:
         """List by Thread ID.
@@ -238,7 +236,7 @@ class HolderCredential(
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .where(cls.thread_id == thread_id)
             .options(selectinload(cls.contact))
             .order_by(desc(cls.updated_at))
@@ -251,7 +249,6 @@ class HolderCredential(
     async def get_by_revocation_ids(
         cls: "HolderCredential",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         revoc_reg_id: str,
         revocation_id: str,
     ) -> "HolderCredential":
@@ -272,7 +269,7 @@ class HolderCredential(
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .where(cls.revoc_reg_id == revoc_reg_id)
             .where(cls.revocation_id == revocation_id)
             .options(selectinload(cls.contact))

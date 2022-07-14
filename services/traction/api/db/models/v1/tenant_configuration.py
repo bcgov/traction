@@ -81,7 +81,7 @@ class TenantConfiguration(TimestampModel, TenantScopedModel, table=True):
 
         """
 
-        q = cls.tenant_select(fallback_tenant_id=tenant_id)
+        q = cls.tenant_select()
         q_result = await db.execute(q)
         db_rec = q_result.scalar_one_or_none()
         if not db_rec:
@@ -119,7 +119,6 @@ class TenantAutoResponseLog(TimestampModel, TenantScopedModel, table=True):
     async def get_from_tenant_to_contact(
         cls: "TenantAutoResponseLog",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         contact_id: uuid.UUID,
     ) -> "TenantAutoResponseLog":
         """Get TenantAutoResponseLog by tenant id and contact id.
@@ -136,9 +135,7 @@ class TenantAutoResponseLog(TimestampModel, TenantScopedModel, table=True):
 
         """
 
-        q = cls.tenant_select(fallback_tenant_id=tenant_id).where(
-            cls.contact_id == contact_id
-        )
+        q = cls.tenant_select().where(cls.contact_id == contact_id)
         q_result = await db.execute(q)
         return q_result.scalar_one_or_none()
 
@@ -192,7 +189,6 @@ class TenantWebhookLog(TimestampModel, TenantScopedModel, table=True):
     async def list_by_tenant_id(
         cls: "TenantWebhookLog",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
     ) -> List["TenantWebhookLog"]:
         """List by Tenant ID.
 
@@ -203,11 +199,7 @@ class TenantWebhookLog(TimestampModel, TenantScopedModel, table=True):
         Returns: List of Tenant Webhook Log (db) records in descending order
         """
 
-        q = (
-            cls.tenant_select()
-            .where(cls.tenant_id == tenant_id)
-            .order_by(desc(cls.updated_at))
-        )
+        q = cls.tenant_select().order_by(desc(cls.updated_at))
         q_result = await db.execute(q)
         db_recs = q_result.scalars().all()
         return db_recs

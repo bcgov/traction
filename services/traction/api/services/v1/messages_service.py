@@ -75,7 +75,7 @@ async def send_message(
     payload: SendMessagePayload,
 ) -> MessageItem:
     async with async_session() as db:
-        db_contact = await Contact.get_by_id(db, tenant_id, payload.contact_id)
+        db_contact = await Contact.get_by_id(db, payload.contact_id)
 
     if db_contact.status is not ContactStatusType.active:
         # raise error
@@ -101,7 +101,7 @@ async def send_message(
         )
         db.add(db_item)
         await db.commit()
-        db_item = await Message.get_by_id(db, tenant_id, db_item.message_id)
+        db_item = await Message.get_by_id(db, db_item.message_id)
     item = message_to_item(db_item, True)
 
     return item
@@ -180,7 +180,6 @@ async def list_messages(
 
 
 async def get_message(
-    tenant_id: UUID,
     wallet_id: UUID,
     message_id: UUID,
     acapy: bool | None = False,
@@ -191,7 +190,6 @@ async def get_message(
     Find and return a Traction Message by ID.
 
     Args:
-      tenant_id: Traction ID of tenant making the call
       wallet_id: AcaPy Wallet ID for tenant
       message_id: Traction ID of Message
       acapy: When True, populate the Message acapy field
@@ -203,7 +201,7 @@ async def get_message(
       NotFoundError: if the item cannot be found by ID and deleted flag
     """
     async with async_session() as db:
-        db_item = await Message.get_by_id(db, tenant_id, message_id, deleted)
+        db_item = await Message.get_by_id(db, message_id, deleted)
 
     item = message_to_item(db_item, acapy)
     return item
@@ -237,7 +235,7 @@ async def update_message(
     """
     # verify this contact exists and is not deleted...
     async with async_session() as db:
-        await Message.get_by_id(db, tenant_id, message_id, False)
+        await Message.get_by_id(db, message_id, False)
 
     # payload contact id must match parameter
     if message_id != payload.message_id:

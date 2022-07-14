@@ -106,7 +106,6 @@ class IssuerCredential(
     async def get_by_id(
         cls: "IssuerCredential",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         issuer_credential_id: uuid.UUID,
         deleted: bool | None = False,
     ) -> "IssuerCredential":
@@ -127,7 +126,7 @@ class IssuerCredential(
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .where(cls.issuer_credential_id == issuer_credential_id)
             .where(cls.deleted == deleted)
             .options(selectinload(cls.contact), selectinload(cls.credential_template))
@@ -146,7 +145,6 @@ class IssuerCredential(
     async def get_by_credential_exchange_id(
         cls: "IssuerCredential",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         credential_exchange_id: str,
     ) -> "IssuerCredential":
         """Get IssuerCredential by Credential Exchange ID.
@@ -165,7 +163,7 @@ class IssuerCredential(
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .where(cls.credential_exchange_id == credential_exchange_id)
             .options(selectinload(cls.contact), selectinload(cls.credential_template))
         )
@@ -185,7 +183,6 @@ class IssuerCredential(
         db: AsyncSession,
         revoc_reg_id: str,
         revocation_id: str,
-        tenant_id: UUID = None,
     ) -> "IssuerCredential":
         """Get IssuerCredential by Revocation IDs.
 
@@ -203,7 +200,7 @@ class IssuerCredential(
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .where(cls.revoc_reg_id == revoc_reg_id)
             .where(cls.revocation_id == revocation_id)
             .options(selectinload(cls.contact), selectinload(cls.credential_template))
@@ -222,7 +219,6 @@ class IssuerCredential(
     async def list_by_credential_template_id(
         cls: "IssuerCredential",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         credential_template_id: uuid.UUID,
     ) -> List["IssuerCredential"]:
         """List by Credential Template ID.
@@ -236,7 +232,7 @@ class IssuerCredential(
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .where(cls.credential_template_id == credential_template_id)
             .options(selectinload(cls.contact), selectinload(cls.credential_template))
             .order_by(desc(cls.updated_at))
@@ -249,7 +245,6 @@ class IssuerCredential(
     async def list_by_cred_def_id(
         cls: "IssuerCredential",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         cred_def_id: str,
     ) -> List["IssuerCredential"]:
         """List by Cred Def ID.
@@ -263,7 +258,7 @@ class IssuerCredential(
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .where(cls.cred_def_id == cred_def_id)
             .options(selectinload(cls.contact), selectinload(cls.credential_template))
             .order_by(desc(cls.updated_at))
@@ -276,7 +271,6 @@ class IssuerCredential(
     async def list_by_contact_id(
         cls: "IssuerCredential",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         contact_id: uuid.UUID,
     ) -> List["IssuerCredential"]:
         """List by Contact ID.
@@ -290,7 +284,7 @@ class IssuerCredential(
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .where(cls.contact_id == contact_id)
             .options(selectinload(cls.contact), selectinload(cls.credential_template))
             .order_by(desc(cls.updated_at))
@@ -303,7 +297,6 @@ class IssuerCredential(
     async def list_by_tenant_id(
         cls: "IssuerCredential",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
     ) -> List["IssuerCredential"]:
         """List by Tenant ID.
 
@@ -315,7 +308,7 @@ class IssuerCredential(
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .options(selectinload(cls.contact), selectinload(cls.credential_template))
             .order_by(desc(cls.updated_at))
         )
@@ -327,7 +320,6 @@ class IssuerCredential(
     async def list_by_thread_id(
         cls: "IssuerCredential",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         thread_id: str,
     ) -> List["IssuerCredential"]:
         """List by Thread ID.
@@ -341,7 +333,7 @@ class IssuerCredential(
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .where(cls.thread_id == thread_id)
             .options(selectinload(cls.contact), selectinload(cls.credential_template))
             .order_by(desc(cls.updated_at))

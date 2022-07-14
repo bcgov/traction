@@ -203,19 +203,17 @@ async def offer_new_credential(
     db_credential_template = None
 
     if payload.contact_id:
-        db_contact = await Contact.get_by_id(db, tenant_id, payload.contact_id)
+        db_contact = await Contact.get_by_id(db, payload.contact_id)
     elif payload.connection_id:
-        db_contact = await Contact.get_by_connection_id(
-            db, tenant_id, payload.connection_id
-        )
+        db_contact = await Contact.get_by_connection_id(db, payload.connection_id)
 
     if payload.credential_template_id:
         db_credential_template = await CredentialTemplate.get_by_id(
-            db, tenant_id, payload.credential_template_id
+            db, payload.credential_template_id
         )
     elif payload.cred_def_id:
         db_credential_template = await CredentialTemplate.get_by_cred_def_id(
-            db, tenant_id, payload.cred_def_id
+            db, payload.cred_def_id
         )
 
     if db_credential_template.status != TemplateStatusType.active:

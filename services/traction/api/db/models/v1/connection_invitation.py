@@ -86,7 +86,6 @@ class ConnectionInvitation(TenantScopedModel, table=True):
     async def get_by_id(
         cls: "ConnectionInvitation",
         db: AsyncSession,
-        tenant_id: UUID,
         connection_invitation_id: UUID,
         deleted: bool | None = False,
     ) -> "ConnectionInvitation":
@@ -106,7 +105,7 @@ class ConnectionInvitation(TenantScopedModel, table=True):
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .where(cls.connection_invitation_id == connection_invitation_id)
             .where(cls.deleted == deleted)
         )
@@ -124,7 +123,6 @@ class ConnectionInvitation(TenantScopedModel, table=True):
     async def get_by_name(
         cls: "ConnectionInvitation",
         db: AsyncSession,
-        tenant_id: UUID,
         name: UUID,
         deleted: bool | None = False,
     ) -> "ConnectionInvitation":
@@ -141,11 +139,7 @@ class ConnectionInvitation(TenantScopedModel, table=True):
 
         """
 
-        q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
-            .where(cls.name == name)
-            .where(cls.deleted == deleted)
-        )
+        q = cls.tenant_select().where(cls.name == name).where(cls.deleted == deleted)
         q_result = await db.execute(q)
         db_item = q_result.scalar_one_or_none()
         return db_item
@@ -154,7 +148,6 @@ class ConnectionInvitation(TenantScopedModel, table=True):
     async def get_by_invitation_key(
         cls: "ConnectionInvitation",
         db: AsyncSession,
-        tenant_id: UUID,
         invitation_key: str,
     ) -> "ConnectionInvitation":
         """Get Connection Invitation by AcaPy invitation_key.
@@ -170,9 +163,7 @@ class ConnectionInvitation(TenantScopedModel, table=True):
 
         """
 
-        q = cls.tenant_select(fallback_tenant_id=tenant_id).where(
-            cls.invitation_key == invitation_key
-        )
+        q = cls.tenant_select().where(cls.invitation_key == invitation_key)
         q_result = await db.execute(q)
         db_item = q_result.scalar_one_or_none()
         return db_item

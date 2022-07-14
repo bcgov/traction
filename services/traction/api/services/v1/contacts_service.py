@@ -203,7 +203,7 @@ async def list_contacts(
     limit = parameters.page_size
     skip = (parameters.page_num - 1) * limit
 
-    filters = [Contact.tenant_id == tenant_id, Contact.deleted == parameters.deleted]
+    filters = [Contact.deleted == parameters.deleted]
     if parameters.status:
         filters.append(Contact.status == parameters.status)
     if parameters.state:
@@ -222,7 +222,7 @@ async def list_contacts(
         filters.append(Contact.tags.comparator.contains(_filter_tags))
 
     # build out a base query with all filters
-    base_q = select(Contact).filter(*filters)
+    base_q = Contact.tenant_select().filter(*filters)
 
     # get a count of ALL records matching our base query
     count_q = select([func.count()]).select_from(base_q)
@@ -305,7 +305,7 @@ async def update_contact(
       IdNotMatchError: if the contact id parameter and in payload do not match
     """
     # verify this contact exists and is not deleted...
-    await Contact.get_by_id(db, tenant_id, contact_id, False)
+    await Contact.get_by_id(db, contact_id, False)
 
     # payload contact id must match parameter
     if contact_id != payload.contact_id:

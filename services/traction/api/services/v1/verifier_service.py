@@ -68,11 +68,9 @@ async def make_verifier_presentation(
     db_contact = None
     async with async_session() as db:
         if payload.contact_id:
-            db_contact = await Contact.get_by_id(db, tenant_id, payload.contact_id)
+            db_contact = await Contact.get_by_id(db, payload.contact_id)
         elif payload.connection_id:
-            db_contact = await Contact.get_by_connection_id(
-                db, tenant_id, payload.connection_id
-            )
+            db_contact = await Contact.get_by_connection_id(db, payload.connection_id)
 
     if not db_contact:
         # TODO refactor this contact GET'ing (and error handling)

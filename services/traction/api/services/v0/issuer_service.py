@@ -128,7 +128,7 @@ async def issue_new_credential(
     # TODO: pass in contact id from v1 endpoint
     contact = None
     try:
-        contact = await Contact.get_by_connection_id(db, tenant_id, connection_id)
+        contact = await Contact.get_by_connection_id(db, connection_id)
     except NotFoundError:
         # suppress not found for v0 compatabilty
         pass

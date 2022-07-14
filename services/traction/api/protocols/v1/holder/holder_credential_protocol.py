@@ -38,7 +38,7 @@ class DefaultHolderCredentialProtocol(IssueCredentialProtocol):
         try:
             async with async_session() as db:
                 return await Contact.get_by_connection_id(
-                    db, profile.tenant_id, connection_id=connection_id
+                    db, connection_id=connection_id
                 )
         except NotFoundError:
             return None

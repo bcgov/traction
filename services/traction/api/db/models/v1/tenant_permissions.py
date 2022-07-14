@@ -7,8 +7,8 @@ Traction level - what the innkeeper has enabled or allowed.
 import uuid
 
 from sqlmodel import Field
-
 from sqlmodel.ext.asyncio.session import AsyncSession
+from sqlalchemy import select
 
 from api.db.models.base import TimestampModel
 
@@ -80,7 +80,7 @@ class TenantPermissions(TimestampModel, table=True):
 
         """
 
-        q = cls.tenant_select().where(cls.tenant_id == tenant_id)
+        q = select(cls).where(cls.tenant_id == tenant_id)
         q_result = await db.execute(q)
         db_rec = q_result.scalar_one_or_none()
         if not db_rec:

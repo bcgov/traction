@@ -109,7 +109,7 @@ class SchemaTemplate(StatefulModel, TimestampModel, TenantScopedModel, table=Tru
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .where(cls.schema_template_id == schema_template_id)
             .where(cls.deleted == deleted)
         )
@@ -148,7 +148,7 @@ class SchemaTemplate(StatefulModel, TimestampModel, TenantScopedModel, table=Tru
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .where(cls.schema_id == schema_id)
             .where(cls.deleted == deleted)
         )
@@ -187,7 +187,7 @@ class SchemaTemplate(StatefulModel, TimestampModel, TenantScopedModel, table=Tru
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .where(cls.transaction_id == transaction_id)
             .where(cls.deleted == deleted)
         )
@@ -218,9 +218,7 @@ class SchemaTemplate(StatefulModel, TimestampModel, TenantScopedModel, table=Tru
         Returns: List of Traction SchemaTemplate (db) records in descending order
         """
 
-        q = cls.tenant_select(fallback_tenant_id=tenant_id).order_by(
-            desc(cls.updated_at)
-        )
+        q = cls.tenant_select().order_by(desc(cls.updated_at))
         q_result = await db.execute(q)
         db_recs = q_result.scalars().all()
         return db_recs
@@ -314,7 +312,7 @@ class CredentialTemplate(StatefulModel, TimestampModel, TenantScopedModel, table
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .where(cls.credential_template_id == credential_template_id)
             .where(cls.deleted == deleted)
         )
@@ -353,7 +351,7 @@ class CredentialTemplate(StatefulModel, TimestampModel, TenantScopedModel, table
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .where(cls.cred_def_id == cred_def_id)
             .where(cls.deleted == deleted)
         )
@@ -392,7 +390,7 @@ class CredentialTemplate(StatefulModel, TimestampModel, TenantScopedModel, table
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .where(cls.transaction_id == transaction_id)
             .where(cls.deleted == deleted)
         )
@@ -410,7 +408,6 @@ class CredentialTemplate(StatefulModel, TimestampModel, TenantScopedModel, table
     async def get_by_schema_and_tag(
         cls: "CredentialTemplate",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         schema_id: str,
         tag: str,
     ) -> "CredentialTemplate":
@@ -428,11 +425,7 @@ class CredentialTemplate(StatefulModel, TimestampModel, TenantScopedModel, table
         Returns: The Traction CredentialTemplate (db) record or None
 
         """
-        q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
-            .where(cls.schema_id == schema_id)
-            .where(cls.tag == tag)
-        )
+        q = cls.tenant_select().where(cls.schema_id == schema_id).where(cls.tag == tag)
         q_result = await db.execute(q)
         db_rec = q_result.scalar_one_or_none()
         return db_rec
@@ -441,7 +434,6 @@ class CredentialTemplate(StatefulModel, TimestampModel, TenantScopedModel, table
     async def list_by_schema_template_id(
         cls: "CredentialTemplate",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         schema_template_id: uuid.UUID,
         status: str | None = None,
     ) -> List["CredentialTemplate"]:
@@ -456,17 +448,12 @@ class CredentialTemplate(StatefulModel, TimestampModel, TenantScopedModel, table
         Returns: List of Traction CredentialTemplate (db) records in descending order
         """
         filters = [
-            cls.tenant_id == tenant_id,
             cls.schema_template_id == schema_template_id,
         ]
         if status:
             filters.append(cls.status == status)
 
-        q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
-            .filter(*filters)
-            .order_by(desc(cls.updated_at))
-        )
+        q = cls.tenant_select().filter(*filters).order_by(desc(cls.updated_at))
         q_result = await db.execute(q)
         db_recs = q_result.scalars().all()
         return db_recs
@@ -489,7 +476,7 @@ class CredentialTemplate(StatefulModel, TimestampModel, TenantScopedModel, table
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .where(cls.schema_id == schema_id)
             .order_by(desc(cls.created_at))
         )
@@ -512,9 +499,7 @@ class CredentialTemplate(StatefulModel, TimestampModel, TenantScopedModel, table
         Returns: List of Traction CredentialTemplate (db) records in descending order
         """
 
-        q = cls.tenant_select(fallback_tenant_id=tenant_id).order_by(
-            desc(cls.updated_at)
-        )
+        q = cls.tenant_select().order_by(desc(cls.updated_at))
         q_result = await db.execute(q)
         db_recs = q_result.scalars().all()
         return db_recs

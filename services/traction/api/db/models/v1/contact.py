@@ -87,7 +87,6 @@ class Contact(
     async def get_by_id(
         cls: "Contact",
         db: AsyncSession,
-        tenant_id: UUID,
         contact_id: UUID,
         deleted: bool | None = False,
     ) -> "Contact":
@@ -107,7 +106,7 @@ class Contact(
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .where(cls.contact_id == contact_id)
             .where(cls.deleted == deleted)
         )
@@ -125,7 +124,6 @@ class Contact(
     async def get_by_connection_id(
         cls: "Contact",
         db: AsyncSession,
-        tenant_id: UUID,
         connection_id: UUID,
         deleted: bool | None = False,
     ) -> "Contact":
@@ -145,7 +143,7 @@ class Contact(
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .where(cls.connection_id == connection_id)
             .where(cls.deleted == deleted)
         )

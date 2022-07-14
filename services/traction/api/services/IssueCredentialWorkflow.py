@@ -100,7 +100,7 @@ class IssueCredentialWorkflow(BaseWorkflow):
                     try:
                         # supress not found for v0 compatibility
                         contact = await Contact.get_by_connection_id(
-                            profile.db, tenant_id, connection_id
+                            profile.db, connection_id
                         )
                     except NotFoundError:
                         pass

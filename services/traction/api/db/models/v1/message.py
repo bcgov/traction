@@ -88,7 +88,6 @@ class Message(TenantScopedModel, table=True):
     async def get_by_id(
         cls: "Message",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         message_id: uuid.UUID,
         deleted: bool | None = False,
     ) -> "Message":
@@ -98,7 +97,6 @@ class Message(TenantScopedModel, table=True):
 
         Args:
           db: database session
-          tenant_id: Traction ID of tenant making the call
           message_id: Traction ID of Message
 
         Returns: The Traction Message (db) record
@@ -109,7 +107,7 @@ class Message(TenantScopedModel, table=True):
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .where(cls.message_id == message_id)
             .where(cls.deleted == deleted)
             .options(selectinload(cls.contact))
@@ -129,7 +127,6 @@ class Message(TenantScopedModel, table=True):
     async def list_by_contact_id(
         cls: "Message",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         contact_id: uuid.UUID,
     ) -> List["Message"]:
         """List by Contact ID.
@@ -143,7 +140,7 @@ class Message(TenantScopedModel, table=True):
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .where(cls.contact_id == contact_id)
             .options(selectinload(cls.contact))
             .order_by(desc(cls.updated_at))
@@ -156,7 +153,6 @@ class Message(TenantScopedModel, table=True):
     async def list_by_tenant_id(
         cls: "Message",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
     ) -> List["Message"]:
         """List by Tenant ID.
 
@@ -168,7 +164,7 @@ class Message(TenantScopedModel, table=True):
         """
 
         q = (
-            cls.tenant_select(fallback_tenant_id=tenant_id)
+            cls.tenant_select()
             .options(selectinload(cls.contact))
             .order_by(desc(cls.updated_at))
         )

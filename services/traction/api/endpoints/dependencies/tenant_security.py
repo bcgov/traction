@@ -33,16 +33,6 @@ logger = logging.getLogger(__name__)
 multitenancy_api = MultitenancyApi(api_client=get_api_client())
 
 
-def get_from_context(name: str):
-    result = context.get(name)
-    if not result:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Error not authenticated",
-        )
-    return result
-
-
 class JWTTFetchingMiddleware(BaseHTTPMiddleware):
     """Middleware to inject tenant JWT into context."""
 

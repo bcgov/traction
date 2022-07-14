@@ -16,7 +16,7 @@ async def is_reusable_invitation(
     if "invitation_key" in payload.keys():
         async with async_session() as db:
             invitation = await ConnectionInvitation.get_by_invitation_key(
-                db, profile.tenant_id, payload["invitation_key"]
+                db, payload["invitation_key"]
             )
             if invitation and invitation.reusable:
                 result = invitation

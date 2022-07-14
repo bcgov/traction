@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import QueuePool
 
 from api.core.config import settings
+from starlette_context import context
 
 
 engine = create_async_engine(
@@ -14,14 +15,3 @@ engine = create_async_engine(
     poolclass=QueuePool,
 )
 async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
-
-
-class TenantContext(object):
-    tenant_id: UUID
-    tenant_wallet_id: UUID
-
-
-# currently NOT IN USE, safe_select is reading starlette context in realtime
-tenant_context = (
-    None  # set elsewhere in http context, task context, or webhook handler context
-)
