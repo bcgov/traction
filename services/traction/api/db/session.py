@@ -21,4 +21,6 @@ class TenantContext(object):
     tenant_wallet_id: UUID
 
 
-tenant_context = None  # set by app middleware in api/tenant_main.py
+tenant_context = (
+    None  # set elsewhere in http context, task context, or webhook handler context
+)

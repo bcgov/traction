@@ -27,7 +27,7 @@ class BaseModel(SQLModel, BaseSchema):
     __mapper_args__ = {"eager_defaults": True}
 
     @classmethod
-    def safe_query(cls):
+    def safe_select(cls):
         return select(cls)
 
     @classmethod
@@ -76,17 +76,24 @@ class TenantScopedModel(BaseModel):
     tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True)
 
     @classmethod
-    def safe_query(cls):
+    def safe_select(cls, tenant_id: UUID = None):
         from api.endpoints.dependencies.tenant_security import get_from_context
-        
-        ##load from starlette context
+
+        result = None
         tenant_context_id = get_from_context("TENANT_ID")
+        ##manually passed in for now
+        if tenant_id:
+            result = select(cls).where(cls.tenant_id == tenant_id)
+        ##load from starlette context
+        elif tenant_context_id:
+            result = select(cls).where(cls.tenant_id == tenant_context_id)
 
-        if not tenant_context_id:
-            logger.warn("not a http context, no tenant_id, unsafe query executing")
-            return select(cls)
+        ## couldn't load tenant context for some reason
+        else:
+            logger.error("not a http context, no tenant_id, EXECUTING AN UNSAFE QUERY")
+            result = select(cls)
 
-        return select(cls).where(cls.tenant_id == tenant_context_id)
+        return result
 
 
 class BaseTable(BaseModel):
