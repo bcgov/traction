@@ -48,6 +48,7 @@ class PresentCredentialProtocolType(str, Enum):
 class PresentationRoleType(str, Enum):
     verifier = "verifier"
     holder = "holder"
+    prover = "prover"
 
 
 class PresentationStateType(str, Enum):

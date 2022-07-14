@@ -12,7 +12,7 @@ from api.db.models.tenant_workflow import TenantWorkflow  # noqa: F401
 from api.db.models.v1.contact import Contact  # noqa: F401
 from api.db.models.v1.connection_invitation import ConnectionInvitation  # noqa: F401
 from api.db.models.v1.governance import SchemaTemplate, CredentialTemplate  # noqa: F401
-from api.db.models.v1.holder import HolderCredential  # noqa: F401
+from api.db.models.v1.holder import HolderCredential, HolderPresentation  # noqa: F401
 from api.db.models.v1.issuer import IssuerCredential  # noqa: F401
 from api.db.models.v1.message import Message  # noqa: F401
 from api.db.models.v1.verifier_presentation import VerifierPresentation  # noqa: F401
@@ -41,4 +41,5 @@ __all__ = [
     "TenantAutoResponseLog",
     "TenantWebhookLog",
     "HolderCredential",
+    "HolderPresentation",
 ]
