@@ -87,7 +87,8 @@ class TenantScopedModel(BaseModel):
         # couldn't load tenant context for some reason
         else:
             logger.warning(
-                "not an http context, no fallback_tenant_id, EXECUTING AN UNSAFE QUERY"
+                f"""QUERY ON {cls.__name__}: no http context on fallback_tenant_id,
+                EXECUTING AN UNSAFE QUERY"""
             )
             result = select(cls)
 
