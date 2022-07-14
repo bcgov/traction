@@ -21,8 +21,12 @@ const toggled = (e: any) => {
 
   // If there's no data make the request to the api.
   if (store.state.schemas.open && !store.state.schemas.data) {
+    // TODO: This is test data. Replace with real data.
+    const url = `/test_schemas.json`;
+    // const url = `${api}/tenant/v1/governance/schema_templates?page_size=1000`;
+
     axios
-      .get(`${api}/tenant/v1/governance/schema_templates?page_size=1000`, {
+      .get(url, {
         headers: {
           accept: "application/json",
           Authorization: `Bearer ${store.state.token}`,
@@ -50,7 +54,7 @@ const toggled = (e: any) => {
     <ProgressSpinner v-if="!store.state.schemas.data" />
     <div v-else>
       <!-- <DataTable></DataTable> -->
-      Here is some text
+      This is showing because empty arrays are positive.
       <Button class="create-btn" icon="pi pi-plus" label="Create Schema" />
     </div>
   </Fieldset>
