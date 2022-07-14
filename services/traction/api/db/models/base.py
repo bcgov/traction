@@ -33,7 +33,7 @@ class BaseModel(SQLModel, BaseSchema):
 
     @classmethod
     def tenant_select(cls, fallback_tenant_id: UUID = None) -> Select:
-        self.logger.warning(
+        logger.warning(
             """tenant_select being called on table not using
             TenantScopedModel, making unsafe call"""
         )
