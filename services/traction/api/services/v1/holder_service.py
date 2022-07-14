@@ -253,7 +253,7 @@ async def hard_delete_holder_credential(tenant_id: UUID, holder_credential_id: U
         hc = await HolderCredential.get_by_id(
             db, tenant_id, holder_credential_id, previously_soft_deleted
         )
-        db.delete(hc)
+        await db.delete(hc)
         await db.commit()
 
 
