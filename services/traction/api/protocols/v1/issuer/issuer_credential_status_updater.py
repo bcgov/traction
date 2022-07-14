@@ -64,13 +64,14 @@ class IssuerCredentialStatusUpdater(DefaultIssueCredentialProtocol):
 
     async def handle_issuance_abandoned(self, issuer_credential, payload):
         if "error_msg" in payload:
-            self.logger.info(f"payload error_msg = {payload['error_msg']}")
+            self.logger.debug(f"payload error_msg = {payload['error_msg']}")
             if str(payload["error_msg"]).startswith("issuance-abandoned"):
+                self.logger.info("credential issuance abandoned, offer not accepted.")
                 values = {
                     "state": CredentialStateType.abandoned,
                     "status": IssuerCredentialStatusType.offer_not_accepted,
                 }
-                self.logger.info(f"updating issuer credential = {values}")
+                self.logger.debug(f"updating issuer credential = {values}")
                 async with async_session() as db:
                     await IssuerCredential.update_by_id(
                         issuer_credential.issuer_credential_id, values
