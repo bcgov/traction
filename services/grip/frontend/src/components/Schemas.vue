@@ -4,11 +4,14 @@ import Fieldset from "primevue/fieldset";
 import Button from "primevue/button";
 import ProgressSpinner from "primevue/progressspinner";
 import DataTable from "primevue/datatable";
+import Column from "primevue/column";
+import InputText from "primevue/inputtext";
 import axios from "axios";
 
 const store: any = inject("store");
 
 // Vite passes the api url to here
+// TODO: This will be changed to reference the backend url
 const api = import.meta.env.VITE_TRACTION_ENDPOINT;
 
 /**
@@ -34,7 +37,7 @@ const toggled = (e: any) => {
       })
       .then((res) => {
         store.state.schemas.data = res.data.items;
-        console.log(res.data.items);
+        console.log(store.state.schemas.data);
       })
       .catch((err) => {
         store.state.schemas.data = null;
@@ -53,8 +56,32 @@ const toggled = (e: any) => {
     <template #legend>Schemas</template>
     <ProgressSpinner v-if="!store.state.schemas.data" />
     <div v-else>
-      <!-- <DataTable></DataTable> -->
-      This is showing because empty arrays are positive.
+      <DataTable
+        :value="store.state.schemas.data"
+        :paginator="true"
+        :rows="10"
+        striped-rows
+        v-model:selection="store.state.schemas.selection"
+        selection-mode="single"
+      >
+        <template #header>
+          <div class="flex justify-content-between">
+            <span class="p-input-icon-left">
+              <i class="pi pi-search" />
+              <InputText
+                v-model="store.state.schemas.filters"
+                placeholder="Schema Search"
+              />
+            </span>
+          </div>
+        </template>
+        <Column field="name" header="Schema" filterField="name" />
+        <Column field="version" header="Version" />
+        <Column field="status" header="Status" />
+        <Column field="state" header="State" />
+        <Column field="attributes" header="Attributes" />
+        <Column field="schema_id" header="ID" />
+      </DataTable>
       <Button class="create-btn" icon="pi pi-plus" label="Create Schema" />
     </div>
   </Fieldset>
@@ -69,5 +96,8 @@ fieldset {
 .create-btn {
   float: right;
   margin-top: 10px;
+}
+.p-datatable-header input {
+  padding-left: 3rem;
 }
 </style>
