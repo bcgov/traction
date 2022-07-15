@@ -37,7 +37,7 @@ async def get_tenant_permissions(
 ) -> TenantPermissionsItem:
 
     async with async_session() as db:
-        db_item = await TenantPermissions.get_by_id(db, tenant_id)
+        db_item = await TenantPermissions.get_by_id(db)
 
     item = tenant_permissions_to_item(db_item)
     return item
@@ -49,7 +49,7 @@ async def update_tenant_permissions(
 ) -> TenantPermissionsItem:
 
     async with async_session() as db:
-        await TenantPermissions.get_by_id(db, tenant_id)
+        await TenantPermissions.get_by_id(db)
 
     # payload tenant id must match parameter
     if tenant_id != payload.tenant_id:

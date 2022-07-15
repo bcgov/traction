@@ -96,7 +96,6 @@ class Contact(
 
         Args:
           db: database session
-          tenant_id: Traction ID of tenant making the call
           contact_id: Traction ID of Contact
 
         Returns: The Traction Contact (db) record
@@ -133,7 +132,6 @@ class Contact(
 
         Args:
           db: database session
-          tenant_id: Traction ID of tenant making the call
           connection_id: AcaPy Connection ID of Contact
 
         Returns: The Traction Contact (db) record

@@ -133,7 +133,6 @@ class Message(TenantScopedModel, table=True):
 
         Find and return list of Message records for Contact.
 
-          tenant_id: Traction ID of tenant making the call
           contact_id: Traction ID of Contact
 
         Returns: List of Traction Message (db) records in descending order
@@ -157,8 +156,6 @@ class Message(TenantScopedModel, table=True):
         """List by Tenant ID.
 
         Find and return list of Message records for Tenant.
-
-          tenant_id: Traction ID of tenant making the call
 
         Returns: List of Traction Message (db) records in descending order
         """

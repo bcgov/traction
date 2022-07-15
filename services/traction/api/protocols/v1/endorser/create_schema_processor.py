@@ -35,9 +35,7 @@ class CreateSchemaProcessor(DefaultEndorserProtocol):
         transaction_id = self.get_transaction_id(payload=payload)
         try:
             async with async_session() as db:
-                return await SchemaTemplate.get_by_transaction_id(
-                    db, profile.tenant_id, transaction_id
-                )
+                return await SchemaTemplate.get_by_transaction_id(db, transaction_id)
         except NotFoundError:
             return None
 
@@ -47,7 +45,6 @@ class CreateSchemaProcessor(DefaultEndorserProtocol):
         async with async_session() as db:
             return await CredentialTemplate.list_by_schema_template_id(
                 db=db,
-                tenant_id=profile.tenant_id,
                 schema_template_id=schema_template.schema_template_id,
                 status=TemplateStatusType.pending,
             )

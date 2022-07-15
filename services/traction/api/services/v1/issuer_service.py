@@ -343,7 +343,7 @@ async def update_issuer_credential(
       IdNotMatchError: if the item id parameter and in payload do not match
     """
     # verify this item exists and is not deleted...
-    await IssuerCredential.get_by_id(db, tenant_id, issuer_credential_id, False)
+    await IssuerCredential.get_by_id(db, issuer_credential_id, False)
 
     # payload id must match parameter
     if issuer_credential_id != payload.issuer_credential_id:

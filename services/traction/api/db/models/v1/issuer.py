@@ -115,7 +115,6 @@ class IssuerCredential(
 
         Args:
           db: database session
-          tenant_id: Traction ID of tenant making the call
           issuer_credential_id: Traction ID of IssuerCredential
 
         Returns: The Traction IssuerCredential (db) record
@@ -153,7 +152,6 @@ class IssuerCredential(
 
         Args:
           db: database session
-          tenant_id: Traction ID of tenant making the call
           credential_exchange_id: acapy message Credential Exchange ID
 
         Returns: The Traction IssuerCredential (db) record
@@ -225,7 +223,6 @@ class IssuerCredential(
 
         Find and return list of Issuer Credential records for Credential Template.
 
-          tenant_id: Traction ID of tenant making the call
           credential_template_id: Traction ID of Credential Template
 
         Returns: List of Traction IssuerCredential (db) records in descending order
@@ -251,8 +248,7 @@ class IssuerCredential(
 
         Find and return list of Issuer Credential records for Cred. Def.
 
-          tenant_id: Traction ID of tenant making the call
-          cred_def_id: Traction ID of Credential Definition
+        cred_def_id: Traction ID of Credential Definition
 
         Returns: List of Traction IssuerCredential (db) records in descending order
         """
@@ -277,7 +273,6 @@ class IssuerCredential(
 
         Find and return list of Issuer Credential records for Contact.
 
-          tenant_id: Traction ID of tenant making the call
           contact_id: Traction ID of Contact
 
         Returns: List of Traction IssuerCredential (db) records in descending order
@@ -326,7 +321,6 @@ class IssuerCredential(
 
         Find and return list of Issuer Credential records for Thread ID.
 
-          tenant_id: Traction ID of tenant making the call
           thread_id: AcaPy Thread ID of Issuer Credential
 
         Returns: List of Traction IssuerCredential (db) records in descending order

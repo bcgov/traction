@@ -95,7 +95,6 @@ class HolderCredential(
     async def get_by_id(
         cls: "HolderCredential",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         holder_credential_id: uuid.UUID,
         deleted: bool | None = False,
     ) -> "HolderCredential":
@@ -136,7 +135,6 @@ class HolderCredential(
     async def get_by_credential_exchange_id(
         cls: "HolderCredential",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         credential_exchange_id: str,
     ) -> "HolderCredential":
         """Get HolderCredential by Credential Exchange ID.
@@ -145,7 +143,6 @@ class HolderCredential(
 
         Args:
           db: database session
-          tenant_id: Traction ID of tenant making the call
           credential_exchange_id: acapy message Credential Exchange ID
 
         Returns: The Traction HolderCredential (db) record
@@ -173,14 +170,12 @@ class HolderCredential(
     async def list_by_contact_id(
         cls: "HolderCredential",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         contact_id: uuid.UUID,
     ) -> List["HolderCredential"]:
         """List by Contact ID.
 
         Find and return list of Holder Credential records for Contact.
 
-          tenant_id: Traction ID of tenant making the call
           contact_id: Traction ID of Contact
 
         Returns: List of Traction HolderCredential (db) records in descending order
@@ -204,8 +199,6 @@ class HolderCredential(
         """List by Tenant ID.
 
         Find and return list of Holder Credential records for Tenant.
-
-          tenant_id: Traction ID of tenant making the call
 
         Returns: List of Traction Holder Credential (db) records in descending order
         """
@@ -258,7 +251,6 @@ class HolderCredential(
 
         Args:
           db: database session
-          tenant_id: Traction tenant (holder) id
           revoc_reg_id: acapy revocation message Revocation Registry ID
           revocation_id: acapy revocation message Revocation ID
 
@@ -285,7 +277,9 @@ class HolderCredential(
         return db_rec
 
 
-class HolderPresentation(StatefulModel, TrackingModel, TimestampModel, table=True):
+class HolderPresentation(
+    StatefulModel, TrackingModel, TimestampModel, TenantScopedModel, table=True
+):
     """Holder Presentation.
 
     Model for the Holder Presentation table (postgresql specific dialects in use).
@@ -319,7 +313,6 @@ class HolderPresentation(StatefulModel, TrackingModel, TimestampModel, table=Tru
             server_default=text("gen_random_uuid()"),
         )
     )
-    tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True)
     contact_id: uuid.UUID = Field(foreign_key="contact.contact_id", index=True)
     deleted: bool = Field(nullable=False, default=False)
 
@@ -339,7 +332,6 @@ class HolderPresentation(StatefulModel, TrackingModel, TimestampModel, table=Tru
     async def get_by_id(
         cls: "HolderPresentation",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         holder_presentation_id: uuid.UUID,
         deleted: bool | None = False,
     ) -> "HolderPresentation":
@@ -349,7 +341,6 @@ class HolderPresentation(StatefulModel, TrackingModel, TimestampModel, table=Tru
 
         Args:
           db: database session
-          tenant_id: Traction ID of tenant making the call
           holder_presentation_id: Traction ID of HolderPresentation
 
         Returns: The Traction HolderPresentation (db) record
@@ -360,8 +351,7 @@ class HolderPresentation(StatefulModel, TrackingModel, TimestampModel, table=Tru
         """
 
         q = (
-            select(cls)
-            .where(cls.tenant_id == tenant_id)
+            cls.tenant_select()
             .where(cls.holder_presentation_id == holder_presentation_id)
             .where(cls.deleted == deleted)
             .options(selectinload(cls.contact))
@@ -380,7 +370,6 @@ class HolderPresentation(StatefulModel, TrackingModel, TimestampModel, table=Tru
     async def get_by_presentation_exchange_id(
         cls: "HolderPresentation",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         presentation_exchange_id: str,
     ) -> "HolderPresentation":
         """Get HolderPresentation by Presentation Exchange ID.
@@ -399,8 +388,7 @@ class HolderPresentation(StatefulModel, TrackingModel, TimestampModel, table=Tru
         """
 
         q = (
-            select(cls)
-            .where(cls.tenant_id == tenant_id)
+            cls.tenant_select()
             .where(cls.presentation_exchange_id == presentation_exchange_id)
             .options(selectinload(cls.contact))
         )
@@ -418,23 +406,20 @@ class HolderPresentation(StatefulModel, TrackingModel, TimestampModel, table=Tru
     async def list_by_contact_id(
         cls: "HolderPresentation",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         contact_id: uuid.UUID,
     ) -> List["HolderPresentation"]:
         """List by Contact ID.
 
         Find and return list of Holder Presentation records for Contact.
 
-          tenant_id: Traction ID of tenant making the call
           contact_id: Traction ID of Contact
 
         Returns: List of Traction HolderPresentation (db) records in descending order
         """
 
         q = (
-            select(cls)
+            cls.tenant_select()
             .where(cls.contact_id == contact_id)
-            .where(cls.tenant_id == tenant_id)
             .options(selectinload(cls.contact))
             .order_by(desc(cls.updated_at))
         )
@@ -446,20 +431,17 @@ class HolderPresentation(StatefulModel, TrackingModel, TimestampModel, table=Tru
     async def list_by_tenant_id(
         cls: "HolderPresentation",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
     ) -> List["HolderPresentation"]:
         """List by Tenant ID.
 
         Find and return list of Holder Presentation records for Tenant.
 
-          tenant_id: Traction ID of tenant making the call
 
         Returns: List of Traction Holder Presentation (db) records in descending order
         """
 
         q = (
-            select(cls)
-            .where(cls.tenant_id == tenant_id)
+            cls.tenant_select()
             .options(selectinload(cls.contact))
             .order_by(desc(cls.updated_at))
         )
@@ -471,23 +453,20 @@ class HolderPresentation(StatefulModel, TrackingModel, TimestampModel, table=Tru
     async def list_by_thread_id(
         cls: "HolderPresentation",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         thread_id: str,
     ) -> List["HolderPresentation"]:
         """List by Thread ID.
 
         Find and return list of Holder Presentation records for Thread ID.
 
-          tenant_id: Traction ID of tenant making the call
           thread_id: AcaPy Thread ID of Holder Presentation
 
         Returns: List of Traction HolderPresentation (db) records in descending order
         """
 
         q = (
-            select(cls)
+            cls.tenant_select()
             .where(cls.thread_id == thread_id)
-            .where(cls.tenant_id == tenant_id)
             .options(selectinload(cls.contact))
             .order_by(desc(cls.updated_at))
         )

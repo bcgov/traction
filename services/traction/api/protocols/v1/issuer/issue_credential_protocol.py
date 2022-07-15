@@ -172,7 +172,7 @@ class DefaultIssueCredentialProtocol(IssueCredentialProtocol):
         try:
             async with async_session() as db:
                 return await IssuerCredential.get_by_credential_exchange_id(
-                    db, profile.tenant_id, cred_ex_id
+                    db, cred_ex_id
                 )
         except NotFoundError:
             return None

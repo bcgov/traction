@@ -271,7 +271,7 @@ async def get_contact(
     Raises:
       NotFoundError: if the contact cannot be found by ID and deleted flag
     """
-    db_contact = await Contact.get_by_id(db, tenant_id, contact_id, deleted)
+    db_contact = await Contact.get_by_id(db, contact_id, deleted)
 
     item = contact_to_contact_item(db_contact, acapy)
 

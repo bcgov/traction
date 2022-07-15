@@ -132,7 +132,6 @@ class ConnectionInvitation(TenantScopedModel, table=True):
 
         Args:
           db: database session
-          tenant_id: Traction ID of tenant making the call
           name: name of Invitation
 
         Returns: The Traction Connection Invitation (db) record or None if not found
@@ -156,7 +155,6 @@ class ConnectionInvitation(TenantScopedModel, table=True):
 
         Args:
           db: database session
-          tenant_id: Traction ID of tenant making the call
           invitation_key: AcaPy Connection Invitation ID
 
         Return Connection Invitation (db) record or None if not found

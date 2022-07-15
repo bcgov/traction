@@ -48,7 +48,7 @@ class CreateCredDefProcessor(DefaultEndorserProtocol):
         try:
             async with async_session() as db:
                 return await CredentialTemplate.get_by_transaction_id(
-                    db, profile.tenant_id, transaction_id
+                    db, transaction_id
                 )
         except NotFoundError:
             return None

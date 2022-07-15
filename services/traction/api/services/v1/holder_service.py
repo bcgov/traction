@@ -85,7 +85,6 @@ async def list_holder_credentials(
     skip = (parameters.page_num - 1) * limit
 
     filters = [
-        HolderCredential.tenant_id == tenant_id,
         HolderCredential.deleted == parameters.deleted,
     ]
     if parameters.status:
@@ -108,7 +107,7 @@ async def list_holder_credentials(
         filters.append(HolderCredential.tags.comparator.contains(_filter_tags))
 
     # build out a base query with all filters
-    base_q = select(HolderCredential).filter(*filters)
+    base_q = HolderCredential.tenant_select().filter(*filters)
 
     # get a count of ALL records matching our base query
     count_q = select([func.count()]).select_from(base_q)
@@ -149,9 +148,7 @@ async def get_holder_credential(
     deleted: bool | None = False,
 ) -> HolderCredentialItem:
     async with async_session() as db:
-        db_item = await HolderCredential.get_by_id(
-            db, tenant_id, holder_credential_id, deleted
-        )
+        db_item = await HolderCredential.get_by_id(db, holder_credential_id, deleted)
 
     item = holder_credential_to_item(db_item, acapy)
 
@@ -178,7 +175,7 @@ async def update_holder_credential(
 ) -> HolderCredentialItem:
     # verify this item exists and is not deleted...
     async with async_session() as db:
-        await HolderCredential.get_by_id(db, tenant_id, holder_credential_id, False)
+        await HolderCredential.get_by_id(db, holder_credential_id, False)
 
     # payload id must match parameter
     if holder_credential_id != payload.holder_credential_id:

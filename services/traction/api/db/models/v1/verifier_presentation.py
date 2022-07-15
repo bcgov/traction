@@ -76,7 +76,6 @@ class VerifierPresentation(
 
         Args:
           db: database session
-          tenant_id: Traction ID of tenant making the call
           verifier_presentation_id: Traction ID of VerifierPresentation
 
         Returns: The Traction VerifierPresentation (db) record
@@ -115,7 +114,6 @@ class VerifierPresentation(
 
         Args:
           db: database session
-          tenant_id: Traction ID of tenant making the call
           pres_exch_id: Traction ID of VerifierPresentation
 
         Returns: The Traction VerifierPresentation (db) record
@@ -149,8 +147,6 @@ class VerifierPresentation(
         """List by Tenant ID.
 
         Find and return list of Verification Request records for Tenant.
-
-          tenant_id: Traction ID of tenant making the call
 
         Returns: List of Traction Verification Request (db) records in descending order
         """

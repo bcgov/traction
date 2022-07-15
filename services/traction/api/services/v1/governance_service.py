@@ -83,7 +83,6 @@ async def list_schema_templates(
     skip = (parameters.page_num - 1) * limit
 
     filters = [
-        SchemaTemplate.tenant_id == tenant_id,
         SchemaTemplate.deleted == parameters.deleted,
     ]
     if parameters.status:
@@ -106,7 +105,7 @@ async def list_schema_templates(
         filters.append(SchemaTemplate.tags.comparator.contains(_filter_tags))
 
     # build out a base query with all filters
-    base_q = select(SchemaTemplate).filter(*filters)
+    base_q = SchemaTemplate.tenant_select().filter(*filters)
 
     # get a count of ALL records matching our base query
     count_q = select([func.count()]).select_from(base_q)
@@ -222,7 +221,7 @@ async def get_schema_template(
     Raises:
       NotFoundError: if the item cannot be found by ID and deleted flag
     """
-    db_rec = await SchemaTemplate.get_by_id(db, tenant_id, schema_template_id, deleted)
+    db_rec = await SchemaTemplate.get_by_id(db, schema_template_id, deleted)
 
     item = schema_template_to_item(db_rec)
 
@@ -279,8 +278,8 @@ async def update_schema_template(
       NotFoundError: if the record cannot be found by ID and deleted flag
       IdNotMatchError: if the schema template id parameter and in payload do not match
     """
-    # verify this contact exists and is not deleted...
-    await SchemaTemplate.get_by_id(db, tenant_id, schema_template_id, False)
+    # verify this is not deleted...
+    await SchemaTemplate.get_by_id(db, schema_template_id, False)
 
     # payload contact id must match parameter
     if schema_template_id != payload.schema_template_id:
@@ -651,8 +650,8 @@ async def update_credential_template(
       IdNotMatchError: if the credential template id parameter and in payload do not
         match
     """
-    # verify this contact exists and is not deleted...
-    await CredentialTemplate.get_by_id(db, tenant_id, credential_template_id, False)
+    # verify this is not deleted...
+    await CredentialTemplate.get_by_id(db, credential_template_id, False)
 
     # payload contact id must match parameter
     if credential_template_id != payload.credential_template_id:

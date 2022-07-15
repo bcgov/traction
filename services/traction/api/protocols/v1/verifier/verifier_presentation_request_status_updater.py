@@ -27,9 +27,7 @@ class VerifierPresentationRequestStatusUpdater(DefaultPresentationRequestProtoco
         pres_exch_id = self.get_presentation_exchange_id(payload=payload)
         try:
             async with async_session() as db:
-                return await VerifierPresentation.get_by_pres_exch_id(
-                    db, profile.tenant_id, pres_exch_id
-                )
+                return await VerifierPresentation.get_by_pres_exch_id(db, pres_exch_id)
         except NotFoundError:
             return None
 

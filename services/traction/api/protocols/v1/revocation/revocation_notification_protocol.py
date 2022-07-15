@@ -62,7 +62,7 @@ class RevocationNotificationProcessor(RevocationNotificationProtocol):
         try:
             async with async_session() as db:
                 return await HolderCredential.get_by_revocation_ids(
-                    db, profile.tenant_id, revoc_reg_id, revocation_id
+                    db, revoc_reg_id, revocation_id
                 )
         except NotFoundError:
             self.logger.error("Error finding credential", exc_info=True)

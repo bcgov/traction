@@ -89,7 +89,6 @@ class SchemaTemplate(StatefulModel, TimestampModel, TenantScopedModel, table=Tru
     async def get_by_id(
         cls: "SchemaTemplate",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         schema_template_id: uuid.UUID,
         deleted: bool | None = False,
     ) -> "SchemaTemplate":
@@ -99,7 +98,6 @@ class SchemaTemplate(StatefulModel, TimestampModel, TenantScopedModel, table=Tru
 
         Args:
           db: database session
-          tenant_id: Traction ID of tenant making the call
           schema_template_id: Traction ID of Schema Template
 
         Returns: The Traction SchemaTemplate (db) record
@@ -127,7 +125,6 @@ class SchemaTemplate(StatefulModel, TimestampModel, TenantScopedModel, table=Tru
     async def get_by_schema_id(
         cls: "SchemaTemplate",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         schema_id: str,
         deleted: bool | None = False,
     ) -> "SchemaTemplate":
@@ -137,7 +134,6 @@ class SchemaTemplate(StatefulModel, TimestampModel, TenantScopedModel, table=Tru
 
         Args:
           db: database session
-          tenant_id: Traction ID of tenant making the call
           schema_id: Ledger Schema ID of Schema Template
 
         Returns: The Traction SchemaTemplate (db) record
@@ -166,7 +162,6 @@ class SchemaTemplate(StatefulModel, TimestampModel, TenantScopedModel, table=Tru
     async def get_by_transaction_id(
         cls: "SchemaTemplate",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         transaction_id: str,
         deleted: bool | None = False,
     ) -> "SchemaTemplate":
@@ -176,7 +171,6 @@ class SchemaTemplate(StatefulModel, TimestampModel, TenantScopedModel, table=Tru
 
         Args:
           db: database session
-          tenant_id: Traction ID of tenant making the call
           transaction_id: Transaction ID from endorser
 
         Returns: The Traction SchemaTemplate (db) record
@@ -205,7 +199,6 @@ class SchemaTemplate(StatefulModel, TimestampModel, TenantScopedModel, table=Tru
     async def list_by_tenant_id(
         cls: "SchemaTemplate",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
     ) -> List["SchemaTemplate"]:
         """List by Tenant ID.
 
@@ -213,7 +206,6 @@ class SchemaTemplate(StatefulModel, TimestampModel, TenantScopedModel, table=Tru
 
         Args:
           db: database session
-          tenant_id: Traction ID of Tenant
 
         Returns: List of Traction SchemaTemplate (db) records in descending order
         """
@@ -235,7 +227,6 @@ class CredentialTemplate(StatefulModel, TimestampModel, TenantScopedModel, table
 
     Attributes:
       credential_template_id: Traction ID
-      tenant_id: Traction Tenant ID
       schema_template_id: Traction ID for Schema Template
       cred_def_id: Credential Definition ID from the ledger
       schema_id: Ledger ID of Schema this credential definition is for
@@ -291,7 +282,6 @@ class CredentialTemplate(StatefulModel, TimestampModel, TenantScopedModel, table
     async def get_by_id(
         cls: "CredentialTemplate",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         credential_template_id: uuid.UUID,
         deleted: bool | None = False,
     ) -> "CredentialTemplate":
@@ -330,7 +320,6 @@ class CredentialTemplate(StatefulModel, TimestampModel, TenantScopedModel, table
     async def get_by_cred_def_id(
         cls: "CredentialTemplate",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         cred_def_id: str,
         deleted: bool | None = False,
     ) -> "CredentialTemplate":
@@ -340,7 +329,6 @@ class CredentialTemplate(StatefulModel, TimestampModel, TenantScopedModel, table
 
         Args:
           db: database session
-          tenant_id: Traction ID of tenant making the call
           cred_def_id: Ledger Cred Def ID of CredentialTemplate
 
         Returns: The Traction CredentialTemplate (db) record
@@ -369,7 +357,6 @@ class CredentialTemplate(StatefulModel, TimestampModel, TenantScopedModel, table
     async def get_by_transaction_id(
         cls: "CredentialTemplate",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         transaction_id: str,
         deleted: bool | None = False,
     ) -> "CredentialTemplate":
@@ -379,7 +366,6 @@ class CredentialTemplate(StatefulModel, TimestampModel, TenantScopedModel, table
 
         Args:
           db: database session
-          tenant_id: Traction ID of tenant making the call
           transaction_id: Transaction ID from endorser
 
         Returns: The Traction CredentialTemplate (db) record
@@ -418,7 +404,6 @@ class CredentialTemplate(StatefulModel, TimestampModel, TenantScopedModel, table
 
         Args:
           db: database session
-          tenant_id: Traction ID of tenant making the call
           schema_id: ledger schema id
           tag: cred def tag
 
@@ -441,7 +426,6 @@ class CredentialTemplate(StatefulModel, TimestampModel, TenantScopedModel, table
 
         Find and return list of Credential Template records for Schema (Tenant).
 
-          tenant_id: Traction ID of tenant making the call
           schema_template_id: Traction ID of SchemaTemplate
           status: optional, if provided return only items that have this status
 
@@ -462,7 +446,6 @@ class CredentialTemplate(StatefulModel, TimestampModel, TenantScopedModel, table
     async def list_by_schema_id(
         cls: "CredentialTemplate",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
         schema_id: str,
     ) -> List["CredentialTemplate"]:
         """List by Schema ID.
@@ -488,7 +471,6 @@ class CredentialTemplate(StatefulModel, TimestampModel, TenantScopedModel, table
     async def list_by_tenant_id(
         cls: "CredentialTemplate",
         db: AsyncSession,
-        tenant_id: uuid.UUID,
     ) -> List["CredentialTemplate"]:
         """List by Tenant ID.
 

@@ -32,7 +32,7 @@ class DefaultHolderPresentationProtocol(DefaultPresentationRequestProtocol):
         try:
             async with async_session() as db:
                 return await HolderPresentation.get_by_presentation_exchange_id(
-                    db, profile.tenant_id, pres_ex_id
+                    db, pres_ex_id
                 )
         except NotFoundError:
             return None
