@@ -161,7 +161,18 @@ class UpdateHolderCredentialPayload(AcceptCredentialOfferPayload):
     pass
 
 
+class UpdateHolderPresentationPayload(BaseModel):
+    holder_presentation_id: UUID | None = None
+    alias: str | None = None
+    external_reference_id: str | None = None
+    tags: List[str] | None = []
+
+
 class UpdateHolderCredentialResponse(GetResponse[HolderCredentialItem]):
+    pass
+
+
+class UpdateHolderPresentationResponse(GetResponse[HolderPresentationItem]):
     pass
 
 

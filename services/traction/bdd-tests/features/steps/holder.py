@@ -342,3 +342,156 @@ def step_impl(context, holder: str):
     ]
     response = accept_holder_credential(context, holder, holder_credential_id)
     assert response.status_code == status.HTTP_409_CONFLICT, response.__dict__
+
+
+@step('"{holder}" will have a holder presentation with status "{pres_status}"')
+def step_impl(context, holder: str, pres_status: str):
+    params = {"status": pres_status}
+    response = list_holder_presentations(context, holder, params)
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    assert resp_json["count"] == 1, resp_json
+
+    # store result, use for update and delete
+    context.config.userdata[holder].setdefault("holder_presentations", resp_json["items"])
+
+
+@then('"{holder}" can update holder presentation')
+def step_impl(context, holder: str):
+    holder_presentation_id = context.config.userdata[holder]["holder_presentations"][0][
+        "holder_presentation_id"
+    ]
+    payload = {"holder_presentation_id": holder_presentation_id}
+
+    for row in context.table:
+        attribute = row["attribute"]
+        value = row["value"]
+        if attribute == "tags":
+            value = row["value"].split(",")
+
+        payload[attribute] = value
+
+    response = update_holder_presentation(
+        context, holder, holder_presentation_id, payload
+    )
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    item = resp_json["item"]
+    assert item["holder_presentation_id"] == holder_presentation_id
+    for row in context.table:
+        attribute = row["attribute"]
+        value = row["value"]
+        if attribute == "tags":
+            value = row["value"].split(",")
+
+        assert item[attribute] == value
+
+
+@step('"{holder}" can soft delete holder presentation')
+def step_impl(context, holder: str):
+    holder_presentation_id = context.config.userdata[holder]["holder_presentations"][0][
+        "holder_presentation_id"
+    ]
+    response = delete_holder_presentation(context, holder, holder_presentation_id)
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    item = resp_json["item"]
+    assert item["holder_presentation_id"] == holder_presentation_id
+    assert item["deleted"]
+    assert item["status"] == "Deleted"
+
+
+@step('"{holder}" will have {count:d} holder presentation(s)')
+def step_impl(context, holder: str, count: int):
+    params = {}
+    response = list_holder_presentations(context, holder, params)
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    assert resp_json["total"] == count, resp_json
+    # store result, use for update and delete
+    context.config.userdata[holder].setdefault("holder_presentations", resp_json["items"])
+
+
+@step('"{holder}" can find holder presentation by alias "{alias}"')
+def step_impl(context, holder: str, alias: str):
+    params = {"alias": alias}
+    response = list_holder_presentations(context, holder, params)
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    assert len(resp_json["items"]) == 1, resp_json
+    assert resp_json["items"][0]["alias"] == alias
+
+
+@step('"{holder}" can find holder presentation by tags "{tags}"')
+def step_impl(context, holder: str, tags: str):
+    params = {"tags": tags}
+    response = list_holder_presentations(context, holder, params)
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    assert len(resp_json["items"]) == 1, resp_json
+    _tags = [x.strip() for x in tags.split(",")]
+    for t in _tags:
+        assert t in resp_json["items"][0]["tags"]
+
+
+@then('"{holder}" cannot find holder presentation by alias "{alias}"')
+def step_impl(context, holder: str, alias: str):
+    params = {"alias": alias}
+    response = list_holder_presentations(context, holder, params)
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    assert len(resp_json["items"]) == 0, resp_json
+
+
+@step('"{holder}" cannot get holder presentation by holder_presentation_id')
+def step_impl(context, holder: str):
+    holder_presentation_id = context.config.userdata[holder]["holder_presentations"][0][
+        "holder_presentation_id"
+    ]
+    response = get_holder_presentation(context, holder, holder_presentation_id)
+    assert response.status_code == status.HTTP_404_NOT_FOUND, response.__dict__
+
+
+@step('"{holder}" can find holder presentation by alias "{alias}" with deleted flag')
+def step_impl(context, holder: str, alias: str):
+    params = {"alias": alias, "deleted": True}
+    response = list_holder_presentations(context, holder, params)
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    assert len(resp_json["items"]) == 1, resp_json
+    assert resp_json["items"][0]["alias"] == alias
+    assert resp_json["items"][0]["deleted"]
+    assert resp_json["items"][0]["status"] == "Deleted"
+
+
+@step('"{holder}" cannot find holder presentation by alias "{alias}" with deleted flag')
+def step_impl(context, holder: str, alias: str):
+    params = {"alias": alias, "deleted": True}
+    response = list_holder_presentations(context, holder, params)
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    assert len(resp_json["items"]) == 0, resp_json
+
+
+@step('"{holder}" can get holder presentation with deleted flag')
+def step_impl(context, holder: str):
+    holder_presentation_id = context.config.userdata[holder]["holder_presentations"][0][
+        "holder_presentation_id"
+    ]
+    params = {"deleted": True}
+    response = get_holder_presentation(context, holder, holder_presentation_id, params)
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    assert resp_json["item"]["holder_presentation_id"] == holder_presentation_id
+    assert resp_json["item"]["deleted"]
+    assert resp_json["item"]["status"] == "Deleted"
+
+
+@step('"{holder}" cannot get holder presentation with deleted flag')
+def step_impl(context, holder: str):
+    holder_presentation_id = context.config.userdata[holder]["holder_presentations"][0][
+        "holder_presentation_id"
+    ]
+    params = {"deleted": True}
+    response = get_holder_presentation(context, holder, holder_presentation_id, params)
+    assert response.status_code == status.HTTP_404_NOT_FOUND, response.__dict__

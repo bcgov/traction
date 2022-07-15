@@ -334,3 +334,42 @@ def delete_holder_credential(context, tenant, item_id, params: dict | None = {})
         headers=context.config.userdata[tenant]["auth_headers"],
     )
     return response
+
+
+def list_holder_presentations(context, tenant, params: dict | None = {}):
+    response = requests.get(
+        context.config.userdata.get("traction_host") + "/tenant/v1/holder/presentations",
+        params=params,
+        headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response
+
+
+def get_holder_presentation(context, tenant, item_id, params: dict | None = {}):
+    response = requests.get(
+        context.config.userdata.get("traction_host")
+        + f"/tenant/v1/holder/presentations/{item_id}",
+        params=params,
+        headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response
+
+
+def update_holder_presentation(context, tenant, item_id, payload: dict | None = {}):
+    response = requests.put(
+        context.config.userdata.get("traction_host")
+        + f"/tenant/v1/holder/presentations/{item_id}",
+        json=payload,
+        headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response
+
+
+def delete_holder_presentation(context, tenant, item_id, params: dict | None = {}):
+    response = requests.delete(
+        context.config.userdata.get("traction_host")
+        + f"/tenant/v1/holder/presentations/{item_id}",
+        params=params,
+        headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response

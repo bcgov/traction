@@ -10,7 +10,7 @@ from acapy_client.model.v10_credential_problem_report_request import (
 )
 
 from api.db.models import Timeline
-from api.db.models.v1.holder import HolderCredential
+from api.db.models.v1.holder import HolderCredential, HolderPresentation
 from api.db.session import async_session
 from api.endpoints.models.credentials import CredentialStateType
 from api.endpoints.models.v1.errors import (
@@ -28,7 +28,14 @@ from api.endpoints.models.v1.holder import (
     HolderCredentialStatusType,
     AcceptCredentialOfferPayload,
     RejectCredentialOfferPayload,
+    HolderPresentationListParameters,
+    HolderPresentationItem,
+    HolderPresentationContact,
+    HolderPresentationTimelineItem,
+    UpdateHolderPresentationPayload,
+    HolderPresentationStatusType,
 )
+from api.endpoints.models.v1.verifier import AcapyPresentProofStateType
 from api.services.v1 import acapy_service
 from api.services.v1.acapy_service import issue_cred_v10_api, credentials_api
 
@@ -73,6 +80,37 @@ def holder_credential_to_item(
         if db_item.credential_id:
             cred = acapy_service.get_credential_json(db_item.credential_id)
             item.acapy.credential = cred
+    return item
+
+
+def holder_presentation_to_item(
+    db_item: HolderPresentation, acapy: bool | None = False
+) -> HolderPresentationItem:
+    """HolderPresentation to HolderPresentationItem.
+
+    Transform a HolderPresentation Table record to a HolderPresentationItem object.
+
+    Args:
+      db_item: The Traction database HolderPresentation
+      acapy: When True, populate the HolderPresentationItem acapy field.
+
+    Returns: The Traction HolderPresentationItem
+
+    """
+    contact = HolderPresentationContact(
+        contact_id=db_item.contact.contact_id,
+        alias=db_item.contact.alias,
+        external_reference_id=db_item.contact.external_reference_id,
+    )
+
+    item = HolderPresentationItem(
+        **db_item.dict(),
+        contact=contact,
+    )
+    if acapy:
+        # TODO - get the acapy data!
+        pass
+
     return item
 
 
@@ -344,3 +382,145 @@ async def reject_credential_offer(
     }
     await HolderCredential.update_by_id(holder_credential_id, values)
     return await get_holder_credential(tenant_id, wallet_id, holder_credential_id, True)
+
+
+async def list_holder_presentations(
+    tenant_id: UUID,
+    wallet_id: UUID,
+    parameters: HolderPresentationListParameters,
+) -> [List[HolderPresentationItem], int]:
+    limit = parameters.page_size
+    skip = (parameters.page_num - 1) * limit
+
+    filters = [
+        HolderPresentation.tenant_id == tenant_id,
+        HolderPresentation.deleted == parameters.deleted,
+    ]
+    if parameters.status:
+        filters.append(HolderPresentation.status == parameters.status)
+    if parameters.state:
+        filters.append(HolderPresentation.state == parameters.state)
+    if parameters.contact_id:
+        filters.append(HolderPresentation.contact_id == parameters.contact_id)
+    if parameters.external_reference_id:
+        filters.append(
+            HolderPresentation.external_reference_id == parameters.external_reference_id
+        )
+
+    if parameters.tags:
+        _filter_tags = [x.strip() for x in parameters.tags.split(",")]
+        filters.append(HolderPresentation.tags.comparator.contains(_filter_tags))
+
+    # build out a base query with all filters
+    base_q = select(HolderPresentation).filter(*filters)
+
+    # get a count of ALL records matching our base query
+    count_q = select([func.count()]).select_from(base_q)
+    async with async_session() as db:
+        count_q_rec = await db.execute(count_q)
+        total_count = count_q_rec.scalar()
+
+    # TODO: should we raise an exception if paging is invalid?
+    # ie. is negative, or starts after available records
+
+    # add in our paging and ordering to get the result set
+    results_q = (
+        base_q.limit(limit)
+        .offset(skip)
+        .options(
+            selectinload(HolderPresentation.contact),
+        )
+        .order_by(desc(HolderPresentation.updated_at))
+    )
+
+    async with async_session() as db:
+        results_q_recs = await db.execute(results_q)
+        db_items = results_q_recs.scalars().all()
+
+    items = []
+    for db_item in db_items:
+        item = holder_presentation_to_item(db_item, parameters.acapy)
+        items.append(item)
+
+    return items, total_count
+
+
+async def get_holder_presentation(
+    tenant_id: UUID,
+    wallet_id: UUID,
+    holder_presentation_id: UUID,
+    acapy: bool | None = False,
+    deleted: bool | None = False,
+) -> HolderPresentationItem:
+    async with async_session() as db:
+        db_item = await HolderPresentation.get_by_id(
+            db, tenant_id, holder_presentation_id, deleted
+        )
+
+    item = holder_presentation_to_item(db_item, acapy)
+
+    return item
+
+
+async def get_holder_presentation_timeline(
+    holder_presentation_id: UUID,
+) -> List[HolderPresentationTimelineItem]:
+    async with async_session() as db:
+        db_items = await Timeline.list_by_item_id(db, holder_presentation_id)
+
+    results = []
+    for db_item in db_items:
+        results.append(HolderPresentationTimelineItem(**db_item.dict()))
+    return results
+
+
+async def update_holder_presentation(
+    tenant_id: UUID,
+    wallet_id: UUID,
+    holder_presentation_id: UUID,
+    payload: UpdateHolderPresentationPayload,
+) -> HolderPresentationItem:
+    # verify this item exists and is not deleted...
+    async with async_session() as db:
+        await HolderPresentation.get_by_id(db, tenant_id, holder_presentation_id, False)
+
+    # payload id must match parameter
+    if holder_presentation_id != payload.holder_presentation_id:
+        raise IdNotMatchError(
+            code="holder_presentation.update.id-not-match",
+            title="Holder Presentation ID mismatch",
+            detail=f"Holder Presentation ID in payload <{payload.holder_presentation_id}> does not match Holder Presentation ID requested <{holder_presentation_id}>",  # noqa: E501
+        )
+
+    payload_dict = payload.dict()
+    # payload isn't the same as the db... move fields around
+    del payload_dict["holder_presentation_id"]
+
+    await HolderPresentation.update_by_id(holder_presentation_id, payload_dict)
+    return await get_holder_presentation(
+        tenant_id, wallet_id, holder_presentation_id, True
+    )
+
+
+async def delete_holder_presentation(
+    tenant_id: UUID,
+    wallet_id: UUID,
+    holder_presentation_id: UUID,
+):
+    q = (
+        update(HolderPresentation)
+        .where(HolderPresentation.tenant_id == tenant_id)
+        .where(HolderPresentation.holder_presentation_id == holder_presentation_id)
+        .values(
+            deleted=True,
+            status=HolderPresentationStatusType.deleted,
+            state=AcapyPresentProofStateType.ABANDONED,
+        )
+    )
+    async with async_session() as db:
+        await db.execute(q)
+        await db.commit()
+
+    return await get_holder_presentation(
+        tenant_id, wallet_id, holder_presentation_id, True, True
+    )
