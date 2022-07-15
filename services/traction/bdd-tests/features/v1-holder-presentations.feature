@@ -23,6 +23,22 @@ Feature: holding credentials
         Then "alice" will have a holder credential with status "Accepted"
         And "faber" will have an "Issued" issuer credential
 
+    Scenario: holder can find credentials for holder presentation
+        When "faber" requests proof of keys in schema "useless-schema" from "alice"
+        And we sadly wait for 10 seconds because we have not figured out how to listen for events
+        And "alice" will have a holder presentation with status "Request Received"
+        Then "alice" can find 1 credential(s) for holder presentation
+
+    Scenario: holder will reject a request
+        When "faber" requests proof of keys in schema "useless-schema" from "alice"
+        And we sadly wait for 10 seconds because we have not figured out how to listen for events
+        And "alice" will have a holder presentation with status "Request Received"
+        Then "alice" will reject presentation from "faber"
+        And we sadly wait for 10 seconds because we have not figured out how to listen for events
+        Then "alice" will have a holder presentation with status "Rejected"
+        And "faber" has a "rejected" verifier presentation
+
+
     Scenario: holder can update holder presentation metadata
         When "faber" requests proof of keys in schema "useless-schema" from "alice"
         And we sadly wait for 10 seconds because we have not figured out how to listen for events

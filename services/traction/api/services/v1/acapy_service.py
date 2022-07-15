@@ -38,6 +38,7 @@ did_exchange_api = DidExchangeApi(api_client=get_api_client())
 out_of_band_api = OutOfBandApi(api_client=get_api_client())
 credentials_api = CredentialsApi(api_client=get_api_client())
 
+
 logger = logging.getLogger(__name__)
 
 

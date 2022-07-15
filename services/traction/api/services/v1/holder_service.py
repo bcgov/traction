@@ -8,11 +8,14 @@ from sqlalchemy.orm import selectinload
 from acapy_client.model.v10_credential_problem_report_request import (
     V10CredentialProblemReportRequest,
 )
+from acapy_client.model.v10_presentation_problem_report_request import (
+    V10PresentationProblemReportRequest,
+)
 
 from api.db.models import Timeline
 from api.db.models.v1.holder import HolderCredential, HolderPresentation
 from api.db.session import async_session
-from api.endpoints.models.credentials import CredentialStateType
+from api.endpoints.models.credentials import CredentialStateType, CredPrecisForProof
 from api.endpoints.models.v1.errors import (
     IdNotMatchError,
     NotFoundError,
@@ -34,10 +37,18 @@ from api.endpoints.models.v1.holder import (
     HolderPresentationTimelineItem,
     UpdateHolderPresentationPayload,
     HolderPresentationStatusType,
+    HolderPresentationCredentialListParameters,
+    HolderPresentationCredentialItem,
+    SendPresentationPayload,
+    RejectPresentationRequestPayload,
 )
 from api.endpoints.models.v1.verifier import AcapyPresentProofStateType
 from api.services.v1 import acapy_service
-from api.services.v1.acapy_service import issue_cred_v10_api, credentials_api
+from api.services.v1.acapy_service import (
+    issue_cred_v10_api,
+    credentials_api,
+    present_proof_api,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -523,4 +534,97 @@ async def delete_holder_presentation(
 
     return await get_holder_presentation(
         tenant_id, wallet_id, holder_presentation_id, True, True
+    )
+
+
+async def list_credentials_for_request(
+    tenant_id: UUID,
+    wallet_id: UUID,
+    holder_presentation_id: UUID,
+    parameters: HolderPresentationCredentialListParameters,
+) -> [List[HolderPresentationCredentialItem], int]:
+    limit = parameters.page_size
+    skip = (parameters.page_num - 1) * limit
+    async with async_session() as db:
+        try:
+            item = await HolderPresentation.get_by_id(
+                db, tenant_id, holder_presentation_id, False
+            )
+        except NotFoundError:
+            pass
+
+    if item:
+        creds = present_proof_api.present_proof_records_pres_ex_id_credentials_get(
+            item.presentation_exchange_id
+        )
+        all_creds = []
+        for cred in creds:
+            all_creds.append(
+                CredPrecisForProof(
+                    cred_info=cred.get("cred_info"),
+                    interval=cred.get("interval"),
+                    presentation_referents=cred.get("presentation_referents"),
+                )
+            )
+        return all_creds[skip : (skip + limit)], len(all_creds)
+    else:
+        return [], 0
+
+
+async def send_presentation(
+    tenant_id: UUID,
+    wallet_id: UUID,
+    holder_presentation_id: UUID,
+    payload: SendPresentationPayload,
+) -> HolderPresentationItem:
+    return None
+
+
+async def reject_presentation_request(
+    tenant_id: UUID,
+    wallet_id: UUID,
+    holder_presentation_id: UUID,
+    payload: RejectPresentationRequestPayload,
+) -> HolderPresentationItem:
+    async with async_session() as db:
+        hp = await HolderPresentation.get_by_id(
+            db, tenant_id, holder_presentation_id, False
+        )
+
+    # payload id must match parameter
+    if holder_presentation_id != payload.holder_presentation_id:
+        raise IdNotMatchError(
+            code="holder_presentation_id.reject-offer.id-not-match",
+            title="Holder Presentation ID mismatch",
+            detail=f"Holder Presentation ID in payload <{payload.holder_presentation_id}> does not match Holder Presentation ID requested <{holder_presentation_id}>",  # noqa: E501
+        )
+
+    if hp.status != HolderPresentationStatusType.request_received:
+        raise IncorrectStatusError(
+            code="holder_presentation.status.not-request-received",
+            title="Holder Presentation - Invalid status to reject",
+            detail=f"Holder Presentation must be have status '{HolderPresentationStatusType.request_received}' to be rejected. Current status is '{hp.status}'",  # noqa: E501
+        )
+
+    problem_description = (
+        payload.rejection_comment
+        if payload.rejection_comment
+        else "Presentation Request rejected."
+    )
+    problem_report = V10PresentationProblemReportRequest(
+        description=problem_description,
+    )
+    data = {"body": problem_report}
+    present_proof_api.present_proof_records_pres_ex_id_problem_report_post(
+        str(hp.presentation_exchange_id),
+        **data,
+    )
+
+    values = {
+        "status": HolderPresentationStatusType.rejected,
+        "rejection_comment": payload.rejection_comment,
+    }
+    await HolderPresentation.update_by_id(holder_presentation_id, values)
+    return await get_holder_presentation(
+        tenant_id, wallet_id, holder_presentation_id, True
     )

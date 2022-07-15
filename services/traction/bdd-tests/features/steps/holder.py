@@ -53,11 +53,15 @@ def step_impl(context, holder: str, issuer: str):
     holder_credential_id = context.config.userdata[holder]["cred_offers"][0][
         "holder_credential_id"
     ]
-    response = reject_holder_credential(context, holder, holder_credential_id)
+    payload = {"rejection_comment": "rejecting offer for test reasons"}
+    response = reject_holder_credential(context, holder, holder_credential_id, payload)
     assert response.status_code == status.HTTP_200_OK, response.__dict__
     resp_json = json.loads(response.content)
     assert resp_json["item"]["state"] == "offer_received", resp_json
     assert resp_json["item"]["status"] == "Rejected", resp_json
+    assert (
+        resp_json["item"]["rejection_comment"] == payload["rejection_comment"]
+    ), resp_json
     time.sleep(2)
 
 
@@ -353,7 +357,9 @@ def step_impl(context, holder: str, pres_status: str):
     assert resp_json["count"] == 1, resp_json
 
     # store result, use for update and delete
-    context.config.userdata[holder].setdefault("holder_presentations", resp_json["items"])
+    context.config.userdata[holder].setdefault(
+        "holder_presentations", resp_json["items"]
+    )
 
 
 @then('"{holder}" can update holder presentation')
@@ -409,7 +415,9 @@ def step_impl(context, holder: str, count: int):
     resp_json = json.loads(response.content)
     assert resp_json["total"] == count, resp_json
     # store result, use for update and delete
-    context.config.userdata[holder].setdefault("holder_presentations", resp_json["items"])
+    context.config.userdata[holder].setdefault(
+        "holder_presentations", resp_json["items"]
+    )
 
 
 @step('"{holder}" can find holder presentation by alias "{alias}"')
@@ -495,3 +503,34 @@ def step_impl(context, holder: str):
     params = {"deleted": True}
     response = get_holder_presentation(context, holder, holder_presentation_id, params)
     assert response.status_code == status.HTTP_404_NOT_FOUND, response.__dict__
+
+
+@then('"{holder}" can find {count:d} credential(s) for holder presentation')
+def step_impl(context, holder: str, count: int):
+    holder_presentation_id = context.config.userdata[holder]["holder_presentations"][0][
+        "holder_presentation_id"
+    ]
+    response = list_credentials_for_request(context, holder, holder_presentation_id)
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    pprint.pp(resp_json)
+    assert resp_json["total"] == count, resp_json
+
+
+@then('"{holder}" will reject presentation from "{alias}"')
+def step_impl(context, holder: str, alias: str):
+    holder_presentation_id = context.config.userdata[holder]["holder_presentations"][0][
+        "holder_presentation_id"
+    ]
+    payload = {"rejection_comment": "rejecting request for test reasons"}
+    response = reject_holder_presentation(
+        context, holder, holder_presentation_id, payload
+    )
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    assert resp_json["item"]["state"] == "request_received", resp_json
+    assert resp_json["item"]["status"] == "Rejected", resp_json
+    assert (
+        resp_json["item"]["rejection_comment"] == payload["rejection_comment"]
+    ), resp_json
+    time.sleep(2)

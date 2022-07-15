@@ -338,7 +338,8 @@ def delete_holder_credential(context, tenant, item_id, params: dict | None = {})
 
 def list_holder_presentations(context, tenant, params: dict | None = {}):
     response = requests.get(
-        context.config.userdata.get("traction_host") + "/tenant/v1/holder/presentations",
+        context.config.userdata.get("traction_host")
+        + "/tenant/v1/holder/presentations",
         params=params,
         headers=context.config.userdata[tenant]["auth_headers"],
     )
@@ -370,6 +371,30 @@ def delete_holder_presentation(context, tenant, item_id, params: dict | None = {
         context.config.userdata.get("traction_host")
         + f"/tenant/v1/holder/presentations/{item_id}",
         params=params,
+        headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response
+
+
+def list_credentials_for_request(context, tenant, item_id):
+    response = requests.get(
+        context.config.userdata.get("traction_host")
+        + "/tenant/v1/holder/presentations/"
+        + item_id
+        + "/credentials-for-request",
+        headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response
+
+
+def reject_holder_presentation(
+    context, tenant, holder_presentation_id, payload: dict | None = {}
+):
+    payload["holder_presentation_id"] = holder_presentation_id
+    response = requests.post(
+        context.config.userdata.get("traction_host")
+        + f"/tenant/v1/holder/presentations/{holder_presentation_id}/reject-request",
+        json=payload,
         headers=context.config.userdata[tenant]["auth_headers"],
     )
     return response
