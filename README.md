@@ -56,6 +56,10 @@ Overview of the traction architecture:
 
 [Architecture](./docs/ARCHITECTURE.md)
 
+Aries Interop Profile status:
+
+[Traction AIP](./docs/AIP.md)
+
 Source code for Traction API:
 
 [Traction](./services/traction/README.md)
