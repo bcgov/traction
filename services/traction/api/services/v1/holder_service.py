@@ -681,24 +681,11 @@ def send_presentation_to_acapy(item: HolderPresentation):
     )
     provided_pres = item.presentation
 
-    for attr in provided_pres["requested_attributes"]:
-        value = provided_pres["requested_attributes"][attr]
-        indy_pres.requested_attributes[attr] = IndyRequestedCredsRequestedAttr(
-            cred_id=value["cred_id"],
-            revealed=value.get("revealed") if value.get("revealed") else True,
-        )
+    presentation_set_requested_attributes(indy_pres, provided_pres)
 
-    for pred in provided_pres["requested_predicates"]:
-        value = provided_pres["requested_predicates"][pred]
-        indy_pres.requested_predicates[pred] = IndyRequestedCredsRequestedPred(
-            cred_id=value["cred_id"],
-        )
-        if value.get("timestamp"):
-            indy_pres.requested_predicates[pred]["timestamp"] = value.get("timestamp")
+    presentation_set_requested_predicates(indy_pres, provided_pres)
 
-    for attr in provided_pres["self_attested_attributes"]:
-        value = provided_pres["self_attested_attributes"][attr]
-        indy_pres.requested_predicates[attr] = value
+    presentation_set_self_attested_attributes(indy_pres, provided_pres)
 
     data = {"body": indy_pres}
     pres_resp = (
@@ -707,6 +694,31 @@ def send_presentation_to_acapy(item: HolderPresentation):
         )
     )
     return pres_resp
+
+
+def presentation_set_self_attested_attributes(indy_pres, provided_pres):
+    for attr in provided_pres["self_attested_attributes"]:
+        value = provided_pres["self_attested_attributes"][attr]
+        indy_pres.requested_predicates[attr] = value
+
+
+def presentation_set_requested_predicates(indy_pres, provided_pres):
+    for pred in provided_pres["requested_predicates"]:
+        value = provided_pres["requested_predicates"][pred]
+        indy_pres.requested_predicates[pred] = IndyRequestedCredsRequestedPred(
+            cred_id=value["cred_id"],
+        )
+        if value.get("timestamp"):
+            indy_pres.requested_predicates[pred]["timestamp"] = value.get("timestamp")
+
+
+def presentation_set_requested_attributes(indy_pres, provided_pres):
+    for attr in provided_pres["requested_attributes"]:
+        value = provided_pres["requested_attributes"][attr]
+        indy_pres.requested_attributes[attr] = IndyRequestedCredsRequestedAttr(
+            cred_id=value["cred_id"],
+            revealed=value.get("revealed") if value.get("revealed") else True,
+        )
 
 
 def send_rejection_to_acapy(item, payload):
