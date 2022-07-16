@@ -5,7 +5,6 @@ import Button from "primevue/button";
 import { useToast } from "vue-toastification";
 import axios from "axios";
 import QRCode from "./common/QRCode.vue";
-import QrcodeVue from "qrcode.vue";
 
 // To store credentials
 const create_contact_alias = ref("");
@@ -38,7 +37,7 @@ const submit_new_contact = () => {
     },
   })
     .then((res) => {
-      invitation_url = res.data.invitation_url;
+      invitation_url.value = res.data.invitation_url;
       console.log(`invitation_url: ${invitation_url}`);
       processing.value = false; // enable button
       toast(`Contact Created!`);
@@ -76,12 +75,6 @@ const submit_new_contact = () => {
     ></Button>
   </div>
 </template>
-
-<script lang="ts">
-export default {
-  name: "CreateContact",
-};
-</script>
 
 <style scoped>
 .create-contact {
