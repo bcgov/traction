@@ -29,11 +29,30 @@ Feature: holding credentials
         And "alice" will have a holder presentation with status "Request Received"
         Then "alice" can find 1 credential(s) for holder presentation
 
+    Scenario: holder will accept a request
+        When "faber" requests proof of keys in schema "useless-schema" from "alice"
+        And we sadly wait for 10 seconds because we have not figured out how to listen for events
+        And "alice" will have a holder presentation with status "Request Received"
+        And "alice" can find 1 credential(s) for holder presentation
+        Then "alice" will send presentation from request for "useless-schema"
+        | attribute  | value    |
+        | alias | faber |
+        | external_reference_id | my ext ref id |
+        | tags | my,request |
+        And we sadly wait for 10 seconds because we have not figured out how to listen for events
+        Then "alice" will have a holder presentation with status "Presentation Received"
+        And "faber" has a "verified" verifier presentation
+        And "alice" can get holder presentation by holder_presentation_id
+
     Scenario: holder will reject a request
         When "faber" requests proof of keys in schema "useless-schema" from "alice"
         And we sadly wait for 10 seconds because we have not figured out how to listen for events
         And "alice" will have a holder presentation with status "Request Received"
         Then "alice" will reject presentation from "faber"
+        | attribute  | value    |
+        | alias | faber |
+        | external_reference_id | my ext ref id |
+        | tags | my,request |
         And we sadly wait for 10 seconds because we have not figured out how to listen for events
         Then "alice" will have a holder presentation with status "Rejected"
         And "faber" has a "rejected" verifier presentation
@@ -65,3 +84,15 @@ Feature: holding credentials
         And "alice" cannot get holder presentation by holder_presentation_id
         But "alice" can find holder presentation by alias "faber" with deleted flag
         And "alice" can get holder presentation with deleted flag
+
+    Scenario: holder can only send or reject an requested presentation
+        When "faber" requests proof of keys in schema "useless-schema" from "alice"
+        And we sadly wait for 10 seconds because we have not figured out how to listen for events
+        And "alice" will have a holder presentation with status "Request Received"
+        And "alice" can find 1 credential(s) for holder presentation
+        Then "alice" will send presentation from request for "useless-schema"
+        And we sadly wait for 10 seconds because we have not figured out how to listen for events
+        Then "alice" will have a holder presentation with status "Presentation Received"
+        And "faber" has a "verified" verifier presentation
+        And "alice" cannot reject an sent presentation
+        And "alice" cannot send an sent presentation

@@ -93,7 +93,6 @@ class HolderCredentialAcapy(BaseModel):
 class HolderPresentationAcapy(BaseModel):
     presentation_exchange_id: str | None = None
     presentation_exchange: dict | None = {}
-    presentation: dict | None = {}
 
 
 class HolderCredentialItem(
@@ -120,6 +119,7 @@ class HolderPresentationItem(
     alias: str | None = None
     external_reference_id: str | None = None
     rejection_comment: str | None = None
+    presentation: dict | None = {}
 
 
 class HolderCredentialTimelineItem(
@@ -203,10 +203,17 @@ class HolderPresentationCredentialListResponse(
     pass
 
 
-class SendPresentationPayload(CredPresentation):
-    pass
+class SendPresentationPayload(BaseModel):
+    holder_presentation_id: UUID
+    presentation: CredPresentation
+    alias: str | None = None
+    external_reference_id: str | None = None
+    tags: List[str] | None = []
 
 
 class RejectPresentationRequestPayload(BaseModel):
     holder_presentation_id: UUID
     rejection_comment: str | None = None
+    alias: str | None = None
+    external_reference_id: str | None = None
+    tags: List[str] | None = []

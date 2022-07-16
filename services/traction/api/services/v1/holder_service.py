@@ -5,6 +5,13 @@ from uuid import UUID
 from sqlalchemy import select, func, desc, update
 from sqlalchemy.orm import selectinload
 
+from acapy_client.model.indy_pres_spec import IndyPresSpec
+from acapy_client.model.indy_requested_creds_requested_attr import (
+    IndyRequestedCredsRequestedAttr,
+)
+from acapy_client.model.indy_requested_creds_requested_pred import (
+    IndyRequestedCredsRequestedPred,
+)
 from acapy_client.model.v10_credential_problem_report_request import (
     V10CredentialProblemReportRequest,
 )
@@ -41,6 +48,7 @@ from api.endpoints.models.v1.holder import (
     HolderPresentationCredentialItem,
     SendPresentationPayload,
     RejectPresentationRequestPayload,
+    HolderPresentationAcapy,
 )
 from api.endpoints.models.v1.verifier import AcapyPresentProofStateType
 from api.services.v1 import acapy_service
@@ -119,8 +127,14 @@ def holder_presentation_to_item(
         contact=contact,
     )
     if acapy:
-        # TODO - get the acapy data!
-        pass
+        item.acapy = HolderPresentationAcapy(
+            presentation_exchange_id=db_item.presentation_exchange_id,
+        )
+        if db_item.presentation_exchange_id:
+            exch = acapy_service.get_presentation_exchange_json(
+                db_item.presentation_exchange_id
+            )
+            item.acapy.presentation_exchange = exch
 
     return item
 
@@ -577,7 +591,41 @@ async def send_presentation(
     holder_presentation_id: UUID,
     payload: SendPresentationPayload,
 ) -> HolderPresentationItem:
-    return None
+    async with async_session() as db:
+        item = await HolderPresentation.get_by_id(
+            db, tenant_id, holder_presentation_id, False
+        )
+
+    # payload id must match parameter
+    if holder_presentation_id != payload.holder_presentation_id:
+        raise IdNotMatchError(
+            code="holder_presentation.accept-offer.id-not-match",
+            title="Holder Presentation ID mismatch",
+            detail=f"Holder Presentation ID in payload <{payload.holder_presentation_id}> does not match Holder Presentation ID requested <{holder_presentation_id}>",  # noqa: E501
+        )
+
+    if item.status != HolderPresentationStatusType.request_received:
+        raise IncorrectStatusError(
+            code="holder_presentation.status.not-request-received",
+            title="Holder Presentation - Invalid status to accept",
+            detail=f"Holder Presentation must be have status '{HolderPresentationStatusType.request_received}' to be accepted. Current status is '{item.status}'",  # noqa: E501
+        )
+
+    payload_dict = payload.dict()
+    # payload isn't the same as the db... move fields around
+    del payload_dict["holder_presentation_id"]
+    # first, update/store the presentation we are going to send
+    item = await HolderPresentation.update_by_id(holder_presentation_id, payload_dict)
+
+    # now send the presentation
+    pres_response = send_presentation_to_acapy(item)
+
+    # update the state...
+    payload_dict["state"] = pres_response.state
+    await HolderPresentation.update_by_id(holder_presentation_id, payload_dict)
+    return await get_holder_presentation(
+        tenant_id, wallet_id, holder_presentation_id, True
+    )
 
 
 async def reject_presentation_request(
@@ -606,6 +654,63 @@ async def reject_presentation_request(
             detail=f"Holder Presentation must be have status '{HolderPresentationStatusType.request_received}' to be rejected. Current status is '{hp.status}'",  # noqa: E501
         )
 
+    payload_dict = payload.dict()
+    # payload isn't the same as the db... move fields around
+    del payload_dict["holder_presentation_id"]
+    # first, update/store the presentation metadata
+    item = await HolderPresentation.update_by_id(holder_presentation_id, payload_dict)
+
+    # send the rejection
+    send_rejection_to_acapy(item, payload)
+
+    values = {
+        "status": HolderPresentationStatusType.rejected,
+    }
+    await HolderPresentation.update_by_id(holder_presentation_id, values)
+    return await get_holder_presentation(
+        tenant_id, wallet_id, holder_presentation_id, True
+    )
+
+
+def send_presentation_to_acapy(item: HolderPresentation):
+    # TODO: should this be a task?
+    indy_pres = IndyPresSpec(
+        requested_attributes={},
+        requested_predicates={},
+        self_attested_attributes={},
+    )
+    provided_pres = item.presentation
+
+    for attr in provided_pres["requested_attributes"]:
+        value = provided_pres["requested_attributes"][attr]
+        indy_pres.requested_attributes[attr] = IndyRequestedCredsRequestedAttr(
+            cred_id=value["cred_id"],
+            revealed=value.get("revealed") if value.get("revealed") else True,
+        )
+
+    for pred in provided_pres["requested_predicates"]:
+        value = provided_pres["requested_predicates"][pred]
+        indy_pres.requested_predicates[pred] = IndyRequestedCredsRequestedPred(
+            cred_id=value["cred_id"],
+        )
+        if value.get("timestamp"):
+            indy_pres.requested_predicates[pred]["timestamp"] = value.get("timestamp")
+
+    for attr in provided_pres["self_attested_attributes"]:
+        value = provided_pres["self_attested_attributes"][attr]
+        indy_pres.requested_predicates[attr] = value
+
+    data = {"body": indy_pres}
+    pres_resp = (
+        present_proof_api.present_proof_records_pres_ex_id_send_presentation_post(
+            item.presentation_exchange_id, **data
+        )
+    )
+    return pres_resp
+
+
+def send_rejection_to_acapy(item, payload):
+    # TODO: should this be a task?
     problem_description = (
         payload.rejection_comment
         if payload.rejection_comment
@@ -616,15 +721,6 @@ async def reject_presentation_request(
     )
     data = {"body": problem_report}
     present_proof_api.present_proof_records_pres_ex_id_problem_report_post(
-        str(hp.presentation_exchange_id),
+        item.presentation_exchange_id,
         **data,
-    )
-
-    values = {
-        "status": HolderPresentationStatusType.rejected,
-        "rejection_comment": payload.rejection_comment,
-    }
-    await HolderPresentation.update_by_id(holder_presentation_id, values)
-    return await get_holder_presentation(
-        tenant_id, wallet_id, holder_presentation_id, True
     )

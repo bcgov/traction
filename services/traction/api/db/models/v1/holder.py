@@ -13,6 +13,7 @@ from sqlalchemy import (
     select,
     desc,
     text,
+    JSON,
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -306,6 +307,7 @@ class HolderPresentation(StatefulModel, TrackingModel, TimestampModel, table=Tru
       external_reference_id: Set by tenant to correlate this Presentation with entity in
         external system
       tags: Set by tenant for arbitrary grouping of Presentations
+      presentation: the presentation data sent to verifier
       deleted: Holder Presentation "soft" delete indicator.
       thread_id: AcaPy thread id
       presentation_exchange_id: AcaPy id for the presentation exchange
@@ -329,6 +331,7 @@ class HolderPresentation(StatefulModel, TrackingModel, TimestampModel, table=Tru
 
     alias: str = Field(nullable=True)
     rejection_comment: str = Field(nullable=True)
+    presentation: dict = Field(default={}, sa_column=Column(JSON))
 
     # acapy data ---
     thread_id: str = Field(nullable=True)

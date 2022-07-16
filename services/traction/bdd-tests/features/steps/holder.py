@@ -354,8 +354,8 @@ def step_impl(context, holder: str, pres_status: str):
     response = list_holder_presentations(context, holder, params)
     assert response.status_code == status.HTTP_200_OK, response.__dict__
     resp_json = json.loads(response.content)
+    pprint.pp(resp_json)
     assert resp_json["count"] == 1, resp_json
-
     # store result, use for update and delete
     context.config.userdata[holder].setdefault(
         "holder_presentations", resp_json["items"]
@@ -505,7 +505,7 @@ def step_impl(context, holder: str):
     assert response.status_code == status.HTTP_404_NOT_FOUND, response.__dict__
 
 
-@then('"{holder}" can find {count:d} credential(s) for holder presentation')
+@step('"{holder}" can find {count:d} credential(s) for holder presentation')
 def step_impl(context, holder: str, count: int):
     holder_presentation_id = context.config.userdata[holder]["holder_presentations"][0][
         "holder_presentation_id"
@@ -515,6 +515,10 @@ def step_impl(context, holder: str, count: int):
     resp_json = json.loads(response.content)
     pprint.pp(resp_json)
     assert resp_json["total"] == count, resp_json
+    # store result, use for update and delete
+    context.config.userdata[holder].setdefault(
+        "holder_presentations_credentials", resp_json["items"]
+    )
 
 
 @then('"{holder}" will reject presentation from "{alias}"')
@@ -523,14 +527,109 @@ def step_impl(context, holder: str, alias: str):
         "holder_presentation_id"
     ]
     payload = {"rejection_comment": "rejecting request for test reasons"}
+    if context.table:
+        for row in context.table:
+            attribute = row["attribute"]
+            value = row["value"]
+            if attribute == "tags":
+                value = row["value"].split(",")
+            payload[attribute] = value
+
     response = reject_holder_presentation(
         context, holder, holder_presentation_id, payload
     )
     assert response.status_code == status.HTTP_200_OK, response.__dict__
     resp_json = json.loads(response.content)
-    assert resp_json["item"]["state"] == "request_received", resp_json
-    assert resp_json["item"]["status"] == "Rejected", resp_json
-    assert (
-        resp_json["item"]["rejection_comment"] == payload["rejection_comment"]
-    ), resp_json
-    time.sleep(2)
+    item = resp_json["item"]
+    assert item["state"] == "request_received", resp_json
+    assert item["status"] == "Rejected", resp_json
+    assert item["rejection_comment"] == payload["rejection_comment"], resp_json
+
+    if context.table:
+        for row in context.table:
+            attribute = row["attribute"]
+            value = row["value"]
+            if attribute == "tags":
+                value = row["value"].split(",")
+
+            assert item[attribute] == value
+
+
+@then('"{holder}" will send presentation from request for "{schema_name}"')
+def step_impl(context, holder: str, schema_name: str):
+    holder_presentation_id, response = send_valid_presentation(context, holder)
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    item = resp_json["item"]
+    assert item["state"] == "presentation_sent", resp_json
+    assert item["presentation"] is not None, resp_json
+
+    if context.table:
+        for row in context.table:
+            attribute = row["attribute"]
+            value = row["value"]
+            if attribute == "tags":
+                value = row["value"].split(",")
+
+            assert item[attribute] == value
+
+
+@step('"{holder}" can get holder presentation by holder_presentation_id')
+def step_impl(context, holder: str):
+    holder_presentation_id = context.config.userdata[holder]["holder_presentations"][0][
+        "holder_presentation_id"
+    ]
+    params = {"acapy": True}
+    response = get_holder_presentation(context, holder, holder_presentation_id, params)
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    pprint.pp(resp_json)
+    assert resp_json["item"]["holder_presentation_id"] == holder_presentation_id
+    assert resp_json["item"]["acapy"] is not None, resp_json
+    assert resp_json["item"]["acapy"]["presentation_exchange"] is not None, resp_json
+    assert resp_json["item"]["presentation"] is not None, resp_json
+
+
+@step('"{holder}" cannot reject an sent presentation')
+def step_impl(context, holder: str):
+    holder_presentation_id = context.config.userdata[holder]["holder_presentations"][0][
+        "holder_presentation_id"
+    ]
+    response = reject_holder_presentation(context, holder, holder_presentation_id)
+    assert response.status_code == status.HTTP_409_CONFLICT, response.__dict__
+
+
+@step('"{holder}" cannot send an sent presentation')
+def step_impl(context, holder: str):
+    holder_presentation_id, response = send_valid_presentation(context, holder)
+    assert response.status_code == status.HTTP_409_CONFLICT, response.__dict__
+
+
+def send_valid_presentation(context, holder):
+    holder_presentation_id = context.config.userdata[holder]["holder_presentations"][0][
+        "holder_presentation_id"
+    ]
+    cred_id = context.config.userdata[holder]["holder_presentations_credentials"][0][
+        "cred_info"
+    ]["referent"]
+    # hard code attr_0,
+    presentation = {
+        "requested_attributes": {"attr_0": {"cred_id": cred_id, "revealed": True}},
+        "requested_predicates": {},
+        "self_attested_attributes": {},
+    }
+    payload = {
+        "holder_presentation_id": holder_presentation_id,
+        "presentation": presentation,
+    }
+    if context.table:
+        for row in context.table:
+            attribute = row["attribute"]
+            value = row["value"]
+            if attribute == "tags":
+                value = row["value"].split(",")
+            payload[attribute] = value
+    response = send_holder_presentation(
+        context, holder, holder_presentation_id, payload
+    )
+    return holder_presentation_id, response

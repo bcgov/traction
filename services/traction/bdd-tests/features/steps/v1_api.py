@@ -398,3 +398,16 @@ def reject_holder_presentation(
         headers=context.config.userdata[tenant]["auth_headers"],
     )
     return response
+
+
+def send_holder_presentation(
+    context, tenant, holder_presentation_id, payload: dict | None = {}
+):
+    payload["holder_presentation_id"] = holder_presentation_id
+    response = requests.post(
+        context.config.userdata.get("traction_host")
+        + f"/tenant/v1/holder/presentations/{holder_presentation_id}/send-presentation",
+        json=payload,
+        headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response
