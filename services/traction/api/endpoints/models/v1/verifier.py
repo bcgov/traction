@@ -27,6 +27,7 @@ class VerifierPresentationStatusType(str, Enum):
     STARTING = "starting"  # being processed in event queue
     RECEIVED = "received"  # Verification has been received but not verified
     VERIFIED = "verified"  # Verified and proven to be correct
+    REJECTED = "rejected"  # request was rejected/abandoned
     ERROR = "Error"  # why is this capitalized?
 
 

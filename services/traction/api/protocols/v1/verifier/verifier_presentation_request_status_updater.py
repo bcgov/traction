@@ -62,9 +62,38 @@ class VerifierPresentationRequestStatusUpdater(DefaultPresentationRequestProtoco
         if payload["state"] in received_states:
             values["status"] = VerifierPresentationStatusType.RECEIVED
 
+        if payload["state"] == AcapyPresentProofStateType.ABANDONED:
+            values["status"] = VerifierPresentationStatusType.REJECTED
+
         self.logger.debug(f"update values = {values}")
 
         await VerifierPresentation.update_by_id(
             verifier_presentation.verifier_presentation_id, values
         )
         self.logger.info("< before_any()")
+
+    # TODO: remove this when we update to acapy 7.4, workaround for bug in 7.3
+    async def on_unknown_state(self, profile: Profile, payload: dict):
+        self.logger.info(f"> on_unknown_state({payload})")
+        verifier_presentation = await self.get_verifier_presentation(profile, payload)
+        if verifier_presentation:
+            # look for an error message
+            await self.handle_abandoned(verifier_presentation, payload)
+
+        self.logger.info("< on_unknown_state()")
+
+    async def handle_abandoned(self, verifier_presentation, payload):
+        if "error_msg" in payload:
+            self.logger.debug(f"payload error_msg = {payload['error_msg']}")
+            if str(payload["error_msg"]).startswith("abandoned"):
+                self.logger.info("presentation request abandoned, request rejected.")
+                values = {
+                    "state": AcapyPresentProofStateType.ABANDONED,
+                    "status": VerifierPresentationStatusType.REJECTED,
+                }
+                self.logger.debug(f"updating issuer credential = {values}")
+                async with async_session() as db:
+                    await VerifierPresentation.update_by_id(
+                        verifier_presentation.verifier_presentation_id, values
+                    )
+                    await db.commit()

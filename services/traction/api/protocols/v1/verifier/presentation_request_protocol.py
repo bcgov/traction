@@ -25,40 +25,66 @@ class PresentationRequestProtocol(ABC):
         self.logger.debug(f"payload={payload}")
         self.logger.info(f"self.role={self.role} ? payload.role={payload['role']}")
         if self.role == payload["role"]:
-            await self.before_all(profile=profile, payload=payload)
+            if "state" in payload:
+                await self.before_all(profile=profile, payload=payload)
 
-            if await self.approve_for_processing(profile=profile, payload=payload):
-                await self.before_any(profile=profile, payload=payload)
+                if await self.approve_for_processing(profile=profile, payload=payload):
+                    await self.before_any(profile=profile, payload=payload)
 
-                if AcapyPresentProofStateType.PROPOSAL_SENT == payload["state"]:
-                    await self.on_proposal_sent(profile=profile, payload=payload)
-                elif AcapyPresentProofStateType.PROPOSAL_RECEIVED == payload["state"]:
-                    await self.on_proposal_received(profile=profile, payload=payload)
-                elif AcapyPresentProofStateType.REQUEST_SENT == payload["state"]:
-                    await self.on_request_sent(profile=profile, payload=payload)
-                elif AcapyPresentProofStateType.REQUEST_RECEIVED == payload["state"]:
-                    await self.on_request_received(profile=profile, payload=payload)
-                elif AcapyPresentProofStateType.PRESENTATION_SENT == payload["state"]:
-                    await self.on_presentation_sent(profile=profile, payload=payload)
-                elif (
-                    AcapyPresentProofStateType.PRESENTATION_RECEIVED == payload["state"]
-                ):
-                    await self.on_presentation_received(
-                        profile=profile, payload=payload
-                    )
-                elif AcapyPresentProofStateType.VERIFIED == payload["state"]:
-                    await self.on_verified(profile=profile, payload=payload)
-                elif AcapyPresentProofStateType.PRESENTATION_ACKED == payload["state"]:
-                    await self.on_presentation_acked(profile=profile, payload=payload)
-                elif AcapyPresentProofStateType.ABANDONED == payload["state"]:
-                    await self.on_abandoned(profile=profile, payload=payload)
-                else:
-                    pass
+                    if AcapyPresentProofStateType.PROPOSAL_SENT == payload["state"]:
+                        await self.on_proposal_sent(profile=profile, payload=payload)
+                    elif (
+                        AcapyPresentProofStateType.PROPOSAL_RECEIVED == payload["state"]
+                    ):
+                        await self.on_proposal_received(
+                            profile=profile, payload=payload
+                        )
+                    elif AcapyPresentProofStateType.REQUEST_SENT == payload["state"]:
+                        await self.on_request_sent(profile=profile, payload=payload)
+                    elif (
+                        AcapyPresentProofStateType.REQUEST_RECEIVED == payload["state"]
+                    ):
+                        await self.on_request_received(profile=profile, payload=payload)
+                    elif (
+                        AcapyPresentProofStateType.PRESENTATION_SENT == payload["state"]
+                    ):
+                        await self.on_presentation_sent(
+                            profile=profile, payload=payload
+                        )
+                    elif (
+                        AcapyPresentProofStateType.PRESENTATION_RECEIVED
+                        == payload["state"]
+                    ):
+                        await self.on_presentation_received(
+                            profile=profile, payload=payload
+                        )
+                    elif AcapyPresentProofStateType.VERIFIED == payload["state"]:
+                        await self.on_verified(profile=profile, payload=payload)
+                    elif (
+                        AcapyPresentProofStateType.PRESENTATION_ACKED
+                        == payload["state"]
+                    ):
+                        await self.on_presentation_acked(
+                            profile=profile, payload=payload
+                        )
+                    elif AcapyPresentProofStateType.ABANDONED == payload["state"]:
+                        await self.on_abandoned(profile=profile, payload=payload)
+                    else:
+                        pass
 
-                await self.after_any(profile=profile, payload=payload)
+                    await self.after_any(profile=profile, payload=payload)
 
-            await self.after_all(profile=profile, payload=payload)
+                await self.after_all(profile=profile, payload=payload)
+            else:
+                # TODO: remove this when we update to acapy 7.4
+                self.logger.info("payload has no key for 'state'")
+                await self.on_unknown_state(profile=profile, payload=payload)
         self.logger.info("< notify()")
+
+    # TODO: remove this when we update to acapy 7.4, workaround for bug in 7.3
+    @abstractmethod
+    async def on_unknown_state(self, profile: Profile, payload: dict):
+        pass
 
     @abstractmethod
     async def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
@@ -120,6 +146,10 @@ class PresentationRequestProtocol(ABC):
 class DefaultPresentationRequestProtocol(PresentationRequestProtocol):
     def __init__(self):
         super().__init__()
+
+    # TODO: remove this when we update to acapy 7.4, workaround for bug in 7.3
+    async def on_unknown_state(self, profile: Profile, payload: dict):
+        pass
 
     async def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
         pass
