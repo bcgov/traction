@@ -10,9 +10,7 @@ import axios from "axios";
 
 const store: any = inject("store");
 
-// Vite passes the api url to here
-// TODO: This will be changed to reference the backend url
-const api = import.meta.env.VITE_TRACTION_ENDPOINT;
+const api: string = 'http://localhost:5100';
 
 /**
  * ## toggled
@@ -24,9 +22,12 @@ const toggled = (e: any) => {
 
   // If there's no data make the request to the api.
   if (store.state.schemas.open && !store.state.schemas.data) {
-    // TODO: This is test data. Replace with real data.
-    const url = `/test_schemas.json`;
-    // const url = `${api}/tenant/v1/governance/schema_templates?page_size=1000`;
+
+    // I still can't add schemas locally.. So....
+    // Activate this url for the Sprint Demo.
+    // const url = `/test_schemas.json`;
+
+    const url = `${api}/tenant/v1/governance/schema_templates?page_size=1000`;
 
     axios
       .get(url, {
