@@ -173,11 +173,7 @@ class Timeline(StatefulModel, table=True):
           order
         """
 
-        q = (
-            cls.tenant_select()
-            .where(cls.item_id == item_id)
-            .order_by(desc(cls.created_at))
-        )
+        q = select(cls).where(cls.item_id == item_id).order_by(desc(cls.created_at))
         q_result = await db.execute(q)
         db_items = q_result.scalars().all()
         return db_items
