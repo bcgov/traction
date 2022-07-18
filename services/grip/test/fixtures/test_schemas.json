@@ -1,0 +1,107 @@
+{
+  "items": [
+    {
+      "status": "Active",
+      "state": "transaction_acked",
+      "error_status_detail": null,
+      "deleted": false,
+      "created_at": "2022-07-14T21:39:30.402623",
+      "updated_at": "2022-07-14T21:39:31.774004",
+      "tags": [],
+      "schema_template_id": "0c350f17-367c-49dd-b4c2-03a5d288fd58",
+      "tenant_id": "1064667f-348e-4144-8248-c83313cee081",
+      "schema_id": "8Tv5b9f6TCiDxN2EsuCWVK:2:testing:1.0.1",
+      "name": "testing-1.0.1",
+      "imported": false,
+      "schema_name": "testing",
+      "version": "1.0.1",
+      "attributes": [
+        "hello"
+      ]
+    },
+    {
+      "status": "Active",
+      "state": "transaction_acked",
+      "error_status_detail": null,
+      "deleted": false,
+      "created_at": "2022-07-14T21:38:10.441848",
+      "updated_at": "2022-07-14T21:38:11.686789",
+      "tags": [],
+      "schema_template_id": "21464791-4fbe-422d-b7a7-aaeaf67bdf74",
+      "tenant_id": "1064667f-348e-4144-8248-c83313cee081",
+      "schema_id": "8Tv5b9f6TCiDxN2EsuCWVK:2:testing:1.0.0",
+      "name": "testing-1.0.0",
+      "imported": false,
+      "schema_name": "testing",
+      "version": "1.0.0",
+      "attributes": [
+        "testing"
+      ]
+    },
+    {
+      "status": "Error",
+      "state": "init",
+      "error_status_detail": "(400)\nReason: Ledger rejected transaction request: client request invalid: InvalidClientRequest('8Tv5b9f6TCiDxN2EsuCWVK', 1657832462456695658, 'validation error [GetSchemaField]: invalid number of parts 1, should contain 2 or 3 (version=3)').\nHTTP response headers: HTTPHeaderDict({'Content-Type': 'text/plain; charset=utf-8', 'Content-Length': '233', 'Date': 'Thu, 14 Jul 2022 21:01:02 GMT', 'Server': 'Python/3.6 aiohttp/3.7.4.post0'})\nHTTP response body: 400: Ledger rejected transaction request: client request invalid: InvalidClientRequest('8Tv5b9f6TCiDxN2EsuCWVK', 1657832462456695658, 'validation error [GetSchemaField]: invalid number of parts 1, should contain 2 or 3 (version=3)').\n",
+      "deleted": false,
+      "created_at": "2022-07-14T21:01:02.395912",
+      "updated_at": "2022-07-14T21:01:02.570415",
+      "tags": [],
+      "schema_template_id": "aea19207-1872-4347-8c29-1433275223b2",
+      "tenant_id": "1064667f-348e-4144-8248-c83313cee081",
+      "schema_id": "8Tv5b9f6TCiDxN2EsuCWVK:2:testing:3",
+      "name": "testing3",
+      "imported": false,
+      "schema_name": "testing",
+      "version": "3",
+      "attributes": [
+        "{\"testing\": \"456\"}"
+      ]
+    },
+    {
+      "status": "Error",
+      "state": "init",
+      "error_status_detail": "(400)\nReason: Ledger rejected transaction request: client request invalid: InvalidClientRequest('8Tv5b9f6TCiDxN2EsuCWVK', 1657832412607430427, 'validation error [GetSchemaField]: invalid number of parts 1, should contain 2 or 3 (version=2)').\nHTTP response headers: HTTPHeaderDict({'Content-Type': 'text/plain; charset=utf-8', 'Content-Length': '233', 'Date': 'Thu, 14 Jul 2022 21:00:12 GMT', 'Server': 'Python/3.6 aiohttp/3.7.4.post0'})\nHTTP response body: 400: Ledger rejected transaction request: client request invalid: InvalidClientRequest('8Tv5b9f6TCiDxN2EsuCWVK', 1657832412607430427, 'validation error [GetSchemaField]: invalid number of parts 1, should contain 2 or 3 (version=2)').\n",
+      "deleted": false,
+      "created_at": "2022-07-14T21:00:12.574456",
+      "updated_at": "2022-07-14T21:00:12.718139",
+      "tags": [],
+      "schema_template_id": "9de3c760-8b83-438b-be7c-2c8cba0060b0",
+      "tenant_id": "1064667f-348e-4144-8248-c83313cee081",
+      "schema_id": "8Tv5b9f6TCiDxN2EsuCWVK:2:testing:2",
+      "name": "testing2",
+      "imported": false,
+      "schema_name": "testing",
+      "version": "2",
+      "attributes": [
+        "{\"testing\": \"123\"}"
+      ]
+    },
+    {
+      "status": "Error",
+      "state": "init",
+      "error_status_detail": "(400)\nReason: Ledger rejected transaction request: client request invalid: InvalidClientRequest('8Tv5b9f6TCiDxN2EsuCWVK', 1657832222279941264, 'validation error [GetSchemaField]: invalid number of parts 1, should contain 2 or 3 (version=1)').\nHTTP response headers: HTTPHeaderDict({'Content-Type': 'text/plain; charset=utf-8', 'Content-Length': '233', 'Date': 'Thu, 14 Jul 2022 20:57:02 GMT', 'Server': 'Python/3.6 aiohttp/3.7.4.post0'})\nHTTP response body: 400: Ledger rejected transaction request: client request invalid: InvalidClientRequest('8Tv5b9f6TCiDxN2EsuCWVK', 1657832222279941264, 'validation error [GetSchemaField]: invalid number of parts 1, should contain 2 or 3 (version=1)').\n",
+      "deleted": false,
+      "created_at": "2022-07-14T20:57:02.201466",
+      "updated_at": "2022-07-14T20:57:02.387682",
+      "tags": [],
+      "schema_template_id": "9d8c2c8c-0688-4e83-be86-88e13d187722",
+      "tenant_id": "1064667f-348e-4144-8248-c83313cee081",
+      "schema_id": "8Tv5b9f6TCiDxN2EsuCWVK:2:testing:1",
+      "name": "testing1",
+      "imported": false,
+      "schema_name": "testing",
+      "version": "1",
+      "attributes": [
+        "{\"testing\": \"123\"}"
+      ]
+    }
+  ],
+  "links": [
+    {
+      "href": "https://traction-api-dev.apps.silver.devops.gov.bc.ca/tenant/v1/governance/schema_templates/?page_num=1&page_size=10&deleted=False",
+      "rel": "self"
+    }
+  ],
+  "count": 5,
+  "total": 5
+}
