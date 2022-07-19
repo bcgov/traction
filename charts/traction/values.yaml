@@ -27,7 +27,7 @@ acapy:
     repository: bcgovimages/aries-cloudagent
     pullPolicy: IfNotPresent
     # --  Overrides the image tag whose default is the chart appVersion.
-    tag: py36-1.16-1_0.7.3
+    tag: py36-1.16-1_0.7.4
 
   # The agent seed, 32 characters. Will be generated if not defined here
   agentSeed: ""
