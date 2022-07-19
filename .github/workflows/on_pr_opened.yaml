@@ -57,7 +57,6 @@ jobs:
     needs: 
       - ready
       - build_api
-      - build_showcase
     if: ${{ always() && (fromJSON(needs.ready.outputs.deploy) == true) && !(contains(needs.*.result, 'failure')) }}
 
     steps:  
