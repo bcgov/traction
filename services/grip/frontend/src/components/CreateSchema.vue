@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
-// import Divider from "primevue/divider";
 import { ref } from "vue";
 const alias = ref("");
+const alias1 = ref("");
 </script>
 <template>
   <div class="row">
@@ -16,14 +16,14 @@ const alias = ref("");
       <label for="create_schema_version">Version Number</label>
     </span>
   </div>
-  <!-- <Divider align="right" type="dashed">
-    <div class="inline-flex align-items-center">
-      <i class="pi pi-user mr-2"></i>
-      <b>Attributes</b>
-    </div>
-  </Divider> -->
-  <!-- <Divider></Divider> -->
   <hr />
+  <div class="row">
+    <span class="p-float-label">
+      <InputText type="text" v-model="alias1" name="create_schema_name" />
+      <label for="create_schema_name">Attribute</label>
+    </span>
+  </div>
+  <Button label="Save"></Button>
 </template>
 <style scoped>
 .row {
