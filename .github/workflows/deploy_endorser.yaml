@@ -30,6 +30,7 @@ jobs:
         uses: ./.github/actions/build_service
         id: builder
         with:
+          ref: ${{ github.event.inputs.ref }}
           context: './services/endorser'
           image_name: ${{ github.repository_owner}}/endorser-api
           registry: ghcr.io
