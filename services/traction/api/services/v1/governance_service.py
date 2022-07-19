@@ -587,9 +587,7 @@ async def get_credential_template(
     Raises:
       NotFoundError: if the item cannot be found by ID and deleted flag
     """
-    db_rec = await CredentialTemplate.get_by_id(
-        db, credential_template_id, deleted
-    )
+    db_rec = await CredentialTemplate.get_by_id(db, credential_template_id, deleted)
 
     item = credential_template_to_item(db_rec)
 

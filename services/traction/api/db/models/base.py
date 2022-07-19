@@ -6,7 +6,6 @@ from typing import Optional, List
 import logging
 import pydantic
 from sqlalchemy.exc import DBAPIError
-from starlette_context import context
 from sqlmodel import Field, SQLModel
 from sqlalchemy import Column, func, text, select, desc, String
 from sqlalchemy.sql.expression import Select

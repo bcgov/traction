@@ -1,10 +1,8 @@
-from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import QueuePool
 
 from api.core.config import settings
-from starlette_context import context
 
 
 engine = create_async_engine(

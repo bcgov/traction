@@ -380,9 +380,7 @@ class SendCredentialOfferTask(Task):
         issuer_credential_id = self._get_id_from_payload(payload)
         try:
             async with async_session() as db:
-                item = await IssuerCredential.get_by_id(
-                    db, issuer_credential_id
-                )
+                item = await IssuerCredential.get_by_id(db, issuer_credential_id)
             cred_preview = self._credential_preview_conversion(item)
 
             cred_offer = V10CredentialFreeOfferRequest(
