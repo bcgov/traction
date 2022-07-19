@@ -195,7 +195,7 @@ async def get_presentation_request(
     """
     async with async_session() as db:
         db_item = await VerifierPresentation.get_by_id(
-            db, tenant_id, verifier_presentation_id, deleted
+            db, verifier_presentation_id, deleted
         )
 
     item = verifier_presentation_to_item(db_item, acapy)

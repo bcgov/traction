@@ -86,6 +86,7 @@ class TenantConfiguration(TimestampModel, TenantScopedModel, table=True):
         db_rec = q_result.scalar_one_or_none()
         if not db_rec:
             # perhaps this is an old tenant, just create a default record
+            print("no db record, making one")
             db_rec = cls(tenant_id=tenant_id)
             db.add(db_rec)
             await db.commit()

@@ -505,9 +505,7 @@ async def create_credential_template(
 
     schema_template = None
     if payload.schema_template_id:
-        schema_template = await SchemaTemplate.get_by_id(
-            db, tenant_id, payload.schema_template_id
-        )
+        schema_template = await SchemaTemplate.get_by_id(db, payload.schema_template_id)
 
     elif payload.schema_id:
         ledger_schema = fetch_schema_from_ledger(payload.schema_id)
@@ -517,14 +515,14 @@ async def create_credential_template(
 
         try:
             schema_template = await SchemaTemplate.get_by_schema_id(
-                db, tenant_id, payload.schema_id
+                db, payload.schema_id
             )
         except NotFoundError:
             # not in traction, import it..
             import_payload = ImportSchemaTemplatePayload(schema_id=payload.schema_id)
             await import_schema_template(db, tenant_id, wallet_id, import_payload)
             schema_template = await SchemaTemplate.get_by_schema_id(
-                db, tenant_id, payload.schema_id
+                db, payload.schema_id
             )
 
     # create OUR credential template
@@ -534,7 +532,7 @@ async def create_credential_template(
 
     # see if cd tag already exists
     exists = await CredentialTemplate.get_by_schema_and_tag(
-        db, tenant_id, schema_template.schema_id, cd.tag
+        db, schema_template.schema_id, cd.tag
     )
     if exists:
         raise AlreadyExistsError(
@@ -590,7 +588,7 @@ async def get_credential_template(
       NotFoundError: if the item cannot be found by ID and deleted flag
     """
     db_rec = await CredentialTemplate.get_by_id(
-        db, tenant_id, credential_template_id, deleted
+        db, credential_template_id, deleted
     )
 
     item = credential_template_to_item(db_rec)

@@ -230,13 +230,13 @@ async def hard_delete_holder_credential(tenant_id: UUID, holder_credential_id: U
     async with async_session() as db:
         try:
             hc = await HolderCredential.get_by_id(
-                db, tenant_id, holder_credential_id, previously_soft_deleted
+                db, holder_credential_id, previously_soft_deleted
             )
         except NotFoundError:
             # this may have been soft deleted...
             previously_soft_deleted = True
             hc = await HolderCredential.get_by_id(
-                db, tenant_id, holder_credential_id, previously_soft_deleted
+                db, holder_credential_id, previously_soft_deleted
             )
 
     # remove from wallet
@@ -248,7 +248,7 @@ async def hard_delete_holder_credential(tenant_id: UUID, holder_credential_id: U
 
     async with async_session() as db:
         hc = await HolderCredential.get_by_id(
-            db, tenant_id, holder_credential_id, previously_soft_deleted
+            db, holder_credential_id, previously_soft_deleted
         )
         await db.delete(hc)
         await db.commit()
@@ -261,9 +261,7 @@ async def accept_credential_offer(
     payload: AcceptCredentialOfferPayload,
 ) -> HolderCredentialItem:
     async with async_session() as db:
-        hc = await HolderCredential.get_by_id(
-            db, tenant_id, holder_credential_id, False
-        )
+        hc = await HolderCredential.get_by_id(db, holder_credential_id, False)
 
     # payload id must match parameter
     if holder_credential_id != payload.holder_credential_id:
@@ -302,9 +300,7 @@ async def reject_credential_offer(
     payload: RejectCredentialOfferPayload,
 ):
     async with async_session() as db:
-        hc = await HolderCredential.get_by_id(
-            db, tenant_id, holder_credential_id, False
-        )
+        hc = await HolderCredential.get_by_id(db, holder_credential_id, False)
 
     # payload id must match parameter
     if holder_credential_id != payload.holder_credential_id:

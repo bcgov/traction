@@ -259,7 +259,7 @@ async def update_message(
         await db.execute(q)
         await db.commit()
 
-    return await get_message(tenant_id, wallet_id, message_id, True, False)
+    return await get_message(wallet_id, message_id, True, False)
 
 
 async def delete_message(
@@ -295,4 +295,4 @@ async def delete_message(
         await db.execute(q)
         await db.commit()
 
-    return await get_message(tenant_id, wallet_id, message_id, True, True)
+    return await get_message(wallet_id, message_id, True, True)

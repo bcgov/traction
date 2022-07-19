@@ -151,8 +151,7 @@ class Task(ABC):
     async def _perform_task_with_context(self, tenant: Tenant, payload: dict):
         context["TENANT_ID"] = tenant.id
         context["TENANT_WALLET_ID"] = tenant.wallet_id
-        self._perform_task(self, tenant, payload)
-        pass
+        await self._perform_task(tenant, payload)
 
     async def _handle_perform_task_error(
         self, tenant: Tenant, payload: dict, exc: Exception
@@ -293,7 +292,7 @@ class SendCredDefRequestTask(Task):
         c_t_id = self._get_id_from_payload(payload)
         try:
             async with async_session() as db:
-                item = await CredentialTemplate.get_by_id(db, tenant.id, c_t_id)
+                item = await CredentialTemplate.get_by_id(db, c_t_id)
 
             cred_def_request = CredentialDefinitionSendRequest(
                 schema_id=str(item.schema_id),
@@ -382,7 +381,7 @@ class SendCredentialOfferTask(Task):
         try:
             async with async_session() as db:
                 item = await IssuerCredential.get_by_id(
-                    db, tenant.id, issuer_credential_id
+                    db, issuer_credential_id
                 )
             cred_preview = self._credential_preview_conversion(item)
 

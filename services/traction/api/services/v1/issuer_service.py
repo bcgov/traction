@@ -250,9 +250,7 @@ async def offer_new_credential(
     )
     db.add(db_item)
     await db.commit()
-    db_item = await IssuerCredential.get_by_id(
-        db, tenant_id, db_item.issuer_credential_id
-    )
+    db_item = await IssuerCredential.get_by_id(db, db_item.issuer_credential_id)
     item = issuer_credential_to_item(db_item, True)
 
     return item
@@ -283,9 +281,7 @@ async def get_issuer_credential(
     Raises:
       NotFoundError: if the item cannot be found by ID and deleted flag
     """
-    db_item = await IssuerCredential.get_by_id(
-        db, tenant_id, issuer_credential_id, deleted
-    )
+    db_item = await IssuerCredential.get_by_id(db, issuer_credential_id, deleted)
 
     item = issuer_credential_to_item(db_item, acapy)
 
@@ -429,9 +425,7 @@ async def revoke_issuer_credential(
             detail=f"Issuer Credential ID in payload <{payload.issuer_credential_id}> does not match Issuer Credential ID requested <{issuer_credential_id}>",  # noqa: E501
         )
 
-    db_item = await IssuerCredential.get_by_id(
-        db, tenant_id, issuer_credential_id, False
-    )
+    db_item = await IssuerCredential.get_by_id(db, issuer_credential_id, False)
 
     if db_item.status != IssuerCredentialStatusType.issued:
         raise IncorrectStatusError(

@@ -53,7 +53,7 @@ async def update_tenant_configuration(
 async def stored_message_content(tenant_id: UUID, content: str) -> str | None:
     async with async_session() as db:
         config = await TenantConfiguration.get_by_id(db, tenant_id)
-        permissions = await TenantPermissions.get_by_id(db)
+        permissions = await TenantPermissions.get_by_id(db, tenant_id)
     if permissions.store_messages and config.store_messages:
         return content
 
@@ -64,7 +64,7 @@ async def check_storage_permissions(
     tenant_id: UUID, payload: UpdateTenantConfigurationPayload
 ):
     async with async_session() as db:
-        permissions = await TenantPermissions.get_by_id(db)
+        permissions = await TenantPermissions.get_by_id(db, tenant_id)
 
     error_fields = []
 

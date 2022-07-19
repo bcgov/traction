@@ -17,9 +17,7 @@ class CreateCredDefRevocationProcessor(CreateCredDefProcessor):
         cred_def_id = payload["meta_data"]["context"]["cred_def_id"]
         try:
             async with async_session() as db:
-                return await CredentialTemplate.get_by_cred_def_id(
-                    db, profile.tenant_id, cred_def_id
-                )
+                return await CredentialTemplate.get_by_cred_def_id(db, cred_def_id)
         except NotFoundError:
             return None
 
