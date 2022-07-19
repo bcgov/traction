@@ -18,7 +18,6 @@ let displayAddContact = ref(false);
 
 const toggled = (e: any) => {
   store.state.contacts.open = !e.value;
-  console.log("toggled", store.state.contacts.open);
 
   if (store.state.contacts.open && !store.state.contacts.data) {
     axios

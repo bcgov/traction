@@ -1,16 +1,25 @@
 <script setup lang="ts">
-import { inject } from "vue";
+import { inject, ref } from "vue";
 import Fieldset from "primevue/fieldset";
 import Button from "primevue/button";
 import ProgressSpinner from "primevue/progressspinner";
 import DataTable from "primevue/datatable";
+import Dialog from "primevue/dialog";
 import Column from "primevue/column";
 import InputText from "primevue/inputtext";
 import axios from "axios";
+import CreateSchema from "./CreateSchema.vue";
 
 const store: any = inject("store");
 
-const api: string = 'http://localhost:5100';
+const api: string = "http://localhost:5100";
+
+// Model closed by default
+let displayAddSchema = ref(false);
+
+const createSchema = () => {
+  displayAddSchema.value = !displayAddSchema.value;
+};
 
 /**
  * ## toggled
@@ -22,12 +31,11 @@ const toggled = (e: any) => {
 
   // If there's no data make the request to the api.
   if (store.state.schemas.open && !store.state.schemas.data) {
-
     // I still can't add schemas locally.. So....
     // Activate this url for the Sprint Demo.
-    // const url = `/test_schemas.json`;
+    const url = `/test_schemas.json`;
 
-    const url = `${api}/tenant/v1/governance/schema_templates?page_size=1000`;
+    // const url = `${api}/tenant/v1/governance/schema_templates?page_size=1000`;
 
     axios
       .get(url, {
@@ -83,7 +91,19 @@ const toggled = (e: any) => {
         <Column field="attributes" header="Attributes" />
         <Column field="schema_id" header="ID" />
       </DataTable>
-      <Button class="create-btn" icon="pi pi-plus" label="Create Schema" />
+      <Button
+        class="create-btn"
+        icon="pi pi-plus"
+        label="Create Schema"
+        @click="createSchema"
+      />
+      <Dialog
+        header="Create a new schema"
+        v-model:visible="displayAddSchema"
+        :modal="true"
+      >
+        <CreateSchema />
+      </Dialog>
     </div>
   </Fieldset>
 </template>
