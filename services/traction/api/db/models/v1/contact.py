@@ -12,7 +12,6 @@ from sqlmodel import Field, Relationship
 from sqlalchemy import Column, text, select
 from sqlalchemy.dialects.postgresql import UUID
 from sqlmodel.ext.asyncio.session import AsyncSession
-from api.db.session import TenantAsyncSession
 
 from api.db.models.base import (
     StatefulModel,
@@ -88,7 +87,7 @@ class Contact(
     @classmethod
     async def get_by_id(
         cls: "Contact",
-        db: TenantAsyncSession,
+        db: AsyncSession,
         contact_id: UUID,
         deleted: bool | None = False,
     ) -> "Contact":
@@ -105,13 +104,8 @@ class Contact(
         Raises:
           NotFoundError: if the contact cannot be found by ID and deleted flag
         """
-        pp("helpme")
-        # pp(db.sync_session._query_cls.__dict__)
-        # db.sync_session._query_cls = TenantQuery
-        pp(db.sync_session.__dict__)
-
         q = (
-            db.query(classz=Contact)
+            cls.tenant_select()
             .where(cls.contact_id == contact_id)
             .where(cls.deleted == deleted)
         )
