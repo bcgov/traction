@@ -14,12 +14,9 @@ const options = [
 ];
 
 // Store the selected option
+// TODO: This needs to be turned into an array that
+//   grows and shrinks with the number of attributes.
 const selectedOption = ref(null);
-
-const onChange = (e: any) => {
-  console.log(e.value);
-  console.log(selectedOption);
-};
 </script>
 <template>
   <div class="row">
@@ -43,7 +40,6 @@ const onChange = (e: any) => {
       :options="options"
       optionLabel="name"
       placeholder="Format"
-      @change="onChange"
     />
   </div>
   <Button label="Save"></Button>
