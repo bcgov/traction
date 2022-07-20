@@ -62,7 +62,7 @@ acapy:
     adminPort: 8031
     httpPort: 8030
     endorserAlias: endorser
-    endorserPublicDID: hczuu1Apw7fkWvckcaM31
+    endorserPublicDID: AKaFAVGCZoDMZrydWtjUev
     walletScheme: MultiWalletSingleTableSharedPool
 
   openshift:
