@@ -1,6 +1,10 @@
 name: Build Traction Service
 description: Build a Traction Service
 inputs:
+  ref:
+    description: 'The branch, tag or SHA to checkout'
+    required: true
+    default: 'develop'  
   context:
     required: true
     type: string
@@ -40,7 +44,9 @@ runs:
   using: "composite"
   steps:
     - uses: actions/checkout@v2   
-   
+      with:
+        ref: ${{ inputs.ref }}
+
     - name: Set up Python 3.10
       uses: actions/setup-python@v2
       with:

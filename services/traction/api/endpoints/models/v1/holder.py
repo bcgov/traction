@@ -4,7 +4,11 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from api.endpoints.models.credentials import CredentialStateType
+from api.endpoints.models.credentials import (
+    CredentialStateType,
+    CredPrecisForProof,
+    CredPresentation,
+)
 from api.endpoints.models.v1.base import (
     ListAcapyItemParameters,
     AcapyItem,
@@ -12,6 +16,7 @@ from api.endpoints.models.v1.base import (
     ListResponse,
     GetTimelineResponse,
     GetResponse,
+    ListItemParameters,
 )
 from api.endpoints.models.v1.verifier import AcapyPresentProofStateType
 
@@ -42,6 +47,8 @@ class HolderPresentationStatusType(str, Enum):
     presentation_sent = "Presentation Sent"
     # we sent, they got it
     presentation_acked = "Presentation Received"
+    # presentation request was rejected
+    rejected = "Rejected"
     # item is soft deleted
     deleted = "Deleted"
     error = "Error"
@@ -86,7 +93,6 @@ class HolderCredentialAcapy(BaseModel):
 class HolderPresentationAcapy(BaseModel):
     presentation_exchange_id: str | None = None
     presentation_exchange: dict | None = {}
-    presentation: dict | None = {}
 
 
 class HolderCredentialItem(
@@ -112,6 +118,8 @@ class HolderPresentationItem(
     contact: HolderPresentationContact
     alias: str | None = None
     external_reference_id: str | None = None
+    rejection_comment: str | None = None
+    presentation: dict | None = {}
 
 
 class HolderCredentialTimelineItem(
@@ -161,10 +169,51 @@ class UpdateHolderCredentialPayload(AcceptCredentialOfferPayload):
     pass
 
 
+class UpdateHolderPresentationPayload(BaseModel):
+    holder_presentation_id: UUID | None = None
+    alias: str | None = None
+    external_reference_id: str | None = None
+    tags: List[str] | None = []
+
+
 class UpdateHolderCredentialResponse(GetResponse[HolderCredentialItem]):
+    pass
+
+
+class UpdateHolderPresentationResponse(GetResponse[HolderPresentationItem]):
     pass
 
 
 class RejectCredentialOfferPayload(BaseModel):
     holder_credential_id: UUID
     rejection_comment: str | None = None
+
+
+class HolderPresentationCredentialListParameters(ListItemParameters[None, None]):
+    pass
+
+
+class HolderPresentationCredentialItem(CredPrecisForProof):
+    pass
+
+
+class HolderPresentationCredentialListResponse(
+    ListResponse[HolderPresentationCredentialItem]
+):
+    pass
+
+
+class SendPresentationPayload(BaseModel):
+    holder_presentation_id: UUID
+    presentation: CredPresentation
+    alias: str | None = None
+    external_reference_id: str | None = None
+    tags: List[str] | None = []
+
+
+class RejectPresentationRequestPayload(BaseModel):
+    holder_presentation_id: UUID
+    rejection_comment: str | None = None
+    alias: str | None = None
+    external_reference_id: str | None = None
+    tags: List[str] | None = []

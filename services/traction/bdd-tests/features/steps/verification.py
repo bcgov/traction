@@ -53,7 +53,6 @@ def step_impl(context, verifier: str, schema_name: str, prover: str):
 @step('"{verifier}" has a "{status_code}" verifier presentation')
 def step_impl(context, verifier: str, status_code: str):
 
-    pp(context.config.userdata[verifier]["verifier_presentations"][0])
     response = requests.get(
         context.config.userdata.get("traction_host")
         + "/tenant/v1/verifier/presentations/",

@@ -6,22 +6,20 @@ from starlette import status
 from v1_api import *
 
 
-@step('"{tenant}" is not an issuer')
+@step('"{tenant}" has issuer status "{issuer_status}"')
+def step_impl(context, tenant: str, issuer_status: str):
+    response = get_tenant_self(context, tenant)
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    assert resp_json["item"]["issuer_status"] == issuer_status, resp_json
+
+
+@step('"{tenant}" will have a public did')
 def step_impl(context, tenant: str):
     response = get_tenant_self(context, tenant)
     assert response.status_code == status.HTTP_200_OK, response.__dict__
     resp_json = json.loads(response.content)
-    assert not resp_json["item"]["issuer"]
-    assert resp_json["item"]["issuer_status"] == "N/A"
-
-
-@step('"{tenant}" is an issuer')
-def step_impl(context, tenant: str):
-    response = get_tenant_self(context, tenant)
-    assert response.status_code == status.HTTP_200_OK, response.__dict__
-    resp_json = json.loads(response.content)
-    assert resp_json["item"]["issuer"]
-    assert resp_json["item"]["issuer_status"] == "Active"
+    assert resp_json["item"]["public_did"] is not None, resp_json
 
 
 @step('"{tenant}" cannot register as an issuer')
@@ -66,7 +64,9 @@ def step_impl(context, issuer: str, holder: str, schema_name: str):
     )
     assert response.status_code == status.HTTP_200_OK, response.__dict__
     resp_json = json.loads(response.content)
-    context.config.userdata[issuer]["issuer_credential_id"] = resp_json["item"]["issuer_credential_id"]
+    context.config.userdata[issuer]["issuer_credential_id"] = resp_json["item"][
+        "issuer_credential_id"
+    ]
 
 
 @step('"{issuer}" will have an "{cred_status}" issuer credential')
@@ -129,9 +129,10 @@ def step_impl(context, tenant):
     context.execute_steps(
         f"""
     Given "{tenant}" is allowed to be an issuer by the innkeeper
-    And we sadly wait for {10} seconds because we have not figured out how to listen for events
+    And we sadly wait for {30} seconds because we have not figured out how to listen for events
     And "{tenant}" registers as an issuer
-    And we sadly wait for {5} seconds because we have not figured out how to listen for events
-    And "{tenant}" will have a public did   
+    And we sadly wait for {30} seconds because we have not figured out how to listen for events
+    And "{tenant}" will have a public did 
+    And "{tenant}" has issuer status "Active"
     """
     )

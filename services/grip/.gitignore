@@ -13,3 +13,6 @@
 # Temporary Code
 node_modules
 dist
+
+# Test data
+frontend/public/test_schemas.json
