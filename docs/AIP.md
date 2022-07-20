@@ -86,8 +86,8 @@ Feature | [0317-please-ack](https://github.com/hyperledger/aries-rfcs/tree/9ff2c
 
  RFC Type | RFC/Link to RFC Version | Traction Support | Details
 --- | --- | --- | ---
-Feature | [0211-route-coordination](https://github.com/hyperledger/aries-rfcs/tree/55e1e1c6e339ef0843268b4f3349b95cb7bd49a5/features/0211-route-coordination) | :question: | -
-Feature | [0092-transport-return-route](https://github.com/hyperledger/aries-rfcs/tree/b3a3942ef052039e73cd23d847f42947f8287da2/features/0092-transport-return-route) | :question: | -
+Feature | [0211-route-coordination](https://github.com/hyperledger/aries-rfcs/tree/55e1e1c6e339ef0843268b4f3349b95cb7bd49a5/features/0211-route-coordination) | :no_entry_sign: | -
+Feature | [0092-transport-return-route](https://github.com/hyperledger/aries-rfcs/tree/b3a3942ef052039e73cd23d847f42947f8287da2/features/0092-transport-return-route) | :no_entry_sign: | -
 
 #### INDYCRED: Indy Based Credentials
 
@@ -100,8 +100,8 @@ Concept | [0441-present-proof-best-practices](https://github.com/hyperledger/ari
 
  RFC Type | RFC/Link to RFC Version | Traction Support | Details
 --- | --- | --- | ---
-Feature | [0593-json-ld-cred-attach](https://github.com/hyperledger/aries-rfcs/tree/b3a3942ef052039e73cd23d847f42947f8287da2/features/0593-json-ld-cred-attach) | :question: | -
-Feature | [0510-dif-pres-exch-attach](https://github.com/hyperledger/aries-rfcs/tree/7a44f650d3cebf5b3047c1680618978393a497d5/features/0510-dif-pres-exch-attach) | :question: | -
+Feature | [0593-json-ld-cred-attach](https://github.com/hyperledger/aries-rfcs/tree/b3a3942ef052039e73cd23d847f42947f8287da2/features/0593-json-ld-cred-attach) | :hourglass_flowing_sand: | -
+Feature | [0510-dif-pres-exch-attach](https://github.com/hyperledger/aries-rfcs/tree/7a44f650d3cebf5b3047c1680618978393a497d5/features/0510-dif-pres-exch-attach) | :hourglass_flowing_sand: | -
 
 #### BBSCRED: BBS+ Based Credentials
 
