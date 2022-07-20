@@ -3,14 +3,16 @@
 Models of the Traction tables for Contacts and related data.
 
 """
+from pprint import pp, pprint
 import uuid
 from datetime import datetime
 from typing import List
 
 from sqlmodel import Field, Relationship
-from sqlalchemy import Column, text
+from sqlalchemy import Column, text, select
 from sqlalchemy.dialects.postgresql import UUID
 from sqlmodel.ext.asyncio.session import AsyncSession
+from api.db.session import TenantAsyncSession
 
 from api.db.models.base import (
     StatefulModel,
@@ -86,7 +88,7 @@ class Contact(
     @classmethod
     async def get_by_id(
         cls: "Contact",
-        db: AsyncSession,
+        db: TenantAsyncSession,
         contact_id: UUID,
         deleted: bool | None = False,
     ) -> "Contact":
@@ -103,9 +105,13 @@ class Contact(
         Raises:
           NotFoundError: if the contact cannot be found by ID and deleted flag
         """
+        pp("helpme")
+        # pp(db.sync_session._query_cls.__dict__)
+        # db.sync_session._query_cls = TenantQuery
+        pp(db.sync_session.__dict__)
 
         q = (
-            cls.tenant_select()
+            db.query(classz=Contact)
             .where(cls.contact_id == contact_id)
             .where(cls.deleted == deleted)
         )

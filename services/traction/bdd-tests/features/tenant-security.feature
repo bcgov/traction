@@ -27,4 +27,4 @@ Feature: tenants can only access their data
         And "faber" creates invitation(s)
         | alias  | invitation_type    |
         | david | connections/1.0 |
-        Then "alice" cannot NOT get "faber"s contact to "david" by id
+        Then "alice" can NOT get "faber"s contact to "david" by id

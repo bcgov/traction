@@ -6,7 +6,7 @@ from starlette import status
 
 
 @then(
-    '"{tenant_1}" cannot NOT get "{tenant_2}"s contact to "{tenant_2_contact_alias}" by id'
+    '"{tenant_1}" can NOT get "{tenant_2}"s contact to "{tenant_2_contact_alias}" by id'
 )
 def step_impl(context, tenant_1: str, tenant_2: str, tenant_2_contact_alias: str):
 

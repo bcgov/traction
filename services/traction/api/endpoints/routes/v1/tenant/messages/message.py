@@ -30,8 +30,10 @@ async def get_message(
     deleted: bool | None = False,
 ) -> MessageGetResponse:
     wallet_id = get_from_context("TENANT_WALLET_ID")
+    tenant_id = get_from_context("TENANT_ID")
 
     item = await messages_service.get_message(
+        tenant_id,
         wallet_id,
         message_id=message_id,
         acapy=acapy,
