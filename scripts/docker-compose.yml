@@ -141,7 +141,7 @@ services:
       - ../services/endorser:/app:rw
 
   endorser-agent:
-    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.4-rc0
+    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.4
     depends_on:
       endorser-db:
         condition: service_healthy
