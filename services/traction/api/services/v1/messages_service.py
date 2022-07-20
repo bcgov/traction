@@ -17,7 +17,6 @@ from api.db.models.v1.contact import Contact
 from api.db.models.v1.message import Message
 from api.db.session import async_session
 
-# from api.db.models.base import tenant_async_session
 from api.endpoints.models.v1.contacts import ContactStatusType
 from api.endpoints.models.v1.errors import IdNotMatchError
 from api.endpoints.models.v1.messages import (
@@ -76,7 +75,7 @@ async def send_message(
     wallet_id: UUID,
     payload: SendMessagePayload,
 ) -> MessageItem:
-    async with async_session(tenant_id) as db:
+    async with async_session() as db:
         db_contact = await Contact.get_by_id(db, payload.contact_id)
 
     if db_contact.status is not ContactStatusType.active:
@@ -203,7 +202,7 @@ async def get_message(
     Raises:
       NotFoundError: if the item cannot be found by ID and deleted flag
     """
-    async with tenant_async_session(tenant_id) as db:
+    async with async_session() as db:
         db_item = await Message.get_by_id(db, message_id, deleted)
 
     item = message_to_item(db_item, acapy)

@@ -3,13 +3,12 @@
 Models of the Traction tables for Contacts and related data.
 
 """
-from pprint import pp, pprint
 import uuid
 from datetime import datetime
 from typing import List
 
 from sqlmodel import Field, Relationship
-from sqlalchemy import Column, text, select
+from sqlalchemy import Column, text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlmodel.ext.asyncio.session import AsyncSession
 
