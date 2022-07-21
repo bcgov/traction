@@ -2,7 +2,7 @@ from api.protocols.v1.connection.connection_notifier import (
     ConnectionNotifier,
 )
 from api.protocols.v1.connection.contact_status_updater import ContactStatusUpdater
-from api.protocols.v1.connection.multiuse_invitation_processor import (
+from api.protocols.v1.connection.multi_use_invitation_processor import (
     MultiUseInvitationProcessor,
 )
 

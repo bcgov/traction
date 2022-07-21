@@ -31,7 +31,7 @@ from api.endpoints.models.v1.invitations import (
 logger = logging.getLogger(__name__)
 
 
-async def create_multiuse_invitation(
+async def create_multi_use_invitation(
     db: AsyncSession,
     tenant_id: UUID,
     wallet_id: UUID,
@@ -39,7 +39,7 @@ async def create_multiuse_invitation(
 ) -> [InvitationItem, str]:
     """Create MultiUseInvitation.
 
-    Create a multiuse Invitation, this can be called by many different agents each use
+    Create a multi_use Invitation, this can be called by many different agents each use
     of this invitation will result in a new Contact
 
     Args:
@@ -59,7 +59,7 @@ async def create_multiuse_invitation(
     existing_connection = connections.get_connection_with_alias(payload.name)
     if existing_connection is not None:
         raise AlreadyExistsError(
-            code="invitation.create.multiuse.invitation.existing.alias",
+            code="invitation.create.multi_use.invitation.existing.alias",
             title="Create MultiUse Invitation alias in use",
             detail=f"Error alias {payload.name} already in use.",
         )
@@ -78,7 +78,7 @@ async def create_multiuse_invitation(
         tags=payload.tags,
         tenant_id=tenant_id,
         public=False,
-        multiuse=True,
+        multi_use=True,
         status=InvitationStatusType.active,
         state=connection.state,
         connection=connection,

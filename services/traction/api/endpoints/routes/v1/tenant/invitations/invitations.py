@@ -55,17 +55,17 @@ async def list_invitations(
 
 
 @router.post(
-    "/create-multiuse-invitation",
+    "/create-multi-use-invitation",
     status_code=status.HTTP_200_OK,
     response_model=CreateMultiUseInvitationResponse,
 )
-async def create_multiuse_invitation(
+async def create_multi_use_invitation(
     payload: CreateMultiUseInvitationPayload,
     db: AsyncSession = Depends(get_db),
 ) -> CreateMultiUseInvitationResponse:
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
-    (item, invitation_url,) = await invitations_service.create_multiuse_invitation(
+    (item, invitation_url,) = await invitations_service.create_multi_use_invitation(
         db, tenant_id, wallet_id, payload=payload
     )
     links = []  # TODO
