@@ -52,13 +52,13 @@ class InvitationItem(
 
     Attributes:
       name: Name for the Invitation, used to find and add context to its purpose
-      reusable: when True, this is a reusable invitation
+      multi_use: when True, this is a multi_use invitation
       public: when True, this is a public invitation
       invitation_url: URL for consumers to "receive"
     """
 
     name: str
-    reusable: bool | None = False
+    multi_use: bool | None = False
     public: bool | None = False
     invitation_url: str
 
@@ -73,7 +73,7 @@ class InvitationListParameters(
 
     Attributes:
       name: return InvitationItems like name
-      reusable: when True, return InvitationItems marked reusable
+      multi_use: when True, return InvitationItems marked multi_use
       public: when True, return InvitationItems marked public
       deleted: when True, return InvitationItems that are deleted
 
@@ -91,10 +91,10 @@ class InvitationGetResponse(GetResponse[InvitationItem]):
     pass
 
 
-class CreateReusableInvitationPayload(BaseModel):
-    """CreateReusableInvitationPayload.
+class CreateMultiUseInvitationPayload(BaseModel):
+    """CreateMultiUseInvitationPayload.
 
-    Payload for Create Reusable Invitation API.
+    Payload for Create MultiUse Invitation API.
 
     Attributes:
       name: required, must be unique. A name/label for the Invitation
@@ -108,13 +108,13 @@ class CreateReusableInvitationPayload(BaseModel):
     tags: Optional[List[str]] | None = None
 
 
-class CreateReusableInvitationResponse(GetResponse[InvitationItem]):
-    """CreateReusableInvitationResponse.
+class CreateMultiUseInvitationResponse(GetResponse[InvitationItem]):
+    """CreateMultiUseInvitationResponse.
 
-    Response to Create Reusable Invitation API.
+    Response to Create MultiUse Invitation API.
 
     Attributes:
-      invitation_url: url to the reusable invitation.
+      invitation_url: url to the MultiUse invitation.
 
     """
 

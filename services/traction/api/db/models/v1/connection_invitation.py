@@ -31,7 +31,7 @@ class ConnectionInvitation(TenantScopedModel, table=True):
       name: Label or Name for the Invitation
       status: Business and Tenant indicator for Invitation status
       tags: Set by tenant for adding to resulting Contacts that used this invitation
-      reusable: When true, this invitation is reusable
+      multi_use: When true, this invitation is multi_use
       public: When true, this invitation is public
       deleted: Invitations "soft" delete indicator.
       connection_id: Underlying AcaPy connection id
@@ -57,7 +57,7 @@ class ConnectionInvitation(TenantScopedModel, table=True):
     name: str = Field(nullable=False, index=True)
     status: str = Field(nullable=False)
     state: str = Field(nullable=False)
-    reusable: bool = Field(nullable=False, default=False)
+    multi_use: bool = Field(nullable=False, default=False)
     public: bool = Field(nullable=False, default=False)
 
     tags: List[str] = Field(sa_column=Column(ARRAY(String)))

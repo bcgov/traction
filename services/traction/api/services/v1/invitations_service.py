@@ -20,8 +20,8 @@ from api.endpoints.models.v1.errors import (
 from api.services import connections
 from api.db.models.v1.connection_invitation import ConnectionInvitation
 from api.endpoints.models.v1.invitations import (
-    CreateReusableInvitationPayload,
-    CreateReusableInvitationResponse,
+    CreateMultiUseInvitationPayload,
+    CreateMultiUseInvitationResponse,
     InvitationListParameters,
     InvitationItem,
     InvitationAcapy,
@@ -31,22 +31,22 @@ from api.endpoints.models.v1.invitations import (
 logger = logging.getLogger(__name__)
 
 
-async def create_reusable_invitation(
+async def create_multi_use_invitation(
     db: AsyncSession,
     tenant_id: UUID,
     wallet_id: UUID,
-    payload: CreateReusableInvitationPayload,
+    payload: CreateMultiUseInvitationPayload,
 ) -> [InvitationItem, str]:
-    """Create ReusableInvitation.
+    """Create MultiUseInvitation.
 
-    Create a reusable Invitation, this can be called by many different agents each use
+    Create a multi_use Invitation, this can be called by many different agents each use
     of this invitation will result in a new Contact
 
     Args:
       db: database session
       tenant_id: Traction ID of tenant making the call
       wallet_id: AcaPy Wallet ID for tenant
-      payload: Reusable Invitation data
+      payload: MultiUse Invitation data
 
     Returns:
       item: The Traction Invitation
@@ -59,8 +59,8 @@ async def create_reusable_invitation(
     existing_connection = connections.get_connection_with_alias(payload.name)
     if existing_connection is not None:
         raise AlreadyExistsError(
-            code="invitation.create.reusable.invitation.existing.alias",
-            title="Create Reusable Invitation alias in use",
+            code="invitation.create.multi_use.invitation.existing.alias",
+            title="Create MultiUse Invitation alias in use",
             detail=f"Error alias {payload.name} already in use.",
         )
 
@@ -78,7 +78,7 @@ async def create_reusable_invitation(
         tags=payload.tags,
         tenant_id=tenant_id,
         public=False,
-        reusable=True,
+        multi_use=True,
         status=InvitationStatusType.active,
         state=connection.state,
         connection=connection,
@@ -101,7 +101,7 @@ async def list_invitations(
     tenant_id: UUID,
     wallet_id: UUID,
     parameters: InvitationListParameters,
-) -> [List[CreateReusableInvitationResponse], int]:
+) -> [List[CreateMultiUseInvitationResponse], int]:
     """List Invitations.
 
     Return a page of invitations filtered by given parameters.

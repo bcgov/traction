@@ -12,8 +12,8 @@ from api.endpoints.routes.v1.link_utils import build_list_links
 from api.endpoints.models.v1.invitations import (
     InvitationListResponse,
     InvitationListParameters,
-    CreateReusableInvitationResponse,
-    CreateReusableInvitationPayload,
+    CreateMultiUseInvitationResponse,
+    CreateMultiUseInvitationPayload,
 )
 from api.services.v1 import invitations_service
 
@@ -55,20 +55,20 @@ async def list_invitations(
 
 
 @router.post(
-    "/create-reusable-invitation",
+    "/create-multi-use-invitation",
     status_code=status.HTTP_200_OK,
-    response_model=CreateReusableInvitationResponse,
+    response_model=CreateMultiUseInvitationResponse,
 )
-async def create_reusable_invitation(
-    payload: CreateReusableInvitationPayload,
+async def create_multi_use_invitation(
+    payload: CreateMultiUseInvitationPayload,
     db: AsyncSession = Depends(get_db),
-) -> CreateReusableInvitationResponse:
+) -> CreateMultiUseInvitationResponse:
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
-    (item, invitation_url,) = await invitations_service.create_reusable_invitation(
+    (item, invitation_url,) = await invitations_service.create_multi_use_invitation(
         db, tenant_id, wallet_id, payload=payload
     )
     links = []  # TODO
-    return CreateReusableInvitationResponse(
+    return CreateMultiUseInvitationResponse(
         item=item, invitation_url=invitation_url, links=links
     )
