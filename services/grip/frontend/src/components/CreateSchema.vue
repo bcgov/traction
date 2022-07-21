@@ -3,9 +3,8 @@ import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import Dropdown from "primevue/dropdown";
 import { ref } from "vue";
-const alias = ref("");
-const alias1 = ref("");
-const alias2 = ref("");
+const schemaName = ref("");
+const schemaVersion = ref("");
 
 // Schema types
 const options = [
@@ -14,38 +13,52 @@ const options = [
   { name: "Boolean", code: "Boolean" },
 ];
 
+/**
+ * ## addAttribute
+ * Add an attribute to the schema.
+ */
 const addAttribute = () => {
-  console.log(alias.value);
-  console.log(alias1.value);
-  console.log(alias2.value);
-  console.log(selectedOption.value);
+  attributes.value.push({ name: "", type: "" });
 };
 
-const selectedOption = ref(null);
+/**
+ * ## save
+ * Save the new schema.
+ */
+const save = () => {
+  console.log(`Name: ${schemaName.value}`);
+  console.log(`Version: ${schemaVersion.value}`);
+  attributes.value.forEach((attribute) => {
+    console.log(`${attribute.name} ${(attribute.type as any).code}`);
+  });
+};
 
-// Store the selected option
-// TODO: This needs to be turned into an array that
-//   grows and shrinks with the number of attributes.
+// Store an array of attributes. Start with an empty attribute
+const attributes = ref([{ name: "", type: "" }]);
 </script>
 <template>
   <div class="row">
     <span class="p-float-label">
-      <InputText type="text" v-model="alias" name="create_schema_name" />
+      <InputText type="text" v-model="schemaName" name="create_schema_name" />
       <label for="create_schema_name">Name</label>
     </span>
     <span class="p-float-label">
-      <InputText type="text" v-model="alias1" name="create_schema_version" />
+      <InputText
+        type="text"
+        v-model="schemaVersion"
+        name="create_schema_version"
+      />
       <label for="create_schema_version">Version Number</label>
     </span>
   </div>
   <hr />
-  <div class="row">
+  <div class="row" v-for="item in attributes">
     <span class="p-float-label">
-      <InputText type="text" v-model="alias2" name="create_schema_name" />
+      <InputText type="text" v-model="item.name" name="create_schema_name" />
       <label for="create_schema_name">Attribute</label>
     </span>
     <Dropdown
-      v-model="selectedOption"
+      v-model="item.type"
       :options="options"
       optionLabel="name"
       placeholder="Type"
@@ -63,7 +76,7 @@ const selectedOption = ref(null);
   <br />
   <br />
   <hr />
-  <Button label="Save"></Button>
+  <Button label="Save" @click="save"></Button>
 </template>
 <style scoped>
 .row {
