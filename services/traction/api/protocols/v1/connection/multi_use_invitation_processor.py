@@ -9,7 +9,7 @@ from api.endpoints.models.v1.contacts import ContactStatusType
 from api.protocols.v1.connection.connection_protocol import DefaultConnectionProtocol
 
 
-async def is_reusable_invitation(
+async def is_multiuse_invitation(
     profile: Profile, payload: dict
 ) -> ConnectionInvitation:
     result = None
@@ -18,22 +18,22 @@ async def is_reusable_invitation(
             invitation = await ConnectionInvitation.get_by_invitation_key(
                 db, profile.tenant_id, payload["invitation_key"]
             )
-            if invitation and invitation.reusable:
+            if invitation and invitation.multiuse:
                 result = invitation
 
     return result
 
 
-class ReusableInvitationProcessor(DefaultConnectionProtocol):
+class MultiUseInvitationProcessor(DefaultConnectionProtocol):
     def __init__(self):
         super().__init__(role=ConnectionRoleType.inviter)
 
     async def on_request(self, profile: Profile, payload: dict):
         self.logger.info("> on_request()")
-        invitation = await is_reusable_invitation(profile, payload)
+        invitation = await is_multiuse_invitation(profile, payload)
         if invitation:
             self.logger.debug(
-                f"on_request >> reusable invitation ({invitation.invitation_key})"
+                f"on_request >> multiuse invitation ({invitation.invitation_key})"
             )
             # create a contact, we will update the alias when we reach active
             label = payload["invitation_key"]
@@ -52,15 +52,15 @@ class ReusableInvitationProcessor(DefaultConnectionProtocol):
                 db.add(db_contact)
                 await db.commit()
         else:
-            self.logger.debug("on_request >> not a reusable invitation")
+            self.logger.debug("on_request >> not a multiuse invitation")
         self.logger.info("< on_request()")
 
     async def on_response(self, profile: Profile, payload: dict):
         self.logger.info("> on_response()")
-        invitation = await is_reusable_invitation(profile, payload)
+        invitation = await is_multiuse_invitation(profile, payload)
         if invitation:
             self.logger.debug(
-                f"on_response >> reusable invitation ({invitation.invitation_key})"
+                f"on_response >> multiuse invitation ({invitation.invitation_key})"
             )
             # ok, this is one of our invitations...
 
@@ -78,5 +78,5 @@ class ReusableInvitationProcessor(DefaultConnectionProtocol):
                 await db.execute(stmt)
                 await db.commit()
         else:
-            self.logger.debug("on_response >> not a reusable invitation")
+            self.logger.debug("on_response >> not a multiuse invitation")
         self.logger.info("< on_response()")
