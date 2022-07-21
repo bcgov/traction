@@ -1,9 +1,24 @@
 Feature: contacts crud functionality
     Background: single authorized tenant to manage their contacts
         Given we have authenticated at the innkeeper
-        And we have "1" traction tenants
+        And we have "2" traction tenants
         | name  | role    |
         | alice | holder |
+        | faber | issuer |
+
+    Scenario: tenant cannot find other tenant contacts
+        When "alice" creates invitation(s)
+        | alias  | invitation_type    |
+        | frank | connections/1.0 |
+        Then "alice" will have 1 contact(s)
+        When "faber" creates invitation(s)
+        | alias  | invitation_type    |
+        | sylvester | connections/1.0 |
+        Then "faber" will have 1 contact(s)
+        And "alice" and "faber" cannot read each others contacts
+        | tenant  | alias |
+        | alice | frank |
+        | faber | sylvester |
 
     Scenario: tenant can create an invitation
         When "alice" creates invitation(s)

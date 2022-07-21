@@ -1,4 +1,5 @@
 import json
+import pprint
 from pprint import pp
 
 from behave import *
@@ -182,3 +183,47 @@ def step_impl(context, tenant: str, contact_alias: str):
     assert item["contact_id"] == contact["contact_id"]
     assert item["deleted"]
     assert item["status"] == "Deleted"
+
+
+@step('"{tenant_1}" and "{tenant_2}" cannot read each others contacts')
+def step_impl(context, tenant_1: str, tenant_2: str):
+    for row in context.table:
+        if row["tenant"] == tenant_1:
+            contact_1_alias = row["alias"]
+        elif row["tenant"] == tenant_2:
+            contact_2_alias = row["alias"]
+
+    params = {}
+
+    # can list their own
+    response = list_contacts(context, tenant_1, params)
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    assert resp_json["total"] == 1, resp_json
+    contact_1 = resp_json["items"][0]
+    # expected alias
+    assert contact_1["alias"] == contact_1_alias, resp_json
+
+    response = list_contacts(context, tenant_2, params)
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    contact_2 = resp_json["items"][0]
+    # expected alias
+    assert contact_2["alias"] == contact_2_alias, resp_json
+
+    # contacts are different
+    assert contact_1["contact_id"] != contact_2["contact_id"]
+
+    # can get their own
+    response = get_contact(context, tenant_1, contact_1["contact_id"])
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+
+    response = get_contact(context, tenant_2, contact_2["contact_id"])
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+
+    # cannot get the others
+    response = get_contact(context, tenant_1, contact_2["contact_id"])
+    assert response.status_code == status.HTTP_404_NOT_FOUND, response.__dict__
+
+    response = get_contact(context, tenant_2, contact_1["contact_id"])
+    assert response.status_code == status.HTTP_404_NOT_FOUND, response.__dict__

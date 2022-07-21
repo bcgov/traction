@@ -18,7 +18,12 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import UUID
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.models.base import StatefulModel, TimestampModel, TrackingModel
+from api.db.models.base import (
+    StatefulModel,
+    TimestampModel,
+    TrackingModel,
+    TenantScopedModel,
+)
 from api.db.models.v1.contact import Contact
 
 from api.endpoints.models.v1.errors import (
@@ -26,7 +31,9 @@ from api.endpoints.models.v1.errors import (
 )
 
 
-class HolderCredential(StatefulModel, TrackingModel, TimestampModel, table=True):
+class HolderCredential(
+    TenantScopedModel, StatefulModel, TrackingModel, TimestampModel, table=True
+):
     """Holder Credential.
 
     Model for the Holder Credential table (postgresql specific dialects in use).
@@ -34,7 +41,6 @@ class HolderCredential(StatefulModel, TrackingModel, TimestampModel, table=True)
 
     Attributes:
       holder_credential_id: Traction ID for holder credential
-      tenant_id: Traction Tenant ID
       contact_id: Traction Contact ID (issuer)
       alias: tenant provided name/alias to identify the credential
       rejection_comment: tenant provided comment when rejecting offer (sent to issuer)
@@ -62,7 +68,6 @@ class HolderCredential(StatefulModel, TrackingModel, TimestampModel, table=True)
             server_default=text("gen_random_uuid()"),
         )
     )
-    tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True)
     contact_id: uuid.UUID = Field(foreign_key="contact.contact_id", index=True)
     deleted: bool = Field(nullable=False, default=False)
 
@@ -289,7 +294,9 @@ class HolderCredential(StatefulModel, TrackingModel, TimestampModel, table=True)
         return db_rec
 
 
-class HolderPresentation(StatefulModel, TrackingModel, TimestampModel, table=True):
+class HolderPresentation(
+    TenantScopedModel, StatefulModel, TrackingModel, TimestampModel, table=True
+):
     """Holder Presentation.
 
     Model for the Holder Presentation table (postgresql specific dialects in use).
@@ -297,7 +304,6 @@ class HolderPresentation(StatefulModel, TrackingModel, TimestampModel, table=Tru
 
     Attributes:
       holder_presentation_id: Traction ID for holder presentation
-      tenant_id: Traction Tenant ID
       contact_id: Traction Contact ID (issuer)
       alias: tenant provided name/alias to identify the presentation
       rejection_comment: tenant provided comment when rejecting offer (sent to issuer)
@@ -325,7 +331,6 @@ class HolderPresentation(StatefulModel, TrackingModel, TimestampModel, table=Tru
             server_default=text("gen_random_uuid()"),
         )
     )
-    tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True)
     contact_id: uuid.UUID = Field(foreign_key="contact.contact_id", index=True)
     deleted: bool = Field(nullable=False, default=False)
 

@@ -12,14 +12,14 @@ from sqlalchemy import Column, func, text, String, select
 from sqlalchemy.dialects.postgresql import UUID, TIMESTAMP, JSON, ARRAY
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.models.base import BaseModel
+from api.db.models.base import TenantScopedModel
 
 from api.endpoints.models.v1.errors import (
     NotFoundError,
 )
 
 
-class ConnectionInvitation(BaseModel, table=True):
+class ConnectionInvitation(TenantScopedModel, table=True):
     """ConnectionInvitation.
 
     This is the model for the ConnectionInvitation table (postgresql specific dialects
@@ -28,7 +28,6 @@ class ConnectionInvitation(BaseModel, table=True):
 
     Attributes:
       connection_invitation_id: Traction Contact ID
-      tenant_id: Traction Tenant ID, owner of this Contact
       name: Label or Name for the Invitation
       status: Business and Tenant indicator for Invitation status
       tags: Set by tenant for adding to resulting Contacts that used this invitation
@@ -54,7 +53,6 @@ class ConnectionInvitation(BaseModel, table=True):
             server_default=text("gen_random_uuid()"),
         )
     )
-    tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True)
 
     name: str = Field(nullable=False, index=True)
     status: str = Field(nullable=False)
