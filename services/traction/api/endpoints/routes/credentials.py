@@ -38,9 +38,9 @@ from api.endpoints.models.tenant_workflow import (
 from api.services.tenant_workflows import create_workflow
 from api.services.base import BaseWorkflow
 
-from acapy_client.api.credentials_api import CredentialsApi
-from acapy_client.api.present_proof_v1_0_api import PresentProofV10Api
-from acapy_client.api.revocation_api import RevocationApi
+from acapy_client_074.api.credentials_api import CredentialsApi
+from acapy_client_074.api.present_proof_v10_api import PresentProofV10Api
+from acapy_client_074.api.revocation_api import RevocationApi
 from api.services.v0.issuer_service import IssueCredentialData
 
 

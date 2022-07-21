@@ -5,17 +5,17 @@ from uuid import UUID
 from sqlalchemy import select, func, desc, update
 from sqlalchemy.orm import selectinload
 
-from acapy_client.model.indy_pres_spec import IndyPresSpec
-from acapy_client.model.indy_requested_creds_requested_attr import (
+from acapy_client_074.model.indy_pres_spec import IndyPresSpec
+from acapy_client_074.model.indy_requested_creds_requested_attr import (
     IndyRequestedCredsRequestedAttr,
 )
-from acapy_client.model.indy_requested_creds_requested_pred import (
+from acapy_client_074.model.indy_requested_creds_requested_pred import (
     IndyRequestedCredsRequestedPred,
 )
-from acapy_client.model.v10_credential_problem_report_request import (
+from acapy_client_074.model.v10_credential_problem_report_request import (
     V10CredentialProblemReportRequest,
 )
-from acapy_client.model.v10_presentation_problem_report_request import (
+from acapy_client_074.model.v10_presentation_problem_report_request import (
     V10PresentationProblemReportRequest,
 )
 

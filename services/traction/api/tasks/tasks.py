@@ -9,13 +9,13 @@ from sqlalchemy import select
 from sqlalchemy.exc import DBAPIError
 from starlette_context import context
 
-from acapy_client.api.issue_credential_v1_0_api import IssueCredentialV10Api
-from acapy_client.model.cred_attr_spec import CredAttrSpec
-from acapy_client.model.credential_definition_send_request import (
+from acapy_client_074.api.issue_credential_v10_api import IssueCredentialV10Api
+from acapy_client_074.model.cred_attr_spec import CredAttrSpec
+from acapy_client_074.model.credential_definition_send_request import (
     CredentialDefinitionSendRequest,
 )
-from acapy_client.model.credential_preview import CredentialPreview
-from acapy_client.model.v10_credential_free_offer_request import (
+from acapy_client_074.model.credential_preview import CredentialPreview
+from acapy_client_074.model.v10_credential_free_offer_request import (
     V10CredentialFreeOfferRequest,
 )
 from api.core.config import settings
@@ -27,10 +27,10 @@ from api.db.models.v1.issuer import IssuerCredential
 from api.db.session import async_session
 from api.endpoints.models.v1.errors import NotFoundError
 from api.endpoints.models.v1.governance import SchemaDefinitionPayload
-from acapy_client.api.endorse_transaction_api import EndorseTransactionApi
-from acapy_client.api.schema_api import SchemaApi
-from acapy_client.api.credential_definition_api import CredentialDefinitionApi
-from acapy_client.model.schema_send_request import SchemaSendRequest
+from acapy_client_074.api.endorse_transaction_api import EndorseTransactionApi
+from acapy_client_074.api.schema_api import SchemaApi
+from acapy_client_074.api.credential_definition_api import CredentialDefinitionApi
+from acapy_client_074.model.schema_send_request import SchemaSendRequest
 
 from api.api_client_utils import get_api_client
 

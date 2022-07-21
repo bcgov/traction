@@ -29,11 +29,11 @@ from api.services.connections import (
 from api.services.base import BaseWorkflow
 
 
-from acapy_client.api.connection_api import ConnectionApi
-from acapy_client.api.endorse_transaction_api import EndorseTransactionApi
-from acapy_client.api.ledger_api import LedgerApi
-from acapy_client.api.wallet_api import WalletApi
-from acapy_client.model.did_create import DIDCreate
+from acapy_client_074.api.connection_api import ConnectionApi
+from acapy_client_074.api.endorse_transaction_api import EndorseTransactionApi
+from acapy_client_074.api.ledger_api import LedgerApi
+from acapy_client_074.api.wallet_api import WalletApi
+from acapy_client_074.model.did_create import DIDCreate
 
 
 logger = logging.getLogger(__name__)

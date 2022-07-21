@@ -1,5 +1,5 @@
-from acapy_client.api_client import ApiClient
-from acapy_client.configuration import Configuration
+from acapy_client_074.api_client import ApiClient
+from acapy_client_074.configuration import Configuration
 
 from api.core.config import settings
 

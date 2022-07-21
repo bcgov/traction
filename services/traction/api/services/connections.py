@@ -9,19 +9,19 @@ from api.endpoints.models.connections import (
     Invitation,
 )
 
-from acapy_client.model_utils import model_to_dict
-from acapy_client.api.basicmessage_api import BasicmessageApi
-from acapy_client.api.connection_api import ConnectionApi
-from acapy_client.api.did_exchange_api import DidExchangeApi
-from acapy_client.api.out_of_band_api import OutOfBandApi
-from acapy_client.model.conn_record import ConnRecord
-from acapy_client.model.connection_list import ConnectionList
-from acapy_client.model.invitation_create_request import InvitationCreateRequest
-from acapy_client.model.invitation_message import InvitationMessage
-from acapy_client.model.invitation_record import InvitationRecord
-from acapy_client.model.invitation_result import InvitationResult
-from acapy_client.model.receive_invitation_request import ReceiveInvitationRequest
-from acapy_client.model.send_message import SendMessage
+from acapy_client_074.model_utils import model_to_dict
+from acapy_client_074.api.basicmessage_api import BasicmessageApi
+from acapy_client_074.api.connection_api import ConnectionApi
+from acapy_client_074.api.did_exchange_api import DidExchangeApi
+from acapy_client_074.api.out_of_band_api import OutOfBandApi
+from acapy_client_074.model.conn_record import ConnRecord
+from acapy_client_074.model.connection_list import ConnectionList
+from acapy_client_074.model.invitation_create_request import InvitationCreateRequest
+from acapy_client_074.model.invitation_message import InvitationMessage
+from acapy_client_074.model.invitation_record import InvitationRecord
+from acapy_client_074.model.invitation_result import InvitationResult
+from acapy_client_074.model.receive_invitation_request import ReceiveInvitationRequest
+from acapy_client_074.model.send_message import SendMessage
 
 
 logger = logging.getLogger(__name__)
@@ -61,7 +61,7 @@ def conn_record_to_connection(conn: ConnRecord) -> Connection:
 def inv_record_to_invitation(inv: InvitationRecord, connection_id: str) -> Invitation:
     return Invitation(
         connection_id=connection_id,
-        invitation=inv.invitation,
+        invitation=model_to_dict(inv.invitation),
         invitation_url=inv.invitation_url,
     )
 
@@ -123,10 +123,13 @@ def create_invitation(
             multi_use=multi_use_qs_val, body=InvitationCreateRequest(**data)
         )
         connection = get_connection_with_alias(alias)
+        logger.info(f"inv = {inv}")
+        logger.info(f"connection = {connection}")
         invitation = inv_record_to_invitation(inv, connection.connection_id)
     else:
         params = {"alias": alias, "multi_use": multi_use_qs_val}
         inv = connection_api.connections_create_invitation_post(**params)
+        logger.info(f"inv = {inv}")
         invitation = inv_result_to_invitation(inv)
     return invitation
 

@@ -22,7 +22,7 @@ from api.endpoints.models.v1.verifier import (
 
 from api.db.models.v1.verifier_presentation import VerifierPresentation
 from api.api_client_utils import get_api_client
-from acapy_client.api.present_proof_v1_0_api import PresentProofV10Api
+from acapy_client_074.api.present_proof_v10_api import PresentProofV10Api
 from api.services.v1 import acapy_service
 
 present_proof_api = PresentProofV10Api(api_client=get_api_client())

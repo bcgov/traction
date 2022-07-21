@@ -6,7 +6,7 @@ from uuid import UUID
 from sqlalchemy import select, update, desc, func
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from acapy_client import OpenApiException
+from acapy_client_074 import OpenApiException
 from api.db.models.base import Timeline
 from api.db.models.v1.governance import (
     SchemaTemplate,
@@ -31,9 +31,9 @@ from api.endpoints.models.v1.governance import (
     SchemaTemplateTimelineItem,
     CredentialTemplateTimelineItem,
 )
-from acapy_client.api.endorse_transaction_api import EndorseTransactionApi
-from acapy_client.api.schema_api import SchemaApi
-from acapy_client.api.credential_definition_api import CredentialDefinitionApi
+from acapy_client_074.api.endorse_transaction_api import EndorseTransactionApi
+from acapy_client_074.api.schema_api import SchemaApi
+from acapy_client_074.api.credential_definition_api import CredentialDefinitionApi
 
 from api.api_client_utils import get_api_client
 from api.protocols.v1.endorser.endorser_protocol import EndorserStateType

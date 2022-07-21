@@ -29,19 +29,19 @@ from api.endpoints.models.webhooks import (
 )
 from api.services.base import BaseWorkflow
 
-from acapy_client.api.present_proof_v1_0_api import PresentProofV10Api
-from acapy_client.model.v10_presentation_send_request_request import (
+from acapy_client_074.api.present_proof_v10_api import PresentProofV10Api
+from acapy_client_074.model.v10_presentation_send_request_request import (
     V10PresentationSendRequestRequest,
 )
-from acapy_client.model.indy_proof_request import IndyProofRequest
-from acapy_client.model.indy_pres_spec import IndyPresSpec
-from acapy_client.model.indy_requested_creds_requested_attr import (
+from acapy_client_074.model.indy_proof_request import IndyProofRequest
+from acapy_client_074.model.indy_pres_spec import IndyPresSpec
+from acapy_client_074.model.indy_requested_creds_requested_attr import (
     IndyRequestedCredsRequestedAttr,
 )
-from acapy_client.model.indy_requested_creds_requested_pred import (
+from acapy_client_074.model.indy_requested_creds_requested_pred import (
     IndyRequestedCredsRequestedPred,
 )
-from acapy_client.model.v10_presentation_problem_report_request import (
+from acapy_client_074.model.v10_presentation_problem_report_request import (
     V10PresentationProblemReportRequest,
 )
 

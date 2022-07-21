@@ -32,13 +32,13 @@ from api.endpoints.models.webhooks import (
 )
 from api.services.base import BaseWorkflow
 
-from acapy_client.api.issue_credential_v1_0_api import IssueCredentialV10Api
-from acapy_client.model.cred_attr_spec import CredAttrSpec
-from acapy_client.model.credential_preview import CredentialPreview
-from acapy_client.model.v10_credential_free_offer_request import (
+from acapy_client_074.api.issue_credential_v10_api import IssueCredentialV10Api
+from acapy_client_074.model.cred_attr_spec import CredAttrSpec
+from acapy_client_074.model.credential_preview import CredentialPreview
+from acapy_client_074.model.v10_credential_free_offer_request import (
     V10CredentialFreeOfferRequest,
 )
-from acapy_client.model.v10_credential_problem_report_request import (
+from acapy_client_074.model.v10_credential_problem_report_request import (
     V10CredentialProblemReportRequest,
 )
 from api.db.models.v1.contact import Contact

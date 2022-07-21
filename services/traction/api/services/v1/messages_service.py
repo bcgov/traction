@@ -10,8 +10,8 @@ import logging
 from typing import List
 from uuid import UUID
 
-from acapy_client.api.basicmessage_api import BasicmessageApi
-from acapy_client.model.send_message import SendMessage
+from acapy_client_074.api.basicmessage_api import BasicmessageApi
+from acapy_client_074.model.send_message import SendMessage
 from api.api_client_utils import get_api_client
 from api.db.models.v1.contact import Contact
 from api.db.models.v1.message import Message

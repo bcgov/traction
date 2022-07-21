@@ -6,9 +6,9 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from acapy_client.api.revocation_api import RevocationApi
+from acapy_client_074.api.revocation_api import RevocationApi
 from api.api_client_utils import get_api_client
-from acapy_client.model.revoke_request import RevokeRequest
+from acapy_client_074.model.revoke_request import RevokeRequest
 from api.db.errors import DoesNotExist
 from api.db.models.base import BaseModel
 from api.db.models.issue_credential import (

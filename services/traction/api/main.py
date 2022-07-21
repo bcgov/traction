@@ -16,7 +16,7 @@ from api.innkeeper_main import get_innkeeperapp
 from api.services.v1.tenant_webhook_service import subscribe_webhook_events
 from api.tasks import subscribe_task_listeners
 from api.tenant_main import get_tenantapp
-from acapy_wrapper.acapy_wrapper_main import get_acapy_wrapper_app
+from acapy_wrapper_074.acapy_wrapper_main import get_acapy_wrapper_app
 
 
 # setup loggers

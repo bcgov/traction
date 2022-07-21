@@ -6,13 +6,13 @@ from sqlalchemy import select, func, desc, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from acapy_client.api.revocation_api import RevocationApi
-from acapy_client.model.revoke_request import RevokeRequest
+from acapy_client_074.api.revocation_api import RevocationApi
+from acapy_client_074.model.revoke_request import RevokeRequest
 from api.db.models import Timeline
 from api.endpoints.models.v1.governance import TemplateStatusType
 from api.services.v1 import tenant_service, acapy_service
 
-from acapy_client.api.issue_credential_v1_0_api import IssueCredentialV10Api
+from acapy_client_074.api.issue_credential_v10_api import IssueCredentialV10Api
 from api.db.models.v1.contact import Contact
 from api.db.models.v1.governance import CredentialTemplate
 from api.db.models.v1.issuer import IssuerCredential

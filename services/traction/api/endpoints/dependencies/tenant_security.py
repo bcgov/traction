@@ -16,8 +16,8 @@ from starlette.requests import Request
 from starlette.responses import Response, JSONResponse
 from starlette_context.header_keys import HeaderKeys
 
-from acapy_client.api.multitenancy_api import MultitenancyApi
-from acapy_client.model.create_wallet_token_request import CreateWalletTokenRequest
+from acapy_client_074.api.multitenancy_api import MultitenancyApi
+from acapy_client_074.model.create_wallet_token_request import CreateWalletTokenRequest
 
 from api.api_client_utils import get_api_client
 

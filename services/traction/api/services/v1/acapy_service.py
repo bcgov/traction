@@ -12,19 +12,19 @@ from uuid import UUID
 
 from urllib3 import HTTPResponse
 
-from acapy_client import ApiException
-from acapy_client.api.basicmessage_api import BasicmessageApi
-from acapy_client.api.connection_api import ConnectionApi
-from acapy_client.api.credentials_api import CredentialsApi
-from acapy_client.api.did_exchange_api import DidExchangeApi
-from acapy_client.api.issue_credential_v1_0_api import IssueCredentialV10Api
-from acapy_client.api.out_of_band_api import OutOfBandApi
-from acapy_client.api.revocation_api import RevocationApi
+from acapy_client_074 import ApiException
+from acapy_client_074.api.basicmessage_api import BasicmessageApi
+from acapy_client_074.api.connection_api import ConnectionApi
+from acapy_client_074.api.credentials_api import CredentialsApi
+from acapy_client_074.api.did_exchange_api import DidExchangeApi
+from acapy_client_074.api.issue_credential_v10_api import IssueCredentialV10Api
+from acapy_client_074.api.out_of_band_api import OutOfBandApi
+from acapy_client_074.api.revocation_api import RevocationApi
 from api.api_client_utils import get_api_client
-from acapy_client.api.credential_definition_api import CredentialDefinitionApi
-from acapy_client.api.endorse_transaction_api import EndorseTransactionApi
-from acapy_client.api.schema_api import SchemaApi
-from acapy_client.api.present_proof_v1_0_api import PresentProofV10Api
+from acapy_client_074.api.credential_definition_api import CredentialDefinitionApi
+from acapy_client_074.api.endorse_transaction_api import EndorseTransactionApi
+from acapy_client_074.api.schema_api import SchemaApi
+from acapy_client_074.api.present_proof_v10_api import PresentProofV10Api
 
 endorse_api = EndorseTransactionApi(api_client=get_api_client())
 schema_api = SchemaApi(api_client=get_api_client())

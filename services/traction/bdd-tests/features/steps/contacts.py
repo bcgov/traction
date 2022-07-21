@@ -1,4 +1,5 @@
 import json
+import pprint
 from pprint import pp
 
 from behave import *
@@ -18,19 +19,19 @@ def step_impl(context, tenant: str):
         assert resp_json["item"]
         assert resp_json["invitation"]
         assert resp_json["invitation_url"]
-        response.status_code == status.HTTP_200_OK, resp_json
+        # pprint.pp(resp_json)
         context.config.userdata[tenant].setdefault("contacts", {})
         context.config.userdata[tenant]["contacts"].setdefault(alias, resp_json["item"])
 
 
 @then('"{tenant}" will have {count:d} contact(s)')
 def step_impl(context, tenant: str, count: int):
-    params = {}
+    params = {"acapy": True}
     response = list_contacts(context, tenant, params)
     assert response.status_code == status.HTTP_200_OK, response.__dict__
     resp_json = json.loads(response.content)
     assert resp_json["total"] == count, resp_json
-
+    # pprint.pp(resp_json["items"])
 
 @then('"{tenant}" can find contact "{contact}" by alias')
 def step_impl(context, tenant: str, contact: str):

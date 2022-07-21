@@ -3,8 +3,8 @@ import logging
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from acapy_client.api.multitenancy_api import MultitenancyApi
-from acapy_client.model.create_wallet_request import CreateWalletRequest
+from acapy_client_074.api.multitenancy_api import MultitenancyApi
+from acapy_client_074.model.create_wallet_request import CreateWalletRequest
 
 from api.api_client_utils import get_api_client
 

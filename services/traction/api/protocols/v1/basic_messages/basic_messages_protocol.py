@@ -19,8 +19,8 @@ from api.endpoints.models.v1.messages import MessageStatusType, MessageRole
 from api.endpoints.models.webhooks import WEBHOOK_BASICMESSAGES_LISTENER_PATTERN
 from sqlalchemy import select
 from starlette_context import context
-from acapy_client.api.basicmessage_api import BasicmessageApi
-from acapy_client.model.send_message import SendMessage
+from acapy_client_074.api.basicmessage_api import BasicmessageApi
+from acapy_client_074.model.send_message import SendMessage
 from api.api_client_utils import get_api_client
 from api.services.v1 import tenant_configuration_service as config_service
 

@@ -2,11 +2,11 @@ from typing import List
 import logging
 from re import Pattern
 from uuid import UUID
-from acapy_client.model.indy_proof_req_attr_spec import IndyProofReqAttrSpec
-from acapy_client.model.indy_proof_req_pred_spec import IndyProofReqPredSpec
-from acapy_client.model.indy_proof_request import IndyProofRequest
+from acapy_client_074.model.indy_proof_req_attr_spec import IndyProofReqAttrSpec
+from acapy_client_074.model.indy_proof_req_pred_spec import IndyProofReqPredSpec
+from acapy_client_074.model.indy_proof_request import IndyProofRequest
 
-from acapy_client.model.v10_presentation_send_request_request import (
+from acapy_client_074.model.v10_presentation_send_request_request import (
     V10PresentationSendRequestRequest,
 )
 
@@ -23,7 +23,7 @@ from api.endpoints.models.credentials import ProofReqAttr, ProofRequest
 from api.endpoints.models.v1.verifier import VerifierPresentationStatusType
 from api.db.session import async_session
 
-from acapy_client.api.present_proof_v1_0_api import PresentProofV10Api
+from acapy_client_074.api.present_proof_v10_api import PresentProofV10Api
 from api.api_client_utils import get_api_client
 
 from api.db.models.v1.verifier_presentation import VerifierPresentation

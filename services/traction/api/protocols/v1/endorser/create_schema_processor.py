@@ -13,7 +13,7 @@ from api.protocols.v1.endorser.endorser_protocol import (
     EndorserStateType,
 )
 from api.api_client_utils import get_api_client
-from acapy_client.api.credential_definition_api import CredentialDefinitionApi
+from acapy_client_074.api.credential_definition_api import CredentialDefinitionApi
 from api.tasks import SendCredDefRequestTask
 
 cred_def_api = CredentialDefinitionApi(api_client=get_api_client())

@@ -17,8 +17,8 @@ from api.endpoints.models.v1.innkeeper import (
     CheckInPayload,
 )
 
-from acapy_client.api.multitenancy_api import MultitenancyApi
-from acapy_client.model.create_wallet_request import CreateWalletRequest
+from acapy_client_074.api.multitenancy_api import MultitenancyApi
+from acapy_client_074.model.create_wallet_request import CreateWalletRequest
 
 from api.api_client_utils import get_api_client
 from api.endpoints.models.v1.tenant import TenantItem
