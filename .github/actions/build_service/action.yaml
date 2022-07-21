@@ -3,8 +3,8 @@ description: Build a Traction Service
 inputs:
   ref:
     description: 'The branch, tag or SHA to checkout'
-    required: true
-    default: 'develop'  
+    required: false
+    default: ''  
   context:
     required: true
     type: string
@@ -45,7 +45,7 @@ runs:
   steps:
     - uses: actions/checkout@v2   
       with:
-        ref: ${{ inputs.ref }}
+        ref: ${{ inputs.ref != '' && inputs.ref ||  GITHUB_REF }}${{ inputs.ref }}
 
     - name: Set up Python 3.10
       uses: actions/setup-python@v2
