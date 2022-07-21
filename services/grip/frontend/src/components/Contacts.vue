@@ -50,7 +50,7 @@ const createContact = () => {
     :collapsed="!store.state.contacts.open"
     @toggle="toggled"
   >
-    <template #legend>Contacts</template>
+    <template #legend>Contacts TEMP TEST CHANGE</template>
 
     <!--
       If there is no data, show a spinner.
