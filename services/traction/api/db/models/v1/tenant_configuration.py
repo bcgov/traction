@@ -19,10 +19,10 @@ from sqlalchemy import (
 
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.models.base import TimestampModel
+from api.db.models.base import TimestampModel, TenantScopedModel
 
 
-class TenantConfiguration(TimestampModel, table=True):
+class TenantConfiguration(TenantScopedModel, TimestampModel, table=True):
     """TenantConfiguration.
 
     This is the model for the Tenant Configuration table. This is configuration for how
@@ -52,6 +52,7 @@ class TenantConfiguration(TimestampModel, table=True):
 
     __tablename__ = "tenant_configuration"
 
+    # tenant_id is PK, so override the column definition from TenantScopedModel
     tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True, primary_key=True)
     webhook_url: str = Field(nullable=True, default=None)
     webhook_key: str = Field(nullable=True, default=None)
@@ -93,7 +94,7 @@ class TenantConfiguration(TimestampModel, table=True):
         return db_rec
 
 
-class TenantAutoResponseLog(TimestampModel, table=True):
+class TenantAutoResponseLog(TenantScopedModel, TimestampModel, table=True):
     """TenantAutoResponseLog.
 
     This is the model for the Tenant Auto-response table. We need to track which
@@ -111,6 +112,7 @@ class TenantAutoResponseLog(TimestampModel, table=True):
 
     __tablename__ = "tenant_auto_response_log"
 
+    # tenant_id is PK, so override the column definition from TenantScopedModel
     tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True, primary_key=True)
     contact_id: uuid.UUID = Field(foreign_key="contact.contact_id")
     message: str = Field(nullable=False)
@@ -145,7 +147,7 @@ class TenantAutoResponseLog(TimestampModel, table=True):
         return q_result.scalar_one_or_none()
 
 
-class TenantWebhookLog(TimestampModel, table=True):
+class TenantWebhookLog(TenantScopedModel, TimestampModel, table=True):
     """TenantWebhookLog.
 
     This is the model for the Tenant Webhook Log. This is where we can track what was
@@ -159,7 +161,6 @@ class TenantWebhookLog(TimestampModel, table=True):
 
     Attributes:
       tenant_webhook_log_id: Traction Primary Key for table
-      tenant_id: Traction Tenant ID
       topic: topic for this message
       payload: payload to be delivered
       webhook_url: a url that will receive webhook data pushed from Traction.
@@ -182,7 +183,6 @@ class TenantWebhookLog(TimestampModel, table=True):
         )
     )
 
-    tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True)
     topic: str = Field(nullable=False)
     payload: dict = Field(default={}, sa_column=Column(JSON))
     webhook_url: str = Field(nullable=False, default=None)

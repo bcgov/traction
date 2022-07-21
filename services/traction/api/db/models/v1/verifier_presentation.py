@@ -11,7 +11,12 @@ from sqlalchemy import Column, text, select
 from sqlalchemy.dialects.postgresql import UUID, JSON
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.models.base import StatefulModel, TimestampModel, TrackingModel
+from api.db.models.base import (
+    StatefulModel,
+    TimestampModel,
+    TrackingModel,
+    TenantScopedModel,
+)
 
 from api.db.models.v1.contact import Contact
 
@@ -20,7 +25,9 @@ from api.endpoints.models.v1.errors import (
 )
 
 
-class VerifierPresentation(StatefulModel, TrackingModel, TimestampModel, table=True):
+class VerifierPresentation(
+    TenantScopedModel, StatefulModel, TrackingModel, TimestampModel, table=True
+):
     """Verification Presentation
 
     Model for the Verification Presentation table (postgresql specific
@@ -39,7 +46,6 @@ class VerifierPresentation(StatefulModel, TrackingModel, TimestampModel, table=T
         )
     )
 
-    tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True)
     contact_id: uuid.UUID = Field(foreign_key="contact.contact_id", index=True)
     deleted: bool = Field(nullable=False, default=False)
     comment: str = Field(nullable=True)

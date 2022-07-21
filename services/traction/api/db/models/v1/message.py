@@ -20,7 +20,7 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import UUID, TIMESTAMP, ARRAY
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.models.base import BaseModel
+from api.db.models.base import TenantScopedModel
 from api.db.models.v1.contact import Contact
 
 from api.endpoints.models.v1.errors import (
@@ -28,7 +28,7 @@ from api.endpoints.models.v1.errors import (
 )
 
 
-class Message(BaseModel, table=True):
+class Message(TenantScopedModel, table=True):
     """Message.
 
     Model for the Message table (postgresql specific dialects in use).
@@ -36,7 +36,6 @@ class Message(BaseModel, table=True):
 
     Attributes:
       message_id: Traction ID for message OR when receiving, it is the AcaPy message_id
-      tenant_id: Traction Tenant ID
       contact_id: Traction Contact ID
       status: Business and Tenant indicator for Credential state; independent of AcaPy
         Basic Message Exchange state
@@ -57,7 +56,6 @@ class Message(BaseModel, table=True):
             server_default=text("gen_random_uuid()"),
         )
     )
-    tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True)
     contact_id: uuid.UUID = Field(foreign_key="contact.contact_id", index=True)
     status: str = Field(nullable=False)
     role: str = Field(nullable=False)

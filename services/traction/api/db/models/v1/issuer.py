@@ -18,7 +18,12 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import UUID
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.models.base import StatefulModel, TimestampModel, TrackingModel
+from api.db.models.base import (
+    StatefulModel,
+    TimestampModel,
+    TrackingModel,
+    TenantScopedModel,
+)
 from api.db.models.v1.contact import Contact
 from api.db.models.v1.governance import CredentialTemplate
 
@@ -27,7 +32,9 @@ from api.endpoints.models.v1.errors import (
 )
 
 
-class IssuerCredential(StatefulModel, TrackingModel, TimestampModel, table=True):
+class IssuerCredential(
+    TenantScopedModel, StatefulModel, TrackingModel, TimestampModel, table=True
+):
     """Issuer Credential.
 
     Model for the Issuer Credential table (postgresql specific dialects in use).
@@ -38,7 +45,6 @@ class IssuerCredential(StatefulModel, TrackingModel, TimestampModel, table=True)
       credential_template_id: Traction Credential Template ID
       contact_id: Traction Contact ID
       cred_def_id: Credential Definition ID (ledger)
-      tenant_id: Traction Tenant ID
       status: Business and Tenant indicator for Credential state; independent of AcaPy
         Credential Exchange state
       external_reference_id: Set by tenant to correlate this Credential with entity in
@@ -72,7 +78,6 @@ class IssuerCredential(StatefulModel, TrackingModel, TimestampModel, table=True)
     credential_template_id: uuid.UUID = Field(
         foreign_key="credential_template.credential_template_id", index=True
     )
-    tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True)
     contact_id: uuid.UUID = Field(foreign_key="contact.contact_id", index=True)
     revoked: bool = Field(nullable=False, default=False)
     deleted: bool = Field(nullable=False, default=False)
@@ -173,44 +178,6 @@ class IssuerCredential(StatefulModel, TrackingModel, TimestampModel, table=True)
                 code="issuer_credential.credential_exchange_id_not_found",
                 title="Issuer Credential does not exist",
                 detail=f"Issuer Credential does not exist for credential exchange id<{credential_exchange_id}>",  # noqa: E501
-            )
-        return db_rec
-
-    @classmethod
-    async def get_by_revocation_ids(
-        cls: "IssuerCredential",
-        db: AsyncSession,
-        revoc_reg_id: str,
-        revocation_id: str,
-    ) -> "IssuerCredential":
-        """Get IssuerCredential by Revocation IDs.
-
-        Find and return the database IssuerCredential record by the revocation ids.
-
-        Args:
-          db: database session
-          revoc_reg_id: acapy revocation message Revocation Registry ID
-          revocation_id: acapy revocation message Revocation ID
-
-        Returns: The Traction IssuerCredential (db) record
-
-        Raises:
-          NotFoundError: if the IssuerCredential cannot be found by IDs
-        """
-
-        q = (
-            select(cls)
-            .where(cls.revoc_reg_id == revoc_reg_id)
-            .where(cls.revocation_id == revocation_id)
-            .options(selectinload(cls.contact), selectinload(cls.credential_template))
-        )
-        q_result = await db.execute(q)
-        db_rec = q_result.scalar_one_or_none()
-        if not db_rec:
-            raise NotFoundError(
-                code="issuer_credential.revocation_ids_not_found",
-                title="Issuer Credential does not exist",
-                detail=f"Issuer Credential does not exist for revocation registration id<{revoc_reg_id}> / revocation id<{revocation_id}>",  # noqa: E501
             )
         return db_rec
 
