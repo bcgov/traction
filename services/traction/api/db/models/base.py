@@ -65,6 +65,10 @@ class BaseModel(SQLModel, BaseSchema):
                 raise e
 
 
+class TenantScopedModel(BaseModel):
+    tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True)
+
+
 class BaseTable(BaseModel):
     # the following are marked optional because they are generated on the server
     # these will be included in each class where we set table=true (our table classes)
@@ -148,7 +152,7 @@ class Timeline(StatefulModel, table=True):
 
         q = select(cls).where(cls.item_id == item_id).order_by(desc(cls.created_at))
         q_result = await db.execute(q)
-        db_items = q_result.scalars()
+        db_items = q_result.scalars().all()
         return db_items
 
 

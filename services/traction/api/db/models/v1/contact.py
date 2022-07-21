@@ -12,13 +12,20 @@ from sqlalchemy import Column, text, select
 from sqlalchemy.dialects.postgresql import UUID
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.models.base import StatefulModel, TimestampModel, TrackingModel
+from api.db.models.base import (
+    StatefulModel,
+    TimestampModel,
+    TrackingModel,
+    TenantScopedModel,
+)
 from api.endpoints.models.v1.errors import (
     NotFoundError,
 )
 
 
-class Contact(StatefulModel, TrackingModel, TimestampModel, table=True):
+class Contact(
+    TenantScopedModel, StatefulModel, TrackingModel, TimestampModel, table=True
+):
     """Contact.
 
     This is the model for the Contact table (postgresql specific dialects in use).
@@ -26,7 +33,6 @@ class Contact(StatefulModel, TrackingModel, TimestampModel, table=True):
 
     Attributes:
       contact_id: Traction Contact ID
-      tenant_id: Traction Tenant ID, owner of this Contact
       alias: Label or Name for the Contact, does not have to match the AcaPy Connection
         alias
       status: Business and Tenant indicator for Contact state; independent of AcaPy
@@ -55,7 +61,6 @@ class Contact(StatefulModel, TrackingModel, TimestampModel, table=True):
             server_default=text("gen_random_uuid()"),
         )
     )
-    tenant_id: uuid.UUID = Field(foreign_key="tenant.id", index=True)
 
     alias: str = Field(nullable=False, index=True)
 
