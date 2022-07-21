@@ -25,6 +25,25 @@ def step_impl(context, inviter: str, invitee: str):
     }
 
 
+@given('"{inviter}" creates a multi-use invitation')
+@when('"{inviter}" creates a multi-use invitation')
+def step_impl(context, inviter: str):
+    response = requests.post(
+        context.config.userdata.get("traction_host")
+        + "/tenant/v1/invitations/create-multi-use-invitation",
+        json={"name": "testing"},
+        headers=context.config.userdata[inviter]["auth_headers"],
+    )
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+
+    resp_json = json.loads(response.content)
+    response.status_code == status.HTTP_200_OK, resp_json
+    context.config.userdata[inviter]["invitation"] = {
+        "invitation": resp_json["item"]["acapy"]["invitation"],
+        "invitation_url": resp_json["invitation_url"],
+    }
+
+
 @given('"{invitee}" receives the invitation from "{inviter}"')
 @when('"{invitee}" receives the invitation from "{inviter}"')
 def step_impl(context, invitee: str, inviter: str):
