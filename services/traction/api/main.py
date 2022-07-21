@@ -75,7 +75,7 @@ add_exception_handlers(acapy_wrapper_app)
 
 @app.on_event("startup")
 async def on_tenant_startup():
-    """Register any events we need to respond to."""
+    """Register any events we TEST need to respond to."""
     logger.warning(">>> Starting up app ...")
     subscribe_workflow_events()
     subscribe_protocol_listeners()
