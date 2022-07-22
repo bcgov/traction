@@ -21,8 +21,7 @@ from acapy_wrapper.acapy_wrapper_main import get_acapy_wrapper_app
 
 # setup loggers
 # TODO: set config via env parameters...
-logging_file_path = (Path(__file__).parent / "logging.conf").resolve()
-logging.config.fileConfig(logging_file_path, disable_existing_loggers=False)
+logging.basicConfig(level=logging.DEBUG)
 
 logger = logging.getLogger(__name__)
 
@@ -97,4 +96,4 @@ def main():
 
 if __name__ == "__main__":
     print("main.")
-    uvicorn.run(app, host="0.0.0.0", port=5100)
+    uvicorn.run(app, host="0.0.0.0", port=5100, log_level="debug")
