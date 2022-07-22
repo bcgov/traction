@@ -22,6 +22,14 @@ const addAttribute = () => {
 };
 
 /**
+ * ## removeAttribute
+ * Remove an attribute from the schema.
+ */
+const removeAttribute = (index: number) => {
+  attributes.value.splice(index, 1);
+};
+
+/**
  * ## save
  * Save the new schema.
  */
@@ -52,7 +60,7 @@ const attributes = ref([{ name: "", type: "" }]);
     </span>
   </div>
   <hr />
-  <div class="row" v-for="item in attributes">
+  <div class="row" v-for="(item, index) in attributes">
     <span class="p-float-label">
       <InputText type="text" v-model="item.name" name="create_schema_name" />
       <label for="create_schema_name">Attribute</label>
@@ -63,6 +71,13 @@ const attributes = ref([{ name: "", type: "" }]);
       optionLabel="name"
       placeholder="Type"
     />
+    <button
+      class="p-button p-component p-button-icon-only p-button-rounded p-button-danger p-button-text"
+      type="button"
+      @click="removeAttribute(index)"
+    >
+      <span class="pi pi-times p-button-icon"></span>
+    </button>
   </div>
   <div style="float: right">
     <button
