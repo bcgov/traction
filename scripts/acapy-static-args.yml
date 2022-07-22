@@ -4,7 +4,7 @@ auto-respond-messages: false
 auto-respond-credential-proposal: false
 auto-respond-credential-offer: false
 auto-respond-credential-request: true
-auto-respond-presentation-proposal: false
+auto-respond-presentation-proposal: true
 auto-respond-presentation-request: false
 auto-store-credential: true
 auto-verify-presentation: true
