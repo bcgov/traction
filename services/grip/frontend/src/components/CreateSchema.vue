@@ -28,17 +28,19 @@ const addAttribute = () => {
 const removeAttribute = (index: number) => {
   attributes.value.splice(index, 1);
 };
-
 /**
  * ## save
  * Save the new schema.
  */
-const save = () => {
-  console.log(`Name: ${schemaName.value}`);
-  console.log(`Version: ${schemaVersion.value}`);
-  attributes.value.forEach((attribute) => {
-    console.log(`${attribute.name} ${(attribute.type as any).code}`);
-  });
+const save = ($emit: any) => {
+  // console.log(`Name: ${schemaName.value}`);
+  // console.log(`Version: ${schemaVersion.value}`);
+  // attributes.value.forEach((attribute) => {
+  //   console.log(`${attribute.name} ${(attribute.type as any).code}`);
+  // });
+
+  // Emit a custom event to the parent component.
+  $emit("schemaSave");
 };
 
 // Store an array of attributes. Start with an empty attribute
@@ -91,7 +93,7 @@ const attributes = ref([{ name: "", type: "" }]);
   <br />
   <br />
   <hr />
-  <Button label="Save" @click="save"></Button>
+  <Button label="Save" @click="save($emit)"></Button>
 </template>
 <style scoped>
 .row {

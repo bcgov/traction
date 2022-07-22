@@ -17,7 +17,10 @@ const api: string = "http://localhost:5100";
 // Model closed by default
 let displayAddSchema = ref(false);
 
-const createSchema = () => {
+/**
+ * ## Toggle the add schema dialog.
+ */
+const toggleSchema = () => {
   displayAddSchema.value = !displayAddSchema.value;
 };
 
@@ -95,14 +98,14 @@ const toggled = (e: any) => {
         class="create-btn"
         icon="pi pi-plus"
         label="Create Schema"
-        @click="createSchema"
+        @click="toggleSchema"
       />
       <Dialog
         header="Create a new schema"
         v-model:visible="displayAddSchema"
         :modal="true"
       >
-        <CreateSchema />
+        <CreateSchema @schema-save="toggleSchema" />
       </Dialog>
     </div>
   </Fieldset>
