@@ -39,13 +39,13 @@ spec:
             httpGet:
               path: /
               port: 5000
-            initialDelaySeconds: 60
+            initialDelaySeconds: 90
             periodSeconds: 10  
           livenessProbe:
             httpGet:
               path: /
               port: 5000
-            initialDelaySeconds: 60
+            initialDelaySeconds: 90
             periodSeconds: 30   
           env:
             - name: TRACTION_API_ADMIN_USER
