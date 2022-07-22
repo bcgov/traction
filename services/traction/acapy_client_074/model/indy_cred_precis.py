@@ -97,10 +97,20 @@ class IndyCredPrecis(ModelNormal):
                 and the value is attribute type.
         """
         lazy_import()
-        return {
+        """return {
             "cred_info": (IndyCredPrecisCredInfo,),  # noqa: E501
-            "interval": (IndyCredPrecisInterval,),  # noqa: E501
+            "interval": (IndyCredPrecisInterval, none_type,),  # noqa: E501
             "presentation_referents": ([str],),  # noqa: E501
+        }"""
+        return {
+            "cred_info": (
+                {str: (bool, date, datetime, dict, float, int, list, str, none_type)},
+            ),  # noqa: E501
+            "interval": (
+                {str: (bool, date, datetime, dict, float, int, list, str, none_type)},
+                none_type,
+            ),  # noqa: E501
+            "presentation_referents": ([str],),  # noqa: E501}
         }
 
     @cached_property

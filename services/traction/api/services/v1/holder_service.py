@@ -571,8 +571,10 @@ async def list_credentials_for_request(
         creds = present_proof_api.present_proof_records_pres_ex_id_credentials_get(
             item.presentation_exchange_id
         )
+        logger.info(f"! ! ! ! ! creds = {creds}")
         all_creds = []
         for cred in creds:
+            logger.info(f"! ! ! ! ! cred = {cred}")
             all_creds.append(
                 CredPrecisForProof(
                     cred_info=cred.get("cred_info"),

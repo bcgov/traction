@@ -11,6 +11,7 @@
 import re  # noqa: F401
 import sys  # noqa: F401
 
+from acapy_client_074.exceptions import ApiAttributeError
 from acapy_client_074.model_utils import (  # noqa: F401
     ApiTypeError,
     ModelComposed,
@@ -26,26 +27,10 @@ from acapy_client_074.model_utils import (  # noqa: F401
     validate_get_composed_info,
     OpenApiModel
 )
-from acapy_client_074.exceptions import ApiAttributeError
 
 
 def lazy_import():
-    from acapy_client_074.model.from_openapi_client_model_indy_proof_requested_proof_import_indy_proof_requested_proof import FromOpenapiClientModelIndyProofRequestedProofImportIndyProofRequestedProof
-    from acapy_client_074.model.from_openapi_client_model_indy_proof_requested_proof_predicate_import_indy_proof_requested_proof_predicate import FromOpenapiClientModelIndyProofRequestedProofPredicateImportIndyProofRequestedProofPredicate
-    from acapy_client_074.model.from_openapi_client_model_indy_proof_requested_proof_revealed_attr_group_import_indy_proof_requested_proof_revealed_attr_group import FromOpenapiClientModelIndyProofRequestedProofRevealedAttrGroupImportIndyProofRequestedProofRevealedAttrGroup
-    from acapy_client_074.model.from_openapi_client_model_indy_proof_requested_proof_revealed_attr_import_indy_proof_requested_proof_revealed_attr import FromOpenapiClientModelIndyProofRequestedProofRevealedAttrImportIndyProofRequestedProofRevealedAttr
-    from acapy_client_074.model.globals_indy_proof_requested_proof_indy_proof_requested_proof import GlobalsIndyProofRequestedProofIndyProofRequestedProof
-    from acapy_client_074.model.globals_indy_proof_requested_proof_predicate_indy_proof_requested_proof_predicate import GlobalsIndyProofRequestedProofPredicateIndyProofRequestedProofPredicate
-    from acapy_client_074.model.globals_indy_proof_requested_proof_revealed_attr_group_indy_proof_requested_proof_revealed_attr_group import GlobalsIndyProofRequestedProofRevealedAttrGroupIndyProofRequestedProofRevealedAttrGroup
-    from acapy_client_074.model.globals_indy_proof_requested_proof_revealed_attr_indy_proof_requested_proof_revealed_attr import GlobalsIndyProofRequestedProofRevealedAttrIndyProofRequestedProofRevealedAttr
-    globals()['from acapy_client_074.model.indy_proof_requested_proof import IndyProofRequestedProof'] = from acapy_client_074.model.indy_proof_requested_proof import IndyProofRequestedProof
-    globals()['from acapy_client_074.model.indy_proof_requested_proof_predicate import IndyProofRequestedProofPredicate'] = from acapy_client_074.model.indy_proof_requested_proof_predicate import IndyProofRequestedProofPredicate
-    globals()['from acapy_client_074.model.indy_proof_requested_proof_revealed_attr import IndyProofRequestedProofRevealedAttr'] = from acapy_client_074.model.indy_proof_requested_proof_revealed_attr import IndyProofRequestedProofRevealedAttr
-    globals()['from acapy_client_074.model.indy_proof_requested_proof_revealed_attr_group import IndyProofRequestedProofRevealedAttrGroup'] = from acapy_client_074.model.indy_proof_requested_proof_revealed_attr_group import IndyProofRequestedProofRevealedAttrGroup
-    globals()['globals()['IndyProofRequestedProof'] = IndyProofRequestedProof'] = globals()['IndyProofRequestedProof'] = IndyProofRequestedProof
-    globals()['globals()['IndyProofRequestedProofPredicate'] = IndyProofRequestedProofPredicate'] = globals()['IndyProofRequestedProofPredicate'] = IndyProofRequestedProofPredicate
-    globals()['globals()['IndyProofRequestedProofRevealedAttr'] = IndyProofRequestedProofRevealedAttr'] = globals()['IndyProofRequestedProofRevealedAttr'] = IndyProofRequestedProofRevealedAttr
-    globals()['globals()['IndyProofRequestedProofRevealedAttrGroup'] = IndyProofRequestedProofRevealedAttrGroup'] = globals()['IndyProofRequestedProofRevealedAttrGroup'] = IndyProofRequestedProofRevealedAttrGroup
+    pass
 
 
 class IndyProofRequestedProof(ModelComposed):

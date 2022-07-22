@@ -141,6 +141,7 @@ class Task(ABC):
         try:
             await self._perform_task(tenant=tenant, payload=payload)
         except Exception as e:
+            self.logger.exception("error", exc_info=True)
             await self._handle_perform_task_error(tenant=tenant, payload=payload, exc=e)
             # TODO: send notification via webhook that task errored out
 

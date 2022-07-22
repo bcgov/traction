@@ -107,8 +107,8 @@ class IndyCredPrecisInterval(ModelComposed):
         """
         lazy_import()
         return {
-            "_from": (int,),  # noqa: E501
-            "to": (int,),  # noqa: E501
+            "_from": (int, none_type,),  # noqa: E501
+            "to": (int, none_type),  # noqa: E501
         }
 
     @cached_property

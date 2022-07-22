@@ -30,10 +30,8 @@ from acapy_client_074.exceptions import ApiAttributeError
 
 
 def lazy_import():
-    from acapy_client_074.model.from_openapi_client_model_indy_proof_proof_aggregated_proof_import_indy_proof_proof_aggregated_proof import FromOpenapiClientModelIndyProofProofAggregatedProofImportIndyProofProofAggregatedProof
-    from acapy_client_074.model.globals_indy_proof_proof_aggregated_proof_indy_proof_proof_aggregated_proof import GlobalsIndyProofProofAggregatedProofIndyProofProofAggregatedProof
-    globals()['from acapy_client_074.model.indy_proof_proof_aggregated_proof import IndyProofProofAggregatedProof'] = from acapy_client_074.model.indy_proof_proof_aggregated_proof import IndyProofProofAggregatedProof
-    globals()['globals()['IndyProofProofAggregatedProof'] = IndyProofProofAggregatedProof'] = globals()['IndyProofProofAggregatedProof'] = IndyProofProofAggregatedProof
+    from acapy_client_074.model.indy_proof_proof_aggregated_proof import IndyProofProofAggregatedProof
+    globals()["IndyProofProofAggregatedProof"] = IndyProofProofAggregatedProof
 
 
 class IndyProofProofAggregatedProof(ModelComposed):

@@ -117,28 +117,40 @@ class SendPresentProofTask(Task):
 def convert_to_IndyProofRequest(name: str, version: str, proof_request: ProofRequest):
     logger.warning(proof_request)
 
+    for a in proof_request.requested_predicates:
+        logger.info(f"a = {a}")
+        logger.info(f"a __dict__ = {a.__dict__}")
+        logger.info(f"IndyProofReqPredSpec(**a.__dict__) = {IndyProofReqPredSpec(**a.__dict__)}")
+
     conv_request_preds = {
         a.name: IndyProofReqPredSpec(**a.__dict__)
         for a in proof_request.requested_predicates
     }
+    logger.info(f"conv_request_preds = {conv_request_preds}")
     conv_request_attrs = _convert_to_IndyProofReqAttrSpec(
         proof_request.requested_attributes
     )
+    logger.info(f"conv_request_attrs = {conv_request_attrs}")
     openapi_proof_request = IndyProofRequest(
         requested_attributes=conv_request_attrs,
         requested_predicates=conv_request_preds,
         name=name,
         version=version,
-        non_revoked={},
     )
+    logger.info(openapi_proof_request)
 
     return openapi_proof_request
 
 
 def _convert_to_IndyProofReqAttrSpec(attrs: List[ProofReqAttr]):
+    logger.info(f"_convert_to_IndyProofReqAttrSpec = {attrs}")
     conv_request_attrs = {}
     for i, a in enumerate(attrs):
+        logger.info(f"i = {i}, a = {a}")
+        logger.info(f"a.dict(exclude_none=True) = {a.dict(exclude_none=True)}")
         attr = IndyProofReqAttrSpec(**a.dict(exclude_none=True))
+        logger.info(f"attr = {attr}")
         conv_request_attrs["attr_" + str(i)] = attr
 
+    logger.info(f"conv_request_attrs = {conv_request_attrs}")
     return conv_request_attrs

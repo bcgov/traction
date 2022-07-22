@@ -30,18 +30,12 @@ from acapy_client_074.exceptions import ApiAttributeError
 
 
 def lazy_import():
-    from acapy_client_074.model.from_openapi_client_model_indy_proof_proof_aggregated_proof_import_indy_proof_proof_aggregated_proof import FromOpenapiClientModelIndyProofProofAggregatedProofImportIndyProofProofAggregatedProof
-    from acapy_client_074.model.from_openapi_client_model_indy_proof_proof_import_indy_proof_proof import FromOpenapiClientModelIndyProofProofImportIndyProofProof
-    from acapy_client_074.model.from_openapi_client_model_indy_proof_proof_proofs_proof_import_indy_proof_proof_proofs_proof import FromOpenapiClientModelIndyProofProofProofsProofImportIndyProofProofProofsProof
-    from acapy_client_074.model.globals_indy_proof_proof_aggregated_proof_indy_proof_proof_aggregated_proof import GlobalsIndyProofProofAggregatedProofIndyProofProofAggregatedProof
-    from acapy_client_074.model.globals_indy_proof_proof_indy_proof_proof import GlobalsIndyProofProofIndyProofProof
-    from acapy_client_074.model.globals_indy_proof_proof_proofs_proof_indy_proof_proof_proofs_proof import GlobalsIndyProofProofProofsProofIndyProofProofProofsProof
-    globals()['from acapy_client_074.model.indy_proof_proof import IndyProofProof'] = from acapy_client_074.model.indy_proof_proof import IndyProofProof
-    globals()['from acapy_client_074.model.indy_proof_proof_aggregated_proof import IndyProofProofAggregatedProof'] = from acapy_client_074.model.indy_proof_proof_aggregated_proof import IndyProofProofAggregatedProof
-    globals()['from acapy_client_074.model.indy_proof_proof_proofs_proof import IndyProofProofProofsProof'] = from acapy_client_074.model.indy_proof_proof_proofs_proof import IndyProofProofProofsProof
-    globals()['globals()['IndyProofProof'] = IndyProofProof'] = globals()['IndyProofProof'] = IndyProofProof
-    globals()['globals()['IndyProofProofAggregatedProof'] = IndyProofProofAggregatedProof'] = globals()['IndyProofProofAggregatedProof'] = IndyProofProofAggregatedProof
-    globals()['globals()['IndyProofProofProofsProof'] = IndyProofProofProofsProof'] = globals()['IndyProofProofProofsProof'] = IndyProofProofProofsProof
+    from acapy_client_074.model.indy_proof_proof_aggregated_proof import IndyProofProofAggregatedProof
+    from acapy_client_074.model.indy_proof_proof import IndyProofProof
+    from acapy_client_074.model.indy_proof_proof_proofs_proof import IndyProofProofProofsProof
+    globals()["IndyProofProofAggregatedProof"] = IndyProofProofAggregatedProof
+    globals()["IndyProofProof"] = IndyProofProof
+    globals()["IndyProofProofProofsProof"] = IndyProofProofProofsProof
 
 
 class IndyProofProof(ModelComposed):
@@ -96,9 +90,15 @@ class IndyProofProof(ModelComposed):
                 and the value is attribute type.
         """
         lazy_import()
-        return {
+        """return {
             'aggregated_proof': (IndyProofProofAggregatedProof,),  # noqa: E501
             'proofs': ([IndyProofProofProofsProof],),  # noqa: E501
+        }"""
+        return {
+            "aggregated_proof": (
+                {str: (bool, date, datetime, dict, float, int, list, str, none_type)},
+            ),  # noqa: E501
+            "proofs": ([IndyProofProofProofsProof],),  # noqa: E501
         }
 
     @cached_property

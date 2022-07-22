@@ -37,8 +37,8 @@ Feature: verification of ARIES presentations
     Scenario: faber can present_proof to a present_proof request
         When "alice" requests proof of keys in schema "useless-schema" from "faber"
         And we sadly wait for 10 seconds because we have not figured out how to listen for events
-        And "faber" will have a present-proof request for "useless-schema"
-        And "faber" loads credentials
-        Then "faber" sends the presentation in response to the request for "useless-schema"
+        And "faber" will have a holder presentation with status "Request Received"
+        And "faber" can find 1 credential(s) for holder presentation
+        Then "faber" will send presentation from request for "useless-schema"
         And we sadly wait for 5 seconds because we have not figured out how to listen for events
         And "alice" has a "verified" verifier presentation

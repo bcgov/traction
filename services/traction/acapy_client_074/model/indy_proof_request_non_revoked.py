@@ -11,6 +11,7 @@
 import re  # noqa: F401
 import sys  # noqa: F401
 
+from acapy_client_074.exceptions import ApiAttributeError
 from acapy_client_074.model_utils import (  # noqa: F401
     ApiTypeError,
     ModelComposed,
@@ -26,14 +27,10 @@ from acapy_client_074.model_utils import (  # noqa: F401
     validate_get_composed_info,
     OpenApiModel
 )
-from acapy_client_074.exceptions import ApiAttributeError
 
 
 def lazy_import():
-    from acapy_client_074.model.from_openapi_client_model_indy_proof_request_non_revoked_import_indy_proof_request_non_revoked import FromOpenapiClientModelIndyProofRequestNonRevokedImportIndyProofRequestNonRevoked
-    from acapy_client_074.model.globals_indy_proof_request_non_revoked_indy_proof_request_non_revoked import GlobalsIndyProofRequestNonRevokedIndyProofRequestNonRevoked
-    globals()['from acapy_client_074.model.indy_proof_request_non_revoked import IndyProofRequestNonRevoked'] = from acapy_client_074.model.indy_proof_request_non_revoked import IndyProofRequestNonRevoked
-    globals()['globals()['IndyProofRequestNonRevoked'] = IndyProofRequestNonRevoked'] = globals()['IndyProofRequestNonRevoked'] = IndyProofRequestNonRevoked
+    pass
 
 
 class IndyProofRequestNonRevoked(ModelComposed):

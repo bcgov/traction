@@ -10,6 +10,7 @@
 
 import re  # noqa: F401
 import sys  # noqa: F401
+from typing import List
 
 from acapy_client_074.model_utils import (  # noqa: F401
     ApiTypeError,
@@ -98,9 +99,9 @@ class IndyProofReqAttrSpec(ModelNormal):
         """
         lazy_import()
         return {
-            "name": (str),  # noqa: E501
-            "names": ([str]),  # noqa: E501
-            "non_revoked": (IndyProofReqAttrSpecNonRevoked,),  # noqa: E501
+            "name": (str,),  # noqa: E501
+            "names": ([str],),  # noqa: E501
+            "non_revoked": (IndyProofReqAttrSpecNonRevoked, none_type),  # noqa: E501
             "restrictions": ([{str: (str,)}],),  # noqa: E501
         }
 
