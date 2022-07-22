@@ -39,7 +39,7 @@ const save = ($emit: any) => {
   //   console.log(`${attribute.name} ${(attribute.type as any).code}`);
   // });
 
-  // Emit a custom event to the parent component.
+  // Emit a custom save event so the parent knows to close the dialog.
   $emit("schemaSave");
 };
 
