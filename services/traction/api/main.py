@@ -29,6 +29,8 @@ time.tzset()
 
 
 logger.debug(">>> get_application ...")
+
+
 def get_application() -> FastAPI:
     application = FastAPI(
         title=settings.TITLE,
@@ -76,6 +78,8 @@ add_exception_handlers(acapy_wrapper_app)
 
 
 logger.debug(">>> startup ...")
+
+
 @app.on_event("startup")
 async def on_tenant_startup():
     """Register any events we TEST need to respond to."""
