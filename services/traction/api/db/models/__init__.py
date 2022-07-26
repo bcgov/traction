@@ -22,11 +22,15 @@ from api.db.models.v1.tenant_configuration import (
     TenantAutoResponseLog,
     TenantWebhookLog,
 )  # noqa: F401
+from api.db.models.v1.tenant import Tenant2
+from api.db.models.v1.tenant_issuer import TenantIssuer
 
 
 __all__ = [
     "BaseTable",
     "Tenant",
+    "Tenant2",
+    "TenantIssuer",
     "TenantWebhook",
     "TenantWebhookMsg",
     "Contact",
