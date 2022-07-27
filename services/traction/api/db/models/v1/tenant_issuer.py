@@ -11,15 +11,14 @@ from sqlalchemy import (
     select,
 )
 
-from sqlmodel.ext.asyncio.session import AsyncSession
 
-from api.db.models.base import TimestampModel
+from api.db.models.base import StatefulModel
 from api.db.models.v1.tenant import Tenant2
 
 
 # uses single table inheritanct
 # https://docs.sqlalchemy.org/en/14/orm/inheritance.html#single-table-inheritance
-class TenantIssuer(Tenant2, table=True):
+class TenantIssuer(Tenant2, StatefulModel, table=True):
     """TenantIssuer.
 
     This is the model to store issuer specfic data for entries in the table of type 'issuer'.

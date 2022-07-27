@@ -19,6 +19,7 @@ from api.endpoints.models.v1.tenant import (
     PublicDIDStatus,
 )
 from api.services.tenant_workflows import create_workflow
+from api.tasks.public_did_task import RegisterPublicDIDTask
 
 logger = logging.getLogger(__name__)
 
@@ -133,11 +134,13 @@ async def make_issuer(
             )
 
         # create workflow and update issuer record
-        await create_workflow(
-            tenant_issuer.wallet_id,
-            TenantWorkflowTypeType.issuer,
-            db,
-        )
+        # await create_workflow(
+        #     tenant_issuer.wallet_id,
+        #     TenantWorkflowTypeType.issuer,
+        #     db,
+        # )
+
+    await RegisterPublicDIDTask.assign(tenant_id, wallet_id, {})
 
     return await get_tenant(tenant_id, wallet_id)
 

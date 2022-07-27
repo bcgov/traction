@@ -45,6 +45,7 @@ class TractionTaskType(str, Enum):
     send_cred_def_request = "send_cred_def_request"
     send_credential_offer = "send_credential_offer"
     send_present_proof_req = "send_present_proof_req"
+    register_public_did = "register_public_did"
 
 
 TRACTION_TASK_PREFIX = "traction::TASK::"
@@ -64,6 +65,10 @@ TRACTION_SEND_CREDENTIAL_OFFER_LISTENER_PATTERN = re.compile(
 
 TRACTION_SEND_PRESENT_PROOF_REQ_PATTERN = re.compile(
     f"^{TRACTION_TASK_PREFIX}{TractionTaskType.send_present_proof_req}(.*)?$"
+)
+
+TRACTION_REGISTER_PUBLIC_DID_PATTERN = re.compile(
+    f"^{TRACTION_TASK_PREFIX}{TractionTaskType.register_public_did}(.*)?$"
 )
 
 
@@ -121,6 +126,7 @@ class Task(ABC):
 
     @abstractmethod
     def _get_db_model_class(self):
+        # model_class must inherit from StatefulModel for error handling
         pass
 
     @property
