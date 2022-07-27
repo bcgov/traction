@@ -8,13 +8,16 @@ from acapy_client.api.wallet_api import WalletApi
 from acapy_client.model.did_create import DIDCreate
 from api.api_client_utils import get_api_client
 from api.core.config import settings
-from api.db.models import Tenant
 
 from api.db.models.tenant_workflow import TenantWorkflowRead
 from api.endpoints.models.tenant_issuer import PublicDIDStateType
+from api.db.repositories.tenant_issuers import TenantIssuersRepository
+from api.db.models.tenant_issuer import TenantIssuerUpdate, TenantIssuerRead
 
-from api.db.models.v1.tenant import Tenant2
-from api.db.models.v1.tenant_issuer import TenantIssuer
+from api.db.models.tenant import Tenant
+
+# from api.db.models.v1.tenant import Tenant2
+# from api.db.models.v1.tenant_issuer import TenantIssuer
 from api.db.session import async_session
 from api.db.models.v1.contact import Contact
 
@@ -37,6 +40,9 @@ def get_logger(cls):
 
 
 class RegisterPublicDIDTask(Task):
+    def __init__(self):
+        self._issuer_repo = TenantIssuersRepository
+
     @staticmethod
     def _listener_pattern() -> Pattern[str]:
         return TRACTION_REGISTER_PUBLIC_DID_PATTERN
@@ -46,7 +52,7 @@ class RegisterPublicDIDTask(Task):
         return TRACTION_TASK_PREFIX + TractionTaskType.register_public_did
 
     def _get_db_model_class(self):
-        return TenantIssuer
+        return Tenant
 
     def _get_id_from_payload(self, payload):
         self.logger.info(f"> _get_id_from_payload ->> {payload.keys()}")
@@ -55,7 +61,22 @@ class RegisterPublicDIDTask(Task):
 
     async def _perform_task(self, tenant: Tenant, payload: dict):
         self.logger.info("> _perform_task()")
-        self.initiate_public_did(tenant)
+        # if tenant.public_did_state == "N/A":
+        # self.logger.info("public did already assigned/started")
+        # return
+        await self.initiate_public_did(tenant)
+
+    # TODO delete this method when default behaviour works.
+    async def _handle_perform_task_error(
+        self, tenant: Tenant, payload: dict, exc: Exception
+    ):
+        self.logger.warning("> _handle_perform_task_error()")
+        self.logger.warning(
+            "> error detail not saved as columns do not exist on Tenant"
+        )
+
+        # old tenant model doesn't have columns to update
+        pass
 
     @classmethod
     async def assign(
@@ -64,23 +85,11 @@ class RegisterPublicDIDTask(Task):
         wallet_id: UUID,
         payload: dict,
     ):
-        # weak validation of payload
-        # required_payload_keys = [
-        #     "verifier_presentation_id",
-        #     "contact_id",
-        #     "proof_request",
-        # ]
-
-        # payload_keys = payload.keys()
-        # if not all(req_key in payload_keys for req_key in required_payload_keys):
-        #     raise Exception(
-        #         f"Invalid payload, {cls.__name__}.assign expects payload with keys={required_payload_keys}"  # noqa: E501
-        #     )
 
         await cls._assign(tenant_id, wallet_id, payload)
         pass
 
-    async def initiate_public_did(self, tenant: Tenant) -> None:
+    async def initiate_public_did(self, tenant_issuer: TenantIssuerRead) -> None:
         self.logger.warn("> initiate_public_did:")
 
         # onto the next phase!  create our DID and make it public
@@ -99,58 +108,75 @@ class RegisterPublicDIDTask(Task):
             tenant_issuer = await self.create_public_did(tenant_issuer, did_result)
         return
 
-    async def create_public_did(self, tenant: Tenant, did_result: dict) -> None:
-        self.logger.warn("calling > create_public_did:")
+    async def create_local_did(
+        self, tenant_issuer: TenantIssuerRead
+    ) -> (TenantIssuerRead, dict):
+        self.logger.warn("> create_public_did:")
 
         genesis_url = settings.ACAPY_GENESIS_URL
         did_registration_url = genesis_url.replace("genesis", "register")
         data = {
             "did": did_result.result.did,
             "verkey": did_result.result.verkey,
-            "alias": str(tenant.tenant_id),
+            "alias": str(tenant_issuer.tenant_id),
         }
         requests.post(did_registration_url, json=data)
 
         # now make it public
         did_result = wallet_api.wallet_did_public_post(did_result.result.did)
 
-        TenantIssuer.update_by_id(
-            tenant.tenant_id,
-            {
-                "public_did_state": PublicDIDStateType.public,
-            },
+        connection_state = tenant_issuer.endorser_connection_state
+        update_issuer = TenantIssuerUpdate(
+            id=tenant_issuer.id,
+            workflow_id=tenant_issuer.workflow_id,
+            endorser_connection_id=tenant_issuer.endorser_connection_id,
+            endorser_connection_state=connection_state,
+            public_did=tenant_issuer.public_did,
+            public_did_state=PublicDIDStateType.public,
         )
-        return
+        async with async_session() as db:
+            tenant_issuer = await self._issuer_repo(db).update(update_issuer)
+        return tenant_issuer
 
     async def initiate_public_did_workflow(
-        self, tenant: Tenant, did_result: dict
-    ) -> None:
-        self.logger.warn("calling > initiate_public_did_workflow:")
-        data = {"alias": tenant.tenant_id}
+        self, tenant_issuer: TenantIssuerRead, did_result: dict
+    ) -> TenantIssuerRead:
+        self.logger.warn("> initiate_public_did_workflow:")
+        data = {"alias": tenant_issuer.tenant_id}
         ledger_api.ledger_register_nym_post(
             did_result.result.did,
             did_result.result.verkey,
             **data,
         )
-        TenantIssuer.update_by_id(
-            tenant.id,
-            {
-                "public_did_state": PublicDIDStateType.requested,
-            },
+        connection_state = tenant_issuer.endorser_connection_state
+        update_issuer = TenantIssuerUpdate(
+            id=tenant_issuer.id,
+            workflow_id=tenant_issuer.workflow_id,
+            endorser_connection_id=tenant_issuer.endorser_connection_id,
+            endorser_connection_state=connection_state,
+            public_did=tenant_issuer.public_did,
+            public_did_state=PublicDIDStateType.requested,
         )
-        return
+        async with async_session() as db:
+            tenant_issuer = await self._issuer_repo(db).update(update_issuer)
+        return tenant_issuer
 
-    async def create_local_did(self, tenant: Tenant) -> (dict):
-        self.logger.warn("calling > create_local_did:")
+    async def create_public_did(
+        self, tenant_issuer: TenantIssuerRead, did_result: dict
+    ) -> TenantIssuerRead:
+        self.logger.warn("> create_local_did:")
 
         data = {"body": DIDCreate()}
         did_result = wallet_api.wallet_did_create_post(**data)
-        TenantIssuer.update_by_id(
-            tenant.tenant_id,
-            {
-                "public_did": did_result.result.did,
-                "public_did_state": PublicDIDStateType.private,
-            },
+        connection_state = tenant_issuer.endorser_connection_state
+        update_issuer = TenantIssuerUpdate(
+            id=tenant_issuer.id,
+            workflow_id=tenant_issuer.workflow_id,
+            endorser_connection_id=tenant_issuer.endorser_connection_id,
+            endorser_connection_state=connection_state,
+            public_did=did_result.result.did,
+            public_did_state=PublicDIDStateType.private,
         )
-
-        return did_result
+        async with async_session() as db:
+            tenant_issuer = await self._issuer_repo(db).update(update_issuer)
+        return (tenant_issuer, did_result)

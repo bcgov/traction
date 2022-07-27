@@ -4,6 +4,7 @@ from .tasks import (
     SendCredDefRequestTask,
 )
 from .present_proof_tasks import SendPresentProofTask
+from .public_did_task import RegisterPublicDIDTask
 
 
 def subscribe_task_listeners():
@@ -11,3 +12,4 @@ def subscribe_task_listeners():
     SendCredDefRequestTask()
     SendCredentialOfferTask()
     SendPresentProofTask()
+    RegisterPublicDIDTask()
