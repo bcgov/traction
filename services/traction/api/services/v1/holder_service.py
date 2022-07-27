@@ -5,6 +5,9 @@ from uuid import UUID
 from sqlalchemy import select, func, desc, update
 from sqlalchemy.orm import selectinload
 
+from acapy_client.model.indy_pres_attr_spec import IndyPresAttrSpec
+from acapy_client.model.indy_pres_pred_spec import IndyPresPredSpec
+from acapy_client.model.indy_pres_preview import IndyPresPreview
 from acapy_client.model.indy_pres_spec import IndyPresSpec
 from acapy_client.model.indy_requested_creds_requested_attr import (
     IndyRequestedCredsRequestedAttr,
@@ -18,8 +21,12 @@ from acapy_client.model.v10_credential_problem_report_request import (
 from acapy_client.model.v10_presentation_problem_report_request import (
     V10PresentationProblemReportRequest,
 )
+from acapy_client.model.v10_presentation_proposal_request import (
+    V10PresentationProposalRequest,
+)
 
 from api.db.models import Timeline
+from api.db.models.v1.contact import Contact
 from api.db.models.v1.holder import HolderCredential, HolderPresentation
 from api.db.session import async_session
 from api.endpoints.models.credentials import CredentialStateType, CredPrecisForProof
@@ -49,6 +56,7 @@ from api.endpoints.models.v1.holder import (
     SendPresentationPayload,
     RejectPresentationRequestPayload,
     HolderPresentationAcapy,
+    HolderSendProposalPayload,
 )
 from api.endpoints.models.v1.verifier import AcapyPresentProofStateType
 from api.services.v1 import acapy_service
@@ -571,6 +579,7 @@ async def list_credentials_for_request(
         creds = present_proof_api.present_proof_records_pres_ex_id_credentials_get(
             item.presentation_exchange_id
         )
+        logger.info(f"^^^^^^ {creds}")
         all_creds = []
         for cred in creds:
             all_creds.append(
@@ -735,4 +744,62 @@ def send_rejection_to_acapy(item, payload):
     present_proof_api.present_proof_records_pres_ex_id_problem_report_post(
         item.presentation_exchange_id,
         **data,
+    )
+
+
+async def send_proposal(
+    tenant_id: UUID,
+    wallet_id: UUID,
+    payload: HolderSendProposalPayload,
+) -> HolderPresentationItem:
+
+    async with async_session() as db:
+        contact = await Contact.get_by_id(db, tenant_id, payload.contact_id)
+
+    attributes = []
+    predicates = []
+    for a in payload.presentation_proposal.attributes:
+        attributes.append(
+            IndyPresAttrSpec(
+                **a.dict(exclude_none=True, exclude_unset=True, exclude_defaults=False)
+            )
+        )
+    for p in payload.presentation_proposal.predicates:
+        predicates.append(
+            IndyPresPredSpec(
+                **p.dict(exclude_none=True, exclude_unset=True, exclude_defaults=False)
+            )
+        )
+
+    presentation_proposal = IndyPresPreview(
+        attributes=attributes,
+        predicates=predicates,
+    )
+    logger.info(f"presentation_proposal = {presentation_proposal}")
+    req = V10PresentationProposalRequest(
+        connection_id=str(contact.connection_id),
+        presentation_proposal=presentation_proposal,
+        comment=payload.comment,
+        auto_present=True,
+        trace=False,
+    )
+    logger.info(f"V10PresentationProposalRequest = {req}")
+    resp = present_proof_api.present_proof_send_proposal_post(body=req)
+    logger.info(f"resp = {resp}")
+
+    offer = HolderPresentation(
+        tenant_id=tenant_id,
+        contact_id=contact.contact_id,
+        status=HolderPresentationStatusType.proposol_sent,
+        state=AcapyPresentProofStateType.PROPOSAL_SENT,
+        presentation_exchange_id=resp["presentation_exchange_id"],
+        connection_id=resp["connection_id"],
+        thread_id=resp["thread_id"],
+    )
+    async with async_session() as db:
+        db.add(offer)
+        await db.commit()
+
+    return await get_holder_presentation(
+        tenant_id, wallet_id, offer.holder_presentation_id, True
     )

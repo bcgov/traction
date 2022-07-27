@@ -10,6 +10,8 @@ from api.endpoints.models.v1.holder import (
     HolderPresentationStatusType,
     HolderPresentationListParameters,
     HolderPresentationListResponse,
+    HolderSendProposalPayload,
+    HolderSendProposalResponse,
 )
 from api.endpoints.routes.v1.link_utils import build_list_links
 
@@ -59,3 +61,16 @@ async def list_holder_presentations(
     return HolderPresentationListResponse(
         items=items, count=len(items), total=total_count, links=links
     )
+
+
+@router.post("/send-proposal", status_code=status.HTTP_200_OK)
+async def send_proposal(
+    payload: HolderSendProposalPayload,
+    save_in_traction: bool | None = False,
+) -> HolderSendProposalResponse:
+    wallet_id = get_from_context("TENANT_WALLET_ID")
+    tenant_id = get_from_context("TENANT_ID")
+
+    item = await holder_service.send_proposal(tenant_id, wallet_id, payload=payload)
+    links = []  # TODO
+    return HolderSendProposalResponse(item=item, links=links)

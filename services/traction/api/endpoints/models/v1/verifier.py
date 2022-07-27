@@ -28,6 +28,7 @@ class VerifierPresentationStatusType(str, Enum):
     RECEIVED = "received"  # Verification has been received but not verified
     VERIFIED = "verified"  # Verified and proven to be correct
     REJECTED = "rejected"  # request was rejected/abandoned
+    PROPOSED = "proposed"  # holder is proposing a verification
     ERROR = "Error"  # why is this capitalized?
 
 
@@ -84,7 +85,7 @@ class VerifierPresentationItem(
 ):
     verifier_presentation_id: UUID
     contact_id: UUID
-    proof_request: ProofRequest
+    # proof_request: ProofRequest
     name: str
     version: str
     comment: Optional[str]

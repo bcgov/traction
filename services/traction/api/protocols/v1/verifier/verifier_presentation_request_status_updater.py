@@ -72,16 +72,6 @@ class VerifierPresentationRequestStatusUpdater(DefaultPresentationRequestProtoco
         )
         self.logger.info("< before_any()")
 
-    # TODO: remove this when we update to acapy 7.4, workaround for bug in 7.3
-    async def on_unknown_state(self, profile: Profile, payload: dict):
-        self.logger.info(f"> on_unknown_state({payload})")
-        verifier_presentation = await self.get_verifier_presentation(profile, payload)
-        if verifier_presentation:
-            # look for an error message
-            await self.handle_abandoned(verifier_presentation, payload)
-
-        self.logger.info("< on_unknown_state()")
-
     async def handle_abandoned(self, verifier_presentation, payload):
         if "error_msg" in payload:
             self.logger.debug(f"payload error_msg = {payload['error_msg']}")
@@ -97,3 +87,24 @@ class VerifierPresentationRequestStatusUpdater(DefaultPresentationRequestProtoco
                         verifier_presentation.verifier_presentation_id, values
                     )
                     await db.commit()
+
+    async def on_presentation_received(self, profile: Profile, payload: dict):
+        self.logger.info(f"##### on_presentation_received.payload = {payload}")
+
+    async def on_request_sent(self, profile: Profile, payload: dict):
+        self.logger.info("> on_request_sent()")
+        verifier_presentation = await self.get_verifier_presentation(profile, payload)
+        if verifier_presentation:
+            #  update the proof request to match what was sent.
+            values = {
+                "proof_request": payload["presentation_request"],
+                "name": payload["presentation_request"]["name"],
+                "version": payload["presentation_request"]["version"],
+            }
+            async with async_session() as db:
+                await VerifierPresentation.update_by_id(
+                    verifier_presentation.verifier_presentation_id, values
+                )
+                await db.commit()
+
+        self.logger.info("< on_request_sent()")

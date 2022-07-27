@@ -411,3 +411,13 @@ def send_holder_presentation(
         headers=context.config.userdata[tenant]["auth_headers"],
     )
     return response
+
+
+def holder_send_proposal(context, tenant, payload: dict | None = {}):
+    response = requests.post(
+        context.config.userdata.get("traction_host")
+        + f"/tenant/v1/holder/presentations/send-proposal",
+        json=payload,
+        headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response

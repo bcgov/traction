@@ -13,6 +13,10 @@ from api.protocols.v1.verifier.presentation_request_protocol import (
     DefaultPresentationRequestProtocol,
 )
 
+new_request_states = [
+    AcapyPresentProofStateType.REQUEST_RECEIVED,
+]
+
 
 class DefaultHolderPresentationProtocol(DefaultPresentationRequestProtocol):
     def __init__(self):
@@ -50,7 +54,7 @@ class DefaultHolderPresentationProtocol(DefaultPresentationRequestProtocol):
     async def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
         self.logger.info("> approve_for_processing()")
         holder_presentation = await self.get_holder_presentation(profile, payload)
-        is_new_request = payload["state"] == AcapyPresentProofStateType.REQUEST_RECEIVED
+        is_new_request = payload["state"] in new_request_states
         is_existing_item = holder_presentation is not None
         approved = is_new_request or is_existing_item
         self.logger.info(f"is_new_request={is_new_request}")
@@ -66,11 +70,17 @@ class DefaultHolderPresentationProtocol(DefaultPresentationRequestProtocol):
             self.logger.debug("holder presentation exists, proceed with status update")
             values = {"state": payload["state"]}
 
+            proposal_states = [
+                AcapyPresentProofStateType.PROPOSAL_SENT,
+            ]
             sent_states = [AcapyPresentProofStateType.PRESENTATION_SENT]
 
             accepted_states = [
                 AcapyPresentProofStateType.PRESENTATION_ACKED,
             ]
+
+            if payload["state"] in proposal_states:
+                values["status"] = HolderPresentationStatusType.proposol_sent
 
             if payload["state"] in sent_states:
                 values["status"] = HolderPresentationStatusType.presentation_sent
@@ -89,19 +99,30 @@ class DefaultHolderPresentationProtocol(DefaultPresentationRequestProtocol):
         self.logger.info("> on_request_received()")
         # create a new holder credential!
         contact = await self.get_contact(profile, payload)
+        holder_presentation = await self.get_holder_presentation(profile, payload)
         if contact:
-            offer = HolderPresentation(
-                tenant_id=profile.tenant_id,
-                contact_id=contact.contact_id,
-                status=HolderPresentationStatusType.request_received,
-                state=payload["state"],
-                thread_id=payload["thread_id"],
-                presentation_exchange_id=payload["presentation_exchange_id"],
-                connection_id=payload["connection_id"],
-            )
-            async with async_session() as db:
-                db.add(offer)
-                await db.commit()
+            if holder_presentation:
+                # may have one due to a sent proposal
+                values = {
+                    "status": HolderPresentationStatusType.request_received,
+                    "state": payload["state"],
+                }
+                await HolderPresentation.update_by_id(
+                    item_id=holder_presentation.holder_presentation_id, values=values
+                )
+            else:
+                offer = HolderPresentation(
+                    tenant_id=profile.tenant_id,
+                    contact_id=contact.contact_id,
+                    status=HolderPresentationStatusType.request_received,
+                    state=payload["state"],
+                    thread_id=payload["thread_id"],
+                    presentation_exchange_id=payload["presentation_exchange_id"],
+                    connection_id=payload["connection_id"],
+                )
+                async with async_session() as db:
+                    db.add(offer)
+                    await db.commit()
 
         # TODO: create payload and send notification to tenant.
         else:
@@ -109,6 +130,11 @@ class DefaultHolderPresentationProtocol(DefaultPresentationRequestProtocol):
                 f"No contact found for connection_id<{payload['connection_id']}>, cannot create holder presentation."  # noqa: E501
             )
         self.logger.info("< on_request_received()")
+
+    async def on_proposal_sent(self, profile: Profile, payload: dict):
+        self.logger.info("> on_proposal_sent()")
+        self.logger.info(f"##### payload = {payload}")
+        self.logger.info("< on_proposal_sent()")
 
     async def on_presentation_sent(self, profile: Profile, payload: dict):
         self.logger.info("> on_presentation_sent()")
