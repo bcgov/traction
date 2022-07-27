@@ -1,7 +1,4 @@
-import uuid
-
 from api.core.profile import Profile
-from api.db.models.v1.contact import Contact
 from api.db.models.v1.holder import HolderPresentation
 from api.db.session import async_session
 from api.endpoints.models.credentials import PresentationRoleType
@@ -23,12 +20,6 @@ class DefaultHolderPresentationProtocol(DefaultPresentationRequestProtocol):
         super().__init__()
         self.role = PresentationRoleType.prover
 
-    def get_presentation_exchange_id(self, payload: dict) -> str:
-        try:
-            return payload["presentation_exchange_id"]
-        except KeyError:
-            return None
-
     async def get_holder_presentation(
         self, profile: Profile, payload: dict
     ) -> HolderPresentation:
@@ -37,16 +28,6 @@ class DefaultHolderPresentationProtocol(DefaultPresentationRequestProtocol):
             async with async_session() as db:
                 return await HolderPresentation.get_by_presentation_exchange_id(
                     db, profile.tenant_id, pres_ex_id
-                )
-        except NotFoundError:
-            return None
-
-    async def get_contact(self, profile: Profile, payload: dict) -> Contact:
-        connection_id = uuid.UUID(payload["connection_id"])
-        try:
-            async with async_session() as db:
-                return await Contact.get_by_connection_id(
-                    db, profile.tenant_id, connection_id=connection_id
                 )
         except NotFoundError:
             return None
@@ -130,20 +111,3 @@ class DefaultHolderPresentationProtocol(DefaultPresentationRequestProtocol):
                 f"No contact found for connection_id<{payload['connection_id']}>, cannot create holder presentation."  # noqa: E501
             )
         self.logger.info("< on_request_received()")
-
-    async def on_proposal_sent(self, profile: Profile, payload: dict):
-        self.logger.info("> on_proposal_sent()")
-        self.logger.info(f"##### payload = {payload}")
-        self.logger.info("< on_proposal_sent()")
-
-    async def on_presentation_sent(self, profile: Profile, payload: dict):
-        self.logger.info("> on_presentation_sent()")
-        self.logger.info("< on_presentation_sent()")
-
-    async def on_presentation_acked(self, profile: Profile, payload: dict):
-        self.logger.info("> on_presentation_acked()")
-        self.logger.info("< on_presentation_acked()")
-
-    async def on_abandoned(self, profile: Profile, payload: dict):
-        self.logger.info("> on_abandoned()")
-        self.logger.info("< on_abandoned()")

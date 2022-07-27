@@ -579,7 +579,6 @@ async def list_credentials_for_request(
         creds = present_proof_api.present_proof_records_pres_ex_id_credentials_get(
             item.presentation_exchange_id
         )
-        logger.info(f"^^^^^^ {creds}")
         all_creds = []
         for cred in creds:
             all_creds.append(
@@ -775,7 +774,6 @@ async def send_proposal(
         attributes=attributes,
         predicates=predicates,
     )
-    logger.info(f"presentation_proposal = {presentation_proposal}")
     req = V10PresentationProposalRequest(
         connection_id=str(contact.connection_id),
         presentation_proposal=presentation_proposal,
@@ -783,9 +781,7 @@ async def send_proposal(
         auto_present=True,
         trace=False,
     )
-    logger.info(f"V10PresentationProposalRequest = {req}")
     resp = present_proof_api.present_proof_send_proposal_post(body=req)
-    logger.info(f"resp = {resp}")
 
     offer = HolderPresentation(
         tenant_id=tenant_id,

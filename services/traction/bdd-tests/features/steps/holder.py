@@ -419,6 +419,7 @@ def step_impl(context, holder: str, count: int):
     response = list_holder_presentations(context, holder, params)
     assert response.status_code == status.HTTP_200_OK, response.__dict__
     resp_json = json.loads(response.content)
+    pprint.pp(resp_json)
     assert resp_json["total"] == count, resp_json
     # store result, use for update and delete
     context.config.userdata[holder].setdefault(

@@ -68,6 +68,16 @@ async def send_proposal(
     payload: HolderSendProposalPayload,
     save_in_traction: bool | None = False,
 ) -> HolderSendProposalResponse:
+    """Holder - Send Proposal
+
+    This allows a holder to send a verifier a proposal of proof.
+
+    Refer to the following RFC for more information on the flow:
+    https://github.com/hyperledger/aries-rfcs/tree/main/features/0037-present-proof#propose-presentation
+
+    For the content structure the presentation_proposal attributes and predicates:
+    https://github.com/hyperledger/aries-rfcs/tree/main/features/0037-present-proof#presentation-preview
+    """
     wallet_id = get_from_context("TENANT_WALLET_ID")
     tenant_id = get_from_context("TENANT_ID")
 

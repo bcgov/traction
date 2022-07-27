@@ -1,10 +1,18 @@
 import logging
+import uuid
 from abc import ABC, abstractmethod
+
+from sqlalchemy import select
 
 from api.core.config import settings
 from api.core.event_bus import Event
 from api.core.profile import Profile
+from api.db.models import Tenant
+from api.db.models.v1.contact import Contact
+from api.db.models.v1.verifier_presentation import VerifierPresentation
+from api.db.session import async_session
 from api.endpoints.models.credentials import PresentationRoleType
+from api.endpoints.models.v1.errors import NotFoundError
 from api.endpoints.models.v1.verifier import AcapyPresentProofStateType
 from api.endpoints.models.webhooks import WEBHOOK_PRESENT_LISTENER_PATTERN
 
@@ -59,6 +67,29 @@ class PresentationRequestProtocol(ABC):
 
             await self.after_all(profile=profile, payload=payload)
         self.logger.info("< notify()")
+
+    async def get_tenant(self, profile: Profile) -> Tenant:
+        async with async_session() as db:
+            q = select(Tenant).where(Tenant.id == profile.tenant_id)
+            q_result = await db.execute(q)
+            db_rec = q_result.scalar_one_or_none()
+            return db_rec
+
+    def get_presentation_exchange_id(self, payload: dict) -> str:
+        try:
+            return payload["presentation_exchange_id"]
+        except KeyError:
+            return None
+
+    async def get_contact(self, profile: Profile, payload: dict) -> Contact:
+        connection_id = uuid.UUID(payload["connection_id"])
+        try:
+            async with async_session() as db:
+                return await Contact.get_by_connection_id(
+                    db, profile.tenant_id, connection_id=connection_id
+                )
+        except NotFoundError:
+            return None
 
     @abstractmethod
     async def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
@@ -120,6 +151,18 @@ class PresentationRequestProtocol(ABC):
 class DefaultPresentationRequestProtocol(PresentationRequestProtocol):
     def __init__(self):
         super().__init__()
+
+    async def get_verifier_presentation(
+        self, profile: Profile, payload: dict
+    ) -> VerifierPresentation:
+        pres_exch_id = self.get_presentation_exchange_id(payload=payload)
+        try:
+            async with async_session() as db:
+                return await VerifierPresentation.get_by_pres_exch_id(
+                    db, profile.tenant_id, pres_exch_id
+                )
+        except NotFoundError:
+            return None
 
     async def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
         pass

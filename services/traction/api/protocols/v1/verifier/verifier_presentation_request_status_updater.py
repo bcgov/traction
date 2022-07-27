@@ -1,9 +1,8 @@
-from api.db.session import async_session
-from api.endpoints.models.v1.errors import NotFoundError
 from api.endpoints.models.v1.verifier import (
     VerifierPresentationStatusType,
     AcapyPresentProofStateType,
 )
+
 
 from .presentation_request_protocol import DefaultPresentationRequestProtocol
 
@@ -14,24 +13,6 @@ from api.db.models.v1.verifier_presentation import VerifierPresentation
 class VerifierPresentationRequestStatusUpdater(DefaultPresentationRequestProtocol):
     def __init__(self):
         super().__init__()
-
-    def get_presentation_exchange_id(self, payload: dict) -> str:
-        try:
-            return payload["presentation_exchange_id"]
-        except KeyError:
-            return None
-
-    async def get_verifier_presentation(
-        self, profile: Profile, payload: dict
-    ) -> VerifierPresentation:
-        pres_exch_id = self.get_presentation_exchange_id(payload=payload)
-        try:
-            async with async_session() as db:
-                return await VerifierPresentation.get_by_pres_exch_id(
-                    db, profile.tenant_id, pres_exch_id
-                )
-        except NotFoundError:
-            return None
 
     async def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
         self.logger.info("> approve_for_processing()")
@@ -71,40 +52,3 @@ class VerifierPresentationRequestStatusUpdater(DefaultPresentationRequestProtoco
             verifier_presentation.verifier_presentation_id, values
         )
         self.logger.info("< before_any()")
-
-    async def handle_abandoned(self, verifier_presentation, payload):
-        if "error_msg" in payload:
-            self.logger.debug(f"payload error_msg = {payload['error_msg']}")
-            if str(payload["error_msg"]).startswith("abandoned"):
-                self.logger.info("presentation request abandoned, request rejected.")
-                values = {
-                    "state": AcapyPresentProofStateType.ABANDONED,
-                    "status": VerifierPresentationStatusType.REJECTED,
-                }
-                self.logger.debug(f"updating issuer credential = {values}")
-                async with async_session() as db:
-                    await VerifierPresentation.update_by_id(
-                        verifier_presentation.verifier_presentation_id, values
-                    )
-                    await db.commit()
-
-    async def on_presentation_received(self, profile: Profile, payload: dict):
-        self.logger.info(f"##### on_presentation_received.payload = {payload}")
-
-    async def on_request_sent(self, profile: Profile, payload: dict):
-        self.logger.info("> on_request_sent()")
-        verifier_presentation = await self.get_verifier_presentation(profile, payload)
-        if verifier_presentation:
-            #  update the proof request to match what was sent.
-            values = {
-                "proof_request": payload["presentation_request"],
-                "name": payload["presentation_request"]["name"],
-                "version": payload["presentation_request"]["version"],
-            }
-            async with async_session() as db:
-                await VerifierPresentation.update_by_id(
-                    verifier_presentation.verifier_presentation_id, values
-                )
-                await db.commit()
-
-        self.logger.info("< on_request_sent()")

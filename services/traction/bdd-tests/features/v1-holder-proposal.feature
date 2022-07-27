@@ -30,5 +30,5 @@ Feature: holding presentations
         And "alice" will have 1 holder presentation(s)
         And "alice" can find 1 credential(s) for holder presentation
         And we sadly wait for 10 seconds because we have not figured out how to listen for events
-        Then "alice" will have a holder presentation with status "Presentation Sent"
-        And "faber" has a "received" verifier presentation
+        Then "alice" will have a holder presentation with status "Presentation Received"
+        And "faber" has a "verified" verifier presentation

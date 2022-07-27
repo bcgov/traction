@@ -50,11 +50,9 @@ def verifier_presentation_to_item(
         presentation_exchange = acapy_service.get_presentation_exchange_json(
             db_item.pres_exch_id
         )
-        logger.info(f" & & & & & = presentation_exchange = {presentation_exchange}")
         acapy_item = PresentationExchangeAcapy(
             presentation_exchange=presentation_exchange
         )
-    logger.info(f"* * * * * db_item = {db_item}")
     item = VerifierPresentationItem(**db_item.dict(), acapy=acapy_item)
     return item
 
