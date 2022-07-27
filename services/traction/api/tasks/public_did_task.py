@@ -42,6 +42,7 @@ def get_logger(cls):
 class RegisterPublicDIDTask(Task):
     def __init__(self):
         self._issuer_repo = TenantIssuersRepository
+        super(RegisterPublicDIDTask, self).__init__()
 
     @staticmethod
     def _listener_pattern() -> Pattern[str]:
@@ -61,10 +62,15 @@ class RegisterPublicDIDTask(Task):
 
     async def _perform_task(self, tenant: Tenant, payload: dict):
         self.logger.info("> _perform_task()")
-        # if tenant.public_did_state == "N/A":
-        # self.logger.info("public did already assigned/started")
-        # return
-        await self.initiate_public_did(tenant)
+
+        tenant_issuer = None
+        async with async_session() as db:
+            tenant_issuer = await self._issuer_repo(db).get_by_tenant_id(tenant.id)
+
+        if tenant_issuer.public_did_state != "N/A":
+            raise Exception("TenantIssuer already has a public did")
+
+        await self.initiate_public_did(tenant_issuer)
 
     # TODO delete this method when default behaviour works.
     async def _handle_perform_task_error(
@@ -74,7 +80,7 @@ class RegisterPublicDIDTask(Task):
         self.logger.warning(
             "> error detail not saved as columns do not exist on Tenant"
         )
-
+        self.logger.error(str(exc))
         # old tenant model doesn't have columns to update
         pass
 
@@ -113,30 +119,20 @@ class RegisterPublicDIDTask(Task):
     ) -> (TenantIssuerRead, dict):
         self.logger.warn("> create_public_did:")
 
-        genesis_url = settings.ACAPY_GENESIS_URL
-        did_registration_url = genesis_url.replace("genesis", "register")
-        data = {
-            "did": did_result.result.did,
-            "verkey": did_result.result.verkey,
-            "alias": str(tenant_issuer.tenant_id),
-        }
-        requests.post(did_registration_url, json=data)
-
-        # now make it public
-        did_result = wallet_api.wallet_did_public_post(did_result.result.did)
-
+        data = {"body": DIDCreate()}
+        did_result = wallet_api.wallet_did_create_post(**data)
         connection_state = tenant_issuer.endorser_connection_state
         update_issuer = TenantIssuerUpdate(
             id=tenant_issuer.id,
             workflow_id=tenant_issuer.workflow_id,
             endorser_connection_id=tenant_issuer.endorser_connection_id,
             endorser_connection_state=connection_state,
-            public_did=tenant_issuer.public_did,
-            public_did_state=PublicDIDStateType.public,
+            public_did=did_result.result.did,
+            public_did_state=PublicDIDStateType.private,
         )
         async with async_session() as db:
             tenant_issuer = await self._issuer_repo(db).update(update_issuer)
-        return tenant_issuer
+        return (tenant_issuer, did_result)
 
     async def initiate_public_did_workflow(
         self, tenant_issuer: TenantIssuerRead, did_result: dict
@@ -164,19 +160,29 @@ class RegisterPublicDIDTask(Task):
     async def create_public_did(
         self, tenant_issuer: TenantIssuerRead, did_result: dict
     ) -> TenantIssuerRead:
-        self.logger.warn("> create_local_did:")
+        self.logger.warn("> create_public_did:")
+        genesis_url = settings.ACAPY_GENESIS_URL
+        did_registration_url = genesis_url.replace("genesis", "register")
+        data = {
+            "did": did_result.result.did,
+            "verkey": did_result.result.verkey,
+            "alias": str(tenant_issuer.tenant_id),
+        }
+        requests.post(did_registration_url, json=data)
 
-        data = {"body": DIDCreate()}
-        did_result = wallet_api.wallet_did_create_post(**data)
+        # now make it public
+        did_result = wallet_api.wallet_did_public_post(did_result.result.did)
+
         connection_state = tenant_issuer.endorser_connection_state
         update_issuer = TenantIssuerUpdate(
             id=tenant_issuer.id,
             workflow_id=tenant_issuer.workflow_id,
             endorser_connection_id=tenant_issuer.endorser_connection_id,
             endorser_connection_state=connection_state,
-            public_did=did_result.result.did,
-            public_did_state=PublicDIDStateType.private,
+            public_did=tenant_issuer.public_did,
+            public_did_state=PublicDIDStateType.public,
         )
+
         async with async_session() as db:
             tenant_issuer = await self._issuer_repo(db).update(update_issuer)
         return (tenant_issuer, did_result)
