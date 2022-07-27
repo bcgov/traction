@@ -134,11 +134,11 @@ async def make_issuer(
             )
 
         # create workflow and update issuer record
-        # await create_workflow(
-        #     tenant_issuer.wallet_id,
-        #     TenantWorkflowTypeType.issuer,
-        #     db,
-        # )
+        await create_workflow(
+            tenant_issuer.wallet_id,
+            TenantWorkflowTypeType.issuer,
+            db,
+        )
 
     await RegisterPublicDIDTask.assign(tenant_id, wallet_id, {})
 

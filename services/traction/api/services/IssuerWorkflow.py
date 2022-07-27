@@ -136,11 +136,6 @@ class IssuerWorkflow(BaseWorkflow):
             else:
                 logger.warn(f">>> ignoring topic for now: {webhook_topic}")
 
-            if process_public_did:
-                (complete_workflow, tenant_issuer) = await self.initiate_public_did(
-                    tenant_issuer
-                )
-
             if complete_workflow:
                 # finish off our workflow
                 await self.complete_workflow()
@@ -222,89 +217,3 @@ class IssuerWorkflow(BaseWorkflow):
             endorse_api.transactions_conn_id_set_endorser_info_post(
                 connection_id, endorser_public_did, **data
             )
-
-    async def initiate_public_did(
-        self, tenant_issuer: TenantIssuerRead
-    ) -> (bool, TenantIssuerRead):
-        complete_workflow = False
-        # onto the next phase!  create our DID and make it public
-        (tenant_issuer, did_result) = await self.create_local_did(tenant_issuer)
-
-        # post to the ledger (this will be an endorser operation)
-        # (just ignore the response for now)
-        try:
-            tenant_issuer = await self.initiate_public_did_workflow(
-                tenant_issuer, did_result
-            )
-        except Exception:
-            # TODO this is a hack (for now) - aca-py 0.7.3 doesn't
-            # supportthe endorser protocol for this transaction, it
-            # will be in the next release (0.7.4 or whatever)
-            tenant_issuer = await self.create_public_did(tenant_issuer, did_result)
-            complete_workflow = True
-        return complete_workflow, tenant_issuer
-
-    async def create_local_did(
-        self, tenant_issuer: TenantIssuerRead
-    ) -> (TenantIssuerRead, dict):
-        data = {"body": DIDCreate()}
-        did_result = wallet_api.wallet_did_create_post(**data)
-        connection_state = tenant_issuer.endorser_connection_state
-        update_issuer = TenantIssuerUpdate(
-            id=tenant_issuer.id,
-            workflow_id=tenant_issuer.workflow_id,
-            endorser_connection_id=tenant_issuer.endorser_connection_id,
-            endorser_connection_state=connection_state,
-            public_did=did_result.result.did,
-            public_did_state=PublicDIDStateType.private,
-        )
-        tenant_issuer = await self.issuer_repo.update(update_issuer)
-        return (tenant_issuer, did_result)
-
-    async def initiate_public_did_workflow(
-        self, tenant_issuer: TenantIssuerRead, did_result: dict
-    ) -> TenantIssuerRead:
-        data = {"alias": tenant_issuer.tenant_id}
-        ledger_api.ledger_register_nym_post(
-            did_result.result.did,
-            did_result.result.verkey,
-            **data,
-        )
-        connection_state = tenant_issuer.endorser_connection_state
-        update_issuer = TenantIssuerUpdate(
-            id=tenant_issuer.id,
-            workflow_id=tenant_issuer.workflow_id,
-            endorser_connection_id=tenant_issuer.endorser_connection_id,
-            endorser_connection_state=connection_state,
-            public_did=tenant_issuer.public_did,
-            public_did_state=PublicDIDStateType.requested,
-        )
-        tenant_issuer = await self.issuer_repo.update(update_issuer)
-        return tenant_issuer
-
-    async def create_public_did(
-        self, tenant_issuer: TenantIssuerRead, did_result: dict
-    ) -> TenantIssuerRead:
-        genesis_url = settings.ACAPY_GENESIS_URL
-        did_registration_url = genesis_url.replace("genesis", "register")
-        data = {
-            "did": did_result.result.did,
-            "verkey": did_result.result.verkey,
-            "alias": str(tenant_issuer.tenant_id),
-        }
-        requests.post(did_registration_url, json=data)
-
-        # now make it public
-        did_result = wallet_api.wallet_did_public_post(did_result.result.did)
-
-        connection_state = tenant_issuer.endorser_connection_state
-        update_issuer = TenantIssuerUpdate(
-            id=tenant_issuer.id,
-            workflow_id=tenant_issuer.workflow_id,
-            endorser_connection_id=tenant_issuer.endorser_connection_id,
-            endorser_connection_state=connection_state,
-            public_did=tenant_issuer.public_did,
-            public_did_state=PublicDIDStateType.public,
-        )
-        tenant_issuer = await self.issuer_repo.update(update_issuer)
-        return tenant_issuer
