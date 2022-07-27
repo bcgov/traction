@@ -11,13 +11,16 @@ from sqlmodel import Field
 
 from api.db.models.base import TimestampModel
 
+# CURRENTLY UNUSED ATTACHED BY UNCOMMENTING IMPORT IN api/db/models/__init__.py
+
 
 class Tenant2(TimestampModel, table=True):
     """Tenant.
 
-    This model holds basic information for the tenants that have been 'checked-in' to
-    the traction service by the 'innkeeper'. Entries where is_active is true can provide there
-    wallet_id and wallet_key (wallet_key is not known by the innkeeper) to access traction's
+    This model holds basic information for the tenants that have been
+    'checked-in' to the traction service by the 'innkeeper'. Entries
+    where is_active is true can provide there wallet_id and wallet_key
+    (wallet_key is not known by the innkeeper) to access traction's
     endpoints and execute actions on traction and the aca-py agent underneath.
     """
 

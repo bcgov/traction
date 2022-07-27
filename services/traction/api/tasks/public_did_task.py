@@ -9,7 +9,6 @@ from acapy_client.model.did_create import DIDCreate
 from api.api_client_utils import get_api_client
 from api.core.config import settings
 
-from api.db.models.tenant_workflow import TenantWorkflowRead
 from api.endpoints.models.tenant_issuer import PublicDIDStateType
 from api.db.repositories.tenant_issuers import TenantIssuersRepository
 from api.db.models.tenant_issuer import TenantIssuerUpdate, TenantIssuerRead
@@ -19,7 +18,6 @@ from api.db.models.tenant import Tenant
 # from api.db.models.v1.tenant import Tenant2
 # from api.db.models.v1.tenant_issuer import TenantIssuer
 from api.db.session import async_session
-from api.db.models.v1.contact import Contact
 
 
 from api.tasks.tasks import (

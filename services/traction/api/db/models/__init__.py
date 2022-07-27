@@ -22,14 +22,16 @@ from api.db.models.v1.tenant_configuration import (
     TenantAutoResponseLog,
     TenantWebhookLog,
 )  # noqa: F401
-from api.db.models.v1.tenant import Tenant2
-from api.db.models.v1.tenant_issuer import TenantIssuer
 
+# When uncommented, run 'alembic revision --autogenerate -m "v1_tenant_single_table_inheritance"' to make migration
+# from api.db.models.v1.tenant import Tenant2 as v1Tenant
+# from api.db.models.v1.tenant_issuer import TenantIssuer as v1TenantIssuer
 
 __all__ = [
     "BaseTable",
     "Tenant",
-    "Tenant2",
+    # "v1Tenant",
+    # "v1TenantIssuer",
     "TenantIssuer",
     "TenantWebhook",
     "TenantWebhookMsg",
