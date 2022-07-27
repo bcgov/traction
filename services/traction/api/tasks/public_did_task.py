@@ -170,7 +170,9 @@ class RegisterPublicDIDTask(Task):
         }
         requests.post(did_registration_url, json=data)
 
-        # now make it public
+        # now make it public, endorser signs this txn
+        # TODO if endorser doesn't automatically sign txn's, this will become
+        # async, could sit 'pending' forever
         did_result = wallet_api.wallet_did_public_post(did_result.result.did)
 
         connection_state = tenant_issuer.endorser_connection_state
