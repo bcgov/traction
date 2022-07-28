@@ -39,4 +39,5 @@ Feature: holding presentations
         And we sadly wait for 10 seconds because we have not figured out how to listen for events
         And "alice" will have 1 holder presentation(s)
         And "alice" will have a holder presentation with status "Error"
+        And "alice" can find 0 credential(s) for holder presentation
         And "faber" has a "rejected" verifier presentation

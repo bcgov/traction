@@ -5,6 +5,7 @@ from uuid import UUID
 from sqlalchemy import select, func, desc, update
 from sqlalchemy.orm import selectinload
 
+from acapy_client import ApiException
 from acapy_client.model.indy_pres_attr_spec import IndyPresAttrSpec
 from acapy_client.model.indy_pres_pred_spec import IndyPresPredSpec
 from acapy_client.model.indy_pres_preview import IndyPresPreview
@@ -576,17 +577,22 @@ async def list_credentials_for_request(
             pass
 
     if item:
-        creds = present_proof_api.present_proof_records_pres_ex_id_credentials_get(
-            item.presentation_exchange_id
-        )
         all_creds = []
-        for cred in creds:
-            all_creds.append(
-                CredPrecisForProof(
-                    cred_info=cred.get("cred_info"),
-                    interval=cred.get("interval"),
-                    presentation_referents=cred.get("presentation_referents"),
+        try:
+            creds = present_proof_api.present_proof_records_pres_ex_id_credentials_get(
+                item.presentation_exchange_id
+            )
+            for cred in creds:
+                all_creds.append(
+                    CredPrecisForProof(
+                        cred_info=cred.get("cred_info"),
+                        interval=cred.get("interval"),
+                        presentation_referents=cred.get("presentation_referents"),
+                    )
                 )
+        except ApiException as e:
+            logger.warning(
+                f"Error getting credentials for presentation request. {e.reason}"
             )
         return all_creds[skip : (skip + limit)], len(all_creds)
     else:
