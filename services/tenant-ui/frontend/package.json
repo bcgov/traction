@@ -1,5 +1,5 @@
 {
-  "name": "tenant-ui",
+  "name": "tenant-ui-frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
