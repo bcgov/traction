@@ -15,6 +15,9 @@ from api.db.models.v1.governance import SchemaTemplate, CredentialTemplate  # no
 from api.db.models.v1.holder import HolderCredential, HolderPresentation  # noqa: F401
 from api.db.models.v1.issuer import IssuerCredential  # noqa: F401
 from api.db.models.v1.message import Message  # noqa: F401
+from api.db.models.v1.presentation_request_template import (
+    PresentationRequestTemplate,
+)  # noqa: F401
 from api.db.models.v1.verifier_presentation import VerifierPresentation  # noqa: F401
 from api.db.models.v1.tenant_permissions import TenantPermissions  # noqa: F401
 from api.db.models.v1.tenant_configuration import (
@@ -42,4 +45,5 @@ __all__ = [
     "TenantWebhookLog",
     "HolderCredential",
     "HolderPresentation",
+    "PresentationRequestTemplate",
 ]
