@@ -686,3 +686,25 @@ def step_impl(context, holder: str, verifier: str):
     resp_json = json.loads(response.content)
     item = resp_json["item"]
     assert item["state"] == "proposal_sent", resp_json
+
+
+@step('"{holder}" proposes an empty presentation to "{verifier}"')
+def step_impl(context, holder: str, verifier: str):
+    contact_id = context.config.userdata[holder]["connections"][verifier]["contact_id"]
+
+    # don't ask for anything to prove...
+    presentation_proposal = {
+        "attributes": [],
+        "predicates": [],
+    }
+
+    payload = {
+        "contact_id": contact_id,
+        "presentation_proposal": presentation_proposal,
+        "comment": "sent for bdd test",
+    }
+    response = holder_send_proposal(context, holder, payload)
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    item = resp_json["item"]
+    assert item["state"] == "proposal_sent", resp_json

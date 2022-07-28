@@ -69,6 +69,10 @@ class DefaultHolderPresentationProtocol(DefaultPresentationRequestProtocol):
             if payload["state"] in accepted_states:
                 values["status"] = HolderPresentationStatusType.presentation_acked
 
+            if "error_msg" in payload:
+                values["error_status_detail"] = payload["error_msg"]
+                values["status"] = HolderPresentationStatusType.error
+
             self.logger.debug(f"update values = {values}")
             await HolderPresentation.update_by_id(
                 item_id=item.holder_presentation_id, values=values
@@ -78,20 +82,15 @@ class DefaultHolderPresentationProtocol(DefaultPresentationRequestProtocol):
 
     async def on_request_received(self, profile: Profile, payload: dict):
         self.logger.info("> on_request_received()")
-        # create a new holder credential!
         contact = await self.get_contact(profile, payload)
-        holder_presentation = await self.get_holder_presentation(profile, payload)
-        if contact:
-            if holder_presentation:
-                # may have one due to a sent proposal
-                values = {
-                    "status": HolderPresentationStatusType.request_received,
-                    "state": payload["state"],
-                }
-                await HolderPresentation.update_by_id(
-                    item_id=holder_presentation.holder_presentation_id, values=values
-                )
-            else:
+        if not contact:
+            self.logger.warning(
+                f"No contact found for connection_id<{payload['connection_id']}>, cannot create holder presentation."  # noqa: E501
+            )
+        else:
+            holder_presentation = await self.get_holder_presentation(profile, payload)
+            if not holder_presentation:
+                # create a new holder credential!
                 offer = HolderPresentation(
                     tenant_id=profile.tenant_id,
                     contact_id=contact.contact_id,
@@ -106,8 +105,23 @@ class DefaultHolderPresentationProtocol(DefaultPresentationRequestProtocol):
                     await db.commit()
 
         # TODO: create payload and send notification to tenant.
-        else:
-            self.logger.warning(
-                f"No contact found for connection_id<{payload['connection_id']}>, cannot create holder presentation."  # noqa: E501
-            )
         self.logger.info("< on_request_received()")
+
+    async def on_abandoned(self, profile: Profile, payload: dict):
+        if "error_msg" in payload:
+            self.logger.info(f"payload error_msg = {payload['error_msg']}")
+            if str(payload["error_msg"]).startswith("created problem report:"):
+                holder_presentation = await self.get_holder_presentation(
+                    profile, payload
+                )
+                self.logger.info("holder request abandoned, request rejected.")
+                values = {
+                    "state": AcapyPresentProofStateType.ABANDONED,
+                    "status": HolderPresentationStatusType.rejected,
+                }
+                self.logger.debug(f"updating holder presentation = {values}")
+                async with async_session() as db:
+                    await HolderPresentation.update_by_id(
+                        holder_presentation.holder_presentation_id, values
+                    )
+                    await db.commit()

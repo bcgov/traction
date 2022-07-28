@@ -35,16 +35,15 @@ class VerifierPresentationRequestStatusUpdater(DefaultPresentationRequestProtoco
             AcapyPresentProofStateType.PRESENTATION_RECEIVED,
         ]
 
-        # what to do about abandoned?
-
         if payload["state"] in verified_states:
             values["status"] = VerifierPresentationStatusType.VERIFIED
 
         if payload["state"] in received_states:
             values["status"] = VerifierPresentationStatusType.RECEIVED
 
-        if payload["state"] == AcapyPresentProofStateType.ABANDONED:
-            values["status"] = VerifierPresentationStatusType.REJECTED
+        if "error_msg" in payload:
+            values["error_status_detail"] = payload["error_msg"]
+            values["status"] = VerifierPresentationStatusType.ERROR
 
         self.logger.debug(f"update values = {values}")
 

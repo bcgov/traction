@@ -25,16 +25,19 @@ class VerifierPresentationRequestHandler(DefaultPresentationRequestProtocol):
         self.logger.info(f"< approve_for_processing({approved})")
         return approved
 
-    async def handle_abandoned(self, verifier_presentation, payload):
+    async def on_abandoned(self, profile: Profile, payload: dict):
         if "error_msg" in payload:
-            self.logger.debug(f"payload error_msg = {payload['error_msg']}")
+            self.logger.info(f"payload error_msg = {payload['error_msg']}")
             if str(payload["error_msg"]).startswith("abandoned"):
+                verifier_presentation = await self.get_verifier_presentation(
+                    profile, payload
+                )
                 self.logger.info("presentation request abandoned, request rejected.")
                 values = {
                     "state": AcapyPresentProofStateType.ABANDONED,
                     "status": VerifierPresentationStatusType.REJECTED,
                 }
-                self.logger.debug(f"updating issuer credential = {values}")
+                self.logger.debug(f"updating verifier presentation = {values}")
                 async with async_session() as db:
                     await VerifierPresentation.update_by_id(
                         verifier_presentation.verifier_presentation_id, values

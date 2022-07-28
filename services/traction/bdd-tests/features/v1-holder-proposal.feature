@@ -32,3 +32,11 @@ Feature: holding presentations
         And we sadly wait for 10 seconds because we have not figured out how to listen for events
         Then "alice" will have a holder presentation with status "Presentation Received"
         And "faber" has a "verified" verifier presentation
+
+
+    Scenario: holder proposes an empty presentation
+        When "alice" proposes an empty presentation to "faber"
+        And we sadly wait for 10 seconds because we have not figured out how to listen for events
+        And "alice" will have 1 holder presentation(s)
+        And "alice" will have a holder presentation with status "Error"
+        And "faber" has a "rejected" verifier presentation
