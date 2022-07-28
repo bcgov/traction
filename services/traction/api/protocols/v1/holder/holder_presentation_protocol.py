@@ -1,7 +1,4 @@
-import uuid
-
 from api.core.profile import Profile
-from api.db.models.v1.contact import Contact
 from api.db.models.v1.holder import HolderPresentation
 from api.db.session import async_session
 from api.endpoints.models.credentials import PresentationRoleType
@@ -13,17 +10,15 @@ from api.protocols.v1.verifier.presentation_request_protocol import (
     DefaultPresentationRequestProtocol,
 )
 
+new_request_states = [
+    AcapyPresentProofStateType.REQUEST_RECEIVED,
+]
+
 
 class DefaultHolderPresentationProtocol(DefaultPresentationRequestProtocol):
     def __init__(self):
         super().__init__()
         self.role = PresentationRoleType.prover
-
-    def get_presentation_exchange_id(self, payload: dict) -> str:
-        try:
-            return payload["presentation_exchange_id"]
-        except KeyError:
-            return None
 
     async def get_holder_presentation(
         self, profile: Profile, payload: dict
@@ -37,20 +32,10 @@ class DefaultHolderPresentationProtocol(DefaultPresentationRequestProtocol):
         except NotFoundError:
             return None
 
-    async def get_contact(self, profile: Profile, payload: dict) -> Contact:
-        connection_id = uuid.UUID(payload["connection_id"])
-        try:
-            async with async_session() as db:
-                return await Contact.get_by_connection_id(
-                    db, profile.tenant_id, connection_id=connection_id
-                )
-        except NotFoundError:
-            return None
-
     async def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
         self.logger.info("> approve_for_processing()")
         holder_presentation = await self.get_holder_presentation(profile, payload)
-        is_new_request = payload["state"] == AcapyPresentProofStateType.REQUEST_RECEIVED
+        is_new_request = payload["state"] in new_request_states
         is_existing_item = holder_presentation is not None
         approved = is_new_request or is_existing_item
         self.logger.info(f"is_new_request={is_new_request}")
@@ -66,17 +51,27 @@ class DefaultHolderPresentationProtocol(DefaultPresentationRequestProtocol):
             self.logger.debug("holder presentation exists, proceed with status update")
             values = {"state": payload["state"]}
 
+            proposal_states = [
+                AcapyPresentProofStateType.PROPOSAL_SENT,
+            ]
             sent_states = [AcapyPresentProofStateType.PRESENTATION_SENT]
 
             accepted_states = [
                 AcapyPresentProofStateType.PRESENTATION_ACKED,
             ]
 
+            if payload["state"] in proposal_states:
+                values["status"] = HolderPresentationStatusType.proposol_sent
+
             if payload["state"] in sent_states:
                 values["status"] = HolderPresentationStatusType.presentation_sent
 
             if payload["state"] in accepted_states:
                 values["status"] = HolderPresentationStatusType.presentation_acked
+
+            if "error_msg" in payload:
+                values["error_status_detail"] = payload["error_msg"]
+                values["status"] = HolderPresentationStatusType.error
 
             self.logger.debug(f"update values = {values}")
             await HolderPresentation.update_by_id(
@@ -87,37 +82,46 @@ class DefaultHolderPresentationProtocol(DefaultPresentationRequestProtocol):
 
     async def on_request_received(self, profile: Profile, payload: dict):
         self.logger.info("> on_request_received()")
-        # create a new holder credential!
         contact = await self.get_contact(profile, payload)
-        if contact:
-            offer = HolderPresentation(
-                tenant_id=profile.tenant_id,
-                contact_id=contact.contact_id,
-                status=HolderPresentationStatusType.request_received,
-                state=payload["state"],
-                thread_id=payload["thread_id"],
-                presentation_exchange_id=payload["presentation_exchange_id"],
-                connection_id=payload["connection_id"],
-            )
-            async with async_session() as db:
-                db.add(offer)
-                await db.commit()
-
-        # TODO: create payload and send notification to tenant.
-        else:
+        if not contact:
             self.logger.warning(
                 f"No contact found for connection_id<{payload['connection_id']}>, cannot create holder presentation."  # noqa: E501
             )
+        else:
+            holder_presentation = await self.get_holder_presentation(profile, payload)
+            if not holder_presentation:
+                # create a new holder credential!
+                offer = HolderPresentation(
+                    tenant_id=profile.tenant_id,
+                    contact_id=contact.contact_id,
+                    status=HolderPresentationStatusType.request_received,
+                    state=payload["state"],
+                    thread_id=payload["thread_id"],
+                    presentation_exchange_id=payload["presentation_exchange_id"],
+                    connection_id=payload["connection_id"],
+                )
+                async with async_session() as db:
+                    db.add(offer)
+                    await db.commit()
+
+        # TODO: create payload and send notification to tenant.
         self.logger.info("< on_request_received()")
 
-    async def on_presentation_sent(self, profile: Profile, payload: dict):
-        self.logger.info("> on_presentation_sent()")
-        self.logger.info("< on_presentation_sent()")
-
-    async def on_presentation_acked(self, profile: Profile, payload: dict):
-        self.logger.info("> on_presentation_acked()")
-        self.logger.info("< on_presentation_acked()")
-
     async def on_abandoned(self, profile: Profile, payload: dict):
-        self.logger.info("> on_abandoned()")
-        self.logger.info("< on_abandoned()")
+        if "error_msg" in payload:
+            self.logger.info(f"payload error_msg = {payload['error_msg']}")
+            if str(payload["error_msg"]).startswith("created problem report:"):
+                holder_presentation = await self.get_holder_presentation(
+                    profile, payload
+                )
+                self.logger.info("holder request abandoned, request rejected.")
+                values = {
+                    "state": AcapyPresentProofStateType.ABANDONED,
+                    "status": HolderPresentationStatusType.rejected,
+                }
+                self.logger.debug(f"updating holder presentation = {values}")
+                async with async_session() as db:
+                    await HolderPresentation.update_by_id(
+                        holder_presentation.holder_presentation_id, values
+                    )
+                    await db.commit()

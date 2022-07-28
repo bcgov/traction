@@ -122,7 +122,7 @@ acapy:
     autoRespondCredentialProposal: false
     autoRespondCredentialOffer: false
     autoRespondCredentialRequest: true
-    autoRespondPresentationProposal: false
+    autoRespondPresentationProposal: true
     autoRespondPresentationRequest: false
     autoStoreCredential: true
     autoVerifyPresentation: true

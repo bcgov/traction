@@ -42,6 +42,7 @@ class HolderCredentialStatusType(str, Enum):
 class HolderPresentationStatusType(str, Enum):
     # pending, nothing happened yet
     pending = "Pending"
+    proposol_sent = "Proposal Sent"
     # offer received, waiting for action
     request_received = "Request Received"
     presentation_sent = "Presentation Sent"
@@ -217,3 +218,33 @@ class RejectPresentationRequestPayload(BaseModel):
     alias: str | None = None
     external_reference_id: str | None = None
     tags: List[str] | None = []
+
+
+class PresentationProposalAttribute(BaseModel):
+    name: str | None = None
+    cred_def_id: str | None = None
+    mime_type: str | None = None
+    referent: str | None = None
+    value: str | None = None
+
+
+class PresentationProposalPredicate(BaseModel):
+    name: str | None = None
+    predicate: str | None = None
+    threshold: int | None = None
+    cred_def_id: str | None = None
+
+
+class PresentationProposal(BaseModel):
+    attributes: List[PresentationProposalAttribute] | None = []
+    predicates: List[PresentationProposalPredicate] | None = []
+
+
+class HolderSendProposalPayload(BaseModel):
+    contact_id: UUID
+    comment: str | None = None
+    presentation_proposal: PresentationProposal
+
+
+class HolderSendProposalResponse(GetResponse[HolderPresentationItem]):
+    pass

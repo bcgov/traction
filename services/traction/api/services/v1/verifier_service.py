@@ -53,7 +53,6 @@ def verifier_presentation_to_item(
         acapy_item = PresentationExchangeAcapy(
             presentation_exchange=presentation_exchange
         )
-
     item = VerifierPresentationItem(**db_item.dict(), acapy=acapy_item)
     return item
 

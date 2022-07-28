@@ -82,7 +82,7 @@ async def new_verifier_presentation(
     task_payload = {
         "verifier_presentation_id": item.verifier_presentation_id,
         "contact_id": item.contact_id,
-        "proof_request": item.proof_request,
+        "proof_request": payload.proof_request,
     }
     await SendPresentProofTask.assign(tenant_id, wallet_id, task_payload)
 

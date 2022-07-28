@@ -156,11 +156,17 @@ def step_impl(context, holder: str):
 
 @step('"{holder}" will have {count:d} holder credential(s)')
 def step_impl(context, holder: str, count: int):
-    params = {}
+    params = {"acapy": True}
     response = list_holder_credentials(context, holder, params)
     assert response.status_code == status.HTTP_200_OK, response.__dict__
     resp_json = json.loads(response.content)
     assert resp_json["total"] == count, resp_json
+    items = resp_json["items"]
+    creds = []
+    for c in items:
+        creds.append(c["acapy"]["credential"])
+    context.config.userdata[holder].setdefault("holder_credentials", items)
+    context.config.userdata[holder].setdefault("wallet_credentials", creds)
 
 
 @step('"{holder}" can find holder credential by alias "{alias}"')
@@ -413,6 +419,7 @@ def step_impl(context, holder: str, count: int):
     response = list_holder_presentations(context, holder, params)
     assert response.status_code == status.HTTP_200_OK, response.__dict__
     resp_json = json.loads(response.content)
+    pprint.pp(resp_json)
     assert resp_json["total"] == count, resp_json
     # store result, use for update and delete
     context.config.userdata[holder].setdefault(
@@ -633,3 +640,71 @@ def send_valid_presentation(context, holder):
         context, holder, holder_presentation_id, payload
     )
     return holder_presentation_id, response
+
+
+@when('"{holder}" proposes a presentation to "{verifier}"')
+def step_impl(context, holder: str, verifier: str):
+    contact_id = context.config.userdata[holder]["connections"][verifier]["contact_id"]
+
+    pprint.pp(context.config.userdata[holder]["holder_credentials"])
+
+    c = context.config.userdata[holder]["holder_credentials"][0]["acapy"]["credential"]
+
+    attributes = []
+    # name: str | None = None
+    # cred_def_id: str | None = None
+    # mime_type: str | None = None
+    # referent: str | None = None
+    # value: str | None = None
+    for k in c["attrs"].keys():
+        attributes.append(
+            {
+                "cred_def_id": c["cred_def_id"],
+                "referent": c["referent"],
+                "name": k,
+                "value": c["attrs"][k],
+            }
+        )
+
+    predicates = []
+    #     name: str | None = None
+    #     predicate: str | None = None
+    #     threshold: int | None = None
+    #     cred_def_id: str | None = None
+    presentation_proposal = {
+        "attributes": attributes,
+        "predicates": predicates,
+    }
+
+    payload = {
+        "contact_id": contact_id,
+        "presentation_proposal": presentation_proposal,
+        "comment": "sent for bdd test",
+    }
+    response = holder_send_proposal(context, holder, payload)
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    item = resp_json["item"]
+    assert item["state"] == "proposal_sent", resp_json
+
+
+@step('"{holder}" proposes an empty presentation to "{verifier}"')
+def step_impl(context, holder: str, verifier: str):
+    contact_id = context.config.userdata[holder]["connections"][verifier]["contact_id"]
+
+    # don't ask for anything to prove...
+    presentation_proposal = {
+        "attributes": [],
+        "predicates": [],
+    }
+
+    payload = {
+        "contact_id": contact_id,
+        "presentation_proposal": presentation_proposal,
+        "comment": "sent for bdd test",
+    }
+    response = holder_send_proposal(context, holder, payload)
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    item = resp_json["item"]
+    assert item["state"] == "proposal_sent", resp_json
