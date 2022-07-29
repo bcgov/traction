@@ -421,3 +421,67 @@ def holder_send_proposal(context, tenant, payload: dict | None = {}):
         headers=context.config.userdata[tenant]["auth_headers"],
     )
     return response
+
+
+def create_presentation_request_template(context, tenant, payload):
+    response = requests.post(
+        context.config.userdata.get("traction_host")
+        + "/tenant/v1/verifier/presentation_templates/",
+        json=payload,
+        headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response
+
+
+def list_presentation_request_templates(context, tenant, params):
+    response = requests.get(
+        context.config.userdata.get("traction_host")
+        + "/tenant/v1/verifier/presentation_templates",
+        params=params,
+        headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response
+
+
+def get_presentation_request_template(
+    context, tenant, item_id, params: dict | None = {}
+):
+    response = requests.get(
+        context.config.userdata.get("traction_host")
+        + f"/tenant/v1/verifier/presentation_templates/{item_id}",
+        params=params,
+        headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response
+
+
+def update_presentation_request_template(context, tenant, item_id, payload):
+    response = requests.put(
+        context.config.userdata.get("traction_host")
+        + f"/tenant/v1/verifier/presentation_templates/{item_id}",
+        json=payload,
+        headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response
+
+
+def delete_presentation_request_template(context, tenant, item_id):
+    response = requests.delete(
+        context.config.userdata.get("traction_host")
+        + f"/tenant/v1/verifier/presentation_templates/{item_id}",
+        headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response
+
+
+def send_request_from_presentation_request_template(
+    context, tenant, item_id, payload: dict | None = {}
+):
+    payload["presentation_request_template"] = item_id
+    response = requests.post(
+        context.config.userdata.get("traction_host")
+        + f"/tenant/v1/verifier/presentation_templates/{item_id}/send-request",
+        json=payload,
+        headers=context.config.userdata[tenant]["auth_headers"],
+    )
+    return response
