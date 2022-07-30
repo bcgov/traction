@@ -18,9 +18,8 @@ import PrimeVue from 'primevue/config';
 import "primevue/resources/themes/nova-vue/theme.css";
 import "primevue/resources/primevue.min.css";
 import "primeicons/primeicons.css";
-import Toast, { PluginOptions } from "vue-toastification";
-import "vue-toastification/dist/index.css";
-const options: PluginOptions = {};
+import 'primeflex/primeflex.css';
+import ToastService from 'primevue/toastservice';
 
 loadConfig();
 
@@ -63,9 +62,9 @@ async function loadConfig() {
 function initializeApp(config: object) {
     const app = createApp(App);
     app.provide('config', config)
-    app.use(PrimeVue);
+    // app.use(PrimeVue);
     app.use(router);
-    app.use(Toast, options);
+    app.use(ToastService);
 
     app.mount('#app')
 }

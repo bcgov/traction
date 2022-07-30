@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import ApiHealth from "./components/ApiHealth.vue";
-import Dashboard from "./pages/Dashboard.vue";
+import AppLayout from "./components/layout/AppLayout.vue";
 import Login from "./components/Login.vue";
 import store from "./store";
 import { inject, provide } from "vue";
+import Sidebar from 'primevue/sidebar';
+
 
 let globalVar = inject('config')
 provide("store", store); // Allow the entire app to see the store.
@@ -11,7 +13,7 @@ provide("store", store); // Allow the entire app to see the store.
 </script>
 
 <template>
-  <h2>Config from backend</h2>
+  <!-- <h2>Config from backend</h2>
   {{ globalVar }}
 
   <hr />
@@ -22,11 +24,9 @@ provide("store", store); // Allow the entire app to see the store.
   </div>
   <router-view />
   <hr />
-  <ApiHealth />
+  <ApiHealth /> -->
 
-  <hr />
-  <h2>Existing Tenant UI Components</h2>
-  <Dashboard v-if="store.state.token" />
+  <AppLayout v-if="store.state.token" />
   <Login v-else />
 </template>
 
@@ -43,11 +43,6 @@ provide("store", store); // Allow the entire app to see the store.
 
 .logo.vue:hover {
   filter: drop-shadow(0 0 2em #42b883aa);
-}
-
-html,
-body {
-  height: 100%;
 }
 
 #app {

@@ -5,7 +5,7 @@ import Button from "primevue/button";
 import QrcodeVue from "qrcode.vue";
 import Accordion from "primevue/accordion";
 import AccordionTab from "primevue/accordiontab";
-import { useToast } from "vue-toastification";
+import { useToast } from 'primevue/usetoast';
 
 const toast = useToast();
 
