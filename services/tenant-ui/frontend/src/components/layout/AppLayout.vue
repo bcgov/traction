@@ -8,7 +8,7 @@
                 <Header />
             </header>
             <main class='layout-content'>
-                This is the main content
+                <router-view />
             </main>
             <footer class='layout-footer'>
                 This is the footer

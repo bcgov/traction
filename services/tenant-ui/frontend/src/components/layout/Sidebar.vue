@@ -1,69 +1,86 @@
 <template>
     <div>
-        <Toast />
-
-        <h5>Inline</h5>
-        <Menu :model="items" />
-
-        <h5>Overlay</h5>
-        <Button type="button" label="Toggle" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" />
-        <Menu id="overlay_menu" ref="menu" :model="items" :popup="true" />
+        <h1>Traction</h1>
+        <PanelMenu :model="items" />
     </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import { ref } from 'vue';
-import { useToast } from 'primevue/usetoast';
+import PanelMenu from 'primevue/panelmenu';
 
-export default {
-    setup() {
-        const toast = useToast();
-        const menu = ref();
-        const items = ref([
+const items = ref([
+    {
+        label: 'Dashboard',
+        icon: 'pi pi-fw pi-chart-bar',
+        to: { name: 'Dashboard' }
+    },
+    {
+        label: 'Connections',
+        icon: 'pi pi-fw pi-users',
+        items: [
             {
-                label: 'Options',
-                items: [{
-                    label: 'Update',
-                    icon: 'pi pi-refresh',
-                    command: () => {
-                        toast.add({ severity: 'success', summary: 'Updated', detail: 'Data Updated', life: 3000 });
-                    }
-                },
-                {
-                    label: 'Delete',
-                    icon: 'pi pi-times',
-                    command: () => {
-                        toast.add({ severity: 'warn', summary: 'Delete', detail: 'Data Deleted', life: 3000 });
-                    }
-                }
-                ]
+                label: 'My Contacts',
+                to: { name: 'MyContacts' }
             },
             {
-                label: 'Navigate',
-                items: [{
-                    label: 'Vue Website',
-                    icon: 'pi pi-external-link',
-                    url: 'https://vuejs.org/'
-                },
-                {
-                    label: 'Router',
-                    icon: 'pi pi-upload',
-                    command: () => {
-                        window.location.hash = "/fileupload"
-                    }
-                }
-                ]
+                label: 'Accept Invitation',
+                to: { name: 'AcceptInvitation' }
             }
-        ]);
+        ]
+    },
 
-        const toggle = (event) => {
-            menu.value.toggle(event);
-        };
-        const save = () => {
-            toast.add({ severity: 'success', summary: 'Success', detail: 'Data Saved', life: 3000 });
-        };
+    {
+        label: 'Issuance',
+        icon: 'pi pi-fw pi-wallet',
+        items: [
+            {
+                label: 'Schemas',
+                to: { name: 'Schemas' }
+            },
+            {
+                label: 'Offer A Credential',
+                to: { name: 'OfferCredential' }
+            },
+            {
+                label: 'My Issued Credentials',
+                to: { name: 'MyIssuedCredentials' }
+            },
+        ]
+    },
 
-        return { items, menu, toggle, save }
-    }
-}
+    {
+        label: 'Verification',
+        icon: 'pi pi-fw pi-check-square',
+        items: [
+            {
+                label: 'My Presentations',
+                to: { name: 'MyPresentations' }
+            },
+            {
+                label: 'Create A Presentation Request',
+                to: { name: 'CreatePresentation' }
+            },
+            {
+                label: 'Presentation Templates',
+                to: { name: 'PresentationTemplates' }
+            },
+        ]
+    },
+
+    {
+        label: 'Holder',
+        icon: 'pi pi-fw pi-key',
+        items: [
+            {
+                label: 'My Held Credentials',
+                to: { name: 'MyHeldCredentials' }
+            },
+            {
+                label: 'Accept a Credential Offer',
+                to: { name: 'AcceptCredential' }
+            }
+        ]
+    },
+]); 
 </script>

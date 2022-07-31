@@ -11,26 +11,16 @@ const toast = useToast();
 
 const copy_to_clipboard = (content: string) => {
   navigator.clipboard.writeText(content);
-  toast("QR Code contents copied to clipboard");
+  toast.add({ severity: 'success', detail: 'Contact Created' });
   return;
 };
 </script>
 
 <template>
   <div class="qr-container" v-if="qr_content">
-    <qrcode-vue
-      class="qr-image"
-      v-if="qr_content"
-      :value="qr_content"
-      :size="400"
-      level="H"
-    />
-    <Button
-      class="clipboard-button"
-      label="Copy to Clipboard"
-      icon="pi pi-paperclip"
-      @click="copy_to_clipboard(qr_content!)"
-    ></Button>
+    <qrcode-vue class="qr-image" v-if="qr_content" :value="qr_content" :size="400" level="H" />
+    <Button class="clipboard-button" label="Copy to Clipboard" icon="pi pi-paperclip"
+      @click="copy_to_clipboard(qr_content!)"></Button>
     <Accordion class="qr-accordion">
       <AccordionTab header="View Raw Content">
         <p style="word-wrap: break-word">{{ qr_content }}</p>
@@ -60,9 +50,11 @@ export default {
   display: flex;
   margin-bottom: 25px;
 }
+
 .qr-container {
   max-width: 400px;
 }
+
 i {
   margin: 10px;
 }

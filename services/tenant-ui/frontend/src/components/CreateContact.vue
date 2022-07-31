@@ -40,11 +40,11 @@ const submit_new_contact = () => {
       invitation_url.value = res.data.invitation_url;
       console.log(`invitation_url: ${invitation_url}`);
       processing.value = false; // enable button
-      toast(`Contact Created!`);
+      toast.add({ severity: 'success', detail: 'Contact Created' });
     })
     .catch((err) => {
       console.error(err);
-      toast.error(`Failure: ${err}`);
+      toast.add({ severity: 'error', detail: `Failure: ${err}` });
       processing.value = false; // enable button
     });
 };
