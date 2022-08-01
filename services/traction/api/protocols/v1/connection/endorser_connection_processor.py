@@ -10,7 +10,6 @@ from api.protocols.v1.connection.connection_protocol import DefaultConnectionPro
 from acapy_client.api.connection_api import ConnectionApi
 from acapy_client.api.endorse_transaction_api import EndorseTransactionApi
 from api.core.config import settings
-from api.tasks.public_did_task import RegisterPublicDIDTask
 
 from api.endpoints.models.connections import ConnectionRoleType
 
@@ -35,6 +34,8 @@ class EndorserConnectionProcessor(DefaultConnectionProtocol):
         connection_id = payload["connection_id"]
 
         if payload["alias"] == settings.ENDORSER_CONNECTION_ALIAS:
+            from api.tasks.public_did_task import RegisterPublicDIDTask
+
             self.logger.info(f"connection to endorser completed, update meta")
             self.update_connection_metadata(connection_id)
             RegisterPublicDIDTask.assign(profile.tenant_id, profile.wallet_id, {})
