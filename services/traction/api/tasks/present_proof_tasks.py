@@ -11,7 +11,7 @@ from acapy_client.model.v10_presentation_send_request_request import (
 )
 
 
-from api.tasks.tasks import (
+from api.tasks.base_tasks import (
     Task,
     TractionTaskType,
     TRACTION_TASK_PREFIX,

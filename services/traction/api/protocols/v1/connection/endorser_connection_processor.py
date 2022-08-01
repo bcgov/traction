@@ -2,6 +2,11 @@ import logging
 import time
 import json
 from api.api_client_utils import get_api_client
+from api.db.session import async_session
+from api.db.repositories.tenant_issuers import (
+    TenantIssuersRepository,
+    TenantIssuerUpdate,
+)
 
 from api.core.profile import Profile
 from api.endpoints.models.webhooks import TenantEventTopicType, TRACTION_EVENT_PREFIX
@@ -26,7 +31,6 @@ class EndorserConnectionProcessor(DefaultConnectionProtocol):
 
     async def on_completed(self, profile: Profile, payload: dict):
         self.logger.info("> on_completed()")
-        self.logger.info(f"payload = {payload}")
         topic = TenantEventTopicType.connection
         event_topic = TRACTION_EVENT_PREFIX + topic
         self.logger.debug(f"profile.notify {event_topic}")
@@ -36,8 +40,24 @@ class EndorserConnectionProcessor(DefaultConnectionProtocol):
         if payload["alias"] == settings.ENDORSER_CONNECTION_ALIAS:
             from api.tasks.public_did_task import RegisterPublicDIDTask
 
-            self.logger.info(f"connection to endorser completed, update meta")
+            self.logger.info(
+                f"connection to endorser completed, update meta on connection_id {connection_id}"
+            )
             self.update_connection_metadata(connection_id)
+
+            # also update tenant_issuer record with details
+            async with async_session() as db:
+                # TODO replace when repo pattern is gone
+                repo = TenantIssuersRepository(db)
+                tenant_issuer = await repo.get_by_tenant_id(profile.tenant_id)
+                update_tenant = TenantIssuerUpdate(
+                    id=tenant_issuer.id,
+                    endorser_connection_id=payload["connection_id"],
+                    endorser_connection_state=payload["state"],
+                )
+                repo.update(update_tenant)
+            time.sleep(5)
+
             RegisterPublicDIDTask.assign(profile.tenant_id, profile.wallet_id, {})
             pass
 

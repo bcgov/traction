@@ -65,7 +65,9 @@ class RegisterPublicDIDTask(Task):
         async with async_session() as db:
             tenant_issuer = await self._issuer_repo(db).get_by_tenant_id(tenant.id)
 
-        if tenant_issuer.public_did_state != "N/A":
+        if not tenant_issuer:
+            raise Exception("TenantIssuer not found")
+        if tenant_issuer.public_did_state is not None:
             raise Exception("TenantIssuer already has a public did")
 
         await self.initiate_public_did(tenant_issuer)
@@ -115,7 +117,7 @@ class RegisterPublicDIDTask(Task):
     async def create_local_did(
         self, tenant_issuer: TenantIssuerRead
     ) -> (TenantIssuerRead, dict):
-        self.logger.warn("> create_public_did:")
+        self.logger.warn("> create_local_did:")
 
         data = {"body": DIDCreate()}
         did_result = wallet_api.wallet_did_create_post(**data)

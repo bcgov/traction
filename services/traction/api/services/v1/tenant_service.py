@@ -1,4 +1,5 @@
 import logging
+import time
 from uuid import UUID
 
 from api.db.errors import DoesNotExist
@@ -139,13 +140,11 @@ async def make_issuer(
                 detail="Innkeeper has to approve the Issuer process before tenant can make themselves an issuer.",  # noqa: E501
             )
 
-        # create workflow and update issuer record
-        await create_workflow(
-            tenant_issuer.wallet_id,
-            TenantWorkflowTypeType.issuer,
-            db,
-        )
-
+    # TODO: make this conditional
+    endorser_alias = settings.ENDORSER_CONNECTION_ALIAS
+    endorser_public_did = settings.ACAPY_ENDORSER_PUBLIC_DID
+    receive_invitation(endorser_alias, their_public_did=endorser_public_did)
+    time.sleep(5)
     await RegisterPublicDIDTask.assign(tenant_id, wallet_id, {})
 
     return await get_tenant(tenant_id, wallet_id)
