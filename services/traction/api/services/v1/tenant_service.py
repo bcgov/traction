@@ -18,8 +18,14 @@ from api.endpoints.models.v1.tenant import (
     IssuerStatus,
     PublicDIDStatus,
 )
+from api.db.models.tenant_issuer import TenantIssuerUpdate, TenantIssuerRead
+
 from api.services.tenant_workflows import create_workflow
 from api.tasks.public_did_task import RegisterPublicDIDTask
+from api.core.config import settings
+from api.services.connections import (
+    receive_invitation,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -160,3 +166,24 @@ async def is_issuer(
         )
 
     return public_did
+
+
+async def establish_endorser_connection(
+    tenant_id: UUID, wallet_id: UUID, raise_error: bool | None = False
+) -> str:
+    endorser_alias = settings.ENDORSER_CONNECTION_ALIAS
+    endorser_public_did = settings.ACAPY_ENDORSER_PUBLIC_DID
+    connection = receive_invitation(
+        endorser_alias, their_public_did=endorser_public_did
+    )
+    update_issuer = TenantIssuerUpdate(
+        id=tenant_issuer.id,
+        endorser_connection_id=connection.connection_id,
+        endorser_connection_state=connection.state,
+    )
+    async with async_session() as db:
+        tenant_issuer = await TenantIssuersRepository(db_session=db).update(
+            update_issuer
+        )
+
+    return tenant_issuer

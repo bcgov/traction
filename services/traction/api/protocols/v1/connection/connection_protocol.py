@@ -63,6 +63,7 @@ class ConnectionProtocol(ABC):
             elif ConnectionStateType.active == payload["state"]:
                 await self.on_active(profile=profile, payload=payload)
             elif ConnectionStateType.completed == payload["state"]:
+                self.logger.info(f"calling self.on_completed")
                 await self.on_completed(profile=profile, payload=payload)
             elif ConnectionStateType.abandoned == payload["state"]:
                 await self.on_abandoned(profile=profile, payload=payload)

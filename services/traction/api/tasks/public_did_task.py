@@ -20,7 +20,7 @@ from api.db.models.tenant import Tenant
 from api.db.session import async_session
 
 
-from api.tasks.tasks import (
+from api.tasks.base_tasks import (
     Task,
     TractionTaskType,
     TRACTION_TASK_PREFIX,
