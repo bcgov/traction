@@ -1,6 +1,5 @@
 import logging
 from abc import ABC, abstractmethod
-from enum import Enum
 from sqlalchemy import select
 
 from api.core.config import settings
@@ -8,20 +7,8 @@ from api.core.event_bus import Event
 from api.core.profile import Profile
 from api.db.models import Tenant
 from api.db.session import async_session
+from api.endpoints.models.v1.enumerated import EndorserStateType
 from api.endpoints.models.webhooks import WEBHOOK_ENDORSE_LISTENER_PATTERN
-
-
-class EndorserStateType(str, Enum):
-    init = "init"
-    request_received = "request_received"
-    request_sent = "request_sent"
-    transaction_acked = "transaction_acked"
-    transaction_cancelled = "transaction_cancelled"
-    transaction_created = "transaction_created"
-    transaction_endorsed = "transaction_endorsed"
-    transaction_refused = "transaction_refused"
-    transaction_resent = "transaction_resent"
-    transaction_resent_received = "transaction_resent_received"
 
 
 active_states = [EndorserStateType.transaction_acked]

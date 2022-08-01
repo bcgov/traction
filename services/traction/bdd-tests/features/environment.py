@@ -26,6 +26,6 @@ def after_scenario(context, scenario):
 
     for tenant_config in tenants:
         if not tenant_config.get("deleted", False):
-            #  _hard_delete_tenant(context, tenant_config)
+            _hard_delete_tenant(context, tenant_config)
             pass
     pass

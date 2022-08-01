@@ -11,6 +11,10 @@ from api.endpoints.models.v1.base import GetResponse
 class IssuerStatus(str, Enum):
     none = "N/A"
     requested = "Requested"
+    approved = "Approved"
+    denied = "Denied"
+    processing = "Processing"
+    error = "Error"
     active = "Active"
 
 
@@ -18,8 +22,10 @@ class PublicDIDStatus(str, Enum):
     none = "N/A"
     private = "Private"
     requested = "Requested"
-    endorsed = "Endorsed"
-    published = "Published"
+    approved = "Approved"
+    denied = "Denied"
+    processing = "Processing"
+    error = "Error"
     public = "Public"
 
 

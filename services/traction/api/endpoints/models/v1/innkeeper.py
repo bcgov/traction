@@ -38,10 +38,11 @@ class UpdateTenantPermissionsResponse(GetResponse[TenantPermissionsItem]):
 
 class CheckInPayload(BaseModel):
     name: str
+    allow_issue_credentials: bool | None = False
 
 
 class CheckInItem(BaseModel):
-    id: UUID
+    tenant_id: UUID
     name: str
     wallet_id: UUID
     wallet_key: UUID

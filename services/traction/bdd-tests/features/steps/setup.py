@@ -38,8 +38,7 @@ def get_innkeeper_token(context):
     }
 
 
-@given("we have {n} traction tenants")
-@when("we have {n} traction tenants")
+@step("we have {n} traction tenants")
 def create_traction_tenants(context, n):
     rand_suffix = "-" + "".join(random.choice(string.ascii_letters) for i in range(6))
 
@@ -48,14 +47,16 @@ def create_traction_tenants(context, n):
 
         # create tenant
         check_in_response = requests.post(
-            context.config.userdata.get("traction_host") + "/innkeeper/v0/check-in",
+            context.config.userdata.get("traction_host")
+            + "/innkeeper/v1/tenants/check-in",
             json={"name": tenant_name},
             headers=context.config.userdata["innkeeper_auth_headers"],
         )
-        assert check_in_response.status_code == status.HTTP_201_CREATED, pprint.pp(
+        assert check_in_response.status_code == status.HTTP_200_OK, pprint.pp(
             check_in_response.__dict__
         )
         check_in_json = json.loads(check_in_response.content)
+        tenant = check_in_json["item"]
         # authenticate and save token to context
         headers = {
             "accept": "application/json",
@@ -63,8 +64,8 @@ def create_traction_tenants(context, n):
         }
 
         data = {
-            "username": check_in_json["wallet_id"],
-            "password": check_in_json["wallet_key"],
+            "username": tenant["wallet_id"],
+            "password": tenant["wallet_key"],
             "grant_type": "",
             "scope": "",
         }
@@ -83,9 +84,9 @@ def create_traction_tenants(context, n):
         context.config.userdata[row["name"]] = {
             "role": row["role"],
             "name": tenant_name,
-            "tenant_id": check_in_json["id"],
-            "wallet_id": check_in_json["wallet_id"],
-            "wallet_key": check_in_json["wallet_key"],
+            "tenant_id": tenant["tenant_id"],
+            "wallet_id": tenant["wallet_id"],
+            "wallet_key": tenant["wallet_key"],
             "auth_headers": {
                 "accept": "application/json",
                 "Content-Type": "application/json",

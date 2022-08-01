@@ -22,7 +22,7 @@ def our_role(their_role: str):
 
 
 def role_match(this_role: ConnectionRoleType, their_role: str):
-    if not our_role:
+    if not our_role(this_role):
         return True
     else:
         return this_role == our_role(their_role)
@@ -42,34 +42,33 @@ class ConnectionProtocol(ABC):
         self.logger.info("> notify()")
         payload = event.payload["payload"]
         their_role = payload["their_role"]
-        self.logger.debug(f"payload={payload}")
 
         await self.before_all(profile=profile, payload=payload)
 
         if role_match(self.role, their_role):
 
             await self.before_any(profile=profile, payload=payload)
-
-            if ConnectionStateType.start == payload["state"]:
-                await self.on_start(profile=profile, payload=payload)
-            elif ConnectionStateType.init == payload["state"]:
-                await self.on_init(profile=profile, payload=payload)
-            elif ConnectionStateType.invitation == payload["state"]:
-                await self.on_invitation(profile=profile, payload=payload)
-            elif ConnectionStateType.request == payload["state"]:
-                await self.on_request(profile=profile, payload=payload)
-            elif ConnectionStateType.response == payload["state"]:
-                await self.on_response(profile=profile, payload=payload)
-            elif ConnectionStateType.active == payload["state"]:
-                await self.on_active(profile=profile, payload=payload)
-            elif ConnectionStateType.completed == payload["state"]:
-                await self.on_completed(profile=profile, payload=payload)
-            elif ConnectionStateType.abandoned == payload["state"]:
-                await self.on_abandoned(profile=profile, payload=payload)
-            elif ConnectionStateType.error == payload["state"]:
-                await self.on_error(profile=profile, payload=payload)
-            else:
-                pass
+            if await self.approve_for_processing(profile=profile, payload=payload):
+                if ConnectionStateType.start == payload["state"]:
+                    await self.on_start(profile=profile, payload=payload)
+                elif ConnectionStateType.init == payload["state"]:
+                    await self.on_init(profile=profile, payload=payload)
+                elif ConnectionStateType.invitation == payload["state"]:
+                    await self.on_invitation(profile=profile, payload=payload)
+                elif ConnectionStateType.request == payload["state"]:
+                    await self.on_request(profile=profile, payload=payload)
+                elif ConnectionStateType.response == payload["state"]:
+                    await self.on_response(profile=profile, payload=payload)
+                elif ConnectionStateType.active == payload["state"]:
+                    await self.on_active(profile=profile, payload=payload)
+                elif ConnectionStateType.completed == payload["state"]:
+                    await self.on_completed(profile=profile, payload=payload)
+                elif ConnectionStateType.abandoned == payload["state"]:
+                    await self.on_abandoned(profile=profile, payload=payload)
+                elif ConnectionStateType.error == payload["state"]:
+                    await self.on_error(profile=profile, payload=payload)
+                else:
+                    pass
 
             await self.after_any(profile=profile, payload=payload)
         else:
@@ -84,6 +83,10 @@ class ConnectionProtocol(ABC):
 
     @abstractmethod
     async def after_all(self, profile: Profile, payload: dict):
+        pass
+
+    @abstractmethod
+    async def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
         pass
 
     @abstractmethod
@@ -137,6 +140,9 @@ class DefaultConnectionProtocol(ConnectionProtocol):
 
     async def after_all(self, profile: Profile, payload: dict):
         pass
+
+    async def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
+        return True
 
     async def before_any(self, profile: Profile, payload: dict):
         pass
