@@ -1,0 +1,18 @@
+# Credentials
+.env
+
+# Configurations
+.vscode
+
+# Temporary files
+*.log
+*.swp
+*.zip
+*.tgz
+
+# Temporary Code
+node_modules
+dist
+
+# Test data
+frontend/public/test_schemas.json

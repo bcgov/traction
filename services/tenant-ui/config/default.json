@@ -1,0 +1,15 @@
+{
+    "frontend": {
+      "apiPath": "api/",
+      "basePath" : "/"
+    },
+    "server": {
+      "apiPath": "/api",
+      "basePath" : "/",
+      "bodyLimit": "30mb",
+      "logLevel": "http",
+      "port": "8080",
+      "tractionUrl": "http://localhost:5100"
+    }
+  }
+  
