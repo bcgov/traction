@@ -16,8 +16,6 @@ from api.endpoints.models.tenant_workflow import (
     TenantWorkflowStateType,
 )
 from api.endpoints.models.webhooks import (
-    WEBHOOK_CONNECTIONS_LISTENER_PATTERN,
-    WEBHOOK_ENDORSE_LISTENER_PATTERN,
     WEBHOOK_ISSUE_LISTENER_PATTERN,
     WEBHOOK_PRESENT_LISTENER_PATTERN,
     WEBHOOK_PROBLEM_REPORT_LISTENER_PATTERN,

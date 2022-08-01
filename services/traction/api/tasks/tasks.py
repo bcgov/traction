@@ -2,9 +2,7 @@ import logging
 from re import Pattern
 from uuid import UUID
 
-from sqlalchemy import select
 from sqlalchemy.exc import DBAPIError
-from starlette_context import context
 
 from acapy_client.api.issue_credential_v1_0_api import IssueCredentialV10Api
 from acapy_client.model.cred_attr_spec import CredAttrSpec

@@ -4,11 +4,9 @@ from uuid import UUID
 
 from api.db.errors import DoesNotExist
 from api.db.models.tenant import TenantRead
-from api.db.models.tenant_issuer import TenantIssuerRead
 from api.db.repositories.tenant_issuers import TenantIssuersRepository
 from api.db.repositories.tenants import TenantsRepository
 from api.db.session import async_session
-from api.endpoints.models.tenant_workflow import TenantWorkflowTypeType
 from api.endpoints.models.v1.admin import PublicDIDStateType
 from api.endpoints.models.v1.errors import (
     IncorrectStatusError,
@@ -21,7 +19,6 @@ from api.endpoints.models.v1.tenant import (
 )
 from api.db.models.tenant_issuer import TenantIssuerUpdate, TenantIssuerRead
 
-from api.services.tenant_workflows import create_workflow
 from api.tasks.public_did_task import RegisterPublicDIDTask
 from api.core.config import settings
 from api.services.connections import (
@@ -131,7 +128,8 @@ async def make_issuer(
     async with async_session() as db:
         try:
             issuer_repo = TenantIssuersRepository(db_session=db)
-            tenant_issuer = await issuer_repo.get_by_wallet_id(wallet_id)
+            tenant_issuer = await issuer_repo.get_by_wallet_id(wallet_id)  # noqa F401
+            # TODO check permissions in a new way
         except DoesNotExist:
             # raise an error, let caller know that innkeeper hasn't started the flow yet
             raise IncorrectStatusError(
@@ -170,6 +168,11 @@ async def is_issuer(
 async def establish_endorser_connection(
     tenant_id: UUID, wallet_id: UUID, raise_error: bool | None = False
 ) -> str:
+    tenant_issuer = None
+    async with async_session() as db:
+        tenant_issuer = await TenantIssuersRepository(db_session=db).get_by_tenant_id(
+            tenant_id
+        )
     endorser_alias = settings.ENDORSER_CONNECTION_ALIAS
     endorser_public_did = settings.ACAPY_ENDORSER_PUBLIC_DID
     connection = receive_invitation(
@@ -184,5 +187,4 @@ async def establish_endorser_connection(
         tenant_issuer = await TenantIssuersRepository(db_session=db).update(
             update_issuer
         )
-
     return tenant_issuer

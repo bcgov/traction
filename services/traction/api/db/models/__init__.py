@@ -26,7 +26,8 @@ from api.db.models.v1.tenant_configuration import (
     TenantWebhookLog,
 )  # noqa: F401
 
-# When uncommented, run 'alembic revision --autogenerate -m "v1_tenant_single_table_inheritance"' to make migration
+# When uncommented, run migration to get new models
+# 'alembic revision --autogenerate -m "v1_tenant_single_table_inheritance"'
 # from api.db.models.v1.tenant import Tenant2 as v1Tenant
 # from api.db.models.v1.tenant_issuer import TenantIssuer as v1TenantIssuer
 

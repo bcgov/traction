@@ -16,6 +16,8 @@ from api.db.models.v1.tenant import Tenant2
 
 # uses single table inheritanct
 # https://docs.sqlalchemy.org/en/14/orm/inheritance.html#single-table-inheritance
+
+
 class TenantIssuer(Tenant2, StatefulModel, table=True):
     """TenantIssuer.
 

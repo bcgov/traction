@@ -1,6 +1,5 @@
 import logging
 import time
-import json
 from api.api_client_utils import get_api_client
 from api.db.session import async_session
 from api.db.repositories.tenant_issuers import (
@@ -41,7 +40,7 @@ class EndorserConnectionProcessor(DefaultConnectionProtocol):
             from api.tasks.public_did_task import RegisterPublicDIDTask
 
             self.logger.info(
-                f"connection to endorser completed, update meta on connection_id {connection_id}"
+                f"update meta on endorser connection, connection_id={connection_id}"
             )
             self.update_connection_metadata(connection_id)
 
