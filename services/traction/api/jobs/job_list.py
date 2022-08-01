@@ -158,12 +158,7 @@ class JobList:
         job_status_type: TenantJobStatusType | None = None,
     ):
         self._logger.info(f"> subscribe({job_type}, {job_name}, {job_status_type})")
-        events = []
-        if job_status_type is None:
-            for jst in TenantJobStatusType:
-                events.append(jst.name)
-        else:
-            events.append(job_status_type)
+        events = self._build_events_list(job_status_type)
 
         for event_name in events:
             key = f"{job_name}::{event_name}".lower()
@@ -174,6 +169,15 @@ class JobList:
         self._logger.info(
             f"< subscribe({job_type}, {job_name}, {job_status_type}): {self.subscriptions}"  # noqa: E501
         )
+
+    def _build_events_list(self, job_status_type):
+        events = []
+        if job_status_type is None:
+            for jst in TenantJobStatusType:
+                events.append(jst.name)
+        else:
+            events.append(job_status_type)
+        return events
 
     @classmethod
     async def assign(
