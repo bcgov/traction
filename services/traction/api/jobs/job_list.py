@@ -26,6 +26,14 @@ class Job(ABC):
         self._logger = logging.getLogger(type(self).__name__)
         self.profile = profile
         self.job_type = job_type
+        self.state_handlers = {
+            str(e.value).lower(): self._empty_state_handler for e in TenantJobStatusType
+        }
+
+    async def _empty_state_handler(self, payload: dict):
+        # this is an empty function assigned to each job status as a default handler
+        # inheriting class needs a specific implementation, they can assign a function
+        pass
 
     async def _get_tenant(self) -> Tenant:
         async with async_session() as db:
@@ -82,12 +90,14 @@ class Job(ABC):
         names = topic.split("::")
         job_name = names[0]
         event_name = names[1]
-        # try a specific function first (to handle event from other job)
-        on_func = f"on_{job_name}_{event_name}"
-        await self._call_event_func(on_func, payload)
         if job_name == self.job_name():
             # call our event handler...
-            on_func = f"on_{event_name}"
+            on_func = self.state_handlers[event_name]
+            self._logger.info(f"on_func = {on_func}")
+            await on_func(payload)
+        else:
+            # try a specific function (to handle event from other job)
+            on_func = f"on_{job_name}_{event_name}"
             await self._call_event_func(on_func, payload)
 
         self._logger.info(f"< execute({payload})")
@@ -106,30 +116,6 @@ class Job(ABC):
 
     @abstractmethod
     async def _do_start(self):
-        pass
-
-    @abstractmethod
-    async def on_requested(self, payload: dict):
-        pass
-
-    @abstractmethod
-    async def on_approved(self, payload: dict):
-        pass
-
-    @abstractmethod
-    async def on_denied(self, payload: dict):
-        pass
-
-    @abstractmethod
-    async def on_processing(self, payload: dict):
-        pass
-
-    @abstractmethod
-    async def on_completed(self, payload: dict):
-        pass
-
-    @abstractmethod
-    async def on_error(self, payload: dict):
         pass
 
 

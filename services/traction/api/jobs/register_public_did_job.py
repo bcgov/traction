@@ -19,24 +19,6 @@ class RegisterPublicDidJob(Job):
     async def _do_start(self):
         pass
 
-    async def on_requested(self, payload: dict):
-        pass
-
-    async def on_approved(self, payload: dict):
-        pass
-
-    async def on_processing(self, payload: dict):
-        pass
-
-    async def on_denied(self, payload: dict):
-        pass
-
-    async def on_completed(self, payload: dict):
-        pass
-
-    async def on_error(self, payload: dict):
-        pass
-
     async def on_endorser_connection_job_active(self, payload: dict):
         self._logger.info("> on_endorser_connection_job_active()")
         job = await self._get_job()

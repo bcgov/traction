@@ -8,6 +8,8 @@ from api.services.connections import receive_invitation
 class EndorserConnectionJob(Job):
     def __init__(self, profile: Profile):
         super().__init__(profile, TenantJobType.endorser)
+        self.state_handlers[TenantJobStatusType.processing.lower()] = self.on_processing
+        self.state_handlers[TenantJobStatusType.completed.lower()] = self.on_completed
 
     async def _do_start(self):
         self._logger.info("> _do_start()")
@@ -29,20 +31,11 @@ class EndorserConnectionJob(Job):
 
         self._logger.info("< _do_start()")
 
-    async def on_requested(self, payload: dict):
-        self._logger.info(f"on_requested({payload})")
-
-    async def on_approved(self, payload: dict):
-        self._logger.info(f"on_approved({payload})")
-
     async def on_processing(self, payload: dict):
         self._logger.info("> on_processing()")
         job = await self._get_job()
         await TenantJob.update_by_id(job.tenant_job_id, {"state": payload["state"]})
         self._logger.info("< on_processing()")
-
-    async def on_denied(self, payload: dict):
-        self._logger.info(f"on_denied({payload})")
 
     async def on_completed(self, payload: dict):
         self._logger.info("> on_completed()")
@@ -55,6 +48,3 @@ class EndorserConnectionJob(Job):
         # let everyone now this job is done!
         await self.fire_event(TenantJobStatusType.active, payload)
         self._logger.info("< on_completed()")
-
-    async def on_error(self, payload: dict):
-        self._logger.info(f"on_error({payload})")
