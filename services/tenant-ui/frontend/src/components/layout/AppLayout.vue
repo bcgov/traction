@@ -8,17 +8,23 @@
                 <Header />
             </header>
             <main class='layout-content'>
-                <router-view />
+                <Card>
+                    <template #content>
+                        <router-view />
+                    </template>
+                </Card>
             </main>
             <footer class='layout-footer'>
-                This is the footer
+                <Footer />
             </footer>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
+import Card from 'primevue/card';
 import Header from "./Header.vue";
+import Footer from "./Footer.vue";
 import Sidebar from "./Sidebar.vue";
 
 </script>
@@ -38,6 +44,8 @@ body {
 
 .layout-sidebar {
     align-self: stretch;
+    background-color: #244075;
+    color: white;
 }
 
 .layout-page {
@@ -48,15 +56,16 @@ body {
 
 .layout-header {
     flex: 1;
+    background-color: white;
 }
 
 .layout-content {
     flex: 1;
-    background-color: yellow;
+    background-color: #e4e4e4;
+    padding: .5em;
 }
 
 .layout-footer {
     flex: 0;
-    background-color: grey;
 }
 </style>

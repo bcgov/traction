@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import ApiHealth from "./components/ApiHealth.vue";
 import AppLayout from "./components/layout/AppLayout.vue";
 import Login from "./components/Login.vue";
 import store from "./store";
 import { inject, provide } from "vue";
-import Sidebar from 'primevue/sidebar';
 
 
 let globalVar = inject('config')
@@ -13,19 +11,6 @@ provide("store", store); // Allow the entire app to see the store.
 </script>
 
 <template>
-  <!-- <h2>Config from backend</h2>
-  {{ globalVar }}
-
-  <hr />
-  <h2>Vue Routing structure</h2>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
-  <router-view />
-  <hr />
-  <ApiHealth /> -->
-
   <AppLayout v-if="store.state.token" />
   <Login v-else />
 </template>

@@ -26,7 +26,7 @@ const submit_new_contact = () => {
 
   axios({
     method: "post",
-    url: "api/traction/tenant/v1/contacts/create-invitation",
+    url: "/api/traction/tenant/v1/contacts/create-invitation",
     headers: {
       accept: "application/json",
       "content-type": "application/json",

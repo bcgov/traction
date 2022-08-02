@@ -1,7 +1,7 @@
 <template>
     <div>
-        <h1>Traction</h1>
-        <PanelMenu :model="items" />
+        <h1 class="sidebar-app-title">TRACTION</h1>
+        <PanelMenu :model="items" class="mt-5"/>
     </div>
 </template>
 
@@ -84,3 +84,26 @@ const items = ref([
     },
 ]); 
 </script>
+
+<style>
+.sidebar-app-title {
+    font-size: 1.6em;
+    text-align: center;
+    padding: .5em 1.7em;
+    margin: .5em;
+    background-color: #96c230;
+}
+
+/* TODO: quick and dirty, rewrite this (or better, find theme settings) */
+.p-panelmenu, .p-panelmenu-panel > .p-panelmenu-header > a > *,
+.p-panelmenu, .p-panelmenu-panel > .p-panelmenu-header > a,
+.p-panelmenu-content,
+.p-submenu-list > *,
+.p-menuitem-link > *,
+a.p-menuitem-link:hover {
+    background-color: #244075 !important;
+    border: none !important;
+    color: white !important;
+    font-weight: normal !important;
+}
+</style>
