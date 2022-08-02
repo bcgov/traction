@@ -17,7 +17,7 @@
     @click="createContact"></Button>
 
   <Dialog header="Create a new contact" v-model:visible="displayAddContact" :modal="true">
-    <CreateContact />
+    <CreateContact @created="contactCreated" />
   </Dialog>
 </template>
 
@@ -47,7 +47,7 @@ const store: any = inject("store");
 // ----------------------------------------------------------------
 let loading = ref(true);
 
-onMounted(() => {
+const loadContacts = () => {
   loading.value = true
   axios
     .get('/api/traction/tenant/v1/contacts', {
@@ -65,6 +65,10 @@ onMounted(() => {
       store.state.contacts.data = null;
       console.error("error", err);
     });
+}
+
+onMounted(() => {
+  loadContacts();
 })
 // -----------------------------------------------/Loading contacts
 
@@ -76,6 +80,11 @@ let displayAddContact = ref(false);
 const createContact = () => {
   displayAddContact.value = !displayAddContact.value;
 };
+
+const contactCreated = () => {
+  // Emited from the contact creation component when a successful invite is made
+  loadContacts();
+}
 // -----------------------------------------------/Adding contacts
 </script>
 

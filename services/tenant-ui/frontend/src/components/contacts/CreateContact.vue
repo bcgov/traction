@@ -42,6 +42,11 @@ let invitation_url = ref("");
 // Grab our store
 const store: any = inject("store");
 
+// ----------------------------------------------------------------
+// Creating a new contact
+// ----------------------------------------------------------------
+const emit = defineEmits(['created'])
+
 const submit_new_contact = () => {
   processing.value = true; // Disable button while processing
 
@@ -62,6 +67,7 @@ const submit_new_contact = () => {
       console.log(`invitation_url: ${invitation_url}`);
       processing.value = false; // enable button
       toast.add({ severity: 'success', detail: 'Contact Created' });
+      emit('created');
     })
     .catch((err) => {
       console.error(err);
@@ -69,6 +75,7 @@ const submit_new_contact = () => {
       processing.value = false; // enable button
     });
 };
+// ---------------------------------------------------/create contact
 </script>
 
 <style scoped>
