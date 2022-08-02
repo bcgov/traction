@@ -1,4 +1,8 @@
+<script setup lang="ts">
+import Credentials from "../../components/holder/Credentials.vue";
+</script>
+
 <template>
-  <h3>MyHeldCredentials</h3>
-  MyHeldCredentials
+  <Credentials />
 </template>
+

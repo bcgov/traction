@@ -1,10 +1,7 @@
 <template>
   <h3 class="mt-0">Connections</h3>
-  <!--
-      If there is no data, show a spinner.
-      Otherwise show the data.
-    -->
-  <ProgressSpinner v-if="!store.state.contacts.data" />
+
+  <ProgressSpinner v-if="loading" />
   <div v-else>
     <DataTable :value="store.state.contacts.data" :paginator="true" :rows="10" striped-rows
       v-model:selection="store.state.contacts.selection" selection-mode="single">
@@ -26,19 +23,28 @@
 
 
 <script setup lang="ts">
+// Vue
 import { inject, ref, onMounted } from "vue";
 
-import DataTable from "primevue/datatable";
-import Column from "primevue/column";
-import ProgressSpinner from "primevue/progressspinner";
-import axios from "axios";
+// PrimeVue
 import Button from "primevue/button";
+import Column from "primevue/column";
+import DataTable from "primevue/datatable";
 import Dialog from "primevue/dialog";
+import ProgressSpinner from "primevue/progressspinner";
 
+// Other imports
+import axios from "axios";
+
+// Other components
 import CreateContact from "./CreateContact.vue";
 
+// Store
 const store: any = inject("store");
 
+// ----------------------------------------------------------------
+// Loading contacts
+// ----------------------------------------------------------------
 let loading = ref(true);
 
 onMounted(() => {
@@ -60,13 +66,17 @@ onMounted(() => {
       console.error("error", err);
     });
 })
+// -----------------------------------------------/Loading contacts
 
-
+// ----------------------------------------------------------------
+// Adding Contacts
+// ----------------------------------------------------------------
 let displayAddContact = ref(false);
 
 const createContact = () => {
   displayAddContact.value = !displayAddContact.value;
 };
+// -----------------------------------------------/Adding contacts
 </script>
 
 <style scoped>

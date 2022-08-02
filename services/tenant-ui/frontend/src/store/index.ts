@@ -10,6 +10,8 @@ const state = reactive({
   token: null, // API Token
   walletInfo: {},
   contacts: {},
+  holderCredentials: {},
+  issuerCredentials: {},
   settings: {},
   schemas: {},
 });
