@@ -2,7 +2,7 @@
 import { ref, inject } from "vue";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
-import { useToast } from "vue-toastification";
+import { useToast } from 'primevue/usetoast';
 import axios from "axios";
 
 // To store credentials
@@ -45,7 +45,7 @@ const clicked = () => {
     })
     .catch((err) => {
       console.error(err);
-      toast.error(`Failure: ${err}`);
+      toast.add({ severity: 'error', detail: `Failure: ${err}` });
       processing.value = false; // enable button
       store.state.token = null;
     });
@@ -65,34 +65,19 @@ const clear = () => {
   <div class="login">
     <div>
       <span class="p-float-label">
-        <InputText
-          type="text"
-          v-model="key"
-          autocomplete="username"
-          name="username"
-          autofocus
-        />
+        <InputText type="text" v-model="key" autocomplete="username" name="username" autofocus />
         <label for="key">Wallet ID</label>
       </span>
 
       <span class="p-float-label">
-        <InputText
-          type="password"
-          autocomplete="current-password"
-          v-model="secret"
-          name="password"
-        />
+        <InputText type="password" autocomplete="current-password" v-model="secret" name="password" />
         <label for="secret">Wallet Key</label>
       </span>
     </div>
     <div>
       <Button label="Clear" class="p-button-warning" @click="clear"></Button>
-      <Button
-        label="Submit"
-        @click="clicked"
-        :disabled="processing ? true : false"
-        :loading="processing ? true : false"
-      ></Button>
+      <Button label="Submit" @click="clicked" :disabled="processing ? true : false"
+        :loading="processing ? true : false"></Button>
     </div>
   </div>
 </template>
@@ -101,6 +86,7 @@ const clear = () => {
 span.p-float-label {
   margin: 25px;
 }
+
 button {
   margin: 0 20px;
 }
