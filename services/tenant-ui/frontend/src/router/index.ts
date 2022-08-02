@@ -1,17 +1,100 @@
 import { createWebHistory, createRouter } from "vue-router";
-import Home from "@/views/Home.vue";
-import About from "@/views/About.vue";
+// Main dashboard
+import Dashboard from "@/views/Dashboard.vue";
+// Connections
+import AcceptInvitation from "@/views/connections/AcceptInvitation.vue";
+import MyContacts from "@/views/connections/MyContacts.vue";
+// Issuance
+import MyIssuedCredentials from "@/views/issuance/MyIssuedCredentials.vue";
+import OfferCredential from "@/views/issuance/OfferCredential.vue";
+import Schemas from "@/views/issuance/Schemas.vue";
+// // Verifictation
+import CreatePresentation from "@/views/verification/CreatePresentation.vue";
+import MyPresentations from "@/views/verification/MyPresentations.vue";
+import PresentationTemplates from "@/views/verification/PresentationTemplates.vue";
+// // Holder
+import AcceptCredential from "@/views/holder/AcceptCredential.vue";
+import MyHeldCredentials from "@/views/holder/MyHeldCredentials.vue";
 
 const routes = [
   {
     path: "/",
-    name: "Home",
-    component: Home,
+    name: "Dashboard",
+    component: Dashboard,
   },
+
   {
-    path: "/about",
-    name: "About",
-    component: About,
+    path: '/connections/',
+    children: [
+      {
+        path: 'acceptInvitation',
+        name: 'AcceptInvitation',
+        component: AcceptInvitation,
+      },
+      {
+        path: 'myContacts',
+        name: 'MyContacts',
+        component: MyContacts,
+      },
+    ],
+  },
+
+  {
+    path: '/issuance/',
+    children: [
+      {
+        path: 'myIssuedCredentials',
+        name: 'MyIssuedCredentials',
+        component: MyIssuedCredentials,
+      },
+      {
+        path: 'offerCredential',
+        name: 'OfferCredential',
+        component: OfferCredential,
+      },
+      {
+        path: 'schemas',
+        name: 'Schemas',
+        component: Schemas,
+      },
+    ],
+  },
+
+  {
+    path: '/verification/',
+    children: [
+      {
+        path: 'myPresentations',
+        name: 'MyPresentations',
+        component: MyPresentations,
+      },
+      {
+        path: 'createPresentation',
+        name: 'CreatePresentation',
+        component: CreatePresentation,
+      },
+      {
+        path: 'presentationTemplates',
+        name: 'PresentationTemplates',
+        component: PresentationTemplates,
+      }
+    ],
+  },
+
+  {
+    path: '/holder/',
+    children: [
+      {
+        path: 'myHeldCredentials',
+        name: 'MyHeldCredentials',
+        component: MyHeldCredentials,
+      },
+      {
+        path: 'acceptCredential',
+        name: 'AcceptCredential',
+        component: AcceptCredential,
+      }
+    ],
   },
 ];
 

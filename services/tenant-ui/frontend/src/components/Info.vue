@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { inject } from "vue";
-import { useToast } from "vue-toastification";
+import { useToast } from 'primevue/usetoast';
 import Button from "primevue/button";
 import Fieldset from "primevue/fieldset";
 import Card from "primevue/card";
@@ -24,11 +24,11 @@ const make_issuer = () => {
     },
   })
     .then(() => {
-      toast(`Starting Issuer Process! Check back later`);
+      toast.add({ severity: 'info', detail: 'Starting Issuer Process! Check back later'});
     })
     .catch((err) => {
       console.error(err);
-      toast.error(`Failure: ${err}`);
+      toast.add({ severity: 'error', detail: `Failure: ${err}`});
     });
 };
 
@@ -54,11 +54,7 @@ const toggled = (e: any) => {
 </script>
 
 <template>
-  <Fieldset
-    :toggleable="true"
-    :collapsed="!store.state.walletInfo.open"
-    @toggle="toggled"
-  >
+  <Fieldset :toggleable="true" :collapsed="!store.state.walletInfo.open" @toggle="toggled">
     <template #legend> Wallet Info </template>
 
     <!--
@@ -108,11 +104,8 @@ const toggled = (e: any) => {
           </div>
         </template>
       </card>
-      <Button
-        label="Become an Issuer"
-        v-if="store.state.walletInfo.data.public_did_status === 'N/A'"
-        @click="make_issuer"
-      ></Button>
+      <Button label="Become an Issuer" v-if="store.state.walletInfo.data.public_did_status === 'N/A'"
+        @click="make_issuer"></Button>
       <Button label="Already an Issuer" v-else :disabled="true"></Button>
     </div>
   </Fieldset>
