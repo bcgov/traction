@@ -143,7 +143,6 @@ async def make_issuer(
     endorser_public_did = settings.ACAPY_ENDORSER_PUBLIC_DID
     receive_invitation(endorser_alias, their_public_did=endorser_public_did)
     time.sleep(5)
-    await RegisterPublicDIDTask.assign(tenant_id, wallet_id, {})
 
     return await get_tenant(tenant_id, wallet_id)
 

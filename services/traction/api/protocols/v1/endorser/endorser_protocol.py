@@ -1,6 +1,7 @@
 import logging
 from abc import ABC, abstractmethod
 from enum import Enum
+from typing import Callable
 from sqlalchemy import select
 
 from api.core.config import settings
@@ -46,6 +47,8 @@ class EndorserProtocol(ABC):
         settings.EVENT_BUS.subscribe(WEBHOOK_ENDORSE_LISTENER_PATTERN, self.notify)
         self._logger = logging.getLogger(type(self).__name__)
 
+    state_map = {e.value: lambda: None for e in EndorserStateType}
+
     @property
     def logger(self):
         return self._logger
@@ -60,94 +63,14 @@ class EndorserProtocol(ABC):
         if await self.approve_for_processing(profile=profile, payload=payload):
             await self.before_any(profile=profile, payload=payload)
 
-            if EndorserStateType.init == payload["state"]:
-                await self.on_init(profile=profile, payload=payload)
-            elif EndorserStateType.request_received == payload["state"]:
-                await self.on_request_received(profile=profile, payload=payload)
-            elif EndorserStateType.request_sent == payload["state"]:
-                await self.on_request_sent(profile=profile, payload=payload)
-            elif EndorserStateType.transaction_acked == payload["state"]:
-                await self.on_transaction_acked(profile=profile, payload=payload)
-            elif EndorserStateType.transaction_cancelled == payload["state"]:
-                await self.on_transaction_cancelled(profile=profile, payload=payload)
-            elif EndorserStateType.transaction_created == payload["state"]:
-                await self.on_transaction_created(profile=profile, payload=payload)
-            elif EndorserStateType.transaction_endorsed == payload["state"]:
-                await self.on_transaction_endorsed(profile=profile, payload=payload)
-            elif EndorserStateType.transaction_refused == payload["state"]:
-                await self.on_transaction_refused(profile=profile, payload=payload)
-            elif EndorserStateType.transaction_resent == payload["state"]:
-                await self.on_transaction_resent(profile=profile, payload=payload)
-            elif EndorserStateType.transaction_resent_received == payload["state"]:
-                await self.on_transaction_resent_received(
-                    profile=profile, payload=payload
-                )
-            else:
-                pass
+            self.state_map[EndorserStateType.find(payload["state"])]
 
             await self.after_any(profile=profile, payload=payload)
 
         await self.after_all(profile=profile, payload=payload)
         self.logger.info("< notify()")
 
-    @abstractmethod
-    def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
-        pass
-
-    @abstractmethod
-    async def before_all(self, profile: Profile, payload: dict):
-        pass
-
-    @abstractmethod
-    async def after_all(self, profile: Profile, payload: dict):
-        pass
-
-    @abstractmethod
-    async def before_any(self, profile: Profile, payload: dict):
-        pass
-
-    @abstractmethod
-    async def after_any(self, profile: Profile, payload: dict):
-        pass
-
-    @abstractmethod
-    async def on_init(self, profile: Profile, payload: dict):
-        pass
-
-    @abstractmethod
-    async def on_request_received(self, profile: Profile, payload: dict):
-        pass
-
-    @abstractmethod
-    async def on_request_sent(self, profile: Profile, payload: dict):
-        pass
-
-    @abstractmethod
-    async def on_transaction_acked(self, profile: Profile, payload: dict):
-        pass
-
-    @abstractmethod
-    async def on_transaction_cancelled(self, profile: Profile, payload: dict):
-        pass
-
-    @abstractmethod
-    async def on_transaction_created(self, profile: Profile, payload: dict):
-        pass
-
-    @abstractmethod
-    async def on_transaction_endorsed(self, profile: Profile, payload: dict):
-        pass
-
-    @abstractmethod
-    async def on_transaction_refused(self, profile: Profile, payload: dict):
-        pass
-
-    @abstractmethod
-    async def on_transaction_resent(self, profile: Profile, payload: dict):
-        pass
-
-    @abstractmethod
-    async def on_transaction_resent_received(self, profile: Profile, payload: dict):
+    async def on_state_change(self, profile: Profile, payload: dict):
         pass
 
 

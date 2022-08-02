@@ -33,6 +33,7 @@ class EndorserConnectionProcessor(DefaultConnectionProtocol):
         topic = TenantEventTopicType.connection
         event_topic = TRACTION_EVENT_PREFIX + topic
         self.logger.debug(f"profile.notify {event_topic}")
+        time.sleep(100)
 
         connection_id = payload["connection_id"]
 
