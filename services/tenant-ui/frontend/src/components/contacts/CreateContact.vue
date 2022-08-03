@@ -1,10 +1,33 @@
+<template>
+  <div class="create-contact">
+    <h1>Contacts</h1>
+    <div>
+      <h2>Create Connection Invitation</h2>
+      <span class="p-float-label">
+        <InputText type="text" v-model="create_contact_alias" name="create_contact_alias" autofocus />
+        <label for="create_contact_alias">Contact Alias</label>
+      </span>
+    </div>
+    <QRCode v-if="invitation_url" :qr_content="invitation_url" />
+    <Button v-else label="Submit" @click="submit_new_contact" :disabled="processing ? true : false"
+      :loading="processing ? true : false"></Button>
+  </div>
+</template>
+
 <script setup lang="ts">
+// Vue
 import { ref, inject } from "vue";
-import InputText from "primevue/inputtext";
+
+// PrimeVue
 import Button from "primevue/button";
+import InputText from "primevue/inputtext";
 import { useToast } from 'primevue/usetoast';
+
+// Other imports
 import axios from "axios";
-import QRCode from "./common/QRCode.vue";
+
+// Other components
+import QRCode from "../common/QRCode.vue";
 
 // To store credentials
 const create_contact_alias = ref("");
@@ -19,10 +42,13 @@ let invitation_url = ref("");
 // Grab our store
 const store: any = inject("store");
 
+// ----------------------------------------------------------------
+// Creating a new contact
+// ----------------------------------------------------------------
+const emit = defineEmits(['created'])
+
 const submit_new_contact = () => {
   processing.value = true; // Disable button while processing
-
-  // const data = `username=${key.value}&password=${secret.value}`;
 
   axios({
     method: "post",
@@ -41,6 +67,7 @@ const submit_new_contact = () => {
       console.log(`invitation_url: ${invitation_url}`);
       processing.value = false; // enable button
       toast.add({ severity: 'success', detail: 'Contact Created' });
+      emit('created');
     })
     .catch((err) => {
       console.error(err);
@@ -48,23 +75,8 @@ const submit_new_contact = () => {
       processing.value = false; // enable button
     });
 };
+// ---------------------------------------------------/create contact
 </script>
-
-<template>
-  <div class="create-contact">
-    <h1>Contacts</h1>
-    <div>
-      <h2>Create Connection Invitation</h2>
-      <span class="p-float-label">
-        <InputText type="text" v-model="create_contact_alias" name="create_contact_alias" autofocus />
-        <label for="create_contact_alias">Contact Alias</label>
-      </span>
-    </div>
-    <QRCode v-if="invitation_url" :qr_content="invitation_url" />
-    <Button v-else label="Submit" @click="submit_new_contact" :disabled="processing ? true : false"
-      :loading="processing ? true : false"></Button>
-  </div>
-</template>
 
 <style scoped>
 .create-contact {

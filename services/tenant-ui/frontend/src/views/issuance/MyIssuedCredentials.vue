@@ -1,3 +1,8 @@
+<script setup lang="ts">
+import IssuedCredentials from "../../components/issuance/IssuedCredentials.vue";
+</script>
+
 <template>
-  Creds issued
+  <IssuedCredentials />
 </template>
+
