@@ -1,4 +1,4 @@
-Feature: holding presentations
+Feature: holder proposals
 
     Background: two tenants, 1 issuer/verifier and 1 holder
         Given we have authenticated at the innkeeper

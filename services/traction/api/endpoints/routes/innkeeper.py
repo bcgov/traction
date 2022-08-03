@@ -1,28 +1,31 @@
 import logging
-from typing import List
+
+# from typing import List
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from api.db.errors import DoesNotExist
-from api.db.models.tenant import TenantRead
-from api.db.models.tenant_issuer import TenantIssuerRead, TenantIssuerCreate
+# from api.db.errors import DoesNotExist
+# from api.db.models.tenant import TenantRead
+# from api.db.models.tenant_issuer import TenantIssuerRead, TenantIssuerCreate
 from api.endpoints.dependencies.db import get_db
-from api.services.innkeeper import create_new_tenant, hard_delete_tenant
-from api.endpoints.models.innkeeper import (
-    CheckInRequest,
-    CheckInResponse,
-)
+from api.services.innkeeper import hard_delete_tenant
+
+# from api.endpoints.models.innkeeper import (
+#     CheckInRequest,
+#     CheckInResponse,
+# )
 from api.db.repositories.tenants import TenantsRepository
-from api.db.repositories.tenant_issuers import TenantIssuersRepository
+
+# from api.db.repositories.tenant_issuers import TenantIssuersRepository
 
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
-
+"""
 @router.post(
     "/check-in",
     status_code=status.HTTP_201_CREATED,
@@ -103,6 +106,8 @@ async def make_tenant_issuer(
         )
         tenant_issuer = await issuer_repo.create(new_issuer)
     return tenant_issuer
+
+"""
 
 
 @router.delete(

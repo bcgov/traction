@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette_context import context
 
-from api.core.config import settings
+# from api.core.config import settings
 from api.db.errors import DoesNotExist
 from api.db.repositories.tenant_workflows import TenantWorkflowsRepository
 from api.db.models.tenant_workflow import (
@@ -15,18 +15,20 @@ from api.endpoints.models.tenant_workflow import (
     TenantWorkflowTypeType,
     TenantWorkflowStateType,
 )
-from api.endpoints.models.webhooks import (
+
+"""from api.endpoints.models.webhooks import (
     WEBHOOK_CONNECTIONS_LISTENER_PATTERN,
     WEBHOOK_ENDORSE_LISTENER_PATTERN,
     WEBHOOK_ISSUE_LISTENER_PATTERN,
     WEBHOOK_PRESENT_LISTENER_PATTERN,
     WEBHOOK_PROBLEM_REPORT_LISTENER_PATTERN,
     WEBHOOK_REVOC_NOTIFY_LISTENER_PATTERN,
-)
+)"""
 from api.services.base import BaseWorkflow
-from api.services.IssuerWorkflow import IssuerWorkflow
-from api.services.IssueCredentialWorkflow import IssueCredentialWorkflow
-from api.services.PresentCredentialWorkflow import PresentCredentialWorkflow
+
+# from api.services.IssuerWorkflow import IssuerWorkflow
+# from api.services.IssueCredentialWorkflow import IssueCredentialWorkflow
+# from api.services.PresentCredentialWorkflow import PresentCredentialWorkflow
 
 
 logger = logging.getLogger(__name__)
@@ -73,6 +75,7 @@ async def create_workflow(
 
 
 def subscribe_workflow_events():
+    """
     settings.EVENT_BUS.subscribe(
         WEBHOOK_CONNECTIONS_LISTENER_PATTERN, IssuerWorkflow.handle_workflow_events
     )
@@ -98,3 +101,5 @@ def subscribe_workflow_events():
         WEBHOOK_PROBLEM_REPORT_LISTENER_PATTERN,
         PresentCredentialWorkflow.handle_workflow_events,
     )
+    """
+    pass

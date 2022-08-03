@@ -1,3 +1,4 @@
+# flake8: noqa
 """v1_verifier_presentations
 
 Revision ID: 7c527dcfae03

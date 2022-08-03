@@ -249,6 +249,27 @@ def tenant_update_configuration(context, tenant, payload: dict):
     return response
 
 
+def innkeeper_tenants_check_in(context, tenant_name):
+    response = requests.post(
+        context.config.userdata.get("traction_host") + "/innkeeper/v1/tenants/check-in",
+        json={"name": tenant_name},
+        headers=context.config.userdata["innkeeper_auth_headers"],
+    )
+    return response
+
+
+def innkeeper_tenants_make_issuer(context, tenant):
+    tenant_id = context.config.userdata[tenant]["tenant_id"]
+    payload = {}
+    response = requests.post(
+        context.config.userdata.get("traction_host")
+        + f"/innkeeper/v1/tenants/{tenant_id}/make-issuer",
+        json=payload,
+        headers=context.config.userdata["innkeeper_auth_headers"],
+    )
+    return response
+
+
 def innkeeper_get_permissions(context, tenant):
     tenant_id = context.config.userdata[tenant]["tenant_id"]
     response = requests.get(

@@ -10,7 +10,8 @@ from starlette_context.middleware import RawContextMiddleware
 from api.endpoints.dependencies.db import get_db
 
 from api.core.config import settings
-from api.endpoints.routes.tenant_api import tenant_router
+
+# from api.endpoints.routes.tenant_api import tenant_router
 from api.endpoints.dependencies.jwt_security import AccessToken
 from api.endpoints.dependencies.tenant_security import (
     JWTTFetchingMiddleware,
@@ -48,12 +49,12 @@ def get_tenantapp() -> FastAPI:
         tags=[],
         dependencies=[Depends(OAuth2PasswordBearer(tokenUrl="token"))],
     )
-    application.include_router(
+    """application.include_router(
         tenant_router,
         prefix=settings.API_V0_STR,
         tags=["v0"],
         dependencies=[Depends(OAuth2PasswordBearer(tokenUrl="token"))],
-    )
+    )"""
     return application
 
 

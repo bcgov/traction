@@ -171,7 +171,3 @@ class DefaultHolderCredentialProtocol(IssueCredentialProtocol):
 
     async def on_credential_revoked(self, profile: Profile, payload: dict):
         pass
-
-    async def on_unknown_state(self, profile: Profile, payload: dict):
-        self.logger.info(f"> on_unknown_state({payload})")
-        self.logger.info("< on_unknown_state()")

@@ -14,7 +14,7 @@ from api.endpoints.models.v1.base import (
     GetTimelineResponse,
 )
 
-from api.protocols.v1.endorser.endorser_protocol import EndorserStateType
+from .enumerated import EndorserStateType
 
 
 class ImportSchemaPayload(BaseModel):

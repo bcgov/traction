@@ -2,11 +2,10 @@ import uuid
 from uuid import UUID
 
 from api.core.config import settings
-from api.db.errors import AlreadyExists, DoesNotExist
+from api.core.profile import Profile
+from api.db.errors import AlreadyExists
 from api.db.models import Tenant
-from api.db.models.tenant_issuer import TenantIssuerCreate
 from api.db.models.v1.tenant_permissions import TenantPermissions
-from api.db.repositories.tenant_issuers import TenantIssuersRepository
 from api.db.repositories.tenants import TenantsRepository
 from api.db.session import async_session
 from api.endpoints.models.v1.errors import IdNotMatchError
@@ -17,14 +16,13 @@ from api.endpoints.models.v1.innkeeper import (
     CheckInPayload,
 )
 
-from acapy_client.api.multitenancy_api import MultitenancyApi
 from acapy_client.model.create_wallet_request import CreateWalletRequest
 
-from api.api_client_utils import get_api_client
 from api.endpoints.models.v1.tenant import TenantItem
-from api.services.v1 import tenant_service
 
-multitenancy_api = MultitenancyApi(api_client=get_api_client())
+from api.jobs import EndorserConnectionJob, RegisterPublicDidJob, MakeIssuerJob
+from api.services.v1 import tenant_service
+from api.services.v1.acapy_service import multitenancy_api
 
 
 def tenant_permissions_to_item(db_item: TenantPermissions) -> TenantPermissionsItem:
@@ -66,6 +64,14 @@ async def update_tenant_permissions(
     await TenantPermissions.update_by_id(tenant_id, payload_dict)
 
     return await get_tenant_permissions(tenant_id)
+
+
+async def register_tenant_jobs(
+    tenant_id: UUID, wallet_id: UUID, payload: CheckInPayload
+):
+    if payload.allow_issue_credentials:
+        # make issuer implies public_did flow too...
+        return await make_issuer(tenant_id, wallet_id)
 
 
 async def check_in_tenant(payload: CheckInPayload) -> CheckInItem:
@@ -110,8 +116,10 @@ async def check_in_tenant(payload: CheckInPayload) -> CheckInItem:
                 db.add(tenant)
                 await db.commit()
 
+            await register_tenant_jobs(tenant.id, tenant.wallet_id, payload)
+
             return CheckInItem(
-                id=tenant.id,
+                tenant_id=tenant.id,
                 name=tenant.name,
                 wallet_id=tenant.wallet_id,
                 wallet_key=wallet_key,
@@ -126,6 +134,7 @@ async def check_in_tenant(payload: CheckInPayload) -> CheckInItem:
 
 async def make_issuer(tenant_id: UUID) -> TenantItem:
     # lets update their permissions so they can act like an issuer
+    # TODO: will we need permissions if we have flows? they have to be approved...
     perms = UpdateTenantPermissionsPayload(
         tenant_id=tenant_id,
         endorser_approval=True,
@@ -135,24 +144,18 @@ async def make_issuer(tenant_id: UUID) -> TenantItem:
     )
     await update_tenant_permissions(tenant_id, perms)
 
-    # now we need to kick off the public did process
-    # TODO: update the public did process!!
-
-    # kick off the process of promoting this tenant to "issuer"
-    # TODO: remove all this v0 code
     async with async_session() as db:
         tenant_repo = TenantsRepository(db_session=db)
-        tenant = await tenant_repo.get_by_id(tenant_id)
-    try:
-        async with async_session() as db:
-            issuer_repo = TenantIssuersRepository(db_session=db)
-            await issuer_repo.get_by_wallet_id(tenant.wallet_id)
-    except DoesNotExist:
-        new_issuer = TenantIssuerCreate(
-            tenant_id=tenant.id,
-            wallet_id=tenant.wallet_id,
-        )
-        await issuer_repo.create(new_issuer)
+        db_tenant = await tenant_repo.get_by_id(tenant_id)
 
-    issuer = await tenant_service.get_tenant(tenant_id, tenant.wallet_id)
+    profile = Profile(tenant_id=tenant_id, wallet_id=db_tenant.wallet_id, db=None)
+    # set the jobs to approved, let tenant kick them off
+    endorser_job = EndorserConnectionJob(profile)
+    await endorser_job.approve()
+    did_job = RegisterPublicDidJob(profile)
+    await did_job.approve()
+    issuer_job = MakeIssuerJob(profile)
+    await issuer_job.approve()
+
+    issuer = await tenant_service.get_tenant(tenant_id, db_tenant.wallet_id)
     return issuer

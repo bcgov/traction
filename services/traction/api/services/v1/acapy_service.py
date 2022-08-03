@@ -18,8 +18,11 @@ from acapy_client.api.connection_api import ConnectionApi
 from acapy_client.api.credentials_api import CredentialsApi
 from acapy_client.api.did_exchange_api import DidExchangeApi
 from acapy_client.api.issue_credential_v1_0_api import IssueCredentialV10Api
+from acapy_client.api.ledger_api import LedgerApi
+from acapy_client.api.multitenancy_api import MultitenancyApi
 from acapy_client.api.out_of_band_api import OutOfBandApi
 from acapy_client.api.revocation_api import RevocationApi
+from acapy_client.api.wallet_api import WalletApi
 from api.api_client_utils import get_api_client
 from acapy_client.api.credential_definition_api import CredentialDefinitionApi
 from acapy_client.api.endorse_transaction_api import EndorseTransactionApi
@@ -37,7 +40,9 @@ connection_api = ConnectionApi(api_client=get_api_client())
 did_exchange_api = DidExchangeApi(api_client=get_api_client())
 out_of_band_api = OutOfBandApi(api_client=get_api_client())
 credentials_api = CredentialsApi(api_client=get_api_client())
-
+ledger_api = LedgerApi(api_client=get_api_client())
+wallet_api = WalletApi(api_client=get_api_client())
+multitenancy_api = MultitenancyApi(api_client=get_api_client())
 
 logger = logging.getLogger(__name__)
 

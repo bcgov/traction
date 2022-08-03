@@ -1,55 +1,83 @@
 import logging
 from uuid import UUID
 
-from api.db.errors import DoesNotExist
+
+from api.core.profile import Profile
+
 from api.db.models.tenant import TenantRead
-from api.db.models.tenant_issuer import TenantIssuerRead
-from api.db.repositories.tenant_issuers import TenantIssuersRepository
+from api.db.models.v1.tenant_job import TenantJobType, TenantJob, TenantJobStatusType
 from api.db.repositories.tenants import TenantsRepository
 from api.db.session import async_session
-from api.endpoints.models.tenant_workflow import TenantWorkflowTypeType
-from api.endpoints.models.v1.admin import PublicDIDStateType
 from api.endpoints.models.v1.errors import (
-    IncorrectStatusError,
     NotAnIssuerError,
+    IncorrectStatusError,
 )
 from api.endpoints.models.v1.tenant import (
     TenantItem,
     IssuerStatus,
     PublicDIDStatus,
 )
-from api.services.tenant_workflows import create_workflow
+from api.jobs import MakeIssuerJob, EndorserConnectionJob, RegisterPublicDidJob
 
 logger = logging.getLogger(__name__)
 
 
-def tenant_issuer_to_tenant_fields(tenant_issuer: TenantIssuerRead):
-    issuer = False
+def tenant_job_status_to_issuer_status(tenant_job_issuer: TenantJob):
     issuer_status = IssuerStatus.none
-    public_did = tenant_issuer.public_did
-    public_did_status = PublicDIDStatus.none
-    if PublicDIDStateType.public == tenant_issuer.public_did_state:
+    issuer = False
+    if tenant_job_issuer.status == TenantJobStatusType.active:
         issuer = True
         issuer_status = IssuerStatus.active
-        public_did_status = PublicDIDStatus.public
-    elif PublicDIDStateType.requested == tenant_issuer.public_did_state:
+    elif tenant_job_issuer.status == TenantJobStatusType.requested:
         issuer_status = IssuerStatus.requested
-        public_did_status = PublicDIDStatus.requested
-    elif PublicDIDStateType.endorsed == tenant_issuer.public_did_state:
-        issuer_status = IssuerStatus.endorsed
-        public_did_status = PublicDIDStatus.endorsed
-    elif PublicDIDStateType.published == tenant_issuer.public_did_state:
-        issuer_status = IssuerStatus.active
-        public_did_status = PublicDIDStatus.published
+    elif tenant_job_issuer.status == TenantJobStatusType.approved:
+        issuer_status = IssuerStatus.approved
+    elif tenant_job_issuer.status == TenantJobStatusType.processing:
+        issuer_status = IssuerStatus.processing
+    elif tenant_job_issuer.status == TenantJobStatusType.denied:
+        issuer_status = IssuerStatus.denied
+    elif tenant_job_issuer.status == TenantJobStatusType.error:
+        issuer_status = IssuerStatus.error
+    return issuer_status, issuer
 
+
+def tenant_job_status_to_did_status(tenant_job_did: TenantJob):
+    public_did = None
+    public_did_status = PublicDIDStatus.none
+    if tenant_job_did.status == TenantJobStatusType.active:
+        public_did_status = PublicDIDStatus.public
+        public_did = tenant_job_did.data["did"]
+    elif tenant_job_did.status == TenantJobStatusType.requested:
+        public_did_status = PublicDIDStatus.requested
+    elif tenant_job_did.status == TenantJobStatusType.approved:
+        public_did_status = PublicDIDStatus.approved
+    elif tenant_job_did.status == TenantJobStatusType.processing:
+        public_did_status = PublicDIDStatus.processing
+    elif tenant_job_did.status == TenantJobStatusType.denied:
+        public_did_status = PublicDIDStatus.denied
+    elif tenant_job_did.status == TenantJobStatusType.error:
+        public_did_status = PublicDIDStatus.error
+    return public_did_status, public_did
+
+
+def issue_credentials_flow_to_tenant_fields(
+    tenant_job_endorser: TenantJob,
+    tenant_job_did: TenantJob,
+    tenant_job_issuer: TenantJob,
+):
+    issuer_status, issuer = tenant_job_status_to_issuer_status(tenant_job_issuer)
+    public_did_status, public_did = tenant_job_status_to_did_status(tenant_job_did)
     return issuer, issuer_status, public_did, public_did_status
 
 
 def db_to_tenant_item(
-    db_tenant: TenantRead, tenant_issuer: TenantIssuerRead | None = None
+    db_tenant: TenantRead,
+    tenant_job_endorser: TenantJob,
+    tenant_job_did: TenantJob,
+    tenant_job_issuer: TenantJob,
 ) -> TenantItem:
     logger.info(db_tenant)
-    logger.info(tenant_issuer)
+
     result = TenantItem(
         tenant_id=db_tenant.id,
         wallet_id=db_tenant.wallet_id,
@@ -63,21 +91,18 @@ def db_to_tenant_item(
         public_did_status=PublicDIDStatus.none,
     )
 
-    if tenant_issuer:
-        # for now, base this on the public did state
-        # when we change up the workflow
-        # (tenant can request public did, tenant requests issuer)
-        # this will get simplified, right now mashup of v0 stuff...
-        (
-            issuer,
-            issuer_status,
-            public_did,
-            public_did_status,
-        ) = tenant_issuer_to_tenant_fields(tenant_issuer)
-        result.issuer = issuer
-        result.issuer_status = issuer_status
-        result.public_did = public_did
-        result.public_did_status = public_did_status
+    (
+        issuer,
+        issuer_status,
+        public_did,
+        public_did_status,
+    ) = issue_credentials_flow_to_tenant_fields(
+        tenant_job_endorser, tenant_job_did, tenant_job_issuer
+    )
+    result.issuer = issuer
+    result.issuer_status = issuer_status
+    result.public_did = public_did
+    result.public_did_status = public_did_status
 
     return result
 
@@ -103,41 +128,54 @@ async def get_tenant(
     async with async_session() as db:
         tenant_repo = TenantsRepository(db_session=db)
         db_tenant = await tenant_repo.get_by_id(tenant_id)
-        tenant_issuer = None
-        try:
-            issuer_repo = TenantIssuersRepository(db_session=db)
-            tenant_issuer = await issuer_repo.get_by_tenant_id(tenant_id)
-        except DoesNotExist:
-            # this is ok, they haven't started the v0 issuer process
-            pass
+        tenant_job_issuer = await TenantJob.get_for_tenant(
+            db, tenant_id, TenantJobType.issuer
+        )
+        tenant_job_did = await TenantJob.get_for_tenant(
+            db, tenant_id, TenantJobType.public_did
+        )
+        tenant_job_endorser = await TenantJob.get_for_tenant(
+            db, tenant_id, TenantJobType.endorser
+        )
 
-    item = db_to_tenant_item(db_tenant, tenant_issuer)
+    item = db_to_tenant_item(
+        db_tenant, tenant_job_endorser, tenant_job_did, tenant_job_issuer
+    )
 
     return item
+
+
+async def handle_make_issuer_job(
+    tenant_id: UUID,
+    wallet_id: UUID,
+):
+    async with async_session() as db:
+        tenant_job_issuer = await TenantJob.get_for_tenant(
+            db, tenant_id, TenantJobType.issuer
+        )
+
+    if tenant_job_issuer.status == TenantJobStatusType.default:
+        # TODO: add proper back and forth flow for approval...
+        # until we figure out the best flow, if the innkeeper has not approved
+        # then we raise an error like before.
+        raise IncorrectStatusError(
+            code="tenant.issuer.innkeeper-not-approved",
+            title="Tenant Issuer - Innkeeper not approved",
+            detail="Innkeeper has to approve the Issuer process before tenant can make themselves an issuer.",  # noqa: E501
+        )
+    elif tenant_job_issuer.status == TenantJobStatusType.approved:
+        # start the job and it's dependencies
+        profile = Profile(tenant_id=tenant_id, wallet_id=wallet_id, db=None)
+        job = MakeIssuerJob(profile)
+        await job.start([EndorserConnectionJob, RegisterPublicDidJob])
 
 
 async def make_issuer(
     tenant_id: UUID,
     wallet_id: UUID,
 ) -> TenantItem:
-    async with async_session() as db:
-        try:
-            issuer_repo = TenantIssuersRepository(db_session=db)
-            tenant_issuer = await issuer_repo.get_by_wallet_id(wallet_id)
-        except DoesNotExist:
-            # raise an error, let caller know that innkeeper hasn't started the flow yet
-            raise IncorrectStatusError(
-                code="tenant.issuer.innkeeper-not-approved",
-                title="Tenant Issuer - Innkeeper not approved",
-                detail="Innkeeper has to approve the Issuer process before tenant can make themselves an issuer.",  # noqa: E501
-            )
-
-        # create workflow and update issuer record
-        await create_workflow(
-            tenant_issuer.wallet_id,
-            TenantWorkflowTypeType.issuer,
-            db,
-        )
+    # get the flows, if approved, then start processing...
+    await handle_make_issuer_job(tenant_id, wallet_id)
 
     return await get_tenant(tenant_id, wallet_id)
 
