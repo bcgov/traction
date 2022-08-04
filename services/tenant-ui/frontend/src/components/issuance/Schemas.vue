@@ -3,8 +3,7 @@
 
   <ProgressSpinner v-if="loading" />
   <div v-else>
-    <DataTable :value="store.state.schemas.data" :paginator="true" :rows="10" striped-rows
-      v-model:selection="store.state.schemas.selection" selection-mode="single">
+    <DataTable :value="store.state.schemas.data" :paginator="true" :rows="10" striped-rows v-model:selection="store.state.schemas.selection" selection-mode="single">
       <template #header>
         <div class="flex justify-content-between">
           <span class="p-input-icon-left">
@@ -26,21 +25,20 @@
 
 <script setup lang="ts">
 // Vue
-import { inject, ref, onMounted } from "vue";
+import { inject, ref, onMounted } from 'vue';
 
 // PrimeVue
-import Button from "primevue/button";
-import Column from "primevue/column";
-import DataTable from "primevue/datatable";
-import InputText from "primevue/inputtext";
-import ProgressSpinner from "primevue/progressspinner";
+import Button from 'primevue/button';
+import Column from 'primevue/column';
+import DataTable from 'primevue/datatable';
+import InputText from 'primevue/inputtext';
+import ProgressSpinner from 'primevue/progressspinner';
 
 // Other imports
-import axios from "axios";
+import axios from 'axios';
 
 // Store
-const store: any = inject("store");
-
+const store: any = inject('store');
 
 // ----------------------------------------------------------------
 // Loading schemas
@@ -48,12 +46,12 @@ const store: any = inject("store");
 let loading = ref(true);
 
 onMounted(() => {
-  loading.value = true
+  loading.value = true;
 
   axios
     .get('/api/traction/tenant/v1/governance/schema_templates', {
       headers: {
-        accept: "application/json",
+        accept: 'application/json',
         Authorization: `Bearer ${store.state.token}`,
       },
     })
@@ -64,8 +62,15 @@ onMounted(() => {
     })
     .catch((err) => {
       store.state.schemas.data = null;
-      console.error("error", err);
+      console.error('error', err);
     });
-})
+});
 // -----------------------------------------------/Loading schemas
 </script>
+
+<style scoped>
+.create-btn {
+  float: right;
+  margin: 3rem 1rem 0 0;
+}
+</style>
