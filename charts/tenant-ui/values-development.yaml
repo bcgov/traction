@@ -1,0 +1,17 @@
+global:
+  ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
+tenant_ui:
+  image:
+    tag: "ghcr.io/bcgov/traction-tenant-ui:sha-aa006f2"
+    version: 'sha-aa006f2'
+    buildtime: "2022-01-28T18:19:10.574Z"
+    pullPolicy: Always
+  traction_api:
+    endpoint: https://traction-api-dev.apps.silver.devops.gov.bc.ca
+  resources:
+    limits:
+      cpu: 400m
+      memory: 1600Mi
+    requests:
+      cpu: 200m
+      memory: 820Mi

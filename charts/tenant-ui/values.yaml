@@ -1,0 +1,91 @@
+# Default values for helm-chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  nameOverride: ""
+  # global.fullnameOverride and postgresql.fullnameOverride must be changed (and match!!!) if deploying multiple instances to the same namespace
+  # the postgresql chart creates secrets and pvcs related to the fullname and will be identical without the override.
+  # use the global.fullnameOverride to install a different named helm instance and will affect naming of all objects and routes for that chart.
+  # for pull requests, can set to something like pr-NN-showcase.
+  fullnameOverride: "tenant-ui"
+
+  # -- Domain suffix to be used for default hostpaths in ingress
+  # override in different environments, or for each app
+  # --set global.ingressSuffix
+  ingressSuffix: -prod.apps.silver.devops.gov.bc.ca
+
+  persistence:
+    # -- If true, the Postgres chart is deployed
+    deployPostgres: true
+
+tenant_ui:
+  image:
+    tag: "ghcr.io/bcgov/traction-tenant-ui:sha-aa006f2"
+    version: 'sha-aa006f2'
+    buildtime: '2022-01-20T22:37:11.102Z'
+    pullPolicy: IfNotPresent
+
+
+  traction_api:
+    # this is the private endpoint
+    endpoint: http://traction-api:5000
+
+
+  serviceAccount:
+    # -- Specifies whether a service account should be created
+    create: false
+    # -- Annotations to add to the service account
+    annotations: {}
+    # -- The name of the service account to use. If not set and create is true, a name is generated using the fullname template
+    name: ""
+
+  imagePullSecrets: []
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  service:
+    type: ClusterIP
+    port: 5000
+
+  openshift:
+    route:
+      enabled: true
+      path: "/"
+      targetPort: http
+      timeout: 2m
+      tls:
+        enabled: true
+        insecureEdgeTerminationPolicy: None
+        termination: edge
+      wildcardPolicy: None
+
+  resources:
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    limits:
+      cpu: 600m
+      memory: 2600Mi
+    requests:
+      cpu: 300m
+      memory: 1300Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+

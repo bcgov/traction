@@ -1,0 +1,16 @@
+apiVersion: v2
+name: traction-tenant-ui
+description: The Traction Tenant UI allows tenants to manage their agent.
+type: application
+version: 0.0.1
+appVersion: 0.0.1
+home: "https://github.com/bcgov/traction"
+sources: ["https://github.com/bcgov/traction"]
+engine: gotpl
+maintainers:
+  - email: tools@usingtechnolo.gy
+    name: usingtechnology
+    url: https://github.com/usingtechnology
+  - email: jason.syrotuck@nttdata.com
+    name: Jsyro
+    url: https://github.com/Jsyro
