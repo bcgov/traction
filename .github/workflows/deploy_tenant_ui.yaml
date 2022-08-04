@@ -8,8 +8,8 @@ on:
         default: 'development'
       ref:
         description: 'The branch, tag or SHA to checkout'
-        required: true
-        default: 'develop'
+        required: false
+        default: ''
       traction_api_endpoint:
         description: 'Traction API Endpoint'
         required: true
