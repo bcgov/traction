@@ -53,3 +53,13 @@ npm run dev
 ```
 
 The Vite hot-module-reload app will serve from [here](http://127.0.0.1:5173/).
+
+
+## Using docker
+
+Build and run a docker image (example shows using environment variable to point at a specific Traction Instance)
+
+```bash
+docker build . -t local/traction-ui
+docker run --env SERVER_TRACTION_URL=https://traction-api-test.apps.silver.devops.gov.bc.ca/ -p 8080:8080 -d local/traction-ui
+```
