@@ -20,6 +20,10 @@ inputs:
     type: string
   registry_password:
     required: true
+  python_image:
+    required: true
+    type: boolean
+    default: "true"
   cc_coverage:
     required: false
     type: boolean
@@ -48,11 +52,13 @@ runs:
         ref: ${{ inputs.ref != '' && inputs.ref ||  env.GITHUB_REF }}${{ inputs.ref }}
 
     - name: Set up Python 3.10
+      if: ${{ fromJSON(inputs.python_image) }}
       uses: actions/setup-python@v2
       with:
         python-version: "3.10"
 
     - name: Install dependencies
+      if: ${{ fromJSON(inputs.python_image) }}
       shell: bash      
       run: |
         cd ${{ inputs.context }}
@@ -60,6 +66,7 @@ runs:
         python -m pip install tox tox-gh-actions
 
     - name: Lint with tox
+      if: ${{ fromJSON(inputs.python_image) }}
       shell: bash      
       run: |
         cd ${{ inputs.context }}
