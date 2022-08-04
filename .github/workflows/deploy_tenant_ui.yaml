@@ -59,7 +59,7 @@ jobs:
           ref: ${{ github.event.inputs.ref }}    
       
       - name: Build service
-        uses: ./.github/actions/build_image
+        uses: ./.github/actions/build_service
         id: builder
         with:
           ref: ${{ github.event.inputs.ref }}
