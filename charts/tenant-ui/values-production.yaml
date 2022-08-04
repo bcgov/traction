@@ -1,0 +1,7 @@
+tenant_ui:
+  image:
+    tag: "ghcr.io/bcgov/traction-tenant-ui:sha-aa006f2"
+    version: 'sha-aa006f2'
+    buildtime: '2022-01-03T21:46:11.855Z'
+  traction_api:
+    endpoint: https://traction-api-prod.apps.silver.devops.gov.bc.ca

@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "tenant_ui.fullname" . }}
+  labels:
+    {{- include "tenant_ui.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "tenant_ui.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/tenant_ui_configmap.yaml") . | sha256sum }} 
+    {{- with .Values.tenant_ui.podAnnotations -}}  
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "tenant_ui.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.tenant_ui.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "tenant_ui.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.tenant_ui.podSecurityContext | nindent 8 }}
+      containers:
+        - name: traction-tenant-ui
+          securityContext:
+            {{- toYaml .Values.tenant_ui.securityContext | nindent 12 }}
+          image: "{{ .Values.tenant_ui.image.tag }}"
+          imagePullPolicy: {{ .Values.tenant_ui.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 60
+            periodSeconds: 10  
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 60
+            periodSeconds: 30   
+          env:
+            - name: SERVER_TRACTION_URL
+              value: {{ .Values.tenant_ui.traction_api.endpoint }}
+            {{- include "tenant_ui.configmap.env.vars" . | nindent 10}}
+          resources:
+            {{- toYaml .Values.tenant_ui.resources | nindent 12 }}
+      {{- with .Values.tenant_ui.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tenant_ui.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tenant_ui.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
