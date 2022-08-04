@@ -1,0 +1,11 @@
+Dockerfile
+venv/
+.env/
+dist/
+node_modules/
+frontend/venv/
+frontend/.env/
+frontend/dist/
+frontend/node_modules/
+config/local.json
+.gitignore

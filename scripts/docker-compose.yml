@@ -194,6 +194,18 @@ services:
       timeout: 5s
       retries: 5
 
+  tenant-ui:
+    build:
+      context: ../services/tenant-ui
+      dockerfile: Dockerfile
+    depends_on:
+      traction-api:
+        condition: service_started
+    environment:
+      - SERVER_TRACTION_URL=${SERVER_TRACTION_URL}
+    ports:
+      - ${TENANT_UI_PORT}:8080
+
 
 volumes:
   traction-wallet:
