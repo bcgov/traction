@@ -33,18 +33,18 @@ spec:
           imagePullPolicy: {{ .Values.tenant_ui.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 5000
+              containerPort: 8080
               protocol: TCP
           readinessProbe:
             httpGet:
               path: /
-              port: 5000
+              port: 8080
             initialDelaySeconds: 60
             periodSeconds: 10  
           livenessProbe:
             httpGet:
               path: /
-              port: 5000
+              port: 8080
             initialDelaySeconds: 60
             periodSeconds: 30   
           env:
