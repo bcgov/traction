@@ -93,32 +93,3 @@ The `comment` is sent to the holder with the revocation notification, and can pr
 
 To include proof of non-revocation, include the `non_revoked` attribute with a timestamp.  (You can specify `from` and `to`, for a revocation range, but typically only the `to` timestamp is provided.)  See the [integration tests](https://github.com/bcgov/traction/blob/develop/services/traction/tests/integration/endpoints/routes/test_tenant_revocation.py) for examples of non-revocation proofs.
 
-## Running the "showcase" demo
-
-Run the traction services as described above, and then in a new bash shell run the following:
-
-```bash
-cd traction/scripts
-docker-compose -f docker-compose.showcase.yml build
-docker-compose -f docker-compose.showcase.yml up
-```
-
-### Create a "sandbox" (set of traction tenants)
-
-### As faber, issue invitation to alice
-
-### As alice, accept connection
-
-### As faber, issue a credential to alice
-
-### As alice, accept the issued credential
-
-### As alice, request to connect to acme
-
-### As acme, accept connection from alice
-
-### As acme, request proof of education from alice
-
-### As alice, provide proof of education to acme
-
-### As acme, verify proof of education from alice
