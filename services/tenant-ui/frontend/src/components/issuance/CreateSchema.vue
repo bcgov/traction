@@ -33,11 +33,11 @@ const removeAttribute = (index: number) => {
  * Save the new schema.
  */
 const save = ($emit: any) => {
-  // console.log(`Name: ${schemaName.value}`);
-  // console.log(`Version: ${schemaVersion.value}`);
-  // attributes.value.forEach((attribute) => {
-  //   console.log(`${attribute.name} ${(attribute.type as any).code}`);
-  // });
+  console.log(`Name: ${schemaName.value}`);
+  console.log(`Version: ${schemaVersion.value}`);
+  attributes.value.forEach((attribute) => {
+    console.log(`${attribute.name} ${(attribute.type as any).code}`);
+  });
 
   // Emit a custom save event so the parent knows to close the dialog.
   $emit("schemaSave");

@@ -35,6 +35,9 @@
       label="Create Schema"
       @click="toggleAddSchema"
     />
+    <Dialog header="Create a new schema" v-model:visible="displayAddingSchema">
+      <CreateSchema @schema-save="toggleAddSchema"></CreateSchema>
+    </Dialog>
   </div>
 </template>
 
@@ -48,6 +51,7 @@ import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import InputText from "primevue/inputtext";
 import ProgressSpinner from "primevue/progressspinner";
+import Dialog from "primevue/dialog";
 
 // Other imports
 import axios from "axios";
@@ -62,6 +66,7 @@ const store: any = inject("store");
 // Loading schemas
 // ----------------------------------------------------------------
 let loading = ref(true);
+let displayAddingSchema = ref(false);
 
 onMounted(() => {
   loading.value = true;
@@ -85,7 +90,7 @@ onMounted(() => {
 });
 
 const toggleAddSchema = () => {
-  store.state.schemas.addSchema = !store.state.schemas.addSchema;
+  displayAddingSchema.value = !displayAddingSchema.value;
 };
 // -----------------------------------------------/Loading schemas
 </script>
