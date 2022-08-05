@@ -16,11 +16,14 @@ from api.endpoints.models.v1.common import (
     CommentPayload,
 )
 
-from api.endpoints.models.credentials import (
-    IssueCredentialProtocolType,
-    CredentialStateType,
+from api.endpoints.models.v1.common import (
     CredentialPreview,
     AttributePreview,
+)
+
+from api.endpoints.models.v1.enumerated import (
+    IssueCredentialProtocolType,
+    CredentialStateType,
 )
 
 

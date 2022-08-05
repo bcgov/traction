@@ -6,7 +6,7 @@ from api.core.event_bus import Event
 from api.core.profile import Profile
 from api.db.models.v1.issuer import IssuerCredential
 from api.db.session import async_session
-from api.endpoints.models.credentials import CredentialRoleType, CredentialStateType
+from api.endpoints.models.v1.enumerated import CredentialRoleType, CredentialStateType
 from api.endpoints.models.v1.errors import NotFoundError
 from api.endpoints.models.webhooks import WEBHOOK_ISSUE_LISTENER_PATTERN
 

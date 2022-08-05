@@ -11,7 +11,7 @@ from api.db.models import Tenant
 from api.db.models.v1.contact import Contact
 from api.db.models.v1.verifier_presentation import VerifierPresentation
 from api.db.session import async_session
-from api.endpoints.models.credentials import PresentationRoleType
+from api.endpoints.models.v1.enumerated import PresentationRoleType
 from api.endpoints.models.v1.errors import NotFoundError
 from api.endpoints.models.v1.verifier import AcapyPresentProofStateType
 from api.endpoints.models.webhooks import WEBHOOK_PRESENT_LISTENER_PATTERN

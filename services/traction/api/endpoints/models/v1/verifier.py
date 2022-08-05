@@ -20,7 +20,7 @@ from api.endpoints.models.v1.base import (
     ListTagsItemParameters,
     TagsItem,
 )
-from api.endpoints.models.credentials import ProofRequest
+from api.endpoints.models.v1.common import ProofRequest
 
 
 # Enums

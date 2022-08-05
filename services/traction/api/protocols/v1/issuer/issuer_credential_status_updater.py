@@ -3,7 +3,7 @@ from sqlalchemy import update
 from api.core.profile import Profile
 from api.db.models.v1.issuer import IssuerCredential
 from api.db.session import async_session
-from api.endpoints.models.credentials import CredentialStateType
+from api.endpoints.models.v1.enumerated import CredentialStateType
 from api.endpoints.models.v1.issuer import IssuerCredentialStatusType
 from api.protocols.v1.issuer.issue_credential_protocol import (
     DefaultIssueCredentialProtocol,

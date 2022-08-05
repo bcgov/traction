@@ -12,7 +12,6 @@ from api.core.exception_handlers import add_exception_handlers
 from api.endpoints.routes.webhooks import get_webhookapp
 from api.jobs import subscribe_job_list
 from api.protocols.v1 import subscribe_protocol_listeners
-from api.services.tenant_workflows import subscribe_workflow_events
 from api.innkeeper_main import get_innkeeperapp
 from api.services.v1.tenant_webhook_service import subscribe_webhook_events
 from api.tasks import subscribe_task_listeners
@@ -78,7 +77,6 @@ add_exception_handlers(acapy_wrapper_app)
 async def on_tenant_startup():
     """Register any events we need to respond to."""
     logger.warning(">>> Starting up app ...")
-    subscribe_workflow_events()
     subscribe_protocol_listeners()
     subscribe_job_list()
     subscribe_task_listeners()
