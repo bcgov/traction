@@ -69,3 +69,12 @@ git pull
 git rebase origin/develop
 git push --force
 ```
+
+## Archive of Showcase
+Earlier iterations of Traction had a Showcase application (use Traction API to facilitate Alice/Faber/Acme demo).
+
+This has been removed as the API advances and other applications fill that role. A full working instance of Traction API and Showcase are in [tag v0.1.0](https://github.com/bcgov/traction/releases/tag/v0.1.0)
+
+The v0.1.0 release has instructions and docker compose files for running Showcase.
+Review [Scripts](https://github.com/bcgov/traction/blob/66565a3f6c01ddec241dc3b8db2bd99879bd7cf2/scripts/README.md). 
+
