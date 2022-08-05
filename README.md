@@ -26,17 +26,6 @@ Open another browser and connect to `http://localhost:5100/tenant/docs`.  Authen
 
 See the [use case](./docs/USE-CASE.md) document for more detailed information about traction services.
 
-To run the showcase application, open a second bash shell and run the following:
-
-```bash
-cd traction/scripts
-docker-compose -f docker-compose.showcase.yml build
-docker-compose -f docker-compose.showcase.yml up
-```
-
-Open a browser to `http://localhost:5200` to access the showcase application.
-
-See the [use case](./docs/USE-CASE.md) document for more detailed information about how to run the showcase demo.
 
 ## Running traction
 
@@ -46,7 +35,7 @@ For more information about the Docker Compose files for spinning up local instan
 
 ## Deploying Traction
 
-Helm charts for deploying Traction, Showcase and Endorser to Openshift:
+Helm charts for deploying Traction and Endorser to Openshift:
 
 [Charts](./charts/README.md)
 
@@ -64,9 +53,6 @@ Source code for Traction API:
 
 [Traction](./services/traction/README.md)
 
-Source code for the traction showcase demo:
-
-[Traction Showcase/Demo](./services/showcase/README.md)
 
 Source code for Endorser controller application.
 

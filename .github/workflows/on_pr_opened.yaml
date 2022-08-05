@@ -5,9 +5,7 @@ on:
       - develop
     paths:
       - 'services/traction/**'
-      - 'services/showcase/**'
       - 'charts/traction/**'
-      - 'charts/showcase/**'
     types:
       - opened
       - synchronize

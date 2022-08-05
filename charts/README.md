@@ -29,7 +29,7 @@ limits.cpu = 4 cores -> 4000m
 
 requests.cpu = 2 cores -> 2000m
 
-Currently, each instance has 5 containers (traction api & traction acapy & traction db + showcase & showcase db). We are using the dev namespace for a DEV instance plus our Pull Request Instances (4 developers, so hopefully only 4 PRs open at a time). This puts cosiderable limitations on the resources we can request and our limits.
+Currently, each instance has 3 containers (traction api & traction acapy & traction db). We are using the dev namespace for a DEV instance plus our Pull Request Instances (4 developers, so hopefully only 4 PRs open at a time). This puts cosiderable limitations on the resources we can request and our limits. We are leaving extra space for standing up tenant-ui on demand.
 
 For test and prod namespaces, we can assume that we will need 2 instances (test + uat), (prod + hotfix).  
 

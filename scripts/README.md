@@ -44,33 +44,6 @@ docker-compose up traction-agent
 docker-compose down traction-agent -v --remove-orphans
 ```
 
-#### start with showcase app
-This will start up traction (database, agent, endorser and api) and a showcase app (with its own database).
-
-```sh
-docker-compose -f docker-compose.yml -f docker-compose.showcase.yml up
-```
-
-##### teardown
-
-```sh
-docker-compose -f docker-compose.showcase.yml -f docker-compose.yml down -v --remove-orphans
-```
-
-##### run backend tests
-```sh
-docker-compose up
-docker exec scripts_traction-api_1 pytest --asyncio-mode=strict
-```
-unit tests can be run without docker like this from `/services/traction`.(tox.ini uses pytest `--asyncio-mode=strict -m "not integtest"`)
-```
-tox -e test 
-```
-run only integration tests like this
-```
-docker exec scripts_traction-api_1 pytest --asyncio-mode=strict -m integtest
-```
-
 
 ##### run bdd tests
 

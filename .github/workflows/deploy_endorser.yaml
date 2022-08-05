@@ -8,8 +8,8 @@ on:
         default: 'tools'
       ref:
         description: 'The branch, tag or SHA to checkout'
-        required: true
-        default: 'develop'
+        required: false
+        default: ''
       instance_name:
         description: 'Instance name'
         required: true

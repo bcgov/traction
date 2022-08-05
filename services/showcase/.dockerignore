@@ -1,9 +1,0 @@
-Dockerfile
-.idea/
-.tox/
-.coverage/
-.gitignore
-tests/
-venv/
-**/__pycache__
-**/.DS_Store
