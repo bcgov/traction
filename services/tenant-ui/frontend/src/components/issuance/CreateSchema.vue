@@ -2,9 +2,14 @@
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import Dropdown from "primevue/dropdown";
-import { ref } from "vue";
+import { inject, ref } from "vue";
+import axios from "axios";
+
 const schemaName = ref("");
 const schemaVersion = ref("");
+
+// Store
+const store: any = inject("store");
 
 // Schema types
 const options = [
@@ -33,14 +38,44 @@ const removeAttribute = (index: number) => {
  * Save the new schema.
  */
 const save = ($emit: any) => {
-  console.log(`Name: ${schemaName.value}`);
-  console.log(`Version: ${schemaVersion.value}`);
-  attributes.value.forEach((attribute) => {
-    console.log(`${attribute.name} ${(attribute.type as any).code}`);
-  });
+  // console.log(`Name: ${schemaName.value}`);
+  // console.log(`Version: ${schemaVersion.value}`);
+  // attributes.value.forEach((attribute) => {
+  //   console.log(`${attribute.name} ${(attribute.type as any).code}`);
+  // });
+  const url = "/api/traction/tenant/v1/governance/schema_templates";
 
-  // Emit a custom save event so the parent knows to close the dialog.
-  $emit("schemaSave");
+  const justAttributeNames = attributes.value.map(
+    (attribute) => attribute.name
+  );
+
+  const payload = {
+    schema_definition: {
+      schema_name: schemaName.value,
+      schema_version: schemaVersion.value,
+      attributes: justAttributeNames,
+    },
+    name: schemaName.value,
+    tags: [],
+  };
+
+  const headers = {
+    Authorization: `Bearer ${store.state.token}`,
+    "Content-Type": "application/json",
+  };
+
+  axios
+    .post(url, payload, { headers })
+    .then((res) => {
+      console.log("success: ", res);
+    })
+    .catch((err) => {
+      console.log("error: ", err);
+    })
+    .finally(() => {
+      // Emit a custom save event so the parent knows to close the dialog.
+      $emit("schemaSave");
+    });
 };
 
 // Store an array of attributes. Start with an empty attribute
