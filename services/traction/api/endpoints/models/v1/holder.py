@@ -4,8 +4,8 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from api.endpoints.models.credentials import (
-    CredentialStateType,
+from api.endpoints.models.v1.enumerated import CredentialStateType
+from api.endpoints.models.v1.common import (
     CredPrecisForProof,
     CredPresentation,
 )

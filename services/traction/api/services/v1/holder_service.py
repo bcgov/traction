@@ -30,7 +30,9 @@ from api.db.models import Timeline
 from api.db.models.v1.contact import Contact
 from api.db.models.v1.holder import HolderCredential, HolderPresentation
 from api.db.session import async_session
-from api.endpoints.models.credentials import CredentialStateType, CredPrecisForProof
+from api.endpoints.models.v1.common import CredPrecisForProof
+from api.endpoints.models.v1.enumerated import CredentialStateType
+
 from api.endpoints.models.v1.errors import (
     IdNotMatchError,
     NotFoundError,

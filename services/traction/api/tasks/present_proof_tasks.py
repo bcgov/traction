@@ -19,7 +19,7 @@ from api.tasks.tasks import (
 )
 from api.db.models import Tenant
 from api.db.models.v1.contact import Contact
-from api.endpoints.models.credentials import ProofReqAttr, ProofRequest
+from api.endpoints.models.v1.common import ProofReqAttr, ProofRequest
 from api.endpoints.models.v1.verifier import VerifierPresentationStatusType
 from api.db.session import async_session
 
