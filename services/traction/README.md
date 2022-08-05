@@ -23,18 +23,6 @@ tox -e lint
 tox -e test
 ```
 
-To run integration tests locally, first start all the services using docker-compose:
-
-```shell
-docker-compose up
-```
-
-... then, in a separate shell, run the tests:
-
-```shell
-docker exec scripts_traction-api_1 pytest --asyncio-mode=strict -m integtest
-```
-
 ## Behaviour Driven Tests
 To run 'Behave' bdd tests. start traction, then navigate to bdd-tests folder and run behave.
 
