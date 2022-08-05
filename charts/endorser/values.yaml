@@ -238,7 +238,6 @@ endorser_api:
   db:
     admin: endorseradminuser
     user: endorseruser
-  # this value and the name of the secret storing the admin key are used in the charts/showcase/values.yaml
   api:
     adminuser: endorser
 

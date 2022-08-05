@@ -21,35 +21,6 @@ on:
 
 jobs:
 
-  uninstall:
-    environment: ${{ github.event.inputs.deploy_env }}
-    runs-on: ubuntu-20.04
-    if: github.repository_owner == 'bcgov'
-    steps:  
-      - uses: actions/checkout@v2  
-      - name: Check out manifest repo
-        uses: actions/checkout@v2
-        with:
-          ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
-          repository: ${{ secrets.MANIFEST_REPO }}
-          path: charts-repo
-
-      - name: Authenticate and set context
-        uses: redhat-actions/oc-login@v1
-        with:
-          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
-          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-          certificate_authority_data: ${{ secrets.OPENSHIFT_CA_CRT }}
-          namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
-      
-      - name: Uninstall via Helm 
-        run: |
-          helm uninstall "${{ github.event.inputs.instance_name }}"
-      
-      - name: Remove Openshift Objects 
-        run: |
-          oc delete secret,pvc --selector "app.kubernetes.io/instance"="${{ github.event.inputs.instance_name }}"
-
   build_image:
     runs-on: ubuntu-20.04
     if: github.repository_owner == 'bcgov'

@@ -7,7 +7,7 @@ global:
   # global.fullnameOverride and postgresql.fullnameOverride must be changed (and match!!!) if deploying multiple instances to the same namespace
   # the postgresql chart creates secrets and pvcs related to the fullname and will be identical without the override.
   # use the global.fullnameOverride to install a different named helm instance and will affect naming of all objects and routes for that chart.
-  # for pull requests, can set to something like pr-NN-showcase.
+  # for pull requests, can set to something like pr-NN-tenant-ui.
   fullnameOverride: "tenant-ui"
 
   # -- Domain suffix to be used for default hostpaths in ingress
@@ -21,9 +21,9 @@ global:
 
 tenant_ui:
   image:
-    tag: "ghcr.io/bcgov/traction-tenant-ui:sha-aa006f2"
-    version: 'sha-aa006f2'
-    buildtime: '2022-01-20T22:37:11.102Z'
+    tag: "ghcr.io/bcgov/traction-tenant-ui:sha-5fdc664"
+    version: 'sha-5fdc664'
+    buildtime: '2022-08-04T22:16:25.869Z'
     pullPolicy: IfNotPresent
 
 
