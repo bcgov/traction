@@ -38,11 +38,6 @@ const removeAttribute = (index: number) => {
  * Save the new schema.
  */
 const save = ($emit: any) => {
-  // console.log(`Name: ${schemaName.value}`);
-  // console.log(`Version: ${schemaVersion.value}`);
-  // attributes.value.forEach((attribute) => {
-  //   console.log(`${attribute.name} ${(attribute.type as any).code}`);
-  // });
   const url = "/api/traction/tenant/v1/governance/schema_templates";
   // const url = "https://traction-api-test.apps.silver.devops.gov.bc.ca/tenant/v1/governance/schema_templates";
 
