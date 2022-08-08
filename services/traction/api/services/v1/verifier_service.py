@@ -5,7 +5,8 @@ from typing import List
 from starlette import status, exceptions
 
 from api.db.models.v1.presentation_request_template import PresentationRequestTemplate
-from api.endpoints.models.credentials import PresentCredentialProtocolType, ProofRequest
+from api.endpoints.models.v1.common import ProofRequest
+from api.endpoints.models.v1.enumerated import PresentCredentialProtocolType
 
 from sqlalchemy import select, desc
 from sqlalchemy.sql.functions import func

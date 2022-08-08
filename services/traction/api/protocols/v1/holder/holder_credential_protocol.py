@@ -3,7 +3,7 @@ import uuid
 from api.core.profile import Profile
 from api.db.models.v1.contact import Contact
 from api.db.models.v1.holder import HolderCredential
-from api.endpoints.models.credentials import CredentialRoleType, CredentialStateType
+from api.endpoints.models.v1.enumerated import CredentialRoleType, CredentialStateType
 from api.endpoints.models.v1.errors import NotFoundError
 from api.endpoints.models.v1.holder import HolderCredentialStatusType
 from api.protocols.v1.issuer.issue_credential_protocol import IssueCredentialProtocol

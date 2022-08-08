@@ -14,7 +14,7 @@ from api.endpoints.models.v1.verifier import (
     CreatePresentationRequestPayload,
     VerifierPresentationListParameters,
 )
-from api.endpoints.models.credentials import PresentCredentialProtocolType
+from api.endpoints.models.v1.enumerated import PresentCredentialProtocolType
 
 
 from api.tasks.present_proof_tasks import SendPresentProofTask

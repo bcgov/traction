@@ -17,7 +17,7 @@ from api.db.models.v1.contact import Contact
 from api.db.models.v1.governance import CredentialTemplate
 from api.db.models.v1.issuer import IssuerCredential
 
-from api.endpoints.models.credentials import CredentialStateType
+from api.endpoints.models.v1.enumerated import CredentialStateType
 from api.endpoints.models.v1.errors import (
     IdNotMatchError,
     IncorrectStatusError,
