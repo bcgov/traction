@@ -3,13 +3,22 @@
 
   <ProgressSpinner v-if="loading" />
   <div v-else>
-    <DataTable :value="store.state.schemas.data" :paginator="true" :rows="10" striped-rows
-      v-model:selection="store.state.schemas.selection" selection-mode="single">
+    <DataTable
+      :value="store.state.schemas.data"
+      :paginator="true"
+      :rows="10"
+      striped-rows
+      v-model:selection="store.state.schemas.selection"
+      selection-mode="single"
+    >
       <template #header>
         <div class="flex justify-content-between">
           <span class="p-input-icon-left">
             <i class="pi pi-search" />
-            <InputText v-model="store.state.schemas.filters" placeholder="Schema Search" />
+            <InputText
+              v-model="store.state.schemas.filters"
+              placeholder="Schema Search"
+            />
           </span>
         </div>
       </template>
@@ -20,7 +29,15 @@
       <Column field="attributes" header="Attributes" />
       <Column field="schema_id" header="ID" />
     </DataTable>
-    <Button class="create-btn" icon="pi pi-plus" label="Create Schema" />
+    <Button
+      class="create-btn"
+      icon="pi pi-plus"
+      label="Create Schema"
+      @click="toggleAddSchema"
+    />
+    <Dialog header="Create a new schema" v-model:visible="displayAddingSchema">
+      <CreateSchema @schema-save="toggleAddSchema"></CreateSchema>
+    </Dialog>
   </div>
 </template>
 
@@ -34,24 +51,28 @@ import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import InputText from "primevue/inputtext";
 import ProgressSpinner from "primevue/progressspinner";
+import Dialog from "primevue/dialog";
 
 // Other imports
 import axios from "axios";
 
+// Custom components
+import CreateSchema from "./CreateSchema.vue";
+
 // Store
 const store: any = inject("store");
-
 
 // ----------------------------------------------------------------
 // Loading schemas
 // ----------------------------------------------------------------
 let loading = ref(true);
+let displayAddingSchema = ref(false);
 
 onMounted(() => {
-  loading.value = true
+  loading.value = true;
 
   axios
-    .get('/api/traction/tenant/v1/governance/schema_templates', {
+    .get("/api/traction/tenant/v1/governance/schema_templates", {
       headers: {
         accept: "application/json",
         Authorization: `Bearer ${store.state.token}`,
@@ -66,6 +87,20 @@ onMounted(() => {
       store.state.schemas.data = null;
       console.error("error", err);
     });
-})
+});
+
+const toggleAddSchema = () => {
+  displayAddingSchema.value = !displayAddingSchema.value;
+};
 // -----------------------------------------------/Loading schemas
 </script>
+
+<style scoped>
+.create-btn {
+  float: right;
+  margin: 3rem 1rem 0 0;
+}
+.p-datatable-header input {
+  padding-left: 3rem;
+}
+</style>
