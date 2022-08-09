@@ -12,6 +12,7 @@ const state = reactive({
   contacts: {},
   holderCredentials: {},
   issuerCredentials: {},
+  verifierPresentations: {},
   settings: {},
   schemas: {},
 });
