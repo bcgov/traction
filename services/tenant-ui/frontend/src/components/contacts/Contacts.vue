@@ -3,8 +3,7 @@
 
   <ProgressSpinner v-if="loading" />
   <div v-else>
-    <DataTable :value="store.state.contacts.data" :paginator="true" :rows="10" striped-rows
-      v-model:selection="store.state.contacts.selection" selection-mode="single">
+    <DataTable :value="store.state.contacts.data" :paginator="true" :rows="10" striped-rows v-model:selection="store.state.contacts.selection" selection-mode="single">
       <Column :sortable="true" field="alias" header="Name" />
       <Column field="role" header="Role" />
       <Column field="state" header="State" />
@@ -13,34 +12,33 @@
       <Column field="contact_id" header="ID" />
     </DataTable>
   </div>
-  <Button v-if="store.state.contacts.data" class="create-contact" icon="pi pi-plus" label="Create Contact"
-    @click="createContact"></Button>
+  <Button v-if="store.state.contacts.data" class="create-contact" icon="pi pi-plus" label="Create Contact" @click="createContact"></Button>
 
   <Dialog header="Create a new contact" v-model:visible="displayAddContact" :modal="true">
     <CreateContact @created="contactCreated" />
   </Dialog>
 </template>
 
-
 <script setup lang="ts">
 // Vue
-import { inject, ref, onMounted } from "vue";
+import { inject, ref, onMounted } from 'vue';
 
 // PrimeVue
-import Button from "primevue/button";
-import Column from "primevue/column";
-import DataTable from "primevue/datatable";
-import Dialog from "primevue/dialog";
-import ProgressSpinner from "primevue/progressspinner";
+import Button from 'primevue/button';
+import Column from 'primevue/column';
+import DataTable from 'primevue/datatable';
+import Dialog from 'primevue/dialog';
+import ProgressSpinner from 'primevue/progressspinner';
+import { useToast } from 'primevue/usetoast';
 
 // Other imports
-import axios from "axios";
+import axios from 'axios';
 
 // Other components
-import CreateContact from "./CreateContact.vue";
+import CreateContact from './CreateContact.vue';
 
 // Store
-const store: any = inject("store");
+const store: any = inject('store');
 
 // ----------------------------------------------------------------
 // Loading contacts
@@ -48,11 +46,19 @@ const store: any = inject("store");
 let loading = ref(true);
 
 const loadContacts = () => {
-  loading.value = true
+  console.log('yo me');
+  loading.value = true;
+  const toast = useToast();
+
+  toast.add({
+    severity: 'info',
+    summary: 'Loading contacts',
+    detail: 'Please wait...',
+  });
   axios
     .get('/api/traction/tenant/v1/contacts', {
       headers: {
-        accept: "application/json",
+        accept: 'application/json',
         Authorization: `Bearer ${store.state.token}`,
       },
     })
@@ -63,13 +69,13 @@ const loadContacts = () => {
     })
     .catch((err) => {
       store.state.contacts.data = null;
-      console.error("error", err);
+      console.error('error', err);
     });
-}
+};
 
 onMounted(() => {
   loadContacts();
-})
+});
 // -----------------------------------------------/Loading contacts
 
 // ----------------------------------------------------------------
@@ -84,7 +90,7 @@ const createContact = () => {
 const contactCreated = () => {
   // Emited from the contact creation component when a successful invite is made
   loadContacts();
-}
+};
 // -----------------------------------------------/Adding contacts
 </script>
 
