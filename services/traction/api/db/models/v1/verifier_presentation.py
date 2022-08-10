@@ -94,7 +94,7 @@ class VerifierPresentation(
             .where(cls.tenant_id == tenant_id)
             .where(cls.verifier_presentation_id == verifier_presentation_id)
             .where(cls.deleted == deleted)
-            .options(cls.contact)
+            .options(selectinload(cls.contact))
         )
         q_result = await db.execute(q)
         db_rec = q_result.scalar_one_or_none()
