@@ -5,11 +5,10 @@
   <div v-else>
     <DataTable :value="store.state.verifierPresentations.data" :paginator="true" :rows="10" striped-rows v-model:selection="store.state.verifierPresentations.selection" selection-mode="single">
       <Column :sortable="true" field="name" header="Name" />
+      <Column field="contact.alias" header="Contact Name" />
       <Column field="state" header="State" />
       <Column field="status" header="Status" />
       <Column field="created_at" header="Created at" />
-      <Column field="contact_id" header="Contact id" />
-      <!--TODO Map this to contact name-->
     </DataTable>
   </div>
 </template>

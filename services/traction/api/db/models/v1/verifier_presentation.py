@@ -60,7 +60,9 @@ class VerifierPresentation(
     # --- acapy data
 
     # relationships ---
-    contact: Optional[Contact] = Relationship()  # don't back populate
+    contact: Optional[Contact] = Relationship(
+        sa_relationship_kwargs={"lazy": "joined"}
+    )  # don't back populate
     # --- relationships
 
     @classmethod
@@ -92,7 +94,7 @@ class VerifierPresentation(
             .where(cls.tenant_id == tenant_id)
             .where(cls.verifier_presentation_id == verifier_presentation_id)
             .where(cls.deleted == deleted)
-            .options(selectinload(cls.contact))
+            .options(cls.contact)
         )
         q_result = await db.execute(q)
         db_rec = q_result.scalar_one_or_none()

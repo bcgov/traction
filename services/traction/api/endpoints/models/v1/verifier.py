@@ -20,7 +20,7 @@ from api.endpoints.models.v1.base import (
     ListTagsItemParameters,
     TagsItem,
 )
-from api.endpoints.models.v1.common import ProofRequest
+from api.endpoints.models.v1.common import ContactCommon, ProofRequest
 
 
 # Enums
@@ -93,7 +93,7 @@ class VerifierPresentationItem(
     ]
 ):
     verifier_presentation_id: UUID
-    contact_id: UUID
+    contact: ContactCommon
     # proof_request: ProofRequest
     name: str
     version: str
