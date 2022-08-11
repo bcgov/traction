@@ -1,4 +1,7 @@
+<script setup lang="ts">
+import verifierPresentations from '../../components/verifier/Presentations.vue';
+</script>
+
 <template>
-  <h3>About Page</h3>
-  TMyPresentationsiew
+  <verifierPresentations />
 </template>

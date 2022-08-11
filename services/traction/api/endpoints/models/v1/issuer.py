@@ -12,9 +12,7 @@ from api.endpoints.models.v1.base import (
     TimelineItem,
     ListAcapyItemParameters,
 )
-from api.endpoints.models.v1.common import (
-    CommentPayload,
-)
+from api.endpoints.models.v1.common import CommentPayload, ContactCommon
 
 from api.endpoints.models.v1.common import (
     CredentialPreview,
@@ -116,12 +114,6 @@ class IssuerCredentialTemplate(BaseModel):
     revocation_enabled: bool
 
 
-class IssuerCredentialContact(BaseModel):
-    contact_id: UUID
-    alias: str
-    external_reference_id: str | None = None
-
-
 class IssuerCredentialAcapy(BaseModel):
     credential_exchange_id: str | None = None
     revoc_reg_id: str | None = None
@@ -134,7 +126,7 @@ class IssuerCredentialItem(
 ):
     issuer_credential_id: UUID
     credential_template: IssuerCredentialTemplate
-    contact: IssuerCredentialContact
+    contact: ContactCommon
     revoked: bool
     comment: str | None = None
     revocation_comment: str | None = None
