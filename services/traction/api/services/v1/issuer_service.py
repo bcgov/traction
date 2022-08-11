@@ -1,6 +1,7 @@
 import logging
 from uuid import UUID
 from typing import List
+from api.endpoints.models.v1.common import ContactCommon
 
 from sqlalchemy import select, func, desc, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -26,7 +27,6 @@ from api.endpoints.models.v1.errors import (
 from api.endpoints.models.v1.issuer import (
     IssuerCredentialListParameters,
     IssuerCredentialItem,
-    IssuerCredentialContact,
     IssuerCredentialAcapy,
     IssuerCredentialTemplate,
     OfferNewCredentialPayload,
@@ -63,7 +63,7 @@ def issuer_credential_to_item(
         cred_def_id=db_item.credential_template.cred_def_id,
         revocation_enabled=db_item.credential_template.revocation_enabled,
     )
-    contact = IssuerCredentialContact(
+    contact = ContactCommon(
         contact_id=db_item.contact.contact_id,
         alias=db_item.contact.alias,
         external_reference_id=db_item.contact.external_reference_id,

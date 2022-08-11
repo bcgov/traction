@@ -1,4 +1,5 @@
 import json
+from uuid import UUID
 from typing import Dict
 
 from pydantic import BaseModel
@@ -85,3 +86,9 @@ class CredPresentation(BaseSchema):
 
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True)
+
+
+class ContactCommon(BaseModel):
+    contact_id: UUID
+    alias: str
+    external_reference_id: str | None = None

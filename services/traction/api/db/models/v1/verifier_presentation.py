@@ -60,7 +60,9 @@ class VerifierPresentation(
     # --- acapy data
 
     # relationships ---
-    contact: Optional[Contact] = Relationship()  # don't back populate
+    contact: Optional[Contact] = Relationship(
+        sa_relationship_kwargs={"lazy": "joined"}
+    )  # don't back populate
     # --- relationships
 
     @classmethod

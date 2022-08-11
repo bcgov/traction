@@ -5,7 +5,7 @@ from typing import List
 from starlette import status, exceptions
 
 from api.db.models.v1.presentation_request_template import PresentationRequestTemplate
-from api.endpoints.models.v1.common import ProofRequest
+from api.endpoints.models.v1.common import ContactCommon, ProofRequest
 from api.endpoints.models.v1.enumerated import PresentCredentialProtocolType
 
 from sqlalchemy import select, desc
@@ -63,7 +63,13 @@ def verifier_presentation_to_item(
         acapy_item = PresentationExchangeAcapy(
             presentation_exchange=presentation_exchange
         )
-    item = VerifierPresentationItem(**db_item.dict(), acapy=acapy_item)
+    contact = ContactCommon(
+        contact_id=db_item.contact.contact_id,
+        alias=db_item.contact.alias,
+        external_reference_id=db_item.contact.external_reference_id,
+    )
+
+    item = VerifierPresentationItem(**db_item.dict(), acapy=acapy_item, contact=contact)
     return item
 
 
