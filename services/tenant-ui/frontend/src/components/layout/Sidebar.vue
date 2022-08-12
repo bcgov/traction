@@ -1,13 +1,15 @@
 <template>
     <div>
-        <h1 class="sidebar-app-title">TRACTION</h1>
+        <h1 class="sidebar-app-title">{{ config.ux.sidebarTitle }}</h1>
         <PanelMenu :model="items" class="mt-5"/>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { inject, ref } from 'vue';
 import PanelMenu from 'primevue/panelmenu';
+
+const config: any = inject("config");
 
 const items = ref([
     {
@@ -82,7 +84,13 @@ const items = ref([
             }
         ]
     },
-]); 
+
+  {
+    label: 'About',
+    icon: 'pi pi-fw pi-question-circle',
+    to: { name: 'About' }
+  },
+]);
 </script>
 
 <style>
@@ -92,6 +100,7 @@ const items = ref([
     padding: .5em 1.7em;
     margin: .5em;
     background-color: #96c230;
+    text-transform: uppercase;
 }
 
 /* TODO: quick and dirty, rewrite this (or better, find theme settings) */
