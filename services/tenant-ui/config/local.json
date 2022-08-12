@@ -1,4 +1,8 @@
 {
+  "image": {
+    "tag": "local/tenant-ui:latest",
+    "version": "latest"
+  },
   "server": {
     "tractionUrl": "https://traction-api-test.apps.silver.devops.gov.bc.ca/"
   }

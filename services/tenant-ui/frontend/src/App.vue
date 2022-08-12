@@ -2,12 +2,16 @@
 import AppLayout from "./components/layout/AppLayout.vue";
 import Login from "./components/Login.vue";
 import store from "./store";
-import { inject, provide } from "vue";
+import {inject, onMounted, provide} from "vue";
 
 
-let globalVar = inject('config')
+const config: any = inject("config");
+
 provide("store", store); // Allow the entire app to see the store.
 
+onMounted(()=> {
+  document.title = config.ux.appTitle;
+})
 </script>
 
 <template>

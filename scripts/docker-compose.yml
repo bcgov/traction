@@ -203,6 +203,13 @@ services:
         condition: service_started
     environment:
       - SERVER_TRACTION_URL=${SERVER_TRACTION_URL}
+      - IMAGE_BUILDTIME=${IMAGE_BUILDTIME}
+      - IMAGE_TAG=${IMAGE_TAG}
+      - IMAGE_VERSION=${IMAGE_VERSION}
+      - UX_APP_TITLE=${UX_APP_TITLE}
+      - UX_SIDEBAR_TITLE=${UX_SIDEBAR_TITLE}
+      - UX_COPYRIGHT=${UX_COPYRIGHT}
+      - UX_OWNER=${UX_OWNER}
     ports:
       - ${TENANT_UI_PORT}:8080
 

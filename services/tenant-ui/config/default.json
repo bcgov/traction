@@ -1,15 +1,27 @@
 {
-    "frontend": {
-      "apiPath": "api/",
-      "basePath" : "/"
-    },
-    "server": {
-      "apiPath": "/api",
-      "basePath" : "/",
-      "bodyLimit": "30mb",
-      "logLevel": "http",
-      "port": "8080",
-      "tractionUrl": "http://localhost:5100"
-    }
+  "frontend": {
+    "apiPath": "api/",
+    "basePath": "/"
+  },
+  "image": {
+    "buildtime": "",
+    "tag": "tenant-ui:default",
+    "version": "default"
+  },
+  "server": {
+    "apiPath": "/api",
+    "basePath": "/",
+    "bodyLimit": "30mb",
+    "logLevel": "http",
+    "port": "8080",
+    "staticFiles": "../../frontend/dist",
+    "tractionUrl": "http://localhost:5100"
+  },
+  "ux": {
+    "appTitle": "Traction Tenant",
+    "sidebarTitle": "TRACTION",
+    "copyright": "",
+    "owner": ""
   }
+}
   

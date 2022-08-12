@@ -2,7 +2,9 @@
 .env
 
 # Configurations
+.venv
 .vscode
+.idea
 
 # Temporary files
 *.log
