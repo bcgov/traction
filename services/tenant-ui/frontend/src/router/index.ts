@@ -1,6 +1,8 @@
 import { createWebHistory, createRouter } from "vue-router";
 // Main dashboard
 import Dashboard from "@/views/Dashboard.vue";
+import About from "@/views/About.vue";
+
 // Connections
 import AcceptInvitation from "@/views/connections/AcceptInvitation.vue";
 import MyContacts from "@/views/connections/MyContacts.vue";
@@ -21,6 +23,11 @@ const routes = [
     path: "/",
     name: "Dashboard",
     component: Dashboard,
+  },
+  {
+    path: "/about",
+    name: "About",
+    component: About,
   },
 
   {

@@ -1,5 +1,16 @@
 {
+  "image": {
+    "buildtime": "IMAGE_BUILDTIME",
+    "tag": "IMAGE_TAG",
+    "version": "IMAGE_VERSION"
+  },
   "server": {
     "tractionUrl": "SERVER_TRACTION_URL"
+  },
+  "ux": {
+    "appTitle": "UX_APP_TITLE",
+    "sidebarTitle": "UX_SIDEBAR_TITLE",
+    "copyright": "UX_COPYRIGHT",
+    "owner": "UX_OWNER"
   }
 }

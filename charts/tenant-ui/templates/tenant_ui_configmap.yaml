@@ -8,3 +8,7 @@ data:
   IMAGE_TAG: {{ .Values.tenant_ui.image.tag | quote }}
   IMAGE_VERSION: {{ .Values.tenant_ui.image.version | quote }}
   IMAGE_BUILDTIME: {{ .Values.tenant_ui.image.buildtime | quote }}
+  UX_APP_TITLE: {{ .Values.tenant_ui.ux.title | quote }}
+  UX_SIDEBAR_TITLE: {{ .Values.tenant_ui.ux.sidebarTitle | quote }}
+  UX_COPYRIGHT: {{ .Values.tenant_ui.ux.copyright | quote }}
+  UX_OWNER: {{ .Values.tenant_ui.ux.owner | quote }}

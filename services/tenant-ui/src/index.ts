@@ -9,6 +9,7 @@ import { tractionProxy } from "./routes/tractionRouter";
 
 const PORT: number = parseInt(config.get('server.port') as string, 10);
 const APIROOT: string = config.get('server.apiPath');
+const STATIC_FILES_PATH: string = config.get('server.staticFiles');
 
 const app = express();
 app.use(cors());
@@ -17,13 +18,13 @@ app.use(express.json());
 
 // Host the static frontend assets
 app.use('/favicon.ico', (_req, res) => { res.redirect('/favicon.ico'); });
-app.use('/', express.static(path.join(__dirname, '../../frontend/dist')));
+app.use('/', express.static(path.join(__dirname, STATIC_FILES_PATH)));
 
 // Frontend configuration endpoint, return config section at /config so UI can get it
 app.use('/config', (_req, res, next) => {
     try {
-        const frontend = config.get('frontend');
-        res.status(200).json(frontend);
+        // if we have passwords or sensitive information, strip it out!!!
+        res.status(200).json(config);
     } catch (err) {
         next(err);
     }
