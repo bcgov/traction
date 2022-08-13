@@ -29,10 +29,10 @@ import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import Dialog from 'primevue/dialog';
 import ProgressSpinner from 'primevue/progressspinner';
-import { useToast } from 'primevue/usetoast';
 
 // Other imports
 import axios from 'axios';
+import { useToast } from 'vue-toastification';
 
 // Other components
 import CreateContact from './CreateContact.vue';
@@ -48,13 +48,15 @@ let loading = ref(true);
 const loadContacts = () => {
   console.log('yo me');
   loading.value = true;
-  const toast = useToast();
 
-  toast.add({
-    severity: 'info',
-    summary: 'Loading contacts',
-    detail: 'Please wait...',
-  });
+  const toast = useToast();
+  toast('testing');
+
+  // toast.add({
+  //   severity: 'info',
+  //   summary: 'Loading contacts',
+  //   detail: 'Please wait...',
+  // });
   axios
     .get('/api/traction/tenant/v1/contacts', {
       headers: {

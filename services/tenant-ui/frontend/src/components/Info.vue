@@ -1,34 +1,36 @@
 <script setup lang="ts">
-import { inject } from "vue";
-import { useToast } from 'primevue/usetoast';
-import Button from "primevue/button";
-import Fieldset from "primevue/fieldset";
-import Card from "primevue/card";
-import ProgressSpinner from "primevue/progressspinner";
-import axios from "axios";
+import { inject } from 'vue';
+import Button from 'primevue/button';
+import Fieldset from 'primevue/fieldset';
+import Card from 'primevue/card';
+import ProgressSpinner from 'primevue/progressspinner';
+import axios from 'axios';
 
-const store: any = inject("store");
+// For notifications
+import { useToast } from 'vue-toastification';
 const toast = useToast();
+
+const store: any = inject('store');
 
 // Vite passes the api url to here
 const api = import.meta.env.VITE_TRACTION_ENDPOINT;
 
 const make_issuer = () => {
   axios({
-    method: "post",
+    method: 'post',
     url: 'api/traction/tenant/v1/admin/make-issuer',
     headers: {
-      accept: "application/json",
-      "content-type": "application/x-www-form-urlencoded",
+      accept: 'application/json',
+      'content-type': 'application/x-www-form-urlencoded',
       Authorization: `Bearer ${store.state.token}`,
     },
   })
     .then(() => {
-      toast.add({ severity: 'info', detail: 'Starting Issuer Process! Check back later'});
+      toast.info('Starting Issuer Process! Check back later');
     })
     .catch((err) => {
       console.error(err);
-      toast.add({ severity: 'error', detail: `Failure: ${err}`});
+      toast.error(`Failure: ${err}`);
     });
 };
 
@@ -38,7 +40,7 @@ const toggled = (e: any) => {
     axios
       .get('api/traction/tenant/v1/admin/self', {
         headers: {
-          accept: "application/json",
+          accept: 'application/json',
           Authorization: `Bearer ${store.state.token}`,
         },
       })
@@ -47,7 +49,7 @@ const toggled = (e: any) => {
       })
       .catch((err) => {
         store.state.walletInfo.data = null;
-        console.error("error", err);
+        console.error('error', err);
       });
   }
 };
@@ -104,8 +106,7 @@ const toggled = (e: any) => {
           </div>
         </template>
       </card>
-      <Button label="Become an Issuer" v-if="store.state.walletInfo.data.public_did_status === 'N/A'"
-        @click="make_issuer"></Button>
+      <Button label="Become an Issuer" v-if="store.state.walletInfo.data.public_did_status === 'N/A'" @click="make_issuer"></Button>
       <Button label="Already an Issuer" v-else :disabled="true"></Button>
     </div>
   </Fieldset>

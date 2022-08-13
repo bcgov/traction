@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import { ref, inject } from "vue";
-import InputText from "primevue/inputtext";
-import Button from "primevue/button";
-import { useToast } from 'primevue/usetoast';
-import axios from "axios";
-
-// To store credentials
-const key = ref("");
-const secret = ref("");
+import { ref, inject } from 'vue';
+import InputText from 'primevue/inputtext';
+import Button from 'primevue/button';
+import axios from 'axios';
 
 // For notifications
+import { useToast } from 'vue-toastification';
 const toast = useToast();
+
+// To store credentials
+const key = ref('');
+const secret = ref('');
 
 // For state
 let processing = ref(false);
 
 // Grab our store
-const store: any = inject("store");
+const store: any = inject('store');
 
 /**
  * ##clicked
@@ -29,11 +29,11 @@ const clicked = () => {
   const data = `username=${key.value}&password=${secret.value}`;
 
   axios({
-    method: "post",
-    url: "api/traction/tenant/token",
+    method: 'post',
+    url: 'api/traction/tenant/token',
     headers: {
-      accept: "application/json",
-      "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+      accept: 'application/json',
+      'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
     },
     data: data,
   })
@@ -45,7 +45,7 @@ const clicked = () => {
     })
     .catch((err) => {
       console.error(err);
-      toast.add({ severity: 'error', detail: `Failure: ${err}` });
+      toast.error(`Failure: ${err}`);
       processing.value = false; // enable button
       store.state.token = null;
     });
@@ -56,8 +56,8 @@ const clicked = () => {
  * Clear the form
  */
 const clear = () => {
-  key.value = "";
-  secret.value = "";
+  key.value = '';
+  secret.value = '';
 };
 </script>
 
@@ -76,8 +76,7 @@ const clear = () => {
     </div>
     <div>
       <Button label="Clear" class="p-button-warning" @click="clear"></Button>
-      <Button label="Submit" @click="clicked" :disabled="processing ? true : false"
-        :loading="processing ? true : false"></Button>
+      <Button label="Submit" @click="clicked" :disabled="processing ? true : false" :loading="processing ? true : false"></Button>
     </div>
   </div>
 </template>
