@@ -46,17 +46,10 @@ const store: any = inject('store');
 let loading = ref(true);
 
 const loadContacts = () => {
-  console.log('yo me');
   loading.value = true;
 
   const toast = useToast();
-  toast('testing');
 
-  // toast.add({
-  //   severity: 'info',
-  //   summary: 'Loading contacts',
-  //   detail: 'Please wait...',
-  // });
   axios
     .get('/api/traction/tenant/v1/contacts', {
       headers: {
