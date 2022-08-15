@@ -33,6 +33,7 @@ const addAttribute = () => {
 const removeAttribute = (index: number) => {
   attributes.value.splice(index, 1);
 };
+
 /**
  * ## save
  * Save the new schema.
