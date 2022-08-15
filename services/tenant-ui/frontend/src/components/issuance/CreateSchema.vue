@@ -40,7 +40,8 @@ const removeAttribute = (index: number) => {
  */
 const save = ($emit: any) => {
   const url = "/api/traction/tenant/v1/governance/schema_templates";
-  // const url = "https://traction-api-test.apps.silver.devops.gov.bc.ca/tenant/v1/governance/schema_templates";
+  // const url =
+  //   "https://traction-api-test.apps.silver.devops.gov.bc.ca/tenant/v1/governance/schema_templates";
 
   const justAttributeNames = attributes.value.map(
     (attribute) => attribute.name
