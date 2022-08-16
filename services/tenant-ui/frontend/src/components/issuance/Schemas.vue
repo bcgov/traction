@@ -36,7 +36,7 @@
       @click="toggleAddSchema"
     />
     <Dialog header="Create a new schema" v-model:visible="displayAddingSchema">
-      <CreateSchema @schema-save="toggleAddSchema"></CreateSchema>
+      <CreateSchema @schema-save="schemaCreated"></CreateSchema>
     </Dialog>
   </div>
 </template>
@@ -55,6 +55,7 @@ import Dialog from "primevue/dialog";
 
 // Other imports
 import axios from "axios";
+import { useToast } from "vue-toastification";
 
 // Custom components
 import CreateSchema from "./CreateSchema.vue";
@@ -69,6 +70,37 @@ let loading = ref(true);
 let displayAddingSchema = ref(false);
 
 onMounted(() => {
+  loadSchemas();
+  // loading.value = true;
+
+  // axios
+  //   .get("/api/traction/tenant/v1/governance/schema_templates", {
+  //     headers: {
+  //       accept: "application/json",
+  //       Authorization: `Bearer ${store.state.token}`,
+  //     },
+  //   })
+  //   .then((res) => {
+  //     store.state.schemas.data = res.data.items;
+  //     console.log(store.state.schemas.data);
+  //     loading.value = false;
+  //   })
+  //   .catch((err) => {
+  //     store.state.schemas.data = null;
+  //     console.error("error", err);
+  //   });
+});
+
+const schemaCreated = () => {
+  loadSchemas();
+  toggleAddSchema();
+};
+
+const toggleAddSchema = () => {
+  displayAddingSchema.value = !displayAddingSchema.value;
+};
+
+const loadSchemas = () => {
   loading.value = true;
 
   axios
@@ -87,10 +119,6 @@ onMounted(() => {
       store.state.schemas.data = null;
       console.error("error", err);
     });
-});
-
-const toggleAddSchema = () => {
-  displayAddingSchema.value = !displayAddingSchema.value;
 };
 // -----------------------------------------------/Loading schemas
 </script>

@@ -5,6 +5,10 @@ import Dropdown from "primevue/dropdown";
 import { inject, ref } from "vue";
 import axios from "axios";
 
+// For notifications
+import { useToast } from "vue-toastification";
+const toast = useToast();
+
 const schemaName = ref("");
 const schemaVersion = ref("");
 
@@ -39,7 +43,7 @@ const removeAttribute = (index: number) => {
  * Save the new schema.
  */
 const save = ($emit: any) => {
-  const url = "/api/traction/tenant/v1/governance/schema_templates";
+  const url = "/api/traction/tenant/v1/governance/schema_templates/";
   // const url =
   //   "https://traction-api-test.apps.silver.devops.gov.bc.ca/tenant/v1/governance/schema_templates";
 
@@ -66,9 +70,11 @@ const save = ($emit: any) => {
     .post(url, payload, { headers })
     .then((res) => {
       console.log("success: ", res);
+      toast.info("Schema created successfully");
     })
     .catch((err) => {
       console.log("error: ", err);
+      toast.error(`Error creating schema: ${err}`);
     })
     .finally(() => {
       // Emit a custom save event so the parent knows to close the dialog.
