@@ -1,4 +1,5 @@
 import uuid
+from typing import List
 from uuid import UUID
 
 from api.core.config import settings
@@ -14,6 +15,7 @@ from api.endpoints.models.v1.innkeeper import (
     UpdateTenantPermissionsPayload,
     CheckInItem,
     CheckInPayload,
+    TenantListParameters,
 )
 
 from acapy_client.model.create_wallet_request import CreateWalletRequest
@@ -71,7 +73,7 @@ async def register_tenant_jobs(
 ):
     if payload.allow_issue_credentials:
         # make issuer implies public_did flow too...
-        return await make_issuer(tenant_id, wallet_id)
+        return await make_issuer(tenant_id)
 
 
 async def check_in_tenant(payload: CheckInPayload) -> CheckInItem:
@@ -159,3 +161,45 @@ async def make_issuer(tenant_id: UUID) -> TenantItem:
 
     issuer = await tenant_service.get_tenant(tenant_id, db_tenant.wallet_id)
     return issuer
+
+
+async def list_tenants(
+    parameters: TenantListParameters,
+) -> [List[TenantItem], int]:
+
+    limit = parameters.page_size
+    skip = (parameters.page_num - 1) * limit
+    # TODO: implement tenant listing properly
+    async with async_session() as db:
+        tenant_repo = TenantsRepository(db_session=db)
+        # just grab them all and build our list out manually
+        db_tenants = await tenant_repo.find(0, 999999999)
+
+    filtered_results = []
+    for db_tenant in db_tenants:
+        tenant = await tenant_service.get_tenant(
+            db_tenant.id, db_tenant.wallet_id, parameters.deleted
+        )
+        filter_match = True
+        # check the parameters...
+        if parameters.deleted != tenant.deleted:
+            filter_match = False
+        if parameters.issuer_status != tenant.issuer_status:
+            filter_match = False
+        if parameters.public_did_status != tenant.public_did_status:
+            filter_match = False
+        if parameters.issuer and (parameters.issuer != tenant.issuer):
+            filter_match = False
+        if filter_match:
+            filtered_results.append(tenant)
+
+    return filtered_results[skip : (skip + limit)], len(filtered_results)
+
+
+async def get_tenant(tenant_id: UUID) -> TenantItem:
+    async with async_session() as db:
+        tenant_repo = TenantsRepository(db_session=db)
+        db_tenant = await tenant_repo.get_by_id(tenant_id)
+
+    tenant = await tenant_service.get_tenant(db_tenant.id, db_tenant.wallet_id)
+    return tenant

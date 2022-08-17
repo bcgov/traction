@@ -3,7 +3,8 @@ from uuid import UUID
 
 from pydantic.main import BaseModel
 
-from api.endpoints.models.v1.base import GetResponse
+from api.endpoints.models.v1.base import GetResponse, ListItemParameters, ListResponse
+from api.endpoints.models.v1.tenant import PublicDIDStatus, IssuerStatus, TenantItem
 
 
 class TenantPermissionsItem(BaseModel):
@@ -49,4 +50,15 @@ class CheckInItem(BaseModel):
 
 
 class CheckInResponse(GetResponse[CheckInItem]):
+    pass
+
+
+class TenantListParameters(ListItemParameters[str, str]):
+    public_did_status: PublicDIDStatus | None = PublicDIDStatus.none
+    issuer: bool | None = False
+    issuer_status: IssuerStatus | None = IssuerStatus.none
+    deleted: bool | None = False
+
+
+class TenantListResponse(ListResponse[TenantItem]):
     pass

@@ -12,14 +12,16 @@ async def hard_delete_tenant(tenant: TenantRead, db: AsyncSession):
     q = select(Tenant).where(Tenant.id == tenant.id)
     result = await db.execute(q)
     db_tenant = result.scalar_one()
-    if not tenant:
+    if not db_tenant:
         raise Exception
 
     response = multitenancy_api.multitenancy_wallet_wallet_id_remove_post(
-        str(tenant.wallet_id)
+        str(db_tenant.wallet_id)
     )
-    logger.warn(f"wallet_id = {tenant.wallet_id} has been hard deleted")
+    logger.warn(f"wallet_id = {db_tenant.wallet_id} has been hard deleted")
 
+    # this is just to so we can reuse the name...
+    db_tenant.name = f"(deleted {db_tenant.name})-{db_tenant.wallet_id}"
     db_tenant.is_active = False
     db.add(db_tenant)
     await db.commit()
