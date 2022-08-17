@@ -1,4 +1,7 @@
+import json
+
 import requests
+from starlette import status
 
 
 def convert_value(value: str):
@@ -249,10 +252,67 @@ def tenant_update_configuration(context, tenant, payload: dict):
     return response
 
 
-def innkeeper_tenants_check_in(context, tenant_name):
+def innkeeper_tenants_check_in(context, payload):
     response = requests.post(
         context.config.userdata.get("traction_host") + "/innkeeper/v1/tenants/check-in",
-        json={"name": tenant_name},
+        json=payload,
+        headers=context.config.userdata["innkeeper_auth_headers"],
+    )
+    return response
+
+
+def tenant_set_auth_headers(context, tenant_name: str, tenant: dict):
+    # authenticate and save token to context
+    headers = {
+        "accept": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+    }
+
+    data = {
+        "username": tenant["wallet_id"],
+        "password": tenant["wallet_key"],
+        "grant_type": "",
+        "scope": "",
+    }
+
+    tenant_auth_response = requests.post(
+        context.config.userdata.get("traction_host") + "/tenant/token",
+        headers=headers,
+        data=data,
+    )
+
+    resp = json.loads(tenant_auth_response.content)
+    assert tenant_auth_response.status_code == status.HTTP_200_OK, resp
+    auth_token = resp["access_token"]
+
+    # save config to context
+    context.config.userdata[tenant_name] = {
+        "name": tenant["name"],
+        "tenant_id": tenant["tenant_id"],
+        "wallet_id": tenant["wallet_id"],
+        "wallet_key": tenant["wallet_key"],
+        "auth_headers": {
+            "accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {auth_token}",
+        },
+    }
+
+
+def innkeeper_list_tenants(context, params):
+    response = requests.get(
+        context.config.userdata.get("traction_host") + "/innkeeper/v1/tenants",
+        params=params,
+        headers=context.config.userdata["innkeeper_auth_headers"],
+    )
+    return response
+
+
+def innkeeper_get_tenant(context, tenant):
+    tenant_id = context.config.userdata[tenant]["tenant_id"]
+    response = requests.get(
+        context.config.userdata.get("traction_host")
+        + f"/innkeeper/v1/tenants/{tenant_id}",
         headers=context.config.userdata["innkeeper_auth_headers"],
     )
     return response
