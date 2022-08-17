@@ -29,3 +29,20 @@ async def initialize_issuer(
     links = []  # TODO: determine useful links for /make-issuer
 
     return TenantGetResponse(item=item, links=links)
+
+
+@router.get(
+    "/{tenant_id}", status_code=status.HTTP_200_OK, response_model=TenantGetResponse
+)
+async def get_tenant(
+    request: Request,
+    tenant_id: UUID,
+) -> TenantGetResponse:
+
+    item = await innkeeper_service.get_tenant(
+        tenant_id,
+    )
+
+    links = []  # TODO: determine useful links for this...
+
+    return TenantGetResponse(item=item, links=links)
