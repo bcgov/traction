@@ -9,6 +9,7 @@ import { tractionProxy } from "./routes/tractionRouter";
 
 const PORT: number = parseInt(config.get('server.port') as string, 10);
 const APIROOT: string = config.get('server.apiPath');
+const PROXYROOT: string = config.get('server.proxyPath');
 const STATIC_FILES_PATH: string = config.get('server.staticFiles');
 
 const app = express();
@@ -34,7 +35,7 @@ app.use('/config', (_req, res, next) => {
 app.use(APIROOT, router);
 
 // Proxy any api/traction calls over to Traction
-app.use(`${APIROOT}/traction`, tractionProxy);
+app.use(`${PROXYROOT}`, tractionProxy);
 
 app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);

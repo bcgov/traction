@@ -14,6 +14,8 @@
 }
 </style>
 <script setup lang="ts">
-import { inject } from "vue";
-const config: any = inject("config");
+import {storeToRefs} from "pinia";
+import {useConfigStore} from "../../store/configStore";
+
+const { config } = storeToRefs(useConfigStore());
 </script>
