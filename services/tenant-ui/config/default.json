@@ -1,5 +1,6 @@
 {
   "frontend": {
+    "proxyPath": "/api/traction",
     "apiPath": "api/",
     "basePath": "/"
   },
@@ -9,6 +10,7 @@
     "version": "default"
   },
   "server": {
+    "proxyPath": "/api/traction",
     "apiPath": "/api",
     "basePath": "/",
     "bodyLimit": "30mb",
