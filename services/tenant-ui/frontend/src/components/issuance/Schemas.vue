@@ -18,6 +18,7 @@
             <InputText
               v-model="store.state.schemas.filters"
               placeholder="Schema Search"
+              disabled
             />
           </span>
         </div>
