@@ -2,14 +2,39 @@
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import Dropdown from "primevue/dropdown";
-import { inject, ref } from "vue";
-import axios from "axios";
+import { ref } from "vue";
+import { useToast } from "vue-toastification";
+import { useGovernanceStore } from "../../store";
+import { storeToRefs } from "pinia";
 
 const schemaName = ref("");
 const schemaVersion = ref("");
 
-// Store
-const store: any = inject("store");
+const toast = useToast();
+
+const emit = defineEmits(["created"]);
+
+const governanceStore = useGovernanceStore();
+governanceStore.$onAction(({ name, after, onError }) => {
+  if (name == "createSchemaTemplate") {
+    // this is after a successful load of the token...
+    after((result) => {
+      console.log(`created schema template`);
+      console.log(result);
+      toast.info("Schema Template Created");
+      emit("created");
+    });
+
+    // and this called if load throws an error
+    onError((err) => {
+      console.error(err);
+      toast.error(`Failure: ${err}`);
+    });
+  }
+});
+
+// use the loading state from the store to disable the button...
+const { loading } = storeToRefs(useGovernanceStore());
 
 // Schema types
 const options = [
@@ -38,10 +63,8 @@ const removeAttribute = (index: number) => {
  * ## save
  * Save the new schema.
  */
-const save = ($emit: any) => {
-  const url = "/api/traction/tenant/v1/governance/schema_templates";
-  // const url = "https://traction-api-test.apps.silver.devops.gov.bc.ca/tenant/v1/governance/schema_templates";
-
+const save = async () => {
+  // build the correct payload...
   const justAttributeNames = attributes.value.map(
     (attribute) => attribute.name
   );
@@ -56,23 +79,8 @@ const save = ($emit: any) => {
     tags: [],
   };
 
-  const headers = {
-    Authorization: `Bearer ${store.state.token}`,
-    "Content-Type": "application/json",
-  };
-
-  axios
-    .post(url, payload, { headers })
-    .then((res) => {
-      console.log("success: ", res);
-    })
-    .catch((err) => {
-      console.log("error: ", err);
-    })
-    .finally(() => {
-      // Emit a custom save event so the parent knows to close the dialog.
-      $emit("schemaSave");
-    });
+  //send it off...
+  governanceStore.createSchemaTemplate(payload).catch(() => {});
 };
 
 // Store an array of attributes. Start with an empty attribute
@@ -81,28 +89,28 @@ const attributes = ref([{ name: "", type: "" }]);
 <template>
   <div class="row">
     <span class="p-float-label">
-      <InputText type="text" v-model="schemaName" name="create_schema_name" />
+      <InputText v-model="schemaName" type="text" name="create_schema_name" />
       <label for="create_schema_name">Name</label>
     </span>
     <span class="p-float-label">
       <InputText
-        type="text"
         v-model="schemaVersion"
+        type="text"
         name="create_schema_version"
       />
       <label for="create_schema_version">Version Number</label>
     </span>
   </div>
   <hr />
-  <div class="row" v-for="(item, index) in attributes">
+  <div v-for="(item, index) in attributes" class="row">
     <span class="p-float-label">
-      <InputText type="text" v-model="item.name" name="create_schema_name" />
+      <InputText v-model="item.name" type="text" name="create_schema_name" />
       <label for="create_schema_name">Attribute</label>
     </span>
     <Dropdown
       v-model="item.type"
       :options="options"
-      optionLabel="name"
+      option-label="name"
       placeholder="Type"
     />
     <button
@@ -125,7 +133,12 @@ const attributes = ref([{ name: "", type: "" }]);
   <br />
   <br />
   <hr />
-  <Button label="Save" @click="save($emit)"></Button>
+  <Button
+    label="Save"
+    :disabled="!!loading"
+    :loading="!!loading"
+    @click="save"
+  ></Button>
 </template>
 <style scoped>
 .row {

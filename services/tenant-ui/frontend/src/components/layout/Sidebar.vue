@@ -10,15 +10,15 @@
 import { ref } from 'vue';
 import PanelMenu from 'primevue/panelmenu';
 import { storeToRefs } from 'pinia';
-import { useConfigStore } from '../../store/configStore';
-import { useTenantStore } from '../../store/tenantStore';
+import { useConfigStore, useTenantStore } from '../../store';
 
 const tenantStore = useTenantStore();
 const { config } = storeToRefs(useConfigStore());
 const { tenant } = storeToRefs(useTenantStore());
 
-// load up the logged in tenant...
-await tenantStore.load().catch(() => {});
+// TODO: load up the logged in tenant...
+// need to figure out what to show and where, this will/should end up in a different component.
+await tenantStore.getSelf().catch(() => {});
 
 const items = ref([
   {

@@ -12,7 +12,7 @@ export const useTokenStore = defineStore('token', () => {
   // getters
 
   // actions
-  async function load(username: string, password: string) {
+  async function login(username: string, password: string) {
     console.log('> tokenStore.load');
     const payload = `username=${username}&password=${password}`;
     token.value = null;
@@ -22,7 +22,7 @@ export const useTokenStore = defineStore('token', () => {
     // TODO: isolate this to something reusable when we grab an axios connection.
     const configStore = useConfigStore();
     const url = configStore.proxyPath('/tenant/token');
-    await axios({
+    axios({
       method: 'post',
       url: url,
       headers: {
@@ -52,7 +52,13 @@ export const useTokenStore = defineStore('token', () => {
     return token.value;
   }
 
-  return { token, loading, error, load };
+  function clearToken() {
+    console.log('> clearToken');
+    token.value = null;
+    console.log('< clearToken');
+  }
+
+  return { token, loading, error, clearToken, login };
 });
 
 export default {

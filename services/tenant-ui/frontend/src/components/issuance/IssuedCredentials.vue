@@ -3,9 +3,19 @@
 
   <ProgressSpinner v-if="loading" />
   <div v-else>
-    <DataTable :value="store.state.issuerCredentials.data" :paginator="true" :rows="10" striped-rows
-      v-model:selection="store.state.issuerCredentials.selection" selection-mode="single">
-      <Column :sortable="true" field="credential_template.name" header="Credential Name" />
+    <DataTable
+      v-model:selection="selectedCredential"
+      :value="credentials"
+      :paginator="true"
+      :rows="10"
+      striped-rows
+      selection-mode="single"
+    >
+      <Column
+        :sortable="true"
+        field="credential_template.name"
+        header="Credential Name"
+      />
       <Column field="contact.alias" header="Contact Name" />
       <Column field="state" header="State" />
       <Column field="status" header="Status" />
@@ -18,44 +28,31 @@
 
 <script setup lang="ts">
 // Vue
-import { inject, ref, onMounted } from "vue";
-
-// PrimeVue
+import { onMounted } from "vue";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import ProgressSpinner from "primevue/progressspinner";
+import { useToast } from "vue-toastification";
 
-// Other imports
-import axios from "axios";
+import { useIssuerStore } from "../../store";
+import { storeToRefs } from "pinia";
 
-// Store
-const store: any = inject("store");
+const toast = useToast();
 
+const issuerStore = useIssuerStore();
+// use the loading state from the store to disable the button...
+const { loading, credentials, selectedCredential } = storeToRefs(
+  useIssuerStore()
+);
 
-// ----------------------------------------------------------------
-// Loading creds
-// ----------------------------------------------------------------
-let loading = ref(true);
+const loadTable = async () => {
+  await issuerStore.listCredentials().catch((err) => {
+    console.error(err);
+    toast.error(`Failure: ${err}`);
+  });
+};
 
-onMounted(() => {
-  loading.value = true
-
-  axios
-    .get('/api/traction/tenant/v1/issuer/credentials', {
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${store.state.token}`,
-      },
-    })
-    .then((res) => {
-      store.state.issuerCredentials.data = res.data.items;
-      console.log(store.state.issuerCredentials.data);
-      loading.value = false;
-    })
-    .catch((err) => {
-      store.state.issuerCredentials.data = null;
-      console.error("error", err);
-    });
-})
-// -------------------------------------------------/Loading creds
+onMounted(async () => {
+  await loadTable();
+});
 </script>

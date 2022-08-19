@@ -1,22 +1,8 @@
-/**
- * All state and related functionality can be defined
- * here for the entire application to access.
- * We are using the Vue3 Composition API as opposed to Vuex or Pinia
- */
-
-import { reactive } from "vue";
-
-const state = reactive({
-  token: null, // API Token
-  walletInfo: {},
-  contacts: {},
-  holderCredentials: {},
-  issuerCredentials: {},
-  verifierPresentations: {},
-  settings: {},
-  schemas: {},
-});
-
-export default {
-  state,
-};
+export { useConfigStore } from './configStore';
+export { useContactsStore } from './contactsStore';
+export { useGovernanceStore } from './governanceStore';
+export { useHolderStore } from './holderStore';
+export { useIssuerStore } from './issuerStore';
+export { useTenantStore } from './tenantStore';
+export { useTokenStore } from './tokenStore';
+export { useVerifierStore } from './verifierStore';

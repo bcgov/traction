@@ -3,7 +3,7 @@
 
   <ProgressSpinner v-if="loading" />
   <div v-else>
-    <DataTable v-model:selection="selection" :value="contacts" :paginator="true" :rows="10" striped-rows selection-mode="single">
+    <DataTable v-model:selection="selectedContact" :value="contacts" :paginator="true" :rows="10" striped-rows selection-mode="single">
       <Column :sortable="true" field="alias" header="Name" />
       <Column field="role" header="Role" />
       <Column field="state" header="State" />
@@ -32,27 +32,27 @@ import ProgressSpinner from 'primevue/progressspinner';
 
 // Other imports
 import { useToast } from 'vue-toastification';
-import { useContactsStore } from '../../store/contactsStore';
+import { useContactsStore } from '../../store';
 import { storeToRefs } from 'pinia';
 
 // Other components
 import CreateContact from './CreateContact.vue';
 
-const contactsStore = useContactsStore();
 const toast = useToast();
 
+const contactsStore = useContactsStore();
 // use the loading state from the store to disable the button...
-const { loading, contacts, selection } = storeToRefs(useContactsStore());
+const { loading, contacts, selectedContact } = storeToRefs(useContactsStore());
 
-const loadContacts = async () => {
-  await contactsStore.load().catch((err) => {
+const loadTable = async () => {
+  contactsStore.listContacts().catch((err) => {
     console.error(err);
     toast.error(`Failure: ${err}`);
   });
 };
 
 onMounted(async () => {
-  await loadContacts();
+  loadTable();
 });
 // -----------------------------------------------/Loading contacts
 
@@ -68,7 +68,7 @@ const createContact = () => {
 const contactCreated = async () => {
   // Emited from the contact creation component when a successful invite is made
   console.log('contact created emit - do we want to "manually" load contacts or have the store automatically do it?');
-  await loadContacts();
+  loadTable();
 };
 // -----------------------------------------------/Adding contacts
 </script>
