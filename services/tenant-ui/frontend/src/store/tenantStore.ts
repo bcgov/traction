@@ -1,8 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import axios from 'axios';
-import { useConfigStore } from './configStore';
-import { useTokenStore } from './tokenStore';
+import { useTenantApi } from './tenantApi';
 
 export const useTenantStore = defineStore('tenant', () => {
   // state
@@ -13,28 +11,18 @@ export const useTenantStore = defineStore('tenant', () => {
   // getters
 
   // actions
-  async function load() {
-    console.log('> tenantStore.load');
+
+  // grab the tenant api
+  const tenantApi = useTenantApi();
+
+  async function getSelf() {
+    console.log('> tenantStore.getSelf');
     tenant.value = null;
     error.value = null;
     loading.value = true;
 
-    // TODO: isolate this to something reusable when we grab an axios connection.
-    const configStore = useConfigStore();
-    const url = configStore.proxyPath('/tenant/v1/admin/self');
-    const tokenStore = useTokenStore();
-    if (!tokenStore.token) {
-      return;
-    }
-
-    await axios({
-      method: 'get',
-      url: url,
-      headers: {
-        accept: 'application/json',
-        Authorization: `Bearer ${tokenStore.token}`,
-      },
-    })
+    tenantApi
+      .getHttp('/tenant/v1/admin/self')
       .then((res) => {
         console.log(res);
         tenant.value = res.data.item;
@@ -47,7 +35,7 @@ export const useTenantStore = defineStore('tenant', () => {
       .finally(() => {
         loading.value = false;
       });
-    console.log('< tenantStore.load');
+    console.log('< tenantStore.getSelf');
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
@@ -62,22 +50,8 @@ export const useTenantStore = defineStore('tenant', () => {
     error.value = null;
     loading.value = true;
 
-    // TODO: isolate this to something reusable when we grab an axios connection.
-    const configStore = useConfigStore();
-    const url = configStore.proxyPath('/tenant/v1/admin/make-issuer');
-    const tokenStore = useTokenStore();
-    if (!tokenStore.token) {
-      return;
-    }
-    await axios({
-      method: 'post',
-      url: url,
-      headers: {
-        accept: 'application/json',
-        Authorization: `Bearer ${tokenStore.token}`,
-      },
-      data: {},
-    })
+    tenantApi
+      .postHttp('/tenant/v1/admin/make-issuer')
       .then((res) => {
         console.log(res);
         tenant.value = res.data.item;
@@ -100,7 +74,7 @@ export const useTenantStore = defineStore('tenant', () => {
     return tenant.value;
   }
 
-  return { tenant, loading, error, load, makeIssuer };
+  return { tenant, loading, error, getSelf, makeIssuer };
 });
 
 export default {

@@ -19,7 +19,7 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import { useToast } from 'vue-toastification';
 import QRCode from '../common/QRCode.vue';
-import { useContactsStore } from '../../store/contactsStore';
+import { useContactsStore } from '../../store';
 import { storeToRefs } from 'pinia';
 
 const contactsStore = useContactsStore();
@@ -47,7 +47,7 @@ contactsStore.$onAction(({ name, after, onError }) => {
 });
 
 // use the loading state from the store to disable the button...
-const { loading, contacts, selection } = storeToRefs(useContactsStore());
+const { loading } = storeToRefs(useContactsStore());
 
 // For notifications
 const toast = useToast();
@@ -63,7 +63,7 @@ const invitation_url = ref('');
 const emit = defineEmits(['created']);
 
 const submit_new_contact = async () => {
-  await contactsStore.createInvitation(create_contact_alias.value).catch(() => {});
+  contactsStore.createInvitation(create_contact_alias.value).catch(() => {});
 };
 // ---------------------------------------------------/create contact
 </script>

@@ -5,7 +5,7 @@ import Button from 'primevue/button';
 
 // For notifications
 import { useToast } from 'vue-toastification';
-import { useTokenStore } from '../store/tokenStore';
+import { useTokenStore } from '../store';
 import { storeToRefs } from 'pinia';
 const toast = useToast();
 
@@ -16,7 +16,7 @@ const secret = ref('');
 const tokenStore = useTokenStore();
 
 tokenStore.$onAction(({ name, after, onError }) => {
-  if (name == 'load') {
+  if (name == 'login') {
     // this is after a successful load of the token...
     after((result) => {
       console.log(`Access Token: ${result}`);
@@ -40,7 +40,7 @@ const { loading } = storeToRefs(useTokenStore());
  */
 const clicked = async () => {
   // the error is processed in the $onAction, add an empty handler to avoid Vue warning.
-  await tokenStore.load(key.value, secret.value).catch(() => {});
+  tokenStore.login(key.value, secret.value).catch(() => {});
 };
 
 /**

@@ -4,11 +4,11 @@
   <ProgressSpinner v-if="loading" />
   <div v-else>
     <DataTable
-      :value="store.state.schemas.data"
+      v-model:selection="selectedSchemaTemplate"
+      :value="schemaTemplates"
       :paginator="true"
       :rows="10"
       striped-rows
-      v-model:selection="store.state.schemas.selection"
       selection-mode="single"
     >
       <template #header>
@@ -16,13 +16,13 @@
           <span class="p-input-icon-left">
             <i class="pi pi-search" />
             <InputText
-              v-model="store.state.schemas.filters"
+              v-model="schemaTemplateFilters"
               placeholder="Schema Search"
             />
           </span>
         </div>
       </template>
-      <Column field="name" header="Schema" filterField="name" />
+      <Column field="name" header="Schema" filter-field="name" />
       <Column field="version" header="Version" />
       <Column field="status" header="Status" />
       <Column field="state" header="State" />
@@ -33,19 +33,16 @@
       class="create-btn"
       icon="pi pi-plus"
       label="Create Schema"
-      @click="toggleAddSchema"
+      @click="createSchema"
     />
-    <Dialog header="Create a new schema" v-model:visible="displayAddingSchema">
-      <CreateSchema @schema-save="toggleAddSchema"></CreateSchema>
+    <Dialog v-model:visible="displayAddSchema" header="Create a new schema">
+      <CreateSchema @created="schemaCreated"></CreateSchema>
     </Dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-// Vue
 import { inject, ref, onMounted } from "vue";
-
-// PrimeVue
 import Button from "primevue/button";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
@@ -53,44 +50,46 @@ import InputText from "primevue/inputtext";
 import ProgressSpinner from "primevue/progressspinner";
 import Dialog from "primevue/dialog";
 
-// Other imports
-import axios from "axios";
-
 // Custom components
 import CreateSchema from "./CreateSchema.vue";
 
-// Store
-const store: any = inject("store");
+import { useToast } from "vue-toastification";
+import { useGovernanceStore } from "../../store";
+import { storeToRefs } from "pinia";
 
-// ----------------------------------------------------------------
-// Loading schemas
-// ----------------------------------------------------------------
-let loading = ref(true);
-let displayAddingSchema = ref(false);
+const toast = useToast();
 
-onMounted(() => {
-  loading.value = true;
+const governanceStore = useGovernanceStore();
+// use the loading state from the store to disable the button...
+const {
+  loading,
+  schemaTemplates,
+  selectedSchemaTemplate,
+  schemaTemplateFilters,
+} = storeToRefs(useGovernanceStore());
 
-  axios
-    .get("/api/traction/tenant/v1/governance/schema_templates", {
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${store.state.token}`,
-      },
-    })
-    .then((res) => {
-      store.state.schemas.data = res.data.items;
-      console.log(store.state.schemas.data);
-      loading.value = false;
-    })
-    .catch((err) => {
-      store.state.schemas.data = null;
-      console.error("error", err);
-    });
+const loadTable = async () => {
+  governanceStore.listSchemaTemplates().catch((err) => {
+    console.error(err);
+    toast.error(`Failure: ${err}`);
+  });
+};
+
+
+onMounted(async () => {
+  loadTable();
 });
 
-const toggleAddSchema = () => {
-  displayAddingSchema.value = !displayAddingSchema.value;
+const displayAddSchema = ref(false);
+
+const createSchema = () => {
+  displayAddSchema.value = !displayAddSchema.value;
+};
+
+const schemaCreated = async () => {
+  // Emited from the schema creation component when a successful invite is made
+  console.log('schema created emit - do we want to "manually" load schemas or have the store automatically do it?');
+  loadTable();
 };
 // -----------------------------------------------/Loading schemas
 </script>
