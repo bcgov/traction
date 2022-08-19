@@ -12,16 +12,48 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
-import { ref } from "vue";
-// TODO: Import Axios
+import { ref, inject } from "vue";
+import axios from "axios";
+
+// For notifications
+import { useToast } from "vue-toastification";
+const toast = useToast();
+
+// Store
+const store: any = inject("store");
+
+// Activate two way binding on schemaId
+const schemaId = ref("");
 
 const copy = (emit: any) => {
-  emit("schemaCopy");
-  console.log(schemaId.value);
-  // TODO: Make a request to the API to copy the schema
-};
+  const url = "/api/traction/tenant/v1/governance/schema_templates/import/";
 
-const schemaId = ref("");
+  const headers = {
+    Authorization: `Bearer ${store.state.token}`,
+    "Content-Type": "application/json",
+  };
+
+  const payload = {
+    schema_id: `${schemaId.value}`,
+    name: "string",
+    tags: [],
+  };
+
+  axios
+    .post(url, payload, { headers })
+    .then((res) => {
+      console.log("success: ", res);
+      toast.info("Schema copied successfully");
+    })
+    .catch((err) => {
+      console.log("error: ", err);
+      toast.error(`Error copying schema: ${err}`);
+    })
+    .finally(() => {
+      // Emit a custom copy event so the parent knows to close the dialog.
+      emit("schemaCopy");
+    });
+};
 </script>
 
 <style>
