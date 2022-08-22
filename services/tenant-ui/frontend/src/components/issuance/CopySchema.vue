@@ -26,7 +26,8 @@ const store: any = inject("store");
 const schemaId = ref("");
 
 const copy = (emit: any) => {
-  const url = "/api/traction/tenant/v1/governance/schema_templates/import/";
+  // Make sure there is no slash at the end
+  const url = "/api/traction/tenant/v1/governance/schema_templates/import";
 
   const headers = {
     Authorization: `Bearer ${store.state.token}`,

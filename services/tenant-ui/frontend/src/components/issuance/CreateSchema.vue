@@ -43,9 +43,8 @@ const removeAttribute = (index: number) => {
  * Save the new schema.
  */
 const save = ($emit: any) => {
+  // There has to be a slash at the end.
   const url = "/api/traction/tenant/v1/governance/schema_templates/";
-  // const url =
-  //   "https://traction-api-test.apps.silver.devops.gov.bc.ca/tenant/v1/governance/schema_templates";
 
   const justAttributeNames = attributes.value.map(
     (attribute) => attribute.name
