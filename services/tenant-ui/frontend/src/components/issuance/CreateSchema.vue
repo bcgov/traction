@@ -7,10 +7,6 @@ import { useToast } from "vue-toastification";
 import { useGovernanceStore } from "../../store";
 import { storeToRefs } from "pinia";
 
-// For notifications
-import { useToast } from "vue-toastification";
-const toast = useToast();
-
 const schemaName = ref("");
 const schemaVersion = ref("");
 
