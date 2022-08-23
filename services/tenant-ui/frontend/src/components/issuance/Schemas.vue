@@ -18,6 +18,7 @@
             <InputText
               v-model="schemaTemplateFilters"
               placeholder="Schema Search"
+              disabled
             />
           </span>
         </div>
@@ -137,5 +138,8 @@ const schemaCopied = async () => {
 }
 .p-datatable-header input {
   padding-left: 3rem;
+}
+.create-btn {
+  margin-right: 1rem;
 }
 </style>
