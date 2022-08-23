@@ -28,13 +28,13 @@ contactsStore.$onAction(({ name, after, onError }) => {
   if (name == 'createInvitation') {
     // this is after a successful load of the token...
     after((result) => {
-      console.log(`loaded invitation`);
+      console.log('loaded invitation');
       console.log(result);
       if (result != null && result['invitation_url']) {
         invitation_url.value = result['invitation_url'];
         console.log(`invitation_url: ${invitation_url.value}`);
         toast.info('Contact Created');
-        emit('created');
+        emit('success');
       }
     });
 
@@ -60,7 +60,7 @@ const invitation_url = ref('');
 // ----------------------------------------------------------------
 // Creating a new contact
 // ----------------------------------------------------------------
-const emit = defineEmits(['created']);
+const emit = defineEmits(['success']);
 
 const submit_new_contact = async () => {
   contactsStore.createInvitation(create_contact_alias.value).catch(() => {});

@@ -29,20 +29,41 @@
       <Column field="attributes" header="Attributes" />
       <Column field="schema_id" header="ID" />
     </DataTable>
-    <Button
-      class="create-btn"
-      icon="pi pi-plus"
-      label="Create Schema"
-      @click="createSchema"
-    />
-    <Dialog v-model:visible="displayAddSchema" header="Create a new schema">
-      <CreateSchema @created="schemaCreated"></CreateSchema>
+    <div class="row buttons">
+      <Button
+        v-if="schemaTemplates"
+        class="create-btn"
+        icon="pi pi-plus"
+        label="Create Schema"
+        @click="createSchema"
+      ></Button>
+      <Button
+        v-if="schemaTemplates"
+        class="copy-btn"
+        icon="pi pi-copy"
+        label="Copy Schema"
+        @click="copySchema"
+      />
+    </div>
+    <Dialog
+      v-model:visible="displayCreateSchema"
+      header="Create a new schema"
+      :modal="true"
+    >
+      <CreateSchema @success="schemaCreated" />
+    </Dialog>
+    <Dialog
+      v-model:visible="displayCopySchema"
+      header="Copy an existing schema"
+      :modal="true"
+    >
+      <CopySchema @success="schemaCopied" />
     </Dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { inject, ref, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import Button from "primevue/button";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
@@ -52,6 +73,7 @@ import Dialog from "primevue/dialog";
 
 // Custom components
 import CreateSchema from "./CreateSchema.vue";
+import CopySchema from "./CopySchema.vue";
 
 import { useToast } from "vue-toastification";
 import { useGovernanceStore } from "../../store";
@@ -75,27 +97,41 @@ const loadTable = async () => {
   });
 };
 
-
 onMounted(async () => {
   loadTable();
 });
 
-const displayAddSchema = ref(false);
-
+const displayCreateSchema = ref(false);
 const createSchema = () => {
-  displayAddSchema.value = !displayAddSchema.value;
+  console.log("createSchema");
+  displayCreateSchema.value = !displayCreateSchema.value;
+};
+const schemaCreated = async () => {
+  console.log(
+    'schema created emit - do we want to "manually" load contacts or have the store automatically do it?'
+  );
+  loadTable();
+  createSchema();
 };
 
-const schemaCreated = async () => {
-  // Emited from the schema creation component when a successful invite is made
-  console.log('schema created emit - do we want to "manually" load schemas or have the store automatically do it?');
-  loadTable();
+const displayCopySchema = ref(false);
+const copySchema = () => {
+  console.log("copySchema");
+  displayCopySchema.value = !displayCopySchema.value;
 };
+const schemaCopied = async () => {
+  console.log(
+    'schema copied emit - do we want to "manually" load contacts or have the store automatically do it?'
+  );
+  loadTable();
+  copySchema();
+};
+
 // -----------------------------------------------/Loading schemas
 </script>
 
 <style scoped>
-.create-btn {
+.row.buttons {
   float: right;
   margin: 3rem 1rem 0 0;
 }

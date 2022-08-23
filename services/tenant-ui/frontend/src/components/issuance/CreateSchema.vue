@@ -12,17 +12,19 @@ const schemaVersion = ref("");
 
 const toast = useToast();
 
-const emit = defineEmits(["created"]);
+const emit = defineEmits(["success"]);
 
 const governanceStore = useGovernanceStore();
 governanceStore.$onAction(({ name, after, onError }) => {
   if (name == "createSchemaTemplate") {
     // this is after a successful load of the token...
     after((result) => {
-      console.log(`created schema template`);
+      console.log("created schema template");
       console.log(result);
-      toast.info("Schema Template Created");
-      emit("created");
+      if (result != null && result["schema_id"]) {
+        toast.info("Schema Template Created");
+        emit("success");
+      }
     });
 
     // and this called if load throws an error
@@ -63,7 +65,7 @@ const removeAttribute = (index: number) => {
  * ## save
  * Save the new schema.
  */
-const save = async () => {
+const submit_new_schema = async () => {
   // build the correct payload...
   const justAttributeNames = attributes.value.map(
     (attribute) => attribute.name
@@ -137,7 +139,7 @@ const attributes = ref([{ name: "", type: "" }]);
     label="Save"
     :disabled="!!loading"
     :loading="!!loading"
-    @click="save"
+    @click="submit_new_schema"
   ></Button>
 </template>
 <style scoped>
