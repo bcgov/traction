@@ -15,7 +15,7 @@
   <Button v-if="contacts" class="create-contact" icon="pi pi-plus" label="Create Contact" @click="createContact"></Button>
 
   <Dialog v-model:visible="displayAddContact" header="Create a new contact" :modal="true">
-    <CreateContact @created="contactCreated" />
+    <CreateContact @success="contactCreated" />
   </Dialog>
 </template>
 

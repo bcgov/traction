@@ -31,7 +31,7 @@ export const useGovernanceStore = defineStore('governance', () => {
 
     let result = null;
 
-    tenantApi
+    await tenantApi
       .postHttp('/tenant/v1/governance/schema_templates/', payload)
       .then((res) => {
         console.log(res);
@@ -60,7 +60,42 @@ export const useGovernanceStore = defineStore('governance', () => {
     return result;
   }
 
-  return { schemaTemplates, selectedSchemaTemplate, schemaTemplateFilters, loading, error, listSchemaTemplates, createSchemaTemplate };
+  async function copySchema(payload: any = {}) {
+    console.log('> governanceStore.copySchema');
+    error.value = null;
+    loading.value = true;
+
+    let result = null;
+
+    await tenantApi
+      .postHttp('/tenant/v1/governance/schema_templates/import', payload)
+      .then((res) => {
+        console.log(res);
+        result = res.data.item;
+        console.log(result);
+      })
+      .then(() => {
+        console.log('schema copied. the store calls load automatically, but do we want this done "manually"?');
+        listSchemaTemplates();
+      })
+      .catch((err) => {
+        error.value = err;
+        //console.log(error.value);
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< governanceStore.copySchema');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return result;
+  }
+
+  return { schemaTemplates, selectedSchemaTemplate, schemaTemplateFilters, loading, error, listSchemaTemplates, createSchemaTemplate, copySchema };
 });
 
 export default {
