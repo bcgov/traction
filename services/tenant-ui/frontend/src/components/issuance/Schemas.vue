@@ -44,7 +44,7 @@
         @click="toggleCopySchema"
       />
     </div>
-    <Dialog header="Create a new schema" v-model:visible="displayAddingSchema">
+    <Dialog header="Create a new schema" :visible="displayAddingSchema">
       <CreateSchema @schema-save="schemaCreated"></CreateSchema>
     </Dialog>
     <Dialog

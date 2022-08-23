@@ -29,7 +29,7 @@
 
   <Dialog
     header="Create a new contact"
-    v-model:visible="displayAddContact"
+    :visible="displayAddContact"
     :modal="true"
   >
     <CreateContact @created="contactCreated" />
