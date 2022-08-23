@@ -63,4 +63,7 @@ const copy = (emit: any) => {
   flex-direction: row;
   margin: 10px;
 }
+.p-dialog-content input {
+  min-width: 400px;
+}
 </style>

@@ -10,7 +10,6 @@
       striped-rows
       v-model:selection="store.state.contacts.selection"
       selection-mode="single"
-      @rowSelect="onRowSelect"
     >
       <Column :sortable="true" field="alias" header="Name" />
       <Column field="role" header="Role" />
@@ -61,12 +60,6 @@ const store: any = inject("store");
 // Loading contacts
 // ----------------------------------------------------------------
 let loading = ref(true);
-
-const onRowSelect = (e: any) => {
-  console.log("onRowSelect: ", Object.keys(e.data));
-  console.log("onRowSelect: ", Object.values(e.data));
-  // displayAddContact.value = true;
-};
 
 const loadContacts = () => {
   loading.value = true;
