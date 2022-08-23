@@ -104,28 +104,26 @@ onMounted(async () => {
 
 const displayCreateSchema = ref(false);
 const createSchema = () => {
-  console.log("createSchema");
   displayCreateSchema.value = !displayCreateSchema.value;
 };
 const schemaCreated = async () => {
+  // this is not getting called... bug? or need to find a new pattern (works on Contacts).
   console.log(
     'schema created emit - do we want to "manually" load contacts or have the store automatically do it?'
   );
   loadTable();
-  createSchema();
 };
 
 const displayCopySchema = ref(false);
 const copySchema = () => {
-  console.log("copySchema");
   displayCopySchema.value = !displayCopySchema.value;
 };
 const schemaCopied = async () => {
+  // this is not getting called... bug? or need to find a new pattern (works on Contacts).
   console.log(
     'schema copied emit - do we want to "manually" load contacts or have the store automatically do it?'
   );
   loadTable();
-  copySchema();
 };
 
 // -----------------------------------------------/Loading schemas
