@@ -6,6 +6,7 @@ from starlette.responses import JSONResponse
 from starlette_context import context
 from starlette_context.header_keys import HeaderKeys
 
+import acapy_client
 from api.db.errors import AlreadyExists, DoesNotExist
 from api.endpoints.models.v1.errors import (
     MethodNotImplementedError,
@@ -20,6 +21,20 @@ from api.endpoints.models.v1.errors import (
 
 
 def add_exception_handlers(_app: FastAPI):
+    @_app.exception_handler(acapy_client.exceptions.UnauthorizedException)
+    async def acapy_unauthorized_exception_handler(
+        request: Request, exc: acapy_client.exceptions.UnauthorizedException
+    ):
+        status_code = status.HTTP_401_UNAUTHORIZED
+        return JSONResponse(
+            status_code=status_code,
+            content={
+                "request_id": context.data[HeaderKeys.request_id],
+                "status": status_code,
+                "reason": exc.reason,
+            },
+        )
+
     @_app.exception_handler(DoesNotExist)
     async def does_not_exist_exception_handler(request: Request, exc: DoesNotExist):
         return JSONResponse(
