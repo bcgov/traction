@@ -63,7 +63,16 @@ export const useTenantApi = defineStore('tenantApi', () => {
       console.error(error);
       // TODO: isolate invalid token/unauthed error
       // not sure if the traction api or the proxy needs fixing, we should expect a 401 but it is 500 right now for invalid token
-      tokenStore.clearToken();
+      console.log(`error.response`);
+      console.log(error.response);
+      console.log(`error.response.status = ${error.response.status}`);
+      if (error.response.status == 401) {
+        console.log(`error.response.status = ${error.response.status}`);
+        tokenStore.clearToken();
+        console.log(`error.response.data`);
+        console.log(error.response.data);
+        return Promise.reject(`Unauthorized: ${error.response.data.reason}`);
+      }
       return Promise.reject(error);
     }
   );
