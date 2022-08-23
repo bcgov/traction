@@ -18,6 +18,7 @@
             <InputText
               v-model="schemaTemplateFilters"
               placeholder="Schema Search"
+              disabled
             />
           </span>
         </div>
@@ -79,7 +80,9 @@ import { useToast } from "vue-toastification";
 import { useGovernanceStore } from "../../store";
 import { storeToRefs } from "pinia";
 
+
 const toast = useToast();
+
 
 const governanceStore = useGovernanceStore();
 // use the loading state from the store to disable the button...
@@ -137,5 +140,8 @@ const schemaCopied = async () => {
 }
 .p-datatable-header input {
   padding-left: 3rem;
+}
+.create-btn {
+  margin-right: 1rem;
 }
 </style>

@@ -7,6 +7,10 @@ import { useToast } from "vue-toastification";
 import { useGovernanceStore } from "../../store";
 import { storeToRefs } from "pinia";
 
+// For notifications
+import { useToast } from "vue-toastification";
+const toast = useToast();
+
 const schemaName = ref("");
 const schemaVersion = ref("");
 
@@ -65,8 +69,10 @@ const removeAttribute = (index: number) => {
  * ## save
  * Save the new schema.
  */
+
 const submit_new_schema = async () => {
   // build the correct payload...
+
   const justAttributeNames = attributes.value.map(
     (attribute) => attribute.name
   );
@@ -80,6 +86,7 @@ const submit_new_schema = async () => {
     name: schemaName.value,
     tags: [],
   };
+
 
   //send it off...
   governanceStore.createSchemaTemplate(payload).catch(() => {});

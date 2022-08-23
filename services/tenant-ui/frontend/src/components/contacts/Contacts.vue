@@ -23,20 +23,23 @@
 // Vue
 import { ref, onMounted } from 'vue';
 
+
 // PrimeVue
-import Button from 'primevue/button';
-import Column from 'primevue/column';
-import DataTable from 'primevue/datatable';
-import Dialog from 'primevue/dialog';
-import ProgressSpinner from 'primevue/progressspinner';
+import Button from "primevue/button";
+import Column from "primevue/column";
+import DataTable from "primevue/datatable";
+import Dialog from "primevue/dialog";
+import ProgressSpinner from "primevue/progressspinner";
 
 // Other imports
+
 import { useToast } from 'vue-toastification';
 import { useContactsStore } from '../../store';
 import { storeToRefs } from 'pinia';
 
+
 // Other components
-import CreateContact from './CreateContact.vue';
+import CreateContact from "./CreateContact.vue";
 
 const toast = useToast();
 
@@ -49,6 +52,7 @@ const loadTable = async () => {
     console.error(err);
     toast.error(`Failure: ${err}`);
   });
+
 };
 
 onMounted(async () => {
