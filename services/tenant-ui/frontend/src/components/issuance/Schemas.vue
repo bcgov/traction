@@ -18,6 +18,7 @@
             <InputText
               v-model="store.state.schemas.filters"
               placeholder="Schema Search"
+              disabled
             />
           </span>
         </div>
@@ -29,14 +30,28 @@
       <Column field="attributes" header="Attributes" />
       <Column field="schema_id" header="ID" />
     </DataTable>
-    <Button
-      class="create-btn"
-      icon="pi pi-plus"
-      label="Create Schema"
-      @click="toggleAddSchema"
-    />
-    <Dialog header="Create a new schema" v-model:visible="displayAddingSchema">
-      <CreateSchema @schema-save="toggleAddSchema"></CreateSchema>
+    <div class="row buttons">
+      <Button
+        class="create-btn"
+        icon="pi pi-plus"
+        label="Create Schema"
+        @click="toggleAddSchema"
+      />
+      <Button
+        class="copy-btn"
+        icon="pi pi-copy"
+        label="Copy Schema"
+        @click="toggleCopySchema"
+      />
+    </div>
+    <Dialog header="Create a new schema" :visible="displayAddingSchema">
+      <CreateSchema @schema-save="schemaCreated"></CreateSchema>
+    </Dialog>
+    <Dialog
+      header="Copy an existing schema"
+      v-model:visible="displayCopyingSchema"
+    >
+      <CopySchema @schema-copy="schemaCopied"></CopySchema>
     </Dialog>
   </div>
 </template>
@@ -58,6 +73,7 @@ import axios from "axios";
 
 // Custom components
 import CreateSchema from "./CreateSchema.vue";
+import CopySchema from "./CopySchema.vue";
 
 // Store
 const store: any = inject("store");
@@ -67,8 +83,32 @@ const store: any = inject("store");
 // ----------------------------------------------------------------
 let loading = ref(true);
 let displayAddingSchema = ref(false);
+let displayCopyingSchema = ref(false);
 
 onMounted(() => {
+  loadSchemas();
+});
+
+const schemaCreated = () => {
+  loadSchemas();
+  toggleAddSchema();
+};
+
+const schemaCopied = () => {
+  loadSchemas();
+  toggleCopySchema();
+};
+
+const toggleAddSchema = () => {
+  displayAddingSchema.value = !displayAddingSchema.value;
+};
+
+const toggleCopySchema = () => {
+  console.log("toggleCopySchema");
+  displayCopyingSchema.value = !displayCopyingSchema.value;
+};
+
+const loadSchemas = () => {
   loading.value = true;
 
   axios
@@ -87,20 +127,19 @@ onMounted(() => {
       store.state.schemas.data = null;
       console.error("error", err);
     });
-});
-
-const toggleAddSchema = () => {
-  displayAddingSchema.value = !displayAddingSchema.value;
 };
 // -----------------------------------------------/Loading schemas
 </script>
 
 <style scoped>
-.create-btn {
+.row.buttons {
   float: right;
   margin: 3rem 1rem 0 0;
 }
 .p-datatable-header input {
   padding-left: 3rem;
+}
+.create-btn {
+  margin-right: 1rem;
 }
 </style>
