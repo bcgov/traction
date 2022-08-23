@@ -4,6 +4,13 @@
   <ProgressSpinner v-if="loading" />
   <div v-else>
     <DataTable v-model:selection="selectedContact" :value="contacts" :paginator="true" :rows="10" striped-rows selection-mode="single">
+      <Column :sortable="false" header="Actions">
+          <template #body="{data}">
+            <Button icon="pi pi-box" class="p-button-text" @click="boxAction(data.contact_id)" />
+            
+            <Button icon="pi pi-bolt" class="p-button-text p-button-danger" @click="boltAction(data)" />
+          </template>
+      </Column>
       <Column :sortable="true" field="alias" header="Name" />
       <Column field="role" header="Role" />
       <Column field="state" header="State" />
@@ -75,6 +82,16 @@ const contactCreated = async () => {
   loadTable();
 };
 // -----------------------------------------------/Adding contacts
+
+
+// TEST
+
+const boxAction = (param: any) => {
+  alert(`You hit the box button for ID ${param}`);
+};
+const boltAction = (param: any) => {
+  alert(`You hit the bolt button for row object ${JSON.stringify(param)}`);
+};
 </script>
 
 <style scoped>
