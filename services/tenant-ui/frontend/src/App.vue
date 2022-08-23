@@ -1,21 +1,21 @@
 <script setup lang="ts">
 import AppLayout from "./components/layout/AppLayout.vue";
 import Login from "./components/Login.vue";
-import store from "./store";
-import {inject, onMounted, provide} from "vue";
+import {onMounted} from "vue";
+import {storeToRefs} from "pinia";
+import {useConfigStore} from "./store/configStore";
+import {useTokenStore} from "./store/tokenStore";
 
-
-const config: any = inject("config");
-
-provide("store", store); // Allow the entire app to see the store.
+const { config } = storeToRefs(useConfigStore());
+const { token } = storeToRefs(useTokenStore());
 
 onMounted(()=> {
-  document.title = config.ux.appTitle;
-})
+  document.title = config.value.ux.appTitle;
+});
 </script>
 
 <template>
-  <AppLayout v-if="store.state.token" />
+  <AppLayout v-if="token" />
   <Login v-else />
 </template>
 

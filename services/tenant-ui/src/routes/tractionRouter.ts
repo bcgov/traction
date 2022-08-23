@@ -7,11 +7,13 @@ import { createProxyMiddleware, fixRequestBody } from 'http-proxy-middleware';
 // can do that in these options (like with onProxyReq)
 // https://www.npmjs.com/package/http-proxy-middleware#intercept-and-manipulate-requests
 const TRACURL: string = config.get('server.tractionUrl');
+const PROXYROOT: string = config.get('server.proxyPath');
+
 const options = {
     target: TRACURL,
     changeOrigin: true,
     // So we go to the root of proxied traction (lose the api/traction part)
-    pathRewrite: { '^/api/traction': '' },
+    pathRewrite: { [`^${PROXYROOT}`]: '' },
     followRedirects: true,
     // So that express body-parser can be used as well
     onProxyReq(proxyReq: any, req: any, res: any) {

@@ -3,7 +3,7 @@
 
   <ProgressSpinner v-if="loading" />
   <div v-else>
-    <DataTable :value="store.state.verifierPresentations.data" :paginator="true" :rows="10" striped-rows v-model:selection="store.state.verifierPresentations.selection" selection-mode="single">
+    <DataTable v-model:selection="selectedPresentation" :value="presentations" :paginator="true" :rows="10" striped-rows selection-mode="single">
       <Column :sortable="true" field="name" header="Name" />
       <Column field="contact.alias" header="Contact Name" />
       <Column field="state" header="State" />
@@ -15,43 +15,29 @@
 
 
 <script setup lang="ts">
-// Vue
-import { inject, ref, onMounted } from 'vue';
-
-// PrimeVue
+import { onMounted } from 'vue';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import ProgressSpinner from 'primevue/progressspinner';
+import { useToast } from 'vue-toastification';
 
-// Other imports
-import axios from 'axios';
+import { useVerifierStore } from '../../store';
+import { storeToRefs } from 'pinia';
 
-// Store
-const store: any = inject('store');
+const toast = useToast();
 
-// ----------------------------------------------------------------
-// Loading Creds
-// ----------------------------------------------------------------
-let loading = ref(true);
+const verifierStore = useVerifierStore();
+// use the loading state from the store to disable the button...
+const { loading, presentations, selectedPresentation } = storeToRefs(useVerifierStore());
 
-onMounted(() => {
-  loading.value = true;
-  axios
-    .get('/api/traction/tenant/v1/verifier/presentations', {
-      headers: {
-        accept: 'application/json',
-        Authorization: `Bearer ${store.state.token}`,
-      },
-    })
-    .then((res) => {
-      store.state.verifierPresentations.data = res.data.items;
-      console.log(store.state.verifierPresentations.data);
-      loading.value = false;
-    })
-    .catch((err) => {
-      store.state.verifierPresentations.data = null;
-      console.error('error', err);
-    });
+const loadTable = async () => {
+  verifierStore.listPresentations().catch((err) => {
+    console.error(err);
+    toast.error(`Failure: ${err}`);
+  });
+};
+
+onMounted(async () => {
+  loadTable();
 });
-// -----------------------------------------------/Loading creds
 </script>

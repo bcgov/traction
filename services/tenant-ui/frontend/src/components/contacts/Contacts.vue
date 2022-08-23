@@ -3,14 +3,7 @@
 
   <ProgressSpinner v-if="loading" />
   <div v-else>
-    <DataTable
-      :value="store.state.contacts.data"
-      :paginator="true"
-      :rows="10"
-      striped-rows
-      v-model:selection="store.state.contacts.selection"
-      selection-mode="single"
-    >
+    <DataTable v-model:selection="selectedContact" :value="contacts" :paginator="true" :rows="10" striped-rows selection-mode="single">
       <Column :sortable="true" field="alias" header="Name" />
       <Column field="role" header="Role" />
       <Column field="state" header="State" />
@@ -19,26 +12,17 @@
       <Column field="contact_id" header="ID" />
     </DataTable>
   </div>
-  <Button
-    v-if="store.state.contacts.data"
-    class="create-contact"
-    icon="pi pi-plus"
-    label="Create Contact"
-    @click="createContact"
-  ></Button>
+  <Button v-if="contacts" class="create-contact" icon="pi pi-plus" label="Create Contact" @click="createContact"></Button>
 
-  <Dialog
-    header="Create a new contact"
-    :visible="displayAddContact"
-    :modal="true"
-  >
-    <CreateContact @created="contactCreated" />
+  <Dialog v-model:visible="displayAddContact" header="Create a new contact" :modal="true">
+    <CreateContact @success="contactCreated" />
   </Dialog>
 </template>
 
 <script setup lang="ts">
 // Vue
-import { inject, ref, onMounted } from "vue";
+import { ref, onMounted } from 'vue';
+
 
 // PrimeVue
 import Button from "primevue/button";
@@ -48,57 +32,47 @@ import Dialog from "primevue/dialog";
 import ProgressSpinner from "primevue/progressspinner";
 
 // Other imports
-import axios from "axios";
+
+import { useToast } from 'vue-toastification';
+import { useContactsStore } from '../../store';
+import { storeToRefs } from 'pinia';
+
 
 // Other components
 import CreateContact from "./CreateContact.vue";
 
-// Store
-const store: any = inject("store");
+const toast = useToast();
 
-// ----------------------------------------------------------------
-// Loading contacts
-// ----------------------------------------------------------------
-let loading = ref(true);
+const contactsStore = useContactsStore();
+// use the loading state from the store to disable the button...
+const { loading, contacts, selectedContact } = storeToRefs(useContactsStore());
 
-const loadContacts = () => {
-  loading.value = true;
+const loadTable = async () => {
+  contactsStore.listContacts().catch((err) => {
+    console.error(err);
+    toast.error(`Failure: ${err}`);
+  });
 
-  axios
-    .get("/api/traction/tenant/v1/contacts", {
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${store.state.token}`,
-      },
-    })
-    .then((res) => {
-      store.state.contacts.data = res.data.items;
-      console.log(store.state.contacts.data);
-      loading.value = false;
-    })
-    .catch((err) => {
-      store.state.contacts.data = null;
-      console.error("error", err);
-    });
 };
 
-onMounted(() => {
-  loadContacts();
+onMounted(async () => {
+  loadTable();
 });
 // -----------------------------------------------/Loading contacts
 
 // ----------------------------------------------------------------
 // Adding Contacts
 // ----------------------------------------------------------------
-let displayAddContact = ref(false);
+const displayAddContact = ref(false);
 
 const createContact = () => {
   displayAddContact.value = !displayAddContact.value;
 };
 
-const contactCreated = () => {
+const contactCreated = async () => {
   // Emited from the contact creation component when a successful invite is made
-  loadContacts();
+  console.log('contact created emit - do we want to "manually" load contacts or have the store automatically do it?');
+  loadTable();
 };
 // -----------------------------------------------/Adding contacts
 </script>

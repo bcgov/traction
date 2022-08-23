@@ -1,54 +1,46 @@
 <script setup lang="ts">
-import { ref, inject } from 'vue';
+import { ref } from 'vue';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
-import axios from 'axios';
 
 // For notifications
 import { useToast } from 'vue-toastification';
+import { useTokenStore } from '../store';
+import { storeToRefs } from 'pinia';
 const toast = useToast();
 
 // To store credentials
 const key = ref('');
 const secret = ref('');
 
-// For state
-let processing = ref(false);
+const tokenStore = useTokenStore();
 
-// Grab our store
-const store: any = inject('store');
+tokenStore.$onAction(({ name, after, onError }) => {
+  if (name == 'login') {
+    // this is after a successful load of the token...
+    after((result) => {
+      console.log(`Access Token: ${result}`);
+    });
+
+    // and this called if load throws an error
+    onError((err) => {
+      console.error(err);
+      toast.error(`Failure: ${err}`);
+    });
+  }
+});
+
+// use the loading state from the store to disable the button...
+const { loading } = storeToRefs(useTokenStore());
 
 /**
  * ##clicked
  * Read the form, formulate the request url then
  * request token from API
  */
-const clicked = () => {
-  processing.value = true; // Disable button while processing
-
-  const data = `username=${key.value}&password=${secret.value}`;
-
-  axios({
-    method: 'post',
-    url: 'api/traction/tenant/token',
-    headers: {
-      accept: 'application/json',
-      'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-    },
-    data: data,
-  })
-    .then((res) => {
-      const token = res.data.access_token;
-      processing.value = false; // enable button
-      console.log(`Access Token: ${token}`);
-      store.state.token = token;
-    })
-    .catch((err) => {
-      console.error(err);
-      toast.error(`Failure: ${err}`);
-      processing.value = false; // enable button
-      store.state.token = null;
-    });
+const clicked = async () => {
+  // the error is processed in the $onAction, add an empty handler to avoid Vue warning.
+  tokenStore.login(key.value, secret.value).catch(() => {});
 };
 
 /**
@@ -65,18 +57,18 @@ const clear = () => {
   <div class="login">
     <div>
       <span class="p-float-label">
-        <InputText type="text" v-model="key" autocomplete="username" name="username" autofocus />
+        <InputText v-model="key" type="text" autocomplete="username" name="username" autofocus />
         <label for="key">Wallet ID</label>
       </span>
 
       <span class="p-float-label">
-        <InputText type="password" autocomplete="current-password" v-model="secret" name="password" />
+        <InputText v-model="secret" type="password" autocomplete="current-password" name="password" />
         <label for="secret">Wallet Key</label>
       </span>
     </div>
     <div>
       <Button label="Clear" class="p-button-warning" @click="clear"></Button>
-      <Button label="Submit" @click="clicked" :disabled="processing ? true : false" :loading="processing ? true : false"></Button>
+      <Button label="Submit" :disabled="!!loading" :loading="!!loading" @click="clicked"></Button>
     </div>
   </div>
 </template>

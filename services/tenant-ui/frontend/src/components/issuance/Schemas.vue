@@ -4,11 +4,11 @@
   <ProgressSpinner v-if="loading" />
   <div v-else>
     <DataTable
-      :value="store.state.schemas.data"
+      v-model:selection="selectedSchemaTemplate"
+      :value="schemaTemplates"
       :paginator="true"
       :rows="10"
       striped-rows
-      v-model:selection="store.state.schemas.selection"
       selection-mode="single"
     >
       <template #header>
@@ -16,14 +16,14 @@
           <span class="p-input-icon-left">
             <i class="pi pi-search" />
             <InputText
-              v-model="store.state.schemas.filters"
+              v-model="schemaTemplateFilters"
               placeholder="Schema Search"
               disabled
             />
           </span>
         </div>
       </template>
-      <Column field="name" header="Schema" filterField="name" />
+      <Column field="name" header="Schema" filter-field="name" />
       <Column field="version" header="Version" />
       <Column field="status" header="Status" />
       <Column field="state" header="State" />
@@ -32,35 +32,39 @@
     </DataTable>
     <div class="row buttons">
       <Button
+        v-if="schemaTemplates"
         class="create-btn"
         icon="pi pi-plus"
         label="Create Schema"
-        @click="toggleAddSchema"
-      />
+        @click="createSchema"
+      ></Button>
       <Button
+        v-if="schemaTemplates"
         class="copy-btn"
         icon="pi pi-copy"
         label="Copy Schema"
-        @click="toggleCopySchema"
+        @click="copySchema"
       />
     </div>
-    <Dialog header="Create a new schema" :visible="displayAddingSchema">
-      <CreateSchema @schema-save="schemaCreated"></CreateSchema>
+    <Dialog
+      v-model:visible="displayCreateSchema"
+      header="Create a new schema"
+      :modal="true"
+    >
+      <CreateSchema @success="schemaCreated" />
     </Dialog>
     <Dialog
+      v-model:visible="displayCopySchema"
       header="Copy an existing schema"
-      v-model:visible="displayCopyingSchema"
+      :modal="true"
     >
-      <CopySchema @schema-copy="schemaCopied"></CopySchema>
+      <CopySchema @success="schemaCopied" />
     </Dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-// Vue
-import { inject, ref, onMounted } from "vue";
-
-// PrimeVue
+import { ref, onMounted } from "vue";
 import Button from "primevue/button";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
@@ -68,66 +72,62 @@ import InputText from "primevue/inputtext";
 import ProgressSpinner from "primevue/progressspinner";
 import Dialog from "primevue/dialog";
 
-// Other imports
-import axios from "axios";
-
 // Custom components
 import CreateSchema from "./CreateSchema.vue";
 import CopySchema from "./CopySchema.vue";
 
-// Store
-const store: any = inject("store");
+import { useToast } from "vue-toastification";
+import { useGovernanceStore } from "../../store";
+import { storeToRefs } from "pinia";
 
-// ----------------------------------------------------------------
-// Loading schemas
-// ----------------------------------------------------------------
-let loading = ref(true);
-let displayAddingSchema = ref(false);
-let displayCopyingSchema = ref(false);
 
-onMounted(() => {
-  loadSchemas();
+const toast = useToast();
+
+
+const governanceStore = useGovernanceStore();
+// use the loading state from the store to disable the button...
+const {
+  loading,
+  schemaTemplates,
+  selectedSchemaTemplate,
+  schemaTemplateFilters,
+} = storeToRefs(useGovernanceStore());
+
+const loadTable = async () => {
+  governanceStore.listSchemaTemplates().catch((err) => {
+    console.error(err);
+    toast.error(`Failure: ${err}`);
+  });
+};
+
+onMounted(async () => {
+  loadTable();
 });
 
-const schemaCreated = () => {
-  loadSchemas();
-  toggleAddSchema();
+const displayCreateSchema = ref(false);
+const createSchema = () => {
+  displayCreateSchema.value = !displayCreateSchema.value;
+};
+const schemaCreated = async () => {
+  // this is not getting called... bug? or need to find a new pattern (works on Contacts).
+  console.log(
+    'schema created emit - do we want to "manually" load contacts or have the store automatically do it?'
+  );
+  loadTable();
 };
 
-const schemaCopied = () => {
-  loadSchemas();
-  toggleCopySchema();
+const displayCopySchema = ref(false);
+const copySchema = () => {
+  displayCopySchema.value = !displayCopySchema.value;
+};
+const schemaCopied = async () => {
+  // this is not getting called... bug? or need to find a new pattern (works on Contacts).
+  console.log(
+    'schema copied emit - do we want to "manually" load contacts or have the store automatically do it?'
+  );
+  loadTable();
 };
 
-const toggleAddSchema = () => {
-  displayAddingSchema.value = !displayAddingSchema.value;
-};
-
-const toggleCopySchema = () => {
-  console.log("toggleCopySchema");
-  displayCopyingSchema.value = !displayCopyingSchema.value;
-};
-
-const loadSchemas = () => {
-  loading.value = true;
-
-  axios
-    .get("/api/traction/tenant/v1/governance/schema_templates", {
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${store.state.token}`,
-      },
-    })
-    .then((res) => {
-      store.state.schemas.data = res.data.items;
-      console.log(store.state.schemas.data);
-      loading.value = false;
-    })
-    .catch((err) => {
-      store.state.schemas.data = null;
-      console.error("error", err);
-    });
-};
 // -----------------------------------------------/Loading schemas
 </script>
 

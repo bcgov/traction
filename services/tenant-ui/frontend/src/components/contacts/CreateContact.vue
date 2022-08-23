@@ -9,72 +9,61 @@
       </span>
     </div>
     <QRCode v-if="invitation_url" :qr_content="invitation_url" />
-    <Button v-else label="Submit" @click="submit_new_contact" :disabled="processing ? true : false" :loading="processing ? true : false"></Button>
+    <Button v-else label="Submit" @click="submit_new_contact" :disabled="!!loading" :loading="!!loading"></Button>
   </div>
 </template>
 
 <script setup lang="ts">
-// Vue
-import { ref, inject } from 'vue';
-
-// PrimeVue
+import { ref } from 'vue';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-
-// Other imports
-import axios from 'axios';
-
-// Other components
+import { useToast } from 'vue-toastification';
 import QRCode from '../common/QRCode.vue';
+import { useContactsStore } from '../../store';
+import { storeToRefs } from 'pinia';
+
+const contactsStore = useContactsStore();
+
+contactsStore.$onAction(({ name, after, onError }) => {
+  if (name == 'createInvitation') {
+    // this is after a successful load of the token...
+    after((result) => {
+      console.log('loaded invitation');
+      console.log(result);
+      if (result != null && result['invitation_url']) {
+        invitation_url.value = result['invitation_url'];
+        console.log(`invitation_url: ${invitation_url.value}`);
+        toast.info('Contact Created');
+        emit('success');
+      }
+    });
+
+    // and this called if load throws an error
+    onError((err) => {
+      console.error(err);
+      toast.error(`Failure: ${err}`);
+    });
+  }
+});
+
+// use the loading state from the store to disable the button...
+const { loading } = storeToRefs(useContactsStore());
 
 // For notifications
-import { useToast } from 'vue-toastification';
 const toast = useToast();
 
-// To store credentials
+// To store local data
 const create_contact_alias = ref('');
+const invitation_url = ref('');
 
-// For notifications
-
-// For state
-let processing = ref(false);
-let invitation_url = ref('');
-
-// Grab our store
-const store: any = inject('store');
 
 // ----------------------------------------------------------------
 // Creating a new contact
 // ----------------------------------------------------------------
-const emit = defineEmits(['created']);
+const emit = defineEmits(['success']);
 
-const submit_new_contact = () => {
-  processing.value = true; // Disable button while processing
-
-  axios({
-    method: 'post',
-    url: '/api/traction/tenant/v1/contacts/create-invitation',
-    headers: {
-      accept: 'application/json',
-      'content-type': 'application/json',
-      authorization: 'Bearer ' + store.state.token,
-    },
-    data: {
-      alias: create_contact_alias.value,
-    },
-  })
-    .then((res) => {
-      invitation_url.value = res.data.invitation_url;
-      console.log(`invitation_url: ${invitation_url}`);
-      processing.value = false; // enable button
-      toast.info('Contact Created');
-      emit('created');
-    })
-    .catch((err) => {
-      console.error(err);
-      toast.error(`Failure: ${err}`);
-      processing.value = false; // enable button
-    });
+const submit_new_contact = async () => {
+  contactsStore.createInvitation(create_contact_alias.value).catch(() => {});
 };
 // ---------------------------------------------------/create contact
 </script>

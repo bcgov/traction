@@ -1,59 +1,56 @@
 <template>
   <div class="row">
     <span class="p-float-label">
-      <InputText type="text" v-model="schemaId" name="copy_schema_name" />
+      <InputText v-model="schemaId" type="text" name="copy_schema_name" />
       <label for="copy_schema_name">Schema ID</label>
     </span>
   </div>
   <div class="row">
-    <Button label="Copy" @click="copy($emit)"></Button>
+    <Button label="Copy" @click="copy()"></Button>
   </div>
 </template>
 <script setup lang="ts">
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
-import { ref, inject } from "vue";
-import axios from "axios";
-
-// For notifications
+import { ref } from "vue";
 import { useToast } from "vue-toastification";
+import { useGovernanceStore } from "@/store";
 const toast = useToast();
-
-// Store
-const store: any = inject("store");
 
 // Activate two way binding on schemaId
 const schemaId = ref("");
 
-const copy = (emit: any) => {
-  // Make sure there is no slash at the end
-  const url = "/api/traction/tenant/v1/governance/schema_templates/import";
+const governanceStore = useGovernanceStore();
+governanceStore.$onAction(({ name, after, onError }) => {
+  if (name == "copySchema") {
+    // this is after a successful load of the token...
+    after((result) => {
+      console.log("copied schema");
+      console.log(result);
+      if (result != null) {
+        toast.info("Schema Copied");
+        emit("success");
+      }
+    });
 
-  const headers = {
-    Authorization: `Bearer ${store.state.token}`,
-    "Content-Type": "application/json",
-  };
+    // and this called if load throws an error
+    onError((err) => {
+      console.error(err);
+      toast.error(`Failure: ${err}`);
+    });
+  }
+});
 
+const emit = defineEmits(["success"]);
+
+const copy = async () => {
   const payload = {
     schema_id: `${schemaId.value}`,
-    name: "string",
+    name: null,
     tags: [],
   };
 
-  axios
-    .post(url, payload, { headers })
-    .then((res) => {
-      console.log("success: ", res);
-      toast.info("Schema copied successfully");
-    })
-    .catch((err) => {
-      console.log("error: ", err);
-      toast.error(`Error copying schema: ${err}`);
-    })
-    .finally(() => {
-      // Emit a custom copy event so the parent knows to close the dialog.
-      emit("schemaCopy");
-    });
+  governanceStore.copySchema(payload).catch(() => {});
 };
 </script>
 
