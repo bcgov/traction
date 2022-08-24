@@ -11,8 +11,12 @@
                     <label for="inviteUrl" :class="{ 'p-error': v$.inviteUrl.$invalid && submitted }">Invitation
                         Url*</label>
                 </div>
-                <small v-if="v$.inviteUrl.$invalid && submitted" class="p-error">{{
-                        v$.inviteUrl.required.$message.replace('Value', 'Invitation URL')
+                <span v-if="v$.inviteUrl.$error && submitted">
+                    <span v-for="(error, index) of v$.inviteUrl.$errors" :key="index">
+                        <small class="p-error">{{ error.$message }}</small>
+                    </span>
+                </span>
+                <small v-else-if="v$.inviteUrl.$invalid && submitted" class="p-error">{{ v$.inviteUrl.required.$message
                 }}</small>
             </div>
 
@@ -23,11 +27,13 @@
                         :class="{ 'p-invalid': v$.alias.$invalid && submitted }" />
                     <label for="alias" :class="{ 'p-error': v$.alias.$invalid && submitted }">Alias</label>
                 </div>
-                <small v-if="v$.alias.$invalid && submitted" class="p-error">{{
-                        v$.alias.maxLengthValue.$message.replace('Value', 'Alias')
-                }}</small>
+                <span v-if="v$.alias.$error && submitted">
+                    <span v-for="(error, index) of v$.alias.$errors" :key="index">
+                        <small class="p-error">{{ error.$message }}</small>
+                    </span>
+                </span>
             </div>
-            <Button type="submit" label="Accept" class="mt-1" />
+            <Button type="submit" label="Accept" class="mt-1" :disabled="loading" :loading="loading" />
         </form>
     </div>
 </template>
@@ -38,19 +44,23 @@ import { reactive, ref } from 'vue';
 
 // State
 import { useContactsStore } from '../../store';
+import { storeToRefs } from 'pinia';
 
-// PrimeVue
+// PrimeVue / Validation
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import Textarea from 'primevue/textarea';
+import { maxLength, required, url } from "@vuelidate/validators";
+import { useVuelidate } from "@vuelidate/core";
 
 // Other imports
-import { maxLength, required } from "@vuelidate/validators";
-import { useVuelidate } from "@vuelidate/core";
 import { useToast } from 'vue-toastification';
 
 const toast = useToast();
 const contactsStore = useContactsStore();
+
+// use the loading state from the store to disable the button...
+const { loading } = storeToRefs(useContactsStore());
 
 // ----------------------------------------------------------------
 // Accept Invite form
@@ -61,7 +71,7 @@ const formFields = reactive({
     alias: ''
 })
 const rules = {
-    inviteUrl: { required },
+    inviteUrl: { required, url },
     alias: { maxLengthValue: maxLength(255) }
 }
 const v$ = useVuelidate(rules, formFields)
