@@ -67,7 +67,7 @@ export const useContactsStore = defineStore('contacts', () => {
     let accepted_data = null;
     // need the await here since the returned invitation_data is not one of our stored refs...
     await tenantApi
-      .postHttp('/tenant/v1/contacts/receive-invitation', { alias: alias, inviteUrl: inviteUrl })
+      .postHttp('/tenant/v1/contacts/receive-invitation', { alias: alias, invitation_url: inviteUrl })
       .then((res) => {
         console.log(res);
         // don't grab the item, there are other parts of the response data we need (invitation, invitation url)
