@@ -89,30 +89,33 @@ async def make_verifier_presentation(
                 db, tenant_id, payload.connection_id
             )
 
-    if not db_contact:
-        # TODO refactor this contact GET'ing (and error handling)
-        raise exceptions.HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="no contact or connection found",
+        if not db_contact:
+            # TODO refactor this contact GET'ing (and error handling)
+            raise exceptions.HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="no contact or connection found",
+            )
+        db_item = VerifierPresentation(
+            tenant_id=tenant_id,
+            contact_id=db_contact.contact_id,
+            status=VerifierPresentationStatusType.PENDING,
+            state=AcapyPresentProofStateType.PENDING,
+            protocol=protocol,
+            proof_request=payload.proof_request.dict(),
+            name=payload.name,
+            version=payload.version,
+            external_reference_id=payload.external_reference_id,
+            comment=payload.comment,
+            tags=payload.tags,
         )
-    db_item = VerifierPresentation(
-        tenant_id=tenant_id,
-        contact_id=db_contact.contact_id,
-        status=VerifierPresentationStatusType.PENDING,
-        state=AcapyPresentProofStateType.PENDING,
-        protocol=protocol,
-        proof_request=payload.proof_request.dict(),
-        name=payload.name,
-        version=payload.version,
-        external_reference_id=payload.external_reference_id,
-        comment=payload.comment,
-        tags=payload.tags,
-    )
 
-    async with async_session() as db:
         db.add(db_item)
         await db.commit()
 
+    async with async_session() as db:
+        db_item = await VerifierPresentation.get_by_id(
+            db, tenant_id, db_item.verifier_presentation_id
+        )
     return verifier_presentation_to_item(db_item)
 
 
