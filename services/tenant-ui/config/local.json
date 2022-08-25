@@ -4,6 +4,6 @@
     "version": "latest"
   },
   "server": {
-    "tractionUrl": "http://localhost:5100"
+    "tractionUrl": "https://traction-api-test.apps.silver.devops.gov.bc.ca/"
   }
 }

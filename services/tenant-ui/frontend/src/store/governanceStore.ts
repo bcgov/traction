@@ -190,6 +190,7 @@ export const useGovernanceStore = defineStore('governance', () => {
     return result;
   }
 
+<<<<<<< HEAD
   async function getSchemaTemplate(id: String, params: any = {}) {
     console.log('> governanceStore.getSchemaTemplate');
     error.value = null;
@@ -252,6 +253,48 @@ export const useGovernanceStore = defineStore('governance', () => {
     return result;
   }
 
+
+  /**
+   * # delete Schema
+   * Delete a schema template
+   * @param payload Data object of schema row entry
+   */
+  async function deleteSchema(payload: any = {}) {
+    console.log('> governanceStore.deleteSchema');
+
+    // Need the UUID to delete the schema
+    const schemaId = payload.schema_template_id;
+
+    error.value = null;
+    loading.value = true;
+
+    let result = null;
+
+    await tenantApi
+      .deleteHttp(`/tenant/v1/governance/schema_templates/${schemaId}`, payload)
+      .then((res) => {
+        result = res.data.item;
+      })
+      .then(() => {
+        console.log('schema deleted.');
+        listSchemaTemplates(); // Refresh table
+      })
+      .catch((err) => {
+        error.value = err;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< governanceStore.deleteSchema');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return result;
+  }
+
   return { 
     schemaTemplates, selectedSchemaTemplate, schemaTemplateFilters, 
     credentialTemplates, selectedCredentialTemplate, credentialTemplateFilters, 
@@ -259,8 +302,11 @@ export const useGovernanceStore = defineStore('governance', () => {
     error, 
     schemaTemplateDropdown,
     credentialTemplateDropdown,
-    listSchemaTemplates, createSchemaTemplate, copySchema, getSchemaTemplate,
+    listSchemaTemplates, createSchemaTemplate, copySchema, deleteSchema, getSchemaTemplate,
     listCredentialTemplates, createCredentialTemplate, getCredentialTemplate};
+
+
+
 });
 
 export default {
