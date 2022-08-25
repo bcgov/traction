@@ -8,6 +8,10 @@ export const useGovernanceStore = defineStore('governance', () => {
   const schemaTemplates: any = ref(null);
   const selectedSchemaTemplate: any = ref(null);
   const schemaTemplateFilters: any = ref(null);
+  
+  const credentialTemplates: any = ref(null);
+  const selectedCredentialTemplate: any = ref(null);
+  const credentialTemplateFilters: any = ref(null);
 
   const credentialTemplates: any = ref(null);
   const selectedCredentialTemplate: any = ref(null);
