@@ -1,6 +1,7 @@
-import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { defineStore, storeToRefs } from 'pinia';
+import { computed, ref } from 'vue';
 import { useTenantApi } from './tenantApi';
+import { useTokenStore } from './tokenStore';
 
 export const useTenantStore = defineStore('tenant', () => {
   // state
@@ -8,16 +9,23 @@ export const useTenantStore = defineStore('tenant', () => {
   const loading: any = ref(false);
   const error: any = ref(null);
 
-  // getters
-
-  // actions
-
-  // grab the tenant api
+  const { token } = storeToRefs(useTokenStore());
   const tenantApi = useTenantApi();
+  
+  // getters
+  const tenantReady = computed(() => {
+    return token.value != null && tenant.value != null;    
+  });
+  
+  // actions
+  function clearTenant() {
+    console.log('> clearTenant');
+    tenant.value = null;
+    console.log('< clearTenant');
+  }
 
   async function getSelf() {
     console.log('> tenantStore.getSelf');
-    tenant.value = null;
     error.value = null;
     loading.value = true;
 
@@ -30,6 +38,7 @@ export const useTenantStore = defineStore('tenant', () => {
       })
       .catch((err) => {
         error.value = err;
+        tenant.value = null;
         //console.log(error.value);
       })
       .finally(() => {
@@ -74,7 +83,7 @@ export const useTenantStore = defineStore('tenant', () => {
     return tenant.value;
   }
 
-  return { tenant, loading, error, getSelf, makeIssuer };
+  return { tenant, loading, error, tenantReady, getSelf, makeIssuer, clearTenant };
 });
 
 export default {

@@ -17,7 +17,7 @@
             </template>
           </Card>
         </main>
-        <footer class="layout-footer">
+        <footer class="absolute bottom-0 layout-footer">
           <Footer />
         </footer>
       </div>
@@ -70,5 +70,6 @@ body {
 
 .layout-footer {
   flex: 0;
+  width: 100%;
 }
 </style>

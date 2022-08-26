@@ -5,7 +5,7 @@
 .venv
 .vscode
 .idea
-config/local.json
+./config/local.json
 
 # Temporary files
 *.log
