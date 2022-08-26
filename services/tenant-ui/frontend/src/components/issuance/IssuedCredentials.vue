@@ -3,19 +3,14 @@
 
   <ProgressSpinner v-if="loading" />
   <div v-else>
-    <DataTable
-      v-model:selection="selectedCredential"
-      :value="credentials"
-      :paginator="true"
-      :rows="10"
-      striped-rows
-      selection-mode="single"
-    >
-      <Column
-        :sortable="true"
-        field="credential_template.name"
-        header="Credential Name"
-      />
+    <DataTable v-model:selection="selectedCredential" :value="credentials" :paginator="true" :rows="10" striped-rows
+      selection-mode="single">
+      <template #header>
+        <div class="table-header">
+          <OfferCredential />
+        </div>
+      </template>
+      <Column :sortable="true" field="credential_template.name" header="Credential Name" />
       <Column field="contact.alias" header="Contact Name" />
       <Column field="state" header="State" />
       <Column field="status" header="Status" />
@@ -39,7 +34,8 @@ import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import ProgressSpinner from "primevue/progressspinner";
 
-// Other Compontents 
+// Other Components 
+import OfferCredential from "./offerCredential/OfferCredential.vue";
 
 // Other Imports
 import { useToast } from "vue-toastification";

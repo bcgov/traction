@@ -13,27 +13,27 @@
     "@vuelidate/core": "^2.0.0-alpha.44",
     "@vuelidate/validators": "^2.0.0-alpha.31",
     "axios": "^0.27.2",
-    "pinia": "^2.0.19",
+    "pinia": "^2.0.21",
     "primeflex": "^3.2.1",
     "primeicons": "^5.0.0",
-    "primevue": "^3.15.0",
+    "primevue": "^3.16.2",
     "qrcode.vue": "^3.3.3",
     "vue": "^3.2.37",
-    "vue-router": "^4.1.2",
+    "vue-router": "^4.1.5",
     "vue-toastification": "^2.0.0-rc.5"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.30.7",
-    "@typescript-eslint/parser": "^5.30.7",
+    "@typescript-eslint/eslint-plugin": "^5.35.1",
+    "@typescript-eslint/parser": "^5.35.1",
     "@vitejs/plugin-vue": "^3.0.0",
     "@vue/eslint-config-prettier": "^7.0.0",
     "@vue/eslint-config-typescript": "^11.0.0",
-    "eslint": "^8.20.0",
+    "eslint": "^8.22.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "eslint-plugin-vue": "^9.2.0",
+    "eslint-plugin-vue": "^9.4.0",
     "prettier": "^2.7.1",
-    "typescript": "^4.6.4",
-    "vite": "^3.0.0",
-    "vue-tsc": "^0.38.4"
+    "typescript": "^4.8.2",
+    "vite": "^3.0.9",
+    "vue-tsc": "^0.40.1"
   }
 }

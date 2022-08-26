@@ -1,15 +1,8 @@
 <template>
-    <Button
-        icon="pi pi-id-card" 
-        class="p-button-text"        
-        @click="displayForm = true"
-        v-tooltip.top="'Create Credential Template'"
-    />
+    <Button icon="pi pi-id-card" class="p-button-text" @click="displayForm = true"
+        v-tooltip.top="'Create Credential Template'" />
     <Dialog header="Create Credential Template" v-model:visible="displayForm">
-        <CreateCredentialTemplateForm 
-            @form-close="displayForm = false;"
-            :schema-template-id="schemaTemplateId"
-        />
+        <CreateCredentialTemplateForm @form-close="displayForm = false;" :schema-template-id="schemaTemplateId" />
     </Dialog>
 </template>
 <script setup lang="ts">
