@@ -33,8 +33,9 @@
       <Column header="Delete">
         <template #body="{ data }">
           <Button
-            icon="pi pi-trash"
-            class="p-button-rounded p-button-danger"
+            title="Delete Schema"
+            icon="pi pi-times"
+            class="p-button-rounded p-button-icon-only p-button-danger p-button-text"
             @click="deleteSchema(data)"
           />
         </template>
