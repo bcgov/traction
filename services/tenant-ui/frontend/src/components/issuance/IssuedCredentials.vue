@@ -29,13 +29,21 @@
 <script setup lang="ts">
 // Vue
 import { onMounted } from "vue";
+
+// State
+import { useIssuerStore } from "../../store";
+import { storeToRefs } from "pinia";
+
+// PrimeVue
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import ProgressSpinner from "primevue/progressspinner";
+
+// Other Compontents 
+
+// Other Imports
 import { useToast } from "vue-toastification";
 
-import { useIssuerStore } from "../../store";
-import { storeToRefs } from "pinia";
 
 const toast = useToast();
 
