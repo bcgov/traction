@@ -86,12 +86,6 @@ const props = defineProps({
     }
 });
 
-const emit = defineEmits(['formClose']);
-
-const close = async () => {
-    emit("formClose");
-}
-
 // use the loading state from the store to disable the button...
 const {
   loading, schemaTemplateDropdown, credentialTemplateDropdown

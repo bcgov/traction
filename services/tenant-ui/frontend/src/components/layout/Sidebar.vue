@@ -1,24 +1,20 @@
 <template>
   <div>
-    <h1 class="sidebar-app-title">{{ config.ux.sidebarTitle }}</h1>
-    <!--<h2>{{ tenant.name }}</h2>-->
+    <h1 class="sidebar-app-title">{{ tenant.name }}</h1>
+    <!--<h1 class="sidebar-app-title">{{ config.ux.sidebarTitle }}</h1>-->
     <PanelMenu :model="items" class="mt-5" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import PanelMenu from 'primevue/panelmenu';
 import { storeToRefs } from 'pinia';
-import { useConfigStore, useTenantStore } from '../../store';
+import { useTenantStore } from '../../store';
 
 const tenantStore = useTenantStore();
-const { config } = storeToRefs(useConfigStore());
+// tenant should be loaded by login...
 const { tenant } = storeToRefs(useTenantStore());
-
-// TODO: load up the logged in tenant...
-// need to figure out what to show and where, this will/should end up in a different component.
-await tenantStore.getSelf().catch(() => {});
 
 const items = ref([
   {
