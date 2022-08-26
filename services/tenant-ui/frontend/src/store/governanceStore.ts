@@ -8,7 +8,7 @@ export const useGovernanceStore = defineStore('governance', () => {
   const schemaTemplates: any = ref(null);
   const selectedSchemaTemplate: any = ref(null);
   const schemaTemplateFilters: any = ref(null);
-  
+
   const credentialTemplates: any = ref(null);
   const selectedCredentialTemplate: any = ref(null);
   const credentialTemplateFilters: any = ref(null);
@@ -19,12 +19,12 @@ export const useGovernanceStore = defineStore('governance', () => {
   const schemaLabelValue = (item: any) => {
     let result = null;
     if (item != null) {
-      result = { 
-        'label': `${item.name} (${item.version})`, 
-        'value': item.schema_template_id,
-        'status': item.status,
-        'can_issue': item.credential_templates.length > 0
-      }
+      result = {
+        label: `${item.name} (${item.version})`,
+        value: item.schema_template_id,
+        status: item.status,
+        can_issue: item.credential_templates.length > 0,
+      };
     }
     return result;
   };
@@ -32,11 +32,11 @@ export const useGovernanceStore = defineStore('governance', () => {
   const credDefLabelValue = (item: any) => {
     let result = null;
     if (item != null) {
-      result = { 
-        'label': `${item.name}`, 
-        'value': item.credential_template_id,
-        'status': item.status
-      }
+      result = {
+        label: `${item.name}`,
+        value: item.credential_template_id,
+        status: item.status,
+      };
     }
     return result;
   };
@@ -44,12 +44,10 @@ export const useGovernanceStore = defineStore('governance', () => {
   const schemaTemplateDropdown = computed(() => {
     return filterMapSortList(schemaTemplates.value, schemaLabelValue, sortByLabelAscending);
   });
-  
+
   const credentialTemplateDropdown = computed(() => {
     return filterMapSortList(credentialTemplates.value, credDefLabelValue, sortByLabelAscending);
   });
-
-  
 
   // grab the tenant api
   const tenantApi = useTenantApi();
@@ -58,21 +56,23 @@ export const useGovernanceStore = defineStore('governance', () => {
     selectedSchemaTemplate.value = null;
     schemaTemplates.value = null;
     //return fetchList('/tenant/v1/governance/schema_templates/', schemaTemplates, error, loading);
-    
+
     // this is a total hack for expedience, lets get cred templates at the same time...
     // just so we can show it all in one grid, this should happen at the api level...
     const schemas = ref();
     await fetchList('/tenant/v1/governance/schema_templates/', schemas, error, loading);
     await listCredentialTemplates();
-    schemaTemplates.value = await Promise.all(schemas.value.map(async (item: any) => {
-      // find any credential templates...
-      const templates = ref();
-      await fetchList('/tenant/v1/governance/credential_templates/', templates, error, loading, {schema_template_id: item.schema_template_id});
-      return {
-        ...item,
-        credential_templates: templates
-      };
-    }));
+    schemaTemplates.value = await Promise.all(
+      schemas.value.map(async (item: any) => {
+        // find any credential templates...
+        const templates = ref();
+        await fetchList('/tenant/v1/governance/credential_templates/', templates, error, loading, { schema_template_id: item.schema_template_id });
+        return {
+          ...item,
+          credential_templates: templates,
+        };
+      })
+    );
     return schemaTemplates.value;
   }
 
@@ -190,7 +190,6 @@ export const useGovernanceStore = defineStore('governance', () => {
     return result;
   }
 
-<<<<<<< HEAD
   async function getSchemaTemplate(id: String, params: any = {}) {
     console.log('> governanceStore.getSchemaTemplate');
     error.value = null;
@@ -253,7 +252,6 @@ export const useGovernanceStore = defineStore('governance', () => {
     return result;
   }
 
-
   /**
    * # delete Schema
    * Delete a schema template
@@ -295,18 +293,26 @@ export const useGovernanceStore = defineStore('governance', () => {
     return result;
   }
 
-  return { 
-    schemaTemplates, selectedSchemaTemplate, schemaTemplateFilters, 
-    credentialTemplates, selectedCredentialTemplate, credentialTemplateFilters, 
-    loading, 
-    error, 
+  return {
+    schemaTemplates,
+    selectedSchemaTemplate,
+    schemaTemplateFilters,
+    credentialTemplates,
+    selectedCredentialTemplate,
+    credentialTemplateFilters,
+    loading,
+    error,
     schemaTemplateDropdown,
     credentialTemplateDropdown,
-    listSchemaTemplates, createSchemaTemplate, copySchema, deleteSchema, getSchemaTemplate,
-    listCredentialTemplates, createCredentialTemplate, getCredentialTemplate};
-
-
-
+    listSchemaTemplates,
+    createSchemaTemplate,
+    copySchema,
+    deleteSchema,
+    getSchemaTemplate,
+    listCredentialTemplates,
+    createCredentialTemplate,
+    getCredentialTemplate,
+  };
 });
 
 export default {
