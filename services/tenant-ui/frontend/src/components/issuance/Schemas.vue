@@ -126,10 +126,15 @@ const schemaCreated = async () => {
 };
 
 const deleteSchema = (schema: any) => {
-  governanceStore.deleteSchema(schema).catch((err) => {
-    console.error(err);
-    toast.error(`Failure: ${err}`);
-  });
+  governanceStore
+    .deleteSchema(schema)
+    .then(() => {
+      toast.success(`Schema successfully deleted`);
+    })
+    .catch((err) => {
+      console.error(err);
+      toast.error(`Failure: ${err}`);
+    });
 };
 
 const displayCopySchema = ref(false);
