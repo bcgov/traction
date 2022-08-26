@@ -1,14 +1,14 @@
 import { useTenantApi } from '../tenantApi';
 import { Ref } from 'vue';
 
-export async function fetchList(url: string, list: Ref<any>, error: Ref<any>, loading: Ref<boolean>) {
+export async function fetchList(url: string, list: Ref<any>, error: Ref<any>, loading: Ref<boolean>, params: any = {}) {
   const tenantApi = useTenantApi();
   console.log(`> fetchList(${url})`);
   list.value = null;
   error.value = null;
   loading.value = true;
   await tenantApi
-    .getHttp(url)
+    .getHttp(url, params)
     .then((res) => {
       console.log(res);
       list.value = res.data.items;

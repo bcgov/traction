@@ -23,12 +23,22 @@
           </span>
         </div>
       </template>
+      <Column :sortable="false" header="Actions">
+      </Column>
       <Column field="name" header="Schema" filter-field="name" />
       <Column field="version" header="Version" />
       <Column field="status" header="Status" />
       <Column field="state" header="State" />
       <Column field="attributes" header="Attributes" />
       <Column field="schema_id" header="ID" />
+      <Column field="credential_templates" header="Credential Template">
+        <template #body="{data}">
+          <CreateCredentialTemplate :schema-template-id="data.schema_template_id" v-if="data.credential_templates.length == 0"/>
+          <div v-else>
+            {{`${data.credential_templates[0].name}:${data.credential_templates[0].tag}`}}  
+          </div>
+        </template>
+      </Column>
     </DataTable>
     <div class="row buttons">
       <Button
@@ -75,6 +85,7 @@ import Dialog from "primevue/dialog";
 // Custom components
 import CreateSchema from "./CreateSchema.vue";
 import CopySchema from "./CopySchema.vue";
+import CreateCredentialTemplate from "./credentialtemplate/CreateCredentialTemplate.vue";
 
 import { useToast } from "vue-toastification";
 import { useGovernanceStore } from "../../store";
