@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { useTenantApi } from './tenantApi';
-import { fetchList } from './utils/fetchList.js';
+import { fetchList, filterMapSortList, sortByLabelAscending } from './utils';
 
 export const useGovernanceStore = defineStore('governance', () => {
   // state
@@ -16,7 +16,6 @@ export const useGovernanceStore = defineStore('governance', () => {
   const loading: any = ref(false);
   const error: any = ref(null);
 
-  // getters
   const schemaLabelValue = (item: any) => {
     let result = null;
     if (item != null) {
@@ -30,16 +29,6 @@ export const useGovernanceStore = defineStore('governance', () => {
     return result;
   };
 
-  const schemaTemplateDropdown = computed(() => {
-    //transform list of schemas into label / value pair
-    let result: any[] = [];
-    if (schemaTemplates.value != null) {
-      result = schemaTemplates.value
-        .map((item: any) => schemaLabelValue(item));
-    }
-    return result;
-  });
-
   const credDefLabelValue = (item: any) => {
     let result = null;
     if (item != null) {
@@ -52,18 +41,15 @@ export const useGovernanceStore = defineStore('governance', () => {
     return result;
   };
 
+  const schemaTemplateDropdown = computed(() => {
+    return filterMapSortList(schemaTemplates.value, schemaLabelValue, sortByLabelAscending);
+  });
+  
   const credentialTemplateDropdown = computed(() => {
-    //transform list of credential templates into label / value pair
-    let result: any[] = [];
-    if (credentialTemplates.value != null) {
-      result = credentialTemplates.value
-        .map((item: any) => credDefLabelValue(item));
-    }
-    return result;
+    return filterMapSortList(credentialTemplates.value, credDefLabelValue, sortByLabelAscending);
   });
 
   
-  // actions
 
   // grab the tenant api
   const tenantApi = useTenantApi();
