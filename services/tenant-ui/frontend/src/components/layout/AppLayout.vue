@@ -17,7 +17,7 @@
             </template>
           </Card>
         </main>
-        <footer class="layout-footer">
+        <footer class="bottom-0 layout-footer">
           <Footer />
         </footer>
       </div>
@@ -53,12 +53,13 @@ body {
 
 .layout-page {
   width: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
 .layout-header {
-  flex: 1;
+  flex: 0;
   background-color: white;
 }
 
@@ -66,9 +67,5 @@ body {
   flex: 1;
   background-color: #e4e4e4;
   padding: 0.5em;
-}
-
-.layout-footer {
-  flex: 0;
 }
 </style>

@@ -3,11 +3,10 @@ import AppLayout from "./components/layout/AppLayout.vue";
 import Login from "./components/Login.vue";
 import {onMounted} from "vue";
 import {storeToRefs} from "pinia";
-import {useConfigStore} from "./store/configStore";
-import {useTokenStore} from "./store/tokenStore";
+import {useConfigStore, useTenantStore} from "./store";
 
 const { config } = storeToRefs(useConfigStore());
-const { token } = storeToRefs(useTokenStore());
+const { tenantReady } = storeToRefs(useTenantStore());
 
 onMounted(()=> {
   document.title = config.value.ux.appTitle;
@@ -15,7 +14,7 @@ onMounted(()=> {
 </script>
 
 <template>
-  <AppLayout v-if="token" />
+  <AppLayout v-if="tenantReady" />
   <Login v-else />
 </template>
 
