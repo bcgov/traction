@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AppLayout from "./components/layout/AppLayout.vue";
 import Login from "./components/Login.vue";
-import {computed, onMounted} from "vue";
+import {onMounted} from "vue";
 import {storeToRefs} from "pinia";
 import {useConfigStore, useTenantStore} from "./store";
 
