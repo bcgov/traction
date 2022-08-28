@@ -25,6 +25,14 @@
       <Column field="state" header="State" />
       <Column field="attributes" header="Attributes" />
       <Column field="schema_id" header="ID" />
+      <Column header="Delete">
+        <template #body="{ data }">
+          <Button
+            title="Delete Schema"
+            icon="pi pi-times"
+            class="p-button-rounded p-button-icon-only p-button-danger p-button-text"
+            @click="deleteSchema(data)"
+          />
       <Column field="credential_templates" header="Credential Template">
         <template #body="{ data }">
           <CreateCredentialTemplate :schema-template-id="data.schema_template_id"
