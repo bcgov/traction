@@ -30,6 +30,14 @@
       <Column field="state" header="State" />
       <Column field="attributes" header="Attributes" />
       <Column field="schema_id" header="ID" />
+      <Column header="Delete">
+        <template #body="{ data }">
+          <Button
+            title="Delete Schema"
+            icon="pi pi-times"
+            class="p-button-rounded p-button-icon-only p-button-danger p-button-text"
+            @click="deleteSchema(data)"
+          />
       <Column field="credential_templates" header="Credential Template">
         <template #body="{data}">
           <CreateCredentialTemplate :schema-template-id="data.schema_template_id" v-if="!data.credential_templates.length"/>
@@ -90,9 +98,7 @@ import { useToast } from "vue-toastification";
 import { useGovernanceStore } from "../../store";
 import { storeToRefs } from "pinia";
 
-
 const toast = useToast();
-
 
 const governanceStore = useGovernanceStore();
 // use the loading state from the store to disable the button...
@@ -124,6 +130,18 @@ const schemaCreated = async () => {
     'schema created emit - do we want to "manually" load contacts or have the store automatically do it?'
   );
   loadTable();
+};
+
+const deleteSchema = (schema: any) => {
+  governanceStore
+    .deleteSchema(schema)
+    .then(() => {
+      toast.success(`Schema successfully deleted`);
+    })
+    .catch((err) => {
+      console.error(err);
+      toast.error(`Failure: ${err}`);
+    });
 };
 
 const displayCopySchema = ref(false);
