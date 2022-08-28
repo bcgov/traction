@@ -28,8 +28,8 @@ tenant_ui:
   ux:
     appTitle: 'Traction Tenant Console'
     sidebarTitle: 'Traction'
-    copyright: '2022 © Energy & Mines Digital Trust'
-    owner: 'Owned and operated by the B.C. Government'
+    copyright: ''
+    owner: ''
 
 
   traction_api:

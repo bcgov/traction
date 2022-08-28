@@ -1,58 +1,3 @@
-<script setup lang="ts">
-import { ref } from 'vue';
-import InputText from 'primevue/inputtext';
-import Button from 'primevue/button';
-
-// For notifications
-import { useToast } from 'vue-toastification';
-import { useTokenStore } from '../store';
-import { storeToRefs } from 'pinia';
-const toast = useToast();
-
-// To store credentials
-const key = ref('');
-const secret = ref('');
-
-const tokenStore = useTokenStore();
-
-tokenStore.$onAction(({ name, after, onError }) => {
-  if (name == 'login') {
-    // this is after a successful load of the token...
-    after((result) => {
-      console.log(`Access Token: ${result}`);
-    });
-
-    // and this called if load throws an error
-    onError((err) => {
-      console.error(err);
-      toast.error(`Failure: ${err}`);
-    });
-  }
-});
-
-// use the loading state from the store to disable the button...
-const { loading } = storeToRefs(useTokenStore());
-
-/**
- * ##clicked
- * Read the form, formulate the request url then
- * request token from API
- */
-const clicked = async () => {
-  // the error is processed in the $onAction, add an empty handler to avoid Vue warning.
-  tokenStore.login(key.value, secret.value).catch(() => {});
-};
-
-/**
- * ## clear
- * Clear the form
- */
-const clear = () => {
-  key.value = '';
-  secret.value = '';
-};
-</script>
-
 <template>
   <div class="login">
     <div>
@@ -72,6 +17,62 @@ const clear = () => {
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { ref } from 'vue';
+import InputText from 'primevue/inputtext';
+import Button from 'primevue/button';
+
+// For notifications
+import { useToast } from 'vue-toastification';
+import { useTenantStore, useTokenStore } from '../store';
+import { storeToRefs } from 'pinia';
+
+const toast = useToast();
+
+// To store credentials
+const key = ref('');
+const secret = ref('');
+
+const tokenStore = useTokenStore();
+// use the loading state from the store to disable the button...
+const { loading, token } = storeToRefs(useTokenStore());
+const tenantStore = useTenantStore();
+const { tenant } = storeToRefs(useTenantStore());
+/**
+ * ##clicked
+ * Read the form, formulate the request url then
+ * request token from API
+ */
+const clicked = async () => {
+  // the error is processed in the $onAction, add an empty handler to avoid Vue warning.
+  try {
+    await tokenStore.login(key.value, secret.value);
+    console.log(token.value);
+  } catch (err) {
+      console.error(err);
+      toast.error(`Failure getting token: ${err}`);
+  }
+  try {
+    // token is loaded, now go fetch the tenant data...
+    await tenantStore.getSelf();
+    console.log(tenant.value);
+  } catch (err) {
+      console.error(err);
+      toast.error(`Failure getting tenant: ${err}`);
+  }
+
+};
+
+/**
+ * ## clear
+ * Clear the form
+ */
+const clear = () => {
+  key.value = '';
+  secret.value = '';
+};
+</script>
 
 <style scoped>
 span.p-float-label {

@@ -23,7 +23,7 @@
           </span>
         </div>
       </template>
-      <Column :sortable="false" header="Actions"> </Column>
+      <Column :sortable="false" header="Actions" />
       <Column field="name" header="Schema" filter-field="name" />
       <Column field="version" header="Version" />
       <Column field="status" header="Status" />
@@ -38,6 +38,12 @@
             class="p-button-rounded p-button-icon-only p-button-danger p-button-text"
             @click="deleteSchema(data)"
           />
+      <Column field="credential_templates" header="Credential Template">
+        <template #body="{data}">
+          <CreateCredentialTemplate :schema-template-id="data.schema_template_id" v-if="!data.credential_templates.length"/>
+          <div v-else>
+            {{`${data.credential_templates[0].name}:${data.credential_templates[0].tag}`}}  
+          </div>
         </template>
       </Column>
     </DataTable>
