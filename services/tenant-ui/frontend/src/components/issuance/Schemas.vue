@@ -16,7 +16,7 @@
       <Column :sortable="false" header="Actions">
         <template #body="{ data }">
           <Button title="Delete Schema" icon="pi pi-times"
-            class="p-button-rounded p-button-icon-only p-button-danger p-button-text" @click="deleteSchema(data)" />
+            class="p-button-rounded p-button-icon-only p-button-danger p-button-text" @click="deleteSchema($event, data)" />
         </template>
       </Column>
       <Column field="name" header="Schema" filter-field="name" />
@@ -103,8 +103,9 @@ const schemaCreated = async () => {
   loadTable();
 };
 
-const deleteSchema = (schema: any) => {
+const deleteSchema = (event: any, schema: any) => {
   confirm.require({
+    target: event.currentTarget,
     message: 'Are you sure you want to delete this schema?',
     header: 'Confirmation',
     icon: 'pi pi-exclamation-triangle',
