@@ -23,6 +23,7 @@ import 'vue-toastification/dist/index.css';
   match the Gov't style.
 */
 import PrimeVue from 'primevue/config';
+import ConfirmationService from 'primevue/confirmationservice';
 import Tooltip from 'primevue/tooltip';
 import 'primevue/resources/themes/nova-vue/theme.css';
 import 'primevue/resources/primevue.min.css';
@@ -59,6 +60,7 @@ async function loadApp() {
   // 4. load/initialize other components
   app.use(PrimeVue);
   app.use(router);
+  app.use(ConfirmationService);
   app.directive('tooltip', Tooltip);
   // 5. initialize the toast notification plugin
   const options: PluginOptions = {};
