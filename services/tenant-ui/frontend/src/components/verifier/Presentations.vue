@@ -20,6 +20,7 @@
       </template>
     </DataTable>
   </div>
+  {{presentationDetailDict}}
 
 </template>
 
@@ -53,6 +54,9 @@ const loadTable = async () => {
 const expandedRows = ref([]);
 const onRowExpand = (event) => {
     toast.info('Product Expanded');
+    console.log(presentationDetailDict);
+    console.log(presentationDetailDict.value);
+
     verifierStore.getPresentationDetails(event.data.verifier_presentation_id);
 };
 

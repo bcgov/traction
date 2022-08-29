@@ -1,7 +1,7 @@
 import { useTenantApi } from '../tenantApi';
 import { Ref } from 'vue';
 
-export async function fetchItem(url: string, id: string, dict: object, error: Ref<any>, loading: Ref<boolean>, params: any = {}) {
+export async function fetchItem(url: string, id: string, dict: any, error: Ref<any>, loading: Ref<boolean>, params: any = {}) {
     const tenantApi = useTenantApi();
     console.log(`> fetchItem(${url})`);
     error.value = null;
@@ -10,8 +10,7 @@ export async function fetchItem(url: string, id: string, dict: object, error: Re
         .getHttp(url + id, params)
         .then((res) => {
             console.log(res);
-            console.log(res.data.item);
-            dict[id as string] = res.data.item;
+            dict[id] = res.data.item; //{"key":value}
             console.log(dict[id]);
         })
         .catch((err) => {
