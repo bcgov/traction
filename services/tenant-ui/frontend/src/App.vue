@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ConfirmPopup from 'primevue/confirmpopup';
 import AppLayout from "./components/layout/AppLayout.vue";
 import Login from "./components/Login.vue";
 import {onMounted} from "vue";
@@ -16,6 +17,9 @@ onMounted(()=> {
 <template>
   <AppLayout v-if="tenantReady" />
   <Login v-else />
+
+  <!-- Shared confirm popup  -->
+  <ConfirmPopup />
 </template>
 
 <style scoped>
