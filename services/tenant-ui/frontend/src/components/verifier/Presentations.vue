@@ -18,6 +18,7 @@
       </template>
     </DataTable>
   </div>
+  {{presentationDetailDict}}
 
 </template>
 
