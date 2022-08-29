@@ -1,7 +1,7 @@
 <template>
   <div>
     <Button label="Offer Credential" icon="pi pi-arrow-up-right" @click="openOfferPopup" />
-    <Dialog header="Offer Credential" v-model:visible="displayOfferModal">
+    <Dialog header="Offer Credential" v-model:visible="displayOfferModal" :modal="true">
       <OfferCredentialForm />
     </Dialog>
   </div>
