@@ -33,6 +33,8 @@
             class="p-button-rounded p-button-icon-only p-button-danger p-button-text"
             @click="deleteSchema(data)"
           />
+        </template>
+      </Column>
       <Column field="credential_templates" header="Credential Template">
         <template #body="{ data }">
           <CreateCredentialTemplate :schema-template-id="data.schema_template_id"

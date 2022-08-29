@@ -1,5 +1,4 @@
 <template>
-  <!-- <h2 class="mt-0">PresentationDetails</h2> -->
     <div v-if="presentation">
         <ul>
           <li>Status: {{presentation.status}}</li>
