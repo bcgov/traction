@@ -33,5 +33,5 @@ export async function fetchItem(url: string, id: string, dict: any, error: Ref<a
         throw error.value;
     }
     // return data so $onAction.after listeners can add their own handler
-    return dict.value;
+    return dict.value[id];
 }
