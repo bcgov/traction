@@ -9,7 +9,6 @@ export async function fetchItem(url: string, id: string, dict: any, error: Ref<a
     await tenantApi
         .getHttp(url + id, params)
         .then((res) => {
-            console.log(res);
             dict.value[id] = res.data.item;
             console.log(dict[id]);
         })
