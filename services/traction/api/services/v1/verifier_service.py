@@ -1,6 +1,6 @@
 import logging
 from uuid import UUID
-from typing import List
+from typing import List, Tuple
 
 from starlette import status, exceptions
 
@@ -56,7 +56,7 @@ def verifier_presentation_to_item(
 
     """
     acapy_item = None  # noqa: F841
-    if acapy:
+    if acapy and db_item.pres_exch_id:
         presentation_exchange = acapy_service.get_presentation_exchange_json(
             db_item.pres_exch_id
         )
@@ -112,7 +112,7 @@ async def make_verifier_presentation(
         db.add(db_item)
         await db.commit()
 
-    return get_presentation_request(
+    return await get_presentation_request(
         tenant_id, wallet_id, db_item.verifier_presentation_id, True
     )
 
@@ -388,7 +388,7 @@ async def make_verifier_presentation_from_template(
     wallet_id: UUID,
     presentation_request_template_id: UUID,
     payload: PresentationRequestFromTemplatePayload,
-) -> [VerifierPresentationItem, ProofRequest]:
+) -> Tuple[VerifierPresentationItem, ProofRequest]:
     # verify this item exists and is not deleted...
     async with async_session() as db:
         db_item = await PresentationRequestTemplate.get_by_id(
