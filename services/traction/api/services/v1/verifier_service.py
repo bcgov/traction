@@ -112,11 +112,9 @@ async def make_verifier_presentation(
         db.add(db_item)
         await db.commit()
 
-    async with async_session() as db:
-        db_item = await VerifierPresentation.get_by_id(
-            db, tenant_id, db_item.verifier_presentation_id
-        )
-    return verifier_presentation_to_item(db_item)
+    return get_presentation_request(
+        tenant_id, wallet_id, db_item.verifier_presentation_id, True
+    )
 
 
 async def list_presentation_requests(
