@@ -13,7 +13,7 @@
       <Column field="status" header="Status" />
       <Column field="created_at" header="Created at" />
       <template #expansion="{data, index}">
-          <PresentationDetails :presentation="presentationDetailDict[expandedRows[index].verifier_presentation_id]"/>
+          <PresentationDetails :presentation="presentationDetailCache[expandedRows[index].verifier_presentation_id]"/>
       </template>
     </DataTable>
   </div>
@@ -36,7 +36,7 @@ const toast = useToast();
 
 const verifierStore = useVerifierStore();
 // use the loading state from the store to disable the button...
-const { loading, presentations, selectedPresentation, presentationDetailDict} = storeToRefs(useVerifierStore());
+const { loading, presentations, selectedPresentation, presentationDetailCache} = storeToRefs(useVerifierStore());
 
 const loadTable = async () => {
   verifierStore.listPresentations().catch((err) => {
@@ -47,7 +47,7 @@ const loadTable = async () => {
 
 const expandedRows = ref([]);
 const onRowExpand = (event: DataTableRowExpandEvent) => {
-    if (!presentationDetailDict[event.data.verifier_presentation_id]){
+    if (!presentationDetailCache[event.data.verifier_presentation_id]){
       verifierStore.getPresentationDetails(event.data.verifier_presentation_id);
     }
 };

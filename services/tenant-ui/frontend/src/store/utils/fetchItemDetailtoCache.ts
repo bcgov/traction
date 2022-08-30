@@ -1,7 +1,7 @@
 import { useTenantApi } from '../tenantApi';
 import { Ref } from 'vue';
 
-export async function fetchItem(url: string, id: string, dict: any, error: Ref<any>, loading: Ref<boolean>, params: any = {}) {
+export async function fetchItemDetailtoCache(url: string, id: string, dict: any, error: Ref<any>, loading: Ref<boolean>, params: any = {}) {
     /*
     This method will fetch an item from the api and add it to a dictionary in the store, 
     to be retrieved by the primary key value later.
@@ -11,7 +11,7 @@ export async function fetchItem(url: string, id: string, dict: any, error: Ref<a
 
 
     const tenantApi = useTenantApi();
-    console.log(`> fetchItem(${url})`);
+    console.log(`> fetchItemDetailtoCache(${url})`);
     error.value = null;
     // loading.value = true;
     await tenantApi
@@ -27,7 +27,7 @@ export async function fetchItem(url: string, id: string, dict: any, error: Ref<a
         .finally(() => {
             loading.value = false;
         });
-    console.log(`< fetchItem(${url})`);
+    console.log(`< fetchItemDetailtoCache(${url})`);
     if (error.value != null) {
         // throw error so $onAction.onError listeners can add their own handler
         throw error.value;
