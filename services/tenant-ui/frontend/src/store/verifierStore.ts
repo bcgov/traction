@@ -22,7 +22,6 @@ export const useVerifierStore = defineStore('verifier', () => {
   }
 
   async function getPresentationDetails(verifier_presentation_id: string) {
-    selectedPresentation.value = null;
     return fetchItem('/tenant/v1/verifier/presentations/', verifier_presentation_id, presentationDetailDict, error, loading, { acapy: true });
   }
 
