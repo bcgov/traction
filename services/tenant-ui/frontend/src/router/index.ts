@@ -55,11 +55,6 @@ const routes = [
         component: MyIssuedCredentials,
       },
       {
-        path: 'offerCredential',
-        name: 'OfferCredential',
-        component: OfferCredential,
-      },
-      {
         path: 'schemas',
         name: 'Schemas',
         component: Schemas,

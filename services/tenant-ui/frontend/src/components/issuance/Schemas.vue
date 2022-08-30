@@ -21,13 +21,13 @@
               disabled
             />
           </span>
+          <Button
+            icon="pi pi-refresh"
+            class="p-button-rounded p-button-outlined"
+            title="Refresh Table"
+            @click="loadTable"
+          ></Button>
         </div>
-        <Button
-          icon="pi pi-refresh"
-          class="p-button-rounded p-button-outlined btn-refresh-table"
-          title="Refresh Table"
-          @click="loadTable"
-        ></Button>
       </template>
       <Column :sortable="false" header="Actions">
         <template #body="{ data }">
@@ -196,10 +196,5 @@ const schemaCopied = async () => {
 
 .create-btn {
   margin-right: 1rem;
-}
-.btn-refresh-table {
-  position: absolute;
-  right: 12px;
-  top: 12px;
 }
 </style>
