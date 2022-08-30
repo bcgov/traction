@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { fetchList } from './utils/fetchList';
 import { fetchItem } from './utils/fetchItem';
 
+
 export const useVerifierStore = defineStore('verifier', () => {
   // state
   const presentations: any = ref(null);
@@ -26,6 +27,7 @@ export const useVerifierStore = defineStore('verifier', () => {
   }
 
   return { presentations, presentationDetailDict, selectedPresentation, loading, error, listPresentations, getPresentationDetails };
+
 });
 
 export default {

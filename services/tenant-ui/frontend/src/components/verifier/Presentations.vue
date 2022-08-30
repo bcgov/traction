@@ -12,13 +12,11 @@
       <Column field="state" header="State" />
       <Column field="status" header="Status" />
       <Column field="created_at" header="Created at" />
-
       <template #expansion="{data, index}">
           <PresentationDetails :presentation="presentationDetailDict[expandedRows[index].verifier_presentation_id]"/>
       </template>
     </DataTable>
   </div>
-
 </template>
 
 
@@ -32,9 +30,8 @@ import { useToast } from 'vue-toastification';
 import { useVerifierStore } from '../../store';
 import { storeToRefs } from 'pinia';
 
+
 import PresentationDetails from './PresentationDetails.vue';
-
-
 const toast = useToast();
 
 const verifierStore = useVerifierStore();

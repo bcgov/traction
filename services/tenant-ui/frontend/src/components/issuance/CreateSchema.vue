@@ -65,8 +65,10 @@ const removeAttribute = (index: number) => {
  * ## save
  * Save the new schema.
  */
+
 const submit_new_schema = async () => {
   // build the correct payload...
+
   const justAttributeNames = attributes.value.map(
     (attribute) => attribute.name
   );
