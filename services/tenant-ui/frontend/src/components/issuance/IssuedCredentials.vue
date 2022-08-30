@@ -6,8 +6,10 @@
     <DataTable v-model:selection="selectedCredential" :value="credentials" :paginator="true" :rows="10" striped-rows
       selection-mode="single">
       <template #header>
-        <div class="table-header">
+        <div class="flex justify-content-between">
           <OfferCredential />
+          <Button icon="pi pi-refresh" class="p-button-rounded p-button-outlined" title="Refresh Table"
+            @click="loadTable"></Button>
         </div>
       </template>
       <Column :sortable="true" field="credential_template.name" header="Credential Name" />
@@ -30,6 +32,7 @@ import { useIssuerStore } from "../../store";
 import { storeToRefs } from "pinia";
 
 // PrimeVue
+import Button from "primevue/button";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import ProgressSpinner from "primevue/progressspinner";
