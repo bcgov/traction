@@ -13,10 +13,6 @@ export const useGovernanceStore = defineStore('governance', () => {
   const selectedCredentialTemplate: any = ref(null);
   const credentialTemplateFilters: any = ref(null);
 
-  const credentialTemplates: any = ref(null);
-  const selectedCredentialTemplate: any = ref(null);
-  const credentialTemplateFilters: any = ref(null);
-
   const loading: any = ref(false);
   const error: any = ref(null);
 
