@@ -11,7 +11,7 @@
                     </label>
 
                     <AutoComplete id="selectedCred" v-model="v$.selectedCred.$model"
-                        :disabled="credsLoading || submitted" :suggestions="filteredCreds"
+                        :disabled="credsLoading" :suggestions="filteredCreds"
                         @complete="searchCreds($event)" :dropdown="true" optionLabel="label" forceSelection
                         @change="resetCredValues" />
                     <small v-if="v$.selectedCred.$invalid && submitted" class="p-error">{{
@@ -28,7 +28,7 @@
                     </label>
 
                     <AutoComplete id="selectedContact" v-model="v$.selectedContact.$model"
-                        :disabled="contactLoading || submitted" :suggestions="filteredContacts"
+                        :disabled="contactLoading" :suggestions="filteredContacts"
                         @complete="searchContacts($event)" :dropdown="true" optionLabel="label" forceSelection />
                     <small v-if="v$.selectedContact.$invalid && submitted" class="p-error">{{
                             v$.selectedContact.required.$message
@@ -39,21 +39,22 @@
                 <div class="field mt-5">
                     <div class="flex justify-content-between">
                         <label for="credentialValues" class="flex justify-content-start"
-                            :class="{ 'p-error': v$.credentialValues.$invalid && submitted }">Credential Value</label>
+                            :class="{ 'p-error': v$.credentialValuesPretty.$invalid && submitted }">Credential
+                            Value</label>
                         <Button label="Enter Credential Value" class="p-button-link flex justify-content-end"
                             :disabled="!v$.selectedCred.$model" @click="editCredentialValues" />
                     </div>
-                    <Textarea id="credentialValues" v-model="v$.credentialValues.$model"
-                        :class="{ 'w-full': true, 'p-invalid': v$.credentialValues.$invalid && submitted }"
+                    <Textarea id="credentialValuesPretty" v-model="v$.credentialValuesPretty.$model"
+                        :class="{ 'w-full': true, 'p-invalid': v$.credentialValuesPretty.$invalid && submitted }"
                         :autoResize="true" rows="20" cols="50" readonly />
-                    <small v-if="v$.credentialValues.$invalid && submitted" class="p-error">{{
-                            v$.credentialValues.required.$message
+                    <small v-if="v$.credentialValuesPretty.$invalid && submitted" class="p-error">{{
+                            v$.credentialValuesPretty.required.$message
                     }}</small>
                 </div>
 
                 <Button type="submit" label="Send Offer" class="mt-5 w-full"
-                    :disabled="contactLoading || credsLoading || submitted"
-                    :loading="contactLoading || credsLoading || submitted" />
+                    :disabled="contactLoading || credsLoading"
+                    :loading="contactLoading || credsLoading" />
             </div>
 
             <!-- Credential values -->
@@ -63,8 +64,7 @@
                 <strong>{{ v$.selectedCred.$model.label }}</strong>
 
                 <div class="field mt-5">
-                    <label for="credentialValues"
-                        :class="{ 'p-error': v$.credentialValues.$invalid && submitted }">Credential Field
+                    <label for="credentialValuesEdit">Credential Field
                         Values
                         <small>(Schema: {{ schemaForSelectedCred.schema_name }} {{ schemaForSelectedCred.version
                         }})</small>
@@ -110,19 +110,20 @@ const issuerStore = useIssuerStore();
 
 // Form and Validation
 // TODO: this one replaced with dynamic field display
+const credentialValuesRaw = ref({});
 const filteredCreds = ref();
 const filteredContacts = ref();
 const schemaForSelectedCred = ref({});
 const showEditCredValues = ref(false);
 const formFields = reactive({
     credentialValuesEditing: '',
-    credentialValues: '',
+    credentialValuesPretty: '',
     selectedContact: '',
     selectedCred: ''
 });
 const rules = {
     credentialValuesEditing: {},
-    credentialValues: { required },
+    credentialValuesPretty: { required },
     selectedCred: { required },
     selectedContact: { required }
 }
@@ -175,7 +176,11 @@ const editCredentialValues = () => {
 }
 const saveCredValues = () => {
     // TODO: to be replaced with dynamic form field component
-    formFields.credentialValues = formFields.credentialValuesEditing;
+    credentialValuesRaw.value = JSON.parse(formFields.credentialValuesEditing);
+    formFields.credentialValuesPretty = "";
+    credentialValuesRaw.value.forEach(c => {
+        formFields.credentialValuesPretty += `${c.name}: ${c.value} \n`
+    });
     showEditCredValues.value = false;
 }
 const resetCredValues = () => {
@@ -195,7 +200,7 @@ const handleSubmit = async (isFormValid: boolean) => {
         const payload = {
             contact_id: formFields.selectedContact.value,
             credential_template_id: formFields.selectedCred.value,
-            attributes: JSON.parse(formFields.credentialValues),
+            attributes: credentialValuesRaw.value,
             tags: []
         }
 
