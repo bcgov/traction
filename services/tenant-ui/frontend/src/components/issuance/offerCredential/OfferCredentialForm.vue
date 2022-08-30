@@ -7,12 +7,13 @@
                 <div class="field">
                     <label for="selectedCred" :class="{ 'p-error': v$.selectedCred.$invalid && submitted }">Credential
                         Name
-                        <ProgressSpinner v-if="ctLoad" />
+                        <ProgressSpinner v-if="credsLoading" />
                     </label>
 
-                    <AutoComplete id="selectedCred" v-model="v$.selectedCred.$model" :disabled="ctLoad"
-                        :suggestions="filteredCreds" @complete="searchCreds($event)" :dropdown="true"
-                        optionLabel="label" forceSelection />
+                    <AutoComplete id="selectedCred" v-model="v$.selectedCred.$model"
+                        :disabled="credsLoading || submitted" :suggestions="filteredCreds"
+                        @complete="searchCreds($event)" :dropdown="true" optionLabel="label" forceSelection
+                        @change="resetCredValues" />
                     <small v-if="v$.selectedCred.$invalid && submitted" class="p-error">{{
                             v$.selectedCred.required.$message
                     }}</small>
@@ -23,12 +24,12 @@
                     <label for="selectedContact"
                         :class="{ 'p-error': v$.selectedContact.$invalid && submitted }">Connection
                         Name
-                        <ProgressSpinner v-if="cLoad" />
+                        <ProgressSpinner v-if="contactLoading" />
                     </label>
 
-                    <AutoComplete id="selectedContact" v-model="v$.selectedContact.$model" :disabled="cLoad"
-                        :suggestions="filteredContacts" @complete="searchContacts($event)" :dropdown="true"
-                        optionLabel="label" forceSelection />
+                    <AutoComplete id="selectedContact" v-model="v$.selectedContact.$model"
+                        :disabled="contactLoading || submitted" :suggestions="filteredContacts"
+                        @complete="searchContacts($event)" :dropdown="true" optionLabel="label" forceSelection />
                     <small v-if="v$.selectedContact.$invalid && submitted" class="p-error">{{
                             v$.selectedContact.required.$message
                     }}</small>
@@ -50,7 +51,9 @@
                     }}</small>
                 </div>
 
-                <Button type="submit" label="Send Offer" class="mt-5 w-full" :disabled="loading" :loading="loading" />
+                <Button type="submit" label="Send Offer" class="mt-5 w-full"
+                    :disabled="contactLoading || credsLoading || submitted"
+                    :loading="contactLoading || credsLoading || submitted" />
             </div>
 
             <!-- Credential values -->
@@ -90,7 +93,7 @@ import { required } from "@vuelidate/validators";
 import { useVuelidate } from "@vuelidate/core";
 // State
 import { storeToRefs } from "pinia";
-import { useContactsStore, useGovernanceStore } from '../../../store';
+import { useContactsStore, useGovernanceStore, useIssuerStore } from '../../../store';
 // Other imports
 import { useToast } from "vue-toastification";
 
@@ -98,12 +101,12 @@ const toast = useToast();
 
 // Store values
 const {
-    loading: cLoad, contactsDropdown
+    loading: contactLoading, contactsDropdown
 } = storeToRefs(useContactsStore());
 const {
-    loading: ctLoad, credentialTemplateDropdown, credentialTemplates, schemaTemplates
+    loading: credsLoading, credentialTemplateDropdown, credentialTemplates, schemaTemplates
 } = storeToRefs(useGovernanceStore());
-const loading = computed(() => cLoad.value || ctLoad.value)
+const issuerStore = useIssuerStore();
 
 // Form and Validation
 // TODO: this one replaced with dynamic field display
@@ -175,6 +178,10 @@ const saveCredValues = () => {
     formFields.credentialValues = formFields.credentialValuesEditing;
     showEditCredValues.value = false;
 }
+const resetCredValues = () => {
+    formFields.credentialValues = "";
+    formFields.credentialValuesEditing = "";
+}
 
 // Form submission
 const submitted = ref(false);
@@ -183,6 +190,22 @@ const handleSubmit = async (isFormValid: boolean) => {
 
     if (!isFormValid) {
         return;
+    }
+    try {
+        const payload = {
+            contact_id: formFields.selectedContact.value,
+            credential_template_id: formFields.selectedCred.value,
+            attributes: JSON.parse(formFields.credentialValues),
+            tags: []
+        }
+
+        // call store
+        await issuerStore.offerCredential(payload);
+        toast.info('Credential Offer Sent');
+    } catch (error) {
+        toast.error(`Failure: ${error}`);
+    } finally {
+        submitted.value = false
     }
 }
 </script>
