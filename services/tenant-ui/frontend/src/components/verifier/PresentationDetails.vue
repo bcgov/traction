@@ -1,31 +1,31 @@
 <template>
-  <h3 class="mt-0">PresentationDetails</h3>
-    <div>
+  <!-- <h2 class="mt-0">PresentationDetails</h2> -->
+    <div v-if="presentation">
         <ul>
-        <li>Status: {{props.presentation.status}}</li>
-        <li>Updated at: {{props.presentation.updated_at}}</li>
-        <li>Contact Alias: {{props.presentation.contact.alias}}</li>
-        <li>Aca-py: {{props.presentation.acapy}}</li>
+          <li>Status: {{presentation.status}}</li>
+          <li>Updated at: {{props.presentation.updated_at}}</li>
+          <li>Contact Alias: {{props.presentation.contact.alias}}</li>
+          <hr/>
+            <li v-for="value, attr in revealed_attr_groups">
+              <h4>{{attr}}:</h4>
+              <span v-for="val, attr_name in value.values" class="presentation-attr-value">
+                <b>{{attr_name}}</b> : {{val.raw}}
+                <br/>
+              </span>
+          </li>
         </ul>
     </div>
-    {{props.presentation}}
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import { useToast } from 'vue-toastification';
-
-
-onMounted(async () => {
-  console.log("mounted")
-});
-
-const props = defineProps({
-    presentation: {
-        type: Object,
-        required: true
-    }
-});
-
+const props = defineProps(['presentation']);
+const revealed_attr_groups = props.presentation.acapy.presentation_exchange.presentation.requested_proof.revealed_attr_groups;
 </script>
+
+
+<style>
+.presentation-attr-value{
+  padding-left: 1em;
+}
+</style>
 

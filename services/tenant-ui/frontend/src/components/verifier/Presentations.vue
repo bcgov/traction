@@ -13,14 +13,11 @@
       <Column field="status" header="Status" />
       <Column field="created_at" header="Created at" />
 
-      <template #expansion="presentation">
-          <!-- <PresentationDetails v-if="presentationDetailDict[presentation.verifier_presentation_id]"
-             :presentation="presentationDetailDict[presentation.verifier_presentation_id]" />  -->
-             {{presentationDetailDict}}
+      <template #expansion="{data, index}">
+          <PresentationDetails :presentation="presentationDetailDict[expandedRows[index].verifier_presentation_id]"/>
       </template>
     </DataTable>
   </div>
-  {{presentationDetailDict}}
 
 </template>
 
@@ -28,7 +25,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import Column from 'primevue/column';
-import DataTable from 'primevue/datatable';
+import DataTable, { DataTableRowCollapseEvent, DataTableRowExpandEvent } from 'primevue/datatable';
 import ProgressSpinner from 'primevue/progressspinner';
 import { useToast } from 'vue-toastification';
 
@@ -52,13 +49,11 @@ const loadTable = async () => {
 };
 
 const expandedRows = ref([]);
-const onRowExpand = (event) => {
-    toast.info('Product Expanded');
-    console.log(presentationDetailDict);
-    console.log(presentationDetailDict.value);
-
+const onRowExpand = (event: DataTableRowExpandEvent) => {
     verifierStore.getPresentationDetails(event.data.verifier_presentation_id);
 };
+
+const onRowCollapse = (event: DataTableRowCollapseEvent) => {};
 
 onMounted(async () => {
   loadTable();

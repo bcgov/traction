@@ -10,7 +10,7 @@ export async function fetchItem(url: string, id: string, dict: any, error: Ref<a
         .getHttp(url + id, params)
         .then((res) => {
             console.log(res);
-            dict[id] = res.data.item; //{"key":value}
+            dict.value[id] = res.data.item;
             console.log(dict[id]);
         })
         .catch((err) => {
