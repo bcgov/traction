@@ -21,7 +21,7 @@ export const useVerifierStore = defineStore('verifier', () => {
     return fetchList('/tenant/v1/verifier/presentations/', presentations, error, loading);
   }
 
-  const presentationDetailbyId = computed((verifier_presentation_id: string, forceFetch: boolean = false) => {
+  const presentationDetailbyId = async (verifier_presentation_id: string, forceFetch: boolean = false) => {
     console.log(verifier_presentation_id)
     let item = presentationDetailCache[verifier_presentation_id];
     if (!item || forceFetch) {
@@ -29,7 +29,7 @@ export const useVerifierStore = defineStore('verifier', () => {
       presentationDetailCache[verifier_presentation_id] = item;
     }
     return item
-  })
+  }
 
   return { presentations, presentationDetailCache, selectedPresentation, loading, error, listPresentations, presentationDetailbyId };
 

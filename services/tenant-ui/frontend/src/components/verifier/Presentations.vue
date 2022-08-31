@@ -13,7 +13,8 @@
       <Column field="status" header="Status" />
       <Column field="created_at" header="Created at" />
       <template #expansion="{data, index}">
-          <PresentationDetails :presentation="presentationDetailCache[expandedRows[index].verifier_presentation_id]"/>
+          <!-- <PresentationDetails v-if='expandedRows[index]' :presentation="expandedRows[index]"/> -->
+          {{expandedRows[index]}}
       </template>
     </DataTable>
   </div>
@@ -36,7 +37,7 @@ const toast = useToast();
 
 const verifierStore = useVerifierStore();
 // use the loading state from the store to disable the button...
-const { loading, presentations, selectedPresentation, presentationDetailbyId} = storeToRefs(useVerifierStore());
+const { loading, presentations, selectedPresentation} = storeToRefs(useVerifierStore());
 
 const loadTable = async () => {
   verifierStore.listPresentations().catch((err) => {
@@ -48,8 +49,19 @@ const loadTable = async () => {
 const expandedRows = ref([]);
 
 const onRowExpand = (event: DataTableRowExpandEvent) => {
-  expandedRows.push(presentationDetailbyId(data.verifier_presentation_id))
+  verifierStore.presentationDetailbyId(event.data.verifier_presentation_id).then((res) => {
+    expandedRows[event.index] = res
+    console.log("callback")
+    console.log(event.index)
+    console.log(expandedRows)
+    console.log(expandedRows[event.index])
+
+  })
+  console.log("onrowexpand")
+  console.log(expandedRows[event.index])
+
 };
+
 const onRowCollapse = (event: DataTableRowCollapseEvent) => {};
 
 onMounted(async () => {
