@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useTenantApi } from './tenantApi';
-import { fetchList } from './utils/fetchList.js';
+import { fetchList, filterByStatusActive, filterMapSortList, sortByLabelAscending } from './utils';
 
 export const useContactsStore = defineStore('contacts', () => {
+
   // state
   const contacts: any = ref(null);
   const selectedContact: any = ref(null);
@@ -11,6 +12,9 @@ export const useContactsStore = defineStore('contacts', () => {
   const error: any = ref(null);
 
   // getters
+  const contactsDropdown = computed(() => {
+    return filterMapSortList(contacts.value, contactLabelValue, sortByLabelAscending, filterByStatusActive);
+  });
 
   // actions
 
@@ -96,7 +100,21 @@ export const useContactsStore = defineStore('contacts', () => {
     return accepted_data;
   }
 
-  return { contacts, selectedContact, loading, error, listContacts, createInvitation, acceptInvitation };
+  // private functions
+  
+  const contactLabelValue = (item: any) => {
+    let result = null;
+    if (item != null) {
+      result = { 
+        'label': `${item.alias}`, 
+        'value': item.contact_id,
+        'status': item.status
+      }
+    }
+    return result;
+  };
+
+  return { contacts, contactsDropdown, selectedContact, loading, error, listContacts, createInvitation, acceptInvitation };
 });
 
 export default {

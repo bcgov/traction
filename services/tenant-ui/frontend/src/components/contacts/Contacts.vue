@@ -17,13 +17,13 @@
             <i class="pi pi-search" />
             <InputText placeholder="Connection Search" disabled />
           </span>
+          <Button
+            icon="pi pi-refresh"
+            class="p-button-rounded p-button-outlined"
+            title="Refresh Table"
+            @click="loadTable"
+          ></Button>
         </div>
-        <Button
-          icon="pi pi-refresh"
-          class="p-button-rounded p-button-outlined btn-refresh-table"
-          title="Refresh Table"
-          @click="loadTable"
-        ></Button>
       </template>
       <Column :sortable="true" field="alias" header="Name" />
       <Column field="role" header="Role" />
@@ -121,10 +121,5 @@ fieldset {
 }
 .p-datatable-header input {
   padding-left: 3rem;
-}
-.btn-refresh-table {
-  position: absolute;
-  right: 12px;
-  top: 12px;
 }
 </style>

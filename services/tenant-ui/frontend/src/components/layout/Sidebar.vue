@@ -46,10 +46,6 @@ const items = ref([
         to: { name: 'Schemas' },
       },
       {
-        label: 'Offer A Credential',
-        to: { name: 'OfferCredential' },
-      },
-      {
         label: 'My Issued Credentials',
         to: { name: 'MyIssuedCredentials' },
       },
@@ -110,12 +106,12 @@ const items = ref([
 
 /* TODO: quick and dirty, rewrite this (or better, find theme settings) */
 .p-panelmenu,
-.p-panelmenu-panel > .p-panelmenu-header > a > *,
+.p-panelmenu-panel>.p-panelmenu-header>a>*,
 .p-panelmenu,
-.p-panelmenu-panel > .p-panelmenu-header > a,
+.p-panelmenu-panel>.p-panelmenu-header>a,
 .p-panelmenu-content,
-.p-submenu-list > *,
-.p-menuitem-link > *,
+.p-submenu-list>*,
+.p-menuitem-link>*,
 a.p-menuitem-link:hover {
   background-color: #244075 !important;
   border: none !important;
