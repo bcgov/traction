@@ -14,6 +14,10 @@
           </li>
         </ul>
     </div>
+    <div v-else>
+      ...loading
+    </div>
+    
 </template>
 
 <script setup lang="ts">

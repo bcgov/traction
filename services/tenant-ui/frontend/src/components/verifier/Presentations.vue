@@ -36,7 +36,7 @@ const toast = useToast();
 
 const verifierStore = useVerifierStore();
 // use the loading state from the store to disable the button...
-const { loading, presentations, selectedPresentation, presentationDetailCache} = storeToRefs(useVerifierStore());
+const { loading, presentations, selectedPresentation, presentationDetailbyId} = storeToRefs(useVerifierStore());
 
 const loadTable = async () => {
   verifierStore.listPresentations().catch((err) => {
@@ -46,12 +46,10 @@ const loadTable = async () => {
 };
 
 const expandedRows = ref([]);
-const onRowExpand = (event: DataTableRowExpandEvent) => {
-    if (!presentationDetailCache[event.data.verifier_presentation_id]){
-      verifierStore.getPresentationDetails(event.data.verifier_presentation_id);
-    }
-};
 
+const onRowExpand = (event: DataTableRowExpandEvent) => {
+  expandedRows.push(presentationDetailbyId(data.verifier_presentation_id))
+};
 const onRowCollapse = (event: DataTableRowCollapseEvent) => {};
 
 onMounted(async () => {

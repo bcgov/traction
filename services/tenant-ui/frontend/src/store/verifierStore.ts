@@ -1,13 +1,13 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { fetchList } from './utils/fetchList';
-import { fetchItemDetailtoCache } from './utils/fetchItemDetailtoCache';
+import { fetchItem } from './utils/fetchItem';
 
 
 export const useVerifierStore = defineStore('verifier', () => {
   // state
   const presentations: any = ref(null);
-  const presentationDetailCache: object = ref({});
+  const presentationDetailCache: any = ref(null);
   const selectedPresentation: any = ref(null);
   const loading: any = ref(false);
   const error: any = ref(null);
@@ -21,11 +21,17 @@ export const useVerifierStore = defineStore('verifier', () => {
     return fetchList('/tenant/v1/verifier/presentations/', presentations, error, loading);
   }
 
-  async function getPresentationDetails(verifier_presentation_id: string) {
-    return fetchItemDetailtoCache('/tenant/v1/verifier/presentations/', verifier_presentation_id, presentationDetailCache, error, loading, { acapy: true });
-  }
+  const presentationDetailbyId = computed((verifier_presentation_id: string, forceFetch: boolean = false) => {
+    console.log(verifier_presentation_id)
+    let item = presentationDetailCache[verifier_presentation_id];
+    if (!item || forceFetch) {
+      item = fetchItem('/tenant/v1/verifier/presentations/', verifier_presentation_id, error, loading, { acapy: true });
+      presentationDetailCache[verifier_presentation_id] = item;
+    }
+    return item
+  })
 
-  return { presentations, presentationDetailCache, selectedPresentation, loading, error, listPresentations, getPresentationDetails };
+  return { presentations, presentationDetailCache, selectedPresentation, loading, error, listPresentations, presentationDetailbyId };
 
 });
 
