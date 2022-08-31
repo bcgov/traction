@@ -13,8 +13,7 @@
       <Column field="status" header="Status" />
       <Column field="created_at" header="Created at" />
       <template #expansion="{data, index}">
-          <!-- <PresentationDetails v-if='expandedRows[index]' :presentation="expandedRows[index]"/> -->
-          {{expandedRows[index]}}
+          <PresentationDetails v-if='expandedRows[index]' :presentation="expandedRows[index]"/>
       </template>
     </DataTable>
   </div>
@@ -22,9 +21,9 @@
 
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, Ref, ref } from 'vue';
 import Column from 'primevue/column';
-import DataTable, { DataTableRowCollapseEvent, DataTableRowExpandEvent } from 'primevue/datatable';
+import DataTable, { DataTableRowCollapseEvent } from 'primevue/datatable';
 import ProgressSpinner from 'primevue/progressspinner';
 import { useToast } from 'vue-toastification';
 
@@ -33,6 +32,7 @@ import { storeToRefs } from 'pinia';
 
 
 import PresentationDetails from './PresentationDetails.vue';
+import { isTemplateNode } from '@vue/compiler-core';
 const toast = useToast();
 
 const verifierStore = useVerifierStore();
@@ -46,20 +46,23 @@ const loadTable = async () => {
   });
 };
 
-const expandedRows = ref([]);
+const expandedRows = ref([]) as Ref<any[]>; 
 
-const onRowExpand = (event: DataTableRowExpandEvent) => {
-  verifierStore.presentationDetailbyId(event.data.verifier_presentation_id).then((res) => {
-    expandedRows[event.index] = res
-    console.log("callback")
-    console.log(event.index)
-    console.log(expandedRows)
-    console.log(expandedRows[event.index])
-
-  })
-  console.log("onrowexpand")
-  console.log(expandedRows[event.index])
-
+const onRowExpand = async (event: any) => {
+  // fetch the item
+  const row = await verifierStore.presentationDetailbyId(event.data.verifier_presentation_id);
+  // if we expand only one...
+  // expandedRows.value = [row];
+  
+  // if we are expanding multiple...
+  // replace the item in rows with our full object
+  const items = expandedRows.value.map((item: any) => {
+    if (item.verifier_presentation_id == row.verifier_presentation_id) {
+      return row;
+    }
+    return item;
+  });
+  expandedRows.value = items;
 };
 
 const onRowCollapse = (event: DataTableRowCollapseEvent) => {};
