@@ -5,6 +5,7 @@ import App from './App.vue';
 
 import { createPinia } from 'pinia';
 import { useConfigStore } from './store/configStore';
+import { formatDate, formatDateLong } from './formatters';
 
 /**
  * For notifications. The one included in PrimeVue is not working.
@@ -65,7 +66,12 @@ async function loadApp() {
   // 5. initialize the toast notification plugin
   const options: PluginOptions = {};
   app.use(Toast, options);
-  // 6. mount the configured app!
+
+  // 6. Global 'filter' type formatters that can be used in templates and scripts
+  // https://v3-migration.vuejs.org/breaking-changes/filters.html#global-filters
+  app.config.globalProperties.$formatters = { formatDate, formatDateLong };
+
+  // 7. mount the configured app!
   app.mount('#app');
 }
 

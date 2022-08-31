@@ -30,7 +30,11 @@
       <Column field="contact.alias" header="Contact Name" />
       <Column field="state" header="State" />
       <Column field="status" header="Status" />
-      <Column field="created_at" header="Created at" />
+      <Column field="created_at" header="Created at">
+        <template #body="{ data }">
+          123 {{  data.created_at  }}
+        </template>
+      </Column>
       <Column field="issuer_credential_id" header="ID" />
       <Column field="revoked" header="Revoked?" />
     </DataTable>
