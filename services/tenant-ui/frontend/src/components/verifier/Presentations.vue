@@ -13,7 +13,7 @@
       <Column field="status" header="Status" />
       <Column field="created_at" header="Created at" />
       <template #expansion="{data, index}">
-          <PresentationDetails :presentation="presentationDetailDict[expandedRows[index].verifier_presentation_id]"/>
+          <PresentationDetails :presentation="presentationDetailDict[data.verifier_presentation_id]"/>
       </template>
     </DataTable>
   </div>
@@ -34,6 +34,9 @@ import { storeToRefs } from 'pinia';
 import PresentationDetails from './PresentationDetails.vue';
 const toast = useToast();
 
+// used by datatable expander behind the scenes
+const expandedRows = ref([]);
+
 const verifierStore = useVerifierStore();
 // use the loading state from the store to disable the button...
 const { loading, presentations, selectedPresentation, presentationDetailDict} = storeToRefs(useVerifierStore());
@@ -45,7 +48,7 @@ const loadTable = async () => {
   });
 };
 
-const expandedRows = ref([]);
+
 const onRowExpand = (event: DataTableRowExpandEvent) => {
     verifierStore.getPresentationDetails(event.data.verifier_presentation_id);
 };
