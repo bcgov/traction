@@ -32,7 +32,7 @@
       <Column field="status" header="Status" />
       <Column field="created_at" header="Created at">
         <template #body="{ data }">
-          123 {{  data.created_at  }}
+          {{  $formatters.formatDateLong(data.created_at)  }}
         </template>
       </Column>
       <Column field="issuer_credential_id" header="ID" />
