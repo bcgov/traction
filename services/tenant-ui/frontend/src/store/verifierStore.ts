@@ -15,10 +15,21 @@ export const useVerifierStore = defineStore('verifier', () => {
 
   async function listPresentations() {
     selectedPresentation.value = null;
-    return fetchList('/tenant/v1/verifier/presentations/', presentations, error, loading);
+    return fetchList(
+      '/tenant/v1/verifier/presentations/',
+      presentations,
+      error,
+      loading
+    );
   }
 
-  return { presentations, selectedPresentation, loading, error, listPresentations };
+  return {
+    presentations,
+    selectedPresentation,
+    loading,
+    error,
+    listPresentations,
+  };
 });
 
 export default {

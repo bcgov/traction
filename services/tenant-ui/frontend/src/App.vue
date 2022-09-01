@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import ConfirmPopup from 'primevue/confirmpopup';
-import AppLayout from "./components/layout/AppLayout.vue";
-import Login from "./components/Login.vue";
-import {onMounted} from "vue";
-import {storeToRefs} from "pinia";
-import {useConfigStore, useTenantStore} from "./store";
+import AppLayout from './components/layout/AppLayout.vue';
+import Login from './components/Login.vue';
+import { onMounted } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useConfigStore, useTenantStore } from './store';
 
 const { config } = storeToRefs(useConfigStore());
 const { tenantReady } = storeToRefs(useTenantStore());
 
-onMounted(()=> {
+onMounted(() => {
   document.title = config.value.ux.appTitle;
 });
 </script>

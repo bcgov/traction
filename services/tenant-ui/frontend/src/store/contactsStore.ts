@@ -1,10 +1,14 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { useTenantApi } from './tenantApi';
-import { fetchList, filterByStatusActive, filterMapSortList, sortByLabelAscending } from './utils';
+import {
+  fetchList,
+  filterByStatusActive,
+  filterMapSortList,
+  sortByLabelAscending,
+} from './utils';
 
 export const useContactsStore = defineStore('contacts', () => {
-
   // state
   const contacts: any = ref(null);
   const selectedContact: any = ref(null);
@@ -13,7 +17,12 @@ export const useContactsStore = defineStore('contacts', () => {
 
   // getters
   const contactsDropdown = computed(() => {
-    return filterMapSortList(contacts.value, contactLabelValue, sortByLabelAscending, filterByStatusActive);
+    return filterMapSortList(
+      contacts.value,
+      contactLabelValue,
+      sortByLabelAscending,
+      filterByStatusActive
+    );
   });
 
   // actions
@@ -43,7 +52,9 @@ export const useContactsStore = defineStore('contacts', () => {
       })
       .then(() => {
         // do we want to automatically reload? or have the caller of this to load?
-        console.log('invitation created. the store calls load automatically, but do we want this done "manually"?');
+        console.log(
+          'invitation created. the store calls load automatically, but do we want this done "manually"?'
+        );
         listContacts();
       })
       .catch((err) => {
@@ -71,7 +82,10 @@ export const useContactsStore = defineStore('contacts', () => {
     let accepted_data = null;
     // need the await here since the returned invitation_data is not one of our stored refs...
     await tenantApi
-      .postHttp('/tenant/v1/contacts/receive-invitation', { alias: alias, invitation_url: inviteUrl })
+      .postHttp('/tenant/v1/contacts/receive-invitation', {
+        alias: alias,
+        invitation_url: inviteUrl,
+      })
       .then((res) => {
         console.log(res);
         // don't grab the item, there are other parts of the response data we need (invitation, invitation url)
@@ -80,7 +94,9 @@ export const useContactsStore = defineStore('contacts', () => {
       })
       .then(() => {
         // do we want to automatically reload? or have the caller of this to load?
-        console.log('invitation accepted. the store calls load automatically, but do we want this done "manually"?');
+        console.log(
+          'invitation accepted. the store calls load automatically, but do we want this done "manually"?'
+        );
         listContacts();
       })
       .catch((err) => {
@@ -101,20 +117,29 @@ export const useContactsStore = defineStore('contacts', () => {
   }
 
   // private functions
-  
+
   const contactLabelValue = (item: any) => {
     let result = null;
     if (item != null) {
-      result = { 
-        'label': `${item.alias}`, 
-        'value': item.contact_id,
-        'status': item.status
-      }
+      result = {
+        label: `${item.alias}`,
+        value: item.contact_id,
+        status: item.status,
+      };
     }
     return result;
   };
 
-  return { contacts, contactsDropdown, selectedContact, loading, error, listContacts, createInvitation, acceptInvitation };
+  return {
+    contacts,
+    contactsDropdown,
+    selectedContact,
+    loading,
+    error,
+    listContacts,
+    createInvitation,
+    acceptInvitation,
+  };
 });
 
 export default {

@@ -2,18 +2,34 @@
   <div class="login">
     <div>
       <span class="p-float-label">
-        <InputText v-model="key" type="text" autocomplete="username" name="username" autofocus />
+        <InputText
+          v-model="key"
+          type="text"
+          autocomplete="username"
+          name="username"
+          autofocus
+        />
         <label for="key">Wallet ID</label>
       </span>
 
       <span class="p-float-label">
-        <InputText v-model="secret" type="password" autocomplete="current-password" name="password" />
+        <InputText
+          v-model="secret"
+          type="password"
+          autocomplete="current-password"
+          name="password"
+        />
         <label for="secret">Wallet Key</label>
       </span>
     </div>
     <div>
       <Button label="Clear" class="p-button-warning" @click="clear"></Button>
-      <Button label="Submit" :disabled="!!loading" :loading="!!loading" @click="clicked"></Button>
+      <Button
+        label="Submit"
+        :disabled="!!loading"
+        :loading="!!loading"
+        @click="clicked"
+      ></Button>
     </div>
   </div>
 </template>
@@ -50,18 +66,17 @@ const clicked = async () => {
     await tokenStore.login(key.value, secret.value);
     console.log(token.value);
   } catch (err) {
-      console.error(err);
-      toast.error(`Failure getting token: ${err}`);
+    console.error(err);
+    toast.error(`Failure getting token: ${err}`);
   }
   try {
     // token is loaded, now go fetch the tenant data...
     await tenantStore.getSelf();
     console.log(tenant.value);
   } catch (err) {
-      console.error(err);
-      toast.error(`Failure getting tenant: ${err}`);
+    console.error(err);
+    toast.error(`Failure getting tenant: ${err}`);
   }
-
 };
 
 /**

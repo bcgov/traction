@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import path from 'path'
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import path from 'path';
 
 // So that when we run this FE in dev mode separately (not served by the node api)
 // it'll call the api properly for config and backend calls (consider make env var for API)
@@ -8,7 +8,7 @@ import path from 'path'
 const proxyObject = {
   target: 'http://localhost:8080',
   ws: true,
-  changeOrigin: true
+  changeOrigin: true,
 };
 
 // https://vitejs.dev/config/
@@ -22,7 +22,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': proxyObject,
-      '/config': proxyObject
-    }
-  }
-})
+      '/config': proxyObject,
+    },
+  },
+});

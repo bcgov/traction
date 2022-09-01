@@ -3,16 +3,30 @@
 
   <ProgressSpinner v-if="loading" />
   <div v-else>
-    <DataTable v-model:selection="selectedCredential" :value="credentials" :paginator="true" :rows="10" striped-rows
-      selection-mode="single">
+    <DataTable
+      v-model:selection="selectedCredential"
+      :value="credentials"
+      :paginator="true"
+      :rows="10"
+      striped-rows
+      selection-mode="single"
+    >
       <template #header>
         <div class="flex justify-content-between">
           <OfferCredential />
-          <Button icon="pi pi-refresh" class="p-button-rounded p-button-outlined" title="Refresh Table"
-            @click="loadTable"></Button>
+          <Button
+            icon="pi pi-refresh"
+            class="p-button-rounded p-button-outlined"
+            title="Refresh Table"
+            @click="loadTable"
+          ></Button>
         </div>
       </template>
-      <Column :sortable="true" field="credential_template.name" header="Credential Name" />
+      <Column
+        :sortable="true"
+        field="credential_template.name"
+        header="Credential Name"
+      />
       <Column field="contact.alias" header="Contact Name" />
       <Column field="state" header="State" />
       <Column field="status" header="Status" />
@@ -25,24 +39,23 @@
 
 <script setup lang="ts">
 // Vue
-import { onMounted } from "vue";
+import { onMounted } from 'vue';
 
 // State
-import { useIssuerStore } from "../../store";
-import { storeToRefs } from "pinia";
+import { useIssuerStore } from '../../store';
+import { storeToRefs } from 'pinia';
 
 // PrimeVue
-import Button from "primevue/button";
-import Column from "primevue/column";
-import DataTable from "primevue/datatable";
-import ProgressSpinner from "primevue/progressspinner";
+import Button from 'primevue/button';
+import Column from 'primevue/column';
+import DataTable from 'primevue/datatable';
+import ProgressSpinner from 'primevue/progressspinner';
 
-// Other Components 
-import OfferCredential from "./offerCredential/OfferCredential.vue";
+// Other Components
+import OfferCredential from './offerCredential/OfferCredential.vue';
 
 // Other Imports
-import { useToast } from "vue-toastification";
-
+import { useToast } from 'vue-toastification';
 
 const toast = useToast();
 

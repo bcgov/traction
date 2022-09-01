@@ -4,12 +4,23 @@
     <div>
       <h2>Create Connection Invitation</h2>
       <span class="p-float-label">
-        <InputText type="text" v-model="create_contact_alias" name="create_contact_alias" autofocus />
+        <InputText
+          v-model="create_contact_alias"
+          type="text"
+          name="create_contact_alias"
+          autofocus
+        />
         <label for="create_contact_alias">Contact Alias</label>
       </span>
     </div>
-    <QRCode v-if="invitation_url" :qr_content="invitation_url" />
-    <Button v-else label="Submit" @click="submit_new_contact" :disabled="!!loading" :loading="!!loading"></Button>
+    <QRCode v-if="invitation_url" :qr-content="invitation_url" />
+    <Button
+      v-else
+      label="Submit"
+      :disabled="!!loading"
+      :loading="!!loading"
+      @click="submit_new_contact"
+    ></Button>
   </div>
 </template>
 
@@ -55,7 +66,6 @@ const toast = useToast();
 // To store local data
 const create_contact_alias = ref('');
 const invitation_url = ref('');
-
 
 // ----------------------------------------------------------------
 // Creating a new contact

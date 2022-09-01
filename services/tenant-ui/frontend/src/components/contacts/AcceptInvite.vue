@@ -1,41 +1,63 @@
 <template>
-    <h3 class="mt-0 mb-5">Accept Invitation</h3>
-    <div class="form-demo">
-        <form @submit.prevent="handleSubmit(!v$.$invalid)">
-            <!-- Invitation URL -->
-            <div class="field">
-                <div class="p-float-label">
-                    <Textarea id="inviteUrl" v-model="v$.inviteUrl.$model"
-                        :class="{ 'p-invalid': v$.inviteUrl.$invalid && submitted }" :autoResize="true" rows="1"
-                        cols="100" />
-                    <label for="inviteUrl" :class="{ 'p-error': v$.inviteUrl.$invalid && submitted }">Invitation
-                        Url*</label>
-                </div>
-                <span v-if="v$.inviteUrl.$error && submitted">
-                    <span v-for="(error, index) of v$.inviteUrl.$errors" :key="index">
-                        <small class="p-error">{{ error.$message }}</small>
-                    </span>
-                </span>
-                <small v-else-if="v$.inviteUrl.$invalid && submitted" class="p-error">{{ v$.inviteUrl.required.$message
-                }}</small>
-            </div>
+  <h3 class="mt-0 mb-5">Accept Invitation</h3>
+  <div class="form-demo">
+    <form @submit.prevent="handleSubmit(!v$.$invalid)">
+      <!-- Invitation URL -->
+      <div class="field">
+        <div class="p-float-label">
+          <Textarea
+            id="inviteUrl"
+            v-model="v$.inviteUrl.$model"
+            :class="{ 'p-invalid': v$.inviteUrl.$invalid && submitted }"
+            :auto-resize="true"
+            rows="1"
+            cols="100"
+          />
+          <label
+            for="inviteUrl"
+            :class="{ 'p-error': v$.inviteUrl.$invalid && submitted }"
+            >Invitation Url*</label
+          >
+        </div>
+        <span v-if="v$.inviteUrl.$error && submitted">
+          <span v-for="(error, index) of v$.inviteUrl.$errors" :key="index">
+            <small class="p-error">{{ error.$message }}</small>
+          </span>
+        </span>
+        <small v-else-if="v$.inviteUrl.$invalid && submitted" class="p-error">{{
+          v$.inviteUrl.required.$message
+        }}</small>
+      </div>
 
-            <!-- Alias -->
-            <div class="field">
-                <div class="p-float-label">
-                    <InputText id="alias" v-model="v$.alias.$model"
-                        :class="{ 'p-invalid': v$.alias.$invalid && submitted }" />
-                    <label for="alias" :class="{ 'p-error': v$.alias.$invalid && submitted }">Alias</label>
-                </div>
-                <span v-if="v$.alias.$error && submitted">
-                    <span v-for="(error, index) of v$.alias.$errors" :key="index">
-                        <small class="p-error">{{ error.$message }}</small>
-                    </span>
-                </span>
-            </div>
-            <Button type="submit" label="Accept" class="mt-1" :disabled="loading" :loading="loading" />
-        </form>
-    </div>
+      <!-- Alias -->
+      <div class="field">
+        <div class="p-float-label">
+          <InputText
+            id="alias"
+            v-model="v$.alias.$model"
+            :class="{ 'p-invalid': v$.alias.$invalid && submitted }"
+          />
+          <label
+            for="alias"
+            :class="{ 'p-error': v$.alias.$invalid && submitted }"
+            >Alias</label
+          >
+        </div>
+        <span v-if="v$.alias.$error && submitted">
+          <span v-for="(error, index) of v$.alias.$errors" :key="index">
+            <small class="p-error">{{ error.$message }}</small>
+          </span>
+        </span>
+      </div>
+      <Button
+        type="submit"
+        label="Accept"
+        class="mt-1"
+        :disabled="loading"
+        :loading="loading"
+      />
+    </form>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -47,11 +69,11 @@ import { useContactsStore } from '../../store';
 import { storeToRefs } from 'pinia';
 
 // PrimeVue / Validation
-import Button from "primevue/button";
-import InputText from "primevue/inputtext";
+import Button from 'primevue/button';
+import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
-import { maxLength, required, url } from "@vuelidate/validators";
-import { useVuelidate } from "@vuelidate/core";
+import { maxLength, required, url } from '@vuelidate/validators';
+import { useVuelidate } from '@vuelidate/core';
 
 // Other imports
 import { useToast } from 'vue-toastification';
@@ -67,32 +89,35 @@ const { loading } = storeToRefs(useContactsStore());
 // ----------------------------------------------------------------
 // Validation
 const formFields = reactive({
-    inviteUrl: '',
-    alias: ''
-})
+  inviteUrl: '',
+  alias: '',
+});
 const rules = {
-    inviteUrl: { required, url },
-    alias: { maxLengthValue: maxLength(255) }
-}
-const v$ = useVuelidate(rules, formFields)
+  inviteUrl: { required, url },
+  alias: { maxLengthValue: maxLength(255) },
+};
+const v$ = useVuelidate(rules, formFields);
 
 // Form submission
 const submitted = ref(false);
 const handleSubmit = async (isFormValid: boolean) => {
-    submitted.value = true;
+  submitted.value = true;
 
-    if (!isFormValid) {
-        return;
-    }
+  if (!isFormValid) {
+    return;
+  }
 
-    try {
-        await contactsStore.acceptInvitation(formFields.inviteUrl, formFields.alias);
-        toast.info('Invitation Accepted');
-    } catch (error) {
-        toast.error(`Failure: ${error}`);
-    } finally {
-        submitted.value = false
-    }
-}
+  try {
+    await contactsStore.acceptInvitation(
+      formFields.inviteUrl,
+      formFields.alias
+    );
+    toast.info('Invitation Accepted');
+  } catch (error) {
+    toast.error(`Failure: ${error}`);
+  } finally {
+    submitted.value = false;
+  }
+};
 // ---------------------------------------------------/accept form
 </script>

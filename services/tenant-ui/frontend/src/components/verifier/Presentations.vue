@@ -3,7 +3,14 @@
 
   <ProgressSpinner v-if="loading" />
   <div v-else>
-    <DataTable v-model:selection="selectedPresentation" :value="presentations" :paginator="true" :rows="10" striped-rows selection-mode="single">
+    <DataTable
+      v-model:selection="selectedPresentation"
+      :value="presentations"
+      :paginator="true"
+      :rows="10"
+      striped-rows
+      selection-mode="single"
+    >
       <Column :sortable="true" field="name" header="Name" />
       <Column field="contact.alias" header="Contact Name" />
       <Column field="state" header="State" />
@@ -12,7 +19,6 @@
     </DataTable>
   </div>
 </template>
-
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
@@ -28,7 +34,9 @@ const toast = useToast();
 
 const verifierStore = useVerifierStore();
 // use the loading state from the store to disable the button...
-const { loading, presentations, selectedPresentation } = storeToRefs(useVerifierStore());
+const { loading, presentations, selectedPresentation } = storeToRefs(
+  useVerifierStore()
+);
 
 const loadTable = async () => {
   verifierStore.listPresentations().catch((err) => {

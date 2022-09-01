@@ -3,7 +3,14 @@
 
   <ProgressSpinner v-if="loading" />
   <div v-else>
-    <DataTable v-model:selection="selectedCredential" :value="credentials" :paginator="true" :rows="10" striped-rows selection-mode="single">
+    <DataTable
+      v-model:selection="selectedCredential"
+      :value="credentials"
+      :paginator="true"
+      :rows="10"
+      striped-rows
+      selection-mode="single"
+    >
       <Column :sortable="true" field="alias" header="Name" />
       <Column field="state" header="State" />
       <Column field="status" header="Status" />
@@ -28,7 +35,9 @@ const toast = useToast();
 
 const holderStore = useHolderStore();
 // use the loading state from the store to disable the button...
-const { loading, credentials, selectedCredential } = storeToRefs(useHolderStore());
+const { loading, credentials, selectedCredential } = storeToRefs(
+  useHolderStore()
+);
 
 const loadTable = async () => {
   holderStore.listCredentials().catch((err) => {
