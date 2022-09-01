@@ -50,7 +50,9 @@ const loadTable = async () => {
 
 
 const onRowExpand = (event: DataTableRowExpandEvent) => {
-    verifierStore.getPresentationDetails(event.data.verifier_presentation_id);
+    if (!presentationDetailDict[event.data.verifier_presentation_id]){
+      verifierStore.getPresentationDetails(event.data.verifier_presentation_id);
+    }
 };
 
 const onRowCollapse = (event: DataTableRowCollapseEvent) => {};

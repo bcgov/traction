@@ -8,8 +8,6 @@ export async function fetchItem(url: string, id: string, dict: any, error: Ref<a
 
     TODO: fix dict typing, should be a Ref<object> but my typescript linter doesn't like that.
     */
-
-
     const tenantApi = useTenantApi();
     console.log(`> fetchItem(${url})`);
     error.value = null;
