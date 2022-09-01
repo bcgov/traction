@@ -4,7 +4,8 @@ This template should help get you started developing with Vue 3 and TypeScript i
 
 ## Recommended IDE Setup
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
+- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+- disable [Vetur](https://marketplace.visualstudio.com/items?itemName=octref.vetur)
 
 ## Type Support For `.vue` Imports in TS
 
@@ -14,3 +15,19 @@ Since TypeScript cannot handle type information for `.vue` imports, they are shi
 2. Reload the VS Code window by running `Developer: Reload Window` from the command palette.
 
 You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/volar/discussions/471).
+
+## Formatting - Prettier and EsLint
+
+Under the tenant-ui .vscode folder, we have added `extensions.json` and `settings.json`.
+
+Extentions recommend [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) and [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) as noted above. This combined with the settings will allow you to format files on save or right-click and format using the eslint and prettier rules.
+
+You can also run lint and lintfix commands to ensure your code is formatted correctly.
+
+```sh
+npm run lint
+```
+
+```sh
+npm run lintfix
+```
