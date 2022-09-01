@@ -1,15 +1,15 @@
-import { format, parseISO } from 'date-fns'
+import { format, parseJSON } from 'date-fns'
 
 function _dateFnsFormat(value: string, formatter: string) {
+  let formatted = '';
   try {
     if (value) {
-      return format(parseISO(value), formatter);
+      return format(parseJSON(value), formatter);
     }
   } catch (error) {
-    console.error(`_dateFnsFormat: Error parsing ${value} to ${formatter}`);
-  } finally {
-    return '';
-  }
+    console.error(`_dateFnsFormat: Error parsing ${value} to ${error}`);
+  } 
+  return formatted;
 };
 
 /**
@@ -19,15 +19,15 @@ function _dateFnsFormat(value: string, formatter: string) {
  * @returns {String} A string representation of `value`
  */
 export function formatDate(value: string) {
-  return _dateFnsFormat(value, 'MMMM D YYYY');
+  return _dateFnsFormat(value, 'MMMM d yyyy');
 };
 
 /**
  * @function formatDateLong
- * Converts a date to an 'MMMM D YYYY, h:mm:ss a' formatted string
+ * Converts a date to an 'MMMM D yyyy, h:mm:ss a' formatted string
  * @param {String} value A string representation of a date
  * @returns {String} A string representation of `value`
  */
 export function formatDateLong(value: string) {
-  return _dateFnsFormat(value, 'MMMM D YYYY, h:mm:ss a');
+  return _dateFnsFormat(value, 'MMMM d yyyy, h:mm:ss a');
 };

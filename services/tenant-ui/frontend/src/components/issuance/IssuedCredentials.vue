@@ -32,7 +32,7 @@
       <Column field="status" header="Status" />
       <Column field="created_at" header="Created at">
         <template #body="{ data }">
-          {{  $formatters.formatDateLong(data.created_at)  }}
+          {{ formatDateLong(data.created_at) }}
         </template>
       </Column>
       <Column field="issuer_credential_id" header="ID" />
@@ -57,6 +57,7 @@ import ProgressSpinner from 'primevue/progressspinner';
 
 // Other Components
 import OfferCredential from './offerCredential/OfferCredential.vue';
+import { formatDateLong } from "@/helpers";
 
 // Other Imports
 import { useToast } from 'vue-toastification';
