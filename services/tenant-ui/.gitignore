@@ -22,3 +22,6 @@ dist
 
 # Test data
 frontend/public/test_schemas.json
+
+# helper scripts
+.utils
