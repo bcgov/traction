@@ -83,7 +83,6 @@ const submit_new_schema = async () => {
     tags: [],
   };
 
-
   //send it off...
   governanceStore.createSchemaTemplate(payload).catch(() => {});
 };
