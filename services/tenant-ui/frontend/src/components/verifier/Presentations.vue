@@ -48,14 +48,12 @@ const loadTable = async () => {
   });
 };
 
-
-const onRowExpand = (event: DataTableRowExpandEvent) => {
-    if (!presentationDetailDict[event.data.verifier_presentation_id]){
-      verifierStore.getPresentationDetails(event.data.verifier_presentation_id);
-    }
+const onRowExpand = (event: any) => {
+    verifierStore.getPresentationDetails(event.data.verifier_presentation_id);
+    
 };
 
-const onRowCollapse = (event: DataTableRowCollapseEvent) => {};
+const onRowCollapse = (event: any) => {};
 
 onMounted(async () => {
   loadTable();
