@@ -2,8 +2,8 @@
   <div v-if="presentation">
     <ul>
       <li>Status: {{ presentation.status }}</li>
-      <li>Updated at: {{ props.presentation.updated_at }}</li>
-      <li>Contact Alias: {{ props.presentation.contact.alias }}</li>
+      <li>Updated at: {{ presentation.updated_at }}</li>
+      <li>Contact Alias: {{ presentation.contact.alias }}</li>
       <hr />
       <li
         v-for="(value, attr) in props.presentation.acapy.presentation_exchange
@@ -20,6 +20,7 @@
       </li>
     </ul>
   </div>
+  <div v-else>...loading</div>
 </template>
 
 <script setup lang="ts">
