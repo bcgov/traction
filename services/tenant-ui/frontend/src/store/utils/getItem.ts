@@ -16,12 +16,11 @@ export async function getItem(
 
     TODO: fix dict typing, should be a Ref<object> but my typescript linter doesn't like that.
     */
-  let result = null;
   if (forceFetch || !dict.value[id]) {
-    result = await fetchItem(url, id, error, loading, params);
+    dict.value[id] = await fetchItem(url, id, error, loading, params);
   }
-  dict.value[id] = result;
+  const result = dict.value[id];
   console.log(dict.value);
 
-  return dict.value[id];
+  return result;
 }
