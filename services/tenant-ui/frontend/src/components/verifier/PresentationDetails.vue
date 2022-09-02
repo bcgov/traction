@@ -24,9 +24,9 @@
           :key="i"
         >
           <li
-            v-for="(name, i) in val.names"
+            v-for="(name, index) in val.names"
+            :key="index"
             class="presentation-attr-value"
-            :key="i"
           >
             <strong>{{ name }}</strong> :
             {{
