@@ -30,7 +30,11 @@
       <Column field="contact.alias" header="Contact Name" />
       <Column field="state" header="State" />
       <Column field="status" header="Status" />
-      <Column field="created_at" header="Created at" />
+      <Column field="created_at" header="Created at">
+        <template #body="{ data }">
+          {{ formatDateLong(data.created_at) }}
+        </template>
+      </Column>
       <Column field="issuer_credential_id" header="ID" />
       <Column field="revoked" header="Revoked?" />
     </DataTable>
@@ -53,6 +57,7 @@ import ProgressSpinner from 'primevue/progressspinner';
 
 // Other Components
 import OfferCredential from './offerCredential/OfferCredential.vue';
+import { formatDateLong } from '@/helpers';
 
 // Other Imports
 import { useToast } from 'vue-toastification';

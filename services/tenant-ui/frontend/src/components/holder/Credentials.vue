@@ -14,7 +14,11 @@
       <Column :sortable="true" field="alias" header="Name" />
       <Column field="state" header="State" />
       <Column field="status" header="Status" />
-      <Column field="created_at" header="Created at" />
+      <Column field="created_at" header="Created at">
+        <template #body="{ data }">
+          {{ formatDateLong(data.created_at) }}
+        </template>
+      </Column>
       <Column field="contact.alias" header="Contact Name" />
     </DataTable>
   </div>
@@ -23,6 +27,7 @@
 <script setup lang="ts">
 // Vue
 import { onMounted } from 'vue';
+// PrimeVue
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import ProgressSpinner from 'primevue/progressspinner';
@@ -30,6 +35,8 @@ import { useToast } from 'vue-toastification';
 
 import { useHolderStore } from '../../store';
 import { storeToRefs } from 'pinia';
+
+import { formatDateLong } from '@/helpers';
 
 const toast = useToast();
 

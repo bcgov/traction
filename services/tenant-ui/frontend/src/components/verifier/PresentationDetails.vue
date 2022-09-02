@@ -2,7 +2,7 @@
   <div v-if="presentation">
     <ul>
       <li>Status: {{ presentation.status }}</li>
-      <li>Updated at: {{ presentation.updated_at }}</li>
+      <li>Updated at: {{ formatDateLong(presentation.updated_at) }}</li>
       <li>Contact Alias: {{ presentation.contact.alias }}</li>
       <hr />
       <li
@@ -28,6 +28,7 @@
 
 <script setup lang="ts">
 import { PropType } from 'vue';
+import { formatDateLong } from '@/helpers';
 
 const props = defineProps({
   presentation: {
