@@ -36,17 +36,13 @@
           </span>
         </li>
         <!-- requested_attributes using 'name' string w/ restrictions -> revealed attributes -->
-        <li>
-          <span
-            v-for="(val, attr_name, i) in presentation.acapy
-              .presentation_exchange.presentation.requested_proof
-              .revealed_attrs"
-            :key="i"
-            class="presentation-attr-value"
-          >
-            <b>{{ attr_name }}</b> : {{ val.raw }}
-            <br />
-          </span>
+        <li
+          v-for="(val, attr_name, i) in presentation.acapy.presentation_exchange
+            .presentation.requested_proof.revealed_attrs"
+          :key="i"
+          class="presentation-attr-value"
+        >
+          <b>{{ attr_name }}</b> : {{ val.raw }}
         </li>
         <!-- requested_attribute using 'name' string w/o restrictions -> revealed self-attested values -->
         <!-- requested_predicates -> unrevealed attributes -->
