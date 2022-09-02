@@ -18,19 +18,20 @@
       </div>
       <!-- PRESENTATION RECEIVED-->
       <!-- requested_attributes using 'names' list -> revealed attribute groups -->
-      <div
-        v-if="presentation.acapy.presentation_exchange.presentation"
-        v-for="(value, attr, index) in requested_attribute_groups()"
-        :key="index"
-      >
-        <li v-for="name in value.names" class="presentation-attr-value">
-          <strong>{{ name }}</strong> :
-          {{
-            test_object.acapy.presentation_exchange.presentation.requested_proof
-              .revealed_attr_groups[attr].values[name].raw
-          }}
-          <br />
-        </li>
+      <div v-if="presentation.acapy.presentation_exchange.presentation">
+        <div
+          v-for="(value, attr, index) in requested_attribute_groups()"
+          :key="index"
+        >
+          <li v-for="name in value.names" class="presentation-attr-value">
+            <strong>{{ name }}</strong> :
+            {{
+              props.presentation.acapy.presentation_exchange.presentation
+                .requested_proof.revealed_attr_groups[attr].values[name].raw
+            }}
+            <br />
+          </li>
+        </div>
         <!-- requested_attributes using 'name' string w/ restrictions -> revealed attributes -->
         <li
           v-for="(val, attr_name, i) in requested_single_attributes()"
@@ -80,7 +81,7 @@ const props = defineProps({
 const requested_attribute_groups = () => {
   return Object.fromEntries(
     Object.entries(
-      test_object.acapy.presentation_exchange.presentation_request
+      props.presentation.acapy.presentation_exchange.presentation_request
         .requested_attributes
     ).filter(([key, ra]) => {
       return 'names' in ra && 'restrictions' in ra;
