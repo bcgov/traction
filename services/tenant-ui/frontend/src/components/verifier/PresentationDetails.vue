@@ -20,18 +20,19 @@
       <!-- requested_attributes using 'names' list -> revealed attribute groups -->
       <div v-if="presentation.acapy.presentation_exchange.presentation">
         <div
-          v-for="(value, attr, index) in requested_attribute_groups()"
-          :key="index"
+          v-for="(val, attr_name, i) in requested_attribute_groups()"
+          :key="i"
         >
           <li
-            v-for="(name, i) in value.names"
+            v-for="(name, i) in val.names"
             class="presentation-attr-value"
             :key="i"
           >
             <strong>{{ name }}</strong> :
             {{
               props.presentation.acapy.presentation_exchange.presentation
-                .requested_proof.revealed_attr_groups[attr].values[name].raw
+                .requested_proof.revealed_attr_groups[attr_name].values[name]
+                .raw
             }}
             <br />
           </li>
@@ -84,30 +85,30 @@ const props = defineProps({
 
 // four different payload locations for the provided claims based on these filters.
 
-const requested_attribute_groups = () => {
+const requested_attribute_groups = (): any => {
   return Object.fromEntries(
     Object.entries(
       props.presentation.acapy.presentation_exchange.presentation_request
         .requested_attributes
-    ).filter(([key, ra]) => {
+    ).filter(([key, ra]): [any, any] => {
       return 'names' in ra && 'restrictions' in ra;
     })
   );
 };
 
-const requested_single_attributes = () => {
+const requested_single_attributes = (): any => {
   return Object.fromEntries(
     Object.entries(
       props.presentation.acapy.presentation_exchange.presentation_request
         .requested_attributes
-    ).filter(([key, ra]) => {
+    ).filter(([key, ra]): [any, any] => {
       return 'name' in ra && 'restrictions' in ra;
     })
   );
 };
 
 // to be used in upcoming UX Designed component
-// const requested_self_attested_attributes = () => {
+// const requested_self_attested_attributes = ():any => {
 //   return Object.fromEntries(
 //     Object.entries(
 //       props.presentation.acapy.presentation_exchange.presentation_request
@@ -118,7 +119,7 @@ const requested_single_attributes = () => {
 //   );
 // };
 
-// const requested_predicates_attributes = () => {
+// const requested_predicates_attributes = ():any => {
 //   return props.presentation.acapy.presentation_exchange.presentation_request
 //     .requested_predicates;
 // };
