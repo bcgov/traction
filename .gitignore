@@ -4,4 +4,4 @@ devops/helm/charts/traction/charts/**
 .DS_Store
 
 traction-venv
-services/tenant-ui/config/local.json
+./services/tenant-ui/config/local.json

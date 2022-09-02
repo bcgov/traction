@@ -1,9 +1,0 @@
-{
-  "image": {
-    "tag": "local/tenant-ui:latest",
-    "version": "latest"
-  },
-  "server": {
-    "tractionUrl": "http://localhost:5100/"
-  }
-}
