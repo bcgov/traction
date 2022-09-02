@@ -90,7 +90,7 @@ const requested_attribute_groups = (): any => {
     Object.entries(
       props.presentation.acapy.presentation_exchange.presentation_request
         .requested_attributes
-    ).filter(([key, ra]): [any, any] => {
+    ).filter(([key, ra]: [string, any]): any => {
       return 'names' in ra && 'restrictions' in ra;
     })
   );
@@ -101,7 +101,7 @@ const requested_single_attributes = (): any => {
     Object.entries(
       props.presentation.acapy.presentation_exchange.presentation_request
         .requested_attributes
-    ).filter(([key, ra]): [any, any] => {
+    ).filter(([key, ra]: [string, any]): any => {
       return 'name' in ra && 'restrictions' in ra;
     })
   );
