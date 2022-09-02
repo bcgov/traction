@@ -78,6 +78,8 @@ const props = defineProps({
   },
 });
 
+// four different payload locations for the provided claims based on these filters.
+
 const requested_attribute_groups = () => {
   return Object.fromEntries(
     Object.entries(
@@ -99,6 +101,22 @@ const requested_single_attributes = () => {
     })
   );
 };
+
+// const requested_self_attested_attributes = () => {
+//   return Object.fromEntries(
+//     Object.entries(
+//       props.presentation.acapy.presentation_exchange.presentation_request
+//         .requested_attributes
+//     ).filter(([key, ra]) => {
+//       return 'name' in ra && !'restrictions' in ra;
+//     })
+//   );
+// };
+
+// const requested_predicates_attributes = () => {
+//   return props.presentation.acapy.presentation_exchange.presentation_request
+//     .requested_predicates;
+// };
 </script>
 
 <style>
