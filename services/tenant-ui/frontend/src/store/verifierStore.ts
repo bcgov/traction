@@ -27,7 +27,7 @@ export const useVerifierStore = defineStore('verifier', () => {
 
   async function getPresentationDetails(
     verifier_presentation_id: string,
-    forceFetch: boolean = false
+    forceFetch = false
   ) {
     return getItem(
       '/tenant/v1/verifier/presentations/',

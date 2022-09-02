@@ -8,7 +8,7 @@ export async function getItem(
   error: Ref<any>,
   loading: Ref<boolean>,
   params: any = {},
-  forceFetch: boolean = false
+  forceFetch = false
 ) {
   /*
     This method will fetch an item from the api and add it to a dict object provided, 
