@@ -23,7 +23,11 @@
           v-for="(value, attr, index) in requested_attribute_groups()"
           :key="index"
         >
-          <li v-for="name in value.names" class="presentation-attr-value">
+          <li
+            v-for="(name, i) in value.names"
+            class="presentation-attr-value"
+            :key="i"
+          >
             <strong>{{ name }}</strong> :
             {{
               props.presentation.acapy.presentation_exchange.presentation
