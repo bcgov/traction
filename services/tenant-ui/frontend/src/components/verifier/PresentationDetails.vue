@@ -71,18 +71,6 @@ const props = defineProps({
     default: true,
   },
 });
-
-const presentation_claims_data = () => {
-  proof =
-    props.presentation.acapy.presentation_exchange.presentation.requested_proof;
-
-  result = {};
-
-  proof.revealed_attr_groups.filter((k, v) => {
-    console.log(k);
-    console.log(v);
-  });
-};
 </script>
 
 <style>
