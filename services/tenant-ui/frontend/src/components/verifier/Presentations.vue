@@ -27,6 +27,7 @@
       <template #expansion="{ data }">
         <PresentationDetails
           :presentation="presentationDetailDict[data.verifier_presentation_id]"
+          :header="false"
         />
       </template>
     </DataTable>
