@@ -31,7 +31,7 @@
             :key="i"
             class="presentation-attr-value"
           >
-            <b>{{ attr_name }}</b> : {{ val.raw }}
+            <strong>{{ attr_name }}</strong> : {{ val.raw }}
             <br />
           </span>
         </li>
@@ -42,10 +42,10 @@
           :key="i"
           class="presentation-attr-value"
         >
-          <b>{{
+          <strong>{{
             presentation.acapy.presentation_exchange.presentation_request
               .requested_attributes[attr_name].name
-          }}</b>
+          }}</strong>
           : {{ val.raw }}
         </li>
         <!-- requested_attribute using 'name' string w/o restrictions -> revealed self-attested values -->
