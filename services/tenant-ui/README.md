@@ -9,7 +9,7 @@ The architechture consists of
 - A Vue3 frontend app providing the UI
 
 ## Set up your configuration
-In tenant-ui/src/config add a `local.json` file to add any specific config you'd like for your local instance (otheriwse see `default.json` for defaults). At this point the only thing you'll probably want to override is the Traction URL. So your local.json can just look like this for example:
+In tenant-ui/config add a `local.json` file to add any specific config you'd like for your local instance (otheriwse see `default.json` for defaults). At this point the only thing you'll probably want to override is the Traction URL. So your local.json can just look like this for example:
 
 ```
 {
