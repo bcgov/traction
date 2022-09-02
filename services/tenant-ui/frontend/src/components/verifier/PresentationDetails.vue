@@ -52,6 +52,11 @@
         <!-- requested_predicates -> unrevealed attributes -->
       </div>
     </ul>
+    <Accordion class="qr-accordion">
+      <AccordionTab header="View Raw Content">
+        <vue-json-pretty :data="presentation" />
+      </AccordionTab>
+    </Accordion>
   </div>
   <div v-else>...loading</div>
 </template>
@@ -59,6 +64,10 @@
 <script setup lang="ts">
 import { PropType } from 'vue';
 import { formatDateLong } from '@/helpers';
+import Accordion from 'primevue/accordion';
+import AccordionTab from 'primevue/accordiontab';
+import VueJsonPretty from 'vue-json-pretty';
+import 'vue-json-pretty/lib/styles.css';
 
 const props = defineProps({
   presentation: {
