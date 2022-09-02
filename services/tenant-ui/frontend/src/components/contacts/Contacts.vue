@@ -65,7 +65,7 @@ import Dialog from 'primevue/dialog';
 import ProgressSpinner from 'primevue/progressspinner';
 import InputText from 'primevue/inputtext';
 // State
-import { useContactsStore } from '../../store';
+import { useContactsStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other imports
 import { useToast } from 'vue-toastification';

@@ -57,7 +57,7 @@ import ProgressSpinner from 'primevue/progressspinner';
 
 // Other Components
 import OfferCredential from './offerCredential/OfferCredential.vue';
-import { formatDateLong } from "@/helpers";
+import { formatDateLong } from '@/helpers';
 
 // Other Imports
 import { useToast } from 'vue-toastification';

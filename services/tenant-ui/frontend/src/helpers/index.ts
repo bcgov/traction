@@ -1,16 +1,16 @@
-import { format, parseJSON } from 'date-fns'
+import { format, parseJSON } from 'date-fns';
 
 function _dateFnsFormat(value: string, formatter: string) {
-  let formatted = '';
+  const formatted = '';
   try {
     if (value) {
       return format(parseJSON(value), formatter);
     }
   } catch (error) {
     console.error(`_dateFnsFormat: Error parsing ${value} to ${error}`);
-  } 
+  }
   return formatted;
-};
+}
 
 /**
  * @function formatDate
@@ -20,7 +20,7 @@ function _dateFnsFormat(value: string, formatter: string) {
  */
 export function formatDate(value: string) {
   return _dateFnsFormat(value, 'MMMM d yyyy');
-};
+}
 
 /**
  * @function formatDateLong
@@ -30,4 +30,4 @@ export function formatDate(value: string) {
  */
 export function formatDateLong(value: string) {
   return _dateFnsFormat(value, 'MMMM d yyyy, h:mm:ss a');
-};
+}
