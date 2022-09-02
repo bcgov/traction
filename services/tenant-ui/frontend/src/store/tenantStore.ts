@@ -11,12 +11,12 @@ export const useTenantStore = defineStore('tenant', () => {
 
   const { token } = storeToRefs(useTokenStore());
   const tenantApi = useTenantApi();
-  
+
   // getters
   const tenantReady = computed(() => {
-    return token.value != null && tenant.value != null;    
+    return token.value != null && tenant.value != null;
   });
-  
+
   // actions
   function clearTenant() {
     console.log('> clearTenant');
@@ -83,7 +83,15 @@ export const useTenantStore = defineStore('tenant', () => {
     return tenant.value;
   }
 
-  return { tenant, loading, error, tenantReady, getSelf, makeIssuer, clearTenant };
+  return {
+    tenant,
+    loading,
+    error,
+    tenantReady,
+    getSelf,
+    makeIssuer,
+    clearTenant,
+  };
 });
 
 export default {

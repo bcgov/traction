@@ -10,26 +10,26 @@
   </div>
 </template>
 <script setup lang="ts">
-import Button from "primevue/button";
-import InputText from "primevue/inputtext";
-import { ref } from "vue";
-import { useToast } from "vue-toastification";
-import { useGovernanceStore } from "@/store";
+import Button from 'primevue/button';
+import InputText from 'primevue/inputtext';
+import { ref } from 'vue';
+import { useToast } from 'vue-toastification';
+import { useGovernanceStore } from '@/store';
 const toast = useToast();
 
 // Activate two way binding on schemaId
-const schemaId = ref("");
+const schemaId = ref('');
 
 const governanceStore = useGovernanceStore();
 governanceStore.$onAction(({ name, after, onError }) => {
-  if (name == "copySchema") {
+  if (name == 'copySchema') {
     // this is after a successful load of the token...
     after((result) => {
-      console.log("copied schema");
+      console.log('copied schema');
       console.log(result);
       if (result != null) {
-        toast.info("Schema Copied");
-        emit("success");
+        toast.info('Schema Copied');
+        emit('success');
       }
     });
 
@@ -41,7 +41,7 @@ governanceStore.$onAction(({ name, after, onError }) => {
   }
 });
 
-const emit = defineEmits(["success"]);
+const emit = defineEmits(['success']);
 
 const copy = async () => {
   const payload = {

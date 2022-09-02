@@ -1,29 +1,29 @@
 <script setup lang="ts">
-import Button from "primevue/button";
-import InputText from "primevue/inputtext";
-import Dropdown from "primevue/dropdown";
-import { ref } from "vue";
-import { useToast } from "vue-toastification";
-import { useGovernanceStore } from "../../store";
-import { storeToRefs } from "pinia";
+import Button from 'primevue/button';
+import InputText from 'primevue/inputtext';
+import Dropdown from 'primevue/dropdown';
+import { ref } from 'vue';
+import { useToast } from 'vue-toastification';
+import { useGovernanceStore } from '../../store';
+import { storeToRefs } from 'pinia';
 
-const schemaName = ref("");
-const schemaVersion = ref("");
+const schemaName = ref('');
+const schemaVersion = ref('');
 
 const toast = useToast();
 
-const emit = defineEmits(["success"]);
+const emit = defineEmits(['success']);
 
 const governanceStore = useGovernanceStore();
 governanceStore.$onAction(({ name, after, onError }) => {
-  if (name == "createSchemaTemplate") {
+  if (name == 'createSchemaTemplate') {
     // this is after a successful load of the token...
     after((result) => {
-      console.log("created schema template");
+      console.log('created schema template');
       console.log(result);
-      if (result != null && result["schema_id"]) {
-        toast.info("Schema Template Created");
-        emit("success");
+      if (result != null && result['schema_id']) {
+        toast.info('Schema Template Created');
+        emit('success');
       }
     });
 
@@ -40,9 +40,9 @@ const { loading } = storeToRefs(useGovernanceStore());
 
 // Schema types
 const options = [
-  { name: "Text", code: "String" },
-  { name: "Number", code: "Number" },
-  { name: "Boolean", code: "Boolean" },
+  { name: 'Text', code: 'String' },
+  { name: 'Number', code: 'Number' },
+  { name: 'Boolean', code: 'Boolean' },
 ];
 
 /**
@@ -50,7 +50,7 @@ const options = [
  * Add an attribute to the schema.
  */
 const addAttribute = () => {
-  attributes.value.push({ name: "", type: "" });
+  attributes.value.push({ name: '', type: '' });
 };
 
 /**
@@ -88,7 +88,7 @@ const submit_new_schema = async () => {
 };
 
 // Store an array of attributes. Start with an empty attribute
-const attributes = ref([{ name: "", type: "" }]);
+const attributes = ref([{ name: '', type: '' }]);
 </script>
 <template>
   <div class="row">
@@ -106,7 +106,7 @@ const attributes = ref([{ name: "", type: "" }]);
     </span>
   </div>
   <hr />
-  <div v-for="(item, index) in attributes" class="row">
+  <div v-for="(item, index) in attributes" :key="index" class="row">
     <span class="p-float-label">
       <InputText v-model="item.name" type="text" name="create_schema_name" />
       <label for="create_schema_name">Attribute</label>

@@ -52,24 +52,24 @@
 
 <script setup lang="ts">
 // Vue
-import { ref, onMounted } from "vue";
+import { ref, onMounted } from 'vue';
 
 // PrimeVue
-import Button from "primevue/button";
-import Column from "primevue/column";
-import DataTable from "primevue/datatable";
-import Dialog from "primevue/dialog";
-import ProgressSpinner from "primevue/progressspinner";
-import InputText from "primevue/inputtext";
+import Button from 'primevue/button';
+import Column from 'primevue/column';
+import DataTable from 'primevue/datatable';
+import Dialog from 'primevue/dialog';
+import ProgressSpinner from 'primevue/progressspinner';
+import InputText from 'primevue/inputtext';
 
 // Other imports
 
-import { useToast } from "vue-toastification";
-import { useContactsStore } from "../../store";
-import { storeToRefs } from "pinia";
+import { useToast } from 'vue-toastification';
+import { useContactsStore } from '../../store';
+import { storeToRefs } from 'pinia';
 
 // Other components
-import CreateContact from "./CreateContact.vue";
+import CreateContact from './CreateContact.vue';
 
 const toast = useToast();
 

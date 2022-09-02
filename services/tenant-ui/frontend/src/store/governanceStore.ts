@@ -42,11 +42,19 @@ export const useGovernanceStore = defineStore('governance', () => {
   };
 
   const schemaTemplateDropdown = computed(() => {
-    return filterMapSortList(schemaTemplates.value, schemaLabelValue, sortByLabelAscending);
+    return filterMapSortList(
+      schemaTemplates.value,
+      schemaLabelValue,
+      sortByLabelAscending
+    );
   });
 
   const credentialTemplateDropdown = computed(() => {
-    return filterMapSortList(credentialTemplates.value, credDefLabelValue, sortByLabelAscending);
+    return filterMapSortList(
+      credentialTemplates.value,
+      credDefLabelValue,
+      sortByLabelAscending
+    );
   });
 
   // grab the tenant api
@@ -60,13 +68,24 @@ export const useGovernanceStore = defineStore('governance', () => {
     // this is a total hack for expedience, lets get cred templates at the same time...
     // just so we can show it all in one grid, this should happen at the api level...
     const schemas = ref();
-    await fetchList('/tenant/v1/governance/schema_templates/', schemas, error, loading);
+    await fetchList(
+      '/tenant/v1/governance/schema_templates/',
+      schemas,
+      error,
+      loading
+    );
     await listCredentialTemplates();
     schemaTemplates.value = await Promise.all(
       schemas.value.map(async (item: any) => {
         // find any credential templates...
         const templates = ref();
-        await fetchList('/tenant/v1/governance/credential_templates/', templates, error, loading, { schema_template_id: item.schema_template_id });
+        await fetchList(
+          '/tenant/v1/governance/credential_templates/',
+          templates,
+          error,
+          loading,
+          { schema_template_id: item.schema_template_id }
+        );
         return {
           ...item,
           credential_templates: templates,
@@ -78,7 +97,12 @@ export const useGovernanceStore = defineStore('governance', () => {
 
   async function listCredentialTemplates() {
     selectedCredentialTemplate.value = null;
-    return fetchList('/tenant/v1/governance/credential_templates/', credentialTemplates, error, loading);
+    return fetchList(
+      '/tenant/v1/governance/credential_templates/',
+      credentialTemplates,
+      error,
+      loading
+    );
   }
 
   async function createSchemaTemplate(payload: any = {}) {
@@ -97,7 +121,9 @@ export const useGovernanceStore = defineStore('governance', () => {
       })
       .then(() => {
         // do we want to automatically reload? or have the caller of this to load?
-        console.log('schema template created. the store calls load automatically, but do we want this done "manually"?');
+        console.log(
+          'schema template created. the store calls load automatically, but do we want this done "manually"?'
+        );
         listSchemaTemplates();
       })
       .catch((err) => {
@@ -133,7 +159,9 @@ export const useGovernanceStore = defineStore('governance', () => {
       })
       .then(() => {
         // do we want to automatically reload? or have the caller of this to load?
-        console.log('credential template created. the store calls load automatically, but do we want this done "manually"?');
+        console.log(
+          'credential template created. the store calls load automatically, but do we want this done "manually"?'
+        );
         // TODO: for demo, we aren't separating schema/cred templates, so load the schema list (that has sub-list of cred templates.)
         //listCredentialTemplates();
         listSchemaTemplates();
@@ -170,7 +198,9 @@ export const useGovernanceStore = defineStore('governance', () => {
         console.log(result);
       })
       .then(() => {
-        console.log('schema copied. the store calls load automatically, but do we want this done "manually"?');
+        console.log(
+          'schema copied. the store calls load automatically, but do we want this done "manually"?'
+        );
         listSchemaTemplates();
       })
       .catch((err) => {

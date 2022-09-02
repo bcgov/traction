@@ -48,8 +48,8 @@
       <Column field="credential_templates" header="Credential Template">
         <template #body="{ data }">
           <CreateCredentialTemplate
-            :schema-template-id="data.schema_template_id"
             v-if="!data.credential_templates.length"
+            :schema-template-id="data.schema_template_id"
           />
           <div v-else>
             {{
@@ -93,23 +93,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import Button from "primevue/button";
-import Column from "primevue/column";
-import DataTable from "primevue/datatable";
-import InputText from "primevue/inputtext";
-import ProgressSpinner from "primevue/progressspinner";
-import Dialog from "primevue/dialog";
+import { ref, onMounted } from 'vue';
+import Button from 'primevue/button';
+import Column from 'primevue/column';
+import DataTable from 'primevue/datatable';
+import InputText from 'primevue/inputtext';
+import ProgressSpinner from 'primevue/progressspinner';
+import Dialog from 'primevue/dialog';
 
 // Custom components
-import CreateSchema from "./CreateSchema.vue";
-import CopySchema from "./CopySchema.vue";
-import CreateCredentialTemplate from "./credentialtemplate/CreateCredentialTemplate.vue";
+import CreateSchema from './CreateSchema.vue';
+import CopySchema from './CopySchema.vue';
+import CreateCredentialTemplate from './credentialtemplate/CreateCredentialTemplate.vue';
 
-import { useConfirm } from "primevue/useconfirm";
-import { useToast } from "vue-toastification";
-import { useGovernanceStore } from "../../store";
-import { storeToRefs } from "pinia";
+import { useConfirm } from 'primevue/useconfirm';
+import { useToast } from 'vue-toastification';
+import { useGovernanceStore } from '../../store';
+import { storeToRefs } from 'pinia';
 
 const confirm = useConfirm();
 const toast = useToast();
@@ -149,9 +149,9 @@ const schemaCreated = async () => {
 const deleteSchema = (event: any, schema: any) => {
   confirm.require({
     target: event.currentTarget,
-    message: "Are you sure you want to delete this schema?",
-    header: "Confirmation",
-    icon: "pi pi-exclamation-triangle",
+    message: 'Are you sure you want to delete this schema?',
+    header: 'Confirmation',
+    icon: 'pi pi-exclamation-triangle',
     accept: () => {
       doDelete(schema);
     },

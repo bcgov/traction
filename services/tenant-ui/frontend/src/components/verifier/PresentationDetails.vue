@@ -6,12 +6,15 @@
       <li>Contact Alias: {{ presentation.contact.alias }}</li>
       <hr />
       <li
-        v-for="(value, attr) in props.presentation.acapy.presentation_exchange
-          .presentation.requested_proof.revealed_attr_groups"
+        v-for="(value, attr, index) in props.presentation.acapy
+          .presentation_exchange.presentation.requested_proof
+          .revealed_attr_groups"
+        :key="index"
       >
         <h4>{{ attr }}:</h4>
         <span
-          v-for="(val, attr_name) in value.values"
+          v-for="(val, attr_name, i) in value.values"
+          :key="i"
           class="presentation-attr-value"
         >
           <b>{{ attr_name }}</b> : {{ val.raw }}
@@ -24,7 +27,14 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps(['presentation']);
+import { PropType } from 'vue';
+
+const props = defineProps({
+  presentation: {
+    type: Object as PropType<any>,
+    required: true,
+  },
+});
 </script>
 
 <style>

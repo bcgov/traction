@@ -18,7 +18,12 @@ export const useIssuerStore = defineStore('issuer', () => {
 
   async function listCredentials() {
     selectedCredential.value = null;
-    return fetchList('/tenant/v1/issuer/credentials/', credentials, error, loading);
+    return fetchList(
+      '/tenant/v1/issuer/credentials/',
+      credentials,
+      error,
+      loading
+    );
   }
 
   async function offerCredential(payload: any = {}) {
@@ -54,7 +59,14 @@ export const useIssuerStore = defineStore('issuer', () => {
     return result;
   }
 
-  return { credentials, selectedCredential, loading, error, listCredentials, offerCredential };
+  return {
+    credentials,
+    selectedCredential,
+    loading,
+    error,
+    listCredentials,
+    offerCredential,
+  };
 });
 
 export default {

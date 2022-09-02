@@ -72,7 +72,11 @@ export const useTenantApi = defineStore('tenantApi', () => {
   );
 
   // private function that calls axios instance configured for tenant calls
-  async function callTenantApi(url: string, method: string, options = {}): Promise<any> {
+  async function callTenantApi(
+    url: string,
+    method: string,
+    options = {}
+  ): Promise<any> {
     return tenantApi({
       method: method.toUpperCase(),
       url: url,
@@ -80,42 +84,66 @@ export const useTenantApi = defineStore('tenantApi', () => {
     });
   }
 
-  async function getHttp(url: string, params: any = {}, options: any = {}): Promise<any> {
+  async function getHttp(
+    url: string,
+    params: any = {},
+    options: any = {}
+  ): Promise<any> {
     return callTenantApi(url, 'get', {
       ...options,
       params,
     });
   }
 
-  async function postHttp(url: string, data: any = {}, options: any = {}): Promise<any> {
+  async function postHttp(
+    url: string,
+    data: any = {},
+    options: any = {}
+  ): Promise<any> {
     return callTenantApi(url, 'post', {
       data,
       ...options,
     });
   }
 
-  async function updateHttp(url: string, data: any = {}, options: any = {}): Promise<any> {
+  async function updateHttp(
+    url: string,
+    data: any = {},
+    options: any = {}
+  ): Promise<any> {
     return callTenantApi(url, 'update', {
       data,
       ...options,
     });
   }
 
-  async function putHttp(url: string, data: any = {}, options: any = {}): Promise<any> {
+  async function putHttp(
+    url: string,
+    data: any = {},
+    options: any = {}
+  ): Promise<any> {
     return callTenantApi(url, 'put', {
       data,
       ...options,
     });
   }
 
-  async function patchHttp(url: string, data: any = {}, options: any = {}): Promise<any> {
+  async function patchHttp(
+    url: string,
+    data: any = {},
+    options: any = {}
+  ): Promise<any> {
     return callTenantApi(url, 'patch', {
       data,
       ...options,
     });
   }
 
-  async function deleteHttp(url: string, data: any = {}, options: any = {}): Promise<any> {
+  async function deleteHttp(
+    url: string,
+    data: any = {},
+    options: any = {}
+  ): Promise<any> {
     return callTenantApi(url, 'delete', {
       data,
       ...options,
