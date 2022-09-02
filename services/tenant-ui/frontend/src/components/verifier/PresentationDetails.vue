@@ -52,7 +52,7 @@
         <!-- requested_predicates -> unrevealed attributes -->
       </div>
     </ul>
-    <Accordion class="qr-accordion">
+    <Accordion>
       <AccordionTab header="View Raw Content">
         <vue-json-pretty :data="presentation" />
       </AccordionTab>
