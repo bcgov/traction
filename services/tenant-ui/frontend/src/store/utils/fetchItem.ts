@@ -1,37 +1,35 @@
 import { useTenantApi } from '../tenantApi';
 import { Ref } from 'vue';
 
-export async function fetchList(
+export async function fetchItem(
   url: string,
-  list: Ref<any>,
+  id: string,
   error: Ref<any>,
   loading: Ref<boolean>,
   params: any = {}
 ) {
   const tenantApi = useTenantApi();
-  console.log(`> fetchList(${url})`);
-  list.value = null;
+  console.log(`> fetchItem(${url})`);
   error.value = null;
-  loading.value = true;
+  let result = null;
+
   await tenantApi
-    .getHttp(url, params)
+    .getHttp(url + id, params)
     .then((res) => {
-      console.log(res);
-      list.value = res.data.items;
-      console.log(list.value);
+      result = res.data.item;
+      console.log(result);
     })
     .catch((err) => {
       error.value = err;
-      // console.log(error.value);
     })
     .finally(() => {
       loading.value = false;
     });
-  console.log(`< fetchList(${url})`);
+  console.log(`< fetchItem(${url})`);
   if (error.value != null) {
     // throw error so $onAction.onError listeners can add their own handler
     throw error.value;
   }
   // return data so $onAction.after listeners can add their own handler
-  return list.value;
+  return result;
 }

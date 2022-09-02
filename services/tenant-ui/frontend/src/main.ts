@@ -6,7 +6,6 @@ import App from './App.vue';
 import { createPinia } from 'pinia';
 import { useConfigStore } from './store/configStore';
 
-
 /**
  * For notifications. The one included in PrimeVue is not working.
  */
@@ -30,7 +29,6 @@ import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
 
-
 async function loadApp() {
   // 1. create app
   const app = createApp(App);
@@ -49,7 +47,9 @@ async function loadApp() {
       onError((err) => {
         console.error('error loading configuration from server');
         console.error(err);
-        throw new Error(`Failed to acquire configuration: ${(err as Error).message}`);
+        throw new Error(
+          `Failed to acquire configuration: ${(err as Error).message}`
+        );
       });
     }
   });

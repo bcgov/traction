@@ -17,12 +17,23 @@ const copy_to_clipboard = (content: string) => {
 </script>
 
 <template>
-  <div class="qr-container" v-if="qr_content">
-    <qrcode-vue class="qr-image" v-if="qr_content" :value="qr_content" :size="400" level="H" />
-    <Button class="clipboard-button" label="Copy to Clipboard" icon="pi pi-paperclip" @click="copy_to_clipboard(qr_content!)"></Button>
+  <div v-if="qrContent" class="qr-container">
+    <qrcode-vue
+      v-if="qrContent"
+      class="qr-image"
+      :value="qrContent"
+      :size="400"
+      level="H"
+    />
+    <Button
+      class="clipboard-button"
+      label="Copy to Clipboard"
+      icon="pi pi-paperclip"
+      @click="copy_to_clipboard(qrContent!)"
+    ></Button>
     <Accordion class="qr-accordion">
       <AccordionTab header="View Raw Content">
-        <p style="word-wrap: break-word">{{ qr_content }}</p>
+        <p style="word-wrap: break-word">{{ qrContent }}</p>
       </AccordionTab>
     </Accordion>
   </div>
@@ -33,7 +44,10 @@ const copy_to_clipboard = (content: string) => {
 export default {
   name: 'QRCode',
   props: {
-    qr_content: String,
+    qrContent: {
+      type: String,
+      default: null,
+    },
   },
 };
 </script>

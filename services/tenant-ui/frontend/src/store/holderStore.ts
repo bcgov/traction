@@ -17,15 +17,34 @@ export const useHolderStore = defineStore('holder', () => {
 
   async function listCredentials() {
     selectedCredential.value = null;
-    return fetchList('/tenant/v1/holder/credentials/', credentials, error, loading);
+    return fetchList(
+      '/tenant/v1/holder/credentials/',
+      credentials,
+      error,
+      loading
+    );
   }
 
   async function listPresentations() {
     selectedPresentation.value = null;
-    return fetchList('/tenant/v1/holder/presentations/', presentations, error, loading);
+    return fetchList(
+      '/tenant/v1/holder/presentations/',
+      presentations,
+      error,
+      loading
+    );
   }
 
-  return { credentials, presentations, selectedCredential, selectedPresentation, loading, error, listCredentials, listPresentations };
+  return {
+    credentials,
+    presentations,
+    selectedCredential,
+    selectedPresentation,
+    loading,
+    error,
+    listCredentials,
+    listPresentations,
+  };
 });
 
 export default {
