@@ -29,7 +29,11 @@
       <Column field="role" header="Role" />
       <Column field="state" header="State" />
       <Column field="status" header="Status" />
-      <Column field="created_at" header="Created at" />
+      <Column field="created_at" header="Created at">
+        <template #body="{ data }">
+          {{ formatDateLong(data.created_at) }}
+        </template>
+      </Column>
       <Column field="contact_id" header="ID" />
     </DataTable>
   </div>
@@ -70,6 +74,7 @@ import { storeToRefs } from 'pinia';
 
 // Other components
 import CreateContact from './CreateContact.vue';
+import { formatDateLong } from '@/helpers';
 
 const toast = useToast();
 
