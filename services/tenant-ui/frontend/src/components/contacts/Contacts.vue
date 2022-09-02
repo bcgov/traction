@@ -57,7 +57,6 @@
 <script setup lang="ts">
 // Vue
 import { ref, onMounted } from 'vue';
-
 // PrimeVue
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -65,13 +64,11 @@ import DataTable from 'primevue/datatable';
 import Dialog from 'primevue/dialog';
 import ProgressSpinner from 'primevue/progressspinner';
 import InputText from 'primevue/inputtext';
-
-// Other imports
-
-import { useToast } from 'vue-toastification';
+// State
 import { useContactsStore } from '../../store';
 import { storeToRefs } from 'pinia';
-
+// Other imports
+import { useToast } from 'vue-toastification';
 // Other components
 import CreateContact from './CreateContact.vue';
 import { formatDateLong } from '@/helpers';

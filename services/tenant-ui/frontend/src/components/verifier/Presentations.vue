@@ -19,7 +19,11 @@
       <Column field="contact.alias" header="Contact Name" />
       <Column field="state" header="State" />
       <Column field="status" header="Status" />
-      <Column field="created_at" header="Created at" />
+      <Column field="created_at" header="Created at">
+        <template #body="{ data }">
+          {{ formatDateLong(data.created_at) }}
+        </template>
+      </Column>
       <template #expansion="{ data }">
         <PresentationDetails
           :presentation="presentationDetailDict[data.verifier_presentation_id]"
@@ -40,6 +44,7 @@ import { useVerifierStore } from '../../store';
 import { storeToRefs } from 'pinia';
 
 import PresentationDetails from './PresentationDetails.vue';
+import { formatDateLong } from '@/helpers';
 const toast = useToast();
 
 // used by datatable expander behind the scenes
