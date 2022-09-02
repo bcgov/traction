@@ -16,37 +16,34 @@
         <li>Contact Alias: {{ presentation.contact.alias }}</li>
         <hr />
       </div>
+      <!-- PRESENTATION RECEIVED-->
+      <!-- requested_attributes using 'names' list -> revealed attribute groups -->
       <div v-if="presentation.acapy.presentation_exchange.presentation">
-        <!-- PRESENTATION RECEIVED-->
-        <!-- requested_attributes using 'names' list -> revealed attribute groups -->
-        <li
-          v-for="(value, attr, index) in props.presentation.acapy
-            .presentation_exchange.presentation.requested_proof
-            .revealed_attr_groups"
+        <div
+          v-for="(value, attr, index) in requested_attribute_groups()"
           :key="index"
         >
-          <h4>{{ attr }}:</h4>
-          <span
-            v-for="(val, attr_name, i) in value.values"
-            :key="i"
-            class="presentation-attr-value"
-          >
-            <strong>{{ attr_name }}</strong> : {{ val.raw }}
+          <li v-for="name in value.names" class="presentation-attr-value">
+            <strong>{{ name }}</strong> :
+            {{
+              props.presentation.acapy.presentation_exchange.presentation
+                .requested_proof.revealed_attr_groups[attr].values[name].raw
+            }}
             <br />
-          </span>
-        </li>
+          </li>
+        </div>
         <!-- requested_attributes using 'name' string w/ restrictions -> revealed attributes -->
         <li
-          v-for="(val, attr_name, i) in presentation.acapy.presentation_exchange
-            .presentation.requested_proof.revealed_attrs"
+          v-for="(val, attr_name, i) in requested_single_attributes()"
           :key="i"
           class="presentation-attr-value"
         >
-          <strong>{{
-            presentation.acapy.presentation_exchange.presentation_request
-              .requested_attributes[attr_name].name
-          }}</strong>
-          : {{ val.raw }}
+          <strong>{{ val.name }}</strong>
+          :
+          {{
+            props.presentation.acapy.presentation_exchange.presentation
+              .requested_proof.revealed_attrs[attr_name].raw
+          }}
         </li>
         <!-- requested_attribute using 'name' string w/o restrictions -> revealed self-attested values -->
         <!-- requested_predicates -> unrevealed attributes -->
@@ -80,6 +77,47 @@ const props = defineProps({
     default: true,
   },
 });
+
+// four different payload locations for the provided claims based on these filters.
+
+const requested_attribute_groups = () => {
+  return Object.fromEntries(
+    Object.entries(
+      props.presentation.acapy.presentation_exchange.presentation_request
+        .requested_attributes
+    ).filter(([key, ra]) => {
+      return 'names' in ra && 'restrictions' in ra;
+    })
+  );
+};
+
+const requested_single_attributes = () => {
+  return Object.fromEntries(
+    Object.entries(
+      props.presentation.acapy.presentation_exchange.presentation_request
+        .requested_attributes
+    ).filter(([key, ra]) => {
+      return 'name' in ra && 'restrictions' in ra;
+    })
+  );
+};
+
+// to be used in upcoming UX Designed component
+// const requested_self_attested_attributes = () => {
+//   return Object.fromEntries(
+//     Object.entries(
+//       props.presentation.acapy.presentation_exchange.presentation_request
+//         .requested_attributes
+//     ).filter(([key, ra]) => {
+//       return 'name' in ra && !'restrictions' in ra;
+//     })
+//   );
+// };
+
+// const requested_predicates_attributes = () => {
+//   return props.presentation.acapy.presentation_exchange.presentation_request
+//     .requested_predicates;
+// };
 </script>
 
 <style>
