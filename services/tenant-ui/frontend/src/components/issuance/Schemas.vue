@@ -59,36 +59,10 @@
         </template>
       </Column>
     </DataTable>
-    <div class="row buttons">
-      <Button
-        v-if="schemaTemplates"
-        class="create-btn"
-        icon="pi pi-plus"
-        label="Create Schema"
-        @click="createSchema"
-      ></Button>
-      <Button
-        v-if="schemaTemplates"
-        class="copy-btn"
-        icon="pi pi-copy"
-        label="Copy Schema"
-        @click="copySchema"
-      />
-    </div>
-    <Dialog
-      v-model:visible="displayCreateSchema"
-      header="Create a new schema"
-      :modal="true"
-    >
-      <CreateSchema @success="schemaCreated" />
-    </Dialog>
-    <Dialog
-      v-model:visible="displayCopySchema"
-      header="Copy an existing schema"
-      :modal="true"
-    >
-      <CopySchema @success="schemaCopied" />
-    </Dialog>
+  </div>
+  <div class="flex justify-content-end flex-wrap m-3 gap-3">
+    <CreateSchema />
+    <CopySchema />
   </div>
 </template>
 
@@ -99,11 +73,10 @@ import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
 import ProgressSpinner from 'primevue/progressspinner';
-import Dialog from 'primevue/dialog';
 
 // Custom components
-import CreateSchema from './CreateSchema.vue';
-import CopySchema from './CopySchema.vue';
+import CreateSchema from './createSchema/CreateSchema.vue';
+import CopySchema from './copySchema/CopySchema.vue';
 import CreateCredentialTemplate from './credentialtemplate/CreateCredentialTemplate.vue';
 
 import { useConfirm } from 'primevue/useconfirm';
@@ -134,18 +107,6 @@ onMounted(async () => {
   loadTable();
 });
 
-const displayCreateSchema = ref(false);
-const createSchema = () => {
-  displayCreateSchema.value = !displayCreateSchema.value;
-};
-const schemaCreated = async () => {
-  // this is not getting called... bug? or need to find a new pattern (works on Contacts).
-  console.log(
-    'schema created emit - do we want to "manually" load contacts or have the store automatically do it?'
-  );
-  loadTable();
-};
-
 const deleteSchema = (event: any, schema: any) => {
   confirm.require({
     target: event.currentTarget,
@@ -168,20 +129,6 @@ const doDelete = (schema: any) => {
       toast.error(`Failure: ${err}`);
     });
 };
-
-const displayCopySchema = ref(false);
-const copySchema = () => {
-  displayCopySchema.value = !displayCopySchema.value;
-};
-const schemaCopied = async () => {
-  // this is not getting called... bug? or need to find a new pattern (works on Contacts).
-  console.log(
-    'schema copied emit - do we want to "manually" load contacts or have the store automatically do it?'
-  );
-  loadTable();
-};
-
-// -----------------------------------------------/Loading schemas
 </script>
 
 <style scoped>

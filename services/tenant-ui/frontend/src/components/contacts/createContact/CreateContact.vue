@@ -1,16 +1,12 @@
 <template>
   <div>
-    <Button
-      label="Offer Credential"
-      icon="pi pi-arrow-up-right"
-      @click="openModal"
-    />
+    <Button label="Create Contact" icon="pi pi-plus" @click="openModal" />
     <Dialog
       v-model:visible="displayModal"
-      header="Offer Credential"
+      header="Create Contact"
       :modal="true"
     >
-      <OfferCredentialForm />
+      <CreateContactForm @closed="displayModal = false" />
     </Dialog>
   </div>
 </template>
@@ -22,15 +18,13 @@ import { ref } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 // State
-import { useContactsStore, useGovernanceStore } from '../../../store';
+
 // Custom Components
-import OfferCredentialForm from './OfferCredentialForm.vue';
+import CreateContactForm from './CreateContactForm.vue';
 // Other Imports
 import { useToast } from 'vue-toastification';
 
 // State setup
-const contactsStore = useContactsStore();
-const governanceStore = useGovernanceStore();
 
 const toast = useToast();
 
@@ -39,16 +33,7 @@ const toast = useToast();
 // ---------------------------------------------------------------------
 const displayModal = ref(false);
 const openModal = async () => {
-  // Kick of the loading asyncs in the store to fetch contacts/creds
-  Promise.all([
-    contactsStore.listContacts(),
-    governanceStore.listSchemaTemplates(),
-  ]).catch((err) => {
-    console.error(err);
-    toast.error(
-      `An error occurred loading your contacts or credentials: ${err}`
-    );
-  });
+  // Kick of the loading asyncs (if needed)
   displayModal.value = true;
 };
 // ---------------------------------------------------------------/display

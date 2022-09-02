@@ -37,21 +37,9 @@
       <Column field="contact_id" header="ID" />
     </DataTable>
   </div>
-  <Button
-    v-if="contacts"
-    class="create-contact"
-    icon="pi pi-plus"
-    label="Create Contact"
-    @click="createContact"
-  ></Button>
-
-  <Dialog
-    v-model:visible="displayAddContact"
-    header="Create a new contact"
-    :modal="true"
-  >
-    <CreateContact @success="contactCreated" />
-  </Dialog>
+  <div class="flex justify-content-end flex-wrap m-3 gap-3">
+    <CreateContact />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -70,7 +58,7 @@ import { storeToRefs } from 'pinia';
 // Other imports
 import { useToast } from 'vue-toastification';
 // Other components
-import CreateContact from './CreateContact.vue';
+import CreateContact from './createContact/CreateContact.vue';
 import { formatDateLong } from '@/helpers';
 
 const toast = useToast();
@@ -89,25 +77,6 @@ const loadTable = async () => {
 onMounted(async () => {
   loadTable();
 });
-// -----------------------------------------------/Loading contacts
-
-// ----------------------------------------------------------------
-// Adding Contacts
-// ----------------------------------------------------------------
-const displayAddContact = ref(false);
-
-const createContact = () => {
-  displayAddContact.value = !displayAddContact.value;
-};
-
-const contactCreated = async () => {
-  // Emited from the contact creation component when a successful invite is made
-  console.log(
-    'contact created emit - do we want to "manually" load contacts or have the store automatically do it?'
-  );
-  loadTable();
-};
-// -----------------------------------------------/Adding contacts
 </script>
 
 <style scoped>
@@ -117,10 +86,6 @@ fieldset {
   justify-content: center;
 }
 
-.create-contact {
-  float: right;
-  margin: 3rem 1rem 0 0;
-}
 .p-datatable-header input {
   padding-left: 3rem;
 }
