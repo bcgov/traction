@@ -11,6 +11,20 @@
       striped-rows
       selection-mode="single"
     >
+      <template #header>
+        <div class="flex justify-content-between">
+          <span class="p-input-icon-left">
+            <i class="pi pi-search" />
+            <InputText placeholder="Credential Search" disabled />
+          </span>
+          <Button
+            icon="pi pi-refresh"
+            class="p-button-rounded p-button-outlined"
+            title="Refresh Table"
+            @click="loadTable"
+          ></Button>
+        </div>
+      </template>
       <Column :sortable="true" field="alias" header="Name" />
       <Column field="state" header="State" />
       <Column field="status" header="Status" />
@@ -28,10 +42,12 @@
 // Vue
 import { onMounted } from 'vue';
 // PrimeVue
+import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import ProgressSpinner from 'primevue/progressspinner';
 import { useToast } from 'vue-toastification';
+import InputText from 'primevue/inputtext';
 
 import { useHolderStore } from '../../store';
 import { storeToRefs } from 'pinia';
@@ -57,3 +73,8 @@ onMounted(async () => {
   loadTable();
 });
 </script>
+<style scoped>
+.p-datatable-header input {
+  padding-left: 3rem;
+}
+</style>
