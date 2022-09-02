@@ -14,6 +14,20 @@
       selection-mode="single"
       @row-expand="onRowExpand"
     >
+      <template #header>
+        <div class="flex justify-content-between">
+          <span class="p-input-icon-left">
+            <i class="pi pi-search" />
+            <InputText placeholder="Presentation Search" disabled />
+          </span>
+          <Button
+            icon="pi pi-refresh"
+            class="p-button-rounded p-button-outlined"
+            title="Refresh Table"
+            @click="loadTable"
+          ></Button>
+        </div>
+      </template>
       <Column :expander="true" header-style="width: 3rem" />
       <Column :sortable="true" field="name" header="Name" />
       <Column field="contact.alias" header="Contact Name" />
@@ -38,7 +52,9 @@
 import { onMounted, ref } from 'vue';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
+import Button from 'primevue/button';
 import ProgressSpinner from 'primevue/progressspinner';
+import InputText from 'primevue/inputtext';
 import { useToast } from 'vue-toastification';
 
 import { useVerifierStore } from '../../store';
@@ -73,3 +89,9 @@ onMounted(async () => {
   loadTable();
 });
 </script>
+
+<style scoped>
+.p-datatable-header input {
+  padding-left: 3rem;
+}
+</style>
