@@ -284,16 +284,3 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 };
 </script>
-
-<style>
-/* TODO: app-wide style (like form layout) to go in a global scss */
-.field > label,
-.field > small.p-error {
-  display: block !important;
-}
-
-.field > label > .p-progress-spinner {
-  height: 1em;
-  width: 1em;
-}
-</style>
