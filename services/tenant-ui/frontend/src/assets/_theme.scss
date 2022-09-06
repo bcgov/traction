@@ -5694,3 +5694,15 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 }
 
 /* Customizations to the designer theme should be defined here */
+
+/* I had to put these here for expedience, i needed to delete a componant that accidentially added these to global scope */
+/* >>>>>>>>>>> */
+.row {
+  display: flex;
+  flex-direction: row;
+  margin: 10px;
+}
+.p-dialog-content input {
+  min-width: 400px;
+}
+/* <<<<<<<<<<< */
