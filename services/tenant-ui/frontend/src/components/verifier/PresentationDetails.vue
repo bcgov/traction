@@ -28,7 +28,7 @@
         <span class="pi pi-check"></span><span>Credential is tamper-free </span
         ><br />
         <span class="pi pi-check"></span
-        ><span>All attribute restrictions were statisfied</span><br />
+        ><span>All attribute restrictions were satisfied</span><br />
       </div>
       <hr />
       <!-- PRESENTATION RECEIVED-->
