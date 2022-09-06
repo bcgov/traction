@@ -11,7 +11,7 @@ const toast = useToast();
 
 const copy_to_clipboard = (content: string) => {
   navigator.clipboard.writeText(content);
-  toast.info('Contact Created');
+  toast.info('URL copied to clipboard');
   return;
 };
 </script>
