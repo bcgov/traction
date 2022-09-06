@@ -12,9 +12,7 @@
       </div>
     </div>
 
-    <div class="hidden md:block col-0 md:col-6 xl:col-8 p-0">
-      <img src="/default-login-image.jpg" class="cover" />
-    </div>
+    <div class="cover-image hidden md:block col-0 md:col-6 xl:col-8 p-0" />
   </div>
 </template>
 
@@ -23,10 +21,11 @@
 import LoginForm from '@/components/LoginForm.vue';
 </script>
 
-<style scoped>
-.cover {
-  width: 100%;
-  height: 100%;
+<style scoped lang="scss">
+.cover-image {
+  background-image: url('/default-login-image.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .logo {
