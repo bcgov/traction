@@ -18,7 +18,7 @@
       </div>
 
       <!-- VERIFIED Meaning-->
-      <div v-if="props.show_information && presentation.status == 'verified'">
+      <div v-if="props.showInformation && presentation.status == 'verified'">
         <span class="pi pi-check"></span
         ><span
           >Credential is held by
@@ -72,9 +72,10 @@
       <!-- Identifiers -->
       <Accordion>
         <AccordionTab
-          v-bind:header="`Identifier_${index + 1}`"
           v-for="(item, index) in props.presentation.acapy.presentation_exchange
             .presentation.identifiers"
+          :key="index"
+          :header="`Identifier_${index + 1}`"
         >
           <ul>
             <li v-for="(val, attr_name, i) in item" :key="i">
@@ -111,7 +112,7 @@ const props = defineProps({
     required: false,
     default: true,
   },
-  show_information: {
+  showInformation: {
     type: Boolean as PropType<boolean>,
     required: false,
     default: false,
