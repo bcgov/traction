@@ -24,7 +24,7 @@ import 'vue-toastification/dist/index.css';
 import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
 import Tooltip from 'primevue/tooltip';
-import 'primevue/resources/themes/nova-vue/theme.css';
+import './assets/_theme.scss'; // copied from '~primevue/resources/themes/nova/theme.css'
 import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
