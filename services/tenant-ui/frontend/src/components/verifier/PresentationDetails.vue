@@ -16,6 +16,21 @@
         <li>Contact Alias: {{ presentation.contact.alias }}</li>
         <hr />
       </div>
+
+      <!-- VERIFIED Meaning-->
+      <div v-if="props.showInformation && presentation.status == 'verified'">
+        <span class="pi pi-check"></span
+        ><span
+          >Credential is held by
+          <strong>{{ presentation.contact.alias }}</strong></span
+        ><br />
+        <span class="pi pi-check"></span><span>Credential is valid</span><br />
+        <span class="pi pi-check"></span><span>Credential is tamper-free </span
+        ><br />
+        <span class="pi pi-check"></span
+        ><span>All attribute restrictions were statisfied</span><br />
+      </div>
+      <hr />
       <!-- PRESENTATION RECEIVED-->
       <!-- requested_attributes using 'names' list -> revealed attribute groups -->
       <div v-if="presentation.acapy.presentation_exchange.presentation">
@@ -53,6 +68,22 @@
         <!-- requested_attribute using 'name' string w/o restrictions -> revealed self-attested values -->
         <!-- requested_predicates -> unrevealed attributes -->
       </div>
+      <hr />
+      <!-- Identifiers -->
+      <Accordion>
+        <AccordionTab
+          v-for="(item, index) in props.presentation.acapy.presentation_exchange
+            .presentation.identifiers"
+          :key="index"
+          :header="`Identifier_${index + 1}`"
+        >
+          <ul>
+            <li v-for="(val, attr_name, i) in item" :key="i">
+              <strong>{{ attr_name }}</strong> : {{ val }}
+            </li>
+          </ul>
+        </AccordionTab>
+      </Accordion>
     </ul>
     <Accordion>
       <AccordionTab header="View Raw Content">
@@ -80,6 +111,11 @@ const props = defineProps({
     type: Boolean as PropType<boolean>,
     required: false,
     default: true,
+  },
+  showInformation: {
+    type: Boolean as PropType<boolean>,
+    required: false,
+    default: false,
   },
 });
 
@@ -128,5 +164,11 @@ const requested_single_attributes = (): any => {
 <style>
 .presentation-attr-value {
   padding-left: 1em;
+}
+
+.pi.pi-check {
+  font-size: 18px;
+  color: green;
+  margin-right: 5px;
 }
 </style>
