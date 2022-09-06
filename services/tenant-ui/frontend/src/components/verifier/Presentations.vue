@@ -42,7 +42,7 @@
         <PresentationDetails
           :presentation="presentationDetailDict[data.verifier_presentation_id]"
           :header="false"
-          :showInformation="true"
+          :show-information="true"
         />
       </template>
     </DataTable>

@@ -4,7 +4,6 @@
   <ProgressSpinner v-if="loading" />
   <div v-else>
     <DataTable
-      v-model:selection="selectedContact"
       :value="contacts"
       :paginator="true"
       :rows="10"
@@ -13,10 +12,7 @@
     >
       <template #header>
         <div class="flex justify-content-between">
-          <span class="p-input-icon-left">
-            <i class="pi pi-search" />
-            <InputText placeholder="Connection Search" disabled />
-          </span>
+          <CreateContact />
           <Button
             icon="pi pi-refresh"
             class="p-button-rounded p-button-outlined"
@@ -37,21 +33,6 @@
       <Column field="contact_id" header="ID" />
     </DataTable>
   </div>
-  <Button
-    v-if="contacts"
-    class="create-contact"
-    icon="pi pi-plus"
-    label="Create Contact"
-    @click="createContact"
-  ></Button>
-
-  <Dialog
-    v-model:visible="displayAddContact"
-    header="Create a new contact"
-    :modal="true"
-  >
-    <CreateContact @success="contactCreated" />
-  </Dialog>
 </template>
 
 <script setup lang="ts">
@@ -61,53 +42,41 @@ import { ref, onMounted } from 'vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import Dialog from 'primevue/dialog';
 import ProgressSpinner from 'primevue/progressspinner';
-import InputText from 'primevue/inputtext';
+
 // State
 import { useContactsStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other imports
 import { useToast } from 'vue-toastification';
 // Other components
-import CreateContact from './CreateContact.vue';
+import CreateContact from './createContact/CreateContact.vue';
 import { formatDateLong } from '@/helpers';
 
 const toast = useToast();
 
 const contactsStore = useContactsStore();
-// use the loading state from the store to disable the button...
-const { loading, contacts, selectedContact } = storeToRefs(useContactsStore());
+
+// do not use the loading from the store as that will cause a refresh of components...
+// .. including the create invitation dialog (it needs to stay open)
+const loading = ref(false);
+const { contacts } = storeToRefs(useContactsStore());
 
 const loadTable = async () => {
-  contactsStore.listContacts().catch((err) => {
-    console.error(err);
-    toast.error(`Failure: ${err}`);
-  });
+  loading.value = true;
+  contactsStore
+    .listContacts()
+    .then(() => (loading.value = false))
+    .catch((err) => {
+      console.error(err);
+      toast.error(`Failure: ${err}`);
+    });
 };
 
 onMounted(async () => {
   loadTable();
 });
 // -----------------------------------------------/Loading contacts
-
-// ----------------------------------------------------------------
-// Adding Contacts
-// ----------------------------------------------------------------
-const displayAddContact = ref(false);
-
-const createContact = () => {
-  displayAddContact.value = !displayAddContact.value;
-};
-
-const contactCreated = async () => {
-  // Emited from the contact creation component when a successful invite is made
-  console.log(
-    'contact created emit - do we want to "manually" load contacts or have the store automatically do it?'
-  );
-  loadTable();
-};
-// -----------------------------------------------/Adding contacts
 </script>
 
 <style scoped>
