@@ -13,20 +13,18 @@
     >
       <template #header>
         <div class="flex justify-content-between">
-          <span class="p-input-icon-left">
-            <i class="pi pi-search" />
-            <InputText
-              v-model="schemaTemplateFilters"
-              placeholder="Schema Search"
-              disabled
+          <div class="flex justify-content-start">
+            <CreateSchema />
+            <CopySchema class="ml-4"/>
+          </div>
+          <div class="flex justify-content-end">
+            <Button
+              icon="pi pi-refresh"
+              class="p-button-rounded p-button-outlined"
+              title="Refresh Table"
+              @click="loadTable"
             />
-          </span>
-          <Button
-            icon="pi pi-refresh"
-            class="p-button-rounded p-button-outlined"
-            title="Refresh Table"
-            @click="loadTable"
-          ></Button>
+          </div>
         </div>
       </template>
       <Column :sortable="false" header="Actions">
@@ -59,10 +57,6 @@
         </template>
       </Column>
     </DataTable>
-  </div>
-  <div class="flex justify-content-end flex-wrap m-3 gap-3">
-    <CreateSchema />
-    <CopySchema />
   </div>
 </template>
 

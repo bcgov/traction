@@ -13,10 +13,7 @@
     >
       <template #header>
         <div class="flex justify-content-between">
-          <span class="p-input-icon-left">
-            <i class="pi pi-search" />
-            <InputText placeholder="Connection Search" disabled />
-          </span>
+          <CreateContact />
           <Button
             icon="pi pi-refresh"
             class="p-button-rounded p-button-outlined"
@@ -36,9 +33,6 @@
       </Column>
       <Column field="contact_id" header="ID" />
     </DataTable>
-  </div>
-  <div class="flex justify-content-end flex-wrap m-3 gap-3">
-    <CreateContact />
   </div>
 </template>
 
