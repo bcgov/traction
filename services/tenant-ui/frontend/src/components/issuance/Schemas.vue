@@ -49,6 +49,7 @@
         <template #body="{ data }">
           <CreateCredentialTemplate
             v-if="!data.credential_templates.length"
+            :disabled="!isIssuer"
             :schema-template-id="data.schema_template_id"
           />
           <div v-else>
@@ -62,6 +63,7 @@
     <div class="row buttons">
       <Button
         v-if="schemaTemplates"
+        :disabled="!isIssuer"
         class="create-btn"
         icon="pi pi-plus"
         label="Create Schema"
@@ -108,13 +110,14 @@ import CreateCredentialTemplate from './credentialtemplate/CreateCredentialTempl
 
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';
-import { useGovernanceStore } from '../../store';
+import { useGovernanceStore, useTenantStore } from '../../store';
 import { storeToRefs } from 'pinia';
 
 const confirm = useConfirm();
 const toast = useToast();
 
 const governanceStore = useGovernanceStore();
+const tenantStore = useTenantStore();
 // use the loading state from the store to disable the button...
 const {
   loading,
@@ -122,6 +125,8 @@ const {
   selectedSchemaTemplate,
   schemaTemplateFilters,
 } = storeToRefs(useGovernanceStore());
+
+const { isIssuer } = storeToRefs(useTenantStore());
 
 const loadTable = async () => {
   governanceStore.listSchemaTemplates().catch((err) => {
