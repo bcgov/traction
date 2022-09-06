@@ -2,6 +2,7 @@
   <Toolbar class="traction-header">
     <template #start>
       <i class="pi pi-bars p-toolbar-separator mr-2" />
+      <Issuance />
     </template>
 
     <template #end>
@@ -15,6 +16,7 @@
 <script setup lang="ts">
 import Toolbar from 'primevue/toolbar';
 import Button from 'primevue/button';
+import Issuance from '@/components/common/Issuance.vue';
 </script>
 
 <style>
