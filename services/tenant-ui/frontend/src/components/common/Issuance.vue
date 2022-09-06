@@ -5,6 +5,7 @@
     class="p-button"
     :disabled="tenant.issuer"
     :loading="loading"
+    @click="requestAccess"
   ></Button>
 </template>
 
@@ -15,7 +16,22 @@ import { ref } from 'vue';
 import { useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
 
+// For monitoring the state of the request
 const loading = ref(false);
 
-const { tenant } = storeToRefs(useTenantStore());
+// Get the tenant store
+const tenantStore = useTenantStore();
+
+// This is the tenant state
+const { tenant } = storeToRefs(tenantStore);
+
+/**
+ * Request access to the issuer
+ */
+const requestAccess = async () => {
+  loading.value = true;
+  await tenantStore.makeIssuer();
+  await tenantStore.getSelf();
+  loading.value = false;
+};
 </script>
