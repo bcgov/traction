@@ -13,6 +13,7 @@
     <template #header>
       <div class="flex justify-content-between">
         <div class="flex justify-content-start">
+          <CreateSchema />
           <CopySchema class="ml-4" />
         </div>
         <div class="flex justify-content-end">
@@ -57,35 +58,16 @@
       </template>
     </Column>
   </DataTable>
-  <div class="row buttons">
-    <Button
-      v-if="schemaTemplates"
-      class="create-btn"
-      icon="pi pi-plus"
-      label="Create Schema"
-      @click="createSchema"
-    ></Button>
-  </div>
-  <div>
-    <Dialog
-      v-model:visible="displayCreateSchema"
-      header="Create a new schema"
-      :modal="true"
-    >
-      <CreateSchema @success="schemaCreated" />
-    </Dialog>
-  </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import Dialog from 'primevue/dialog';
 
 // Custom components
-import CreateSchema from './CreateSchema.vue';
+import CreateSchema from './createSchema/CreateSchema.vue';
 import CopySchema from './copySchema/CopySchema.vue';
 import CreateCredentialTemplate from './credentialtemplate/CreateCredentialTemplate.vue';
 
@@ -116,18 +98,6 @@ const loadTable = async () => {
 onMounted(async () => {
   loadTable();
 });
-
-const displayCreateSchema = ref(false);
-const createSchema = () => {
-  displayCreateSchema.value = !displayCreateSchema.value;
-};
-const schemaCreated = async () => {
-  // this is not getting called... bug? or need to find a new pattern (works on Contacts).
-  console.log(
-    'schema created emit - do we want to "manually" load contacts or have the store automatically do it?'
-  );
-  loadTable();
-};
 
 const deleteSchema = (event: any, schema: any) => {
   confirm.require({
