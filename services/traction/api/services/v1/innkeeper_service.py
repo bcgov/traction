@@ -1,3 +1,4 @@
+import logging
 import uuid
 from typing import List
 from uuid import UUID
@@ -25,6 +26,8 @@ from api.endpoints.models.v1.tenant import TenantItem
 from api.jobs import EndorserConnectionJob, RegisterPublicDidJob, MakeIssuerJob
 from api.services.v1 import tenant_service
 from api.services.v1.acapy_service import multitenancy_api
+
+logger = logging.getLogger(__name__)
 
 
 def tenant_permissions_to_item(db_item: TenantPermissions) -> TenantPermissionsItem:
@@ -163,34 +166,45 @@ async def make_issuer(tenant_id: UUID) -> TenantItem:
     return issuer
 
 
+def parameter_filter_match(param_value, value) -> bool:
+    # if parameter values is set, then better check it
+    if param_value is not None:
+        return param_value == value
+    # else let it pass (didn't want to filter on this...)
+    return True
+
+
+def list_tenant_filter_match(params: TenantListParameters, tenant: TenantItem) -> bool:
+    return (
+        parameter_filter_match(params.deleted, tenant.deleted)
+        and parameter_filter_match(params.issuer, tenant.issuer)
+        and parameter_filter_match(params.issuer_status, tenant.issuer_status)
+        and parameter_filter_match(params.public_did_status, tenant.public_did_status)
+    )
+
+
 async def list_tenants(
     parameters: TenantListParameters,
 ) -> [List[TenantItem], int]:
 
     limit = parameters.page_size
     skip = (parameters.page_num - 1) * limit
+    logger.info(f"parameters = {parameters}")
+    logger.info(f"limit = {limit}, skip={skip}")
     # TODO: implement tenant listing properly
     async with async_session() as db:
         tenant_repo = TenantsRepository(db_session=db)
         # just grab them all and build our list out manually
         db_tenants = await tenant_repo.find(0, 999999999)
 
+    logger.info(len(db_tenants))
+
     filtered_results = []
     for db_tenant in db_tenants:
         tenant = await tenant_service.get_tenant(
             db_tenant.id, db_tenant.wallet_id, parameters.deleted
         )
-        filter_match = True
-        # check the parameters...
-        if parameters.deleted != tenant.deleted:
-            filter_match = False
-        if parameters.issuer_status != tenant.issuer_status:
-            filter_match = False
-        if parameters.public_did_status != tenant.public_did_status:
-            filter_match = False
-        if parameters.issuer and (parameters.issuer != tenant.issuer):
-            filter_match = False
-        if filter_match:
+        if list_tenant_filter_match(parameters, tenant):
             filtered_results.append(tenant)
 
     return filtered_results[skip : (skip + limit)], len(filtered_results)

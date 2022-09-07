@@ -38,9 +38,9 @@ async def list_tenants(
     page_num: int | None = 1,
     page_size: int | None = settings.DEFAULT_PAGE_SIZE,
     public_did_status: PublicDIDStatus | None = None,
-    issuer: bool | None = False,
+    issuer: bool | None = None,
     issuer_status: IssuerStatus | None = None,
-    deleted: bool | None = False,
+    deleted: bool = False,
 ) -> TenantListResponse:
 
     parameters = TenantListParameters(
