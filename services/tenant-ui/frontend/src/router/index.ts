@@ -3,12 +3,14 @@ import { createWebHistory, createRouter } from 'vue-router';
 import Dashboard from '@/views/Dashboard.vue';
 import About from '@/views/About.vue';
 
+// Tenant
+import Profile from '@/views/tenant/Profile.vue';
+import Settings from '@/views/tenant/Settings.vue';
 // Connections
 import AcceptInvitation from '@/views/connections/AcceptInvitation.vue';
 import MyContacts from '@/views/connections/MyContacts.vue';
 // Issuance
 import MyIssuedCredentials from '@/views/issuance/MyIssuedCredentials.vue';
-import OfferCredential from '@/views/issuance/OfferCredential.vue';
 import Schemas from '@/views/issuance/Schemas.vue';
 // // Verifictation
 import CreatePresentation from '@/views/verification/CreatePresentation.vue';
@@ -28,6 +30,22 @@ const routes = [
     path: '/about',
     name: 'About',
     component: About,
+  },
+
+  {
+    path: '/tenant/',
+    children: [
+      {
+        path: 'profile',
+        name: 'Profile',
+        component: Profile,
+      },
+      {
+        path: 'settings',
+        name: 'Settings',
+        component: Settings,
+      },
+    ],
   },
 
   {

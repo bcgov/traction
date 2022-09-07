@@ -24,16 +24,12 @@ const items = [
   {
     label: 'Profile',
     icon: 'pi pi-user',
-    command: () => {
-      console.log('profile');
-    },
+    to: { name: 'Profile' },
   },
   {
     label: 'Settings',
     icon: 'pi pi-cog',
-    command: () => {
-      console.log('settings');
-    },
+    to: { name: 'Settings' },
   },
   {
     label: 'Logout',
