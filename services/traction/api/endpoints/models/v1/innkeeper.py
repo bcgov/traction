@@ -55,7 +55,7 @@ class CheckInResponse(GetResponse[CheckInItem]):
 
 class TenantListParameters(ListItemParameters[str, str]):
     public_did_status: PublicDIDStatus | None = PublicDIDStatus.none
-    issuer: bool | None = False
+    issuer: bool | None = None
     issuer_status: IssuerStatus | None = IssuerStatus.none
     deleted: bool | None = False
 
