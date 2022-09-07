@@ -1,6 +1,7 @@
 <template>
   <div>
     <Button
+      :disabled="!isIssuer"
       v-tooltip.top="'Create Credential Template'"
       icon="pi pi-id-card"
       class="p-button-text"
@@ -28,12 +29,17 @@ import Button from 'primevue/button';
 
 import CreateCredentialTemplateForm from './CreateCredentialTemplateForm.vue';
 
+import { useTenantStore } from '../../../store';
+import { storeToRefs } from 'pinia';
+
 const props = defineProps({
   schemaTemplateId: {
     type: String,
     required: true,
   },
 });
+
+const { isIssuer } = storeToRefs(useTenantStore());
 
 defineEmits(['success']);
 

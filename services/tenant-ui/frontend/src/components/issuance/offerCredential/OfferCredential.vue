@@ -1,6 +1,7 @@
 <template>
   <div>
     <Button
+      :disabled="!isIssuer"
       label="Offer Credential"
       icon="pi pi-arrow-up-right"
       @click="openOfferPopup"
@@ -22,7 +23,12 @@ import { ref } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 // State
-import { useContactsStore, useGovernanceStore } from '../../../store';
+import {
+  useContactsStore,
+  useGovernanceStore,
+  useTenantStore,
+} from '../../../store';
+import { storeToRefs } from 'pinia';
 // Custom Components
 import OfferCredentialForm from './OfferCredentialForm.vue';
 // Other Imports
@@ -33,6 +39,8 @@ const contactsStore = useContactsStore();
 const governanceStore = useGovernanceStore();
 
 const toast = useToast();
+
+const { isIssuer } = storeToRefs(useTenantStore());
 
 // -----------------------------------------------------------------------
 // Display popup

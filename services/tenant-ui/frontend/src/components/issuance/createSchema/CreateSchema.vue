@@ -1,6 +1,11 @@
 <template>
   <div>
-    <Button label="Create Schema" icon="pi pi-plus" @click="openModal" />
+    <Button
+      :disabled="!isIssuer"
+      label="Create Schema"
+      icon="pi pi-plus"
+      @click="openModal"
+    />
     <Dialog
       v-model:visible="displayModal"
       header="Create Schema"
@@ -19,7 +24,8 @@ import { ref } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 // State
-
+import { useTenantStore } from '../../../store';
+import { storeToRefs } from 'pinia';
 // Custom Components
 import CreateSchemaForm from './CreateSchemaForm.vue';
 // Other Imports
@@ -28,6 +34,8 @@ import { useToast } from 'vue-toastification';
 // State setup
 
 const toast = useToast();
+
+const { isIssuer } = storeToRefs(useTenantStore());
 
 defineEmits(['success']);
 
