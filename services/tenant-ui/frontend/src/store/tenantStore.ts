@@ -18,7 +18,7 @@ export const useTenantStore = defineStore('tenant', () => {
   });
 
   const isIssuer = computed(() => {
-    return tenant.issuer_status == 'Approved'
+    return tenant.value.issuer;
   });
 
   // actions

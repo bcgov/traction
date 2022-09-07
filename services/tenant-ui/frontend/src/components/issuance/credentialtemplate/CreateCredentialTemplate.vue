@@ -1,8 +1,8 @@
 <template>
   <div>
     <Button
-      :disabled="!isIssuer"
       v-tooltip.top="'Create Credential Template'"
+      :disabled="!isIssuer"
       icon="pi pi-id-card"
       class="p-button-text"
       @click="openModal"
