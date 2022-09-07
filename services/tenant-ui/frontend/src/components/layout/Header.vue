@@ -8,7 +8,7 @@
     <template #end>
       <Button icon="pi pi-search" class="p-button-text p-button-info mr-2" />
       <Button icon="pi pi-bell" class="p-button-text p-button-info mr-2" />
-      <Button icon="pi pi-user" class="p-button-icon p-button-rounded" />
+      <ProfileButton />
     </template>
   </Toolbar>
 </template>
@@ -17,6 +17,7 @@
 import Toolbar from 'primevue/toolbar';
 import Button from 'primevue/button';
 import Issuance from '@/components/common/Issuance.vue';
+import ProfileButton from '@/components/profile/ProfileButton.vue';
 </script>
 
 <style>
