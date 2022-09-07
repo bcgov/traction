@@ -1,44 +1,46 @@
 <template>
   <h3 class="mt-0">My Issued Credentials</h3>
 
-  <ProgressSpinner v-if="loading" />
-  <div v-else>
-    <DataTable
-      v-model:selection="selectedCredential"
-      :value="credentials"
-      :paginator="true"
-      :rows="10"
-      striped-rows
-      selection-mode="single"
-    >
-      <template #header>
-        <div class="flex justify-content-between">
-          <OfferCredential />
-          <Button
-            icon="pi pi-refresh"
-            class="p-button-rounded p-button-outlined"
-            title="Refresh Table"
-            @click="loadTable"
-          ></Button>
-        </div>
+  <DataTable
+    v-model:selection="selectedCredential"
+    :loading="loading"
+    :value="credentials"
+    :paginator="true"
+    :rows="10"
+    striped-rows
+    selection-mode="single"
+  >
+    <template #header>
+      <div class="flex justify-content-between">
+        <OfferCredential />
+        <Button
+          icon="pi pi-refresh"
+          class="p-button-rounded p-button-outlined"
+          title="Refresh Table"
+          @click="loadTable"
+        ></Button>
+      </div>
+    </template>
+    <template #empty> No issued credentials found. </template>
+    <template #loading>
+      Loading issued credentials data. Please wait...
+    </template>
+    <Column
+      :sortable="true"
+      field="credential_template.name"
+      header="Credential Name"
+    />
+    <Column field="contact.alias" header="Contact Name" />
+    <Column field="state" header="State" />
+    <Column field="status" header="Status" />
+    <Column field="created_at" header="Created at">
+      <template #body="{ data }">
+        {{ formatDateLong(data.created_at) }}
       </template>
-      <Column
-        :sortable="true"
-        field="credential_template.name"
-        header="Credential Name"
-      />
-      <Column field="contact.alias" header="Contact Name" />
-      <Column field="state" header="State" />
-      <Column field="status" header="Status" />
-      <Column field="created_at" header="Created at">
-        <template #body="{ data }">
-          {{ formatDateLong(data.created_at) }}
-        </template>
-      </Column>
-      <Column field="issuer_credential_id" header="ID" />
-      <Column field="revoked" header="Revoked?" />
-    </DataTable>
-  </div>
+    </Column>
+    <Column field="issuer_credential_id" header="ID" />
+    <Column field="revoked" header="Revoked?" />
+  </DataTable>
 </template>
 
 <script setup lang="ts">
@@ -53,7 +55,6 @@ import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import ProgressSpinner from 'primevue/progressspinner';
 
 // Other Components
 import OfferCredential from './offerCredential/OfferCredential.vue';
