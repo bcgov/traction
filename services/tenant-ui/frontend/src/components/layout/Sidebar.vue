@@ -2,7 +2,7 @@
   <div>
     <h1 class="sidebar-app-title">{{ tenant.name }}</h1>
     <!--<h1 class="sidebar-app-title">{{ config.ux.sidebarTitle }}</h1>-->
-    <PanelMenu :model="items" class="mt-5" />
+    <PanelMenu :model="items" class="mt-5" id="side-menu" />
   </div>
 </template>
 
@@ -94,7 +94,8 @@ const items = ref([
 ]);
 </script>
 
-<style>
+<!-- Make sure style is scoped so it doesn't bleed into other components. -->
+<style scoped>
 .sidebar-app-title {
   font-size: 1.6em;
   text-align: center;
@@ -105,14 +106,14 @@ const items = ref([
 }
 
 /* TODO: quick and dirty, rewrite this (or better, find theme settings) */
-.p-panelmenu,
-.p-panelmenu-panel > .p-panelmenu-header > a > *,
-.p-panelmenu,
-.p-panelmenu-panel > .p-panelmenu-header > a,
-.p-panelmenu-content,
-.p-submenu-list > *,
-.p-menuitem-link > *,
-a.p-menuitem-link:hover {
+#side-menu >>> .p-panelmenu,
+#side-menu >>> .p-panelmenu-panel > .p-panelmenu-header > a > *,
+#side-menu >>> .p-panelmenu,
+#side-menu >>> .p-panelmenu-panel > .p-panelmenu-header > a,
+#side-menu >>> .p-panelmenu-content,
+#side-menu >>> .p-submenu-list > *,
+#side-menu >>> .p-menuitem-link > *,
+#side-menu >>> a.p-menuitem-link:hover {
   background-color: #244075 !important;
   border: none !important;
   color: white !important;

@@ -10,11 +10,14 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import Menu from 'primevue/menu';
+import { ref } from 'vue';
+
+const menu = ref();
 /**
  * Toggle the profile menu
  */
-const toggleProfile = () => {
-  console.log('yo');
+const toggleProfile = (event: any) => {
+  menu.value.toggle(event);
 };
 
 const items = [
@@ -41,3 +44,4 @@ const items = [
   },
 ];
 </script>
+<style scoped></style>
