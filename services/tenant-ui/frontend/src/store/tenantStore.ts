@@ -17,6 +17,10 @@ export const useTenantStore = defineStore('tenant', () => {
     return token.value != null && tenant.value != null;
   });
 
+  const isIssuer = computed(() => {
+    return tenant.issuer_status == 'Approved'
+  });
+
   // actions
   function clearTenant() {
     console.log('> clearTenant');
@@ -91,6 +95,7 @@ export const useTenantStore = defineStore('tenant', () => {
     getSelf,
     makeIssuer,
     clearTenant,
+    isIssuer,
   };
 });
 
