@@ -37,28 +37,69 @@
           @click="deleteSchema($event, data)"
         />
       </template>
-    </Column>
-    <Column field="name" header="Schema" filter-field="name" />
-    <Column field="version" header="Version" />
-    <Column field="status" header="Status" />
-    <Column field="state" header="State" />
-    <Column field="attributes" header="Attributes" />
-    <Column field="schema_id" header="ID" />
-    <Column field="credential_templates" header="Credential Template">
-      <template #body="{ data }">
-        <CreateCredentialTemplate
-          v-if="!data.credential_templates.length"
-          :disabled="!isIssuer"
-          :schema-template-id="data.schema_template_id"
-        />
-        <div v-else>
-          {{
-            `${data.credential_templates[0].name}:${data.credential_templates[0].tag}`
-          }}
-        </div>
-      </template>
-    </Column>
-  </DataTable>
+      <Column :sortable="false" header="Actions">
+        <template #body="{ data }">
+          <Button
+            title="Delete Schema"
+            icon="pi pi-times"
+            class="p-button-rounded p-button-icon-only p-button-danger p-button-text"
+            @click="deleteSchema($event, data)"
+          />
+        </template>
+      </Column>
+      <Column field="name" header="Schema" filter-field="name" />
+      <Column field="version" header="Version" />
+      <Column field="status" header="Status" />
+      <Column field="state" header="State" />
+      <Column field="attributes" header="Attributes" />
+      <Column field="schema_id" header="ID" />
+      <Column field="credential_templates" header="Credential Template">
+        <template #body="{ data }">
+          <CreateCredentialTemplate
+            v-if="!data.credential_templates.length"
+            :disabled="!isIssuer"
+            :schema-template-id="data.schema_template_id"
+          />
+          <div v-else>
+            {{
+              `${data.credential_templates[0].name}:${data.credential_templates[0].tag}`
+            }}
+          </div>
+        </template>
+      </Column>
+    </DataTable>
+    <div class="row buttons">
+      <Button
+        v-if="schemaTemplates"
+        :disabled="!isIssuer"
+        class="create-btn"
+        icon="pi pi-plus"
+        label="Create Schema"
+        @click="createSchema"
+      ></Button>
+      <Button
+        v-if="schemaTemplates"
+        class="copy-btn"
+        icon="pi pi-copy"
+        label="Copy Schema"
+        @click="copySchema"
+      />
+    </div>
+    <Dialog
+      v-model:visible="displayCreateSchema"
+      header="Create a new schema"
+      :modal="true"
+    >
+      <CreateSchema @success="schemaCreated" />
+    </Dialog>
+    <Dialog
+      v-model:visible="displayCopySchema"
+      header="Copy an existing schema"
+      :modal="true"
+    >
+      <CopySchema @success="schemaCopied" />
+    </Dialog>
+  </div>
 </template>
 
 <script setup lang="ts">
