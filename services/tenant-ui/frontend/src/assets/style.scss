@@ -1,0 +1,25 @@
+@import '_theme.scss'; // copied from '~primevue/resources/themes/nova/theme.css'
+
+.row {
+	display: flex;
+	flex-direction: row;
+	margin: 10px;
+}
+.p-dialog-content {
+	input {
+		min-width: 400px;
+	}
+}
+.field {
+	>label {
+		display: block !important;
+		>.p-progress-spinner {
+			height: 1em;
+			width: 1em;
+		}
+	}
+	>small.p-error {
+		display: block !important;
+	}
+}
+

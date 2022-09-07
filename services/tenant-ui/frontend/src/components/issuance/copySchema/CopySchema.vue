@@ -1,39 +1,33 @@
 <template>
   <div>
-    <Button
-      v-tooltip.top="'Create Credential Template'"
-      icon="pi pi-id-card"
-      class="p-button-text"
-      @click="openModal"
-    />
+    <Button label="Copy Schema" icon="pi pi-copy" @click="openModal" />
     <Dialog
       v-model:visible="displayModal"
-      header="Create Credential Template"
+      header="Copy Schema"
       :modal="true"
       @update:visible="handleClose"
     >
-      <CreateCredentialTemplateForm
-        :schema-template-id="schemaTemplateId"
-        @success="$emit('success')"
-        @closed="handleClose"
-      />
+      <CopySchemaForm @success="$emit('success')" @closed="handleClose" />
     </Dialog>
   </div>
 </template>
 
 <script setup lang="ts">
+// Vue
 import { ref } from 'vue';
-import Dialog from 'primevue/dialog';
+// PrimeVue
 import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
+// State
 
-import CreateCredentialTemplateForm from './CreateCredentialTemplateForm.vue';
+// Custom Components
+import CopySchemaForm from './CopySchemaForm.vue';
+// Other Imports
+import { useToast } from 'vue-toastification';
 
-const props = defineProps({
-  schemaTemplateId: {
-    type: String,
-    required: true,
-  },
-});
+// State setup
+
+const toast = useToast();
 
 defineEmits(['success']);
 
@@ -49,4 +43,5 @@ const handleClose = async () => {
   // some logic... maybe we shouldn't close?
   displayModal.value = false;
 };
+// ---------------------------------------------------------------/display
 </script>
