@@ -34,7 +34,7 @@ const items = [
   {
     label: 'Logout',
     icon: 'pi pi-sign-out',
-    url: '/',
+    url: '/', // TODO: this should be a logout route
   },
 ];
 </script>
