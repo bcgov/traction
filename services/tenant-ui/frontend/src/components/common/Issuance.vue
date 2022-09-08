@@ -32,6 +32,7 @@ const tenantStore = useTenantStore();
 const { tenant } = storeToRefs(tenantStore);
 
 /**
+ * ## requestAccess
  * Request access to the issuer
  */
 const requestAccess = async () => {
@@ -39,7 +40,6 @@ const requestAccess = async () => {
 
   const res = await tenantStore.makeIssuer();
   if (res.issuer_status === 'N/A') {
-    console.error("Sorry you don't have access yet.");
     toast.error(
       'Sorry you do not have access yet. Please contact your Innkeeper directly.'
     );
@@ -49,6 +49,11 @@ const requestAccess = async () => {
   loading.value = false; // Remove the spinner
 };
 
+/**
+ * ## label
+ * Return the label for the button depending
+ * on the state of the tenant
+ */
 const label = () => {
   if (tenant.value.issuer) {
     return 'Issuer';
