@@ -1,6 +1,6 @@
 <template>
   <Button
-    :label="tenant.issuer ? 'Issuer' : 'Activate Issuer'"
+    :label="tenant.issuer ? 'Issuer' : 'Request Issuer Permissions'"
     :icon="tenant.issuer ? 'pi pi-check' : 'pi pi-flag'"
     class="p-button"
     :disabled="tenant.issuer"
