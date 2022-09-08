@@ -34,9 +34,7 @@ const items = [
   {
     label: 'Logout',
     icon: 'pi pi-sign-out',
-    command: () => {
-      console.log('logout');
-    },
+    url: '/',
   },
 ];
 </script>
