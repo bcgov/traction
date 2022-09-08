@@ -1,5 +1,5 @@
 <template>
-  <h3>Tenant Profile View</h3>
+  <h3>Tenant Profile</h3>
   <Issuance />
 </template>
 <script setup lang="ts">
