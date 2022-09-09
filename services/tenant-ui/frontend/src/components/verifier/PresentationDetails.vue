@@ -17,7 +17,10 @@
         <hr />
       </div>
       <!-- VERIFIED Meaning-->
-      <div v-if="props.showInformation && presentation.status == 'verified'">
+      <div
+        v-if="props.showInformation && presentation.status == 'verified'"
+        class="information"
+      >
         <span class="pi pi-check"></span
         ><span
           >Credential is held by
@@ -32,7 +35,16 @@
       <hr />
       <!-- PRESENTATION RECEIVED-->
 
-      <DataTable :value="attribute_claim_rows()" responsiveLayout="scroll">
+      <DataTable
+        :value="attribute_claim_rows()"
+        responsiveLayout="scroll"
+        stripedRows
+      >
+        <Column field="" header="" style="width: 30px">
+          <template #body="row">
+            <span v-if="row.data.checkmark" class="pi pi-check"></span>
+          </template>
+        </Column>
         <Column field="name" header="Name"></Column>
         <Column field="val" header="Value"></Column>
       </DataTable>
@@ -95,6 +107,7 @@ interface AttrbiuteClaimRow {
   val: string;
   attr_type: string;
   referent: string;
+  checkmark: boolean;
   tooltip: object;
 }
 
@@ -111,6 +124,7 @@ const attribute_claim_rows = (): AttrbiuteClaimRow[] => {
           .revealed_attr_groups[k].values[name].raw,
         attr_type: 'requested_attribute_group',
         referent: k,
+        checkmark: true,
         tooltip: '',
       });
     });
@@ -123,6 +137,7 @@ const attribute_claim_rows = (): AttrbiuteClaimRow[] => {
         .revealed_attrs[k].raw,
       attr_type: 'requested_single_attribute',
       referent: k,
+      checkmark: true,
       tooltip: '',
     });
   }
@@ -134,6 +149,7 @@ const attribute_claim_rows = (): AttrbiuteClaimRow[] => {
         .self_attested_attrs[k],
       attr_type: 'self_attested_attribute',
       referent: k,
+      checkmark: false,
       tooltip: '',
     });
   }
@@ -458,7 +474,7 @@ const test_presentation = {
   padding-left: 1em;
 }
 
-.pi.pi-check {
+.information .pi.pi-check {
   font-size: 18px;
   color: green;
   margin-right: 5px;
