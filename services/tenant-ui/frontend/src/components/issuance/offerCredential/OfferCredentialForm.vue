@@ -14,6 +14,7 @@
 
           <AutoComplete
             id="selectedCred"
+            class="w-full"
             v-model="v$.selectedCred.$model"
             :disabled="credsLoading"
             :suggestions="filteredCreds"
@@ -39,6 +40,7 @@
 
           <AutoComplete
             id="selectedContact"
+            class="w-full"
             v-model="v$.selectedContact.$model"
             :disabled="contactLoading"
             :suggestions="filteredContacts"
@@ -80,7 +82,7 @@
               'p-invalid': v$.credentialValuesPretty.$invalid && submitted,
             }"
             :auto-resize="true"
-            rows="20"
+            rows="15"
             cols="50"
             readonly
           />
@@ -110,22 +112,55 @@
         <strong>{{ formFields.selectedCred.label }}</strong>
 
         <div class="field mt-5">
-          <label for="credentialValuesEdit"
-            >Credential Field Values
-            <small
-              >(Schema: {{ schemaForSelectedCred.schema_name }}
-              {{ schemaForSelectedCred.version }})</small
+          <!-- Label/toggle -->
+          <div class="flex justify-content-between">
+            <div class="flex justify-content-start">
+              <label for="credentialValuesEdit">
+                Credential Field Values
+              </label>
+            </div>
+            <div class="flex justify-content-end">
+              JSON
+              <InputSwitch v-model="showRawJson" class="ml-1" />
+            </div>
+          </div>
+
+          <!-- Raw JSON input mode -->
+          <div v-show="showRawJson">
+            <Textarea
+              id="credentialValuesEdit"
+              v-model="v$.credentialValuesEditing.$model"
+              :auto-resize="true"
+              rows="20"
+              cols="60"
+              class="w-full mt-1"
+            />
+          </div>
+
+          <!-- Dynamic Attribute field list -->
+          <div v-show="!showRawJson">
+            <div
+              class="field"
+              v-for="(item, index) in credentialValuesRaw"
+              :key="item.name"
             >
-          </label>
-          <!-- TODO: This is replaced with the dynamic field creation  -->
-          <Textarea
-            id="credentialValuesEdit"
-            v-model="v$.credentialValuesEditing.$model"
-            :auto-resize="true"
-            rows="20"
-            cols="50"
-            class="w-full"
-          />
+              <label :for="item.name">
+                {{ item.name }}
+              </label>
+              <InputText
+                :id="item.name"
+                v-model="credentialValuesRaw[index].value"
+                class="w-full"
+              />
+            </div>
+          </div>
+
+          <div class="flex justify-content-end">
+            <small>
+              Schema: {{ schemaForSelectedCred.schema_name }} Version:
+              {{ schemaForSelectedCred.version }}
+            </small>
+          </div>
 
           <Button label="Save" class="mt-5 w-full" @click="saveCredValues" />
         </div>
@@ -136,10 +171,12 @@
 
 <script setup lang="ts">
 // Vue
-import { computed, reactive, ref } from 'vue';
+import { reactive, ref } from 'vue';
 // PrimeVue / Validation
 import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
+import InputSwitch from 'primevue/inputswitch';
+import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import ProgressSpinner from 'primevue/progressspinner';
 import { required } from '@vuelidate/validators';
@@ -171,8 +208,7 @@ const issuerStore = useIssuerStore();
 const emit = defineEmits(['closed', 'success']);
 
 // Form and Validation
-// TODO: this one replaced with dynamic field display
-const credentialValuesRaw = ref([]);
+const credentialValuesRaw = ref([] as { name: string; value: string }[]);
 const filteredCreds = ref();
 const filteredContacts = ref();
 const schemaForSelectedCred = ref();
@@ -215,6 +251,7 @@ const searchCreds = (event: any) => {
 };
 
 // Editing the credential
+const showRawJson = ref(false);
 const editCredentialValues = () => {
   showEditCredValues.value = true;
 
@@ -238,6 +275,7 @@ const editCredentialValues = () => {
       }
     );
     console.log(schemaFillIn);
+    credentialValuesRaw.value = schemaFillIn;
     formFields.credentialValuesEditing = JSON.stringify(
       schemaFillIn,
       undefined,
@@ -246,8 +284,7 @@ const editCredentialValues = () => {
   }
 };
 const saveCredValues = () => {
-  // TODO: to be replaced with dynamic form field component
-  credentialValuesRaw.value = JSON.parse(formFields.credentialValuesEditing);
+  // credentialValuesRaw.value = JSON.parse(formFields.credentialValuesEditing);
   formFields.credentialValuesPretty = '';
   credentialValuesRaw.value.forEach((c: any) => {
     formFields.credentialValuesPretty += `${c.name}: ${c.value} \n`;

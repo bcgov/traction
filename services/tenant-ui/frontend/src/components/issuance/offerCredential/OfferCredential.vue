@@ -10,6 +10,7 @@
       v-model:visible="displayModal"
       header="Offer Credential"
       :modal="true"
+      :style="{width: '500px'}"
       @update:visible="handleClose"
     >
       <OfferCredentialForm @success="$emit('success')" @closed="handleClose" />
