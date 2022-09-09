@@ -16,7 +16,6 @@
         <li>Contact Alias: {{ presentation.contact.alias }}</li>
         <hr />
       </div>
-
       <!-- VERIFIED Meaning-->
       <div v-if="props.showInformation && presentation.status == 'verified'">
         <span class="pi pi-check"></span
@@ -32,57 +31,13 @@
       </div>
       <hr />
       <!-- PRESENTATION RECEIVED-->
-      <!-- requested_attributes using 'names' list -> revealed attribute groups -->
 
-      <div v-if="presentation.acapy.presentation_exchange.presentation">
-        <div
-          v-for="(val, attr_name, i) in requested_attribute_groups()"
-          :key="i"
-        >
-          <li
-            v-for="(name, index) in val.names"
-            :key="index"
-            class="presentation-attr-value"
-          >
-            <strong>{{ name }}</strong> :
-            {{
-              test_presentation.acapy.presentation_exchange.presentation
-                .requested_proof.revealed_attr_groups[attr_name].values[name]
-                .raw
-            }}
-            <br />
-          </li>
-        </div>
-        <!-- requested_attributes using 'name' string w/ restrictions -> revealed attributes -->
-        <li
-          v-for="(val, attr_name, i) in requested_single_attributes()"
-          :key="i"
-          class="presentation-attr-value"
-        >
-          <strong>{{ val.name }}</strong>
-          :
-          {{
-            test_presentation.acapy.presentation_exchange.presentation
-              .requested_proof.revealed_attrs[attr_name].raw
-          }}
-        </li>
-        <!-- requested_attribute using 'name' string w/o restrictions -> revealed self-attested values -->
-        <hr />
-        <li
-          v-for="(val, attr_name, i) in requested_self_attested_attributes()"
-          :key="i"
-          class="presentation-attr-value"
-        >
-          <strong>{{ val.name }}</strong>
-          :
-          {{
-            test_presentation.acapy.presentation_exchange.presentation
-              .requested_proof.self_attested_attrs[attr_name]
-          }}
-        </li>
-        <!-- requested_predicates -> unrevealed attributes -->
-      </div>
-      <hr />
+      <DataTable :value="attribute_claim_rows()" responsiveLayout="scroll">
+        <Column field="name" header="Name"></Column>
+        <Column field="val" header="Value"></Column>
+      </DataTable>
+
+      <br />
       <!-- Identifiers -->
       <Accordion>
         <AccordionTab
@@ -106,12 +61,13 @@
     </Accordion>
   </div>
   <div v-else>...loading</div>
-  {{ attribute_claim_rows() }}
 </template>
 
 <script setup lang="ts">
 import { PropType } from 'vue';
 import { formatDateLong } from '@/helpers';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import VueJsonPretty from 'vue-json-pretty';
@@ -148,16 +104,16 @@ const attribute_claim_rows = (): AttrbiuteClaimRow[] => {
 
   //normalize attribute_groups for table
   for (const [k, v] of Object.entries(requested_attribute_groups())) {
-    for (const [name, index] in v.names) {
+    v.names.forEach((name) => {
       result.push({
         name: name,
         val: pres.acapy.presentation_exchange.presentation.requested_proof
-          .revealed_attr_groups[k].values[name],
+          .revealed_attr_groups[k].values[name].raw,
         attr_type: 'requested_attribute_group',
         referent: k,
         tooltip: '',
       });
-    }
+    });
   }
   //normalize single_attributes for table
   for (const [k, v] of Object.entries(requested_single_attributes())) {
@@ -185,6 +141,7 @@ const attribute_claim_rows = (): AttrbiuteClaimRow[] => {
   // normalize requested_predicates for table
   // ag_rows = requested_attribute_groups().map(ua => console.log(ua)
   console.log(result);
+  return result;
 };
 // four different payload locations for the provided claims based on these filters.
 const requested_attribute_groups = (): any => {
