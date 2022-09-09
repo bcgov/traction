@@ -170,7 +170,7 @@ const attribute_claim_rows = (): AttrbiuteClaimRow[] => {
 const requested_attribute_groups = (): any => {
   return Object.fromEntries(
     Object.entries(
-      test_presentation.acapy.presentation_exchange.presentation_request
+      props.presentation.acapy.presentation_exchange.presentation_request
         .requested_attributes
     ).filter(([key, ra]: [string, any]): any => {
       return 'names' in ra && 'restrictions' in ra;
@@ -181,7 +181,7 @@ const requested_attribute_groups = (): any => {
 const requested_single_attributes = (): any => {
   return Object.fromEntries(
     Object.entries(
-      test_presentation.acapy.presentation_exchange.presentation_request
+      props.presentation.acapy.presentation_exchange.presentation_request
         .requested_attributes
     ).filter(([key, ra]: [string, any]): any => {
       return 'name' in ra && 'restrictions' in ra;
