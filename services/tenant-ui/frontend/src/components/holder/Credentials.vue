@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-0">My Held Credentials</h3>
+  <h3 class="mt-0">Credentials</h3>
 
   <ProgressSpinner v-if="loading" />
   <div v-else>

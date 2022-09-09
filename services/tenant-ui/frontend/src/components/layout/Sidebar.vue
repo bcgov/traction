@@ -28,31 +28,12 @@ const items = ref([
   },
 
   {
-    label: 'Issuance',
-    icon: 'pi pi-fw pi-wallet',
+    label: 'Configuration',
+    icon: 'pi pi-fw pi-file',
     items: [
       {
         label: 'Schemas',
         to: { name: 'Schemas' },
-      },
-      {
-        label: 'My Issued Credentials',
-        to: { name: 'MyIssuedCredentials' },
-      },
-    ],
-  },
-
-  {
-    label: 'Verification',
-    icon: 'pi pi-fw pi-check-square',
-    items: [
-      {
-        label: 'My Presentations',
-        to: { name: 'MyPresentations' },
-      },
-      {
-        label: 'Create A Presentation Request',
-        to: { name: 'CreatePresentation' },
       },
       {
         label: 'Presentation Templates',
@@ -62,18 +43,21 @@ const items = ref([
   },
 
   {
+    label: 'Issuance',
+    icon: 'pi pi-fw pi-wallet',
+    to: { name: 'MyIssuedCredentials' },
+  },
+
+  {
+    label: 'Verification',
+    icon: 'pi pi-fw pi-check-square',
+    to: { name: 'MyPresentations' },
+  },
+
+  {
     label: 'Holder',
-    icon: 'pi pi-fw pi-key',
-    items: [
-      {
-        label: 'My Held Credentials',
-        to: { name: 'MyHeldCredentials' },
-      },
-      {
-        label: 'Accept a Credential Offer',
-        to: { name: 'AcceptCredential' },
-      },
-    ],
+    icon: 'pi pi-fw pi-id-card',
+    to: { name: 'MyHeldCredentials' },
   },
 
   {
@@ -115,6 +99,9 @@ const items = ref([
           order: 2;
           margin-left: auto;
         }
+      }
+      .p-menuitem-icon {
+        font-size: 1.3em;
       }
     }
   }

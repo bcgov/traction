@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-0">My Received Presentations</h3>
+  <h3 class="mt-0">Verifications</h3>
 
   <ProgressSpinner v-if="loading" />
   <div v-else>

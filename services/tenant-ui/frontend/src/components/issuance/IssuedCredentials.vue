@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-0">My Issued Credentials</h3>
+  <h3 class="mt-0">Issued/Offered Credentials</h3>
 
   <DataTable
     v-model:selection="selectedCredential"

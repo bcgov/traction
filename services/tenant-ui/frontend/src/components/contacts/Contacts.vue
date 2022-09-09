@@ -14,7 +14,7 @@
       <div class="flex justify-content-between">
         <div class="flex justify-content-start">
           <CreateContact />
-          <AcceptInvitation class="ml-4"/>
+          <AcceptInvitation class="ml-4" />
         </div>
         <div class="flex justify-content-end">
           <Button
