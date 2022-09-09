@@ -7,7 +7,6 @@
     :value="schemaTemplates"
     :paginator="true"
     :rows="10"
-    striped-rows
     selection-mode="single"
   >
     <template #header>
@@ -32,8 +31,8 @@
       <template #body="{ data }">
         <Button
           title="Delete Schema"
-          icon="pi pi-times"
-          class="p-button-rounded p-button-icon-only p-button-danger p-button-text"
+          icon="pi pi-times-circle"
+          class="p-button-rounded p-button-icon-only p-button-text"
           @click="deleteSchema($event, data)"
         />
       </template>

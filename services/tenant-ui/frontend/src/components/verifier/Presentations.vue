@@ -9,7 +9,6 @@
     data-key="verifier_presentation_id"
     :paginator="true"
     :rows="10"
-    striped-rows
     selection-mode="single"
     @row-expand="onRowExpand"
   >

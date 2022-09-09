@@ -7,7 +7,6 @@
     :value="credentials"
     :paginator="true"
     :rows="10"
-    striped-rows
     selection-mode="single"
   >
     <template #header>
