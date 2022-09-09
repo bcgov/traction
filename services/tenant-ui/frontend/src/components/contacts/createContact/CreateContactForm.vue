@@ -1,15 +1,25 @@
 <template>
-  <form @submit.prevent="handleSubmit()">
+  <form @submit.prevent="handleSubmit(!v$.$invalid)">
     <!-- Alias -->
     <div class="field">
-      <label for="create_contact_alias">Contact Alias</label>
+      <label
+        for="alias"
+        :class="{ 'p-error': v$.alias.$invalid && submitted }"
+        >Contact Alias
+      </label>
       <InputText
-        v-model="create_contact_alias"
+        v-model="v$.alias.$model"
+        :class="{ 'p-invalid': v$.alias.$invalid && submitted }"
         type="text"
-        name="create_contact_alias"
+        name="alias"
         autofocus
         :readonly="!!invitation_url"
       />
+      <small
+        v-if="v$.alias.$invalid && submitted"
+        class="p-error"
+        >{{ v$.alias.required.$message }}
+      </small>
     </div>
 
     <div v-if="invitation_url">
@@ -23,12 +33,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+// Vue
+import { reactive, ref } from 'vue';
+// State
+import { useContactsStore } from '../../../store';
+// PrimeVue / Validation
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
+import { required } from '@vuelidate/validators';
+import { useVuelidate } from '@vuelidate/core';
 import { useToast } from 'vue-toastification';
+// Other Components
 import QRCode from '../../common/QRCode.vue';
-import { useContactsStore } from '../../../store';
 
 const contactsStore = useContactsStore();
 
@@ -36,7 +52,6 @@ const contactsStore = useContactsStore();
 const toast = useToast();
 
 // To store local data
-const create_contact_alias = ref('');
 const invitation_url = ref('');
 
 // ----------------------------------------------------------------
@@ -44,12 +59,26 @@ const invitation_url = ref('');
 // ----------------------------------------------------------------
 const emit = defineEmits(['closed', 'success']);
 
+// Validation
+const formFields = reactive({
+  alias: '',
+});
+const rules = {
+  alias: { required },
+};
+const v$ = useVuelidate(rules, formFields);
+
 // Form submission
-const handleSubmit = async () => {
+const submitted = ref(false);
+const handleSubmit = async (isFormValid: boolean) => {
+  submitted.value = true;
+  if (!isFormValid) {
+    return;
+  }
   try {
     // call store
     const result = await contactsStore.createInvitation(
-      create_contact_alias.value
+      formFields.alias
     );
     if (result != null && result['invitation_url']) {
       invitation_url.value = result['invitation_url'];
@@ -60,6 +89,8 @@ const handleSubmit = async () => {
     return false;
   } catch (error) {
     toast.error(`Failure: ${error}`);
+  } finally {
+    submitted.value = false;
   }
 };
 
