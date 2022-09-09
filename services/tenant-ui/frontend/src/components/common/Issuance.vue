@@ -61,7 +61,7 @@ const label = () => {
     !tenant.value.issuer &&
     tenant.value.issuer_status === 'Approved'
   ) {
-    return 'Request Issuer Permissions';
+    return 'Approve Issuer Permissions';
   } else {
     return 'Request Issuer Permissions';
   }
