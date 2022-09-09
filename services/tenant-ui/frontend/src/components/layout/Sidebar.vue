@@ -68,6 +68,7 @@ const items = ref([
 ]);
 </script>
 
+<!-- Make sure style is scoped so it doesn't bleed into other components. -->
 <style scoped lang="scss">
 .sidebar-app-title {
   font-size: 1.6em;

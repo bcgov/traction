@@ -3,6 +3,9 @@ import { createWebHistory, createRouter } from 'vue-router';
 import Dashboard from '@/views/Dashboard.vue';
 import About from '@/views/About.vue';
 
+// Tenant
+import Profile from '@/views/tenant/Profile.vue';
+import Settings from '@/views/tenant/Settings.vue';
 // Connections
 import MyContacts from '@/views/connections/MyContacts.vue';
 // Issuance
@@ -29,7 +32,23 @@ const routes = [
   },
 
   {
-    path: '/contacts/',
+    path: '/tenant/',
+    children: [
+      {
+        path: 'profile',
+        name: 'Profile',
+        component: Profile,
+      },
+      {
+        path: 'settings',
+        name: 'Settings',
+        component: Settings,
+      },
+    ],
+  },
+
+  {
+    path: '/connections/',
     children: [
       {
         path: 'myContacts',
