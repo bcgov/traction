@@ -28,21 +28,6 @@ const items = ref([
   },
 
   {
-    label: 'Configuration',
-    icon: 'pi pi-fw pi-file',
-    items: [
-      {
-        label: 'Schemas',
-        to: { name: 'Schemas' },
-      },
-      {
-        label: 'Presentation Templates',
-        to: { name: 'PresentationTemplates' },
-      },
-    ],
-  },
-
-  {
     label: 'Issuance',
     icon: 'pi pi-fw pi-wallet',
     to: { name: 'MyIssuedCredentials' },
@@ -58,6 +43,21 @@ const items = ref([
     label: 'Holder',
     icon: 'pi pi-fw pi-id-card',
     to: { name: 'MyHeldCredentials' },
+  },
+
+  {
+    label: 'Configuration',
+    icon: 'pi pi-fw pi-file',
+    items: [
+      {
+        label: 'Schemas',
+        to: { name: 'Schemas' },
+      },
+      {
+        label: 'Presentation Templates',
+        to: { name: 'PresentationTemplates' },
+      },
+    ],
   },
 
   {
