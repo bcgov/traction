@@ -2,7 +2,7 @@
   <div>
     <h1 class="sidebar-app-title">{{ tenant.name }}</h1>
     <!--<h1 class="sidebar-app-title">{{ config.ux.sidebarTitle }}</h1>-->
-    <PanelMenu :model="items" class="mt-5" id="side-menu" />
+    <PanelMenu :model="items" class="mt-5" />
   </div>
 </template>
 
@@ -80,7 +80,6 @@ const items = ref([
   word-wrap: break-word;
 }
 
-// #side-menu >>> .p-panelmenu {
 .p-panelmenu {
   :deep(.p-panelmenu-panel) {
     * {
