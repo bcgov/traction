@@ -27,6 +27,16 @@
     </template>
     <template #empty> No records found. </template>
     <template #loading> Loading data. Please wait... </template>
+    <Column :sortable="false" header="Actions">
+      <template #body="{ data }">
+        <Button
+          title="Delete Contact"
+          icon="pi pi-times-circle"
+          class="p-button-rounded p-button-icon-only p-button-text"
+          @click="deleteContact($event, data)"
+        />
+      </template>
+    </Column>
     <Column :sortable="true" field="alias" header="Name" />
     <Column field="role" header="Role" />
     <Column field="status" header="Status" />
@@ -45,17 +55,17 @@ import { onMounted } from 'vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-
+import { useConfirm } from 'primevue/useconfirm';
+import { useToast } from 'vue-toastification';
 // State
 import { useContactsStore } from '@/store';
 import { storeToRefs } from 'pinia';
-// Other imports
-import { useToast } from 'vue-toastification';
 // Other components
 import AcceptInvitation from './acceptInvitation/AcceptInvitation.vue';
 import CreateContact from './createContact/CreateContact.vue';
 import { formatDateLong } from '@/helpers';
 
+const confirm = useConfirm();
 const toast = useToast();
 
 const contactsStore = useContactsStore();
@@ -72,7 +82,29 @@ const loadTable = async () => {
 onMounted(async () => {
   loadTable();
 });
-// -----------------------------------------------/Loading contacts
+
+const deleteContact = (event: any, schema: any) => {
+  confirm.require({
+    target: event.currentTarget,
+    message: 'Are you sure you want to delete this contact?',
+    header: 'Confirmation',
+    icon: 'pi pi-exclamation-triangle',
+    accept: () => {
+      doDelete(schema);
+    },
+  });
+};
+const doDelete = (schema: any) => {
+  contactsStore
+    .deleteContact(schema)
+    .then(() => {
+      toast.success(`Contact successfully deleted`);
+    })
+    .catch((err) => {
+      console.error(err);
+      toast.error(`Failure: ${err}`);
+    });
+};
 </script>
 
 <style scoped>
