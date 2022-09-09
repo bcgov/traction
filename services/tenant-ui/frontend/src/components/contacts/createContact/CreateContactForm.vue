@@ -2,9 +2,7 @@
   <form @submit.prevent="handleSubmit(!v$.$invalid)">
     <!-- Alias -->
     <div class="field">
-      <label
-        for="alias"
-        :class="{ 'p-error': v$.alias.$invalid && submitted }"
+      <label for="alias" :class="{ 'p-error': v$.alias.$invalid && submitted }"
         >Contact Alias
       </label>
       <InputText
@@ -15,9 +13,7 @@
         autofocus
         :readonly="!!invitation_url"
       />
-      <small
-        v-if="v$.alias.$invalid && submitted"
-        class="p-error"
+      <small v-if="v$.alias.$invalid && submitted" class="p-error"
         >{{ v$.alias.required.$message }}
       </small>
     </div>
@@ -77,9 +73,7 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
   try {
     // call store
-    const result = await contactsStore.createInvitation(
-      formFields.alias
-    );
+    const result = await contactsStore.createInvitation(formFields.alias);
     if (result != null && result['invitation_url']) {
       invitation_url.value = result['invitation_url'];
       console.log(`invitation_url: ${invitation_url.value}`);
