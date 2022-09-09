@@ -2672,8 +2672,8 @@
   outline-offset: -0.15rem;
 }
 .p-datatable .p-datatable-tbody > tr.p-highlight {
-  background: $tenant-ui-secondary-color;
-  color: #ffffff;
+  background: $tenant-ui-flat-highlight;
+  color: #333333;
 }
 .p-datatable .p-datatable-tbody > tr.p-datatable-dragpoint-top > td {
   box-shadow: inset 0 2px 0 0 $tenant-ui-secondary-color;
