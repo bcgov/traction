@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-0">Connections</h3>
+  <h3 class="mt-0">Contacts</h3>
 
   <DataTable
     v-model:selection="selectedContact"
@@ -12,13 +12,18 @@
   >
     <template #header>
       <div class="flex justify-content-between">
-        <CreateContact />
-        <Button
-          icon="pi pi-refresh"
-          class="p-button-rounded p-button-outlined"
-          title="Refresh Table"
-          @click="loadTable"
-        ></Button>
+        <div class="flex justify-content-start">
+          <CreateContact />
+          <AcceptInvitation class="ml-4"/>
+        </div>
+        <div class="flex justify-content-end">
+          <Button
+            icon="pi pi-refresh"
+            class="p-button-rounded p-button-outlined"
+            title="Refresh Table"
+            @click="loadTable"
+          />
+        </div>
       </div>
     </template>
     <template #empty> No contacts found. </template>
@@ -50,6 +55,7 @@ import { storeToRefs } from 'pinia';
 // Other imports
 import { useToast } from 'vue-toastification';
 // Other components
+import AcceptInvitation from './acceptInvitation/AcceptInvitation.vue';
 import CreateContact from './createContact/CreateContact.vue';
 import { formatDateLong } from '@/helpers';
 

@@ -4,11 +4,9 @@ import Dashboard from '@/views/Dashboard.vue';
 import About from '@/views/About.vue';
 
 // Connections
-import AcceptInvitation from '@/views/connections/AcceptInvitation.vue';
 import MyContacts from '@/views/connections/MyContacts.vue';
 // Issuance
 import MyIssuedCredentials from '@/views/issuance/MyIssuedCredentials.vue';
-import OfferCredential from '@/views/issuance/OfferCredential.vue';
 import Schemas from '@/views/issuance/Schemas.vue';
 // // Verifictation
 import CreatePresentation from '@/views/verification/CreatePresentation.vue';
@@ -33,11 +31,6 @@ const routes = [
   {
     path: '/connections/',
     children: [
-      {
-        path: 'acceptInvitation',
-        name: 'AcceptInvitation',
-        component: AcceptInvitation,
-      },
       {
         path: 'myContacts',
         name: 'MyContacts',

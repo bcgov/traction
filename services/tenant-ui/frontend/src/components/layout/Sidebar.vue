@@ -22,18 +22,9 @@ const items = ref([
     to: { name: 'Dashboard' },
   },
   {
-    label: 'Connections',
+    label: 'Contacts',
     icon: 'pi pi-fw pi-users',
-    items: [
-      {
-        label: 'My Contacts',
-        to: { name: 'MyContacts' },
-      },
-      {
-        label: 'Accept Invitation',
-        to: { name: 'AcceptInvitation' },
-      },
-    ],
+    to: { name: 'MyContacts' },
   },
 
   {
@@ -97,7 +88,7 @@ const items = ref([
 .sidebar-app-title {
   font-size: 1.6em;
   text-align: center;
-  padding: 0.5em 1.7em;
+  padding: 0.5em;
   margin: 0.5em;
   background-color: $tenant-ui-accent-color;
   text-transform: uppercase;
