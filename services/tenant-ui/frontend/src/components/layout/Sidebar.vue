@@ -80,7 +80,8 @@ const items = ref([
   word-wrap: break-word;
 }
 
-#side-menu >>> .p-panelmenu {
+// #side-menu >>> .p-panelmenu {
+.p-panelmenu {
   :deep(.p-panelmenu-panel) {
     * {
       background-color: $tenant-ui-primary-color !important;
