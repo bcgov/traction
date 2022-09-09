@@ -21,10 +21,8 @@
         ></Button>
       </div>
     </template>
-    <template #empty> No issued credentials found. </template>
-    <template #loading>
-      Loading issued credentials data. Please wait...
-    </template>
+    <template #empty> No records found. </template>
+    <template #loading> Loading data. Please wait... </template>
     <Column
       :sortable="true"
       field="credential_template.name"

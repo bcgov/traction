@@ -26,8 +26,8 @@
         </div>
       </div>
     </template>
-    <template #empty> No contacts found. </template>
-    <template #loading> Loading contacts data. Please wait... </template>
+    <template #empty> No records found. </template>
+    <template #loading> Loading data. Please wait... </template>
     <Column :sortable="true" field="alias" header="Name" />
     <Column field="role" header="Role" />
     <Column field="state" header="State" />
