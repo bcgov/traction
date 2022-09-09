@@ -1,50 +1,53 @@
 <template>
-  <form @submit.prevent="handleSubmit()">
-    <div class="create-contact">
-      <h1>Contacts</h1>
-      <div>
-        <h2>Create Connection Invitation</h2>
-        <span class="p-float-label">
-          <InputText
-            v-model="create_contact_alias"
-            type="text"
-            name="create_contact_alias"
-            autofocus
-          />
-          <label for="create_contact_alias">Contact Alias</label>
-        </span>
-      </div>
-      <QRCode v-if="invitation_url" :qr-content="invitation_url" />
-      <Button
-        v-if="invitation_url"
-        label="Close"
-        class="mt-5 w-full"
-        @click="$emit('closed')"
+  <form @submit.prevent="handleSubmit(!v$.$invalid)">
+    <!-- Alias -->
+    <div class="field">
+      <label for="alias" :class="{ 'p-error': v$.alias.$invalid && submitted }"
+        >Contact Alias
+      </label>
+      <InputText
+        v-model="v$.alias.$model"
+        :class="{ 'p-invalid': v$.alias.$invalid && submitted }"
+        type="text"
+        name="alias"
+        autofocus
+        :readonly="!!invitation_url"
       />
-      <Button v-else type="submit" label="Submit" class="mt-5 w-full" />
+      <small v-if="v$.alias.$invalid && submitted" class="p-error"
+        >{{ v$.alias.required.$message }}
+      </small>
     </div>
+
+    <div v-if="invitation_url">
+      <!-- QR Code Display -->
+      <QRCode :qr-content="invitation_url" />
+
+      <Button label="Close" class="mt-5 w-full" @click="$emit('closed')" />
+    </div>
+    <Button v-else type="submit" label="Submit" class="mt-5 w-full" />
   </form>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+// Vue
+import { reactive, ref } from 'vue';
+// State
+import { useContactsStore } from '../../../store';
+// PrimeVue / Validation
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
+import { required } from '@vuelidate/validators';
+import { useVuelidate } from '@vuelidate/core';
 import { useToast } from 'vue-toastification';
+// Other Components
 import QRCode from '../../common/QRCode.vue';
-import { useContactsStore } from '../../../store';
-import { storeToRefs } from 'pinia';
 
 const contactsStore = useContactsStore();
-
-// use the loading state from the store to disable the button...
-const { loading } = storeToRefs(useContactsStore());
 
 // For notifications
 const toast = useToast();
 
 // To store local data
-const create_contact_alias = ref('');
 const invitation_url = ref('');
 
 // ----------------------------------------------------------------
@@ -52,13 +55,25 @@ const invitation_url = ref('');
 // ----------------------------------------------------------------
 const emit = defineEmits(['closed', 'success']);
 
+// Validation
+const formFields = reactive({
+  alias: '',
+});
+const rules = {
+  alias: { required },
+};
+const v$ = useVuelidate(rules, formFields);
+
 // Form submission
-const handleSubmit = async () => {
+const submitted = ref(false);
+const handleSubmit = async (isFormValid: boolean) => {
+  submitted.value = true;
+  if (!isFormValid) {
+    return;
+  }
   try {
     // call store
-    const result = await contactsStore.createInvitation(
-      create_contact_alias.value
-    );
+    const result = await contactsStore.createInvitation(formFields.alias);
     if (result != null && result['invitation_url']) {
       invitation_url.value = result['invitation_url'];
       console.log(`invitation_url: ${invitation_url.value}`);
@@ -68,26 +83,10 @@ const handleSubmit = async () => {
     return false;
   } catch (error) {
     toast.error(`Failure: ${error}`);
+  } finally {
+    submitted.value = false;
   }
 };
 
 // ---------------------------------------------------/create contact
 </script>
-
-<style scoped>
-.create-contact {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  margin: 10px;
-  padding: 15px;
-  border: 3px solid grey;
-  border-radius: 8px;
-}
-
-span.p-float-label {
-  margin: 25px;
-}
-</style>

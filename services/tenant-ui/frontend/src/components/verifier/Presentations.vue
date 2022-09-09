@@ -9,7 +9,6 @@
     data-key="verifier_presentation_id"
     :paginator="true"
     :rows="10"
-    striped-rows
     selection-mode="single"
     @row-expand="onRowExpand"
   >
@@ -31,7 +30,6 @@
     <Column :expander="true" header-style="width: 3rem" />
     <Column :sortable="true" field="name" header="Name" />
     <Column field="contact.alias" header="Contact Name" />
-    <Column field="state" header="State" />
     <Column field="status" header="Status" />
     <Column field="created_at" header="Created at">
       <template #body="{ data }">

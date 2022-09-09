@@ -7,7 +7,6 @@
     :value="contacts"
     :paginator="true"
     :rows="10"
-    striped-rows
     selection-mode="single"
   >
     <template #header>
@@ -30,14 +29,12 @@
     <template #loading> Loading data. Please wait... </template>
     <Column :sortable="true" field="alias" header="Name" />
     <Column field="role" header="Role" />
-    <Column field="state" header="State" />
     <Column field="status" header="Status" />
     <Column field="created_at" header="Created at">
       <template #body="{ data }">
         {{ formatDateLong(data.created_at) }}
       </template>
     </Column>
-    <Column field="contact_id" header="ID" />
   </DataTable>
 </template>
 
