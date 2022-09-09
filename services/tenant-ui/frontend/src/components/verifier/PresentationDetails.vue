@@ -39,14 +39,20 @@
         :value="attribute_claim_rows()"
         responsiveLayout="scroll"
         stripedRows
+        class="p-datatable-sm"
       >
-        <Column field="" header="" style="width: 30px">
+        <Column field="checkmark" header="" style="width: 30px">
           <template #body="row">
             <span v-if="row.data.checkmark" class="pi pi-check"></span>
           </template>
         </Column>
         <Column field="name" header="Name"></Column>
         <Column field="val" header="Value"></Column>
+        <Column field="tooltip" style="width: 40px">
+          <template #body="row">
+            <span class="pi pi-info-circle" v-tooltip="row.data.tooltip"></span>
+          </template>
+        </Column>
       </DataTable>
 
       <br />
@@ -118,6 +124,8 @@ const attribute_claim_rows = (): AttrbiuteClaimRow[] => {
   //normalize attribute_groups for table
   for (const [k, v] of Object.entries(requested_attribute_groups())) {
     v.names.forEach((name) => {
+      console.log(v);
+      console.log(v.restrictions[0]);
       result.push({
         name: name,
         val: pres.acapy.presentation_exchange.presentation.requested_proof
@@ -125,7 +133,7 @@ const attribute_claim_rows = (): AttrbiuteClaimRow[] => {
         attr_type: 'requested_attribute_group',
         referent: k,
         checkmark: true,
-        tooltip: '',
+        tooltip: JSON.stringify(v.restrictions[0]),
       });
     });
   }
@@ -138,7 +146,7 @@ const attribute_claim_rows = (): AttrbiuteClaimRow[] => {
       attr_type: 'requested_single_attribute',
       referent: k,
       checkmark: true,
-      tooltip: '',
+      tooltip: JSON.stringify(v.restrictions[0]),
     });
   }
   //normalize self_attested_attributes for table
@@ -150,7 +158,7 @@ const attribute_claim_rows = (): AttrbiuteClaimRow[] => {
       attr_type: 'self_attested_attribute',
       referent: k,
       checkmark: false,
-      tooltip: '',
+      tooltip: 'No Restrictions',
     });
   }
 
