@@ -41,9 +41,7 @@
     <Column field="name" header="Schema" filter-field="name" />
     <Column field="version" header="Version" />
     <Column field="status" header="Status" />
-    <Column field="state" header="State" />
     <Column field="attributes" header="Attributes" />
-    <Column field="schema_id" header="ID" />
     <Column field="credential_templates" header="Credential Template">
       <template #body="{ data }">
         <CreateCredentialTemplate

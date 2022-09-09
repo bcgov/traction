@@ -26,7 +26,6 @@
     <template #empty> No records found. </template>
     <template #loading> Loading data. Please wait... </template>
     <Column :sortable="true" field="alias" header="Name" />
-    <Column field="state" header="State" />
     <Column field="status" header="Status" />
     <Column field="created_at" header="Created at">
       <template #body="{ data }">
