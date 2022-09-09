@@ -7,7 +7,6 @@ import About from '@/views/About.vue';
 import Profile from '@/views/tenant/Profile.vue';
 import Settings from '@/views/tenant/Settings.vue';
 // Connections
-import AcceptInvitation from '@/views/connections/AcceptInvitation.vue';
 import MyContacts from '@/views/connections/MyContacts.vue';
 // Issuance
 import MyIssuedCredentials from '@/views/issuance/MyIssuedCredentials.vue';
@@ -52,11 +51,6 @@ const routes = [
     path: '/connections/',
     children: [
       {
-        path: 'acceptInvitation',
-        name: 'AcceptInvitation',
-        component: AcceptInvitation,
-      },
-      {
         path: 'myContacts',
         name: 'MyContacts',
         component: MyContacts,
@@ -65,33 +59,12 @@ const routes = [
   },
 
   {
-    path: '/issuance/',
+    path: '/configuration/',
     children: [
-      {
-        path: 'myIssuedCredentials',
-        name: 'MyIssuedCredentials',
-        component: MyIssuedCredentials,
-      },
       {
         path: 'schemas',
         name: 'Schemas',
         component: Schemas,
-      },
-    ],
-  },
-
-  {
-    path: '/verification/',
-    children: [
-      {
-        path: 'myPresentations',
-        name: 'MyPresentations',
-        component: MyPresentations,
-      },
-      {
-        path: 'createPresentation',
-        name: 'CreatePresentation',
-        component: CreatePresentation,
       },
       {
         path: 'presentationTemplates',
@@ -102,17 +75,34 @@ const routes = [
   },
 
   {
+    path: '/issuance/',
+    children: [
+      {
+        path: 'credentials',
+        name: 'MyIssuedCredentials',
+        component: MyIssuedCredentials,
+      },
+    ],
+  },
+
+  {
+    path: '/verification/',
+    children: [
+      {
+        path: 'verifications',
+        name: 'MyPresentations',
+        component: MyPresentations,
+      },
+    ],
+  },
+
+  {
     path: '/holder/',
     children: [
       {
-        path: 'myHeldCredentials',
+        path: 'credentials',
         name: 'MyHeldCredentials',
         component: MyHeldCredentials,
-      },
-      {
-        path: 'acceptCredential',
-        name: 'AcceptCredential',
-        component: AcceptCredential,
       },
     ],
   },

@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-0">My Issued Credentials</h3>
+  <h3 class="mt-0">Issued/Offered Credentials</h3>
 
   <DataTable
     v-model:selection="selectedCredential"
@@ -21,10 +21,8 @@
         ></Button>
       </div>
     </template>
-    <template #empty> No issued credentials found. </template>
-    <template #loading>
-      Loading issued credentials data. Please wait...
-    </template>
+    <template #empty> No records found. </template>
+    <template #loading> Loading data. Please wait... </template>
     <Column
       :sortable="true"
       field="credential_template.name"

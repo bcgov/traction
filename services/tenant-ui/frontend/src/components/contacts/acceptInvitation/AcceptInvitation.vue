@@ -1,18 +1,13 @@
 <template>
   <div>
-    <Button
-      :disabled="!isIssuer"
-      label="Create Schema"
-      icon="pi pi-plus"
-      @click="openModal"
-    />
+    <Button label="Accept Invitation" icon="pi pi-plus" @click="openModal" />
     <Dialog
       v-model:visible="displayModal"
-      header="Create Schema"
+      header="Accept Invitation"
       :modal="true"
       @update:visible="handleClose"
     >
-      <CreateSchemaForm @success="$emit('success')" @closed="handleClose" />
+      <AcceptInviteForm @success="$emit('success')" @closed="handleClose" />
     </Dialog>
   </div>
 </template>
@@ -24,18 +19,15 @@ import { ref } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 // State
-import { useTenantStore } from '../../../store';
-import { storeToRefs } from 'pinia';
+
 // Custom Components
-import CreateSchemaForm from './CreateSchemaForm.vue';
+import AcceptInviteForm from './AcceptInviteForm.vue';
 // Other Imports
 import { useToast } from 'vue-toastification';
 
 // State setup
 
 const toast = useToast();
-
-const { isIssuer } = storeToRefs(useTenantStore());
 
 defineEmits(['success']);
 

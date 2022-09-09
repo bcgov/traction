@@ -32,7 +32,7 @@ import Footer from './Footer.vue';
 import Sidebar from './Sidebar.vue';
 </script>
 
-<style lang="css" scoped>
+<style lang="scss" scoped>
 body {
   margin: 0;
 }
@@ -47,8 +47,9 @@ body {
 
 .layout-sidebar {
   align-self: stretch;
-  background-color: #244075;
-  color: white;
+  background-color: $tenant-ui-primary-color;
+  color: $tenant-ui-text-on-primary;
+  min-width: 20em;
 }
 
 .layout-page {
