@@ -50,7 +50,10 @@
         <Column field="val" header="Value"></Column>
         <Column field="tooltip" style="width: 40px">
           <template #body="row">
-            <span class="pi pi-info-circle" v-tooltip="row.data.tooltip"></span>
+            <JSONModal
+              :object="row.data.restrictions"
+              :header="'Restrictions'"
+            />
           </template>
         </Column>
       </DataTable>
@@ -90,6 +93,7 @@ import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import VueJsonPretty from 'vue-json-pretty';
 import 'vue-json-pretty/lib/styles.css';
+import JSONModal from '../common/JSONModal.vue';
 
 const props = defineProps({
   presentation: {
@@ -114,7 +118,7 @@ interface AttrbiuteClaimRow {
   attr_type: string;
   referent: string;
   checkmark: boolean;
-  tooltip: object;
+  restrictions: object;
 }
 
 const attribute_claim_rows = (): AttrbiuteClaimRow[] => {
@@ -124,8 +128,6 @@ const attribute_claim_rows = (): AttrbiuteClaimRow[] => {
   //normalize attribute_groups for table
   for (const [k, v] of Object.entries(requested_attribute_groups())) {
     v.names.forEach((name) => {
-      console.log(v);
-      console.log(v.restrictions[0]);
       result.push({
         name: name,
         val: pres.acapy.presentation_exchange.presentation.requested_proof
@@ -133,7 +135,7 @@ const attribute_claim_rows = (): AttrbiuteClaimRow[] => {
         attr_type: 'requested_attribute_group',
         referent: k,
         checkmark: true,
-        tooltip: JSON.stringify(v.restrictions[0]),
+        restrictions: v.restrictions,
       });
     });
   }
@@ -146,7 +148,7 @@ const attribute_claim_rows = (): AttrbiuteClaimRow[] => {
       attr_type: 'requested_single_attribute',
       referent: k,
       checkmark: true,
-      tooltip: JSON.stringify(v.restrictions[0]),
+      restrictions: v.restrictions,
     });
   }
   //normalize self_attested_attributes for table
@@ -158,7 +160,7 @@ const attribute_claim_rows = (): AttrbiuteClaimRow[] => {
       attr_type: 'self_attested_attribute',
       referent: k,
       checkmark: false,
-      tooltip: 'No Restrictions',
+      restrictions: { info: 'No Restrictions' },
     });
   }
 
