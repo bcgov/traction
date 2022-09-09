@@ -1,9 +1,4 @@
-
-$tenant-ui-primary-color: #3c5973;
-$tenant-ui-secondary-color: #385a8a;
-$tenant-ui-accent-color: #fcba19;
-$tenant-ui-secondary-active: darken( $tenant-ui-secondary-color, 10% );
-$tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
+@import 'variables.scss';
 
 :root {
   --surface-a: #ffffff;
@@ -235,7 +230,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   --primary-200:#ade0ca;
   --primary-300:#89d3b2;
   --primary-400:#65c59b;
-  --primary-500:$tenant-ui-primary-color;
+  --primary-500:$tenant-ui-secondary-color;
   --primary-600:#379c6f;
   --primary-700:#2e815c;
   --primary-800:#246548;
@@ -255,7 +250,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   outline: 0 none;
   outline-offset: 0;
   box-shadow: 0 0 0 0.2rem $tenant-ui-shadow;
-  border-color: $tenant-ui-primary-color;
+  border-color: $tenant-ui-secondary-color;
 }
 .p-autocomplete .p-autocomplete-multiple-container {
   padding: 0.2145rem 0.429rem;
@@ -309,10 +304,10 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 }
 .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item.p-highlight {
   color: #ffffff;
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
 }
 .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item.p-highlight.p-focus {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
 }
 .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item:not(.p-highlight):not(.p-disabled).p-focus {
   color: #333333;
@@ -371,7 +366,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 }
 .p-datepicker .p-datepicker-header .p-datepicker-prev:enabled:hover,
 .p-datepicker .p-datepicker-header .p-datepicker-next:enabled:hover {
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
   border-color: transparent;
   background: transparent;
 }
@@ -393,7 +388,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 }
 .p-datepicker .p-datepicker-header .p-datepicker-title .p-datepicker-year:enabled:hover,
 .p-datepicker .p-datepicker-header .p-datepicker-title .p-datepicker-month:enabled:hover {
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
 }
 .p-datepicker .p-datepicker-header .p-datepicker-title .p-datepicker-month {
   margin-right: 0.5rem;
@@ -421,7 +416,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 }
 .p-datepicker table td > span.p-highlight {
   color: #ffffff;
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
 }
 .p-datepicker table td > span:focus {
   outline: 0 none;
@@ -435,7 +430,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 }
 .p-datepicker table td.p-datepicker-today > span.p-highlight {
   color: #ffffff;
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
 }
 .p-datepicker .p-datepicker-buttonbar {
   padding: 0.857rem 0 0.429rem 0;
@@ -458,7 +453,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
 }
 .p-datepicker .p-timepicker button:enabled:hover {
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
   border-color: transparent;
   background: transparent;
 }
@@ -489,7 +484,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 }
 .p-datepicker .p-monthpicker .p-monthpicker-month.p-highlight {
   color: #ffffff;
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
 }
 .p-datepicker .p-yearpicker {
   margin: 0.857rem 0;
@@ -501,7 +496,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 }
 .p-datepicker .p-yearpicker .p-yearpicker-year.p-highlight {
   color: #ffffff;
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
 }
 .p-datepicker.p-datepicker-multiple-month .p-datepicker-group {
   border-left: 1px solid #d8dae2;
@@ -560,7 +555,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   outline: 0 none;
   outline-offset: 0;
   box-shadow: 0 0 0 0.2rem $tenant-ui-shadow;
-  border-color: $tenant-ui-primary-color;
+  border-color: $tenant-ui-secondary-color;
 }
 .p-cascadeselect .p-cascadeselect-label {
   background: transparent;
@@ -605,10 +600,10 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 }
 .p-cascadeselect-panel .p-cascadeselect-items .p-cascadeselect-item.p-highlight {
   color: #ffffff;
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
 }
 .p-cascadeselect-panel .p-cascadeselect-items .p-cascadeselect-item.p-highlight.p-focus {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
 }
 .p-cascadeselect-panel .p-cascadeselect-items .p-cascadeselect-item:not(.p-highlight):not(.p-disabled).p-focus {
   color: #333333;
@@ -654,8 +649,8 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   font-size: 14px;
 }
 .p-checkbox .p-checkbox-box.p-highlight {
-  border-color: $tenant-ui-primary-color;
-  background: $tenant-ui-primary-color;
+  border-color: $tenant-ui-secondary-color;
+  background: $tenant-ui-secondary-color;
 }
 .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box:hover {
   border-color: #212121;
@@ -664,7 +659,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   outline: 0 none;
   outline-offset: 0;
   box-shadow: 0 0 0 0.2rem $tenant-ui-shadow;
-  border-color: $tenant-ui-primary-color;
+  border-color: $tenant-ui-secondary-color;
 }
 .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box.p-highlight:hover {
   border-color: $tenant-ui-secondary-active;
@@ -679,7 +674,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   background-color: #f4f4f4;
 }
 .p-input-filled .p-checkbox .p-checkbox-box.p-highlight {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
 }
 .p-input-filled .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box:hover {
   background-color: #f4f4f4;
@@ -699,7 +694,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   outline: 0 none;
   outline-offset: 0;
   box-shadow: 0 0 0 0.2rem $tenant-ui-shadow;
-  border-color: $tenant-ui-primary-color;
+  border-color: $tenant-ui-secondary-color;
 }
 .p-chips .p-chips-multiple-container {
   padding: 0.2145rem 0.429rem;
@@ -763,7 +758,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   outline: 0 none;
   outline-offset: 0;
   box-shadow: 0 0 0 0.2rem $tenant-ui-shadow;
-  border-color: $tenant-ui-primary-color;
+  border-color: $tenant-ui-secondary-color;
 }
 .p-dropdown.p-dropdown-clearable .p-dropdown-label {
   padding-right: 1.429rem;
@@ -832,10 +827,10 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 }
 .p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight {
   color: #ffffff;
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
 }
 .p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight.p-focus {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
 }
 .p-dropdown-panel .p-dropdown-items .p-dropdown-item:not(.p-highlight):not(.p-disabled).p-focus {
   color: #333333;
@@ -952,22 +947,22 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 .p-editor-container .ql-snow.ql-toolbar button.ql-active,
 .p-editor-container .ql-snow.ql-toolbar .ql-picker-label.ql-active,
 .p-editor-container .ql-snow.ql-toolbar .ql-picker-item.ql-selected {
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
 }
 .p-editor-container .ql-snow.ql-toolbar button.ql-active .ql-stroke,
 .p-editor-container .ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-stroke,
 .p-editor-container .ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-stroke {
-  stroke: $tenant-ui-primary-color;
+  stroke: $tenant-ui-secondary-color;
 }
 .p-editor-container .ql-snow.ql-toolbar button.ql-active .ql-fill,
 .p-editor-container .ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-fill,
 .p-editor-container .ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-fill {
-  fill: $tenant-ui-primary-color;
+  fill: $tenant-ui-secondary-color;
 }
 .p-editor-container .ql-snow.ql-toolbar button.ql-active .ql-picker-label,
 .p-editor-container .ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-picker-label,
 .p-editor-container .ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-picker-label {
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
 }
 
 .p-inputgroup-addon {
@@ -1074,7 +1069,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   background: #b7b7b7;
 }
 .p-inputswitch.p-inputswitch-checked .p-inputswitch-slider {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
 }
 .p-inputswitch.p-inputswitch-checked .p-inputswitch-slider:before {
   background: #cccccc;
@@ -1104,7 +1099,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   outline: 0 none;
   outline-offset: 0;
   box-shadow: 0 0 0 0.2rem $tenant-ui-shadow;
-  border-color: $tenant-ui-primary-color;
+  border-color: $tenant-ui-secondary-color;
 }
 .p-inputtext.p-invalid.p-component {
   border-color: #a80000;
@@ -1223,7 +1218,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 }
 .p-listbox .p-listbox-list .p-listbox-item.p-highlight {
   color: #ffffff;
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
 }
 .p-listbox .p-listbox-list .p-listbox-item-group {
   margin: 0;
@@ -1238,7 +1233,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   background: transparent;
 }
 .p-listbox:not(.p-disabled) .p-listbox-item.p-highlight.p-focus {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
 }
 .p-listbox:not(.p-disabled) .p-listbox-item:not(.p-highlight):not(.p-disabled).p-focus {
   color: #333333;
@@ -1252,7 +1247,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   outline: 0 none;
   outline-offset: 0;
   box-shadow: 0 0 0 0.2rem $tenant-ui-shadow;
-  border-color: $tenant-ui-primary-color;
+  border-color: $tenant-ui-secondary-color;
 }
 .p-listbox.p-invalid {
   border-color: #a80000;
@@ -1271,7 +1266,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   outline: 0 none;
   outline-offset: 0;
   box-shadow: 0 0 0 0.2rem $tenant-ui-shadow;
-  border-color: $tenant-ui-primary-color;
+  border-color: $tenant-ui-secondary-color;
 }
 .p-multiselect .p-multiselect-label {
   padding: 0.429rem 0.429rem;
@@ -1342,7 +1337,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
 }
 .p-multiselect-panel .p-multiselect-header .p-multiselect-close:enabled:hover {
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
   border-color: transparent;
   background: transparent;
 }
@@ -1365,10 +1360,10 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 }
 .p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight {
   color: #ffffff;
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
 }
 .p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight.p-focus {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
 }
 .p-multiselect-panel .p-multiselect-items .p-multiselect-item:not(.p-highlight):not(.p-disabled).p-focus {
   color: #333333;
@@ -1450,7 +1445,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   outline: 0 none;
   outline-offset: 0;
   box-shadow: 0 0 0 0.2rem $tenant-ui-shadow;
-  border-color: $tenant-ui-primary-color;
+  border-color: $tenant-ui-secondary-color;
 }
 .p-radiobutton .p-radiobutton-box .p-radiobutton-icon {
   width: 12px;
@@ -1459,8 +1454,8 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   background-color: #ffffff;
 }
 .p-radiobutton .p-radiobutton-box.p-highlight {
-  border-color: $tenant-ui-primary-color;
-  background: $tenant-ui-primary-color;
+  border-color: $tenant-ui-secondary-color;
+  background: $tenant-ui-secondary-color;
 }
 .p-radiobutton .p-radiobutton-box.p-highlight:not(.p-disabled):hover {
   border-color: $tenant-ui-secondary-active;
@@ -1481,7 +1476,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   background-color: #f4f4f4;
 }
 .p-input-filled .p-radiobutton .p-radiobutton-box.p-highlight {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
 }
 .p-input-filled .p-radiobutton .p-radiobutton-box.p-highlight:not(.p-disabled):hover {
   background: $tenant-ui-secondary-active;
@@ -1504,16 +1499,16 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   margin-left: 0;
 }
 .p-rating .p-rating-icon.pi-star-fill {
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
 }
 .p-rating:not(.p-disabled):not(.p-readonly) .p-rating-icon.p-focus {
   outline: 0 none;
   outline-offset: 0;
   box-shadow: 0 0 0 0.2rem $tenant-ui-shadow;
-  border-color: $tenant-ui-primary-color;
+  border-color: $tenant-ui-secondary-color;
 }
 .p-rating:not(.p-disabled):not(.p-readonly) .p-rating-icon:hover {
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
 }
 .p-rating:not(.p-disabled):not(.p-readonly) .p-rating-icon.p-rating-cancel:hover {
   color: #b5019f;
@@ -1543,8 +1538,8 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   color: #212121;
 }
 .p-selectbutton .p-button.p-highlight {
-  background: $tenant-ui-primary-color;
-  border-color: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
+  border-color: $tenant-ui-secondary-color;
   color: #ffffff;
 }
 .p-selectbutton .p-button.p-highlight .p-button-icon-left,
@@ -1597,11 +1592,11 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   box-shadow: 0 0 0 0.2rem $tenant-ui-shadow;
 }
 .p-slider .p-slider-range {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
 }
 .p-slider:not(.p-disabled) .p-slider-handle:hover {
   background: 2px solid #666666;
-  border-color: $tenant-ui-primary-color;
+  border-color: $tenant-ui-secondary-color;
 }
 
 .p-treeselect {
@@ -1617,7 +1612,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   outline: 0 none;
   outline-offset: 0;
   box-shadow: 0 0 0 0.2rem $tenant-ui-shadow;
-  border-color: $tenant-ui-primary-color;
+  border-color: $tenant-ui-secondary-color;
 }
 .p-treeselect .p-treeselect-label {
   padding: 0.429rem 0.429rem;
@@ -1694,8 +1689,8 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   color: #212121;
 }
 .p-togglebutton.p-button.p-highlight {
-  background: $tenant-ui-primary-color;
-  border-color: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
+  border-color: $tenant-ui-secondary-color;
   color: #ffffff;
 }
 .p-togglebutton.p-button.p-highlight .p-button-icon-left,
@@ -1717,8 +1712,8 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 
 .p-button {
   color: #ffffff;
-  background: $tenant-ui-primary-color;
-  border: 1px solid $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
+  border: 1px solid $tenant-ui-secondary-color;
   padding: 0.429rem 1rem;
   font-size: 1rem;
   transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
@@ -1736,17 +1731,17 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 }
 .p-button.p-button-outlined {
   background-color: transparent;
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
   border: 1px solid;
 }
 .p-button.p-button-outlined:enabled:hover {
   background: rgba(65, 184, 131, 0.04);
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
   border: 1px solid;
 }
 .p-button.p-button-outlined:enabled:active {
   background: rgba(65, 184, 131, 0.16);
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
   border: 1px solid;
 }
 .p-button.p-button-outlined.p-button-plain {
@@ -1763,17 +1758,17 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 }
 .p-button.p-button-text {
   background-color: transparent;
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
   border-color: transparent;
 }
 .p-button.p-button-text:enabled:hover {
   background: rgba(65, 184, 131, 0.04);
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
   border-color: transparent;
 }
 .p-button.p-button-text:enabled:active {
   background: rgba(65, 184, 131, 0.16);
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
   border-color: transparent;
 }
 .p-button.p-button-text.p-button-plain {
@@ -1812,7 +1807,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   min-width: 1rem;
   height: 1rem;
   line-height: 1rem;
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
   background-color: #ffffff;
 }
 .p-button.p-button-raised {
@@ -2254,16 +2249,16 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 }
 .p-splitbutton.p-button-outlined > .p-button {
   background-color: transparent;
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
   border: 1px solid;
 }
 .p-splitbutton.p-button-outlined > .p-button:enabled:hover, .p-splitbutton.p-button-outlined > .p-button:not(button):not(a):not(.p-disabled):hover {
   background: rgba(65, 184, 131, 0.04);
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
 }
 .p-splitbutton.p-button-outlined > .p-button:enabled:active, .p-splitbutton.p-button-outlined > .p-button:not(button):not(a):not(.p-disabled):active {
   background: rgba(65, 184, 131, 0.16);
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
 }
 .p-splitbutton.p-button-outlined.p-button-plain > .p-button {
   color: #848484;
@@ -2279,17 +2274,17 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 }
 .p-splitbutton.p-button-text > .p-button {
   background-color: transparent;
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
   border-color: transparent;
 }
 .p-splitbutton.p-button-text > .p-button:enabled:hover, .p-splitbutton.p-button-text > .p-button:not(button):not(a):not(.p-disabled):hover {
   background: rgba(65, 184, 131, 0.04);
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
   border-color: transparent;
 }
 .p-splitbutton.p-button-text > .p-button:enabled:active, .p-splitbutton.p-button-text > .p-button:not(button):not(a):not(.p-disabled):active {
   background: rgba(65, 184, 131, 0.16);
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
   border-color: transparent;
 }
 .p-splitbutton.p-button-text.p-button-plain > .p-button {
@@ -2514,7 +2509,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 }
 .p-carousel .p-carousel-content .p-carousel-prev:enabled:hover,
 .p-carousel .p-carousel-content .p-carousel-next:enabled:hover {
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
   border-color: transparent;
   background: transparent;
 }
@@ -2542,7 +2537,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   background: #eaeaea;
 }
 .p-carousel .p-carousel-indicators .p-carousel-indicator.p-highlight button {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
   color: #ffffff;
 }
 
@@ -2599,7 +2594,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   min-width: 1.143rem;
   line-height: 1.143rem;
   color: #ffffff;
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
   margin-left: 0.5rem;
 }
 .p-datatable .p-sortable-column:not(.p-highlight):hover {
@@ -2610,14 +2605,14 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   color: #333333;
 }
 .p-datatable .p-sortable-column.p-highlight {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
   color: #ffffff;
 }
 .p-datatable .p-sortable-column.p-highlight .p-sortable-column-icon {
   color: #ffffff;
 }
 .p-datatable .p-sortable-column.p-highlight:hover {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
   color: #ffffff;
 }
 .p-datatable .p-sortable-column.p-highlight:hover .p-sortable-column-icon {
@@ -2654,7 +2649,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 .p-datatable .p-datatable-tbody > tr > td .p-row-editor-init:enabled:hover,
 .p-datatable .p-datatable-tbody > tr > td .p-row-editor-save:enabled:hover,
 .p-datatable .p-datatable-tbody > tr > td .p-row-editor-cancel:enabled:hover {
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
   border-color: transparent;
   background: transparent;
 }
@@ -2677,21 +2672,21 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   outline-offset: -0.15rem;
 }
 .p-datatable .p-datatable-tbody > tr.p-highlight {
-  background: $tenant-ui-primary-color;
-  color: #ffffff;
+  background: $tenant-ui-flat-highlight;
+  color: #333333;
 }
 .p-datatable .p-datatable-tbody > tr.p-datatable-dragpoint-top > td {
-  box-shadow: inset 0 2px 0 0 $tenant-ui-primary-color;
+  box-shadow: inset 0 2px 0 0 $tenant-ui-secondary-color;
 }
 .p-datatable .p-datatable-tbody > tr.p-datatable-dragpoint-bottom > td {
-  box-shadow: inset 0 -2px 0 0 $tenant-ui-primary-color;
+  box-shadow: inset 0 -2px 0 0 $tenant-ui-secondary-color;
 }
 .p-datatable.p-datatable-hoverable-rows .p-datatable-tbody > tr:not(.p-highlight):hover {
   background: #eaeaea;
   color: #333333;
 }
 .p-datatable .p-column-resizer-helper {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
 }
 .p-datatable .p-datatable-scrollable-header,
 .p-datatable .p-datatable-scrollable-footer {
@@ -2742,7 +2737,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   background: #f9f9f9;
 }
 .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even).p-highlight {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
   color: #ffffff;
 }
 .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even).p-highlight .p-row-toggler {
@@ -2834,16 +2829,16 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
 }
 .p-column-filter-menu-button:hover {
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
   border-color: transparent;
   background: transparent;
 }
 .p-column-filter-menu-button.p-column-filter-menu-button-open, .p-column-filter-menu-button.p-column-filter-menu-button-open:hover {
   background: transparent;
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
 }
 .p-column-filter-menu-button.p-column-filter-menu-button-active, .p-column-filter-menu-button.p-column-filter-menu-button-active:hover {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
   color: #ffffff;
 }
 .p-column-filter-menu-button:focus {
@@ -2862,7 +2857,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
 }
 .p-column-filter-clear-button:hover {
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
   border-color: transparent;
   background: transparent;
 }
@@ -2894,7 +2889,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 }
 .p-column-filter-overlay .p-column-filter-row-items .p-column-filter-row-item.p-highlight {
   color: #ffffff;
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
 }
 .p-column-filter-overlay .p-column-filter-row-items .p-column-filter-row-item:not(.p-highlight):not(.p-disabled):hover {
   color: #333333;
@@ -2972,8 +2967,8 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 }
 .fc.fc-unthemed .fc-toolbar .fc-button {
   color: #ffffff;
-  background: $tenant-ui-primary-color;
-  border: 1px solid $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
+  border: 1px solid $tenant-ui-secondary-color;
   font-size: 1rem;
   transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
   border-radius: 3px;
@@ -3028,8 +3023,8 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   color: #333333;
 }
 .fc.fc-unthemed .fc-toolbar .fc-button.fc-dayGridMonth-button.fc-button-active, .fc.fc-unthemed .fc-toolbar .fc-button.fc-timeGridWeek-button.fc-button-active, .fc.fc-unthemed .fc-toolbar .fc-button.fc-timeGridDay-button.fc-button-active {
-  background: $tenant-ui-primary-color;
-  border-color: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
+  border-color: $tenant-ui-secondary-color;
   color: #ffffff;
 }
 .fc.fc-unthemed .fc-toolbar .fc-button.fc-dayGridMonth-button.fc-button-active:hover, .fc.fc-unthemed .fc-toolbar .fc-button.fc-timeGridWeek-button.fc-button-active:hover, .fc.fc-unthemed .fc-toolbar .fc-button.fc-timeGridDay-button.fc-button-active:hover {
@@ -3099,7 +3094,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   content: "\e90b";
 }
 .fc.fc-theme-standard .fc-view-harness .fc-popover .fc-popover-header .fc-popover-close:hover {
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
   border-color: transparent;
   background: transparent;
 }
@@ -3136,8 +3131,8 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 }
 .fc.fc-theme-standard .fc-toolbar .fc-button {
   color: #ffffff;
-  background: $tenant-ui-primary-color;
-  border: 1px solid $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
+  border: 1px solid $tenant-ui-secondary-color;
   font-size: 1rem;
   transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
   border-radius: 3px;
@@ -3160,8 +3155,8 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 .fc.fc-theme-standard .fc-toolbar .fc-button:disabled {
   opacity: 0.5;
   color: #ffffff;
-  background: $tenant-ui-primary-color;
-  border: 1px solid $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
+  border: 1px solid $tenant-ui-secondary-color;
 }
 .fc.fc-theme-standard .fc-toolbar .fc-button .fc-icon-chevron-left {
   font-family: "PrimeIcons" !important;
@@ -3196,8 +3191,8 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   color: #333333;
 }
 .fc.fc-theme-standard .fc-toolbar .fc-button.fc-dayGridMonth-button.fc-button-active, .fc.fc-theme-standard .fc-toolbar .fc-button.fc-timeGridWeek-button.fc-button-active, .fc.fc-theme-standard .fc-toolbar .fc-button.fc-timeGridDay-button.fc-button-active {
-  background: $tenant-ui-primary-color;
-  border-color: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
+  border-color: $tenant-ui-secondary-color;
   color: #ffffff;
 }
 .fc.fc-theme-standard .fc-toolbar .fc-button.fc-dayGridMonth-button.fc-button-active:hover, .fc.fc-theme-standard .fc-toolbar .fc-button.fc-timeGridWeek-button.fc-button-active:hover, .fc.fc-theme-standard .fc-toolbar .fc-button.fc-timeGridDay-button.fc-button-active:hover {
@@ -3224,7 +3219,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 }
 .fc.fc-theme-standard .fc-highlight {
   color: #ffffff;
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
 }
 
 .p-orderlist .p-orderlist-controls {
@@ -3270,7 +3265,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 }
 .p-orderlist .p-orderlist-list .p-orderlist-item.p-highlight {
   color: #ffffff;
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
 }
 .p-orderlist.p-orderlist-striped .p-orderlist-list .p-orderlist-item:nth-child(even) {
   background: #f9f9f9;
@@ -3284,7 +3279,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   color: #333333;
 }
 .p-organizationchart .p-organizationchart-node-content.p-highlight {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
   color: #ffffff;
 }
 .p-organizationchart .p-organizationchart-node-content.p-highlight .p-node-toggler i {
@@ -3390,8 +3385,8 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   border-radius: 0;
 }
 .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
-  background: $tenant-ui-primary-color;
-  border-color: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
+  border-color: $tenant-ui-secondary-color;
   color: #ffffff;
 }
 .p-paginator .p-paginator-pages .p-paginator-page:not(.p-highlight):hover {
@@ -3443,7 +3438,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 }
 .p-picklist .p-picklist-list .p-picklist-item.p-highlight {
   color: #ffffff;
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
 }
 .p-picklist.p-picklist-striped .p-picklist-list .p-picklist-item:nth-child(even) {
   background: #f9f9f9;
@@ -3457,7 +3452,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   border-radius: 50%;
   width: 1rem;
   height: 1rem;
-  background-color: $tenant-ui-primary-color;
+  background-color: $tenant-ui-secondary-color;
 }
 .p-timeline .p-timeline-event-connector {
   background-color: #c8c8c8;
@@ -3503,7 +3498,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
 }
 .p-tree .p-tree-container .p-treenode .p-treenode-content .p-tree-toggler:enabled:hover {
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
   border-color: transparent;
   background: transparent;
 }
@@ -3528,7 +3523,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   box-shadow: inset 0 0 0 0.15rem $tenant-ui-shadow;
 }
 .p-tree .p-tree-container .p-treenode .p-treenode-content.p-highlight {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
   color: #ffffff;
 }
 .p-tree .p-tree-container .p-treenode .p-treenode-content.p-highlight .p-tree-toggler,
@@ -3617,7 +3612,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   min-width: 1.143rem;
   line-height: 1.143rem;
   color: #ffffff;
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
   margin-left: 0.5rem;
 }
 .p-treetable .p-sortable-column:not(.p-highlight):hover {
@@ -3628,7 +3623,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   color: #333333;
 }
 .p-treetable .p-sortable-column.p-highlight {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
   color: #ffffff;
 }
 .p-treetable .p-sortable-column.p-highlight .p-sortable-column-icon {
@@ -3656,7 +3651,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   margin-right: 0.5rem;
 }
 .p-treetable .p-treetable-tbody > tr > td .p-treetable-toggler:enabled:hover {
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
   border-color: transparent;
   background: transparent;
 }
@@ -3676,7 +3671,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   outline-offset: -0.15rem;
 }
 .p-treetable .p-treetable-tbody > tr.p-highlight {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
   color: #ffffff;
 }
 .p-treetable .p-treetable-tbody > tr.p-highlight .p-treetable-toggler {
@@ -3693,7 +3688,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   color: #333333;
 }
 .p-treetable .p-column-resizer-helper {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
 }
 .p-treetable .p-treetable-scrollable-header,
 .p-treetable .p-treetable-scrollable-footer {
@@ -3777,8 +3772,8 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   color: #333333;
 }
 .p-accordion .p-accordion-header:not(.p-disabled).p-highlight .p-accordion-header-link {
-  background: $tenant-ui-primary-color;
-  border-color: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
+  border-color: $tenant-ui-secondary-color;
   color: #ffffff;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
@@ -3918,7 +3913,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
 }
 .p-panel .p-panel-header .p-panel-header-icon:enabled:hover {
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
   border-color: transparent;
   background: transparent;
 }
@@ -4001,12 +3996,12 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   color: #333333;
 }
 .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
-  background: $tenant-ui-primary-color;
-  border-color: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
+  border-color: $tenant-ui-secondary-color;
   color: #ffffff;
 }
 .p-tabview .p-tabview-nav-btn.p-link {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
   color: #ffffff;
   width: 2.357rem;
   box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
@@ -4108,7 +4103,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   margin-right: 0.5rem;
 }
 .p-dialog .p-dialog-header .p-dialog-header-icon:enabled:hover {
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
   border-color: transparent;
   background: transparent;
 }
@@ -4160,7 +4155,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   padding: 0.571rem 1rem;
 }
 .p-overlaypanel .p-overlaypanel-close {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
   color: #ffffff;
   width: 2rem;
   height: 2rem;
@@ -4212,7 +4207,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 }
 .p-sidebar .p-sidebar-header .p-sidebar-close:enabled:hover,
 .p-sidebar .p-sidebar-header .p-sidebar-icon:enabled:hover {
-  color: $tenant-ui-primary-color;
+  color: $tenant-ui-secondary-color;
   border-color: transparent;
   background: transparent;
 }
@@ -4911,8 +4906,8 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   margin-bottom: 0;
 }
 .p-panelmenu .p-panelmenu-header.p-highlight > a {
-  background: $tenant-ui-primary-color;
-  border-color: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
+  border-color: $tenant-ui-secondary-color;
   color: #ffffff;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
@@ -5004,7 +4999,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   box-shadow: 0 0 0 0.2rem $tenant-ui-shadow;
 }
 .p-steps .p-steps-item.p-highlight .p-steps-number {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
   color: #ffffff;
 }
 .p-steps .p-steps-item.p-highlight .p-steps-title {
@@ -5057,8 +5052,8 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   color: #333333;
 }
 .p-tabmenu .p-tabmenu-nav .p-tabmenuitem.p-highlight .p-menuitem-link {
-  background: $tenant-ui-primary-color;
-  border-color: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
+  border-color: $tenant-ui-secondary-color;
   color: #ffffff;
 }
 
@@ -5395,7 +5390,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   background: #eaeaea;
 }
 .p-galleria .p-galleria-indicators .p-galleria-indicator.p-highlight button {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
   color: #ffffff;
 }
 .p-galleria.p-galleria-indicators-bottom .p-galleria-indicator, .p-galleria.p-galleria-indicators-top .p-galleria-indicator {
@@ -5414,7 +5409,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
   background: rgba(255, 255, 255, 0.6);
 }
 .p-galleria.p-galleria-indicator-onitem .p-galleria-indicators .p-galleria-indicator.p-highlight button {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
   color: #ffffff;
 }
 .p-galleria .p-galleria-thumbnail-container {
@@ -5510,7 +5505,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 }
 
 .p-badge {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
   color: #ffffff;
   font-size: 0.75rem;
   font-weight: 700;
@@ -5606,7 +5601,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 .p-progressbar .p-progressbar-value {
   border: 0 none;
   margin: 0;
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
 }
 .p-progressbar .p-progressbar-label {
   color: #ffffff;
@@ -5640,7 +5635,7 @@ $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 }
 
 .p-tag {
-  background: $tenant-ui-primary-color;
+  background: $tenant-ui-secondary-color;
   color: #ffffff;
   font-size: 0.75rem;
   font-weight: 700;

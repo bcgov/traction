@@ -1,41 +1,38 @@
 <template>
-  <h3 class="mt-0">My Held Credentials</h3>
+  <h3 class="mt-0">Credentials</h3>
 
-  <ProgressSpinner v-if="loading" />
-  <div v-else>
-    <DataTable
-      v-model:selection="selectedCredential"
-      :value="credentials"
-      :paginator="true"
-      :rows="10"
-      striped-rows
-      selection-mode="single"
-    >
-      <template #header>
-        <div class="flex justify-content-between">
-          <span class="p-input-icon-left">
-            <i class="pi pi-search" />
-            <InputText placeholder="Credential Search" disabled />
-          </span>
+  <DataTable
+    v-model:selection="selectedCredential"
+    :loading="loading"
+    :value="credentials"
+    :paginator="true"
+    :rows="10"
+    selection-mode="single"
+  >
+    <template #header>
+      <div class="flex justify-content-between">
+        <div class="flex justify-content-start"></div>
+        <div class="flex justify-content-end">
           <Button
             icon="pi pi-refresh"
             class="p-button-rounded p-button-outlined"
             title="Refresh Table"
             @click="loadTable"
-          ></Button>
+          />
         </div>
+      </div>
+    </template>
+    <template #empty> No records found. </template>
+    <template #loading> Loading data. Please wait... </template>
+    <Column :sortable="true" field="alias" header="Name" />
+    <Column field="status" header="Status" />
+    <Column field="created_at" header="Created at">
+      <template #body="{ data }">
+        {{ formatDateLong(data.created_at) }}
       </template>
-      <Column :sortable="true" field="alias" header="Name" />
-      <Column field="state" header="State" />
-      <Column field="status" header="Status" />
-      <Column field="created_at" header="Created at">
-        <template #body="{ data }">
-          {{ formatDateLong(data.created_at) }}
-        </template>
-      </Column>
-      <Column field="contact.alias" header="Contact Name" />
-    </DataTable>
-  </div>
+    </Column>
+    <Column field="contact.alias" header="Contact Name" />
+  </DataTable>
 </template>
 
 <script setup lang="ts">
@@ -45,9 +42,7 @@ import { onMounted } from 'vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import ProgressSpinner from 'primevue/progressspinner';
 import { useToast } from 'vue-toastification';
-import InputText from 'primevue/inputtext';
 
 import { useHolderStore } from '../../store';
 import { storeToRefs } from 'pinia';

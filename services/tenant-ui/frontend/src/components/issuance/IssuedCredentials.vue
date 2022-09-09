@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-0">My Issued Credentials</h3>
+  <h3 class="mt-0">Issued/Offered Credentials</h3>
 
   <DataTable
     v-model:selection="selectedCredential"
@@ -7,7 +7,6 @@
     :value="credentials"
     :paginator="true"
     :rows="10"
-    striped-rows
     selection-mode="single"
   >
     <template #header>
@@ -21,24 +20,20 @@
         ></Button>
       </div>
     </template>
-    <template #empty> No issued credentials found. </template>
-    <template #loading>
-      Loading issued credentials data. Please wait...
-    </template>
+    <template #empty> No records found. </template>
+    <template #loading> Loading data. Please wait... </template>
     <Column
       :sortable="true"
       field="credential_template.name"
       header="Credential Name"
     />
     <Column field="contact.alias" header="Contact Name" />
-    <Column field="state" header="State" />
     <Column field="status" header="Status" />
     <Column field="created_at" header="Created at">
       <template #body="{ data }">
         {{ formatDateLong(data.created_at) }}
       </template>
     </Column>
-    <Column field="issuer_credential_id" header="ID" />
     <Column field="revoked" header="Revoked?" />
   </DataTable>
 </template>

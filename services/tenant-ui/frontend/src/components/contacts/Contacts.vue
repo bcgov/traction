@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-0">Connections</h3>
+  <h3 class="mt-0">Contacts</h3>
 
   <DataTable
     v-model:selection="selectedContact"
@@ -7,32 +7,34 @@
     :value="contacts"
     :paginator="true"
     :rows="10"
-    striped-rows
     selection-mode="single"
   >
     <template #header>
       <div class="flex justify-content-between">
-        <CreateContact />
-        <Button
-          icon="pi pi-refresh"
-          class="p-button-rounded p-button-outlined"
-          title="Refresh Table"
-          @click="loadTable"
-        ></Button>
+        <div class="flex justify-content-start">
+          <CreateContact />
+          <AcceptInvitation class="ml-4" />
+        </div>
+        <div class="flex justify-content-end">
+          <Button
+            icon="pi pi-refresh"
+            class="p-button-rounded p-button-outlined"
+            title="Refresh Table"
+            @click="loadTable"
+          />
+        </div>
       </div>
     </template>
-    <template #empty> No contacts found. </template>
-    <template #loading> Loading contacts data. Please wait... </template>
+    <template #empty> No records found. </template>
+    <template #loading> Loading data. Please wait... </template>
     <Column :sortable="true" field="alias" header="Name" />
     <Column field="role" header="Role" />
-    <Column field="state" header="State" />
     <Column field="status" header="Status" />
     <Column field="created_at" header="Created at">
       <template #body="{ data }">
         {{ formatDateLong(data.created_at) }}
       </template>
     </Column>
-    <Column field="contact_id" header="ID" />
   </DataTable>
 </template>
 
@@ -50,6 +52,7 @@ import { storeToRefs } from 'pinia';
 // Other imports
 import { useToast } from 'vue-toastification';
 // Other components
+import AcceptInvitation from './acceptInvitation/AcceptInvitation.vue';
 import CreateContact from './createContact/CreateContact.vue';
 import { formatDateLong } from '@/helpers';
 

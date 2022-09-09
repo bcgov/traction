@@ -7,7 +7,6 @@
     :value="schemaTemplates"
     :paginator="true"
     :rows="10"
-    striped-rows
     selection-mode="single"
   >
     <template #header>
@@ -26,14 +25,14 @@
         </div>
       </div>
     </template>
-    <template #empty> No schemas found. </template>
-    <template #loading> Loading schema data. Please wait... </template>
+    <template #empty> No records found. </template>
+    <template #loading> Loading data. Please wait... </template>
     <Column :sortable="false" header="Actions">
       <template #body="{ data }">
         <Button
           title="Delete Schema"
-          icon="pi pi-times"
-          class="p-button-rounded p-button-icon-only p-button-danger p-button-text"
+          icon="pi pi-times-circle"
+          class="p-button-rounded p-button-icon-only p-button-text"
           @click="deleteSchema($event, data)"
         />
       </template>
@@ -41,9 +40,7 @@
     <Column field="name" header="Schema" filter-field="name" />
     <Column field="version" header="Version" />
     <Column field="status" header="Status" />
-    <Column field="state" header="State" />
     <Column field="attributes" header="Attributes" />
-    <Column field="schema_id" header="ID" />
     <Column field="credential_templates" header="Credential Template">
       <template #body="{ data }">
         <CreateCredentialTemplate
