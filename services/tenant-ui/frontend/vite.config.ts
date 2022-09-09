@@ -25,4 +25,11 @@ export default defineConfig({
       '/config': proxyObject,
     },
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@import "@/assets/variables.scss";`
+      }
+    }
+  },
 });

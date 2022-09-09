@@ -7,12 +7,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import PanelMenu from 'primevue/panelmenu';
 import { storeToRefs } from 'pinia';
 import { useTenantStore } from '../../store';
 
-const tenantStore = useTenantStore();
 // tenant should be loaded by login...
 const { tenant } = storeToRefs(useTenantStore());
 
@@ -94,28 +93,39 @@ const items = ref([
 ]);
 </script>
 
-<style>
+<style scoped lang="scss">
 .sidebar-app-title {
   font-size: 1.6em;
   text-align: center;
   padding: 0.5em 1.7em;
   margin: 0.5em;
-  background-color: #96c230;
+  background-color: $tenant-ui-accent-color;
   text-transform: uppercase;
+  word-wrap: break-word;
 }
 
-/* TODO: quick and dirty, rewrite this (or better, find theme settings) */
-.p-panelmenu,
-.p-panelmenu-panel > .p-panelmenu-header > a > *,
-.p-panelmenu,
-.p-panelmenu-panel > .p-panelmenu-header > a,
-.p-panelmenu-content,
-.p-submenu-list > *,
-.p-menuitem-link > *,
-a.p-menuitem-link:hover {
-  background-color: #244075 !important;
-  border: none !important;
-  color: white !important;
-  font-weight: normal !important;
+.p-panelmenu {
+  :deep(.p-panelmenu-panel) {
+    * {
+      background-color: $tenant-ui-primary-color !important;
+      border: none !important;
+      color: $tenant-ui-text-on-primary !important;
+      font-weight: normal !important;
+    }
+    .p-submenu-list {
+      padding-left: 1.5em !important;
+    }
+    // Override the order of the drop down icon
+    .p-panelmenu-header-link {
+      display: flex;
+      span {
+        &.pi-chevron-right,
+        &.pi-chevron-down {
+          order: 2;
+          margin-left: auto;
+        }
+      }
+    }
+  }
 }
 </style>
