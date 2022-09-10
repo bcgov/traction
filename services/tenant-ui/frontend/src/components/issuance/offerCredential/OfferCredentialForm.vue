@@ -104,66 +104,12 @@
 
       <!-- Credential values -->
       <div v-else>
-        <Button
-          icon="pi pi-arrow-left"
-          class="p-button-rounded p-button-text mr-2 pt-3"
-          @click="showEditCredValues = false"
+        <EnterCredentialValues
+          :existing-credential-values="credentialValuesRaw"
+          :header="formFields.selectedCred.label"
+          :schema-for-selected-cred="schemaForSelectedCred"
+          @back="showEditCredValues = false"
         />
-        <strong>{{ formFields.selectedCred.label }}</strong>
-
-        <div class="field mt-5">
-          <!-- Label/toggle -->
-          <div class="flex justify-content-between">
-            <div class="flex justify-content-start">
-              <label for="credentialValuesEdit">
-                Credential Field Values
-              </label>
-            </div>
-            <div class="flex justify-content-end">
-              JSON
-              <InputSwitch v-model="showRawJson" class="ml-1" />
-            </div>
-          </div>
-
-          <!-- Raw JSON input mode -->
-          <div v-show="showRawJson">
-            <Textarea
-              id="credentialValuesEdit"
-              v-model="v$.credentialValuesEditing.$model"
-              :auto-resize="true"
-              rows="20"
-              cols="60"
-              class="w-full mt-1"
-            />
-          </div>
-
-          <!-- Dynamic Attribute field list -->
-          <div v-show="!showRawJson">
-            <div
-              class="field"
-              v-for="(item, index) in credentialValuesRaw"
-              :key="item.name"
-            >
-              <label :for="item.name">
-                {{ item.name }}
-              </label>
-              <InputText
-                :id="item.name"
-                v-model="credentialValuesRaw[index].value"
-                class="w-full"
-              />
-            </div>
-          </div>
-
-          <div class="flex justify-content-end">
-            <small>
-              Schema: {{ schemaForSelectedCred.schema_name }} Version:
-              {{ schemaForSelectedCred.version }}
-            </small>
-          </div>
-
-          <Button label="Save" class="mt-5 w-full" @click="saveCredValues" />
-        </div>
       </div>
     </form>
   </div>
@@ -172,15 +118,14 @@
 <script setup lang="ts">
 // Vue
 import { reactive, ref } from 'vue';
-// PrimeVue / Validation
+// PrimeVue / Validation / etc
 import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
-import InputSwitch from 'primevue/inputswitch';
-import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import ProgressSpinner from 'primevue/progressspinner';
 import { required } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
+import { useToast } from 'vue-toastification';
 // State
 import { storeToRefs } from 'pinia';
 import {
@@ -188,8 +133,8 @@ import {
   useGovernanceStore,
   useIssuerStore,
 } from '../../../store';
-// Other imports
-import { useToast } from 'vue-toastification';
+// Other components
+import EnterCredentialValues from './EnterCredentialValues.vue';
 
 const toast = useToast();
 
@@ -251,37 +196,18 @@ const searchCreds = (event: any) => {
 };
 
 // Editing the credential
-const showRawJson = ref(false);
 const editCredentialValues = () => {
+  // Get the specific schema to edit values for
+  const schemaId = credentialTemplates.value.find(
+    (ct: any) => ct.credential_template_id === formFields.selectedCred.value
+  ).schema_template_id;
+  const schema = schemaTemplates.value.find(
+    (st: any) => st.schema_template_id === schemaId
+  );
+  schemaForSelectedCred.value = schema;
+
+  // Open the editor
   showEditCredValues.value = true;
-
-  // Popuplate cred editor if it's not already been edited
-  if (!formFields.credentialValuesPretty.length) {
-    // Get the specific schema to edit values for
-    const schemaId = credentialTemplates.value.find(
-      (ct: any) => ct.credential_template_id === formFields.selectedCred.value
-    ).schema_template_id;
-    const schema = schemaTemplates.value.find(
-      (st: any) => st.schema_template_id === schemaId
-    );
-    schemaForSelectedCred.value = schema;
-
-    const schemaFillIn = schemaForSelectedCred.value.attributes.map(
-      (a: string) => {
-        return {
-          name: `${a}`,
-          value: '',
-        };
-      }
-    );
-    console.log(schemaFillIn);
-    credentialValuesRaw.value = schemaFillIn;
-    formFields.credentialValuesEditing = JSON.stringify(
-      schemaFillIn,
-      undefined,
-      2
-    );
-  }
 };
 const saveCredValues = () => {
   // credentialValuesRaw.value = JSON.parse(formFields.credentialValuesEditing);
