@@ -108,7 +108,7 @@ jobs:
           yq eval '.tenant_ui.image.tag = "${{ needs.build_image.outputs.image_tag }}"' -i ./charts/tenant-ui/values-pr.yaml
           yq eval '.tenant_ui.image.version = "${{ needs.build_image.outputs.image_version }}"' -i ./charts/tenant-ui/values-pr.yaml
           yq eval '.tenant_ui.image.buildtime = "${{ needs.build_image.outputs.buildtime }}"' -i ./charts/tenant-ui/values-pr.yaml
-          helm upgrade -f ./charts/tenant-ui/values.yaml -f ./charts/tenant-ui/values-pr.yaml pr-${{ github.event.number }}-tenant-ui ./charts/tenant-ui --install --wait
+          helm upgrade -f ./charts/tenant-ui/values.yaml -f ./charts/tenant-ui/values-pr.yaml pr-${{ github.event.number }}-tenant-ui ./charts/tenant-ui --install
   
   deploymenturls:
     name: Deployment URLs comment
