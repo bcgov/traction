@@ -15,6 +15,7 @@
           <AutoComplete
             id="selectedCred"
             v-model="v$.selectedCred.$model"
+            class="w-full"
             :disabled="credsLoading"
             :suggestions="filteredCreds"
             :dropdown="true"
@@ -40,6 +41,7 @@
           <AutoComplete
             id="selectedContact"
             v-model="v$.selectedContact.$model"
+            class="w-full"
             :disabled="contactLoading"
             :suggestions="filteredContacts"
             :dropdown="true"
@@ -80,7 +82,7 @@
               'p-invalid': v$.credentialValuesPretty.$invalid && submitted,
             }"
             :auto-resize="true"
-            rows="20"
+            rows="15"
             cols="50"
             readonly
           />
@@ -102,33 +104,13 @@
 
       <!-- Credential values -->
       <div v-else>
-        <Button
-          icon="pi pi-arrow-left"
-          class="p-button-rounded p-button-text mr-2 pt-3"
-          @click="showEditCredValues = false"
+        <EnterCredentialValues
+          :existing-credential-values="credentialValuesRaw"
+          :header="formFields.selectedCred.label"
+          :schema-for-selected-cred="schemaForSelectedCred"
+          @back="showEditCredValues = false"
+          @save="saveCredValues"
         />
-        <strong>{{ formFields.selectedCred.label }}</strong>
-
-        <div class="field mt-5">
-          <label for="credentialValuesEdit"
-            >Credential Field Values
-            <small
-              >(Schema: {{ schemaForSelectedCred.schema_name }}
-              {{ schemaForSelectedCred.version }})</small
-            >
-          </label>
-          <!-- TODO: This is replaced with the dynamic field creation  -->
-          <Textarea
-            id="credentialValuesEdit"
-            v-model="v$.credentialValuesEditing.$model"
-            :auto-resize="true"
-            rows="20"
-            cols="50"
-            class="w-full"
-          />
-
-          <Button label="Save" class="mt-5 w-full" @click="saveCredValues" />
-        </div>
       </div>
     </form>
   </div>
@@ -136,14 +118,15 @@
 
 <script setup lang="ts">
 // Vue
-import { computed, reactive, ref } from 'vue';
-// PrimeVue / Validation
+import { reactive, ref } from 'vue';
+// PrimeVue / Validation / etc
 import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
 import Textarea from 'primevue/textarea';
 import ProgressSpinner from 'primevue/progressspinner';
 import { required } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
+import { useToast } from 'vue-toastification';
 // State
 import { storeToRefs } from 'pinia';
 import {
@@ -151,8 +134,8 @@ import {
   useGovernanceStore,
   useIssuerStore,
 } from '../../../store';
-// Other imports
-import { useToast } from 'vue-toastification';
+// Other components
+import EnterCredentialValues from './EnterCredentialValues.vue';
 
 const toast = useToast();
 
@@ -171,8 +154,7 @@ const issuerStore = useIssuerStore();
 const emit = defineEmits(['closed', 'success']);
 
 // Form and Validation
-// TODO: this one replaced with dynamic field display
-const credentialValuesRaw = ref([]);
+const credentialValuesRaw = ref([] as { name: string; value: string }[]);
 const filteredCreds = ref();
 const filteredContacts = ref();
 const schemaForSelectedCred = ref();
@@ -216,38 +198,21 @@ const searchCreds = (event: any) => {
 
 // Editing the credential
 const editCredentialValues = () => {
+  // Get the specific schema to edit values for
+  const schemaId = credentialTemplates.value.find(
+    (ct: any) => ct.credential_template_id === formFields.selectedCred.value
+  ).schema_template_id;
+  const schema = schemaTemplates.value.find(
+    (st: any) => st.schema_template_id === schemaId
+  );
+  schemaForSelectedCred.value = schema;
+
+  // Open the editor
   showEditCredValues.value = true;
-
-  // Popuplate cred editor if it's not already been edited
-  if (!formFields.credentialValuesPretty.length) {
-    // Get the specific schema to edit values for
-    const schemaId = credentialTemplates.value.find(
-      (ct: any) => ct.credential_template_id === formFields.selectedCred.value
-    ).schema_template_id;
-    const schema = schemaTemplates.value.find(
-      (st: any) => st.schema_template_id === schemaId
-    );
-    schemaForSelectedCred.value = schema;
-
-    const schemaFillIn = schemaForSelectedCred.value.attributes.map(
-      (a: string) => {
-        return {
-          name: `${a}`,
-          value: '',
-        };
-      }
-    );
-    console.log(schemaFillIn);
-    formFields.credentialValuesEditing = JSON.stringify(
-      schemaFillIn,
-      undefined,
-      2
-    );
-  }
 };
-const saveCredValues = () => {
-  // TODO: to be replaced with dynamic form field component
-  credentialValuesRaw.value = JSON.parse(formFields.credentialValuesEditing);
+const saveCredValues = (credEmitted: { name: string; value: string }[]) => {
+  console.log(credEmitted);
+  credentialValuesRaw.value = credEmitted;
   formFields.credentialValuesPretty = '';
   credentialValuesRaw.value.forEach((c: any) => {
     formFields.credentialValuesPretty += `${c.name}: ${c.value} \n`;

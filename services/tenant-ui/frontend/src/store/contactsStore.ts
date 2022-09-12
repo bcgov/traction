@@ -116,6 +116,40 @@ export const useContactsStore = defineStore('contacts', () => {
     return accepted_data;
   }
 
+  async function deleteContact(payload: any = {}) {
+    console.log('> contactsStore.deleteContact');
+
+    const contactId = payload.contact_id;
+
+    error.value = null;
+    loading.value = true;
+
+    let result = null;
+
+    await tenantApi
+      .deleteHttp(`/tenant/v1/contacts/${contactId}`, payload)
+      .then((res) => {
+        result = res.data.item;
+      })
+      .then(() => {
+        listContacts(); // Refresh table
+      })
+      .catch((err) => {
+        error.value = err;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< contactsStore.deleteContact');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return result;
+  }
+
   // private functions
 
   const contactLabelValue = (item: any) => {
@@ -139,6 +173,7 @@ export const useContactsStore = defineStore('contacts', () => {
     listContacts,
     createInvitation,
     acceptInvitation,
+    deleteContact,
   };
 });
 
