@@ -1,9 +1,7 @@
 <template>
-  <Button
-    icon="pi pi-wallet"
-    class="p-button-icon p-button-rounded"
-    @click="toggleProfile"
-  />
+  <Button @click="toggleProfile">
+    <div class="wallet-img"></div>
+  </Button>
   <Menu ref="menu" :model="items" :popup="true" />
 </template>
 
@@ -38,4 +36,24 @@ const items = [
   },
 ];
 </script>
-<style scoped></style>
+<style scoped>
+button {
+  background-color: rgba(0, 0, 0, 0);
+  border: 0;
+  border-radius: 50%;
+  padding: 0;
+  transition: all 0.2s ease-in-out;
+}
+.wallet-img {
+  background-image: url(/public/profile_003_64.png);
+  width: 32px;
+  height: 32px;
+  background-size: cover;
+  transition-duration: 2s;
+}
+button:enabled:hover {
+  background-color: rgba(0, 0, 0, 0);
+  border: 0;
+  transform: scale(1.1);
+}
+</style>
