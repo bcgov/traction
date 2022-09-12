@@ -56,7 +56,7 @@ runs:
       with:
         eslint: true
         prettier: true
-        eslint_dir: ${{ inputs.context }}/frontend
+        eslint_dir: services/tenant-ui/frontend/
         continue_on_error: false
 
     - name: Lint backend
@@ -64,7 +64,7 @@ runs:
       with:
         eslint: true
         prettier: true
-        eslint_dir: ${{ inputs.context }}
+        eslint_dir: services/tenant-ui/
         continue_on_error: false
 
     - name: Build
