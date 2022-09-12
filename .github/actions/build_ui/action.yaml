@@ -52,16 +52,20 @@ runs:
         npm ci && npm cache clean --force && npm install -g typescript && cd frontend && npm ci
 
     - name: Lint frontend
-      shell: bash      
-      run: |
-        cd ${{ inputs.context }}/frontend
-        npm run lint
+      uses: wearerequired/lint-action@v2
+      with:
+        eslint: true
+        prettier: true
+        eslint_dir: ${{ inputs.context }}/frontend
+        continue_on_error: false
 
     - name: Lint backend
-      shell: bash      
-      run: |
-        cd ${{ inputs.context }}
-        npm run lint
+      uses: wearerequired/lint-action@v2
+      with:
+        eslint: true
+        prettier: true
+        eslint_dir: ${{ inputs.context }}
+        continue_on_error: false
 
     - name: Build
       shell: bash      
