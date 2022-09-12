@@ -1,0 +1,103 @@
+name: Build Tenant UI Image
+description: Build Tenant UI Image
+inputs:
+  ref:
+    description: 'The branch, tag or SHA to checkout'
+    required: false
+    default: ''  
+  context:
+    required: true
+    type: string
+    default: 'tenant-ui'
+  image_name:
+    required: true
+    type: string
+  registry:
+    required: true
+    type: string
+    default: ghcr.io
+  registry_username:
+    required: true
+    type: string
+  registry_password:
+    required: true
+
+outputs:
+  image_tag:
+    description: "Image Tag"
+    value: ${{ steps.values.outputs.image_tag }}
+  image_version:
+    description: "Image Version"
+    value: ${{ steps.values.outputs.image_version }}
+  buildtime:
+    description: "Build Time"
+    value: ${{ steps.values.outputs.buildtime }}
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v2   
+      with:
+        ref: ${{ inputs.ref != '' && inputs.ref ||  env.GITHUB_REF }}${{ inputs.ref }}
+
+    - name: Set up Node
+      uses: actions/setup-node@master
+      with:
+          node-version: 16
+
+    - name: Install dependencies
+      shell: bash      
+      run: |
+        cd ${{ inputs.context }}
+        npm ci && npm cache clean --force && npm install -g typescript && cd frontend && npm ci
+
+    - name: Lint frontend
+      shell: bash      
+      run: |
+        cd ${{ inputs.context }}/frontend
+        npm run lint
+
+    - name: Lint backend
+      shell: bash      
+      run: |
+        cd ${{ inputs.context }}
+        npm run lint
+
+    - name: Build
+      shell: bash      
+      run: |
+        cd ${{ inputs.context }}
+        npm run build
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1
+      with:
+        registry: ${{ inputs.registry}}
+        username: ${{ inputs.registry_username}}
+        password: ${{ inputs.registry_password }}
+
+    - name: Prepare docker tags for image
+      id: meta
+      uses: docker/metadata-action@v3
+      with:
+        images: ${{ inputs.registry }}/${{ inputs.image_name }}
+        tags: type=sha
+
+    - name: Build and push image
+      id: builder
+      uses: docker/build-push-action@v2
+      with:
+        context: ${{ inputs.context }}
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+
+    - id: values  
+      shell: bash
+      run: |
+        echo "::set-output name=image_tag::${{ fromJSON(steps.meta.outputs.json).tags[0] }}"
+        echo "::set-output name=image_version::${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}"
+        echo "::set-output name=buildtime::${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}"
