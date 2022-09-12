@@ -5,6 +5,7 @@ on:
       - develop
     paths:
       - 'services/traction/**'
+      - 'services/tenant-ui/**'
       - 'charts/traction/**'
     types:
       - opened
@@ -47,6 +48,28 @@ jobs:
       image_tag: ${{ steps.builder.outputs.image_tag }}
       image_version: ${{ steps.builder.outputs.image_version }}
       buildtime: ${{ steps.builder.outputs.buildtime }}
+        
+  build_ui:
+    name: 'Build Tenant UI'
+    runs-on: ubuntu-20.04
+    if: ${{ always() && fromJSON(needs.ready.outputs.build) == true }}
+    needs: 
+      - ready
+    steps:      
+      - uses: actions/checkout@v2        
+      - name: Build UI
+        uses: ./.github/actions/build_ui
+        id: builder
+        with:
+          context: './services/tenant-ui'
+          image_name: ${{ github.repository_owner}}/traction-tenant-ui
+          registry: ghcr.io
+          registry_username: ${{ github.repository_owner}}
+          registry_password: ${{ secrets.GITHUB_TOKEN }}
+    outputs:
+      image_tag: ${{ steps.builder.outputs.image_tag }}
+      image_version: ${{ steps.builder.outputs.image_version }}
+      buildtime: ${{ steps.builder.outputs.buildtime }}
 
   deploy:
     name: Deploy PR
@@ -55,6 +78,7 @@ jobs:
     needs: 
       - ready
       - build_api
+      - build_ui
     if: ${{ always() && (fromJSON(needs.ready.outputs.deploy) == true) && !(contains(needs.*.result, 'failure')) }}
 
     steps:  
@@ -77,6 +101,14 @@ jobs:
           yq eval '.traction_api.image.buildtime = "${{ needs.build_api.outputs.buildtime }}"' -i ./charts/traction/values-pr.yaml
           helm upgrade -f ./charts/traction/values.yaml -f ./charts/traction/values-pr.yaml pr-${{ github.event.number }}-traction ./charts/traction --install
 
+      - name: Run Tenant UI PR Helm
+        run: |
+          yq eval '.global.fullnameOverride = "pr-${{ github.event.number }}-tenant-ui"' -i ./charts/tenant-ui/values.yaml
+          yq eval '.tenant_ui.traction_api.endpoint = "https://pr-${{ github.event.number }}-traction-api-dev.apps.silver.devops.gov.bc.ca"' -i ./charts/tenant-ui/values-pr.yaml
+          yq eval '.tenant_ui.image.tag = "${{ needs.build_image.outputs.image_tag }}"' -i ./charts/tenant-ui/values-pr.yaml
+          yq eval '.tenant_ui.image.version = "${{ needs.build_image.outputs.image_version }}"' -i ./charts/tenant-ui/values-pr.yaml
+          yq eval '.tenant_ui.image.buildtime = "${{ needs.build_image.outputs.buildtime }}"' -i ./charts/tenant-ui/values-pr.yaml
+          helm upgrade -f ./charts/tenant-ui/values.yaml -f ./charts/tenant-ui/values-pr.yaml pr-${{ github.event.number }}-tenant-ui ./charts/tenant-ui --install --wait
   
   deploymenturls:
     name: Deployment URLs comment
@@ -107,6 +139,7 @@ jobs:
             | | API | https://pr-${{ github.event.number }}-traction-api-dev.apps.silver.devops.gov.bc.ca |
             | | Innkeeper Swagger | https://pr-${{ github.event.number }}-traction-api-dev.apps.silver.devops.gov.bc.ca/innkeeper/docs |
             | | Tenant Swagger | https://pr-${{ github.event.number }}-traction-api-dev.apps.silver.devops.gov.bc.ca/tenant/docs |
+            | | Tenant UI | https://pr-${{ github.event.number }}-tenant-ui-dev.apps.silver.devops.gov.bc.ca |
             | Aca-Py | | |
             | | Admin Swagger | https://pr-${{ github.event.number }}-traction-acapy-admin-dev.apps.silver.devops.gov.bc.ca/api/doc |
             
