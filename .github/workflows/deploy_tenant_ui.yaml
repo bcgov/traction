@@ -30,13 +30,12 @@ jobs:
           ref: ${{ github.event.inputs.ref }}    
       
       - name: Build service
-        uses: ./.github/actions/build_service
+        uses: ./.github/actions/build_ui
         id: builder
         with:
           ref: ${{ github.event.inputs.ref }}
           context: './services/tenant-ui'
           image_name: ${{ github.repository_owner}}/traction-tenant-ui
-          python_image: false
           registry: ghcr.io
           registry_username: ${{ github.repository_owner}}          
           registry_password: ${{ secrets.GITHUB_TOKEN }}
