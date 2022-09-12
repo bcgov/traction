@@ -35,8 +35,8 @@
       <hr />
       <DataTable
         :value="attribute_claim_rows()"
-        responsiveLayout="scroll"
-        stripedRows
+        responsive-layout="scroll"
+        striped-rows
         class="p-datatable-sm"
       >
         <Column field="checkmark" header="" style="width: 30px">
@@ -121,11 +121,12 @@ interface AttrbiuteClaimRow {
 
 const attribute_claim_rows = (): AttrbiuteClaimRow[] => {
   const pres = props.presentation;
-  let result: AttrbiuteClaimRow[] = [];
+  const result: AttrbiuteClaimRow[] = [];
 
   //normalize attribute_groups for table
   for (const [k, v] of Object.entries(requested_attribute_groups())) {
-    v.names.forEach((name) => {
+    // @ts-expect-error types have not been defined for this object
+    v.names.forEach((name: string) => {
       result.push({
         name: name,
         val: pres.acapy.presentation_exchange.presentation.requested_proof
@@ -133,6 +134,7 @@ const attribute_claim_rows = (): AttrbiuteClaimRow[] => {
         attr_type: 'requested_attribute_group',
         referent: k,
         checkmark: true,
+        // @ts-expect-error types have not been defined for this object
         restrictions: v.restrictions,
       });
     });
@@ -140,18 +142,21 @@ const attribute_claim_rows = (): AttrbiuteClaimRow[] => {
   //normalize single_attributes for table
   for (const [k, v] of Object.entries(requested_single_attributes())) {
     result.push({
+      // @ts-expect-error types have not been defined for this object
       name: v.name,
       val: pres.acapy.presentation_exchange.presentation.requested_proof
         .revealed_attrs[k].raw,
       attr_type: 'requested_single_attribute',
       referent: k,
       checkmark: true,
+      // @ts-expect-error types have not been defined for this object
       restrictions: v.restrictions,
     });
   }
   //normalize self_attested_attributes for table
   for (const [k, v] of Object.entries(requested_self_attested_attributes())) {
     result.push({
+      // @ts-expect-error types have not been defined for this object
       name: v.name,
       val: pres.acapy.presentation_exchange.presentation.requested_proof
         .self_attested_attrs[k],
@@ -195,6 +200,7 @@ const requested_self_attested_attributes = (): any => {
       props.presentation.acapy.presentation_exchange.presentation_request
         .requested_attributes
     ).filter(([key, ra]) => {
+      // @ts-expect-error types have not been defined for this object
       return 'name' in ra && !('restrictions' in ra);
     })
   );

@@ -168,6 +168,8 @@ const {
 } = storeToRefs(useGovernanceStore());
 const issuerStore = useIssuerStore();
 
+const emit = defineEmits(['closed', 'success']);
+
 // Form and Validation
 // TODO: this one replaced with dynamic field display
 const credentialValuesRaw = ref([]);
@@ -277,6 +279,9 @@ const handleSubmit = async (isFormValid: boolean) => {
     // call store
     await issuerStore.offerCredential(payload);
     toast.info('Credential Offer Sent');
+    emit('success');
+    // close up on success
+    emit('closed');
   } catch (error) {
     toast.error(`Failure: ${error}`);
   } finally {
