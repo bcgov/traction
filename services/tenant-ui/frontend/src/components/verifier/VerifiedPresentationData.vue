@@ -52,7 +52,7 @@ const props = defineProps({
   },
 });
 
-interface AttrbiuteClaimRow {
+interface AttributeClaimRow {
   name: string;
   val: string;
   attr_type: string;
@@ -61,9 +61,9 @@ interface AttrbiuteClaimRow {
   restrictions: object;
 }
 
-const attribute_claim_rows = (): AttrbiuteClaimRow[] => {
+const attribute_claim_rows = (): AttributeClaimRow[] => {
   const pres = props.presentation;
-  const result: AttrbiuteClaimRow[] = [];
+  const result: AttributeClaimRow[] = [];
 
   //normalize attribute_groups for table
   for (const [k, v] of Object.entries(requested_attribute_groups())) {
