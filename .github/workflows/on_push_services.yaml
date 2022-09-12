@@ -1,5 +1,6 @@
 name: Push Instance to Develop
 on:
+  workflow_dispatch:
   push:
     branches: 
       - develop
@@ -7,6 +8,7 @@ on:
       - 'services/traction/**'
       - 'services/tenant-ui/**'
       - 'charts/traction/**'
+      - 'charts/tenant-ui/**'
       
 jobs:
 
