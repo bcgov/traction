@@ -1,6 +1,8 @@
 # Traction Demo
 
-The Traction demo utilizes the Innkeeper API (tenant manager), the Tenant API and Tenant UI.  Tenant UI is currently under development and does not implement all the features of the Tenant API. We will be hopping around between Swagger and the Tenant UI to show:
+The Traction demo utilizes the Innkeeper API (tenant manager), the Tenant API and Tenant UI. The Tenant UI is a Vue 3 application that calls the Tenant API - anything that the Tenant UI does can be called through the Traction (Tenant) API directly. The Tenant UI is a convenience utility and is not required for application integration.
+
+Tenant UI is currently under development and does not implement all the features of the Tenant API. We will be hopping around between Swagger and the Tenant UI to show:
 
 1. Innkeeper create Tenants (including Issuer)
 2. Tenant enabled for Issuance by Innkeeper completing the Issuer process
@@ -33,7 +35,8 @@ docker-compose build
 docker-compose up
 ```
 
-By default, this will start an environment with:
+By default, this will start an environment with: 
+
 * a postgres database for traction and aca-py data
 * an endorser (database, aca-py agent and API)
 * [aca-py](https://github.com/hyperledger/aries-cloudagent-python) agent in multitenancy mode (access through ngrok)
