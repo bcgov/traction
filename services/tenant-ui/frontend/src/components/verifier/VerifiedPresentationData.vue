@@ -1,40 +1,46 @@
 <template>
-  <DataTable
-    :value="attribute_claim_rows()"
-    responsive-layout="scroll"
-    striped-rows
-    class="p-datatable-sm"
-  >
-    <Column field="checkmark" header="" style="width: 30px">
-      <template #body="row">
-        <span v-if="row.data.checkmark" class="pi pi-check"></span>
-      </template>
-    </Column>
-    <Column field="name" header="Name"></Column>
-    <Column field="val" header="Value"></Column>
-    <Column field="tooltip" style="width: 40px">
-      <template #body="row">
-        <InfoModal :object="row.data.restrictions" :header="'Restrictions'" />
-      </template>
-    </Column>
-  </DataTable>
-
-  <br />
-  <!-- Identifiers -->
-  <Accordion>
-    <AccordionTab
-      v-for="(item, index) in props.presentation.acapy.presentation_exchange
-        .presentation.identifiers"
-      :key="index"
-      :header="`Identifier_${index + 1}`"
+  <div v-if="presentation.status == 'verified'">
+    <DataTable
+      :value="attribute_claim_rows()"
+      responsive-layout="scroll"
+      striped-rows
+      class="p-datatable-sm"
     >
-      <ul>
-        <li v-for="(val, attr_name, i) in item" :key="i">
-          <strong>{{ attr_name }}</strong> : {{ val }}
-        </li>
-      </ul>
-    </AccordionTab>
-  </Accordion>
+      <Column field="checkmark" header="" style="width: 30px">
+        <template #body="row">
+          <span v-if="row.data.checkmark" class="pi pi-check"></span>
+        </template>
+      </Column>
+      <Column field="name" header="Name"></Column>
+      <Column field="val" header="Value"></Column>
+      <Column field="tooltip" style="width: 40px">
+        <template #body="row">
+          <InfoModal :object="row.data.restrictions" :header="'Restrictions'" />
+        </template>
+      </Column>
+    </DataTable>
+
+    <br />
+    <!-- Identifiers -->
+    <Accordion>
+      <AccordionTab
+        v-for="(item, index) in props.presentation.acapy.presentation_exchange
+          .presentation.identifiers"
+        :key="index"
+        :header="`Identifier_${index + 1}`"
+      >
+        <ul>
+          <li v-for="(val, attr_name, i) in item" :key="i">
+            <strong>{{ attr_name }}</strong> : {{ val }}
+          </li>
+        </ul>
+      </AccordionTab>
+    </Accordion>
+  </div>
+  <div v-else>
+    This is not the component you are looking for, presentation should have
+    status='verified'
+  </div>
 </template>
 
 <script setup lang="ts">
