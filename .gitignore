@@ -5,3 +5,5 @@ devops/helm/charts/traction/charts/**
 
 traction-venv
 ./services/tenant-ui/config/local.json
+
+.vscode/settings.json
