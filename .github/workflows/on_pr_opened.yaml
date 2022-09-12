@@ -103,7 +103,7 @@ jobs:
 
       - name: Run Tenant UI PR Helm
         run: |
-          yq eval '.global.fullnameOverride = "pr-${{ github.event.number }}-tenant-ui"' -i ./charts/tenant-ui/values.yaml
+          yq eval '.global.fullnameOverride = "pr-${{ github.event.number }}-tenant-ui"' -i ./charts/tenant-ui/values-pr.yaml
           yq eval '.tenant_ui.traction_api.endpoint = "https://pr-${{ github.event.number }}-traction-api-dev.apps.silver.devops.gov.bc.ca"' -i ./charts/tenant-ui/values-pr.yaml
           yq eval '.tenant_ui.image.tag = "${{ needs.build_ui.outputs.image_tag }}"' -i ./charts/tenant-ui/values-pr.yaml
           yq eval '.tenant_ui.image.version = "${{ needs.build_ui.outputs.image_version }}"' -i ./charts/tenant-ui/values-pr.yaml

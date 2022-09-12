@@ -1,4 +1,5 @@
 global:
+  fullnameOverride: 'pr-00-tenant-ui'
   ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
 tenant_ui:
   image:
