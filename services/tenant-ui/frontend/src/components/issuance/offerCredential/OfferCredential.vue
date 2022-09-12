@@ -4,14 +4,15 @@
       :disabled="!isIssuer"
       label="Offer Credential"
       icon="pi pi-arrow-up-right"
-      @click="openOfferPopup"
+      @click="openModal"
     />
     <Dialog
-      v-model:visible="displayOfferModal"
+      v-model:visible="displayModal"
       header="Offer Credential"
       :modal="true"
+      @update:visible="handleClose"
     >
-      <OfferCredentialForm />
+      <OfferCredentialForm @success="$emit('success')" @closed="handleClose" />
     </Dialog>
   </div>
 </template>
@@ -45,8 +46,9 @@ const { isIssuer } = storeToRefs(useTenantStore());
 // -----------------------------------------------------------------------
 // Display popup
 // ---------------------------------------------------------------------
-const displayOfferModal = ref(false);
-const openOfferPopup = async () => {
+defineEmits(['success']);
+const displayModal = ref(false);
+const openModal = async () => {
   // Kick of the loading asyncs in the store to fetch contacts/creds
   Promise.all([
     contactsStore.listContacts(),
@@ -57,7 +59,11 @@ const openOfferPopup = async () => {
       `An error occurred loading your contacts or credentials: ${err}`
     );
   });
-  displayOfferModal.value = true;
+  displayModal.value = true;
+};
+const handleClose = async () => {
+  // some logic... maybe we shouldn't close?
+  displayModal.value = false;
 };
 // ---------------------------------------------------------------/display
 </script>
