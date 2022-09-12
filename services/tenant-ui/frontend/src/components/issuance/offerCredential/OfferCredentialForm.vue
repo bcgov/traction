@@ -14,8 +14,8 @@
 
           <AutoComplete
             id="selectedCred"
-            class="w-full"
             v-model="v$.selectedCred.$model"
+            class="w-full"
             :disabled="credsLoading"
             :suggestions="filteredCreds"
             :dropdown="true"
@@ -40,8 +40,8 @@
 
           <AutoComplete
             id="selectedContact"
-            class="w-full"
             v-model="v$.selectedContact.$model"
+            class="w-full"
             :disabled="contactLoading"
             :suggestions="filteredContacts"
             :dropdown="true"
@@ -109,6 +109,7 @@
           :header="formFields.selectedCred.label"
           :schema-for-selected-cred="schemaForSelectedCred"
           @back="showEditCredValues = false"
+          @save="saveCredValues"
         />
       </div>
     </form>
@@ -209,8 +210,9 @@ const editCredentialValues = () => {
   // Open the editor
   showEditCredValues.value = true;
 };
-const saveCredValues = () => {
-  // credentialValuesRaw.value = JSON.parse(formFields.credentialValuesEditing);
+const saveCredValues = (credEmitted: { name: string; value: string }[]) => {
+  console.log(credEmitted);
+  credentialValuesRaw.value = credEmitted;
   formFields.credentialValuesPretty = '';
   credentialValuesRaw.value.forEach((c: any) => {
     formFields.credentialValuesPretty += `${c.name}: ${c.value} \n`;

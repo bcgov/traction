@@ -6,11 +6,6 @@
   />
   <strong>{{ props.header }}</strong>
 
-  <br />
-  {{ credentialValuesJson }}
-  <br />
-  {{ credentialValuesRaw }}
-
   <div class="field mt-5">
     <!-- Label/toggle -->
     <div class="flex justify-content-between">
@@ -21,7 +16,7 @@
       </div>
       <div class="flex justify-content-end">
         JSON
-        <InputSwitch v-model="showRawJson" @input="toggleJson" class="ml-1" />
+        <InputSwitch v-model="showRawJson" class="ml-1" @input="toggleJson" />
       </div>
     </div>
 
@@ -47,9 +42,9 @@
     <!-- Dynamic Attribute field list -->
     <div v-show="!showRawJson">
       <div
-        class="field"
         v-for="(item, index) in credentialValuesRaw"
         :key="item.name"
+        class="field"
       >
         <label :for="item.name">
           {{ item.name }}
@@ -75,6 +70,7 @@ import InputSwitch from 'primevue/inputswitch';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import { useToast } from 'vue-toastification';
+import { emitError } from 'vue-json-pretty/types/utils';
 
 const toast = useToast();
 
@@ -86,6 +82,8 @@ interface Props {
 }
 const props = defineProps<Props>();
 
+const emit = defineEmits(['back', 'save']);
+
 // Fields
 const credentialValuesJson = ref('');
 const credentialValuesRaw = ref([] as { name: string; value: string }[]);
@@ -95,17 +93,26 @@ const showRawJson = ref(false);
 // TODO: util function file
 function _tryParseJson(jsonString: string) {
   try {
-    var o = JSON.parse(jsonString);
+    const o = JSON.parse(jsonString);
     if (o && typeof o === 'object') {
       return o;
     }
-  } catch (e) {}
+    return false;
+  } catch (e) {
+    return false;
+  }
+}
 
-  return false;
+function _jsonToCredRaw() {
+  const parsed = _tryParseJson(credentialValuesJson.value);
+  if (parsed) {
+    credentialValuesRaw.value = JSON.parse(credentialValuesJson.value);
+  } else {
+    toast.warning('The JSON you inputted has invalid syntax');
+  }
 }
 
 const toggleJson = () => {
-  debugger;
   if (showRawJson.value) {
     // Convert over to the json from what was entered on the fields
     credentialValuesJson.value = JSON.stringify(
@@ -115,18 +122,16 @@ const toggleJson = () => {
     );
   } else {
     // Parse the entered JSON into fields, or ignore and warn if invalid syntax
-    const parsed = _tryParseJson(credentialValuesJson.value);
-    if (parsed) {
-      credentialValuesRaw.value = JSON.parse(credentialValuesJson.value);
-    } else {
-      toast.warning('The JSON you inputted has invalid syntax');
-    }
+    _jsonToCredRaw();
   }
 };
 
 const saveCredValues = () => {
-  
-}
+  if (showRawJson.value) {
+    _jsonToCredRaw();
+  }
+  emit('save', credentialValuesRaw.value);
+};
 
 // Whnen the component is intialized set up the fields and raw JSON based
 // on the supplied schema and if there is existing values already
@@ -147,7 +152,6 @@ onMounted(() => {
   } else {
     credentialValuesRaw.value = props.existingCredentialValues;
   }
-  debugger;
   credentialValuesJson.value = JSON.stringify(
     credentialValuesRaw.value,
     undefined,
