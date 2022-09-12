@@ -8,7 +8,7 @@
     "prestart": "npm run build",
     "start": "node dist/src/index.js",
     "dev": "ts-node-dev --respawn --pretty --transpile-only src/index.ts",
-    "lint": "eslint . --ext .ts  --ignore-path .gitignore --ignore-pattern 'frontend/*' ."
+    "lint": "eslint . --ext .ts --max-warnings=0 --ignore-path .gitignore --ignore-pattern 'frontend/*' ."
   },
   "keywords": [],
   "author": "",
