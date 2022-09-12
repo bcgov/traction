@@ -35,6 +35,7 @@ jobs:
         continue-on-error: true
         run: |
           helm uninstall pr-${{ github.event.number }}-traction
+          helm uninstall pr-${{ github.event.number }}-tenant-ui
       
       - name: Remove Traction Openshift Objects
         continue-on-error: true 
