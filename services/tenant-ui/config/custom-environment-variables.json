@@ -11,6 +11,7 @@
     "appTitle": "UX_APP_TITLE",
     "sidebarTitle": "UX_SIDEBAR_TITLE",
     "copyright": "UX_COPYRIGHT",
-    "owner": "UX_OWNER"
+    "owner": "UX_OWNER",
+    "coverImageCopyright": "UX_COVERIMAGE_COPYRIGHT"
   }
 }

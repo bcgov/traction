@@ -30,6 +30,7 @@ tenant_ui:
     sidebarTitle: 'Traction'
     copyright: ''
     owner: ''
+    coverImageCopyright: 'Photo by Kristoffer Fredriksson on StockSnap'
 
 
   traction_api:
