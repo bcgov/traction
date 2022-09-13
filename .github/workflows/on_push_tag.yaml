@@ -175,7 +175,7 @@ jobs:
       
       - name: Run Tenant UI Helm 
         run: |
-          yq eval '.traction_api.image.tag = ${{ needs.read_config_ui.outputs.image_tag }}' -i ./charts/tenant-ui/values-${{ needs.init.outputs.promote_to }}.yaml
-          yq eval '.traction_api.image.version = ${{ needs.read_config_ui.outputs.image_version }}' -i ./charts/tenant-ui/values-${{ needs.init.outputs.promote_to }}.yaml
-          yq eval '.traction_api.image.buildtime = ${{ needs.read_config_ui.outputs.buildtime }}' -i ./charts/tenant-ui/values-${{ needs.init.outputs.promote_to }}.yaml
+          yq eval '.tenant_ui.image.tag = ${{ needs.read_config_ui.outputs.image_tag }}' -i ./charts/tenant-ui/values-${{ needs.init.outputs.promote_to }}.yaml
+          yq eval '.tenant_ui.image.version = ${{ needs.read_config_ui.outputs.image_version }}' -i ./charts/tenant-ui/values-${{ needs.init.outputs.promote_to }}.yaml
+          yq eval '.tenant_ui.image.buildtime = ${{ needs.read_config_ui.outputs.buildtime }}' -i ./charts/tenant-ui/values-${{ needs.init.outputs.promote_to }}.yaml
           helm upgrade -f ./charts/tenant-ui/values.yaml -f ./charts/tenant-ui/values-${{ needs.init.outputs.promote_to }}.yaml ${{ needs.init.outputs.promote_to }}-tenant-ui ./charts/tenant-ui --install --wait
