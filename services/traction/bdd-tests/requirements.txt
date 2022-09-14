@@ -30,7 +30,7 @@ Mako==1.1.6
 MarkupSafe==2.0.1
 mypy-extensions==0.4.3
 packaging==21.3
-paramiko==2.10.1
+paramiko==2.9.3
 parse==1.19.0
 parse-type==0.6.0
 passlib==1.7.4
