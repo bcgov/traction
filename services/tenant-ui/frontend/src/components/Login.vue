@@ -14,12 +14,19 @@
       </div>
     </div>
 
-    <div class="cover-image hidden md:block col-0 md:col-6 xl:col-8 p-0" />
+    <div class="cover-image hidden md:block col-0 md:col-6 xl:col-8 p-0">
+      <span v-if="config.ux.coverImageCopyright" class="copyright">
+        {{ config.ux.coverImageCopyright }}
+      </span>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import LoginForm from '@/components/LoginForm.vue';
+import { useConfigStore } from '@/store';
+const { config } = storeToRefs(useConfigStore());
 </script>
 
 <style scoped lang="scss">
@@ -41,5 +48,15 @@ import LoginForm from '@/components/LoginForm.vue';
   background-image: url('/default-login-image.jpg');
   background-repeat: no-repeat;
   background-size: cover;
+  .copyright {
+    color: white;
+    font-size: 0.5em;
+    background-color: rgba($color: #000000, $alpha: 0.5);
+    padding: 0 0.5em;
+    margin: 1em;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+  }
 }
 </style>

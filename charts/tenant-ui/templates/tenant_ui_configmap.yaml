@@ -12,3 +12,4 @@ data:
   UX_SIDEBAR_TITLE: {{ .Values.tenant_ui.ux.sidebarTitle | quote }}
   UX_COPYRIGHT: {{ .Values.tenant_ui.ux.copyright | quote }}
   UX_OWNER: {{ .Values.tenant_ui.ux.owner | quote }}
+  UX_COVERIMAGE_COPYRIGHT: {{ .Values.tenant_ui.ux.coverImageCopyright | quote }}

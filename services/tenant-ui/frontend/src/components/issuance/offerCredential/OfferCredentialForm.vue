@@ -97,8 +97,8 @@
           type="submit"
           label="Send Offer"
           class="mt-5 w-full"
-          :disabled="contactLoading || credsLoading"
-          :loading="contactLoading || credsLoading"
+          :disabled="contactLoading || credsLoading || issueLoading"
+          :loading="contactLoading || credsLoading || issueLoading"
         />
       </div>
 
@@ -149,6 +149,7 @@ const {
   credentialTemplates,
   schemaTemplates,
 } = storeToRefs(useGovernanceStore());
+const { loading: issueLoading } = storeToRefs(useIssuerStore());
 const issuerStore = useIssuerStore();
 
 const emit = defineEmits(['closed', 'success']);
