@@ -70,7 +70,6 @@ import InputSwitch from 'primevue/inputswitch';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import { useToast } from 'vue-toastification';
-import { emitError } from 'vue-json-pretty/types/utils';
 
 const toast = useToast();
 
