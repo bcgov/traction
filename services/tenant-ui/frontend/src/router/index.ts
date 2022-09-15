@@ -12,14 +12,16 @@ import MyContacts from '@/views/connections/MyContacts.vue';
 import MyIssuedCredentials from '@/views/issuance/MyIssuedCredentials.vue';
 import Schemas from '@/views/issuance/Schemas.vue';
 // // Verifictation
-import CreatePresentation from '@/views/verification/CreatePresentation.vue';
 import MyPresentations from '@/views/verification/MyPresentations.vue';
 import PresentationTemplates from '@/views/verification/PresentationTemplates.vue';
 // // Holder
-import AcceptCredential from '@/views/holder/AcceptCredential.vue';
 import MyHeldCredentials from '@/views/holder/MyHeldCredentials.vue';
+// 404
+import NotFound from '@/views/NotFound.vue';
+
 
 const routes = [
+  { path: '/:pathMatch(.*)', component: NotFound },
   {
     path: '/',
     name: 'Dashboard',
