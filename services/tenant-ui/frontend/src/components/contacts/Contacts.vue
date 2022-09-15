@@ -3,11 +3,14 @@
 
   <DataTable
     v-model:selection="selectedContact"
+    v-model:expandedRows="expandedRows"
     :loading="loading"
     :value="contacts"
     :paginator="true"
     :rows="10"
     selection-mode="single"
+    data-key="contact_id"
+    @row-expand="onRowExpand"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -27,6 +30,7 @@
     </template>
     <template #empty> No records found. </template>
     <template #loading> Loading data. Please wait... </template>
+    <Column :expander="true" header-style="width: 3rem" />
     <Column :sortable="false" header="Actions">
       <template #body="{ data }">
         <Button
@@ -45,12 +49,26 @@
         {{ formatDateLong(data.created_at) }}
       </template>
     </Column>
+    <template #expansion="{ data: row }">
+      <RowExpandData :loading="contactLoading" :data="contact">
+        <template v-slot:details="item">
+          <div>
+            <ul>
+              <!-- red is showing data that is in the table collection -->
+              <li style="color: red">{{ row.contact_id }}</li>
+              <!-- green is showing data that was fetched and loaded into the expand data component -->
+              <li style="color: green">{{ item.acapy.connection }}</li>
+            </ul>
+          </div>
+        </template>
+      </RowExpandData>
+    </template>
   </DataTable>
 </template>
 
 <script setup lang="ts">
 // Vue
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 // PrimeVue
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -64,6 +82,8 @@ import { storeToRefs } from 'pinia';
 import AcceptInvitation from './acceptInvitation/AcceptInvitation.vue';
 import CreateContact from './createContact/CreateContact.vue';
 import { formatDateLong } from '@/helpers';
+import RowExpandData from '../common/RowExpandData.vue';
+import useGetContact from '@/composables/useGetContact';
 
 const confirm = useConfirm();
 const toast = useToast();
@@ -71,6 +91,7 @@ const toast = useToast();
 const contactsStore = useContactsStore();
 
 const { loading, contacts, selectedContact } = storeToRefs(useContactsStore());
+const { loading: contactLoading, contact, getFullContact } = useGetContact();
 
 const loadTable = async () => {
   contactsStore.listContacts().catch((err) => {
@@ -104,6 +125,11 @@ const doDelete = (schema: any) => {
       console.error(err);
       toast.error(`Failure: ${err}`);
     });
+};
+
+const expandedRows = ref([]);
+const onRowExpand = async (event: any) => {
+  await getFullContact(event.data.contact_id);
 };
 </script>
 
