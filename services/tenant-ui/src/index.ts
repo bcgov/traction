@@ -11,7 +11,10 @@ const APIROOT: string = config.get("server.apiPath");
 const PROXYROOT: string = config.get("server.proxyPath");
 const STATIC_FILES_PATH: string = config.get("server.staticFiles");
 
+import history from "connect-history-api-fallback";
+
 const app = express();
+app.use(history());
 app.use(cors());
 app.use(express.json());
 // app.use(bodyParser.json());
