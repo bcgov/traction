@@ -51,7 +51,7 @@
     </Column>
     <template #expansion="{ data: row }">
       <RowExpandData :loading="contactLoading" :data="contact">
-        <template v-slot:details="item">
+        <template #details="item">
           <div>
             <ul>
               <!-- red is showing data that is in the table collection -->
