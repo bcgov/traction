@@ -1,4 +1,4 @@
-import { useContactsStore } from '@/store';
+import { useContactsStore } from '../store';
 import { ref } from 'vue';
 
 export default function useGetContact() {
