@@ -19,7 +19,6 @@ import MyHeldCredentials from '@/views/holder/MyHeldCredentials.vue';
 // 404
 import NotFound from '@/views/NotFound.vue';
 
-
 const routes = [
   { path: '/:pathMatch(.*)', component: NotFound },
   {
