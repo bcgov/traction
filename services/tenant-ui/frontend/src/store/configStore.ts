@@ -33,7 +33,7 @@ export const useConfigStore = defineStore('config', () => {
     error.value = null;
     loading.value = true;
     await axios
-      .get('config')
+      .get('/config')
       .then((res) => {
         console.log(res);
         config.value = res.data;
