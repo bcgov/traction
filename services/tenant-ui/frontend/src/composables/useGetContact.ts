@@ -1,31 +1,55 @@
-import { useContactsStore } from '../store';
 import { ref } from 'vue';
+import { GetItem } from '../types';
+import { useContactsStore } from '../store';
 
-export default function useGetContact() {
-  const contact = ref();
-  const loading: any = ref(false);
+// this is just here for demo of the spinner...
+// will remove
+const timeout = (ms: number, message: any) => {
+  return new Promise((_, reject) => {
+    setTimeout(() => {
+      reject(new Error(message));
+    }, ms);
+  });
+};
+async function wait(ms: number) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(ms);
+    }, ms);
+  });
+}
+export default function useGetContact(): GetItem {
   const contactsStore = useContactsStore();
 
-  async function getContact(id: String, params: any = {}) {
+  const item = ref();
+  const loading: any = ref(false);
+
+  async function fetchItem(id: String, params: any = {}) {
     try {
       loading.value = true;
       // call store
-      contact.value = await contactsStore.getContact(id, params);
+      await Promise.race([
+        timeout(3000, 'took too long'),
+        (async () => {
+          item.value = await contactsStore.getContact(id, params);
+          await wait(2000);
+        })(),
+      ]);
     } catch (error) {
-      contact.value = null;
+      item.value = null;
     } finally {
       loading.value = false;
     }
   }
 
-  async function getFullContact(id: String) {
-    return getContact(id, { acapy: true });
+  async function fetchItemWithAcapy(id: String) {
+    return fetchItem(id, { acapy: true });
   }
 
   return {
-    contact,
+    item,
     loading,
-    getContact,
-    getFullContact,
+    fetchItem,
+    fetchItemWithAcapy,
   };
 }

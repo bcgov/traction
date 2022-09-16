@@ -1,5 +1,7 @@
 <template>
-  <div v-if="loading">Loading data. Please wait...</div>
+  <div v-if="loading" class="flex justify-content-center">
+    <ProgressSpinner />
+  </div>
   <div v-else>
     <div>
       <slot name="details" v-bind="data"></slot>
@@ -13,13 +15,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, PropType, ref } from 'vue';
+import { PropType } from 'vue';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
+import ProgressSpinner from 'primevue/progressspinner';
 import VueJsonPretty from 'vue-json-pretty';
-import 'vue-json-pretty/lib/styles.css';
-import { JSONDataType } from 'vue-json-pretty/types/utils';
-import { processSlotOutlet } from '@vue/compiler-core';
 
 const props = defineProps({
   data: {

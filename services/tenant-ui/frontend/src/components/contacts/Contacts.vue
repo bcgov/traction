@@ -49,19 +49,8 @@
         {{ formatDateLong(data.created_at) }}
       </template>
     </Column>
-    <template #expansion="{ data: row }">
-      <RowExpandData :loading="contactLoading" :data="contact">
-        <template #details="item">
-          <div>
-            <ul>
-              <!-- red is showing data that is in the table collection -->
-              <li style="color: red">{{ row.contact_id }}</li>
-              <!-- green is showing data that was fetched and loaded into the expand data component -->
-              <li style="color: green">{{ item.acapy.connection }}</li>
-            </ul>
-          </div>
-        </template>
-      </RowExpandData>
+    <template #expansion="{ data }">
+      <ContactRowExpandData :row="data" />
     </template>
   </DataTable>
 </template>
@@ -82,8 +71,8 @@ import { storeToRefs } from 'pinia';
 import AcceptInvitation from './acceptInvitation/AcceptInvitation.vue';
 import CreateContact from './createContact/CreateContact.vue';
 import { formatDateLong } from '@/helpers';
-import RowExpandData from '../common/RowExpandData.vue';
-import useGetContact from '@/composables/useGetContact';
+import ContactRowExpandData from './ContactRowExpandData.vue';
+//import useGetContact from '@/composables/useGetContact';
 
 const confirm = useConfirm();
 const toast = useToast();
@@ -91,7 +80,11 @@ const toast = useToast();
 const contactsStore = useContactsStore();
 
 const { loading, contacts, selectedContact } = storeToRefs(useContactsStore());
-const { loading: contactLoading, contact, getFullContact } = useGetContact();
+//const {
+//  loading: contactLoading,
+//  item: contact,
+//  fetchItemWithAcapy,
+//} = useGetContact();
 
 const loadTable = async () => {
   contactsStore.listContacts().catch((err) => {
@@ -129,7 +122,7 @@ const doDelete = (schema: any) => {
 
 const expandedRows = ref([]);
 const onRowExpand = async (event: any) => {
-  await getFullContact(event.data.contact_id);
+  //  await fetchItemWithAcapy(event.data.contact_id);
 };
 </script>
 
