@@ -9,7 +9,7 @@ import { PropType } from 'vue';
 // State
 // Other components
 import RowExpandData from '../common/RowExpandData.vue';
-import useGetContact from '@/composables/useGetContact';
+import useGetSchema from '@/composables/useGetSchema';
 
 const props = defineProps({
   row: {
@@ -18,10 +18,10 @@ const props = defineProps({
   },
 });
 
-const { loading, item, fetchItemWithAcapy } = useGetContact();
+const { loading, item, fetchItemWithAcapy } = useGetSchema();
 
 // ok, let's load up the contact with acapy data...
-fetchItemWithAcapy(props.row.contact_id);
+fetchItemWithAcapy(props.row.schema_template_id);
 </script>
 
 <style scoped></style>

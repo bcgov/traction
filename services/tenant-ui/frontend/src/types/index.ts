@@ -1,8 +1,8 @@
 interface GetItem {
   item?: {};
   loading: boolean;
-  fetchItem: (id: String, params?: any) => Promise<void>;
-  fetchItemWithAcapy: (id: String) => Promise<void>;
+  fetchItem: (id: string, params?: any) => Promise<void>;
+  fetchItemWithAcapy: (id: string) => Promise<void>;
 }
 
 export type { GetItem };

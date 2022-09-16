@@ -2,7 +2,7 @@
   <div v-if="loading" class="flex justify-content-center">
     <ProgressSpinner />
   </div>
-  <div v-else>
+  <div v-if="data">
     <div>
       <slot name="details" v-bind="data"></slot>
     </div>

@@ -10,7 +10,6 @@
     :rows="10"
     selection-mode="single"
     data-key="contact_id"
-    @row-expand="onRowExpand"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -72,7 +71,6 @@ import AcceptInvitation from './acceptInvitation/AcceptInvitation.vue';
 import CreateContact from './createContact/CreateContact.vue';
 import { formatDateLong } from '@/helpers';
 import ContactRowExpandData from './ContactRowExpandData.vue';
-//import useGetContact from '@/composables/useGetContact';
 
 const confirm = useConfirm();
 const toast = useToast();
@@ -80,11 +78,6 @@ const toast = useToast();
 const contactsStore = useContactsStore();
 
 const { loading, contacts, selectedContact } = storeToRefs(useContactsStore());
-//const {
-//  loading: contactLoading,
-//  item: contact,
-//  fetchItemWithAcapy,
-//} = useGetContact();
 
 const loadTable = async () => {
   contactsStore.listContacts().catch((err) => {
@@ -120,10 +113,8 @@ const doDelete = (schema: any) => {
     });
 };
 
+// necessary for expanding rows, we don't do anything with this
 const expandedRows = ref([]);
-const onRowExpand = async (event: any) => {
-  //  await fetchItemWithAcapy(event.data.contact_id);
-};
 </script>
 
 <style scoped>

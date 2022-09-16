@@ -9,12 +9,13 @@ export async function fetchItem(
   params: any = {}
 ) {
   const tenantApi = useTenantApi();
-  console.log(`> fetchItem(${url})`);
+  const _url = `${url}${id}`;
+  console.log(`> fetchItem(${_url})`);
   error.value = null;
   let result = null;
 
   await tenantApi
-    .getHttp(url + id, params)
+    .getHttp(_url, params)
     .then((res) => {
       result = res.data.item;
       console.log(result);
@@ -25,7 +26,7 @@ export async function fetchItem(
     .finally(() => {
       loading.value = false;
     });
-  console.log(`< fetchItem(${url})`);
+  console.log(`< fetchItem(${_url})`);
   if (error.value != null) {
     // throw error so $onAction.onError listeners can add their own handler
     throw error.value;

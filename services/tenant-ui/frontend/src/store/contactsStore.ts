@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { computed, ref } from 'vue';
+import { computed, Ref, ref } from 'vue';
 import { useTenantApi } from './tenantApi';
 import {
   fetchList,
@@ -7,6 +7,7 @@ import {
   filterMapSortList,
   sortByLabelAscending,
 } from './utils';
+import { fetchItem } from './utils/fetchItem';
 
 export const useContactsStore = defineStore('contacts', () => {
   // state
@@ -150,35 +151,9 @@ export const useContactsStore = defineStore('contacts', () => {
     return result;
   }
 
-  async function getContact(id: String, params: any = {}) {
-    console.log('> contactStore.getContact');
-    error.value = null;
-    loading.value = true;
-
-    let result = null;
-
-    await tenantApi
-      .getHttp(`/tenant/v1/contacts/${id}`, params)
-      .then((res) => {
-        console.log(res);
-        result = res.data.item;
-        console.log(result);
-      })
-      .catch((err) => {
-        error.value = err;
-        //console.log(error.value);
-      })
-      .finally(() => {
-        loading.value = false;
-      });
-    console.log('< contactStore.getContact');
-
-    if (error.value != null) {
-      // throw error so $onAction.onError listeners can add their own handler
-      throw error.value;
-    }
-    // return data so $onAction.after listeners can add their own handler
-    return result;
+  async function getContact(id: string, params: any = {}) {
+    const getloading: any = ref(false);
+    return fetchItem('/tenant/v1/contacts/', id, error, getloading, params);
   }
   // private functions
 

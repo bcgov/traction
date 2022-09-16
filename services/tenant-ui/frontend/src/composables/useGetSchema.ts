@@ -1,9 +1,9 @@
 import { ref } from 'vue';
 import { GetItem } from '../types';
-import { useContactsStore } from '../store';
+import { useGovernanceStore } from '../store';
 
 export default function useGetContact(): GetItem {
-  const store = useContactsStore();
+  const store = useGovernanceStore();
 
   const item = ref();
   const loading: any = ref(false);
@@ -12,7 +12,7 @@ export default function useGetContact(): GetItem {
     try {
       // call store
       loading.value = true;
-      item.value = await store.getContact(id, params);
+      item.value = await store.getSchemaTemplate(id, params);
     } catch (error) {
       item.value = null;
     } finally {
