@@ -226,13 +226,29 @@ export const useGovernanceStore = defineStore('governance', () => {
     loading.value = true;
 
     let result = null;
-
     await tenantApi
       .getHttp(`/tenant/v1/governance/schema_templates/${id}`, params)
       .then((res) => {
         console.log(res);
         result = res.data.item;
         console.log(result);
+        return result;
+      })
+      .then((item) => {
+        // TODO: another hack, similar to list, move this to the API
+        const credtemplates = ref([]);
+        fetchList(
+          '/tenant/v1/governance/credential_templates/',
+          credtemplates,
+          error,
+          loading,
+          { schema_template_id: item.schema_template_id }
+        );
+        result = {
+          ...item,
+          credential_templates: credtemplates,
+        };
+        return result;
       })
       .catch((err) => {
         error.value = err;

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { computed, ref } from 'vue';
+import { computed, Ref, ref } from 'vue';
 import { useTenantApi } from './tenantApi';
 import {
   fetchList,
@@ -7,6 +7,7 @@ import {
   filterMapSortList,
   sortByLabelAscending,
 } from './utils';
+import { fetchItem } from './utils/fetchItem';
 
 export const useContactsStore = defineStore('contacts', () => {
   // state
@@ -150,6 +151,10 @@ export const useContactsStore = defineStore('contacts', () => {
     return result;
   }
 
+  async function getContact(id: string, params: any = {}) {
+    const getloading: any = ref(false);
+    return fetchItem('/tenant/v1/contacts/', id, error, getloading, params);
+  }
   // private functions
 
   const contactLabelValue = (item: any) => {
@@ -174,6 +179,7 @@ export const useContactsStore = defineStore('contacts', () => {
     createInvitation,
     acceptInvitation,
     deleteContact,
+    getContact,
   };
 });
 

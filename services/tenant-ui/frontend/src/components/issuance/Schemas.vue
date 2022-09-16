@@ -3,11 +3,13 @@
 
   <DataTable
     v-model:selection="selectedSchemaTemplate"
+    v-model:expandedRows="expandedRows"
     :loading="loading"
     :value="schemaTemplates"
     :paginator="true"
     :rows="10"
     selection-mode="single"
+    data-key="schema_template_id"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -27,6 +29,7 @@
     </template>
     <template #empty> No records found. </template>
     <template #loading> Loading data. Please wait... </template>
+    <Column :expander="true" header-style="width: 3rem" />
     <Column :sortable="false" header="Actions">
       <template #body="{ data }">
         <Button
@@ -54,11 +57,14 @@
         </div>
       </template>
     </Column>
+    <template #expansion="{ data }">
+      <SchemaRowExpandData :row="data" />
+    </template>
   </DataTable>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
@@ -67,6 +73,7 @@ import DataTable from 'primevue/datatable';
 import CreateSchema from './createSchema/CreateSchema.vue';
 import CopySchema from './copySchema/CopySchema.vue';
 import CreateCredentialTemplate from './credentialtemplate/CreateCredentialTemplate.vue';
+import SchemaRowExpandData from './SchemaRowExpandData.vue';
 
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';
@@ -120,6 +127,9 @@ const doDelete = (schema: any) => {
 };
 
 // -----------------------------------------------/Loading schemas
+
+// necessary for expanding rows, we don't do anything with this
+const expandedRows = ref([]);
 </script>
 
 <style scoped>

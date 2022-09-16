@@ -3,11 +3,13 @@
 
   <DataTable
     v-model:selection="selectedContact"
+    v-model:expandedRows="expandedRows"
     :loading="loading"
     :value="contacts"
     :paginator="true"
     :rows="10"
     selection-mode="single"
+    data-key="contact_id"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -27,6 +29,7 @@
     </template>
     <template #empty> No records found. </template>
     <template #loading> Loading data. Please wait... </template>
+    <Column :expander="true" header-style="width: 3rem" />
     <Column :sortable="false" header="Actions">
       <template #body="{ data }">
         <Button
@@ -45,12 +48,15 @@
         {{ formatDateLong(data.created_at) }}
       </template>
     </Column>
+    <template #expansion="{ data }">
+      <ContactRowExpandData :row="data" />
+    </template>
   </DataTable>
 </template>
 
 <script setup lang="ts">
 // Vue
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 // PrimeVue
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -64,6 +70,7 @@ import { storeToRefs } from 'pinia';
 import AcceptInvitation from './acceptInvitation/AcceptInvitation.vue';
 import CreateContact from './createContact/CreateContact.vue';
 import { formatDateLong } from '@/helpers';
+import ContactRowExpandData from './ContactRowExpandData.vue';
 
 const confirm = useConfirm();
 const toast = useToast();
@@ -105,6 +112,9 @@ const doDelete = (schema: any) => {
       toast.error(`Failure: ${err}`);
     });
 };
+
+// necessary for expanding rows, we don't do anything with this
+const expandedRows = ref([]);
 </script>
 
 <style scoped>

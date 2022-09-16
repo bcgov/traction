@@ -1,12 +1,11 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { Ref, ref } from 'vue';
+import { fetchItem } from './utils/fetchItem';
 import { fetchList } from './utils/fetchList';
-import { getItem } from './utils/getItem';
 
 export const useVerifierStore = defineStore('verifier', () => {
   // state
   const presentations: any = ref(null);
-  const presentationDetailDict: Record<string, any> = ref({});
   const selectedPresentation: any = ref(null);
   const loading: any = ref(false);
   const error: any = ref(null);
@@ -25,29 +24,24 @@ export const useVerifierStore = defineStore('verifier', () => {
     );
   }
 
-  async function getPresentationDetails(
-    verifier_presentation_id: string,
-    forceFetch = false
-  ) {
-    return getItem(
+  async function getPresentation(id: string, params: any = {}) {
+    const getloading: any = ref(false);
+    return fetchItem(
       '/tenant/v1/verifier/presentations/',
-      verifier_presentation_id,
-      presentationDetailDict,
+      id,
       error,
-      loading,
-      { acapy: true },
-      forceFetch
+      getloading,
+      params
     );
   }
 
   return {
     presentations,
-    presentationDetailDict,
     selectedPresentation,
     loading,
     error,
     listPresentations,
-    getPresentationDetails,
+    getPresentation,
   };
 });
 

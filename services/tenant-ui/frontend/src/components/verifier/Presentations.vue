@@ -10,7 +10,6 @@
     :paginator="true"
     :rows="10"
     selection-mode="single"
-    @row-expand="onRowExpand"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -37,8 +36,8 @@
       </template>
     </Column>
     <template #expansion="{ data }">
-      <PresentationDetails
-        :presentation="presentationDetailDict[data.verifier_presentation_id]"
+      <PresentationRowExpandData
+        :row="data"
         :header="false"
         :show-information="true"
       />
@@ -56,7 +55,7 @@ import { useToast } from 'vue-toastification';
 import { useVerifierStore } from '../../store';
 import { storeToRefs } from 'pinia';
 
-import PresentationDetails from './PresentationDetails.vue';
+import PresentationRowExpandData from './PresentationRowExpandData.vue';
 import { formatDateLong } from '@/helpers';
 const toast = useToast();
 
@@ -65,18 +64,15 @@ const expandedRows = ref([]);
 
 const verifierStore = useVerifierStore();
 // use the loading state from the store to disable the button...
-const { loading, presentations, selectedPresentation, presentationDetailDict } =
-  storeToRefs(useVerifierStore());
+const { loading, presentations, selectedPresentation } = storeToRefs(
+  useVerifierStore()
+);
 
 const loadTable = async () => {
   verifierStore.listPresentations().catch((err) => {
     console.error(err);
     toast.error(`Failure: ${err}`);
   });
-};
-
-const onRowExpand = (event: any) => {
-  verifierStore.getPresentationDetails(event.data.verifier_presentation_id);
 };
 
 onMounted(async () => {
