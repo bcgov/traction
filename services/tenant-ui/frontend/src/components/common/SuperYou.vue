@@ -14,7 +14,7 @@
     v-model:visible="displayModal"
     header="Custom API Call"
     :modal="true"
-  />
+  ></Dialog>
 </template>
 <script setup lang="ts">
 import Button from 'primevue/button';
