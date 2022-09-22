@@ -17,6 +17,9 @@
           <CreateContact />
           <AcceptInvitation class="ml-4" />
         </div>
+        <div class="api-custom-btn">
+          <SuperYou />
+        </div>
         <div class="flex justify-content-end">
           <Button
             icon="pi pi-refresh"
@@ -71,6 +74,7 @@ import AcceptInvitation from './acceptInvitation/AcceptInvitation.vue';
 import CreateContact from './createContact/CreateContact.vue';
 import { formatDateLong } from '@/helpers';
 import ContactRowExpandData from './ContactRowExpandData.vue';
+import SuperYou from '@/components/common/SuperYou.vue';
 
 const confirm = useConfirm();
 const toast = useToast();
@@ -130,5 +134,10 @@ fieldset {
 }
 .p-datatable-header input {
   padding-left: 3rem;
+}
+.api-custom-btn {
+  position: absolute;
+  margin: 0 1rem;
+  right: 50px;
 }
 </style>
