@@ -18,7 +18,7 @@
           <AcceptInvitation class="ml-4" />
         </div>
         <div class="api-custom-btn">
-          <SuperYou />
+          <SuperYou :apiUrl="apiUrl" :templateJson="templateJson" />
         </div>
         <div class="flex justify-content-end">
           <Button
@@ -89,6 +89,20 @@ const loadTable = async () => {
     toast.error(`Failure: ${err}`);
   });
 };
+
+/**
+ * Convenient functionality for devs to test the API
+ */
+const templateJson = ref({
+  alias: 'Test Contact',
+  role: 'admin',
+  status: 'active',
+  created_at: '2021-09-01T00:00:00.000000Z',
+  updated_at: '2021-09-01T00:00:00.000000Z',
+  contact_id: '1234567890',
+  invitation_url: 'https://example.com',
+});
+const apiUrl = ref('/api/v1/contacts');
 
 onMounted(async () => {
   loadTable();
