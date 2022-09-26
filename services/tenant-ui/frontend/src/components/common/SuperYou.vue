@@ -38,19 +38,6 @@ const toggleModal = () => {
     : (displayModal.value = true);
 };
 
-const setupDialog = () => {
-  console.log('setupDialog');
-  const editor = new JSONEditor({
-    target: document.getElementById('json-input'),
-    props: {
-      content,
-      onChange: (updatedContent) => {
-        console.log(updatedContent);
-      },
-    },
-  });
-};
-
 /**
  * This component should accept a JSON object
  * and a url to send it to.
@@ -74,11 +61,28 @@ let content = {
   json: props.templateJson,
 };
 
+const setupDialog = () => {
+  const editor = new JSONEditor({
+    target: document.getElementById('json-input'),
+    props: {
+      content,
+      mainMenuBar: false,
+      mode: 'text',
+      statusBar: false,
+      navigationBar: false,
+      indentation: 2,
+      tabSize: 2,
+      onChange: (updatedContent) => (content = updatedContent),
+    },
+  });
+};
+
 /**
  * Send the JSON to the API
  */
 const submit = () => {
-  console.log('submit');
+  const payload = content.json || JSON.parse(content.text);
 };
 </script>
+
 <style></style>
