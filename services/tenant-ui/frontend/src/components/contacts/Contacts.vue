@@ -18,7 +18,7 @@
           <AcceptInvitation class="ml-4" />
         </div>
         <div class="api-custom-btn">
-          <SuperYou :apiUrl="apiUrl" :templateJson="templateJson" />
+          <SuperYou :api-url="apiUrl" :template-json="templateJson" />
         </div>
         <div class="flex justify-content-end">
           <Button
@@ -94,15 +94,9 @@ const loadTable = async () => {
  * Convenient functionality for devs to test the API
  */
 const templateJson = ref({
-  alias: 'Test Contact',
-  role: 'admin',
-  status: 'active',
-  created_at: '2021-09-01T00:00:00.000000Z',
-  updated_at: '2021-09-01T00:00:00.000000Z',
-  contact_id: '1234567890',
-  invitation_url: 'https://example.com',
+  alias: 'my_name_here',
 });
-const apiUrl = ref('/api/v1/contacts');
+const apiUrl = ref('/tenant/v1/contacts/create-invitation');
 
 onMounted(async () => {
   loadTable();

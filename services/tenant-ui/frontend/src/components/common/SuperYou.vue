@@ -17,17 +17,22 @@
     @show="setupDialog"
   >
     <div id="json-input"></div>
-    <Button @click="submit" type="submit" label="Submit" class="mt-5 w-full" />
+    <Button type="submit" label="Submit" class="mt-5 w-full" @click="submit" />
   </Dialog>
 </template>
 <script setup lang="ts">
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { useTenantApi } from '@/store/tenantApi';
 import { JSONEditor } from 'vanilla-jsoneditor';
+import { useToast } from 'vue-toastification';
 
+// Switch for displaying the modal
 const displayModal = ref(false);
+
+// For notifications
+const toast = useToast();
 
 /** #toggleModal
  * Open and close the modal
@@ -63,7 +68,8 @@ let content = {
 
 const setupDialog = () => {
   const editor = new JSONEditor({
-    target: document.getElementById('json-input'),
+    /* eslint-disable */
+    target: document.getElementById('json-input')!, // Not sure how else to do this
     props: {
       content,
       mainMenuBar: false,
@@ -82,6 +88,18 @@ const setupDialog = () => {
  */
 const submit = () => {
   const payload = content.json || JSON.parse(content.text);
+  console.log(payload);
+  useTenantApi()
+    .postHttp(props.apiUrl, payload)
+    .then((response) => {
+      toast.info('Success!');
+    })
+    .catch((error) => {
+      toast.error(`Something went wrong... ${error}`);
+    })
+    .finally(() => {
+      toggleModal();
+    });
 };
 </script>
 
