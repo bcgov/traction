@@ -117,6 +117,35 @@ export const useTenantStore = defineStore('tenant', () => {
     return tenantConfig.value;
   }
 
+  async function updateConfiguration(payload: any = {}) {
+    console.log('> tenantStore.updateConfiguration');
+    error.value = null;
+    loading.value = true;
+    console.log(payload);
+    await tenantApi
+      .putHttp('/tenant/v1/admin/configuration', payload)
+      .then((res) => {
+        console.log(res);
+        tenantConfig.value = res.data.item;
+        console.log(tenant.value);
+      })
+      .catch((err) => {
+        error.value = err;
+        console.log(error.value);
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< tenantStore.updateConfiguration');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return tenantConfig.value;
+  }
+
   return {
     tenant,
     loading,
@@ -127,6 +156,7 @@ export const useTenantStore = defineStore('tenant', () => {
     clearTenant,
     isIssuer,
     getConfiguration,
+    updateConfiguration,
     tenantConfig,
   };
 });
