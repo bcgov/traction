@@ -11,8 +11,8 @@
         >
         <InputText
           id="webhookUrl"
-          class="w-full"
           v-model="v$.webhook_url.$model"
+          class="w-full"
           :class="{ 'p-invalid': v$.webhook_url.$invalid && submitted }"
         />
         <span v-if="v$.webhook_url.$error && submitted">
@@ -26,21 +26,21 @@
         <label for="webhookKey">WebHook Key</label>
         <InputText
           id="webhookKey"
-          class="w-full"
           v-model="v$.webhook_key.$model"
+          class="w-full"
         />
       </div>
       <!-- Auto Respond -->
       <p class="mb-1">Auto Respond Messages</p>
       <InputSwitch v-model="v$.auto_respond_messages.$model" />
       <!-- Message -->
-      <div class="field mt-2" v-if="v$.auto_respond_messages.$model">
+      <div v-if="v$.auto_respond_messages.$model" class="field mt-2">
         <label for="autoResMessage">Auto Response Message</label>
         <Textarea
           id="autoResMessage"
+          v-model="v$.auto_response_message.$model"
           rows="5"
           class="w-full"
-          v-model="v$.auto_response_message.$model"
         />
       </div>
       <!-- Store Messages -->
