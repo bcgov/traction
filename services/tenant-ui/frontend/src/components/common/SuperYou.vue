@@ -61,19 +61,19 @@ const props = defineProps({
 /**
  * The JSON editor likes to consume the following format.
  */
-let content = {
+let content: any = {
   text: undefined,
   json: props.templateJson,
 };
 
 const setupDialog = () => {
   const editor = new JSONEditor({
-    /* eslint-disable */
+    /* eslint-disable-next-line */
     target: document.getElementById('json-input')!, // Not sure how else to do this
     props: {
       content,
       mainMenuBar: false,
-      mode: 'text',
+      mode: 'text' as any, // Maybe a bug in the types?
       statusBar: false,
       navigationBar: false,
       indentation: 2,
