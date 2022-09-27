@@ -16,7 +16,6 @@
 // Vue
 import { PropType, ref } from 'vue';
 // PrimeVue
-import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 // State
 
