@@ -131,4 +131,9 @@ fieldset {
 .p-datatable-header input {
   padding-left: 3rem;
 }
+.api-custom-btn {
+  position: absolute;
+  margin: 0 1rem;
+  right: 50px;
+}
 </style>
