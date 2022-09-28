@@ -45,7 +45,8 @@
       </div>
 
       <div>
-        <i class="pi pi-info-circle mx-0" /> <span>Can only set fields below if you have Innkeeper approval</span>
+        <i class="pi pi-info-circle mx-0" />
+        <span>Can only set fields below if you have Innkeeper approval</span>
       </div>
       <!-- Store Messages -->
       <p class="my-1">Store Messages</p>

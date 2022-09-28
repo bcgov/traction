@@ -5,7 +5,10 @@
         <div class="pt-4 pb-6">
           <img src="/img/bc/bc_logo.png" class="logo-bc" />
 
-          <img src="/img/logo/traction-logo-bc-text.svg" class="logo-traction" />
+          <img
+            src="/img/logo/traction-logo-bc-text.svg"
+            class="logo-traction"
+          />
         </div>
 
         <div class="py-8">
