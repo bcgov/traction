@@ -39,12 +39,16 @@
         <Textarea
           id="autoResMessage"
           v-model="v$.auto_response_message.$model"
-          rows="5"
+          rows="3"
           class="w-full"
         />
       </div>
+
+      <div>
+        <i class="pi pi-info-circle mx-0" /> <span>Can only set fields below if you have Innkeeper approval</span>
+      </div>
       <!-- Store Messages -->
-      <p class="mb-1">Store Messages</p>
+      <p class="my-1">Store Messages</p>
       <InputSwitch v-model="v$.store_messages.$model" />
       <!-- Store creds -->
       <p class="mb-1">Store Issuer Credentials</p>
@@ -88,7 +92,7 @@ const toast = useToast();
 
 // State setup
 const tenantStore = useTenantStore();
-const { tenantConfig, loading } = storeToRefs(useTenantStore());
+const { tenant, tenantConfig, loading } = storeToRefs(useTenantStore());
 
 // Get Tenant Configuration
 const loadTenantSettings = async () => {
@@ -97,6 +101,10 @@ const loadTenantSettings = async () => {
     .then(() => {
       // set the local form settings (don't bind controls directly to state for this)
       Object.assign(formFields, tenantConfig.value);
+      // Set the 'default' if nothing there to show the user the default auto-response
+      if (!formFields.auto_response_message) {
+        formFields.auto_response_message = `'${tenant.value.name}' has recieved your message but does not correspond via messages`;
+      }
     })
     .catch((err: any) => {
       console.error(err);
