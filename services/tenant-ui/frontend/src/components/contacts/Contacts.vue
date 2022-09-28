@@ -17,9 +17,6 @@
           <CreateContact />
           <AcceptInvitation class="ml-4" />
         </div>
-        <div class="api-custom-btn">
-          <SuperYou :api-url="apiUrl" :template-json="templateJson" />
-        </div>
         <div class="flex justify-content-end">
           <Button
             icon="pi pi-refresh"
@@ -74,7 +71,6 @@ import AcceptInvitation from './acceptInvitation/AcceptInvitation.vue';
 import CreateContact from './createContact/CreateContact.vue';
 import { formatDateLong } from '@/helpers';
 import ContactRowExpandData from './ContactRowExpandData.vue';
-import SuperYou from '@/components/common/SuperYou.vue';
 
 const confirm = useConfirm();
 const toast = useToast();
@@ -89,14 +85,6 @@ const loadTable = async () => {
     toast.error(`Failure: ${err}`);
   });
 };
-
-/**
- * Convenient functionality for devs to test the API
- */
-const templateJson = ref({
-  alias: 'my_name_here',
-});
-const apiUrl = ref('/tenant/v1/contacts/create-invitation');
 
 onMounted(async () => {
   loadTable();
