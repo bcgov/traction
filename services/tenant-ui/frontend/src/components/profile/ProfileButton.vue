@@ -45,7 +45,7 @@ button {
   transition: all 0.2s ease-in-out;
 }
 .wallet-img {
-  background-image: url('/profile_003_64.png');
+  background-image: url('/img/badges/wallet.png');
   width: 32px;
   height: 32px;
   background-size: cover;
