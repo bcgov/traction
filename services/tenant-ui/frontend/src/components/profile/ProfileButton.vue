@@ -1,14 +1,23 @@
 <template>
-  <Button @click="toggleProfile">
-    <div class="wallet-img"></div>
-  </Button>
+  <div class="parent">
+    <Button @click="toggleProfile">
+      <div class="wallet-img" />
+    </Button>
+    <div v-if="isIssuer" class="issuer-badge" />
+  </div>
   <Menu ref="menu" :model="items" :popup="true" />
 </template>
 
 <script setup lang="ts">
+// Vue
+import { ref } from 'vue';
+// PrimeVue
 import Button from 'primevue/button';
 import Menu from 'primevue/menu';
-import { ref } from 'vue';
+// State
+import { useTenantStore } from '@/store';
+import { storeToRefs } from 'pinia';
+const { isIssuer } = storeToRefs(useTenantStore());
 
 const menu = ref();
 /**
@@ -36,7 +45,13 @@ const items = [
   },
 ];
 </script>
+
 <style scoped>
+.parent {
+  position: relative;
+  top: 0;
+  left: 0;
+}
 button {
   background-color: rgba(0, 0, 0, 0);
   border: 0;
@@ -46,10 +61,18 @@ button {
 }
 .wallet-img {
   background-image: url('/img/badges/wallet.png');
-  width: 32px;
-  height: 32px;
+  width: 45px;
+  height: 45px;
   background-size: cover;
-  transition-duration: 2s;
+}
+.issuer-badge {
+  background-image: url('/img/badges/issuer_shield.png');
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  bottom: -6px;
+  left: 15px;
+  background-size: cover;
 }
 button:enabled:hover {
   background-color: rgba(0, 0, 0, 0);
