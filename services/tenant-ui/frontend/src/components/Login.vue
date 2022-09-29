@@ -3,9 +3,12 @@
     <div class="col-12 md:col-6 xl:col-4">
       <div class="px-8">
         <div class="pt-4 pb-6">
-          <img src="/bc/bc_logo.png" class="logo-bc" />
+          <img src="/img/bc/bc_logo.png" class="logo-bc" />
 
-          <img src="/traction-logo-bc-text.svg" class="logo-traction" />
+          <img
+            src="/img/logo/traction-logo-bc-text.svg"
+            class="logo-traction"
+          />
         </div>
 
         <div class="py-8">
@@ -45,7 +48,7 @@ const { config } = storeToRefs(useConfigStore());
 }
 
 .cover-image {
-  background-image: url('/default-login-image.jpg');
+  background-image: url('/img/default-login-image.jpg');
   background-repeat: no-repeat;
   background-size: cover;
   .copyright {
