@@ -59,13 +59,21 @@
           <Button
             v-tooltip.top="'Delete Credential'"
             label="Delete"
-            class="p-button-danger"
+            class="p-button-secondary"
             icon="pi pi-times-circle"
             @click="deleteCredential($event, data)"
           />
         </div>
       </template>
     </Column>
+    <Column :sortable="true" field="alias" header="Name" />
+    <Column field="status" header="Status" />
+    <Column field="created_at" header="Created at">
+      <template #body="{ data }">
+        {{ formatDateLong(data.created_at) }}
+      </template>
+    </Column>
+    <Column field="contact.alias" header="Contact Name" />
   </DataTable>
 </template>
 
