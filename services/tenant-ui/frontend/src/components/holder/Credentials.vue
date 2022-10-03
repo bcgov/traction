@@ -1,6 +1,5 @@
 <template>
   <h3 class="mt-0">Credentials</h3>
-
   <DataTable
     v-model:selection="selectedCredential"
     v-model:expandedRows="expandedRows"
@@ -38,6 +37,35 @@
     <template #expansion="{ data }">
       <CredentialRowExpandData :row="data" />
     </template>
+    <Column header="Actions" class="action-col">
+      <template #body="{ data }">
+        <div v-if="data.state == 'offer_received'">
+          <Button
+            v-tooltip.top="'Accept Credential into Wallet'"
+            label="Accept"
+            class="p-button-success"
+            icon="pi pi-id-card"
+            @click="acceptOffer($event, data)"
+          />
+          <Button
+            v-tooltip.top="'Report Issue with Credential'"
+            label="Reject"
+            class="p-button-danger"
+            icon="pi pi-times-circle"
+            @click="rejectOffer($event, data)"
+          />
+        </div>
+        <div v-else>
+          <Button
+            v-tooltip.top="'Delete Credential'"
+            label="Delete"
+            class="p-button-danger"
+            icon="pi pi-times-circle"
+            @click="deleteCredential($event, data)"
+          />
+        </div>
+      </template>
+    </Column>
   </DataTable>
 </template>
 
@@ -53,16 +81,67 @@ import { useToast } from 'vue-toastification';
 import { useHolderStore } from '../../store';
 import { storeToRefs } from 'pinia';
 import CredentialRowExpandData from './CredentialRowExpandData.vue';
+import { useConfirm } from 'primevue/useconfirm';
 
 import { formatDateLong } from '@/helpers';
 
 const toast = useToast();
+const confirm = useConfirm();
 
 const holderStore = useHolderStore();
 // use the loading state from the store to disable the button...
 const { loading, credentials, selectedCredential } = storeToRefs(
   useHolderStore()
 );
+
+const acceptOffer = (event: any, data: any) => {
+  holderStore.acceptCredentialOffer(data.holder_credential_id).then(() => {
+    loadTable();
+  });
+};
+const rejectOffer = (event: any, data: any) => {
+  holderStore.rejectCredentialOffer(data.holder_credential_id).then(() => {
+    loadTable();
+  });
+};
+
+const deleteCredential = (event: any, data: any) => {
+  confirm.require({
+    target: event.currentTarget,
+    message: 'Are you sure you want to delete this credential?',
+    header: 'Confirmation',
+    icon: 'pi pi-exclamation-triangle',
+    accept: () => {
+      holderStore.deleteHolderCredential(data.holder_credential_id).then(() => {
+        loadTable();
+      });
+    },
+  });
+};
+
+const doAcceptCredOffer = (schema: any) => {
+  governanceStore
+    .deleteSchema(schema)
+    .then(() => {
+      toast.success(`Schema successfully deleted`);
+    })
+    .catch((err) => {
+      console.error(err);
+      toast.error(`Failure: ${err}`);
+    });
+};
+
+const doRejectCredOffer = (schema: any) => {
+  governanceStore
+    .deleteSchema(schema)
+    .then(() => {
+      toast.success(`Schema successfully deleted`);
+    })
+    .catch((err) => {
+      console.error(err);
+      toast.error(`Failure: ${err}`);
+    });
+};
 
 const loadTable = async () => {
   holderStore.listCredentials().catch((err) => {
@@ -80,5 +159,9 @@ const expandedRows = ref([]);
 <style scoped>
 .p-datatable-header input {
   padding-left: 3rem;
+}
+
+.action-col Button {
+  margin-right: 1rem;
 }
 </style>
