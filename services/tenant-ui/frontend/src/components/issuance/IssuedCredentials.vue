@@ -3,11 +3,13 @@
 
   <DataTable
     v-model:selection="selectedCredential"
+    v-model:expandedRows="expandedRows"
     :loading="loading"
     :value="credentials"
     :paginator="true"
     :rows="10"
     selection-mode="single"
+    data-key="issuer_credentials_id"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -22,6 +24,7 @@
     </template>
     <template #empty> No records found. </template>
     <template #loading> Loading data. Please wait... </template>
+    <Column :expander="true" header-style="width: 3rem" />
     <Column
       :sortable="true"
       field="credential_template.name"
@@ -35,12 +38,15 @@
       </template>
     </Column>
     <Column field="revoked" header="Revoked?" />
+    <template #expansion="{ data }">
+      <IssuedCredentialRowExpandData :row="data" />
+    </template>
   </DataTable>
 </template>
 
 <script setup lang="ts">
 // Vue
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 
 // State
 import { useIssuerStore } from '../../store';
@@ -53,6 +59,7 @@ import DataTable from 'primevue/datatable';
 
 // Other Components
 import OfferCredential from './offerCredential/OfferCredential.vue';
+import IssuedCredentialRowExpandData from './IssuedCredentialRowExpandData.vue';
 import { formatDateLong } from '@/helpers';
 
 // Other Imports
@@ -76,4 +83,6 @@ const loadTable = async () => {
 onMounted(async () => {
   await loadTable();
 });
+// necessary for expanding rows, we don't do anything with this
+const expandedRows = ref([]);
 </script>

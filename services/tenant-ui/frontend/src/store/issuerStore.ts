@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { fetchList } from './utils/fetchList.js';
 import { useTenantApi } from './tenantApi';
+import { fetchItem } from './utils/fetchItem';
 
 export const useIssuerStore = defineStore('issuer', () => {
   const tenantApi = useTenantApi();
@@ -59,6 +60,17 @@ export const useIssuerStore = defineStore('issuer', () => {
     return result;
   }
 
+  async function getCredential(id: string, params: any = {}) {
+    const getloading: any = ref(false);
+    return fetchItem(
+      '/tenant/v1/issuer/credentials/',
+      id,
+      error,
+      getloading,
+      params
+    );
+  }
+
   return {
     credentials,
     selectedCredential,
@@ -66,6 +78,7 @@ export const useIssuerStore = defineStore('issuer', () => {
     error,
     listCredentials,
     offerCredential,
+    getCredential,
   };
 });
 
