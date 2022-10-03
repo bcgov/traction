@@ -86,17 +86,17 @@ export const useHolderStore = defineStore('holder', () => {
       .finally(() => {
         loading.value = false;
       });
-      if (error.value != null) {
-        // throw error so $onAction.onError listeners can add their own handler
-        throw error.value;
-      }
-      // return data so $onAction.after listeners can add their own handler
-      return result;
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return result;
   }
 
   async function rejectCredentialOffer(cred_id: string) {
     console.log('> holderStore.rejectCredentialOffer');
-    
+
     error.value = null;
     loading.value = true;
 
