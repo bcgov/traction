@@ -50,7 +50,7 @@
           <Button
             v-tooltip.top="'Report Issue with Credential'"
             label="Reject"
-            class="p-button-danger"
+            class="p-button-secondary"
             icon="pi pi-times-circle"
             @click="rejectOffer($event, data)"
           />
@@ -59,7 +59,7 @@
           <Button
             v-tooltip.top="'Delete Credential'"
             label="Delete"
-            class="p-button-secondary"
+            class="p-button-danger"
             icon="pi pi-times-circle"
             @click="deleteCredential($event, data)"
           />
