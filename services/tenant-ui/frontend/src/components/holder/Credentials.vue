@@ -119,30 +119,6 @@ const deleteCredential = (event: any, data: any) => {
   });
 };
 
-const doAcceptCredOffer = (schema: any) => {
-  governanceStore
-    .deleteSchema(schema)
-    .then(() => {
-      toast.success(`Schema successfully deleted`);
-    })
-    .catch((err) => {
-      console.error(err);
-      toast.error(`Failure: ${err}`);
-    });
-};
-
-const doRejectCredOffer = (schema: any) => {
-  governanceStore
-    .deleteSchema(schema)
-    .then(() => {
-      toast.success(`Schema successfully deleted`);
-    })
-    .catch((err) => {
-      console.error(err);
-      toast.error(`Failure: ${err}`);
-    });
-};
-
 const loadTable = async () => {
   holderStore.listCredentials().catch((err) => {
     console.error(err);
