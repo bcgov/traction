@@ -104,12 +104,12 @@ const { loading, credentials, selectedCredential } = storeToRefs(
 
 const acceptOffer = (event: any, data: any) => {
   holderStore.acceptCredentialOffer(data.holder_credential_id).then(() => {
-    loadTable();
+    toast.success(`Credential successfully added to your wallet`);
   });
 };
 const rejectOffer = (event: any, data: any) => {
   holderStore.rejectCredentialOffer(data.holder_credential_id).then(() => {
-    loadTable();
+    toast.success(`Credential offer rejected`);
   });
 };
 
