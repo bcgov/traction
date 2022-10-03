@@ -17,6 +17,7 @@ jobs:
       CI_PRERELEASE: ''
       PROMOTE_TO: 'test'
       PROMOTE_FROM: 'dev'
+      CM_TENANT_UI: 'configmap/tenant-ui'
     steps:
       - name: Parse semver string
         continue-on-error: true
@@ -46,12 +47,14 @@ jobs:
         run: |
           echo "PROMOTE_TO=int" >> $GITHUB_ENV
           echo "PROMOTE_FROM=test" >> $GITHUB_ENV
+          echo "CM_TENANT_UI=configmap/test-tenant-ui" >> $GITHUB_ENV
 
       - name: set cd config (prod)
         if: ${{ fromJSON(env.CI_IS_PROD) }}
         run: |
           echo "PROMOTE_TO=production" >> $GITHUB_ENV
           echo "PROMOTE_FROM=test" >> $GITHUB_ENV
+          echo "CM_TENANT_UI=configmap/test-tenant-ui" >> $GITHUB_ENV
 
       - name: print outputs
         run: |
@@ -59,11 +62,13 @@ jobs:
           echo "PROMOTE_TO: ${{ env.PROMOTE_TO }}"
           echo "CI_VERSION: ${{ env.CI_VERSION }}"  
           echo "CI_PRERELEASE: ${{ env.CI_PRERELEASE }}"
+          echo "CM_TENANT_UI: ${{ env.CM_TENANT_UI }}"
 
     outputs:
       promote_from: ${{ env.PROMOTE_FROM }}
       promote_to: ${{ env.PROMOTE_TO }}
       version: ${{ env.CI_VERSION }}
+      cm_tenant_ui: ${{ env.CM_TENANT_UI }}
 
   read_config:
     name: Read Image Configuration
@@ -129,9 +134,9 @@ jobs:
       
       - name: OC
         run: |
-          echo "IMAGE_BUILDTIME=$(oc get configmap/tenant-ui -o 'jsonpath={ .data}' | jq .IMAGE_BUILDTIME)" >> $GITHUB_ENV
-          echo "IMAGE_TAG=$(oc get configmap/tenant-ui -o 'jsonpath={ .data}' | jq .IMAGE_TAG)" >> $GITHUB_ENV
-          echo "IMAGE_VERSION=$(oc get configmap/tenant-ui -o 'jsonpath={ .data}' | jq .IMAGE_VERSION)" >> $GITHUB_ENV
+          echo "IMAGE_BUILDTIME=$(oc get ${{ needs.init.outputs.cm_tenant_ui }} -o 'jsonpath={ .data}' | jq .IMAGE_BUILDTIME)" >> $GITHUB_ENV
+          echo "IMAGE_TAG=$(oc get ${{ needs.init.outputs.cm_tenant_ui }} -o 'jsonpath={ .data}' | jq .IMAGE_TAG)" >> $GITHUB_ENV
+          echo "IMAGE_VERSION=$(oc get ${{ needs.init.outputs.cm_tenant_ui }} -o 'jsonpath={ .data}' | jq .IMAGE_VERSION)" >> $GITHUB_ENV
 
 
       - name: print outputs
