@@ -25,18 +25,10 @@
     </template>
     <template #empty> No records found. </template>
     <template #loading> Loading data. Please wait... </template>
-    <Column :expander="true" header-style="width: 3rem" />
-    <Column :sortable="true" field="alias" header="Name" />
-    <Column field="status" header="Status" />
-    <Column field="created_at" header="Created at">
-      <template #body="{ data }">
-        {{ formatDateLong(data.created_at) }}
-      </template>
-    </Column>
-    <Column field="contact.alias" header="Contact Name" />
     <template #expansion="{ data }">
       <CredentialRowExpandData :row="data" />
     </template>
+    <Column :expander="true" header-style="width: 3rem" />
     <Column header="Actions" class="action-col">
       <template #body="{ data }">
         <div v-if="data.state == 'offer_received'">
@@ -85,8 +77,8 @@ import { useToast } from 'vue-toastification';
 
 import { useHolderStore } from '../../store';
 import { storeToRefs } from 'pinia';
-import CredentialRowExpandData from './CredentialRowExpandData.vue';
 import { useConfirm } from 'primevue/useconfirm';
+import CredentialRowExpandData from './CredentialRowExpandData.vue';
 
 import { formatDateLong } from '@/helpers';
 
