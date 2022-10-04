@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { fetchItem } from './utils/fetchItem';
 import { fetchList } from './utils/fetchList.js';
+import { useTenantApi } from './tenantApi';
 
 export const useHolderStore = defineStore('holder', () => {
   // state
@@ -58,6 +59,105 @@ export const useHolderStore = defineStore('holder', () => {
     );
   }
 
+  const tenantApi = useTenantApi();
+
+  async function acceptCredentialOffer(cred_id: string) {
+    console.log('> holderStore.acceptCredentialOffer');
+
+    error.value = null;
+    loading.value = true;
+
+    let result = null;
+
+    await tenantApi
+      .postHttp(`/tenant/v1/holder/credentials/${cred_id}/accept-offer`, {
+        holder_credential_id: cred_id,
+      })
+      .then((res) => {
+        result = res.data.item;
+      })
+      .then(() => {
+        console.log('credential offer accepted.');
+        listCredentials(); // Refresh table
+      })
+      .catch((err) => {
+        error.value = err;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return result;
+  }
+
+  async function rejectCredentialOffer(cred_id: string) {
+    console.log('> holderStore.rejectCredentialOffer');
+
+    error.value = null;
+    loading.value = true;
+
+    let result = null;
+
+    await tenantApi
+      .postHttp(`/tenant/v1/holder/credentials/${cred_id}/reject-offer`, {
+        holder_credential_id: cred_id,
+      })
+      .then((res) => {
+        result = res.data.item;
+      })
+      .then(() => {
+        console.log('credential offer rejected.');
+        listCredentials(); // Refresh table
+      })
+      .catch((err) => {
+        error.value = err;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return result;
+  }
+
+  async function deleteHolderCredential(cred_id: string) {
+    console.log('> holderStore.deleteHolderCredential');
+
+    error.value = null;
+    loading.value = true;
+
+    let result = null;
+
+    await tenantApi
+      .deleteHttp(`/tenant/v1/holder/credentials/${cred_id}`)
+      .then((res) => {
+        result = res.data.item;
+      })
+      .then(() => {
+        console.log('credential deleted.');
+        listCredentials(); // Refresh table
+      })
+      .catch((err) => {
+        error.value = err;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return result;
+  }
+
   return {
     credentials,
     presentations,
@@ -69,6 +169,9 @@ export const useHolderStore = defineStore('holder', () => {
     listPresentations,
     getCredential,
     getPresentation,
+    acceptCredentialOffer,
+    rejectCredentialOffer,
+    deleteHolderCredential,
   };
 });
 

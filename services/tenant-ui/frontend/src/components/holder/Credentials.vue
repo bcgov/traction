@@ -1,6 +1,5 @@
 <template>
   <h3 class="mt-0">Credentials</h3>
-
   <DataTable
     v-model:selection="selectedCredential"
     v-model:expandedRows="expandedRows"
@@ -26,7 +25,36 @@
     </template>
     <template #empty> No records found. </template>
     <template #loading> Loading data. Please wait... </template>
+    <template #expansion="{ data }">
+      <CredentialRowExpandData :row="data" />
+    </template>
     <Column :expander="true" header-style="width: 3rem" />
+    <Column header="Actions" class="action-col">
+      <template #body="{ data }">
+        <div v-if="data.state == 'offer_received'">
+          <Button
+            title="Accept Credential into Wallet"
+            icon="pi pi-check"
+            class="p-button-rounded p-button-icon-only p-button-text"
+            @click="acceptOffer($event, data)"
+          />
+          <Button
+            title="Reject Credential Offer"
+            icon="pi pi-times"
+            class="p-button-rounded p-button-icon-only p-button-text"
+            @click="rejectOffer($event, data)"
+          />
+        </div>
+        <div v-else>
+          <Button
+            title="Delete Credential"
+            icon="pi pi-trash"
+            class="p-button-rounded p-button-icon-only p-button-text"
+            @click="deleteCredential($event, data)"
+          />
+        </div>
+      </template>
+    </Column>
     <Column :sortable="true" field="alias" header="Name" />
     <Column field="status" header="Status" />
     <Column field="created_at" header="Created at">
@@ -35,9 +63,6 @@
       </template>
     </Column>
     <Column field="contact.alias" header="Contact Name" />
-    <template #expansion="{ data }">
-      <CredentialRowExpandData :row="data" />
-    </template>
   </DataTable>
 </template>
 
@@ -52,17 +77,44 @@ import { useToast } from 'vue-toastification';
 
 import { useHolderStore } from '../../store';
 import { storeToRefs } from 'pinia';
+import { useConfirm } from 'primevue/useconfirm';
 import CredentialRowExpandData from './CredentialRowExpandData.vue';
 
 import { formatDateLong } from '@/helpers';
 
 const toast = useToast();
+const confirm = useConfirm();
 
 const holderStore = useHolderStore();
 // use the loading state from the store to disable the button...
 const { loading, credentials, selectedCredential } = storeToRefs(
   useHolderStore()
 );
+
+const acceptOffer = (event: any, data: any) => {
+  holderStore.acceptCredentialOffer(data.holder_credential_id).then(() => {
+    toast.success(`Credential successfully added to your wallet`);
+  });
+};
+const rejectOffer = (event: any, data: any) => {
+  holderStore.rejectCredentialOffer(data.holder_credential_id).then(() => {
+    toast.success(`Credential offer rejected`);
+  });
+};
+
+const deleteCredential = (event: any, data: any) => {
+  confirm.require({
+    target: event.currentTarget,
+    message: 'Are you sure you want to delete this credential?',
+    header: 'Confirmation',
+    icon: 'pi pi-exclamation-triangle',
+    accept: () => {
+      holderStore.deleteHolderCredential(data.holder_credential_id).then(() => {
+        loadTable();
+      });
+    },
+  });
+};
 
 const loadTable = async () => {
   holderStore.listCredentials().catch((err) => {
@@ -80,5 +132,9 @@ const expandedRows = ref([]);
 <style scoped>
 .p-datatable-header input {
   padding-left: 3rem;
+}
+
+.action-col Button {
+  margin-right: 1rem;
 }
 </style>
