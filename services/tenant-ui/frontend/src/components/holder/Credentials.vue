@@ -41,26 +41,23 @@
       <template #body="{ data }">
         <div v-if="data.state == 'offer_received'">
           <Button
-            v-tooltip.top="'Accept Credential into Wallet'"
-            label="Accept"
-            class="p-button-success"
-            icon="pi pi-id-card"
+            title="Accept Credential into Wallet"
+            icon="pi pi-check"
+            class="p-button-rounded p-button-icon-only p-button-text"
             @click="acceptOffer($event, data)"
           />
           <Button
-            v-tooltip.top="'Report Issue with Credential'"
-            label="Reject"
-            class="p-button-secondary"
-            icon="pi pi-times-circle"
+            title="Reject Credential Offer"
+            icon="pi pi-times"
+            class="p-button-rounded p-button-icon-only p-button-text"
             @click="rejectOffer($event, data)"
           />
         </div>
         <div v-else>
           <Button
-            v-tooltip.top="'Delete Credential'"
-            label="Delete"
-            class="p-button-danger"
-            icon="pi pi-times-circle"
+            title="Delete Credential"
+            icon="pi pi-trash"
+            class="p-button-rounded p-button-icon-only p-button-text"
             @click="deleteCredential($event, data)"
           />
         </div>
