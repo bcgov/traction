@@ -1,12 +1,13 @@
 <template>
-  <InnkeeperLayout />
+  <InnkeeperLayout v-if="innkeeperReady" />
+  <InnkeeperLogin v-else />
 </template>
 
 <script setup lang="ts">
 import InnkeeperLayout from '@/components/layout/innkeeper/InnkeeperLayout.vue';
-//   import Login from '@/components/Login.vue';
-// import { storeToRefs } from 'pinia';
-// import { useTenantStore } from '@/store';
+import InnkeeperLogin from '@/components/innkeeper/InnkeeperLogin.vue';
+import { storeToRefs } from 'pinia';
+import { useInnkeeperTokenStore } from '@/store';
 
-// const { tenantReady } = storeToRefs(useTenantStore());
+const { innkeeperReady } = storeToRefs(useInnkeeperTokenStore());
 </script>
