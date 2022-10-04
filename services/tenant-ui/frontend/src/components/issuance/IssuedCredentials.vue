@@ -9,7 +9,7 @@
     :paginator="true"
     :rows="10"
     selection-mode="single"
-    data-key="issuer_credentials_id"
+    data-key="issuer_credential_id"
   >
     <template #header>
       <div class="flex justify-content-between">
