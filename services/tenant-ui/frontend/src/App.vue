@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import ConfirmPopup from 'primevue/confirmpopup';
-import AppLayout from './components/layout/AppLayout.vue';
-import Login from './components/Login.vue';
 import { onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useConfigStore, useTenantStore } from './store';
+import { useConfigStore } from './store';
 
 const { config } = storeToRefs(useConfigStore());
-const { tenantReady } = storeToRefs(useTenantStore());
 
 onMounted(() => {
   document.title = config.value.ux.appTitle;
@@ -15,8 +12,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <AppLayout v-if="tenantReady" />
-  <Login v-else />
+  <router-view />
 
   <!-- Shared confirm popup  -->
   <ConfirmPopup />

@@ -4,6 +4,7 @@ import Dashboard from '@/views/Dashboard.vue';
 import About from '@/views/About.vue';
 
 // Tenant
+import TenantUi from '@/views/TenantUi.vue';
 import Profile from '@/views/tenant/Profile.vue';
 import Settings from '@/views/tenant/Settings.vue';
 // Connections
@@ -18,92 +19,129 @@ import PresentationTemplates from '@/views/verification/PresentationTemplates.vu
 import MyHeldCredentials from '@/views/holder/MyHeldCredentials.vue';
 // 404
 import NotFound from '@/views/NotFound.vue';
+// Innkeeper
+import InnkeeperUi from '@/views/InnkeeperUi.vue';
+import InnkeeperTenants from '@/views/innkeeper/InnkeeperTenants.vue';
 
 const routes = [
   { path: '/:pathMatch(.*)', component: NotFound },
+
+  // Tenant Routes (base / is Tenant side for this app)
   {
     path: '/',
-    name: 'Dashboard',
-    component: Dashboard,
-  },
-  {
-    path: '/about',
-    name: 'About',
-    component: About,
-  },
-
-  {
-    path: '/tenant/',
+    name: 'TenantUi',
+    component: TenantUi,
     children: [
+      //Blank route uses dashboard view
+      { path: '', name: 'Dashboard', component: Dashboard },
+
+      // About
       {
-        path: 'profile',
-        name: 'Profile',
-        component: Profile,
+        path: '/about',
+        name: 'About',
+        component: About,
       },
+
+      // Tenant - Setup etc
       {
-        path: 'settings',
-        name: 'Settings',
-        component: Settings,
+        path: '/tenant/',
+        children: [
+          {
+            path: 'profile',
+            name: 'Profile',
+            component: Profile,
+          },
+          {
+            path: 'settings',
+            name: 'Settings',
+            component: Settings,
+          },
+        ],
+      },
+
+      // Tenant - Connections
+      {
+        path: '/connections/',
+        children: [
+          {
+            path: 'myContacts',
+            name: 'MyContacts',
+            component: MyContacts,
+          },
+        ],
+      },
+
+      // Tenant - Schemas, templates etc
+      {
+        path: '/configuration/',
+        children: [
+          {
+            path: 'schemas',
+            name: 'Schemas',
+            component: Schemas,
+          },
+          {
+            path: 'presentationTemplates',
+            name: 'PresentationTemplates',
+            component: PresentationTemplates,
+          },
+        ],
+      },
+
+      // Tenant - Issuer
+      {
+        path: '/issuance/',
+        children: [
+          {
+            path: 'credentials',
+            name: 'MyIssuedCredentials',
+            component: MyIssuedCredentials,
+          },
+        ],
+      },
+
+      // Tenant - Verifier
+      {
+        path: '/verification/',
+        children: [
+          {
+            path: 'verifications',
+            name: 'MyPresentations',
+            component: MyPresentations,
+          },
+        ],
+      },
+
+      // Tenant - Holder
+      {
+        path: '/holder/',
+        children: [
+          {
+            path: 'credentials',
+            name: 'MyHeldCredentials',
+            component: MyHeldCredentials,
+          },
+        ],
       },
     ],
   },
 
+  // Innkeeper routes
   {
-    path: '/connections/',
+    path: '/innkeeper/',
+    name: 'InnkeeperUi',
+    component: InnkeeperUi,
+    meta: { isInnkeeper: true },
     children: [
-      {
-        path: 'myContacts',
-        name: 'MyContacts',
-        component: MyContacts,
-      },
-    ],
-  },
+      // Blank route uses dashboard view
+      { path: '', name: 'InnkeeperTenants', component: InnkeeperTenants },
 
-  {
-    path: '/configuration/',
-    children: [
+      // About
       {
-        path: 'schemas',
-        name: 'Schemas',
-        component: Schemas,
-      },
-      {
-        path: 'presentationTemplates',
-        name: 'PresentationTemplates',
-        component: PresentationTemplates,
-      },
-    ],
-  },
-
-  {
-    path: '/issuance/',
-    children: [
-      {
-        path: 'credentials',
-        name: 'MyIssuedCredentials',
-        component: MyIssuedCredentials,
-      },
-    ],
-  },
-
-  {
-    path: '/verification/',
-    children: [
-      {
-        path: 'verifications',
-        name: 'MyPresentations',
-        component: MyPresentations,
-      },
-    ],
-  },
-
-  {
-    path: '/holder/',
-    children: [
-      {
-        path: 'credentials',
-        name: 'MyHeldCredentials',
-        component: MyHeldCredentials,
+        path: 'about',
+        name: 'InnkeeperAbout',
+        component: About,
+        meta: { isInnkeeper: true },
       },
     ],
   },
