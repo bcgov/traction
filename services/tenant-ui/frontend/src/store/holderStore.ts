@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+import { fetchItem } from './utils/fetchItem';
 import { fetchList } from './utils/fetchList.js';
 
 export const useHolderStore = defineStore('holder', () => {
@@ -35,6 +36,28 @@ export const useHolderStore = defineStore('holder', () => {
     );
   }
 
+  async function getCredential(id: string, params: any = {}) {
+    const getloading: any = ref(false);
+    return fetchItem(
+      '/tenant/v1/holder/credentials/',
+      id,
+      error,
+      getloading,
+      params
+    );
+  }
+
+  async function getPresentation(id: string, params: any = {}) {
+    const getloading: any = ref(false);
+    return fetchItem(
+      '/tenant/v1/holder/presentations/',
+      id,
+      error,
+      getloading,
+      params
+    );
+  }
+
   return {
     credentials,
     presentations,
@@ -44,6 +67,8 @@ export const useHolderStore = defineStore('holder', () => {
     error,
     listCredentials,
     listPresentations,
+    getCredential,
+    getPresentation,
   };
 });
 
