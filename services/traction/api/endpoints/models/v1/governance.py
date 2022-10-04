@@ -60,6 +60,7 @@ class SchemaTemplateListParameters(
     name: str | None = None
     schema_id: str | None = None
     schema_template_id: uuid.UUID | None = None
+    credential_templates: bool | None = False
 
 
 class CredentialTemplateListParameters(
@@ -80,43 +81,6 @@ class CredentialTemplateListParameters(
     credential_template_id: uuid.UUID | None = None
     schema_id: str | None = None
     schema_template_id: uuid.UUID | None = None
-
-
-class SchemaTemplateItem(TagsItem[TemplateStatusType, EndorserStateType]):
-    """SchemaTemplateItem.
-
-    Inherits from Item.
-    Representation for the SchemaTemplate database record.
-
-    Attributes:
-      schema_template_id: Traction ID for the schema template
-      schema_id: This will be the ledger schema id - this is not a UUID
-      tenant_id: Traction Tenant ID, owner of this Contact
-      name: a "pretty" name for the schema, this can be different than the name on the
-        ledger (schema_name).
-      status: current state of the Schema - Pending, In Progress, Completed, Deleted
-      tags: Set by tenant for arbitrary grouping of their Schemas
-      deleted: Schema/Tenant "soft" delete indicator.
-      imported: When True, this tenant imported the schema, otherwise they created it
-      version: version, on ledger
-      attributes: list of attribute names, on ledger
-
-    """
-
-    schema_template_id: uuid.UUID
-    tenant_id: UUID
-    schema_id: str | None = None
-    name: str
-    imported: bool
-
-    # ledger data ---
-    schema_name: str
-    version: str
-    attributes: List[str] | None = []
-
-
-class SchemaTemplateTimelineItem(TimelineItem[TemplateStatusType, EndorserStateType]):
-    pass
 
 
 class CredentialTemplateItem(TagsItem[TemplateStatusType, EndorserStateType]):
@@ -152,6 +116,45 @@ class CredentialTemplateItem(TagsItem[TemplateStatusType, EndorserStateType]):
     # ledger data ---
     attributes: List[str] | None = []
     tag: str | None = None
+
+
+class SchemaTemplateItem(TagsItem[TemplateStatusType, EndorserStateType]):
+    """SchemaTemplateItem.
+
+    Inherits from Item.
+    Representation for the SchemaTemplate database record.
+
+    Attributes:
+      schema_template_id: Traction ID for the schema template
+      schema_id: This will be the ledger schema id - this is not a UUID
+      tenant_id: Traction Tenant ID, owner of this Contact
+      name: a "pretty" name for the schema, this can be different than the name on the
+        ledger (schema_name).
+      status: current state of the Schema - Pending, In Progress, Completed, Deleted
+      tags: Set by tenant for arbitrary grouping of their Schemas
+      deleted: Schema/Tenant "soft" delete indicator.
+      imported: When True, this tenant imported the schema, otherwise they created it
+      version: version, on ledger
+      attributes: list of attribute names, on ledger
+
+    """
+
+    schema_template_id: uuid.UUID
+    tenant_id: UUID
+    schema_id: str | None = None
+    name: str
+    imported: bool
+
+    # ledger data ---
+    schema_name: str
+    version: str
+    attributes: List[str] | None = []
+
+    credential_templates: List[CredentialTemplateItem] | None = []
+
+
+class SchemaTemplateTimelineItem(TimelineItem[TemplateStatusType, EndorserStateType]):
+    pass
 
 
 class CredentialTemplateTimelineItem(

@@ -85,12 +85,9 @@ const toast = useToast();
 
 const governanceStore = useGovernanceStore();
 // use the loading state from the store to disable the button...
-const {
-  loading,
-  schemaTemplates,
-  selectedSchemaTemplate,
-  schemaTemplateFilters,
-} = storeToRefs(useGovernanceStore());
+const { loading, schemaTemplates, selectedSchemaTemplate } = storeToRefs(
+  useGovernanceStore()
+);
 
 const loadTable = async () => {
   governanceStore.listSchemaTemplates().catch((err) => {

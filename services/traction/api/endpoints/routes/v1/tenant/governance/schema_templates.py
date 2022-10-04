@@ -41,6 +41,7 @@ async def list_schema_templates(
     status: TemplateStatusType | None = None,
     tags: str | None = None,
     deleted: bool | None = False,
+    credential_templates: bool | None = False,
     db: AsyncSession = Depends(get_db),
 ) -> SchemaTemplateListResponse:
     wallet_id = get_from_context("TENANT_WALLET_ID")
@@ -56,6 +57,7 @@ async def list_schema_templates(
         schema_template_id=schema_template_id,
         status=status,
         tags=tags,
+        credential_templates=credential_templates,
     )
     items, total_count = await governance_service.list_schema_templates(
         db, tenant_id, wallet_id, parameters

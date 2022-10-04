@@ -29,6 +29,7 @@ async def get_schema_template(
     schema_template_id: UUID,
     deleted: bool | None = False,
     timeline: bool | None = False,
+    credential_templates: bool | None = False,
     db: AsyncSession = Depends(get_db),
 ) -> SchemaTemplateGetResponse:
     wallet_id = get_from_context("TENANT_WALLET_ID")
@@ -40,6 +41,7 @@ async def get_schema_template(
         wallet_id,
         schema_template_id=schema_template_id,
         deleted=deleted,
+        credential_templates=credential_templates,
     )
 
     links = build_item_links(str(request.url), item)

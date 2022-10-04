@@ -5,8 +5,9 @@ related tables for schemas and credential definitions.
 
 """
 import uuid
-from typing import List
+from typing import List, Optional
 
+from sqlalchemy.orm import selectinload
 from sqlmodel import Field, Relationship
 from sqlalchemy import (
     Column,
@@ -24,207 +25,6 @@ from api.db.models.base import StatefulModel, TimestampModel, TenantScopedModel
 from api.endpoints.models.v1.errors import (
     NotFoundError,
 )
-
-
-class SchemaTemplate(TenantScopedModel, StatefulModel, TimestampModel, table=True):
-    """SchemaTemplate.
-
-    This is the model for the Schema table (postgresql specific dialects in use).
-    Schemas are registered on the ledger, so there can be only one...
-    However, each Tenant can import the same schema for their own purposes. For now,
-    there will be redundancy in the Schema data, we are going to wait on usage to
-    determine if we need to normalize and have a singular table for Schemas for all and
-    then join table for Schema/Tenant.
-
-
-    There is already a table for v0 API named tenantschema and this is named differently
-     to avoid confusion and interference.  When v0 is retired/deleted, perhaps we change
-     the name then...
-
-    For a given tenant, the schema can be found by the schema_template_id (Traction id)
-    or schema_id (ledger id).
-
-    Attributes:
-      schema_template_id: Traction ID
-      schema_id: This will be the ledger schema id - this is not a UUID
-      name: a "pretty" name for the schema, this can be different than the name on the
-        ledger (schema_name).
-      status: Status of the schema as it is being endorsed and registered
-      tags: Set by tenant for arbitrary grouping of their Schemas
-      deleted: Schema/Tenant "soft" delete indicator.
-      imported: When True, this tenant imported the schema, otherwise they created it
-      version: version, on ledger
-      attributes: list of attribute names, on ledger
-      schema_name: name as is appears on the ledger
-      transaction_id: id used when schema is being endorsed and registered
-      state: The underlying AcaPy endorser state
-      created_at: Timestamp when record was created in Traction
-      updated_at: Timestamp when record was last modified in Traction
-    """
-
-    __tablename__ = "schema_template"
-    __table_args__ = (UniqueConstraint("tenant_id", "schema_id"),)
-    schema_template_id: uuid.UUID = Field(
-        sa_column=Column(
-            UUID(as_uuid=True),
-            primary_key=True,
-            server_default=text("gen_random_uuid()"),
-        )
-    )
-    schema_id: str = Field(nullable=True, index=True)
-
-    name: str = Field(nullable=False)
-
-    tags: List[str] = Field(sa_column=Column(ARRAY(String)))
-    deleted: bool = Field(nullable=False, default=False)
-    imported: bool = Field(nullable=False, default=False)
-    # ledger data ---
-    version: str = Field(nullable=False)
-    attributes: List[str] = Field(sa_column=Column(ARRAY(String)))
-    schema_name: str = Field(nullable=True)
-    transaction_id: str = Field(nullable=True)
-    # --- ledger data
-
-    @classmethod
-    async def get_by_id(
-        cls: "SchemaTemplate",
-        db: AsyncSession,
-        tenant_id: uuid.UUID,
-        schema_template_id: uuid.UUID,
-        deleted: bool | None = False,
-    ) -> "SchemaTemplate":
-        """Get SchemaTemplate by schema_template_id.
-
-        Find and return the database SchemaTemplate record
-
-        Args:
-          db: database session
-          tenant_id: Traction ID of tenant making the call
-          schema_template_id: Traction ID of Schema Template
-
-        Returns: The Traction SchemaTemplate (db) record
-
-        Raises:
-          NotFoundError: if the SchemaTemplate cannot be found by ID and deleted flag
-        """
-
-        q = (
-            select(cls)
-            .where(cls.tenant_id == tenant_id)
-            .where(cls.schema_template_id == schema_template_id)
-            .where(cls.deleted == deleted)
-        )
-        q_result = await db.execute(q)
-        db_rec = q_result.scalar_one_or_none()
-        if not db_rec:
-            raise NotFoundError(
-                code="schema_template.id_not_found",
-                title="Schema Template does not exist",
-                detail=f"Schema Template does not exist for id<{schema_template_id}>",
-            )
-        return db_rec
-
-    @classmethod
-    async def get_by_schema_id(
-        cls: "SchemaTemplate",
-        db: AsyncSession,
-        tenant_id: uuid.UUID,
-        schema_id: str,
-        deleted: bool | None = False,
-    ) -> "SchemaTemplate":
-        """Get SchemaTemplate by schema_id.
-
-        Find and return the database SchemaTemplate record
-
-        Args:
-          db: database session
-          tenant_id: Traction ID of tenant making the call
-          schema_id: Ledger Schema ID of Schema Template
-
-        Returns: The Traction SchemaTemplate (db) record
-
-        Raises:
-          NotFoundError: if the SchemaTemplate cannot be found by schema ID and deleted
-          flag
-        """
-
-        q = (
-            select(cls)
-            .where(cls.tenant_id == tenant_id)
-            .where(cls.schema_id == schema_id)
-            .where(cls.deleted == deleted)
-        )
-        q_result = await db.execute(q)
-        db_rec = q_result.scalar_one_or_none()
-        if not db_rec:
-            raise NotFoundError(
-                code="schema_template.schema_id_not_found",
-                title="Schema Template does not exist",
-                detail=f"Schema Template does not exist for schema_id<{schema_id}>",
-            )
-        return db_rec
-
-    @classmethod
-    async def get_by_transaction_id(
-        cls: "SchemaTemplate",
-        db: AsyncSession,
-        tenant_id: uuid.UUID,
-        transaction_id: str,
-        deleted: bool | None = False,
-    ) -> "SchemaTemplate":
-        """Get SchemaTemplate by transaction_id.
-
-        Find and return the database SchemaTemplate record
-
-        Args:
-          db: database session
-          tenant_id: Traction ID of tenant making the call
-          transaction_id: Transaction ID from endorser
-
-        Returns: The Traction SchemaTemplate (db) record
-
-        Raises:
-          NotFoundError: if the SchemaTemplate cannot be found by schema ID and deleted
-          flag
-        """
-
-        q = (
-            select(cls)
-            .where(cls.tenant_id == tenant_id)
-            .where(cls.transaction_id == transaction_id)
-            .where(cls.deleted == deleted)
-        )
-        q_result = await db.execute(q)
-        db_rec = q_result.scalar_one_or_none()
-        if not db_rec:
-            raise NotFoundError(
-                code="schema_template.transaction_id_not_found",
-                title="Schema Template does not exist",
-                detail=f"Schema Template does not exist for transaction_id<{transaction_id}>",  # noqa: E501
-            )
-        return db_rec
-
-    @classmethod
-    async def list_by_tenant_id(
-        cls: "SchemaTemplate",
-        db: AsyncSession,
-        tenant_id: uuid.UUID,
-    ) -> List["SchemaTemplate"]:
-        """List by Tenant ID.
-
-        Find and return list of SchemaTemplate records for Tenant.
-
-        Args:
-          db: database session
-          tenant_id: Traction ID of Tenant
-
-        Returns: List of Traction SchemaTemplate (db) records in descending order
-        """
-
-        q = select(cls).where(cls.tenant_id == tenant_id).order_by(desc(cls.updated_at))
-        q_result = await db.execute(q)
-        db_recs = q_result.scalars().all()
-        return db_recs
 
 
 class CredentialTemplate(StatefulModel, TimestampModel, table=True):
@@ -289,6 +89,7 @@ class CredentialTemplate(StatefulModel, TimestampModel, table=True):
     issuer_credentials: List["IssuerCredential"] = Relationship(  # noqa: F821
         back_populates="credential_template"
     )
+    schema_template: Optional["SchemaTemplate"] = Relationship()
     # --- relationships
 
     @classmethod
@@ -519,3 +320,203 @@ class CredentialTemplate(StatefulModel, TimestampModel, table=True):
         q_result = await db.execute(q)
         db_recs = q_result.scalars().all()
         return db_recs
+
+
+class SchemaTemplate(TenantScopedModel, StatefulModel, TimestampModel, table=True):
+    """SchemaTemplate.
+
+    This is the model for the Schema table (postgresql specific dialects in use).
+    Schemas are registered on the ledger, so there can be only one...
+    However, each Tenant can import the same schema for their own purposes. For now,
+    there will be redundancy in the Schema data, we are going to wait on usage to
+    determine if we need to normalize and have a singular table for Schemas for all and
+    then join table for Schema/Tenant.
+
+
+    There is already a table for v0 API named tenantschema and this is named differently
+     to avoid confusion and interference.  When v0 is retired/deleted, perhaps we change
+     the name then...
+
+    For a given tenant, the schema can be found by the schema_template_id (Traction id)
+    or schema_id (ledger id).
+
+    Attributes:
+      schema_template_id: Traction ID
+      schema_id: This will be the ledger schema id - this is not a UUID
+      name: a "pretty" name for the schema, this can be different than the name on the
+        ledger (schema_name).
+      status: Status of the schema as it is being endorsed and registered
+      tags: Set by tenant for arbitrary grouping of their Schemas
+      deleted: Schema/Tenant "soft" delete indicator.
+      imported: When True, this tenant imported the schema, otherwise they created it
+      version: version, on ledger
+      attributes: list of attribute names, on ledger
+      schema_name: name as is appears on the ledger
+      transaction_id: id used when schema is being endorsed and registered
+      state: The underlying AcaPy endorser state
+      created_at: Timestamp when record was created in Traction
+      updated_at: Timestamp when record was last modified in Traction
+    """
+
+    __tablename__ = "schema_template"
+    __table_args__ = (UniqueConstraint("tenant_id", "schema_id"),)
+    schema_template_id: uuid.UUID = Field(
+        sa_column=Column(
+            UUID(as_uuid=True),
+            primary_key=True,
+            server_default=text("gen_random_uuid()"),
+        )
+    )
+    schema_id: str = Field(nullable=True, index=True)
+
+    name: str = Field(nullable=False)
+
+    tags: List[str] = Field(sa_column=Column(ARRAY(String)))
+    deleted: bool = Field(nullable=False, default=False)
+    imported: bool = Field(nullable=False, default=False)
+    # ledger data ---
+    version: str = Field(nullable=False)
+    attributes: List[str] = Field(sa_column=Column(ARRAY(String)))
+    schema_name: str = Field(nullable=True)
+    transaction_id: str = Field(nullable=True)
+    # --- ledger data
+
+    # relationships ---
+    credential_templates: List["CredentialTemplate"] = Relationship(
+        back_populates="schema_template"
+    )
+
+    @classmethod
+    async def get_by_id(
+        cls: "SchemaTemplate",
+        db: AsyncSession,
+        tenant_id: uuid.UUID,
+        schema_template_id: uuid.UUID,
+        deleted: bool | None = False,
+        credential_templates: bool | None = False,
+    ) -> "SchemaTemplate":
+        """Get SchemaTemplate by schema_template_id.
+
+        Find and return the database SchemaTemplate record
+
+        Args:
+          db: database session
+          tenant_id: Traction ID of tenant making the call
+          schema_template_id: Traction ID of Schema Template
+          deleted: match the deleted flag
+          credential_templates: if True, include child records
+        Returns: The Traction SchemaTemplate (db) record
+
+        Raises:
+          NotFoundError: if the SchemaTemplate cannot be found by ID and deleted flag
+        """
+        q = (
+            select(cls)
+            .where(cls.tenant_id == tenant_id)
+            .where(cls.schema_template_id == schema_template_id)
+            .where(cls.deleted == deleted)
+        )
+        if credential_templates:
+            q = q.options(selectinload(SchemaTemplate.credential_templates))
+
+        q_result = await db.execute(q)
+        db_rec = q_result.scalar_one_or_none()
+        if not db_rec:
+            raise NotFoundError(
+                code="schema_template.id_not_found",
+                title="Schema Template does not exist",
+                detail=f"Schema Template does not exist for id<{schema_template_id}>",
+            )
+        return db_rec
+
+    @classmethod
+    async def get_by_schema_id(
+        cls: "SchemaTemplate",
+        db: AsyncSession,
+        tenant_id: uuid.UUID,
+        schema_id: str,
+        deleted: bool | None = False,
+        credential_templates: bool | None = False,
+    ) -> "SchemaTemplate":
+        """Get SchemaTemplate by schema_id.
+
+        Find and return the database SchemaTemplate record
+
+        Args:
+          db: database session
+          tenant_id: Traction ID of tenant making the call
+          schema_id: Ledger Schema ID of Schema Template
+          deleted: match the deleted flag
+          credential_templates: if True, include child records
+
+        Returns: The Traction SchemaTemplate (db) record
+
+        Raises:
+          NotFoundError: if the SchemaTemplate cannot be found by schema ID and deleted
+          flag
+        """
+
+        q = (
+            select(cls)
+            .where(cls.tenant_id == tenant_id)
+            .where(cls.schema_id == schema_id)
+            .where(cls.deleted == deleted)
+        )
+        if credential_templates:
+            q = q.options(selectinload(SchemaTemplate.credential_templates))
+
+        q_result = await db.execute(q)
+        db_rec = q_result.scalar_one_or_none()
+        if not db_rec:
+            raise NotFoundError(
+                code="schema_template.schema_id_not_found",
+                title="Schema Template does not exist",
+                detail=f"Schema Template does not exist for schema_id<{schema_id}>",
+            )
+        return db_rec
+
+    @classmethod
+    async def get_by_transaction_id(
+        cls: "SchemaTemplate",
+        db: AsyncSession,
+        tenant_id: uuid.UUID,
+        transaction_id: str,
+        deleted: bool | None = False,
+        credential_templates: bool | None = False,
+    ) -> "SchemaTemplate":
+        """Get SchemaTemplate by transaction_id.
+
+        Find and return the database SchemaTemplate record
+
+        Args:
+          db: database session
+          tenant_id: Traction ID of tenant making the call
+          transaction_id: Transaction ID from endorser
+          deleted: match the deleted flag
+          credential_templates: if True, include child records
+
+        Returns: The Traction SchemaTemplate (db) record
+
+        Raises:
+          NotFoundError: if the SchemaTemplate cannot be found by schema ID and deleted
+          flag
+        """
+
+        q = (
+            select(cls)
+            .where(cls.tenant_id == tenant_id)
+            .where(cls.transaction_id == transaction_id)
+            .where(cls.deleted == deleted)
+        )
+        if credential_templates:
+            q = q.options(selectinload(SchemaTemplate.credential_templates))
+
+        q_result = await db.execute(q)
+        db_rec = q_result.scalar_one_or_none()
+        if not db_rec:
+            raise NotFoundError(
+                code="schema_template.transaction_id_not_found",
+                title="Schema Template does not exist",
+                detail=f"Schema Template does not exist for transaction_id<{transaction_id}>",  # noqa: E501
+            )
+        return db_rec
