@@ -167,6 +167,8 @@ export const useHolderStore = defineStore('holder', () => {
     error,
     listCredentials,
     listPresentations,
+    getCredential,
+    getPresentation,
     acceptCredentialOffer,
     rejectCredentialOffer,
     deleteHolderCredential,
