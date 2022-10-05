@@ -1,0 +1,20 @@
+// Specific to form fields, layout, spacing, etc
+
+.field {
+  > label {
+    display: block !important;
+    > .p-progress-spinner {
+      height: 1em;
+      width: 1em;
+    }
+  }
+  > small.p-error {
+    display: block !important;
+  }
+}
+
+.p-dialog-content {
+  input {
+    min-width: 400px;
+  }
+}

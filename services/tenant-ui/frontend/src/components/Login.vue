@@ -1,5 +1,5 @@
 <template>
-  <div class="grid w-screen h-screen">
+  <div class="traction-login grid w-screen h-screen">
     <div class="col-12 md:col-6 xl:col-4">
       <div class="px-8">
         <div class="pt-4 pb-6">
@@ -33,33 +33,9 @@ const { config } = storeToRefs(useConfigStore());
 </script>
 
 <style scoped lang="scss">
-.logo {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
-.logo-bc {
-  @extend .logo;
-  width: 18em;
-}
-.logo-traction {
-  @extend .logo;
-  width: 20em;
-}
-
+// See layout.scss for generalized common login layout stuff
+// Set the image specific to this component here though
 .cover-image {
   background-image: url('/img/default-login-image.jpg');
-  background-repeat: no-repeat;
-  background-size: cover;
-  .copyright {
-    color: white;
-    font-size: 0.5em;
-    background-color: rgba($color: #000000, $alpha: 0.5);
-    padding: 0 0.5em;
-    margin: 1em;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-  }
 }
 </style>
