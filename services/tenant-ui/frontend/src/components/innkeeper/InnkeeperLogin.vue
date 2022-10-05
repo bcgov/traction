@@ -2,9 +2,7 @@
   <div class="grid w-screen h-screen">
     <div class="col-12 md:col-6 xl:col-4">
       <div class="px-8">
-        <div class="pt-4 pb-6">
-          Image and text UX TBD
-        </div>
+        <div class="pt-4 pb-6">Image and text UX TBD</div>
 
         <div class="py-8">
           <LoginForm />
@@ -32,5 +30,4 @@ import LoginForm from '@/components/innkeeper/InnkeeperLoginForm.vue';
   @extend .logo;
   width: 20em;
 }
-
 </style>

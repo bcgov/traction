@@ -1,6 +1,6 @@
 /**
  * See comments in tenantApi.ts, this maybe should be a service rather than a store
- * 
+ *
  * This is to allow calls to the Innkeeper API with the specific Innkeeper token usage
  */
 import { defineStore, storeToRefs } from 'pinia';
