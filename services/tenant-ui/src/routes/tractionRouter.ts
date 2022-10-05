@@ -23,7 +23,8 @@ const options = {
     // to allow application/json posts to work through the proxy, but then the token fetch in traction is
     // x-www-urlformencoded, and the shim then seems to break that. I think there's got to be another way to
     // handle this but for now just don't adjust bodies for the 1 token endpoint
-    if (!req.originalUrl.includes("tenant/token")) {
+    // if (!req.originalUrl.includes("tenant/token")) {
+    if (!/tenant\/token|innkeeper\/token/.test(req.originalUrl)) {
       return fixRequestBody(proxyReq, req);
     }
   },

@@ -1,7 +1,6 @@
 <template>
   <div>
-    <h1 v-if="tenant" class="sidebar-app-title">{{ tenant.name }}</h1>
-    <!--<h1 class="sidebar-app-title">{{ config.ux.sidebarTitle }}</h1>-->
+    <h1 class="sidebar-app-title">Innkeeper</h1>
     <PanelMenu :model="items" class="mt-5" />
   </div>
 </template>
@@ -9,66 +8,22 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import PanelMenu from 'primevue/panelmenu';
-import { storeToRefs } from 'pinia';
-import { useTenantStore } from '../../store';
-
-// tenant should be loaded by login...
-const { tenant } = storeToRefs(useTenantStore());
 
 const items = ref([
   {
-    label: 'Dashboard',
+    label: 'Tenants',
     icon: 'pi pi-fw pi-chart-bar',
-    to: { name: 'Dashboard' },
+    to: { name: 'InnkeeperTenants' },
   },
-  {
-    label: 'Contacts',
-    icon: 'pi pi-fw pi-users',
-    to: { name: 'MyContacts' },
-  },
-
-  {
-    label: 'Issuance',
-    icon: 'pi pi-fw pi-wallet',
-    to: { name: 'MyIssuedCredentials' },
-  },
-
-  {
-    label: 'Verification',
-    icon: 'pi pi-fw pi-check-square',
-    to: { name: 'MyPresentations' },
-  },
-
-  {
-    label: 'Holder',
-    icon: 'pi pi-fw pi-id-card',
-    to: { name: 'MyHeldCredentials' },
-  },
-
-  {
-    label: 'Configuration',
-    icon: 'pi pi-fw pi-file',
-    items: [
-      {
-        label: 'Schemas',
-        to: { name: 'Schemas' },
-      },
-      {
-        label: 'Presentation Templates',
-        to: { name: 'PresentationTemplates' },
-      },
-    ],
-  },
-
   {
     label: 'About',
     icon: 'pi pi-fw pi-question-circle',
-    to: { name: 'About' },
+    to: { name: 'InnkeeperAbout' },
   },
 ]);
 </script>
 
-<!-- Make sure style is scoped so it doesn't bleed into other components. -->
+<!-- Extract this up to global if the innkeeper sidebar ends up being the same style as tenant -->
 <style scoped lang="scss">
 .sidebar-app-title {
   font-size: 1.6em;
