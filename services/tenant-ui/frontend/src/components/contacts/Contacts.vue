@@ -49,7 +49,11 @@
       </template>
     </Column>
     <template #expansion="{ data }">
-      <ContactRowExpandData :row="data" />
+      <RowExpandData
+        :id="data.contact_id"
+        :url="'/tenant/v1/contacts/'"
+        :params="{ acapy: true }"
+      />
     </template>
   </DataTable>
 </template>
@@ -70,7 +74,7 @@ import { storeToRefs } from 'pinia';
 import AcceptInvitation from './acceptInvitation/AcceptInvitation.vue';
 import CreateContact from './createContact/CreateContact.vue';
 import { formatDateLong } from '@/helpers';
-import ContactRowExpandData from './ContactRowExpandData.vue';
+import RowExpandData from '../common/RowExpandData.vue';
 
 const confirm = useConfirm();
 const toast = useToast();

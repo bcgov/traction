@@ -58,7 +58,11 @@
       </template>
     </Column>
     <template #expansion="{ data }">
-      <SchemaRowExpandData :row="data" />
+      <RowExpandData
+        :id="data.schema_template_id"
+        :url="'/tenant/v1/governance/schema_templates/'"
+        :params="{ acapy: true, credential_templates: true }"
+      />
     </template>
   </DataTable>
 </template>
@@ -73,7 +77,7 @@ import DataTable from 'primevue/datatable';
 import CreateSchema from './createSchema/CreateSchema.vue';
 import CopySchema from './copySchema/CopySchema.vue';
 import CreateCredentialTemplate from './credentialtemplate/CreateCredentialTemplate.vue';
-import SchemaRowExpandData from './SchemaRowExpandData.vue';
+import RowExpandData from '../common/RowExpandData.vue';
 
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';

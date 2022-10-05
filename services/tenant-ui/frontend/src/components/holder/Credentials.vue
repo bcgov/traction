@@ -26,7 +26,11 @@
     <template #empty> No records found. </template>
     <template #loading> Loading data. Please wait... </template>
     <template #expansion="{ data }">
-      <CredentialRowExpandData :row="data" />
+      <RowExpandData
+        :id="data.holder_credential_id"
+        :url="'/tenant/v1/holder/credentials/'"
+        :params="{ acapy: true }"
+      />
     </template>
     <Column :expander="true" header-style="width: 3rem" />
     <Column header="Actions" class="action-col">
@@ -78,7 +82,7 @@ import { useToast } from 'vue-toastification';
 import { useHolderStore } from '../../store';
 import { storeToRefs } from 'pinia';
 import { useConfirm } from 'primevue/useconfirm';
-import CredentialRowExpandData from './CredentialRowExpandData.vue';
+import RowExpandData from '../common/RowExpandData.vue';
 
 import { formatDateLong } from '@/helpers';
 
