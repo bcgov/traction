@@ -140,6 +140,7 @@ jobs:
             | | Innkeeper Swagger | https://pr-${{ github.event.number }}-traction-api-dev.apps.silver.devops.gov.bc.ca/innkeeper/docs |
             | | Tenant Swagger | https://pr-${{ github.event.number }}-traction-api-dev.apps.silver.devops.gov.bc.ca/tenant/docs |
             | | Tenant UI | https://pr-${{ github.event.number }}-tenant-ui-dev.apps.silver.devops.gov.bc.ca |
+            | | Innkeeper UI | https://pr-${{ github.event.number }}-tenant-ui-dev.apps.silver.devops.gov.bc.ca/innkeeper |
             | Aca-Py | | |
             | | Admin Swagger | https://pr-${{ github.event.number }}-traction-acapy-admin-dev.apps.silver.devops.gov.bc.ca/api/doc |
             
