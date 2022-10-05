@@ -54,6 +54,7 @@ const openModal = async () => {
   Promise.all([
     contactsStore.listContacts(),
     governanceStore.listSchemaTemplates(),
+    governanceStore.listCredentialTemplates(),
   ]).catch((err) => {
     console.error(err);
     toast.error(

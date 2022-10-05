@@ -1,7 +1,12 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { useTenantApi } from './tenantApi';
-import { fetchList, filterMapSortList, sortByLabelAscending } from './utils';
+import {
+  fetchItem,
+  fetchList,
+  filterMapSortList,
+  sortByLabelAscending,
+} from './utils';
 
 export const useGovernanceStore = defineStore('governance', () => {
   // state
@@ -63,40 +68,18 @@ export const useGovernanceStore = defineStore('governance', () => {
   async function listSchemaTemplates() {
     selectedSchemaTemplate.value = null;
     schemaTemplates.value = null;
-    //return fetchList('/tenant/v1/governance/schema_templates/', schemaTemplates, error, loading);
-
-    // this is a total hack for expedience, lets get cred templates at the same time...
-    // just so we can show it all in one grid, this should happen at the api level...
-    const schemas = ref();
-    await fetchList(
+    return fetchList(
       '/tenant/v1/governance/schema_templates/',
-      schemas,
+      schemaTemplates,
       error,
-      loading
+      loading,
+      { credential_templates: true }
     );
-    await listCredentialTemplates();
-    schemaTemplates.value = await Promise.all(
-      schemas.value.map(async (item: any) => {
-        // find any credential templates...
-        const templates = ref();
-        await fetchList(
-          '/tenant/v1/governance/credential_templates/',
-          templates,
-          error,
-          loading,
-          { schema_template_id: item.schema_template_id }
-        );
-        return {
-          ...item,
-          credential_templates: templates,
-        };
-      })
-    );
-    return schemaTemplates.value;
   }
 
   async function listCredentialTemplates() {
     selectedCredentialTemplate.value = null;
+    credentialTemplates.value = null;
     return fetchList(
       '/tenant/v1/governance/credential_templates/',
       credentialTemplates,
@@ -162,9 +145,12 @@ export const useGovernanceStore = defineStore('governance', () => {
         console.log(
           'credential template created. the store calls load automatically, but do we want this done "manually"?'
         );
-        // TODO: for demo, we aren't separating schema/cred templates, so load the schema list (that has sub-list of cred templates.)
-        //listCredentialTemplates();
+        // load schemas for tables...
         listSchemaTemplates();
+      })
+      .then(() => {
+        // reload this for pick lists...
+        listCredentialTemplates();
       })
       .catch((err) => {
         error.value = err;
@@ -220,82 +206,30 @@ export const useGovernanceStore = defineStore('governance', () => {
     return result;
   }
 
-  async function getSchemaTemplate(id: String, params: any = {}) {
-    console.log('> governanceStore.getSchemaTemplate');
-    error.value = null;
-    loading.value = true;
-
-    let result = null;
-    await tenantApi
-      .getHttp(`/tenant/v1/governance/schema_templates/${id}`, params)
-      .then((res) => {
-        console.log(res);
-        result = res.data.item;
-        console.log(result);
-        return result;
-      })
-      .then((item) => {
-        // TODO: another hack, similar to list, move this to the API
-        const credtemplates = ref([]);
-        fetchList(
-          '/tenant/v1/governance/credential_templates/',
-          credtemplates,
-          error,
-          loading,
-          { schema_template_id: item.schema_template_id }
-        );
-        result = {
-          ...item,
-          credential_templates: credtemplates,
-        };
-        return result;
-      })
-      .catch((err) => {
-        error.value = err;
-        //console.log(error.value);
-      })
-      .finally(() => {
-        loading.value = false;
-      });
-    console.log('< governanceStore.getSchemaTemplate');
-
-    if (error.value != null) {
-      // throw error so $onAction.onError listeners can add their own handler
-      throw error.value;
+  async function getSchemaTemplate(id: string, params: any = {}) {
+    const getloading: any = ref(false);
+    if (!('credential_templates' in params)) {
+      // if we do not explicitly say not to get cred templates, get 'em.
+      params['credential_templates'] = true;
     }
-    // return data so $onAction.after listeners can add their own handler
-    return result;
+    return fetchItem(
+      '/tenant/v1/governance/schema_templates/',
+      id,
+      error,
+      getloading,
+      params
+    );
   }
 
-  async function getCredentialTemplate(id: String, params: any = {}) {
-    console.log('> governanceStore.getCredentialTemplate');
-    error.value = null;
-    loading.value = true;
-
-    let result = null;
-
-    await tenantApi
-      .getHttp(`/tenant/v1/governance/credential_templates/${id}`, params)
-      .then((res) => {
-        console.log(res);
-        result = res.data.item;
-        console.log(result);
-      })
-      .catch((err) => {
-        error.value = err;
-        //console.log(error.value);
-      })
-      .finally(() => {
-        loading.value = false;
-      });
-    console.log('< governanceStore.getCredentialTemplate');
-
-    if (error.value != null) {
-      // throw error so $onAction.onError listeners can add their own handler
-      throw error.value;
-    }
-    // return data so $onAction.after listeners can add their own handler
-    return result;
+  async function getCredentialTemplate(id: string, params: any = {}) {
+    const getloading: any = ref(false);
+    return fetchItem(
+      '/tenant/v1/governance/credential_templates/',
+      id,
+      error,
+      getloading,
+      params
+    );
   }
 
   /**

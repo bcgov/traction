@@ -1,4 +1,5 @@
 export { fetchList } from './fetchList';
+export { fetchItem } from './fetchItem';
 
 /**
  * Filter, Map and Sort a list.

@@ -3,7 +3,9 @@ from typing import List
 
 from uuid import UUID
 
+import sqlalchemy.exc
 from sqlalchemy import select, update, desc, func
+from sqlalchemy.orm import selectinload
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from acapy_client import OpenApiException
@@ -113,6 +115,10 @@ async def list_schema_templates(
     count_q_rec = await db.execute(count_q)
     total_count = count_q_rec.scalar()
 
+    # do we want to see the child records?
+    if parameters.credential_templates is True:
+        base_q = base_q.options(selectinload(SchemaTemplate.credential_templates))
+
     # TODO: should we raise an exception if paging is invalid?
     # ie. is negative, or starts after available records
 
@@ -205,6 +211,7 @@ async def get_schema_template(
     wallet_id: UUID,
     schema_template_id: UUID,
     deleted: bool | None = False,
+    credential_templates: bool | None = False,
 ) -> SchemaTemplateItem:
     """Get  Schema Template.
 
@@ -216,13 +223,15 @@ async def get_schema_template(
       wallet_id: AcaPy Wallet ID for tenant
       schema_template_id: Traction ID of Schema Template
       deleted: When True, return Schema Template if marked as deleted
-
+      credential_templates: When True, include child records
     Returns: The Traction Schema Template
 
     Raises:
       NotFoundError: if the item cannot be found by ID and deleted flag
     """
-    db_rec = await SchemaTemplate.get_by_id(db, tenant_id, schema_template_id, deleted)
+    db_rec = await SchemaTemplate.get_by_id(
+        db, tenant_id, schema_template_id, deleted, credential_templates
+    )
 
     item = schema_template_to_item(db_rec)
 
@@ -726,7 +735,17 @@ async def delete_credential_template(
 
 def schema_template_to_item(db_item: SchemaTemplate) -> SchemaTemplateItem:
     if db_item:
-        return SchemaTemplateItem(**db_item.dict())
+        item = SchemaTemplateItem(**db_item.dict())
+        try:
+            credential_templates = map(
+                lambda x: CredentialTemplateItem(**x.dict()),
+                db_item.credential_templates,
+            )
+            item.credential_templates = list(credential_templates)
+        except sqlalchemy.exc.SQLAlchemyError:
+            pass
+
+        return item
     else:
         return None
 

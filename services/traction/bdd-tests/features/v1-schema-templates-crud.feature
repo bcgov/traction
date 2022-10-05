@@ -14,6 +14,7 @@ Feature: schema templates crud functionality
         | bdd-schema-with-cred | 0.0 | first,last | default    | 1                  |
         Then "faber" will have 2 schema template(s)
         And "faber" will have 1 credential template(s)
+        And "faber" will list schema template(s) with credential templates
 
     Scenario: issuer cannot create a bad schema template
         Given "faber" creates schema template(s)

@@ -76,6 +76,18 @@ def step_impl(context, tenant: str, count: int):
     assert resp_json["total"] == count, resp_json
 
 
+@step('"{tenant}" will list schema template(s) with credential templates')
+def step_impl(context, tenant: str):
+    params = {"credential_templates": True}
+    response = list_schema_templates(context, tenant, params)
+    assert response.status_code == status.HTTP_200_OK, response.__dict__
+    resp_json = json.loads(response.content)
+    count = 0
+    for s in resp_json["items"]:
+        count = count + len(s["credential_templates"])
+    assert count > 0, resp_json["items"]
+
+
 @then('"{tenant}" will have {count:d} credential template(s)')
 def step_impl(context, tenant: str, count: int):
     params = {}
