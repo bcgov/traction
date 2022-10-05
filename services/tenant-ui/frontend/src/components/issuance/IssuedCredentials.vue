@@ -39,7 +39,11 @@
     </Column>
     <Column field="revoked" header="Revoked?" />
     <template #expansion="{ data }">
-      <IssuedCredentialRowExpandData :row="data" />
+      <RowExpandData
+        :id="data.issuer_credential_id"
+        :url="'/tenant/v1/issuer/credentials/'"
+        :params="{ acapy: true }"
+      />
     </template>
   </DataTable>
 </template>
@@ -59,7 +63,7 @@ import DataTable from 'primevue/datatable';
 
 // Other Components
 import OfferCredential from './offerCredential/OfferCredential.vue';
-import IssuedCredentialRowExpandData from './IssuedCredentialRowExpandData.vue';
+import RowExpandData from '../common/RowExpandData.vue';
 import { formatDateLong } from '@/helpers';
 
 // Other Imports

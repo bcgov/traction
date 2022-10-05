@@ -1,18 +1,19 @@
 import { ref } from 'vue';
 import { GetItem } from '../types';
-import { useIssuerStore } from '../store';
+import { fetchItem as utilFetchItem } from '../store/utils/fetchItem';
 
-export default function useGetIssuedCredential(): GetItem {
-  const store = useIssuerStore();
+export default function useGetItem(url: string): GetItem {
+  const _url = ref(url);
 
   const item = ref();
   const loading: any = ref(false);
 
   async function fetchItem(id: string, params: any = {}) {
+    const error: any = ref(null);
     try {
       // call store
       loading.value = true;
-      item.value = await store.getCredential(id, params);
+      item.value = await utilFetchItem(_url.value, id, error, loading, params);
     } catch (error) {
       item.value = null;
     } finally {
@@ -20,14 +21,9 @@ export default function useGetIssuedCredential(): GetItem {
     }
   }
 
-  async function fetchItemWithAcapy(id: string) {
-    return fetchItem(id, { acapy: true });
-  }
-
   return {
     item,
     loading,
     fetchItem,
-    fetchItemWithAcapy,
   };
 }

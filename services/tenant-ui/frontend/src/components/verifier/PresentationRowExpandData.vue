@@ -1,5 +1,9 @@
 <template>
-  <RowExpandData :loading="loading" :data="item">
+  <RowExpandData
+    :id="props.row.verifier_presentation_id"
+    :url="'/tenant/v1/verifier/presentations/'"
+    :params="{ acapy: true }"
+  >
     <template #details="presentation">
       <div>
         <ul>
@@ -46,7 +50,6 @@ import { PropType } from 'vue';
 import { formatDateLong } from '@/helpers';
 import RowExpandData from '../common/RowExpandData.vue';
 import VerifiedPresentationData from './VerifiedPresentationData.vue';
-import useGetVerifierPresentation from '@/composables/useGetVerifierPresentation';
 
 const props = defineProps({
   row: {
@@ -64,10 +67,6 @@ const props = defineProps({
     default: false,
   },
 });
-
-const { loading, item, fetchItemWithAcapy } = useGetVerifierPresentation();
-
-fetchItemWithAcapy(props.row.verifier_presentation_id);
 </script>
 
 <style scoped></style>
