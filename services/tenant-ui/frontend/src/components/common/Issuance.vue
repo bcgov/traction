@@ -45,6 +45,7 @@ const requestAccess = async () => {
     );
   } else {
     await tenantStore.getSelf();
+    toast.info('You are now an issuer!');
   }
   loading.value = false; // Remove the spinner
 };
