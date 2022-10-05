@@ -23,7 +23,7 @@ const items = ref([
 ]);
 </script>
 
-<!-- Make sure style is scoped so it doesn't bleed into other components. -->
+<!-- Extract this up to global if the innkeeper sidebar ends up being the same style as tenant -->
 <style scoped lang="scss">
 .sidebar-app-title {
   font-size: 1.6em;
