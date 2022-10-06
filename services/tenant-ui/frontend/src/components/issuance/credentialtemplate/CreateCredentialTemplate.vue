@@ -1,12 +1,20 @@
 <template>
   <div>
-    <Button
-      v-tooltip.top="'Create Credential Template'"
-      :disabled="!isIssuer"
-      icon="pi pi-id-card"
-      class="p-button-text"
-      @click="openModal"
-    />
+    <div v-if="schemaTemplate.credential_templates.length">
+      {{
+        `${schemaTemplate.credential_templates[0].name}:${schemaTemplate.credential_templates[0].tag}`
+      }}
+    </div>
+    <div v-else>
+      <Button
+        v-if="schemaTemplate.status === 'Active'"
+        v-tooltip.top="'Create Credential Template'"
+        :disabled="!isIssuer"
+        icon="pi pi-id-card"
+        class="p-button-text"
+        @click="openModal"
+      />
+    </div>
     <Dialog
       v-model:visible="displayModal"
       header="Create Credential Template"
@@ -14,7 +22,7 @@
       @update:visible="handleClose"
     >
       <CreateCredentialTemplateForm
-        :schema-template-id="schemaTemplateId"
+        :schema-template-id="schemaTemplate.schema_template_id"
         @success="$emit('success')"
         @closed="handleClose"
       />
@@ -33,8 +41,8 @@ import { useTenantStore } from '../../../store';
 import { storeToRefs } from 'pinia';
 
 const props = defineProps({
-  schemaTemplateId: {
-    type: String,
+  schemaTemplate: {
+    type: Object,
     required: true,
   },
 });

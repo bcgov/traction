@@ -4,6 +4,7 @@ import { useTenantApi } from './tenantApi';
 import {
   fetchItem,
   fetchList,
+  filterByStatusActive,
   filterMapSortList,
   sortByLabelAscending,
 } from './utils';
@@ -50,7 +51,8 @@ export const useGovernanceStore = defineStore('governance', () => {
     return filterMapSortList(
       schemaTemplates.value,
       schemaLabelValue,
-      sortByLabelAscending
+      sortByLabelAscending,
+      filterByStatusActive
     );
   });
 
@@ -58,7 +60,8 @@ export const useGovernanceStore = defineStore('governance', () => {
     return filterMapSortList(
       credentialTemplates.value,
       credDefLabelValue,
-      sortByLabelAscending
+      sortByLabelAscending,
+      filterByStatusActive
     );
   });
 
