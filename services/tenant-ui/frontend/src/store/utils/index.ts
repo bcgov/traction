@@ -24,10 +24,10 @@ export function filterMapSortList(
   filterFn: Function = (item: any) => true
 ) {
   let result: any[] = [];
-  console.log(list);
-  console.log(mapFn);
-  console.log(filterFn);
-  console.log(sortFn);
+  //console.log(list);
+  //console.log(mapFn);
+  //console.log(filterFn);
+  //console.log(sortFn);
 
   if (list != null) {
     result = list
@@ -35,7 +35,7 @@ export function filterMapSortList(
       .map((item: any) => mapFn(item))
       .sort(sortFn);
   }
-  console.log(result);
+  //console.log(result);
   return result;
 }
 

@@ -46,15 +46,7 @@
     <Column field="attributes" header="Attributes" />
     <Column field="credential_templates" header="Credential Template">
       <template #body="{ data }">
-        <CreateCredentialTemplate
-          v-if="!data.credential_templates.length"
-          :schema-template-id="data.schema_template_id"
-        />
-        <div v-else>
-          {{
-            `${data.credential_templates[0].name}:${data.credential_templates[0].tag}`
-          }}
-        </div>
+        <CreateCredentialTemplate :schema-template="data" />
       </template>
     </Column>
     <template #expansion="{ data }">
