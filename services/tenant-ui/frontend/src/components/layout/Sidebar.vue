@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="traction-sidebar">
     <h1 v-if="tenant" class="sidebar-app-title">{{ tenant.name }}</h1>
     <!--<h1 class="sidebar-app-title">{{ config.ux.sidebarTitle }}</h1>-->
     <PanelMenu :model="items" class="mt-5" />
@@ -67,44 +67,3 @@ const items = ref([
   },
 ]);
 </script>
-
-<!-- Make sure style is scoped so it doesn't bleed into other components. -->
-<style scoped lang="scss">
-.sidebar-app-title {
-  font-size: 1.6em;
-  text-align: center;
-  padding: 0.5em;
-  margin: 0.5em;
-  background-color: $tenant-ui-accent-color;
-  text-transform: uppercase;
-  word-wrap: break-word;
-}
-
-.p-panelmenu {
-  :deep(.p-panelmenu-panel) {
-    * {
-      background-color: $tenant-ui-primary-color !important;
-      border: none !important;
-      color: $tenant-ui-text-on-primary !important;
-      font-weight: normal !important;
-    }
-    .p-submenu-list {
-      padding-left: 1.5em !important;
-    }
-    // Override the order of the drop down icon
-    .p-panelmenu-header-link {
-      display: flex;
-      span {
-        &.pi-chevron-right,
-        &.pi-chevron-down {
-          order: 2;
-          margin-left: auto;
-        }
-      }
-      .p-menuitem-icon {
-        font-size: 1.3em;
-      }
-    }
-  }
-}
-</style>

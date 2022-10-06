@@ -1,12 +1,14 @@
 <template>
   <Suspense>
     <!-- the suspense tag is so we can await any of these components-->
-    <div class="layout-container">
+    <div class="layout-container innkeeper-layout">
       <nav class="layout-sidebar">
         <Sidebar />
       </nav>
       <div class="layout-page">
-        <header class="layout-header"></header>
+        <header class="layout-header">
+          <Header />
+        </header>
         <main class="layout-content">
           <Card>
             <template #content>
@@ -26,4 +28,5 @@
 import Card from 'primevue/card';
 import Footer from '../Footer.vue';
 import Sidebar from './Sidebar.vue';
+import Header from './Header.vue';
 </script>
