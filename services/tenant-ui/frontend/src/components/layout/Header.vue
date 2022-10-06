@@ -17,12 +17,3 @@ import Toolbar from 'primevue/toolbar';
 import Button from 'primevue/button';
 import ProfileButton from '@/components/profile/ProfileButton.vue';
 </script>
-
-<style>
-/* spamming important here. TODO: figure out best way to override this with theme */
-.p-toolbar {
-  background-color: white !important;
-  padding: 0.5em !important;
-  border-radius: 0 !important;
-}
-</style>

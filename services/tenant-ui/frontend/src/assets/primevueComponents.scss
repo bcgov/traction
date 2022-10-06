@@ -1,0 +1,15 @@
+// Global modifications to PrimeVue components here
+// Note if general global theming (colors mostly) needs changing, look to the pulled in _theme file 
+// Can adjust ALL instances of a PrimeVue component her by just overriding the classes,
+// or if you want a component that only sometimes gets modified, can add another .traction class to it
+// like if we want a bunch of tables to get overriden style (but still want other customizable or default,
+// add .traction-table and nest style from that
+
+// Dialogs
+.p-dialog-content {
+  input {
+    min-width: 400px;
+  }
+}
+
+// TODO: move more customization into here

@@ -1,0 +1,144 @@
+@import 'variables.scss';
+
+// General application layout and styles for the 'containing' components (nav, content, etc)
+
+body {
+  margin: 0;
+}
+
+// The app layout
+.layout-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  min-height: 100vh;
+  width: 100%;
+  .layout-sidebar {
+    align-self: stretch;
+    background-color: $tenant-ui-primary-color;
+    color: $tenant-ui-text-on-primary;
+    min-width: 20em;
+  }
+  // Innkeeper specifics
+  &.innkeeper-layout .layout-sidebar {
+    background-color: $innkeeper-ui-primary-color;
+    color: $innkeeper-ui-text-on-primary;
+  }
+
+  .layout-page {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .layout-header {
+    flex: 0;
+    background-color: white;
+  }
+
+  .layout-content {
+    flex: 1;
+    background-color: #e4e4e4;
+    padding: 0.5em;
+  }
+}
+
+// The Login screen layout
+.traction-login {
+  .logo {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .logo-bc {
+    @extend .logo;
+    width: 18em;
+  }
+  .logo-traction {
+    @extend .logo;
+    width: 20em;
+  }
+
+  .cover-image {
+    background-repeat: no-repeat;
+    background-size: cover;
+    .copyright {
+      color: white;
+      font-size: 0.5em;
+      background-color: rgba($color: #000000, $alpha: 0.5);
+      padding: 0 0.5em;
+      margin: 1em;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+    }
+  }
+}
+
+// Sidebar layout styling
+.traction-sidebar {
+  .sidebar-app-title {
+    font-size: 1.6em;
+    text-align: center;
+    padding: 0.5em;
+    margin: 0.5em;
+    background-color: $tenant-ui-accent-color;
+    text-transform: uppercase;
+    word-wrap: break-word;
+  }
+  // Innkeeper specifics
+  &.innkeeper-sidebar .sidebar-app-title {
+    background-color: white;
+    color: $innkeeper-ui-primary-color;
+    margin: 0.5em 1em;
+    letter-spacing: 3px;
+  }
+
+  .p-panelmenu {
+    .p-panelmenu-panel {
+      * {
+        border: none !important;
+        font-weight: normal !important;
+        background-color: $tenant-ui-primary-color !important;
+        color: $tenant-ui-text-on-primary !important;
+      }
+      .p-submenu-list {
+        padding-left: 1.5em !important;
+      }
+      // Override the order of the drop down icon
+      .p-panelmenu-header-link {
+        display: flex;
+        span {
+          &.pi-chevron-right,
+          &.pi-chevron-down {
+            order: 2;
+            margin-left: auto;
+          }
+        }
+        .p-menuitem-icon {
+          font-size: 1.3em;
+        }
+      }
+    }
+  }
+  // Innkeeper specifics
+  &.innkeeper-sidebar .p-panelmenu .p-panelmenu-panel * {
+    background-color: $innkeeper-ui-primary-color !important;
+    color: $innkeeper-ui-text-on-primary !important;
+  }
+}
+
+// Header Layout Styling
+.traction-header {
+  &.p-toolbar {
+    background-color: white !important;
+    border-radius: 0 !important;
+  }
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  margin: 10px;
+}
