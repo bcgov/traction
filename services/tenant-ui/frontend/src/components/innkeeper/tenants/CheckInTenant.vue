@@ -29,6 +29,7 @@ const emit = defineEmits(['success']);
 // Open popup
 const displayModal = ref(false);
 const openModal = async () => {
+  allowClose.value = true;
   displayModal.value = true;
 };
 
