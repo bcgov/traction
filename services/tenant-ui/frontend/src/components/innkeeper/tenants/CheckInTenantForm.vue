@@ -132,8 +132,8 @@ const handleSubmit = async (isFormValid: boolean) => {
 
 // Copying key to clipboard
 const copy_to_clipboard = () => {
-  navigator.clipboard.writeText(`Wallet ID: ${checkinResponse.value!.wallet_id}
-  \r\nWallet Key: ${checkinResponse.value!.wallet_key}`);
+  navigator.clipboard.writeText(`Wallet ID: ${checkinResponse.value?.wallet_id}
+  \r\nWallet Key: ${checkinResponse.value?.wallet_key}`);
   toast.info('Wallet information copied to clipboard');
   return;
 };
