@@ -69,11 +69,11 @@ const requestAccess = async () => {
  */
 const label = () => {
   if (issuer.value) {
-    return 'Issuer';
+    return 'Issuer'; // Already an issuer
   } else if (!issuer.value && tenant.value.issuer_status === 'Approved') {
-    return 'Approve Issuer Permissions';
+    return 'Approve Issuer Permissions'; // Already approved, but not an issuer
   } else {
-    return 'Request Issuer Permissions';
+    return 'Request Issuer Permissions'; // Not approved yet
   }
 };
 </script>
