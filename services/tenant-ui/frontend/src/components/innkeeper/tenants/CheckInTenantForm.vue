@@ -47,7 +47,7 @@
         </span>
       </div>
 
-      <Panel header="Wallet Access for Tenant" >
+      <Panel header="Wallet Access for Tenant">
         <p>Wallet ID: {{ checkinResponse.wallet_id }}</p>
 
         <p>Wallet Key: {{ checkinResponse.wallet_key }}</p>
@@ -128,7 +128,8 @@ const handleSubmit = async (isFormValid: boolean) => {
 const closeForm = (event: any) => {
   confirm.require({
     target: event.currentTarget,
-    message: 'Are you sure you want to Close? Make sure you have the Wallet Key!',
+    message:
+      'Are you sure you want to Close? Make sure you have the Wallet Key!',
     header: 'Confirmation',
     icon: 'pi pi-exclamation-triangle',
     accept: () => {

@@ -9,8 +9,8 @@
     :rows="10"
     selection-mode="single"
     data-key="tenant_id"
-    sortField="created_at"
-    :sortOrder="-1"
+    sort-field="created_at"
+    :sort-order="-1"
   >
     <template #header>
       <div class="flex justify-content-between">
