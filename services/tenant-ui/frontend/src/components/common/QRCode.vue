@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import Button from 'primevue/button';
 import QrcodeVue from 'qrcode.vue';
 import Accordion from 'primevue/accordion';

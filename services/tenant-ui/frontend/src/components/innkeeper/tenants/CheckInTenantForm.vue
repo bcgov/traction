@@ -48,6 +48,13 @@
       </div>
 
       <Panel header="Wallet Access for Tenant">
+        <template #icons>
+          <Button
+            label="Copy to Clipboard"
+            class="p-button-text"
+            @click="copy_to_clipboard()"
+          />
+        </template>
         <p>Wallet ID: {{ checkinResponse.wallet_id }}</p>
 
         <p>Wallet Key: {{ checkinResponse.wallet_key }}</p>
@@ -113,7 +120,7 @@ const handleSubmit = async (isFormValid: boolean) => {
     );
     if (result != null) {
       checkinResponse.value = result;
-      toast.info(`Tenant ${formFields.name} Checked In Successfully`);
+      toast.success(`Tenant ${formFields.name} Checked In Successfully`);
       emit('success');
     }
   } catch (error) {
@@ -123,13 +130,21 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 };
 
+// Copying key to clipboard
+const copy_to_clipboard = () => {
+  navigator.clipboard.writeText(`Wallet ID: ${checkinResponse.value!.wallet_id}
+  \r\nWallet Key: ${checkinResponse.value!.wallet_key}`);
+  toast.info('Wallet information copied to clipboard');
+  return;
+};
+
 // Close the form after check in
 // Parent will not let the form close by other avenues once checked-in
 const closeForm = (event: any) => {
   confirm.require({
     target: event.currentTarget,
     message:
-      'Are you sure you want to Close? Make sure you have the Wallet Key!',
+      'Are you sure? You will not be able to retrieve this wallet key again after this.',
     header: 'Confirmation',
     icon: 'pi pi-exclamation-triangle',
     accept: () => {
