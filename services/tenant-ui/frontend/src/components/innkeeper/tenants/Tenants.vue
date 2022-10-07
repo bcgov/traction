@@ -9,6 +9,8 @@
     :rows="10"
     selection-mode="single"
     data-key="tenant_id"
+    sortField="created_at"
+    :sortOrder="-1"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -40,9 +42,9 @@
     </Column>
     <Column :sortable="true" field="name" header="Name" />
     <Column :sortable="true" field="wallet_id" header="Name" />
-    <Column :sortable="true" field="public_did" header="Name" />
+    <Column :sortable="true" field="public_did" header="Public DID" />
     <Column :sortable="true" field="issuer" header="Is Issuer" />
-    <Column field="created_at" header="Created at">
+    <Column :sortable="true" field="created_at" header="Created at">
       <template #body="{ data }">
         {{ formatDateLong(data.created_at) }}
       </template>

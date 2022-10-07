@@ -3,6 +3,13 @@ import { ref } from 'vue';
 import { useInnkeeperApi } from './innkeeperApi';
 import { fetchList } from '../utils';
 
+export interface TenantResponseData {
+  tenant_id?: string;
+  name?: string;
+  wallet_id: string;
+  wallet_key: string;
+}
+
 export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
   // state
   const tenants: any = ref(null);
@@ -25,14 +32,14 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     error.value = null;
     loading.value = true;
 
-    let tenant_data = null;
+    let tenant_data: TenantResponseData | undefined;
     await innkeeperApi
       .postHttp('/innkeeper/v1/tenants/check-in', {
         name: name,
         allow_issue_credentials: allowIssue,
       })
       .then((res) => {
-        tenant_data = res.data;
+        tenant_data = res.data.item;
       })
       .then(() => {
         // Tenant created, reload the list in state
