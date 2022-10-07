@@ -1,9 +1,9 @@
 <template>
   <Button
     :label="label()"
-    :icon="tenant.issuer ? 'pi pi-check' : 'pi pi-flag'"
+    :icon="issuer ? 'pi pi-check' : 'pi pi-flag'"
     class="p-button"
-    :disabled="tenant.issuer"
+    :disabled="issuer"
     :loading="loading"
     @click="requestAccess"
   ></Button>
@@ -29,7 +29,19 @@ const loading = ref(false);
 const tenantStore = useTenantStore();
 
 // This is the tenant state
-const { tenant } = storeToRefs(tenantStore);
+const { tenant } = storeToRefs(tenantStore); // This isn't updating
+
+/**
+ * Listen for changes to the tenant state
+ * then adjust the appropriate ref.
+ * This is the result of Pinia not being reactive with the store.
+ */
+const issuer = ref(tenant.value.issuer ? true : false);
+tenantStore.$subscribe((state) => {
+  if ((state?.events as any)?.newValue?.issuer) {
+    issuer.value = (state.events as any).newValue.issuer;
+  }
+});
 
 /**
  * ## requestAccess
@@ -44,8 +56,8 @@ const requestAccess = async () => {
       'Sorry you do not have access yet. Please contact your Innkeeper directly.'
     );
   } else {
-    await tenantStore.getSelf();
-    toast.info('You are now an issuer!');
+    await tenantStore.getSelf(); // Reload profile data
+    toast.success('You are now an issuer!');
   }
   loading.value = false; // Remove the spinner
 };
@@ -56,12 +68,9 @@ const requestAccess = async () => {
  * on the state of the tenant
  */
 const label = () => {
-  if (tenant.value.issuer) {
+  if (issuer.value) {
     return 'Issuer';
-  } else if (
-    !tenant.value.issuer &&
-    tenant.value.issuer_status === 'Approved'
-  ) {
+  } else if (!issuer.value && tenant.value.issuer_status === 'Approved') {
     return 'Approve Issuer Permissions';
   } else {
     return 'Request Issuer Permissions';
