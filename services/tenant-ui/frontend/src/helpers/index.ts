@@ -31,3 +31,12 @@ export function formatDate(value: string) {
 export function formatDateLong(value: string) {
   return _dateFnsFormat(value, 'MMMM d yyyy, h:mm:ss a');
 }
+
+export function toKebabCase(str: string | null) {
+  const strs =
+    str &&
+    str.match(
+      /[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g
+    );
+  return strs ? strs.join('-').toLocaleLowerCase() : '';
+}

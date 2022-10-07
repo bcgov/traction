@@ -1,9 +1,12 @@
 <template>
   <div>
-    <div v-if="schemaTemplate.credential_templates.length">
-      {{
-        `${schemaTemplate.credential_templates[0].name}:${schemaTemplate.credential_templates[0].tag}`
-      }}
+    <div v-if="credentialTemplate">
+      <div v-if="credentialTemplate.status === 'Active'">
+        {{ `${credentialTemplate.name}:${credentialTemplate.tag}` }}
+      </div>
+      <div v-else>
+        <StatusChip :status="credentialTemplate.status" />
+      </div>
     </div>
     <div v-else>
       <Button
@@ -31,9 +34,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
+import StatusChip from '../../common/StatusChip.vue';
 
 import CreateCredentialTemplateForm from './CreateCredentialTemplateForm.vue';
 
@@ -48,6 +52,13 @@ const props = defineProps({
 });
 
 const { isIssuer } = storeToRefs(useTenantStore());
+
+const credentialTemplate = computed(() => {
+  if (props.schemaTemplate.credential_templates.length) {
+    return props.schemaTemplate.credential_templates[0];
+  }
+  return null;
+});
 
 defineEmits(['success']);
 
