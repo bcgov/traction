@@ -1,0 +1,56 @@
+.status-chip {
+    background-color: $tenant-ui-status-default-background;
+    color: $tenant-ui-status-default-color;
+    border-radius: 5px;
+    padding: 0.25rem 1rem 0.25rem 1rem;
+    font-weight: bolder;
+    text-align: center;
+    > span.text {
+        min-width: 80px;
+        text-align: center
+    }
+  }
+
+  /* green */
+.status-chip.active {
+    background-color: $tenant-ui-status-green-background;
+    color: $tenant-ui-status-green-color;
+  }
+
+.status-chip.accepted {
+    background-color: $tenant-ui-status-green-background;
+    color: $tenant-ui-status-green-color;
+  }     
+
+.status-chip.verified {
+    background-color: $tenant-ui-status-green-background;
+    color: $tenant-ui-status-green-color;
+  } 
+
+  /* amber */
+.status-chip.pending {
+    background-color: $tenant-ui-status-amber-background;
+    color: $tenant-ui-status-amber-color;
+  }
+  
+  /* red */
+.status-chip.error {
+    background-color: $tenant-ui-status-red-background;
+    color: $tenant-ui-status-red-color;
+  }
+
+.status-chip.rejected {
+    background-color: $tenant-ui-status-red-background;
+    color: $tenant-ui-status-red-color;
+  } 
+
+  /* blue */
+.status-chip.in-progress {
+    background-color: $tenant-ui-status-blue-background;
+    color: $tenant-ui-status-blue-color;
+  }
+
+.status-chip.request-sent {
+    background-color: $tenant-ui-status-blue-background;
+    color: $tenant-ui-status-blue-color;
+  }
