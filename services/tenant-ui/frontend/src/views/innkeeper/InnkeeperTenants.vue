@@ -1,3 +1,7 @@
-<template>Test this is innkeeper</template>
+<template>
+  <Tenants />
+</template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import Tenants from '@/components/innkeeper/tenants/Tenants.vue';
+</script>

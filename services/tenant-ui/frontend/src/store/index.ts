@@ -9,3 +9,4 @@ export { useTokenStore } from './tokenStore';
 export { useVerifierStore } from './verifierStore';
 // Innkeeper
 export { useInnkeeperTokenStore } from './innkeeper/innkeeperTokenStore';
+export { useInnkeeperTenantsStore } from './innkeeper/innkeeperTenantsStore';
