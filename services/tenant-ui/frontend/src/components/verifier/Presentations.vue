@@ -29,7 +29,11 @@
     <Column :expander="true" header-style="width: 3rem" />
     <Column :sortable="true" field="name" header="Name" />
     <Column field="contact.alias" header="Contact Name" />
-    <Column field="status" header="Status" />
+    <Column field="status" header="Status">
+      <template #body="{ data }">
+        <StatusChip :status="data.status" />
+      </template>
+    </Column>
     <Column field="created_at" header="Created at">
       <template #body="{ data }">
         {{ formatDateLong(data.created_at) }}
@@ -57,6 +61,7 @@ import { storeToRefs } from 'pinia';
 
 import PresentationRowExpandData from './PresentationRowExpandData.vue';
 import { formatDateLong } from '@/helpers';
+import StatusChip from '../common/StatusChip.vue';
 const toast = useToast();
 
 // used by datatable expander behind the scenes

@@ -1,7 +1,7 @@
 <template>
   <Chip :class="statusClass">
-    <span class="text">{{ status }}</span></Chip
-  >
+    <span class="text">{{ status }}</span>
+  </Chip>
 </template>
 
 <script setup lang="ts">

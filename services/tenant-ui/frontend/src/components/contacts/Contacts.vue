@@ -42,7 +42,11 @@
     </Column>
     <Column :sortable="true" field="alias" header="Name" />
     <Column field="role" header="Role" />
-    <Column field="status" header="Status" />
+    <Column field="status" header="Status">
+      <template #body="{ data }">
+        <StatusChip :status="data.status" />
+      </template>
+    </Column>
     <Column field="created_at" header="Created at">
       <template #body="{ data }">
         {{ formatDateLong(data.created_at) }}
@@ -75,6 +79,7 @@ import AcceptInvitation from './acceptInvitation/AcceptInvitation.vue';
 import CreateContact from './createContact/CreateContact.vue';
 import { formatDateLong } from '@/helpers';
 import RowExpandData from '../common/RowExpandData.vue';
+import StatusChip from '../common/StatusChip.vue';
 
 const confirm = useConfirm();
 const toast = useToast();

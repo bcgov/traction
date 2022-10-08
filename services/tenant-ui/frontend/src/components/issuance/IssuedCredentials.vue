@@ -31,7 +31,11 @@
       header="Credential Name"
     />
     <Column field="contact.alias" header="Contact Name" />
-    <Column field="status" header="Status" />
+    <Column field="status" header="Status">
+      <template #body="{ data }">
+        <StatusChip :status="data.status" />
+      </template>
+    </Column>
     <Column field="created_at" header="Created at">
       <template #body="{ data }">
         {{ formatDateLong(data.created_at) }}
@@ -51,23 +55,19 @@
 <script setup lang="ts">
 // Vue
 import { onMounted, ref } from 'vue';
-
 // State
 import { useIssuerStore } from '../../store';
 import { storeToRefs } from 'pinia';
-
 // PrimeVue
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-
+import { useToast } from 'vue-toastification';
 // Other Components
 import OfferCredential from './offerCredential/OfferCredential.vue';
 import RowExpandData from '../common/RowExpandData.vue';
 import { formatDateLong } from '@/helpers';
-
-// Other Imports
-import { useToast } from 'vue-toastification';
+import StatusChip from '../common/StatusChip.vue';
 
 const toast = useToast();
 
