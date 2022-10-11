@@ -41,9 +41,13 @@
       </template>
     </Column>
     <Column :sortable="true" field="name" header="Name" />
-    <Column :sortable="true" field="wallet_id" header="Name" />
+    <Column :sortable="true" field="wallet_id" header="Wallet ID" />
     <Column :sortable="true" field="public_did" header="Public DID" />
-    <Column :sortable="true" field="issuer" header="Is Issuer" />
+    <Column :sortable="true" field="issuer" header="Issuer">
+      <template #body="{ data }">
+        <i v-if="data.issuer" class="pi pi-check-circle" />
+      </template>
+    </Column>
     <Column :sortable="true" field="created_at" header="Created at">
       <template #body="{ data }">
         {{ formatDateLong(data.created_at) }}
