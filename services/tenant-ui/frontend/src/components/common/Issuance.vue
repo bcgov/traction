@@ -25,6 +25,9 @@ const toast = useToast();
 // For monitoring the state of the request
 const loading = ref(false);
 
+// Flag for pending requests
+const pending = ref(false);
+
 // Get the tenant store
 const tenantStore = useTenantStore();
 
@@ -57,7 +60,12 @@ const requestAccess = async () => {
     );
   } else {
     await tenantStore.getSelf(); // Reload profile data
-    toast.success('You are now an issuer!');
+    if (pending.value === false) {
+      toast.success(
+        'Successfully sent approval request! Check back later for status.'
+      );
+    }
+    pending.value = true;
   }
   loading.value = false; // Remove the spinner
 };
@@ -70,8 +78,14 @@ const requestAccess = async () => {
 const label = () => {
   if (issuer.value) {
     return 'Issuer'; // Already an issuer
-  } else if (!issuer.value && tenant.value.issuer_status === 'Approved') {
+  } else if (
+    !issuer.value &&
+    tenant.value.issuer_status === 'Approved' &&
+    !pending.value
+  ) {
     return 'Approve Issuer Permissions'; // Already approved, but not an issuer
+  } else if (pending) {
+    return 'Check Issuer Status'; // Requested, but not approved
   } else {
     return 'Request Issuer Permissions'; // Not approved yet
   }
