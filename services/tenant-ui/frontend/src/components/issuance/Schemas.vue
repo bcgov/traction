@@ -42,7 +42,11 @@
     </Column>
     <Column field="name" header="Schema" filter-field="name" />
     <Column field="version" header="Version" />
-    <Column field="status" header="Status" />
+    <Column field="status" header="Status">
+      <template #body="{ data }">
+        <StatusChip :status="data.status" />
+      </template>
+    </Column>
     <Column field="attributes" header="Attributes" />
     <Column field="credential_templates" header="Credential Template">
       <template #body="{ data }">
@@ -70,6 +74,7 @@ import CreateSchema from './createSchema/CreateSchema.vue';
 import CopySchema from './copySchema/CopySchema.vue';
 import CreateCredentialTemplate from './credentialtemplate/CreateCredentialTemplate.vue';
 import RowExpandData from '../common/RowExpandData.vue';
+import StatusChip from '../common/StatusChip.vue';
 
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';
