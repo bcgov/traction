@@ -84,7 +84,7 @@ const label = () => {
     !pending.value
   ) {
     return 'Approve Issuer Permissions'; // Already approved, but not an issuer
-  } else if (pending) {
+  } else if (pending.value) {
     return 'Check Issuer Status'; // Requested, but not approved
   } else {
     return 'Request Issuer Permissions'; // Not approved yet
