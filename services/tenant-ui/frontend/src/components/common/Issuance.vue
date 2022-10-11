@@ -1,9 +1,9 @@
 <template>
   <Button
     :label="label()"
-    :icon="tenant.issuer ? 'pi pi-check' : 'pi pi-flag'"
+    :icon="issuer ? 'pi pi-check' : 'pi pi-flag'"
     class="p-button"
-    :disabled="tenant.issuer"
+    :disabled="issuer"
     :loading="loading"
     @click="requestAccess"
   ></Button>
@@ -25,11 +25,26 @@ const toast = useToast();
 // For monitoring the state of the request
 const loading = ref(false);
 
+// Flag for pending requests
+const pending = ref(false);
+
 // Get the tenant store
 const tenantStore = useTenantStore();
 
 // This is the tenant state
-const { tenant } = storeToRefs(tenantStore);
+const { tenant } = storeToRefs(tenantStore); // This isn't updating
+
+/**
+ * Listen for changes to the tenant state
+ * then adjust the appropriate ref.
+ * This is the result of Pinia not being reactive with the store.
+ */
+const issuer = ref(tenant.value.issuer ? true : false);
+tenantStore.$subscribe((state) => {
+  if ((state?.events as any)?.newValue?.issuer) {
+    issuer.value = (state.events as any).newValue.issuer;
+  }
+});
 
 /**
  * ## requestAccess
@@ -44,7 +59,13 @@ const requestAccess = async () => {
       'Sorry you do not have access yet. Please contact your Innkeeper directly.'
     );
   } else {
-    await tenantStore.getSelf();
+    await tenantStore.getSelf(); // Reload profile data
+    if (pending.value === false) {
+      toast.success(
+        'Successfully sent approval request! Check back later for status.'
+      );
+    }
+    pending.value = true;
   }
   loading.value = false; // Remove the spinner
 };
@@ -55,15 +76,18 @@ const requestAccess = async () => {
  * on the state of the tenant
  */
 const label = () => {
-  if (tenant.value.issuer) {
-    return 'Issuer';
+  if (issuer.value) {
+    return 'Issuer'; // Already an issuer
   } else if (
-    !tenant.value.issuer &&
-    tenant.value.issuer_status === 'Approved'
+    !issuer.value &&
+    tenant.value.issuer_status === 'Approved' &&
+    !pending.value
   ) {
-    return 'Approve Issuer Permissions';
+    return 'Approve Issuer Permissions'; // Already approved, but not an issuer
+  } else if (pending.value) {
+    return 'Check Issuer Status'; // Requested, but not approved
   } else {
-    return 'Request Issuer Permissions';
+    return 'Request Issuer Permissions'; // Not approved yet
   }
 };
 </script>
