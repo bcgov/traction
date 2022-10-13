@@ -1,11 +1,5 @@
 <template>
   <div>
-    <!-- <Button
-      :disabled="!isIssuer"
-      label="Offer Credential"
-      icon="pi pi-arrow-up-right"
-      @click="openModal"
-    /> -->
     <FormButton
       label="Offer Credential"
       icon="pi pi-arrow-up-right"

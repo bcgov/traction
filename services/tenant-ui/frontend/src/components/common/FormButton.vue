@@ -1,5 +1,5 @@
 <!---------------------------------------------------------------
-  Standardized form submission button
+  Standardized form button
 -->
 <template>
   <div>
@@ -18,23 +18,28 @@ import Button from 'primevue/button';
 
 const props = defineProps({
   icon: {
+    // All buttons should have icons
     type: String,
     required: true,
   },
   submit: {
+    // What's a button within logic
     type: Function,
     required: true,
   },
   label: {
+    // If no label, use the icon
     type: String,
     required: false,
   },
   disabled: {
+    // If disabled, don't submit
     type: Boolean,
     required: false,
     default: false,
   },
   loading: {
+    // If loading, don't submit
     type: Boolean,
     required: false,
     default: false,
