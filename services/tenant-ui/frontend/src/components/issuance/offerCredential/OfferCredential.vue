@@ -3,7 +3,7 @@
     <FormButton
       label="Offer Credential"
       icon="pi pi-arrow-up-right"
-      :disabled="false"
+      :disabled="!isIssuer"
       :loading="false"
       :submit="openModal"
     />
