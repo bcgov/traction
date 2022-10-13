@@ -31,6 +31,7 @@ const props = defineProps({
     // If no label, use the icon
     type: String,
     required: false,
+    default: '',
   },
   disabled: {
     // If disabled, don't submit
