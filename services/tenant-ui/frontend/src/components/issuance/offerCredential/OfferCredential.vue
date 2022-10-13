@@ -1,10 +1,17 @@
 <template>
   <div>
-    <Button
+    <!-- <Button
       :disabled="!isIssuer"
       label="Offer Credential"
       icon="pi pi-arrow-up-right"
       @click="openModal"
+    /> -->
+    <FormButton
+      label="Offer Credential"
+      icon="pi pi-arrow-up-right"
+      :disabled="false"
+      :loading="false"
+      :submit="openModal"
     />
     <Dialog
       v-model:visible="displayModal"
@@ -33,6 +40,7 @@ import {
 import { storeToRefs } from 'pinia';
 // Custom Components
 import OfferCredentialForm from './OfferCredentialForm.vue';
+import FormButton from '@/components/common/FormButton.vue';
 // Other Imports
 import { useToast } from 'vue-toastification';
 
