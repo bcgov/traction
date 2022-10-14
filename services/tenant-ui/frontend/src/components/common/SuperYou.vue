@@ -5,8 +5,9 @@
 -->
 <template>
   <Button
-    icon="pi pi-bolt"
-    class="p-button-rounded p-button-outlined"
+    :icon="`pi ${icon}`"
+    :class="text ? '' : 'p-button-rounded p-button-outlined'"
+    :label="text"
     title="Custom API Call"
     @click="toggleModal"
   ></Button>
@@ -55,6 +56,15 @@ const props = defineProps({
   templateJson: {
     type: Object,
     required: true,
+  },
+  icon: {
+    type: String,
+    required: false,
+    default: 'pi-bolt',
+  },
+  text: {
+    type: String,
+    required: false,
   },
 });
 
