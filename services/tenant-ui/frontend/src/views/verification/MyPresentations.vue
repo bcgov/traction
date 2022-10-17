@@ -5,8 +5,8 @@ import SuperYou from '@/components/common/SuperYou.vue';
 const apiUrl = '/tenant/v1/verifier/presentations/adhoc-request';
 
 const templateJson = {
-  contact_id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-  connection_id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+  contact_id: '67f68781-4dd9-49ad-9a5e-1e9a06e901f4',
+  connection_id: '6530a727-8c05-4818-a1bb-687117afbd44',
   proof_request: {
     requested_attributes: [
       {
