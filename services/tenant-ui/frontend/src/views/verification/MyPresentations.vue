@@ -2,8 +2,7 @@
 import verifierPresentations from '../../components/verifier/Presentations.vue';
 import SuperYou from '@/components/common/SuperYou.vue';
 
-const apiUrl =
-  'http://localhost:8000/tenant/v1/verifier/presentations/adhoc-request';
+const apiUrl = '/tenant/v1/verifier/presentations/adhoc-request';
 
 const templateJson = {
   contact_id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
@@ -37,10 +36,19 @@ const templateJson = {
 </script>
 
 <template>
-  <SuperYou
-    :api-url="apiUrl"
-    :template-json="templateJson"
-    text="Create Presentation Request"
-  />
+  <div class="presentation-request-btn">
+    <SuperYou
+      :api-url="apiUrl"
+      :template-json="templateJson"
+      text="Create Presentation Request"
+      icon="pi-key"
+    />
+  </div>
   <verifierPresentations />
 </template>
+
+<style scoped>
+.presentation-request-btn {
+  float: right;
+}
+</style>
