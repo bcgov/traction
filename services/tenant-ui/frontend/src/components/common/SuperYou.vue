@@ -99,7 +99,6 @@ const setupDialog = () => {
  */
 const submit = () => {
   const payload = content.json || JSON.parse(content.text);
-  console.log(payload);
   useTenantApi()
     .postHttp(props.apiUrl, payload)
     .then((response) => {
