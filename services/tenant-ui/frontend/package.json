@@ -22,6 +22,7 @@
     "qrcode.vue": "^3.3.3",
     "vanilla-jsoneditor": "^0.7.10",
     "vue": "^3.2.41",
+    "vue-i18n": "^9.2.2",
     "vue-json-pretty": "^2.2.2",
     "vue-router": "^4.1.5",
     "vue-toastification": "^2.0.0-rc.5"
