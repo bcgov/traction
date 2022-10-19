@@ -94,6 +94,8 @@ const setupDialog = () => {
   });
 };
 
+const emit = defineEmits(['success']);
+
 /**
  * Send the JSON to the API
  */
@@ -103,6 +105,7 @@ const submit = () => {
     .postHttp(props.apiUrl, payload)
     .then((response) => {
       toast.info('Success!');
+      emit('success');
     })
     .catch((error) => {
       toast.error(`Something went wrong... ${error}`);
