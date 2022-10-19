@@ -1,6 +1,6 @@
 <template>
   <div class="traction-footer flex justify-content-between flex-wrap">
-    <div>Powered by Traction</div>
+    <div>{{ t('home.greeting') }}</div>
     <div>{{ config.ux.copyright }} {{ config.ux.owner }}</div>
   </div>
 </template>
@@ -8,9 +8,13 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { useConfigStore } from '../../store';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const { config } = storeToRefs(useConfigStore());
 </script>
+
 <style>
 .traction-footer {
   background-color: white !important;

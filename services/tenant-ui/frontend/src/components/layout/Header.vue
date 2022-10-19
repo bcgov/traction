@@ -5,8 +5,11 @@
     </template>
 
     <template #end>
-      <Button icon="pi pi-search" class="p-button-text p-button-info mr-2" />
-      <Button icon="pi pi-bell" class="p-button-text p-button-info mr-2" />
+      <select v-model="locale" class="mr-4">
+        <option value="en">en</option>
+        <option value="fr">fr</option>
+      </select>
+
       <ProfileButton />
     </template>
   </Toolbar>
@@ -14,6 +17,8 @@
 
 <script setup lang="ts">
 import Toolbar from 'primevue/toolbar';
-import Button from 'primevue/button';
 import ProfileButton from '@/components/profile/ProfileButton.vue';
+import { useI18n } from 'vue-i18n';
+
+const { locale } = useI18n({ useScope: 'global' });
 </script>

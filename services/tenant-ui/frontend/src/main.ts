@@ -1,5 +1,6 @@
 import router from './router';
 import { createApp } from 'vue';
+import createI18n from './i18n/i18n';
 import './style.css';
 import App from './App.vue';
 
@@ -17,9 +18,6 @@ import 'vue-toastification/dist/index.css';
   https://www.primefaces.org/primevue/
   Each component is defined here so
   the tree shaking can be applied.
-
-  There are material themes available that would
-  match the Gov't style.
 */
 import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
@@ -58,6 +56,7 @@ async function loadApp() {
   unsubscribe();
 
   // 4. load/initialize other components
+  app.use(createI18n);
   app.use(PrimeVue);
   app.use(router);
   app.use(ConfirmationService);
