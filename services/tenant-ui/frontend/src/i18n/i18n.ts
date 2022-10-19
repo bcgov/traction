@@ -8,16 +8,45 @@ function loadLocaleMessages() {
   // one json file per language probably best in the future
   const messages = {
     en: {
-      structure: {
+      home: {
         greeting: 'Powered by Traction',
         dashboard: 'Dashboard',
+        login: {
+          id: 'Wallet ID',
+          secret: 'Wallet Secret',
+          submit: 'Sign-In',
+        },
+      },
+      user: {
+        profile: 'Profile',
+        settings: 'Settings',
+        logout: 'Logout',
+      },
+      contact: {
         contacts: 'Contacts',
+        create: 'Create Contact',
+        accept: 'Accept Invitation',
       },
     },
     fr: {
-      structure: {
+      home: {
         greeting: 'Propulsé par Traction',
         dashboard: 'Dashboard <FR>',
+        login: {
+          id: 'Wallet ID <FR>',
+          secret: 'Wallet Secret <FR>',
+          submit: 'Sign-In <FR>',
+        },
+      },
+      user: {
+        profile: 'Profile <FR>',
+        settings: 'Settings <FR>',
+        logout: 'Logout <FR>',
+      },
+      contact: {
+        contacts: 'Contacts <FR>',
+        create: 'Create Contact <FR>',
+        accept: 'Accept Invitation <FR>',
       },
     },
   };
