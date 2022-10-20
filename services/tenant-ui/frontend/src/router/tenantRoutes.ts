@@ -52,7 +52,7 @@ const tenantRoutes = [
 
       // Tenant - Connections
       {
-        path: '/connections/',
+        path: '/contacts/',
         children: [
           {
             path: 'myContacts',

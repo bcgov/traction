@@ -34,7 +34,7 @@
           <label
             for="selectedContact"
             :class="{ 'p-error': v$.selectedContact.$invalid && submitted }"
-            >Connection Name
+            >Contact Name
             <ProgressSpinner v-if="contactLoading" />
           </label>
 
