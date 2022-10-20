@@ -13,7 +13,15 @@
   >
     <template #header>
       <div class="flex justify-content-between">
-        <div class="flex justify-content-start"></div>
+        <div class="flex justify-content-start">
+          <SuperYou
+            :api-url="apiUrl"
+            :template-json="templateJson"
+            text="Create Presentation Request"
+            icon="pi-key"
+            @success="loadTable"
+          />
+        </div>
         <div class="flex justify-content-end">
           <Button
             icon="pi pi-refresh"
@@ -62,8 +70,40 @@ import { storeToRefs } from 'pinia';
 import PresentationRowExpandData from './PresentationRowExpandData.vue';
 import { formatDateLong } from '@/helpers';
 import StatusChip from '../common/StatusChip.vue';
+import SuperYou from '@/components/common/SuperYou.vue';
 const toast = useToast();
 
+const apiUrl = '/tenant/v1/verifier/presentations/adhoc-request';
+
+const templateJson = {
+  contact_id: '67f68781-4dd9-49ad-9a5e-1e9a06e901f4',
+  connection_id: '6530a727-8c05-4818-a1bb-687117afbd44',
+  proof_request: {
+    requested_attributes: [
+      {
+        name: 'string',
+        names: ['string'],
+        non_revoked: {},
+        restrictions: [{}],
+      },
+    ],
+    requested_predicates: [
+      {
+        name: 'string',
+        p_type: '<',
+        p_value: 0,
+        non_revoked: {},
+        restrictions: [{}],
+      },
+    ],
+    non_revoked: {},
+  },
+  name: 'string',
+  version: '1.0.0',
+  external_reference_id: 'string',
+  comment: 'string',
+  tags: [],
+};
 // used by datatable expander behind the scenes
 const expandedRows = ref([]);
 
@@ -75,7 +115,6 @@ const { loading, presentations, selectedPresentation } = storeToRefs(
 
 const loadTable = async () => {
   verifierStore.listPresentations().catch((err) => {
-    console.error(err);
     toast.error(`Failure: ${err}`);
   });
 };

@@ -5,3 +5,5 @@ import verifierPresentations from '../../components/verifier/Presentations.vue';
 <template>
   <verifierPresentations />
 </template>
+
+<style scoped></style>

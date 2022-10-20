@@ -94,16 +94,18 @@ const setupDialog = () => {
   });
 };
 
+const emit = defineEmits(['success']);
+
 /**
  * Send the JSON to the API
  */
 const submit = () => {
   const payload = content.json || JSON.parse(content.text);
-  console.log(payload);
   useTenantApi()
     .postHttp(props.apiUrl, payload)
     .then((response) => {
       toast.info('Success!');
+      emit('success');
     })
     .catch((error) => {
       toast.error(`Something went wrong... ${error}`);
