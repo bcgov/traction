@@ -5,6 +5,8 @@ on:
       - develop
     paths:
       - 'services/traction/**'
+      - 'services/tenant-ui/**'
+      - 'charts/traction/**'
     types:
       - closed
 jobs:
