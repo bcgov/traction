@@ -17,7 +17,7 @@
     "date-fns": "^2.29.3",
     "pinia": "^2.0.23",
     "primeflex": "^3.2.1",
-    "primeicons": "^5.0.0",
+    "primeicons": "^6.0.1",
     "primevue": "^3.17.0",
     "qrcode.vue": "^3.3.3",
     "vanilla-jsoneditor": "^0.7.11",
