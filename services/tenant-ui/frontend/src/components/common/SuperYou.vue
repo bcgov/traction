@@ -115,5 +115,3 @@ const submit = () => {
     });
 };
 </script>
-
-<style></style>
