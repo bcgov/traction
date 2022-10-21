@@ -34,7 +34,7 @@
       <template #body="{ data }">
         <Button
           title="Delete Contact"
-          icon="pi pi-times-circle"
+          icon="pi pi-trash"
           class="p-button-rounded p-button-icon-only p-button-text"
           @click="deleteContact($event, data)"
         />

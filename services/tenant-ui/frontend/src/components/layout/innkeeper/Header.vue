@@ -5,6 +5,8 @@
     </template>
 
     <template #end>
+      <LocaleSwitcher />
+
       <InnkeeperBadge />
     </template>
   </Toolbar>
@@ -13,4 +15,5 @@
 <script setup lang="ts">
 import Toolbar from 'primevue/toolbar';
 import InnkeeperBadge from '@/components/innkeeper/InnkeeperBadge.vue';
+import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue';
 </script>

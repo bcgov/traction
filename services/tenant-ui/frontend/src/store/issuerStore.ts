@@ -71,6 +71,72 @@ export const useIssuerStore = defineStore('issuer', () => {
     );
   }
 
+  async function revokeCredential(payload: any = {}) {
+    console.log('> issuerStore.revokeCredential');
+    error.value = null;
+    loading.value = true;
+
+    let result = null;
+
+    await tenantApi
+      .postHttp(
+        `/tenant/v1/issuer/credentials/${payload.issuer_credential_id}/revoke-credential`,
+        payload
+      )
+      .then((res) => {
+        result = res.data.item;
+      })
+      .then(() => {
+        listCredentials();
+      })
+      .catch((err) => {
+        error.value = err;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< issuerStore.revokeCredential');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return result;
+  }
+
+  async function deleteCredential(issuer_credential_id: string) {
+    console.log('> contactsStore.deleteCredential');
+
+    error.value = null;
+    loading.value = true;
+
+    let result = null;
+
+    await tenantApi
+      .deleteHttp(`/tenant/v1/issuer/credentials/${issuer_credential_id}`)
+      .then((res) => {
+        result = res.data.item;
+      })
+      .then(() => {
+        listCredentials(); // Refresh table
+      })
+      .catch((err) => {
+        error.value = err;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< contactsStore.deleteCredential');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return result;
+  }
+
   return {
     credentials,
     selectedCredential,
@@ -79,6 +145,8 @@ export const useIssuerStore = defineStore('issuer', () => {
     listCredentials,
     offerCredential,
     getCredential,
+    revokeCredential,
+    deleteCredential,
   };
 });
 

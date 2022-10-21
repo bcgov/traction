@@ -5,10 +5,7 @@
     </template>
 
     <template #end>
-      <select v-model="locale" class="mr-4">
-        <option value="en">en</option>
-        <option value="fr">fr</option>
-      </select>
+      <LocaleSwitcher />
 
       <ProfileButton />
     </template>
@@ -18,7 +15,5 @@
 <script setup lang="ts">
 import Toolbar from 'primevue/toolbar';
 import ProfileButton from '@/components/profile/ProfileButton.vue';
-import { useI18n } from 'vue-i18n';
-
-const { locale } = useI18n({ useScope: 'global' });
+import LocaleSwitcher from '../common/LocaleSwitcher.vue';
 </script>

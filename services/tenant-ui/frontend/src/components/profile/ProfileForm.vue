@@ -61,7 +61,7 @@
 
 <script setup lang="ts">
 import InputText from 'primevue/inputtext';
-import Issuance from '@/components/common/Issuance.vue';
+import Issuance from '@/components/profile/Issuance.vue';
 
 import { storeToRefs } from 'pinia';
 import { useTenantStore } from '@/store';

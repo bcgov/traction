@@ -30,16 +30,6 @@
     <template #empty> No records found. </template>
     <template #loading> Loading data. Please wait... </template>
     <Column :expander="true" header-style="width: 3rem" />
-    <Column :sortable="false" header="Actions">
-      <template #body="{ data }">
-        <Button
-          title="Delete Contact"
-          icon="pi pi-times-circle"
-          class="p-button-rounded p-button-icon-only p-button-text"
-          @click="deleteTenant($event, data)"
-        />
-      </template>
-    </Column>
     <Column :sortable="true" field="name" header="Name" />
     <Column :sortable="true" field="wallet_id" header="Wallet ID" />
     <Column :sortable="true" field="public_did" header="Public DID" />
@@ -66,7 +56,6 @@ import { onMounted, ref } from 'vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';
 // State
 import { useInnkeeperTenantsStore } from '@/store';
@@ -76,7 +65,6 @@ import CheckInTenant from './CheckInTenant.vue';
 import { formatDateLong } from '@/helpers';
 import RowExpandData from '@/components/common/RowExpandData.vue';
 
-const confirm = useConfirm();
 const toast = useToast();
 
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
@@ -93,21 +81,6 @@ const loadTable = async () => {
 onMounted(async () => {
   loadTable();
 });
-
-const deleteTenant = (event: any, tenant: any) => {
-  confirm.require({
-    target: event.currentTarget,
-    message: 'Are you sure you want to delete this Tenant?',
-    header: 'Confirmation',
-    icon: 'pi pi-exclamation-triangle',
-    accept: () => {
-      doDelete(tenant);
-    },
-  });
-};
-const doDelete = (tenant: any) => {
-  alert(`To be implemented ${JSON.stringify(tenant)}`);
-};
 
 // necessary for expanding rows, we don't do anything with this
 const expandedRows = ref([]);

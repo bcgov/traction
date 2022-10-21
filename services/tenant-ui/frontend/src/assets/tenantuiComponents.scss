@@ -11,8 +11,10 @@
   }
 
   /* green */
-  &.active ,
+  &.active,
   &.accepted,
+  &.offer-accepted,
+  &.issued,
   &.verified {
     background-color: $tenant-ui-status-green-background;
     color: $tenant-ui-status-green-color;
@@ -27,6 +29,7 @@
   /* red */
   &.error,
   &.rejected,
+  &.revoked,
   &.offer-not-accepted {
     background-color: $tenant-ui-status-red-background;
     color: $tenant-ui-status-red-color;

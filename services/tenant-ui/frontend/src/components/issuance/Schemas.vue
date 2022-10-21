@@ -34,7 +34,7 @@
       <template #body="{ data }">
         <Button
           title="Delete Schema"
-          icon="pi pi-times-circle"
+          icon="pi pi-trash"
           class="p-button-rounded p-button-icon-only p-button-text"
           @click="deleteSchema($event, data)"
         />
