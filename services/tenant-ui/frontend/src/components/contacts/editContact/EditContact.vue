@@ -11,7 +11,7 @@
     :modal="true"
     @update:visible="handleClose"
   >
-    <EditContactForm :contactId="props.contactId" @closed="handleClose" />
+    <EditContactForm :contact-id="props.contactId" @closed="handleClose" />
   </Dialog>
 </template>
 

@@ -164,7 +164,10 @@ export const useContactsStore = defineStore('contacts', () => {
 
     let contact_data = null;
     await tenantApi
-      .putHttp(`/tenant/v1/contacts/${contactId}`, { contact_id: contactId, alias: alias })
+      .putHttp(`/tenant/v1/contacts/${contactId}`, {
+        contact_id: contactId,
+        alias: alias,
+      })
       .then((res) => {
         contact_data = res.data;
       })

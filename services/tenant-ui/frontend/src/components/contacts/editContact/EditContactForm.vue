@@ -21,13 +21,12 @@
     </div>
 
     <Button type="submit" label="Submit" class="mt-3 w-full" />
-    
+
     <div v-if="item" class="flex justify-content-end mb-0 mt-3">
       <small>
         Contact Last Updated: {{ formatDateLong(item.updated_at) }}
       </small>
     </div>
-
   </form>
 </template>
 

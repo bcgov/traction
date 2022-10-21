@@ -38,7 +38,7 @@
           class="p-button-rounded p-button-icon-only p-button-text"
           @click="deleteContact($event, data)"
         />
-        <EditContact :contactId="data.contact_id"/>
+        <EditContact :contact-id="data.contact_id" />
       </template>
     </Column>
     <Column :sortable="true" field="alias" header="Name" />
