@@ -7,3 +7,4 @@ traction-venv
 ./services/tenant-ui/config/local.json
 
 .vscode/settings.json
+**/.venv
