@@ -89,6 +89,7 @@ const toast = useToast();
 const contactsStore = useContactsStore();
 
 const { loading, contacts, selectedContact } = storeToRefs(useContactsStore());
+console.log('contact data', contacts);
 
 const loadTable = async () => {
   contactsStore.listContacts().catch((err) => {
