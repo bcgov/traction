@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { computed, Ref, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useTenantApi } from './tenantApi';
 import {
   fetchList,
@@ -155,8 +155,42 @@ export const useContactsStore = defineStore('contacts', () => {
     const getloading: any = ref(false);
     return fetchItem('/tenant/v1/contacts/', id, error, getloading, params);
   }
-  // private functions
 
+  // Only going to do alias right now but expand to other params as needed later
+  async function updateContact(contactId: string, alias: string) {
+    console.log('> contactsStore.updateContact');
+    error.value = null;
+    loading.value = true;
+
+    let contact_data = null;
+    await tenantApi
+      .putHttp(`/tenant/v1/contacts/${contactId}`, {
+        contact_id: contactId,
+        alias: alias,
+      })
+      .then((res) => {
+        contact_data = res.data;
+      })
+      .then(() => {
+        listContacts();
+      })
+      .catch((err) => {
+        error.value = err;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< contactsStore.updateContact');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return contact_data;
+  }
+
+  // private functions
   const contactLabelValue = (item: any) => {
     let result = null;
     if (item != null) {
@@ -180,6 +214,7 @@ export const useContactsStore = defineStore('contacts', () => {
     acceptInvitation,
     deleteContact,
     getContact,
+    updateContact,
   };
 });
 
