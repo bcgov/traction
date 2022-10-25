@@ -10,7 +10,7 @@ from aries_cloudagent.core.event_bus import Event, EventBus, EventWithMetadata
 from aries_cloudagent.core.profile import Profile
 from aries_cloudagent.multitenant.base import BaseMultitenantManager
 
-from .provider import TractionMultitenantManagerProvider
+from .provider import CustomMultitenantManagerProvider
 
 LOGGER = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ async def on_startup(profile: Profile, event: Event):
     if profile.context.settings.get("multitenant.enabled"):
         # need to replace some multi tenant managers... anything that was created during start up
         # override the default factory...
-        profile.context.injector.bind_provider(BaseMultitenantManager, TractionMultitenantManagerProvider(profile))
+        profile.context.injector.bind_provider(BaseMultitenantManager, CustomMultitenantManagerProvider(profile))
 
         # the AdminServer was created with the old one injected
         # replace it...
@@ -41,6 +41,6 @@ async def on_startup(profile: Profile, event: Event):
         srv.multitenant_manager = profile.context.inject(BaseMultitenantManager)
     else:
         # what type of error should this throw?
-        raise ValueError("'multitenant' is not enabled, cannot load 'multitenant_tokens' plugin")  
+        raise ValueError("'multitenant' is not enabled, cannot load 'multitenant_provider' plugin")  
          
     LOGGER.info("< on_startup")

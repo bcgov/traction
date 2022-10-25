@@ -13,36 +13,45 @@ from aries_cloudagent.multitenant.manager_provider import MultitenantManagerProv
 LOGGER = logging.getLogger(__name__)
 
 
-class TractionMultitenantManagerProvider(MultitenantManagerProvider):
+class CustomMultitenantManagerProvider(MultitenantManagerProvider):
     """
     Multitenant manager provider.
 
     Decides which manager to use based on the settings.
     """
-    config_key = "multitenant_tokens"
+    config_key = "multitenant_provider"
 
     def __init__(self, root_profile):
          super().__init__(root_profile)
 
 
+    def get_config(self, settings: BaseSettings):
+        try:
+            plugin_config = settings["plugin_config"] or {}
+            config = plugin_config[self.config_key]
+            return config
+        except KeyError as error:
+            # will just proceed with defaults
+            LOGGER.warning(f"No configuration found for plugin '{self.config_key}', proceeding with defaults.")
+            return {}    
+
     def get_manager_type(self, config: dict):
         try:
             return config["manager_type"]
         except KeyError as error:
-            return ""     
+            return "custom"     
 
     def get_manager_class(self, config: dict):
         try:
             return config["manager_class"]
         except KeyError as error:
-            return "multitenant_tokens.manager.TractionMultitenantManager"     
+            return "multitenant_provider.manager.BasicMultitokenMultitenantManager"     
         
 
     def provide(self, settings: BaseSettings, injector: BaseInjector):
         """Create the multitenant manager instance."""
 
-        plugin_config = settings["plugin_config"] or {}
-        config = plugin_config[self.config_key]
+        config = self.get_config(settings)
         manager_type = self.get_manager_type(config)
         if manager_type == "custom":
             manager_class = self.get_manager_class(config)
@@ -54,7 +63,7 @@ class TractionMultitenantManagerProvider(MultitenantManagerProvider):
                     )
                 except ClassNotFoundError as err:
                     raise InjectionError(
-                        f"Unknown multitenant manager type: {manager_type}"
+                        f"Error loading multitenant manager, class '{manager_class}' not found."
                     ) from err
 
             return self._inst[manager_class]

@@ -14,7 +14,7 @@ from .models import TokensWalletRecord, TokensWalletRecordSchema
 
 LOGGER = logging.getLogger(__name__)
 
-class TractionMultitenantManager(MultitenantManager):
+class BasicMultitokenMultitenantManager(MultitenantManager):
 
     def __init__(self, profile: Profile):
         super().__init__(profile)

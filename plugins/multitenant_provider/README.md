@@ -10,6 +10,6 @@
 ### build and run
 ```
 cd docker
-docker build -f ./Dockerfile --tag multitenant_tokens ..
-docker run -it -p 3000:3000 -p 3001:3001 --rm multitenant_tokens
+docker build -f ./Dockerfile --tag multitenant_provider ..
+docker run -it -p 3000:3000 -p 3001:3001 --rm multitenant_provider
 ```

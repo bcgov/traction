@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "multitenant-tokens"
+name = "multitenant-provider"
 version = "0.1.0"
 description = ""
 authors = ["Jason Sherman <tools@usingtechnolo.gy>"]
 license = "Apache-2.0"
 readme = "README.md"
-packages = [{include = "multitenant_tokens"}]
+packages = [{include = "multitenant_provider"}]
 
 [tool.poetry.dependencies]
 python = ">=3.6.13,<4.0"

@@ -15,16 +15,19 @@ endpoint:
 
 # plugins
 plugin:
-  - multitenant_tokens
+  - multitenant_provider
 
-plugin-config-value:
-  - multitenant_tokens.manager_type="custom"
+# these are the default values...
+# plugin-config-value:
+#  - multitenant_provider.manager_type="custom"
+#  - multitenant_provider.manager_class="traction_plugins.multitenant_provider.manager.BasicMultitokenMultitenantManager"
 
 
 #config 
 genesis-url: https://indy.igrant.io/genesis
 
 # Multi-tenancy
+# multitenancy is required to use this plugin...
 multitenant: true
 jwt-secret: insecure-jwt-secret
 multitenant-admin: true

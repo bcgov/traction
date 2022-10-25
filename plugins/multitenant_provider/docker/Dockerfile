@@ -11,7 +11,7 @@ ENV PATH="/opt/poetry/bin:$PATH"
 RUN poetry config virtualenvs.in-project true
 
 # Setup project
-RUN mkdir multitenant_tokens && touch multitenant_tokens/__init__.py
+RUN mkdir multitenant_provider && touch multitenant_provider/__init__.py
 COPY --chown=indy:indy pyproject.toml poetry.lock README.md ./
 RUN poetry install --no-dev
 
@@ -20,6 +20,6 @@ COPY --from=base --chown=indy:indy /home/indy/.venv /home/indy/.venv
 ENV PATH="/home/indy/.venv/bin:$PATH"
 
 COPY docker/default.yml ./
-COPY multitenant_tokens multitenant_tokens
+COPY multitenant_provider multitenant_provider
 ENTRYPOINT ["/bin/bash", "-c", "aca-py \"$@\"", "--"]
 CMD ["start", "--arg-file", "default.yml"]
