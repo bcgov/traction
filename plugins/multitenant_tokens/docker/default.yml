@@ -17,6 +17,10 @@ endpoint:
 plugin:
   - multitenant_tokens
 
+plugin-config-value:
+  - multitenant_tokens.manager_type="custom"
+
+
 #config 
 genesis-url: https://indy.igrant.io/genesis
 
@@ -24,6 +28,8 @@ genesis-url: https://indy.igrant.io/genesis
 multitenant: true
 jwt-secret: insecure-jwt-secret
 multitenant-admin: true
+
+
 
 # Wallet
 # wallet-name: default

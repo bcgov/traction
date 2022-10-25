@@ -26,6 +26,10 @@ plugin:
   - traction_plugins.traction_innkeeper
   - traction_plugins.traction_metadata
 
+plugin-config-value:
+  - multitenant_tokens.manager_type="custom"
+  - multitenant_tokens.manager_class="traction_plugins.multitenant_tokens.manager.TractionMultitenantManager"
+
 #block-plugin:
 # - aries_cloudagent.protocols.connections
 
