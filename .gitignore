@@ -8,3 +8,4 @@ traction-venv
 
 .vscode/settings.json
 **/.venv
+plugins/poetry.lock

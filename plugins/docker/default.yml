@@ -1,4 +1,4 @@
-label: traction-metadata-plugin
+label: traction-plugin
 
 # Admin
 admin: [0.0.0.0, 3001]
@@ -15,15 +15,17 @@ endpoint:
 
 # plugins
 plugin:
-  - traction_metadata
+  - traction_plugins.multitenant_tokens
+  - traction_plugins.traction_innkeeper
+  - traction_plugins.traction_metadata
 
 #config 
 genesis-url: https://indy.igrant.io/genesis
 
 # Multi-tenancy
-multitenant: false
+multitenant: true
 jwt-secret: insecure-jwt-secret
-multitenant-admin: false
+multitenant-admin: true
 
 # Wallet
 # wallet-name: default
