@@ -17,10 +17,9 @@ endpoint:
 plugin:
   - multitenant_provider
 
-# these are the default values...
+# this is the default value (which manager class we want to load)...
 # plugin-config-value:
-#  - multitenant_provider.manager_type="custom"
-#  - multitenant_provider.manager_class="traction_plugins.multitenant_provider.manager.BasicMultitokenMultitenantManager"
+#  - multitenant_provider.manager_class="multitenant_provider.manager.BasicMultitokenMultitenantManager"
 
 
 #config 

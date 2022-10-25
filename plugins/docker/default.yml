@@ -20,7 +20,6 @@ plugin:
   - traction_plugins.traction_metadata
 
 plugin-config-value:
-  - multitenant_provider.manager_type="custom"
   - multitenant_provider.manager_class="traction_plugins.multitenant_provider.manager.BasicMultitokenMultitenantManager"
 
 #config 

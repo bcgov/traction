@@ -24,7 +24,7 @@ class BasicMultitokenMultitenantManager(MultitenantManager):
         LOGGER.info('> create_auth_token')
         async with self._profile.session() as session:
             tokens_wallet_record = await TokensWalletRecord.retrieve_by_id(session, wallet_record.wallet_id)
-            LOGGER.info(tokens_wallet_record)
+            LOGGER.debug(tokens_wallet_record)
 
         iat = datetime.now(tz=timezone.utc)
         # TODO: configuration for how long token is valid.
@@ -54,6 +54,7 @@ class BasicMultitokenMultitenantManager(MultitenantManager):
             await tokens_wallet_record.save(session)
 
         # return this token...    
+        LOGGER.debug(tokens_wallet_record)
         LOGGER.info('< create_auth_token')
         return token
 
