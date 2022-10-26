@@ -27,6 +27,24 @@ function loadLocaleMessages() {
         create: 'Create Contact',
         accept: 'Accept Invitation',
       },
+      issue: {
+
+      },
+      verify: {
+
+      },
+      holder: {
+
+      },
+      schemasCreds: {
+
+      },
+      tenants: {
+
+      },
+      about: {
+        about: 'About'
+      }
     },
     fr: {
       home: {
@@ -47,6 +65,27 @@ function loadLocaleMessages() {
         contacts: 'Contacts <FR>',
         create: 'Create Contact <FR>',
         accept: 'Accept Invitation <FR>',
+      },
+    },
+    jp: {
+      home: {
+        greeting: 'トラクションを搭載',
+        dashboard: 'Dashboard <JP>',
+        login: {
+          id: 'Wallet ID <JP>',
+          secret: 'Wallet Secret <JP>',
+          submit: 'Sign-In <JP>',
+        },
+      },
+      user: {
+        profile: 'Profile <JP>',
+        settings: 'Settings <JP>',
+        logout: 'Logout <JP>',
+      },
+      contact: {
+        contacts: 'Contacts <JP>',
+        create: 'Create Contact <JP>',
+        accept: 'Accept Invitation <JP>',
       },
     },
   };

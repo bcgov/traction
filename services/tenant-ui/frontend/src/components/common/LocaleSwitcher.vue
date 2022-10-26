@@ -8,7 +8,7 @@ import { useI18n } from 'vue-i18n';
 
 const { locale } = useI18n({ useScope: 'global' });
 
-const localeList = ['en', 'fr'];
+const localeList = ['en', 'fr', 'jp'];
 </script>
 
 <style lang="scss" scoped>

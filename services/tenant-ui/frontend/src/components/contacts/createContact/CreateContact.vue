@@ -1,9 +1,9 @@
 <template>
   <div>
-    <Button label="Create Contact" icon="pi pi-plus" @click="openModal" />
+    <Button :label="t('contact.create')" icon="pi pi-plus" @click="openModal" />
     <Dialog
       v-model:visible="displayModal"
-      header="Create Contact"
+      :header=" t('contact.create')"
       :modal="true"
       @update:visible="handleClose"
     >
@@ -23,17 +23,13 @@ import Dialog from 'primevue/dialog';
 // Custom Components
 import CreateContactForm from './CreateContactForm.vue';
 // Other Imports
-import { useToast } from 'vue-toastification';
+import { useI18n } from 'vue-i18n';
 
-// State setup
-
-const toast = useToast();
+const { t } = useI18n();
 
 defineEmits(['success']);
 
-// -----------------------------------------------------------------------
 // Display popup
-// ---------------------------------------------------------------------
 const displayModal = ref(false);
 const openModal = async () => {
   // Kick of the loading asyncs (if needed)
@@ -43,5 +39,4 @@ const handleClose = async () => {
   // some logic... maybe we shouldn't close?
   displayModal.value = false;
 };
-// ---------------------------------------------------------------/display
 </script>
