@@ -44,6 +44,13 @@
         {{ formatDateLong(data.created_at) }}
       </template>
     </Column>
+    <template #expansion="{ data }">
+      <RowExpandData
+        :id="data.message_id"
+        :url="'/tenant/v1/messages/'"
+        :params="{ acapy: true }"
+      />
+    </template>
   </DataTable>
 </template>
 <script setup lang="ts">
@@ -53,7 +60,6 @@ import { onMounted, ref } from 'vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';
 // State
 import { useMessageStore } from '@/store';
@@ -62,6 +68,7 @@ import { storeToRefs } from 'pinia';
 // Other components
 import { formatDateLong } from '@/helpers';
 import SuperYou from '@/components/common/SuperYou.vue';
+import RowExpandData from '../common/RowExpandData.vue';
 
 const toast = useToast();
 
