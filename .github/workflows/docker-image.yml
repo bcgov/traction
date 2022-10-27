@@ -3,9 +3,9 @@ name: Docker Image CI
 on:
   workflow_dispatch:
     inputs:
-      tag: 
+      image_name: 
         required: false
-        default: 'acapy-image'
+        default: 'traction-plugins-acapy'
 jobs:
 
   build:
@@ -13,6 +13,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: cd plugins && docker build . --file ./docker/Dockerfile --tag ${{ github.event.inputs.tag }}:$(date +%s)
+      - uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner}}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prepare docker tags for image
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ghcr.io/${{ github.event.inputs.image_name }}
+          tags: type=sha
+
+      - name: Build and push image
+        id: builder
+        uses: docker/build-push-action@v2
+        with:
+          context: './plugins'
+          file: './docker/Dockerfile'
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
