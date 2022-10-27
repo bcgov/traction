@@ -18,12 +18,17 @@ plugin:
   - multitenant_provider
 
 # this is the default value (which manager class we want to load)...
-# plugin-config-value:
-#  - multitenant_provider.manager_class="multitenant_provider.manager.BasicMultitokenMultitenantManager"
+plugin-config-value:
+  # wallet_type = indy default...
+  # - multitenant_provider.manager_class="multitenant_provider.manager.BasicMultitokenMultitenantManager"
+  # wallet_type = askar default...
+  # - multitenant_provider.manager_class="multitenant_provider.manager.AskarMultitokenMultitenantManager"
 
 
 #config 
 genesis-url: https://indy.igrant.io/genesis
+# read-only-ledger: true
+# no-ledger: true
 
 # Multi-tenancy
 # multitenancy is required to use this plugin...
@@ -32,11 +37,11 @@ jwt-secret: insecure-jwt-secret
 multitenant-admin: true
 
 
-
 # Wallet
-# wallet-name: default
+wallet-name: default
 # wallet-type: indy
-# wallet-key: "insecure, for use in demo only"
-# auto-provision: true
+wallet-type: askar
+wallet-key: "insecure, for use in demo only"
+auto-provision: true
 
 log-level: info

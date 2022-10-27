@@ -9,7 +9,7 @@
 ### configuration
 this plugin requires that acapy is running in multitenant mode. this plugin will load a new Profile Manager in place of the one loaded by Aca-py, and subsequent calls for a Multitenant Profile Manager will use the class configured in this plugin.
 
-the default manager class provided in this plugin is the equivalent of the "basic" provider except that it can provide many simultaneously valid tokens per wallet. further configuration for this class is expected (ie. set timedelta for token expiry *note: it is currently 1 day*).
+the default manager classes provided in this plugin allow multiple tokens per wallet. further configuration for these classes are expected (ie. set timedelta for token expiry *note: it is currently 1 day*).
 
 ```
 # Multi-tenancy
@@ -24,9 +24,13 @@ plugin:
 
 
 plugin-config-value:
-  # tell the plugin to load a specific manager class, this is the default if this config value is not provided.
-  - multitenant_provider.manager_class="multitenant_provider.manager.BasicMultitokenMultitenantManager"
+  - multitenant_provider.manager_class="my_plugins.manager.MyMultitenantManager"
 ```
+
+#### askar vs basic/indy
+
+there are 2 multitoken manager classes provided in this plugin: one for indy wallet types, one for askar wallet types.  
+if there is no specific configuration provided for `multitenant_provider.manager_class`, we will look at the `wallet_type` (not the `multitenancy-config.wallet_type`). if `wallet_type=askar` then we will load `multitenant_provider.manager.AskarMultitokenMultitenantManager` else we will load `multitenant_provider.manager.BasicMultitokenMultitenantManager`.
 
 
 ### build and run

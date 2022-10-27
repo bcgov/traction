@@ -31,12 +31,27 @@ class CustomMultitenantManagerProvider(MultitenantManagerProvider):
             LOGGER.warning(f"No configuration section found for plugin '{self.config_key}'.")
             return {}    
 
-    def get_manager_class(self, config: dict):
+    def get_wallet_type(self, settings: BaseSettings):
         try:
+            return settings["wallet.type"]
+        except KeyError as error:
+            LOGGER.warning("No setting found for wallet type, proceeding with default.")
+            # basic, indy, askar
+            return "basic"
+
+    def get_manager_class(self, settings: BaseSettings):
+        try:
+            config = self.get_config(settings)
             return config["manager_class"]
         except KeyError as error:
-            LOGGER.warning(f"No configuration found for '{self.config_key}.manager_class', proceeding with default.")
-            return "multitenant_provider.manager.BasicMultitokenMultitenantManager"     
+            # no manager class specified, so determine which of our defaults by the wallet type
+            # would this be better from the multitenant.wallet_type configuration???
+            wallet_type = self.get_wallet_type(settings)
+            LOGGER.warning(f"No configuration found for '{self.config_key}.manager_class', proceeding with default for '{wallet_type}'.")
+            if wallet_type == 'askar':
+                return "multitenant_provider.manager.AskarMultitokenMultitenantManager"
+            else:
+                return "multitenant_provider.manager.BasicMultitokenMultitenantManager"  
         
 
     def provide(self, settings: BaseSettings, injector: BaseInjector):
@@ -44,8 +59,7 @@ class CustomMultitenantManagerProvider(MultitenantManagerProvider):
 
         if not self.manager_class:
             # we have not loaded a manager...
-            config = self.get_config(settings)
-            manager_class = self.get_manager_class(config)
+            manager_class = self.get_manager_class(settings)
             LOGGER.info(f"Create multitenant manager (class={manager_class})")
             try:
                 self._inst[manager_class] = ClassLoader.load_class(manager_class)(

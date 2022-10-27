@@ -27,7 +27,10 @@ plugin:
   - traction_plugins.traction_metadata
 
 plugin-config-value:
+  # if wallet_type = indy, configure to load this class... 
   - multitenant_provider.manager_class="traction_plugins.multitenant_provider.manager.BasicMultitokenMultitenantManager"
+  # if wallet_type = askar, configure to load this class...
+  # - multitenant_provider.manager_class="traction_plugins.multitenant_provider.manager.AskarMultitokenMultitenantManager"
 
 #block-plugin:
 # - aries_cloudagent.protocols.connections
@@ -38,7 +41,8 @@ plugin-config-value:
 #config 
 genesis-url: http://test.bcovrin.vonx.io/genesis
 
-wallet-type: 'indy'
+wallet-type: indy
+# wallet-type: askar
 wallet-name: traction-wallet
 wallet-key: 'insecure-change-me'
 wallet-storage-type: postgres_storage
