@@ -1,0 +1,47 @@
+label: multitenant-tokens-plugin
+
+# Admin
+admin: [0.0.0.0, 3001]
+admin-insecure-mode: false
+admin-api-key: change-me
+
+# Transport
+inbound-transport:
+  - [http, 0.0.0.0, 3000]
+  - [ws, 0.0.0.0, 3002]
+outbound-transport: http
+endpoint:
+  - http://localhost:3000
+
+# plugins
+plugin:
+  - multitenant_provider
+
+# this is the default value (which manager class we want to load)...
+plugin-config-value:
+  # wallet_type = indy default...
+  # - multitenant_provider.manager_class="multitenant_provider.manager.BasicMultitokenMultitenantManager"
+  # wallet_type = askar default...
+  # - multitenant_provider.manager_class="multitenant_provider.manager.AskarMultitokenMultitenantManager"
+
+
+#config 
+genesis-url: https://indy.igrant.io/genesis
+# read-only-ledger: true
+# no-ledger: true
+
+# Multi-tenancy
+# multitenancy is required to use this plugin...
+multitenant: true
+jwt-secret: insecure-jwt-secret
+multitenant-admin: true
+
+
+# Wallet
+wallet-name: default
+# wallet-type: indy
+wallet-type: askar
+wallet-key: "insecure, for use in demo only"
+auto-provision: true
+
+log-level: info
