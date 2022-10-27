@@ -46,6 +46,12 @@ const items = ref([
   },
 
   {
+    label: 'Messages',
+    icon: 'pi pi-fw pi-envelope',
+    to: { name: 'MyMessages' },
+  },
+
+  {
     label: 'Configuration',
     icon: 'pi pi-fw pi-file',
     items: [

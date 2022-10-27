@@ -16,6 +16,9 @@ import PresentationTemplates from '@/views/verification/PresentationTemplates.vu
 // // Holder
 import MyHeldCredentials from '@/views/holder/MyHeldCredentials.vue';
 
+// Messages
+import MyMessages from '@/views/messages/MyMessages.vue';
+
 const tenantRoutes = [
   // Tenant Routes (base / is Tenant side for this app)
   {
@@ -111,6 +114,18 @@ const tenantRoutes = [
             path: 'credentials',
             name: 'MyHeldCredentials',
             component: MyHeldCredentials,
+          },
+        ],
+      },
+
+      // Tenant - Messages
+      {
+        path: '/messages',
+        children: [
+          {
+            path: 'recent',
+            name: 'MyMessages',
+            component: MyMessages,
           },
         ],
       },
