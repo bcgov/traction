@@ -33,6 +33,8 @@ class CustomMultitenantManagerProvider(MultitenantManagerProvider):
 
     def get_wallet_type(self, settings: BaseSettings):
         try:
+            # would this be better from the multitenant.wallet_type configuration???
+            # the core ProfileManager uses settings["wallet.type"] to determine, so we should use it too.
             return settings["wallet.type"]
         except KeyError as error:
             LOGGER.warning("No setting found for wallet type, proceeding with default.")
@@ -45,7 +47,6 @@ class CustomMultitenantManagerProvider(MultitenantManagerProvider):
             return config["manager_class"]
         except KeyError as error:
             # no manager class specified, so determine which of our defaults by the wallet type
-            # would this be better from the multitenant.wallet_type configuration???
             wallet_type = self.get_wallet_type(settings)
             LOGGER.warning(f"No configuration found for '{self.config_key}.manager_class', proceeding with default for '{wallet_type}'.")
             if wallet_type == 'askar':
