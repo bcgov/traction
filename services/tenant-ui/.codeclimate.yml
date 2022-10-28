@@ -46,6 +46,8 @@ plugins:
   eslint:
     enabled: true
     channel: "eslint-6"
+  tslint:
+    enabled: true
   csslint:
     enabled: true
 
