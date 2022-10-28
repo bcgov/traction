@@ -75,6 +75,7 @@ spec:
            {{- end }}
            {{- if .Values.acapy.plugins.multitenantProvider }}
            --plugin traction_plugins.multitenant_provider \
+           --plugin-config-value {{ .Values.acapy.pluginValues.multitenantProvider.managerClass }}
            {{- end }}
            "
           ]
