@@ -142,6 +142,12 @@ acapy:
     multitenant: true
     multitenantAdmin: true
 
+  secret:
+    adminurl:
+      # set to false and provide a value to "hardcode" the password value
+      generated: true
+      value: "will be generated"
+
 postgresql:
   # when overriding global.fullnameOverride, you must override this to match.
   fullnameOverride: "traction"
@@ -253,6 +259,12 @@ traction_api:
     user: tractionuser
   api:
     adminuser: innkeeper
+
+  secret:
+    adminPwd:
+      # set to false and provide a value to "hardcode" the password value
+      generated: true
+      value: "will be generated"
 
   serviceAccount:
     # -- Specifies whether a service account should be created
