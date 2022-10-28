@@ -45,9 +45,11 @@ checks:
 plugins:
   tslint:
     enabled: true
-  # eslint:
-  #   enabled: true
-  #   channel: "eslint-6"
+  eslint:
+    enabled: true
+    channel: "eslint-6"
+  csslint:
+    enabled: true
 
 exclude_patterns:
   - "config/"
@@ -63,3 +65,16 @@ exclude_patterns:
   - "**/vendor/"
   - "**/*_test.go"
   - "**/*.d.ts"
+  - ".github/"
+  - ".vscode/"
+  - "charts/"
+  - "scripts/"
+  - "services/endorser/"
+  - "services/grip/"
+  - "services/showcase/"
+  - "services/traction/acapy_client/"
+  - "services/traction/acapy_wrapper/"
+  - "services/traction/api/db/migrations/"
+  - "services/traction/bdd-tests/"
+  - "services/traction/tests/"
+  - "plugins/"
