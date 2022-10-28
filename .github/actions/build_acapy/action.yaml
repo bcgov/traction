@@ -67,7 +67,7 @@ runs:
       uses: docker/build-push-action@v3
       with:
         context: ${{ inputs.context }}
-        file: ${{ inputs.context }}
+        file: ${{ inputs.dockerfile }}
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
