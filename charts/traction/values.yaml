@@ -39,6 +39,10 @@ acapy:
 
   readOnlyMode: false
 
+  # list the plugins on our image we want to enable.
+  plugins:
+    multitokenProvider: true
+
   imagePullSecrets: []
   nameOverride: ""
   fullnameOverride: ""

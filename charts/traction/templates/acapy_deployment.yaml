@@ -73,6 +73,9 @@ spec:
            {{- if .Values.acapy.readOnlyMode }}
            --read-only-ledger \
            {{- end }}
+           {{- if .Values.acapy.plugins.multitokenProvider }}
+           --plugin traction_plugins.multitoken_provider \
+           {{- end }}
            "
           ]
           command:
