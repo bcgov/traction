@@ -80,7 +80,7 @@ jobs:
     steps:      
       - uses: actions/checkout@v3        
       - name: Build service
-        uses: ./.github/actions/build_service
+        uses: ./.github/actions/build_acapy
         id: builder
         with:
           context: './plugins'
