@@ -45,7 +45,7 @@ acapy:
 
   pluginValues:
     multitenantProvider:
-      managerClass: traction_plugins.multitenant_provider.manager.BasicMultitokenMultitenantManager
+      managerClass: multitenant_provider.manager_class=traction_plugins.multitenant_provider.manager.BasicMultitokenMultitenantManager
 
   imagePullSecrets: []
   nameOverride: ""
