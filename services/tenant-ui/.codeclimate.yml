@@ -43,13 +43,11 @@ checks:
       threshold: #language-specific defaults. overrides affect all languages.
 
 plugins:
-  eslint:
-    enabled: true
-    channel: "eslint-6"
   tslint:
     enabled: true
-  csslint:
-    enabled: true
+  # eslint:
+  #   enabled: true
+  #   channel: "eslint-6"
 
 exclude_patterns:
   - "config/"
