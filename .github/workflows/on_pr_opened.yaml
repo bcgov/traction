@@ -79,7 +79,7 @@ jobs:
       - ready
     steps:      
       - uses: actions/checkout@v3        
-      - name: Build service
+      - name: Build Aca-Py Image
         uses: ./.github/actions/build_acapy
         id: builder
         with:
@@ -106,7 +106,7 @@ jobs:
     if: ${{ always() && (fromJSON(needs.ready.outputs.deploy) == true) && !(contains(needs.*.result, 'failure')) }}
 
     steps:  
-      - uses: actions/checkout@v2  
+      - uses: actions/checkout@v3  
 
       - name: Authenticate and set context
         uses: redhat-actions/oc-login@v1
@@ -144,7 +144,7 @@ jobs:
       - deploy
     if: ${{ (fromJSON(needs.ready.outputs.deploy) == true) && !(contains(needs.*.result, 'failure')) }}
     steps:  
-      - uses: actions/checkout@v2 
+      - uses: actions/checkout@v3 
       
       - name: Find Comment
         uses: peter-evans/find-comment@v1

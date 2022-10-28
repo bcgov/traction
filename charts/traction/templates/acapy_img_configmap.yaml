@@ -1,0 +1,11 @@
+{{- $fullName := include "acapy.fullname" . -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "acapy.fullname" . }}-img
+  labels:
+    {{- include "acapy.labels" . | nindent 4 }}
+data:
+  IMAGE_TAG: {{ .Values.acapy.image.tag | quote }}
+  IMAGE_VERSION: {{ .Values.acapy.image.version | quote }}
+  IMAGE_BUILDTIME: {{ .Values.acapy.image.buildtime | quote }}

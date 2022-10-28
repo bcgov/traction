@@ -10,7 +10,6 @@ acapy:
   secret:
     adminurl:
       generated: false
-      value: "change-me"
   resources:
     limits:
       cpu: 200m
@@ -36,9 +35,8 @@ traction_api:
     buildtime: '2022-01-20T22:37:11.102Z'
     pullPolicy: Always
   secret:
-    adminPwd:
+    apiAdminKey:
       generated: false
-      value: "change-me"
   config:
     gunicornWorkers: 2
   resources:

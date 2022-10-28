@@ -1,3 +1,8 @@
+acapy:
+  image:
+    tag: "ghcr.io/bcgov/traction-plugins-acapy:sha-25c438d"
+    version: 'sha-25c438d'
+    buildtime: '2022-10-28T01:30:31.105Z'
 traction_api:
   image:
     tag: "ghcr.io/bcgov/traction-api:sha-0bd01da"

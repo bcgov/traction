@@ -24,10 +24,15 @@ global:
 
 acapy:
   image:
-    repository: bcgovimages/aries-cloudagent
-    pullPolicy: IfNotPresent
+    # building our own acapy with plugins
+    tag: "ghcr.io/bcgov/traction-plugins-acapy:sha-25c438d"
+    version: 'sha-25c438d'
+    buildtime: '2022-10-28T01:30:31.105Z'
+    pullPolicy: Always
+    # repository: bcgovimages/aries-cloudagent
+    # pullPolicy: IfNotPresent
     # --  Overrides the image tag whose default is the chart appVersion.
-    tag: py36-1.16-1_0.7.4
+    # tag: py36-1.16-1_0.7.4
 
   # The agent seed, 32 characters. Will be generated if not defined here
   agentSeed: ""
@@ -146,7 +151,7 @@ acapy:
     adminurl:
       # set to false and provide a value to "hardcode" the password value
       generated: true
-      value: "will be generated"
+      value: "change-me"
 
 postgresql:
   # when overriding global.fullnameOverride, you must override this to match.
@@ -261,10 +266,10 @@ traction_api:
     adminuser: innkeeper
 
   secret:
-    adminPwd:
+    apiAdminKey:
       # set to false and provide a value to "hardcode" the password value
       generated: true
-      value: "will be generated"
+      value: "change-me"
 
   serviceAccount:
     # -- Specifies whether a service account should be created
