@@ -15,7 +15,7 @@ jobs:
         id: builder
         with:
           context: './plugins'
-          file: './plugins/docker/Dockerfile'
+          dockerfile: './plugins/docker/Dockerfile'
           image_name: ${{ github.repository_owner}}/traction-plugins-acapy
           registry: ghcr.io
           registry_username: ${{ github.repository_owner}}
