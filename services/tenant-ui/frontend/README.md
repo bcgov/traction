@@ -31,3 +31,5 @@ npm run lint
 ```sh
 npm run lintfix
 ```
+
+Updated codeclimate config
