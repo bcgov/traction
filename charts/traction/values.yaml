@@ -41,7 +41,7 @@ acapy:
 
   # list the plugins on our image we want to enable.
   plugins:
-    multitokenProvider: true
+    multitenantProvider: true
 
   imagePullSecrets: []
   nameOverride: ""

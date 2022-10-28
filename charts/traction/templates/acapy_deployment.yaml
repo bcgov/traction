@@ -73,8 +73,8 @@ spec:
            {{- if .Values.acapy.readOnlyMode }}
            --read-only-ledger \
            {{- end }}
-           {{- if .Values.acapy.plugins.multitokenProvider }}
-           --plugin traction_plugins.multitoken_provider \
+           {{- if .Values.acapy.plugins.multitenantProvider }}
+           --plugin traction_plugins.multitenant_provider \
            {{- end }}
            "
           ]
