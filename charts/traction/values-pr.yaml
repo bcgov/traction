@@ -3,7 +3,6 @@ global:
   ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
 acapy:
   image:
-    repository: 
     tag: "ghcr.io/bcgov/traction-plugins-acapy:sha-25c438d"
     version: 'sha-25c438d'
     buildtime: '2022-10-28T01:30:31.105Z'

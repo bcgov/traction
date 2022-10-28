@@ -30,7 +30,7 @@ spec:
         - name: acapy
           securityContext:
             {{- toYaml .Values.acapy.securityContext | nindent 12 }}
-          image: "{{ .Values.acapy.image.repository }}:{{ .Values.acapy.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.acapy.image.tag }}"
           imagePullPolicy: {{ .Values.acapy.image.pullPolicy }}
           args: [
            "-c",
