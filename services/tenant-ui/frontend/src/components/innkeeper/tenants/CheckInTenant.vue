@@ -1,6 +1,10 @@
 <template>
   <div>
-    <Button :label="t('tenants.checkIn')" icon="pi pi-plus" @click="openModal" />
+    <Button
+      :label="t('tenants.checkIn')"
+      icon="pi pi-plus"
+      @click="openModal"
+    />
     <Dialog
       v-model:visible="displayModal"
       :header="t('tenants.checkIn')"
