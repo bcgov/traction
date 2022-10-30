@@ -1,0 +1,55 @@
+{
+  "home": {
+    "greeting": "Powered by Traction",
+    "dashboard": "Dashboard",
+    "login": {
+      "id": "Wallet ID",
+      "secret": "Wallet Secret",
+      "submit": "Sign-In"
+    }
+  },
+  "user": {
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "contact": {
+    "contacts": "Contacts",
+    "create": "Create Contact",
+    "accept": "Accept Invitation"
+  },
+  "issue": {
+    "issuance": "Issuance",
+    "credentials": "Issued/Offered Credentials",
+    "offer": "Offer Credential"
+  },
+  "verify": {
+    "verification": "Verification",
+    "verifications": "Verifications",
+    "createRequest": "Create Presentation Requests"
+  },
+  "holder": {
+    "holder": "Holder",
+    "credentials": "Credentials"
+  },
+  "configuration": {
+    "configuration": "Configuration",
+    "schemasCreds": {
+      "schemas": "Schemas",
+      "create": "Create Schema",
+      "copy": "Copy Schema"
+    },
+    "presentationTemplates": {
+      "templates": "Presentation Templates"
+    }
+  },
+  "messages": {
+    "messages": "Messages"
+  },
+  "tenants": {
+    "tenants": "Tenants"
+  },
+  "about": {
+    "about": "About"
+  }
+}

@@ -1,6 +1,5 @@
 <template>
   <div class="traction-sidebar">
-    {{ someProperty }}
     <h1 v-if="tenant" class="sidebar-app-title">{{ tenant.name }}</h1>
     <!--<h1 class="sidebar-app-title">{{ config.ux.sidebarTitle }}</h1>-->
     <PanelMenu :model="items" class="mt-5" />
@@ -8,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import PanelMenu from 'primevue/panelmenu';
 import { storeToRefs } from 'pinia';
 import { useTenantStore } from '../../store';
@@ -32,22 +31,19 @@ const items = ref([
   },
 
   {
-    label: 'Issuance',
-    label: () => t('home.dashboard'),
+    label: () => t('issue.issuance'),
     icon: 'pi pi-fw pi-wallet',
     to: { name: 'MyIssuedCredentials' },
   },
 
   {
-    label: 'Verification',
-    label: () => t('home.dashboard'),
+    label: () => t('verify.verification'),
     icon: 'pi pi-fw pi-check-square',
     to: { name: 'MyPresentations' },
   },
 
   {
-    label: 'Holder',
-    label: () => t('home.dashboard'),
+    label: () => t('holder.holder'),
     icon: 'pi pi-fw pi-id-card',
     to: { name: 'MyHeldCredentials' },
   },
@@ -59,26 +55,22 @@ const items = ref([
   },
 
   {
-    label: 'Configuration',
-    label: () => t('home.dashboard'),
+    label: () => t('configuration.configuration'),
     icon: 'pi pi-fw pi-file',
     items: [
       {
-        label: 'Schemas',
-        label: () => t('home.dashboard'),
+        label: () => t('configuration.schemasCreds.schemas'),
         to: { name: 'Schemas' },
       },
       {
-        label: 'Presentation Templates',
-        label: () => t('home.dashboard'),
+        label: () => t('configuration.presentationTemplates.templates'),
         to: { name: 'PresentationTemplates' },
       },
     ],
   },
 
   {
-    label: 'About',
-    label: () => t('home.dashboard'),
+    label: () => t('about.about'),
     icon: 'pi pi-fw pi-question-circle',
     to: { name: 'About' },
   },

@@ -1,0 +1,29 @@
+{
+    "home": {
+      "greeting": "トラクションを搭載",
+      "dashboard": "Dashboard",
+      "login": {
+        "id": "Wallet ID",
+        "secret": "Wallet Secret",
+        "submit": "Sign-In"
+      }
+    },
+    "user": {
+      "profile": "Profile",
+      "settings": "Settings",
+      "logout": "Logout"
+    },
+    "contact": {
+      "contacts": "Contacts",
+      "create": "Create Contact",
+      "accept": "Accept Invitation"
+    },
+    "issue": {},
+    "verify": {},
+    "holder": {},
+    "schemasCreds": {},
+    "tenants": {},
+    "about": {
+      "about": "About"
+    }
+  }

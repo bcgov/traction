@@ -1,0 +1,29 @@
+{
+  "home": {
+    "greeting": "Propulsé par Traction",
+    "dashboard": "Dashboard <FR>",
+    "login": {
+      "id": "Wallet ID <FR>",
+      "secret": "Wallet Secret <FR>",
+      "submit": "Sign-In <FR>"
+    }
+  },
+  "user": {
+    "profile": "Profile <FR>",
+    "settings": "Settings <FR>",
+    "logout": "Logout <FR>"
+  },
+  "contact": {
+    "contacts": "Contacts <FR>",
+    "create": "Create Contact <FR>",
+    "accept": "Accept Invitation <FR>"
+  },
+  "issue": {},
+  "verify": {},
+  "holder": {},
+  "schemasCreds": {},
+  "tenants": {},
+  "about": {
+    "about": "About"
+  }
+}
