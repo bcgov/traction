@@ -18,12 +18,39 @@
     "create": "Create Contact <FR>",
     "accept": "Accept Invitation <FR>"
   },
-  "issue": {},
-  "verify": {},
-  "holder": {},
-  "schemasCreds": {},
-  "tenants": {},
+  "issue": {
+    "issuance": "Issuance <FR>",
+    "credentials": "Issued/Offered Credentials <FR>",
+    "offer": "Offer Credential <FR>"
+  },
+  "verify": {
+    "verification": "Verification <FR>",
+    "verifications": "Verifications <FR>",
+    "createRequest": "Create Presentation Requests <FR>"
+  },
+  "holder": {
+    "holder": "Holder <FR>",
+    "credentials": "Credentials <FR>"
+  },
+  "configuration": {
+    "configuration": "Configuration <FR>",
+    "schemasCreds": {
+      "schemas": "Schemas <FR>",
+      "create": "Create Schema <FR>",
+      "copy": "Copy Schema <FR>"
+    },
+    "presentationTemplates": {
+      "templates": "Presentation Templates <FR>"
+    }
+  },
+  "messages": {
+    "messages": "Messages <FR>"
+  },
+  "tenants": {
+    "tenants": "Tenants <FR>",
+    "checkIn": "Check-In Tenant <FR>"
+  },
   "about": {
-    "about": "About"
+    "about": "About <FR>"
   }
 }

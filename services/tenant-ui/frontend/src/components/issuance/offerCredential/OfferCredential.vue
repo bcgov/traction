@@ -2,13 +2,13 @@
   <div>
     <Button
       :disabled="!isIssuer"
-      label="Offer Credential"
+      :label="t('issue.offer')"
       icon="pi pi-arrow-up-right"
       @click="openModal"
     />
     <Dialog
       v-model:visible="displayModal"
-      header="Offer Credential"
+      :header="t('issue.offer')"
       :modal="true"
       :style="{ width: '500px' }"
       @update:visible="handleClose"
@@ -35,12 +35,14 @@ import { storeToRefs } from 'pinia';
 import OfferCredentialForm from './OfferCredentialForm.vue';
 // Other Imports
 import { useToast } from 'vue-toastification';
+import { useI18n } from 'vue-i18n';
 
 // State setup
 const contactsStore = useContactsStore();
 const governanceStore = useGovernanceStore();
 
 const toast = useToast();
+const { t } = useI18n();
 
 const { isIssuer } = storeToRefs(useTenantStore());
 

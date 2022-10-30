@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-0">Issued/Offered Credentials</h3>
+  <h3 class="mt-0">{{ t('issue.credentials') }}</h3>
 
   <DataTable
     v-model:selection="selectedCredential"
@@ -89,9 +89,11 @@ import OfferCredential from './offerCredential/OfferCredential.vue';
 import RowExpandData from '../common/RowExpandData.vue';
 import { formatDateLong } from '@/helpers';
 import StatusChip from '../common/StatusChip.vue';
+import { useI18n } from 'vue-i18n';
 
 const toast = useToast();
 const confirm = useConfirm();
+const { t } = useI18n();
 
 const issuerStore = useIssuerStore();
 // use the loading state from the store to disable the button...

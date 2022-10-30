@@ -3,7 +3,7 @@
     <Button :label="t('contact.create')" icon="pi pi-plus" @click="openModal" />
     <Dialog
       v-model:visible="displayModal"
-      :header=" t('contact.create')"
+      :header="t('contact.create')"
       :modal="true"
       @update:visible="handleClose"
     >

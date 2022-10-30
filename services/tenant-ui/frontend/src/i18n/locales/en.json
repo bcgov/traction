@@ -47,7 +47,8 @@
     "messages": "Messages"
   },
   "tenants": {
-    "tenants": "Tenants"
+    "tenants": "Tenants",
+    "checkIn": "Check-In Tenant"
   },
   "about": {
     "about": "About"

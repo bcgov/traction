@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-0">Tenants</h3>
+  <h3 class="mt-0">{{ t('tenants.tenants') }}</h3>
 
   <DataTable
     v-model:expandedRows="expandedRows"
@@ -64,8 +64,10 @@ import { storeToRefs } from 'pinia';
 import CheckInTenant from './CheckInTenant.vue';
 import { formatDateLong } from '@/helpers';
 import RowExpandData from '@/components/common/RowExpandData.vue';
+import { useI18n } from 'vue-i18n';
 
 const toast = useToast();
+const { t } = useI18n();
 
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
 

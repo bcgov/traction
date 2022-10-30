@@ -49,7 +49,7 @@ const items = ref([
   },
 
   {
-    label: 'Messages',
+    label: () => t('messages.messages'),
     icon: 'pi pi-fw pi-envelope',
     to: { name: 'MyMessages' },
   },

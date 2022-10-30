@@ -1,29 +1,56 @@
 {
-    "home": {
-      "greeting": "トラクションを搭載",
-      "dashboard": "Dashboard",
-      "login": {
-        "id": "Wallet ID",
-        "secret": "Wallet Secret",
-        "submit": "Sign-In"
-      }
-    },
-    "user": {
-      "profile": "Profile",
-      "settings": "Settings",
-      "logout": "Logout"
-    },
-    "contact": {
-      "contacts": "Contacts",
-      "create": "Create Contact",
-      "accept": "Accept Invitation"
-    },
-    "issue": {},
-    "verify": {},
-    "holder": {},
-    "schemasCreds": {},
-    "tenants": {},
-    "about": {
-      "about": "About"
+  "home": {
+    "greeting": "トラクションを搭載",
+    "dashboard": "Dashboard <JP>",
+    "login": {
+      "id": "Wallet ID <JP>",
+      "secret": "Wallet Secret <JP>",
+      "submit": "Sign-In <JP>"
     }
+  },
+  "user": {
+    "profile": "Profile <JP>",
+    "settings": "Settings <JP>",
+    "logout": "Logout <JP>"
+  },
+  "contact": {
+    "contacts": "Contacts <JP>",
+    "create": "Create Contact <JP>",
+    "accept": "Accept Invitation <JP>"
+  },
+  "issue": {
+    "issuance": "Issuance <JP>",
+    "credentials": "Issued/Offered Credentials <JP>",
+    "offer": "Offer Credential <JP>"
+  },
+  "verify": {
+    "verification": "Verification <JP>",
+    "verifications": "Verifications <JP>",
+    "createRequest": "Create Presentation Requests <JP>"
+  },
+  "holder": {
+    "holder": "Holder <JP>",
+    "credentials": "Credentials <JP>"
+  },
+  "configuration": {
+    "configuration": "Configuration <JP>",
+    "schemasCreds": {
+      "schemas": "Schemas <JP>",
+      "create": "Create Schema <JP>",
+      "copy": "Copy Schema <JP>"
+    },
+    "presentationTemplates": {
+      "templates": "Presentation Templates <JP>"
+    }
+  },
+  "messages": {
+    "messages": "Messages <JP>"
+  },
+  "tenants": {
+    "tenants": "Tenants <JP>",
+    "checkIn": "Check-In Tenant <JP>"
+  },
+  "about": {
+    "about": "About <JP>"
   }
+}
