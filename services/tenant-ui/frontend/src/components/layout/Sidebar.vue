@@ -11,63 +11,66 @@ import { ref } from 'vue';
 import PanelMenu from 'primevue/panelmenu';
 import { storeToRefs } from 'pinia';
 import { useTenantStore } from '../../store';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 // tenant should be loaded by login...
 const { tenant } = storeToRefs(useTenantStore());
 
 const items = ref([
   {
-    label: 'Dashboard',
+    label: () => t('home.dashboard'),
     icon: 'pi pi-fw pi-chart-bar',
     to: { name: 'Dashboard' },
   },
   {
-    label: 'Contacts',
+    label: () => t('contact.contacts'),
     icon: 'pi pi-fw pi-users',
     to: { name: 'MyContacts' },
   },
 
   {
-    label: 'Issuance',
+    label: () => t('issue.issuance'),
     icon: 'pi pi-fw pi-wallet',
     to: { name: 'MyIssuedCredentials' },
   },
 
   {
-    label: 'Verification',
+    label: () => t('verify.verification'),
     icon: 'pi pi-fw pi-check-square',
     to: { name: 'MyPresentations' },
   },
 
   {
-    label: 'Holder',
+    label: () => t('holder.holder'),
     icon: 'pi pi-fw pi-id-card',
     to: { name: 'MyHeldCredentials' },
   },
 
   {
-    label: 'Messages',
+    label: () => t('messages.messages'),
     icon: 'pi pi-fw pi-envelope',
     to: { name: 'MyMessages' },
   },
 
   {
-    label: 'Configuration',
+    label: () => t('configuration.configuration'),
     icon: 'pi pi-fw pi-file',
     items: [
       {
-        label: 'Schemas',
+        label: () => t('configuration.schemasCreds.schemas'),
         to: { name: 'Schemas' },
       },
       {
-        label: 'Presentation Templates',
+        label: () => t('configuration.presentationTemplates.templates'),
         to: { name: 'PresentationTemplates' },
       },
     ],
   },
 
   {
-    label: 'About',
+    label: () => t('about.about'),
     icon: 'pi pi-fw pi-question-circle',
     to: { name: 'About' },
   },

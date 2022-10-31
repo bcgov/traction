@@ -1,9 +1,13 @@
 <template>
   <div>
-    <Button label="Check-In Tenant" icon="pi pi-plus" @click="openModal" />
+    <Button
+      :label="t('tenants.checkIn')"
+      icon="pi pi-plus"
+      @click="openModal"
+    />
     <Dialog
       v-model:visible="displayModal"
-      header="Check-In Tenant"
+      :header="t('tenants.checkIn')"
       :modal="true"
       :closable="allowClose"
     >
@@ -23,7 +27,10 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 // Custom Components
 import CheckInTenantForm from './CheckInTenantForm.vue';
+// Other Imports
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const emit = defineEmits(['success']);
 
 // Open popup

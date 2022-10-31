@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-0">Contacts</h3>
+  <h3 class="mt-0">{{ t('contact.contacts') }}</h3>
 
   <DataTable
     v-model:selection="selectedContact"
@@ -82,9 +82,11 @@ import { formatDateLong } from '@/helpers';
 import RowExpandData from '../common/RowExpandData.vue';
 import StatusChip from '../common/StatusChip.vue';
 import EditContact from './editContact/EditContact.vue';
+import { useI18n } from 'vue-i18n';
 
 const confirm = useConfirm();
 const toast = useToast();
+const { t } = useI18n();
 
 const contactsStore = useContactsStore();
 

@@ -8,15 +8,18 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import PanelMenu from 'primevue/panelmenu';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const items = ref([
   {
-    label: 'Tenants',
+    label: () => t('tenants.tenants'),
     icon: 'pi pi-fw pi-users',
     to: { name: 'InnkeeperTenants' },
   },
   {
-    label: 'About',
+    label: () => t('about.about'),
     icon: 'pi pi-fw pi-question-circle',
     to: { name: 'InnkeeperAbout' },
   },

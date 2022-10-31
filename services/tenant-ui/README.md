@@ -63,3 +63,15 @@ Build and run a docker image (example shows using environment variable to point 
 docker build . -t local/traction-ui
 docker run --env SERVER_TRACTION_URL=https://traction-api-test.apps.silver.devops.gov.bc.ca/ -p 8080:8080 -d local/traction-ui
 ```
+
+## Internationalization
+
+The Tenant UI uses [Vue I18n](https://vue-i18n.intlify.dev/) to handle internationalization for the Vue app. 
+
+When developing, review the [documentation](https://vue-i18n.intlify.dev/guide/essentials/syntax.html) for the basic syntax for that library quickly to understand the localization features used. Internatonalization settings are handled in the `i18n` folder and translations are kept in `json` files for each language there.
+
+When developing the Tenant UI, adhere to localization best practices including
+- Do not handle any localization logic or translations in the components themselves. The frontend code should only deal with message string names, and all localizations should be handled exclusively in the language `json` files.
+- Use proper responsive design principles, and do not space UI components based on english language text lengths. Translated UI elements might end up shorter or much longer, so overflows of text should always work accordingly.
+
+Currently localization is handled at the Tenant UI frontend level, but data that returns to the frontend from the Traction and AcaPy APIs may not include localization of text and status codes, etc. As such, full localization is a work in progress and will require some future work in integrating with Traction and AcaPy.

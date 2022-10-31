@@ -1,55 +1,20 @@
 import { createI18n } from 'vue-i18n';
 
 // The Locale message resources
-// TODO: This should probably be reorganized into JSON files and set up in this method instead
-// but how we want to organize our languages is coming after this proof of concept so TBD
-// Probably see https://vue-i18n.intlify.dev/guide/advanced/optimization.html#how-to-configure
 function loadLocaleMessages() {
-  // one json file per language probably best in the future
-  const messages = {
-    en: {
-      home: {
-        greeting: 'Powered by Traction',
-        dashboard: 'Dashboard',
-        login: {
-          id: 'Wallet ID',
-          secret: 'Wallet Secret',
-          submit: 'Sign-In',
-        },
-      },
-      user: {
-        profile: 'Profile',
-        settings: 'Settings',
-        logout: 'Logout',
-      },
-      contact: {
-        contacts: 'Contacts',
-        create: 'Create Contact',
-        accept: 'Accept Invitation',
-      },
-    },
-    fr: {
-      home: {
-        greeting: 'Propulsé par Traction',
-        dashboard: 'Dashboard <FR>',
-        login: {
-          id: 'Wallet ID <FR>',
-          secret: 'Wallet Secret <FR>',
-          submit: 'Sign-In <FR>',
-        },
-      },
-      user: {
-        profile: 'Profile <FR>',
-        settings: 'Settings <FR>',
-        logout: 'Logout <FR>',
-      },
-      contact: {
-        contacts: 'Contacts <FR>',
-        create: 'Create Contact <FR>',
-        accept: 'Accept Invitation <FR>',
-      },
-    },
-  };
+  // Load messages from any json files in the locales folder
+  const modules = import.meta.glob('./locales/*.json');
+  const messages: any = {};
+  for (const path in modules) {
+    // For each file found, build the message object
+    // with the file NAME as the top level key
+    modules[path]().then((mod: any) => {
+      const matches = path.match(/[ \w-]+?(?=\.)/i);
+      if (matches && matches.length) {
+        messages[matches[0]] = mod;
+      }
+    });
+  }
   return messages;
 }
 
