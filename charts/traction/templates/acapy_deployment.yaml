@@ -30,7 +30,7 @@ spec:
         - name: acapy
           securityContext:
             {{- toYaml .Values.acapy.securityContext | nindent 12 }}
-          image: "{{ .Values.acapy.image.repository }}:{{ .Values.acapy.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.acapy.image.tag }}"
           imagePullPolicy: {{ .Values.acapy.image.pullPolicy }}
           args: [
            "-c",
@@ -72,6 +72,10 @@ spec:
            {{- end }}
            {{- if .Values.acapy.readOnlyMode }}
            --read-only-ledger \
+           {{- end }}
+           {{- if .Values.acapy.plugins.multitenantProvider }}
+           --plugin traction_plugins.multitenant_provider \
+           --plugin-config-value {{ .Values.acapy.pluginValues.multitenantProvider.managerClass }}
            {{- end }}
            "
           ]

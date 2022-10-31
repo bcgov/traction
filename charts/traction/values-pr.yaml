@@ -2,6 +2,14 @@ global:
   fullnameOverride: "pr-00-traction"
   ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
 acapy:
+  image:
+    tag: "ghcr.io/bcgov/traction-plugins-acapy:sha-25c438d"
+    version: 'sha-25c438d'
+    buildtime: '2022-10-28T01:30:31.105Z'
+    pullPolicy: Always
+  secret:
+    adminurl:
+      generated: false
   resources:
     limits:
       cpu: 200m
@@ -26,6 +34,9 @@ traction_api:
     version: 'sha-87c2eb2'
     buildtime: '2022-01-20T22:37:11.102Z'
     pullPolicy: Always
+  secret:
+    apiAdminKey:
+      generated: false
   config:
     gunicornWorkers: 2
   resources:

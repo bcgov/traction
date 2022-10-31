@@ -19,10 +19,10 @@ jobs:
 
   build_traction:
     name: 'Build Traction API'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     if: github.repository_owner == 'bcgov'
     steps:      
-      - uses: actions/checkout@v2    
+      - uses: actions/checkout@v3    
         with:
           ref: ${{ github.event.inputs.ref }}    
 
@@ -30,6 +30,7 @@ jobs:
         uses: ./.github/actions/build_service
         id: builder
         with:
+          ref: ${{ github.event.inputs.ref }}
           context: './services/traction'
           image_name: ${{ github.repository_owner}}/traction-api
           registry: ghcr.io
@@ -40,18 +41,41 @@ jobs:
       image_version: ${{ steps.builder.outputs.image_version }}
       buildtime: ${{ steps.builder.outputs.buildtime }}
 
-
+  build_acapy:
+    name: 'Build Traction Aca-Py'
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'bcgov'
+    steps:      
+      - uses: actions/checkout@v3        
+        with:
+          ref: ${{ github.event.inputs.ref }}    
+      - name: Build Aca-Py Image
+        uses: ./.github/actions/build_acapy
+        id: builder
+        with:
+          ref: ${{ github.event.inputs.ref }}
+          context: './plugins'
+          dockerfile: './plugins/docker/Dockerfile'
+          image_name: ${{ github.repository_owner}}/traction-plugins-acapy
+          registry: ghcr.io
+          registry_username: ${{ github.repository_owner}}
+          registry_password: ${{ secrets.GITHUB_TOKEN }}
+    outputs:
+      image_tag: ${{ steps.builder.outputs.image_tag }}
+      image_version: ${{ steps.builder.outputs.image_version }}
+      buildtime: ${{ steps.builder.outputs.buildtime }}
 
   deploy:
     name: Deploy Traction
     environment: ${{ github.event.inputs.deploy_env }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: 
       - build_traction
+      - build_acapy
     if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) && (github.repository_owner == 'bcgov') }}
     
     steps:  
-      - uses: actions/checkout@v2  
+      - uses: actions/checkout@v3  
         with:
           ref: ${{ github.event.inputs.ref }}    
 
@@ -70,4 +94,7 @@ jobs:
           yq eval '.traction_api.image.tag = "${{ needs.build_traction.outputs.image_tag }}"' -i ./charts/traction/values-${{ github.event.inputs.deploy_env }}.yaml
           yq eval '.traction_api.image.version = "${{ needs.build_traction.outputs.image_version }}"' -i ./charts/traction/values-${{ github.event.inputs.deploy_env }}.yaml
           yq eval '.traction_api.image.buildtime = "${{ needs.build_traction.outputs.buildtime }}"' -i ./charts/traction/values-${{ github.event.inputs.deploy_env }}.yaml
+          yq eval '.acapy.image.tag = "${{ needs.build_acapy.outputs.image_tag }}"' -i ./charts/traction/values-${{ github.event.inputs.deploy_env }}.yaml
+          yq eval '.acapy.image.version = "${{ needs.build_acapy.outputs.image_version }}"' -i ./charts/traction/values-${{ github.event.inputs.deploy_env }}.yaml
+          yq eval '.acapy.image.buildtime = "${{ needs.build_acapy.outputs.buildtime }}"' -i ./charts/traction/values-${{ github.event.inputs.deploy_env }}.yaml
           helm upgrade -f ./charts/traction/values.yaml -f ./charts/traction/values-${{ github.event.inputs.deploy_env }}.yaml "${{ github.event.inputs.instance_name }}" ./charts/traction --install --wait
