@@ -30,11 +30,11 @@ checks:
     config:
       threshold: 4
   return-statements:
-    enabled: true
+    enabled: false
     config:
       threshold: 4
   similar-code:
-    enabled: true
+    enabled: false
     config:
       threshold: #language-specific defaults. overrides affect all languages.
   identical-code:
@@ -46,15 +46,15 @@ plugins:
   tslint:
     enabled: true
   eslint:
-    enabled: true
+    enabled: false
     channel: "eslint-6"
   csslint:
-    enabled: true
+    enabled: false
 
 exclude_patterns:
   - "config/"
   - "db/"
-  - "dist/"
+  - "**/dist/"
   - "features/"
   - "**/node_modules/"
   - "script/"
