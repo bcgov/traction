@@ -14,7 +14,7 @@ jobs:
 
   build_api:
     name: 'Build Traction API'
-    runs-on: ubuntu-2latest
+    runs-on: ubuntu-latest
     if: github.repository_owner == 'bcgov'
     steps:      
       - uses: actions/checkout@v3        
