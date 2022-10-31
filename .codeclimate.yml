@@ -4,19 +4,19 @@ checks:
   argument-count:
     enabled: true
     config:
-      threshold: 4
+      threshold: 8
   complex-logic:
     enabled: true
     config:
-      threshold: 4
+      threshold: 8
   file-lines:
     enabled: true
     config:
-      threshold: 250
+      threshold: 1000
   method-complexity:
     enabled: true
     config:
-      threshold: 5
+      threshold: 10
   method-count:
     enabled: true
     config:
@@ -24,7 +24,7 @@ checks:
   method-lines:
     enabled: true
     config:
-      threshold: 25
+      threshold: 200
   nested-control-flow:
     enabled: true
     config:
@@ -45,6 +45,7 @@ checks:
 plugins:
   tslint:
     enabled: true
+    config: "services/tenant-ui/tslint.json"
   eslint:
     enabled: false
     channel: "eslint-6"
