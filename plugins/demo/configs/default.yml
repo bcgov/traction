@@ -22,6 +22,7 @@ endpoint:
 # plugins
 plugin:
   - aries_cloudagent.messaging.jsonld
+  - traction_plugins.basicmessage_storage
   - traction_plugins.multitenant_provider
   - traction_plugins.traction_innkeeper
   - traction_plugins.traction_metadata
