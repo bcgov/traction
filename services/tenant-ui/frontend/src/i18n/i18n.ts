@@ -8,7 +8,7 @@ function loadLocaleMessages() {
   for (const path in modules) {
     // For each file found, build the message object
     // with the file NAME as the top level key
-    if (modules.hasOwnProperty(path)) {
+    if (modules.path) {
       modules[path]().then((mod: any) => {
         const matches = path.match(/[ \w-]+?(?=\.)/i);
         if (matches && matches.length) {
