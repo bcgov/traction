@@ -6,8 +6,11 @@ function loadLocaleMessages() {
   const modules = import.meta.glob('./locales/*.json');
   const messages: any = {};
   for (const path in modules) {
+    console.log('here is a path', path);
     // For each file found, build the message object
     // with the file NAME as the top level key
+    if (modules.hasOwnProperty(path)) continue;
+
     modules[path]().then((mod: any) => {
       const matches = path.match(/[ \w-]+?(?=\.)/i);
       if (matches && matches.length) {
