@@ -16,15 +16,15 @@ checks:
   method-complexity:
     enabled: true
     config:
-      threshold: 10
+      threshold: 20
   method-count:
     enabled: true
     config:
-      threshold: 20
+      threshold: 50
   method-lines:
     enabled: true
     config:
-      threshold: 200
+      threshold: 500
   nested-control-flow:
     enabled: true
     config:

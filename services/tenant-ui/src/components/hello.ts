@@ -4,7 +4,6 @@
  * @returns {string} A string
  */
 export const getHello = () => {
-  const value = 'Hello World!';
+  const value = "Hello World!";
   return value;
-}
-
+};

@@ -28,13 +28,13 @@ export const useInnkeeperApi = defineStore('innkeeperApi', () => {
 
   // need to add authorization before we make traction tenant requests...
   innkeeperApi.interceptors.request.use(
-    async (config: AxiosRequestConfig) => {
+    async (apiConfig: AxiosRequestConfig) => {
       const result = {
-        ...config,
+        ...apiConfig,
         headers: {
           contentType: 'application/json',
           accept: 'application/json',
-          ...config.headers,
+          ...apiConfig.headers,
           Authorization: `Bearer ${innkeeperTokenStore.token}`,
         },
       };
@@ -49,14 +49,14 @@ export const useInnkeeperApi = defineStore('innkeeperApi', () => {
 
   innkeeperApi.interceptors.response.use(
     (response) => {
-      //console.log('tenantApi.response.fulfilled');
-      //console.log(response);
+      // console.log('tenantApi.response.fulfilled');
+      // console.log(response);
       return response;
     },
     (error: any) => {
       console.error('innkeeperApi.response.error');
       console.error(error);
-      if (error.response.status == 401) {
+      if (error.response.status === 401) {
         innkeeperTokenStore.clearToken();
         return Promise.reject(`Unauthorized: ${error.response.data.reason}`);
       }
@@ -72,7 +72,7 @@ export const useInnkeeperApi = defineStore('innkeeperApi', () => {
   ): Promise<any> {
     return innkeeperApi({
       method: method.toUpperCase(),
-      url: url,
+      url,
       ...options,
     });
   }

@@ -13,15 +13,15 @@ export async function fetchList(
   list.value = null;
   error.value = null;
   loading.value = true;
-  //console.log(params);
+  // console.log(params);
   params = { ...params, page_num: 1, page_size: 100 };
-  //console.log(params);
+  // console.log(params);
   await tenantApi
     .getHttp(url, params)
     .then((res) => {
-      //console.log(res);
+      // console.log(res);
       list.value = res.data.items;
-      //console.log(list.value);
+      // console.log(list.value);
     })
     .catch((err) => {
       error.value = err;

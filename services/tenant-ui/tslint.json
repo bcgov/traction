@@ -7,6 +7,7 @@
     "object-literal-sort-keys": false,
     "object-literal-key-quotes": false,
     "ordered-imports": false,
+    "interface-name": false,
     "quotemark": false,
     "no-console": false,
     "eofline": false,

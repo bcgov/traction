@@ -105,7 +105,7 @@ export const useIssuerStore = defineStore('issuer', () => {
     return result;
   }
 
-  async function deleteCredential(issuer_credential_id: string) {
+  async function deleteCredential(issuerCredentialId: string) {
     console.log('> contactsStore.deleteCredential');
 
     error.value = null;
@@ -114,7 +114,7 @@ export const useIssuerStore = defineStore('issuer', () => {
     let result = null;
 
     await tenantApi
-      .deleteHttp(`/tenant/v1/issuer/credentials/${issuer_credential_id}`)
+      .deleteHttp(`/tenant/v1/issuer/credentials/${issuerCredentialId}`)
       .then((res) => {
         result = res.data.item;
       })

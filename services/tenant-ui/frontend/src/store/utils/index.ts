@@ -9,7 +9,9 @@ export { fetchItem } from './fetchItem';
  *
  * function parameters are order in most likely to override: map, sort, filter
  *
- * example mapFn: (item: any) => { return {'label': `${item.name} (${item.version})`, 'value': item.id, 'status': item.status }; }
+ * example mapFn: (item: any) => {
+ *   return {'label': `${item.name} (${item.version})`, 'value': item.id, 'status': item.status };
+ * }
  * example sortFn: (a:any, b: any) => { return a.label.localeCompare(b.label); })
  * example filterFn: (item: any) => { return item.status === 'Active'; }
  * @param {Array} list - The current list
@@ -17,17 +19,19 @@ export { fetchItem } from './fetchItem';
  * @param {Function} sortFn - Sort the list according to this function (objects are the mapFn object!)
  * @param {Function} filterFn - Filter items from current list
  */
+
+// Declare function types
+type MapFunc = (item: any) => any;
+type SortFunc = (a: any, b: any) => number;
+type FilterFunc = (item: any) => boolean;
+
 export function filterMapSortList(
   list: any,
-  mapFn: Function = (item: any) => item,
-  sortFn: Function = (a: any, b: any) => 0,
-  filterFn: Function = (item: any) => true
+  mapFn: MapFunc = (item: any) => item,
+  sortFn: SortFunc = (a: any, b: any) => 0,
+  filterFn: FilterFunc = (item: any) => true
 ) {
   let result: any[] = [];
-  //console.log(list);
-  //console.log(mapFn);
-  //console.log(filterFn);
-  //console.log(sortFn);
 
   if (list != null) {
     result = list
@@ -35,7 +39,7 @@ export function filterMapSortList(
       .map((item: any) => mapFn(item))
       .sort(sortFn);
   }
-  //console.log(result);
+  // console.log(result);
   return result;
 }
 

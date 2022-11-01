@@ -37,7 +37,7 @@ async function loadApp() {
   const configStore = useConfigStore();
   // listen for errors loading configuration...
   const unsubscribe = configStore.$onAction(({ name, after, onError }) => {
-    if (name == 'load') {
+    if (name === 'load') {
       after((result) => {
         console.log('configuration loaded from server.');
         console.log(result);

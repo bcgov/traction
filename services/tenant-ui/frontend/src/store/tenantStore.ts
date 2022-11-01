@@ -44,7 +44,7 @@ export const useTenantStore = defineStore('tenant', () => {
       .catch((err) => {
         error.value = err;
         tenant.value = null;
-        //console.log(error.value);
+        // console.log(error.value);
       })
       .finally(() => {
         loading.value = false;

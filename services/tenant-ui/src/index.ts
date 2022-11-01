@@ -20,13 +20,13 @@ app.use(express.json());
 // app.use(bodyParser.json());
 
 // Host the static frontend assets
-app.use("/favicon.ico", (_req, res) => {
+app.use("/favicon.ico", (_, res) => {
   res.redirect("/favicon.ico");
 });
 app.use("/", express.static(path.join(__dirname, STATIC_FILES_PATH)));
 
 // Frontend configuration endpoint, return config section at /config so UI can get it
-app.use("/config", (_req, res, next) => {
+app.use("/config", (_, res, next) => {
   try {
     // if we have passwords or sensitive information, strip it out!!!
     res.status(200).json(config);

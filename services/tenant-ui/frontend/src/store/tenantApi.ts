@@ -33,14 +33,14 @@ export const useTenantApi = defineStore('tenantApi', () => {
 
   // need to add authorization before we make traction tenant requests...
   tenantApi.interceptors.request.use(
-    async (config: AxiosRequestConfig) => {
-      //console.log('tenantApi.request.fulfilled');
+    async (dataConfig: AxiosRequestConfig) => {
+      // console.log('tenantApi.request.fulfilled');
       const result = {
-        ...config,
+        ...dataConfig,
         headers: {
           contentType: 'application/json',
           accept: 'application/json',
-          ...config.headers,
+          ...dataConfig.headers,
           Authorization: `Bearer ${tokenStore.token}`,
         },
       };
@@ -55,14 +55,14 @@ export const useTenantApi = defineStore('tenantApi', () => {
 
   tenantApi.interceptors.response.use(
     (response) => {
-      //console.log('tenantApi.response.fulfilled');
-      //console.log(response);
+      // console.log('tenantApi.response.fulfilled');
+      // console.log(response);
       return response;
     },
     (error: any) => {
       console.error('tenantApi.response.error');
       console.error(error);
-      if (error.response.status == 401) {
+      if (error.response.status === 401) {
         tokenStore.clearToken();
         tenantStore.clearTenant();
         return Promise.reject(`Unauthorized: ${error.response.data.reason}`);
@@ -79,7 +79,7 @@ export const useTenantApi = defineStore('tenantApi', () => {
   ): Promise<any> {
     return tenantApi({
       method: method.toUpperCase(),
-      url: url,
+      url,
       ...options,
     });
   }

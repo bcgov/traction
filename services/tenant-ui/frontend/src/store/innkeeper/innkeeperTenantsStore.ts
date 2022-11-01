@@ -32,14 +32,14 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     error.value = null;
     loading.value = true;
 
-    let tenant_data: TenantResponseData | undefined;
+    let tenantData: TenantResponseData | undefined;
     await innkeeperApi
       .postHttp('/innkeeper/v1/tenants/check-in', {
-        name: name,
+        name,
         allow_issue_credentials: allowIssue,
       })
       .then((res) => {
-        tenant_data = res.data.item;
+        tenantData = res.data.item;
       })
       .then(() => {
         // Tenant created, reload the list in state
@@ -59,7 +59,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
       throw error.value;
     }
     // return data so $onAction.after listeners can add their own handler
-    return tenant_data;
+    return tenantData;
   }
 
   return {

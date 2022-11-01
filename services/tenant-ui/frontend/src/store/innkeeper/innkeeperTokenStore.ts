@@ -29,7 +29,7 @@ export const useInnkeeperTokenStore = defineStore(
       const url = configStore.proxyPath('/innkeeper/token');
       await axios({
         method: 'post',
-        url: url,
+        url,
         headers: {
           accept: 'application/json',
           'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',

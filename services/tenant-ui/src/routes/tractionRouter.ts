@@ -1,8 +1,8 @@
 // Not really a router, but the configuration to proxy calls to THIS backend over to Traction
 import config from "config";
 import { createProxyMiddleware, fixRequestBody } from "http-proxy-middleware";
-import type * as express from "express";
-import type * as http from "http";
+import * as express from "express";
+import * as http from "http";
 
 // Send calls to api/traction to the configured Traction environment
 // If we need to alter any request bodies or anything when coming from the tenant UI
