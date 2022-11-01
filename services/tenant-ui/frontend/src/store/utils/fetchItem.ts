@@ -10,7 +10,7 @@ export async function fetchItem(
 ) {
   const tenantApi = useTenantApi();
   const dataUrl = `${url}${id}`;
-  console.log(`> fetchItem(${dataUrl})`);
+  console.log(` > fetchItem(${dataUrl})`);
   error.value = null;
   let result = null;
 
