@@ -4,4 +4,4 @@ interface GetItem {
   fetchItem: (id: string, params?: any) => Promise<void>;
 }
 
-export { GetItem };
+export type { GetItem };
