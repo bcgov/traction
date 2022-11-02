@@ -3,9 +3,6 @@ import uuid
 
 from aiohttp import web
 from aiohttp_apispec import docs, request_schema, response_schema, match_info_schema, querystring_schema
-
-from marshmallow import fields, validate
-
 from aries_cloudagent.admin.request_context import AdminRequestContext
 from aries_cloudagent.messaging.models.base import BaseModelError
 from aries_cloudagent.messaging.models.openapi import OpenAPISchema
@@ -14,6 +11,7 @@ from aries_cloudagent.protocols.basicmessage.v1_0.message_types import SPEC_URI
 from aries_cloudagent.protocols.basicmessage.v1_0.routes import BasicMessageModuleResponseSchema, SendMessageSchema, \
     BasicConnIdMatchInfoSchema, connections_send_message
 from aries_cloudagent.storage.error import StorageError
+from marshmallow import fields, validate
 
 from .models import BasicMessageRecord, BasicMessageRecordSchema
 
@@ -52,8 +50,8 @@ def messages_sort_key(rec):
 @match_info_schema(BasicConnIdMatchInfoSchema())
 @request_schema(SendMessageSchema())
 @response_schema(BasicMessageModuleResponseSchema(), 200, description="")
-async def x_connections_send_message(request: web.BaseRequest):
-    # LOGGER.info("> x_connections_send_message")
+async def v0_1_connections_send_message(request: web.BaseRequest):
+    # LOGGER.info("> v0_1_connections_send_message")
 
     # need this for storing our sent message
     connection_id = request.match_info["conn_id"]
@@ -85,7 +83,7 @@ async def x_connections_send_message(request: web.BaseRequest):
     except Exception as err:
         LOGGER.error(err)
         raise err
-    # LOGGER.info("< x_connections_send_message")
+    # LOGGER.info("< v0_1_connections_send_message")
     return response
 
 
@@ -131,11 +129,10 @@ async def messages_list(request: web.BaseRequest):
 
 async def register(app: web.Application):
     """Register routes."""
-
     app.add_routes(
         [
             web.get("/connections/{conn_id}/messages", messages_list, allow_head=False),
-            web.post("/connections/{conn_id}/send-message", x_connections_send_message),
+            web.post("/connections/{conn_id}/send-message", v0_1_connections_send_message)
         ]
     )
 

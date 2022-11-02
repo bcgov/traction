@@ -22,19 +22,20 @@ endpoint:
 # plugins
 plugin:
   - aries_cloudagent.messaging.jsonld
-  - traction_plugins.basicmessage_storage
+  - traction_plugins.basicmessage_storage.v0_1
   - traction_plugins.multitenant_provider
   - traction_plugins.traction_innkeeper
   - traction_plugins.traction_metadata
+
+block-plugin:
+ # when using basicmessage_storage.v0_1, basicmessage must be blocked
+ - aries_cloudagent.protocols.basicmessage
 
 plugin-config-value:
   # if wallet_type = indy, configure to load this class... 
   - multitenant_provider.manager_class="traction_plugins.multitenant_provider.manager.BasicMultitokenMultitenantManager"
   # if wallet_type = askar, configure to load this class...
   # - multitenant_provider.manager_class="traction_plugins.multitenant_provider.manager.AskarMultitokenMultitenantManager"
-
-#block-plugin:
-# - aries_cloudagent.protocols.connections
 
 # invite: true
 # invite-label: ACA-Py (Traction Plugins)
@@ -59,7 +60,7 @@ emit-new-didcomm-prefix: true
 
 auto-accept-invites: true
 auto-accept-requests: true
-auto-respond-messages: true
+auto-respond-messages: false
 auto-respond-credential-proposal: true
 auto-respond-credential-offer: true
 auto-respond-credential-request: true
