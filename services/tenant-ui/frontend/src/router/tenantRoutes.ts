@@ -26,7 +26,7 @@ const tenantRoutes = [
     name: 'TenantUi',
     component: TenantUi,
     children: [
-      //Blank route uses dashboard view
+      // Blank route uses dashboard view
       { path: '', name: 'Dashboard', component: Dashboard },
 
       // About

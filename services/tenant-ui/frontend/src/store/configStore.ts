@@ -40,7 +40,7 @@ export const useConfigStore = defineStore('config', () => {
       })
       .catch((err) => {
         error.value = err;
-        //console.log(error.value);
+        // console.log(error.value);
       })
       .finally(() => {
         loading.value = false;

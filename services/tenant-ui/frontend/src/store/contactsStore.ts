@@ -41,15 +41,14 @@ export const useContactsStore = defineStore('contacts', () => {
     error.value = null;
     loading.value = true;
 
-    let invitation_data = null;
-    // need the await here since the returned invitation_data is not one of our stored refs...
+    let invitationData = null;
+    // need the await here since the returned invitationData is not one of our stored refs...
     await tenantApi
-      .postHttp('/tenant/v1/contacts/create-invitation', { alias: alias })
+      .postHttp('/tenant/v1/contacts/create-invitation', { alias })
       .then((res) => {
         console.log(res);
         // don't grab the item, there are other parts of the response data we need (invitation, invitation url)
-        invitation_data = res.data;
-        console.log(invitation_data);
+        invitationData = res.data;
       })
       .then(() => {
         // do we want to automatically reload? or have the caller of this to load?
@@ -60,7 +59,7 @@ export const useContactsStore = defineStore('contacts', () => {
       })
       .catch((err) => {
         error.value = err;
-        //console.log(error.value);
+        // console.log(error.value);
       })
       .finally(() => {
         loading.value = false;
@@ -72,7 +71,7 @@ export const useContactsStore = defineStore('contacts', () => {
       throw error.value;
     }
     // return data so $onAction.after listeners can add their own handler
-    return invitation_data;
+    return invitationData;
   }
 
   async function acceptInvitation(inviteUrl: string, alias: string) {
@@ -80,18 +79,17 @@ export const useContactsStore = defineStore('contacts', () => {
     error.value = null;
     loading.value = true;
 
-    let accepted_data = null;
+    let acceptedData = null;
     // need the await here since the returned invitation_data is not one of our stored refs...
     await tenantApi
       .postHttp('/tenant/v1/contacts/receive-invitation', {
-        alias: alias,
+        alias,
         invitation_url: inviteUrl,
       })
       .then((res) => {
         console.log(res);
         // don't grab the item, there are other parts of the response data we need (invitation, invitation url)
-        accepted_data = res.data;
-        console.log(accepted_data);
+        acceptedData = res.data;
       })
       .then(() => {
         // do we want to automatically reload? or have the caller of this to load?
@@ -102,7 +100,7 @@ export const useContactsStore = defineStore('contacts', () => {
       })
       .catch((err) => {
         error.value = err;
-        //console.log(error.value);
+        // console.log(error.value);
       })
       .finally(() => {
         loading.value = false;
@@ -114,7 +112,7 @@ export const useContactsStore = defineStore('contacts', () => {
       throw error.value;
     }
     // return data so $onAction.after listeners can add their own handler
-    return accepted_data;
+    return acceptedData;
   }
 
   async function deleteContact(payload: any = {}) {
@@ -162,14 +160,14 @@ export const useContactsStore = defineStore('contacts', () => {
     error.value = null;
     loading.value = true;
 
-    let contact_data = null;
+    let contactData = null;
     await tenantApi
       .putHttp(`/tenant/v1/contacts/${contactId}`, {
         contact_id: contactId,
-        alias: alias,
+        alias,
       })
       .then((res) => {
-        contact_data = res.data;
+        contactData = res.data;
       })
       .then(() => {
         listContacts();
@@ -187,7 +185,7 @@ export const useContactsStore = defineStore('contacts', () => {
       throw error.value;
     }
     // return data so $onAction.after listeners can add their own handler
-    return contact_data;
+    return contactData;
   }
 
   // private functions

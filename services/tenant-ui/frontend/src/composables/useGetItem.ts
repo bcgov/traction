@@ -3,7 +3,7 @@ import { GetItem } from '../types';
 import { fetchItem as utilFetchItem } from '../store/utils/fetchItem';
 
 export default function useGetItem(url: string): GetItem {
-  const _url = ref(url);
+  const data = ref(url);
 
   const item = ref();
   const loading: any = ref(false);
@@ -13,7 +13,7 @@ export default function useGetItem(url: string): GetItem {
     try {
       // call store
       loading.value = true;
-      item.value = await utilFetchItem(_url.value, id, error, loading, params);
+      item.value = await utilFetchItem(data.value, id, error, loading, params);
     } catch (error) {
       item.value = null;
     } finally {

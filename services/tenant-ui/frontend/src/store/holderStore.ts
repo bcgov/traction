@@ -61,7 +61,7 @@ export const useHolderStore = defineStore('holder', () => {
 
   const tenantApi = useTenantApi();
 
-  async function acceptCredentialOffer(cred_id: string) {
+  async function acceptCredentialOffer(credId: string) {
     console.log('> holderStore.acceptCredentialOffer');
 
     error.value = null;
@@ -70,8 +70,8 @@ export const useHolderStore = defineStore('holder', () => {
     let result = null;
 
     await tenantApi
-      .postHttp(`/tenant/v1/holder/credentials/${cred_id}/accept-offer`, {
-        holder_credential_id: cred_id,
+      .postHttp(`/tenant/v1/holder/credentials/${credId}/accept-offer`, {
+        holder_credential_id: credId,
       })
       .then((res) => {
         result = res.data.item;
@@ -94,7 +94,7 @@ export const useHolderStore = defineStore('holder', () => {
     return result;
   }
 
-  async function rejectCredentialOffer(cred_id: string) {
+  async function rejectCredentialOffer(credId: string) {
     console.log('> holderStore.rejectCredentialOffer');
 
     error.value = null;
@@ -103,8 +103,8 @@ export const useHolderStore = defineStore('holder', () => {
     let result = null;
 
     await tenantApi
-      .postHttp(`/tenant/v1/holder/credentials/${cred_id}/reject-offer`, {
-        holder_credential_id: cred_id,
+      .postHttp(`/tenant/v1/holder/credentials/${credId}/reject-offer`, {
+        holder_credential_id: credId,
       })
       .then((res) => {
         result = res.data.item;
@@ -127,7 +127,7 @@ export const useHolderStore = defineStore('holder', () => {
     return result;
   }
 
-  async function deleteHolderCredential(cred_id: string) {
+  async function deleteHolderCredential(credId: string) {
     console.log('> holderStore.deleteHolderCredential');
 
     error.value = null;
@@ -136,7 +136,7 @@ export const useHolderStore = defineStore('holder', () => {
     let result = null;
 
     await tenantApi
-      .deleteHttp(`/tenant/v1/holder/credentials/${cred_id}`)
+      .deleteHttp(`/tenant/v1/holder/credentials/${credId}`)
       .then((res) => {
         result = res.data.item;
       })

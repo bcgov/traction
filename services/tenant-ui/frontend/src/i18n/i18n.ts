@@ -8,12 +8,14 @@ function loadLocaleMessages() {
   for (const path in modules) {
     // For each file found, build the message object
     // with the file NAME as the top level key
-    modules[path]().then((mod: any) => {
-      const matches = path.match(/[ \w-]+?(?=\.)/i);
-      if (matches && matches.length) {
-        messages[matches[0]] = mod;
-      }
-    });
+    if (modules.path) {
+      modules[path]().then((mod: any) => {
+        const matches = path.match(/[ \w-]+?(?=\.)/i);
+        if (matches && matches.length) {
+          messages[matches[0]] = mod;
+        }
+      });
+    }
   }
   return messages;
 }

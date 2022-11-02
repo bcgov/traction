@@ -24,7 +24,7 @@ export const useTokenStore = defineStore('token', () => {
     const url = configStore.proxyPath('/tenant/token');
     await axios({
       method: 'post',
-      url: url,
+      url,
       headers: {
         accept: 'application/json',
         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',

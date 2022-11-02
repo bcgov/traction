@@ -114,7 +114,7 @@ export const useGovernanceStore = defineStore('governance', () => {
       })
       .catch((err) => {
         error.value = err;
-        //console.log(error.value);
+        // console.log(error.value);
       })
       .finally(() => {
         loading.value = false;
@@ -157,7 +157,7 @@ export const useGovernanceStore = defineStore('governance', () => {
       })
       .catch((err) => {
         error.value = err;
-        //console.log(error.value);
+        // console.log(error.value);
       })
       .finally(() => {
         loading.value = false;
@@ -194,7 +194,7 @@ export const useGovernanceStore = defineStore('governance', () => {
       })
       .catch((err) => {
         error.value = err;
-        //console.log(error.value);
+        // console.log(error.value);
       })
       .finally(() => {
         loading.value = false;
@@ -213,7 +213,7 @@ export const useGovernanceStore = defineStore('governance', () => {
     const getloading: any = ref(false);
     if (!('credential_templates' in params)) {
       // if we do not explicitly say not to get cred templates, get 'em.
-      params['credential_templates'] = true;
+      params.credential_templates = true;
     }
     return fetchItem(
       '/tenant/v1/governance/schema_templates/',

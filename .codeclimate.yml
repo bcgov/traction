@@ -1,0 +1,81 @@
+version: "2" # required to adjust maintainability checks
+
+checks:
+  argument-count:
+    enabled: true
+    config:
+      threshold: 8
+  complex-logic:
+    enabled: true
+    config:
+      threshold: 8
+  file-lines:
+    enabled: true
+    config:
+      threshold: 1000
+  method-complexity:
+    enabled: true
+    config:
+      threshold: 20
+  method-count:
+    enabled: true
+    config:
+      threshold: 50
+  method-lines:
+    enabled: true
+    config:
+      threshold: 500
+  nested-control-flow:
+    enabled: true
+    config:
+      threshold: 4
+  return-statements:
+    enabled: false
+    config:
+      threshold: 4
+  similar-code:
+    enabled: false
+    config:
+      threshold: #language-specific defaults. overrides affect all languages.
+  identical-code:
+    enabled: true
+    config:
+      threshold: #language-specific defaults. overrides affect all languages.
+
+plugins:
+  tslint:
+    enabled: true
+    config: "services/tenant-ui/tslint.json"
+  eslint:
+    enabled: false
+    channel: "eslint-6"
+  csslint:
+    enabled: false
+
+exclude_patterns:
+  - "config/"
+  - "db/"
+  - "**/dist/"
+  - "features/"
+  - "**/node_modules/"
+  - "script/"
+  - "**/spec/"
+  - "**/test/"
+  - "**/tests/"
+  - "Tests/"
+  - "**/vendor/"
+  - "**/*_test.go"
+  - "**/*.d.ts"
+  - ".github/"
+  - ".vscode/"
+  - "charts/"
+  - "scripts/"
+  - "services/endorser/"
+  - "services/grip/"
+  - "services/showcase/"
+  - "services/traction/acapy_client/"
+  - "services/traction/acapy_wrapper/"
+  - "services/traction/api/db/migrations/"
+  - "services/traction/bdd-tests/"
+  - "services/traction/tests/"
+  - "plugins/"
