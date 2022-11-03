@@ -15,14 +15,13 @@ endpoint:
 
 # plugins
 plugin:
-  - traction_plugins.basicmessage_storage.v0_1
+  - traction_plugins.basicmessage_storage.v1_0
   - traction_plugins.multitenant_provider
   - traction_plugins.traction_innkeeper
   - traction_plugins.traction_metadata
 
-block-plugin:
- # when using basicmessage_storage.v0_1, basicmessage must be blocked
- - aries_cloudagent.protocols.basicmessage
+# block-plugin:
+
  
 plugin-config-value:
   - multitenant_provider.manager_class="traction_plugins.multitenant_provider.manager.BasicMultitokenMultitenantManager"

@@ -15,12 +15,7 @@ endpoint:
 
 # plugins
 plugin:
-  - basicmessage_storage.v0_1
-# - basicmessage_storage.v0_2
-
-block-plugin:
-  # when using basicmessage_storage.v0_1, basicmessage must be blocked
-  - aries_cloudagent.protocols.basicmessage
+  - basicmessage_storage.v1_0
 
 #config
 genesis-url: https://indy.igrant.io/genesis
@@ -38,4 +33,4 @@ multitenant-admin: true
 log-level: info
 
 auto-accept-invites: true
-auto-respond-messages: false
+auto-respond-messages: true
