@@ -22,14 +22,14 @@ endpoint:
 # plugins
 plugin:
   - aries_cloudagent.messaging.jsonld
-  - traction_plugins.basicmessage_storage.v0_1
+  - traction_plugins.basicmessage_storage.v0_2
   - traction_plugins.multitenant_provider
   - traction_plugins.traction_innkeeper
   - traction_plugins.traction_metadata
 
 block-plugin:
  # when using basicmessage_storage.v0_1, basicmessage must be blocked
- - aries_cloudagent.protocols.basicmessage
+ # - aries_cloudagent.protocols.basicmessage
 
 plugin-config-value:
   # if wallet_type = indy, configure to load this class... 

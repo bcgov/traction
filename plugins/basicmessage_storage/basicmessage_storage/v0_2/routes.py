@@ -11,7 +11,7 @@ from aries_cloudagent.protocols.basicmessage.v1_0.message_types import SPEC_URI
 from frozenlist import FrozenList
 
 from ..v0_1.models import BasicMessageRecord
-from ..v0_1.routes import messages_list
+from ..v0_1.routes import messages_list, all_messages_list
 
 LOGGER = logging.getLogger(__name__)
 
@@ -65,10 +65,11 @@ async def register(app: web.Application):
         app.middlewares[:] + [save_message_middleware]
     )
 
-    # add in the message list route, no need to re-write it though.
+    # add in the message list(s) route, no need to re-write it though.
     app.add_routes(
         [
-            web.get("/connections/{conn_id}/messages", messages_list, allow_head=False)
+            web.get("/connections/{conn_id}/messages", messages_list, allow_head=False),
+            web.get("/messages", all_messages_list, allow_head=False)
         ]
     )
 

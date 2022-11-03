@@ -35,6 +35,22 @@ class BasicMessageListQueryStringSchema(OpenAPISchema):
     )
 
 
+class BasicMessageListAllQueryStringSchema(OpenAPISchema):
+    connection_id = fields.Str(
+        description=(
+            "Connection identifier, if none specified, "
+            "then return messages from all connections."
+        ),
+    )
+    state = fields.Str(
+        description="Message state",
+        required=False,
+        validate=validate.OneOf(
+            [BasicMessageRecord.STATE_SENT, BasicMessageRecord.STATE_RECV]
+        ),
+    )
+
+
 def messages_sort_key(rec):
     """Get the sorting key for a basic messages."""
     if rec["state"] == BasicMessageRecord.STATE_SENT:
@@ -92,10 +108,11 @@ async def v0_1_connections_send_message(request: web.BaseRequest):
     summary="Query agent-to-agent messages",
 )
 @querystring_schema(BasicMessageListQueryStringSchema())
+@match_info_schema(BasicConnIdMatchInfoSchema())
 @response_schema(BasicMessageListSchema(), 200, description="")
 async def messages_list(request: web.BaseRequest):
     """
-    Request handler for searching basic message records.
+    Request handler for searching basic message records with a single agent/connection.
 
     Args:
         request: aiohttp request object
@@ -107,8 +124,9 @@ async def messages_list(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
 
     tag_filter = {}
-    post_filter = {}
-
+    post_filter = {
+        "connection_id": request.match_info["conn_id"]
+    }
     state = request.query.get("state")
     if state:
         post_filter["state"] = state
@@ -127,12 +145,55 @@ async def messages_list(request: web.BaseRequest):
     return web.json_response({"results": results})
 
 
+@docs(
+    tags=["basicmessage"],
+    summary="Query messages from all agents",
+)
+@querystring_schema(BasicMessageListAllQueryStringSchema())
+@response_schema(BasicMessageListSchema(), 200, description="")
+async def all_messages_list(request: web.BaseRequest):
+    """
+    Request handler for searching basic message records from All agents/connections.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The message list response
+
+    """
+    context: AdminRequestContext = request["context"]
+
+    tag_filter = {}
+    post_filter = {
+        k: request.query[k]
+        for k in ("connection_id", "state")
+        if request.query.get(k, "") != ""
+    }
+    profile = context.profile
+    try:
+        async with profile.session() as session:
+            records = await BasicMessageRecord.query(
+                session=session,
+                tag_filter=tag_filter,
+                post_filter_positive=post_filter,
+                alt=True
+            )
+        results = [record.serialize() for record in records]
+        results.sort(key=messages_sort_key)
+    except (StorageError, BaseModelError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response({"results": results})
+
+
 async def register(app: web.Application):
     """Register routes."""
     app.add_routes(
         [
             web.get("/connections/{conn_id}/messages", messages_list, allow_head=False),
-            web.post("/connections/{conn_id}/send-message", v0_1_connections_send_message)
+            web.post("/connections/{conn_id}/send-message", v0_1_connections_send_message),
+            web.get("/messages", all_messages_list, allow_head=False)
         ]
     )
 

@@ -20,7 +20,7 @@ plugin:
 
 block-plugin:
   # when using basicmessage_storage.v0_1, basicmessage must be blocked
-  - basicmessage
+  - aries_cloudagent.protocols.basicmessage
 
 #config
 genesis-url: https://indy.igrant.io/genesis
