@@ -55,4 +55,7 @@ exec aca-py start \
     --auto-write-transactions \
     --auto-create-revocation-transactions \
     --notify-revocation \
-    --monitor-revocation-notification
+    --monitor-revocation-notification \
+    --plugin traction_plugins.multitenant_provider \
+    --plugin-config-value multitenant_provider.manager_class=traction_plugins.multitenant_provider.manager.BasicMultitokenMultitenantManager \
+    --plugin traction_plugins.basicmessage_storage.v1_0 \
