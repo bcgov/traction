@@ -13,6 +13,7 @@
 
         <div class="py-8">
           <InnkeeperLoginForm />
+          <InnkeeperLoginOidc />
         </div>
       </div>
     </div>
@@ -25,6 +26,7 @@
 
 <script setup lang="ts">
 import InnkeeperLoginForm from '@/components/innkeeper/InnkeeperLoginForm.vue';
+import InnkeeperLoginOidc from '@/components/innkeeper/InnkeeperLoginOidc.vue';
 </script>
 
 <style scoped lang="scss">

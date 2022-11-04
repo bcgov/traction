@@ -1,4 +1,10 @@
 {
+  "frontend": {
+    "innkeeperAuthType": "FRONTEND_INNKEEPER_AUTH_TYPE",
+    "innkeeperOidc": {
+      "client": "FRONTEND_INNKEEPER_OIDC_CLIENT"
+    } 
+  },
   "image": {
     "buildtime": "IMAGE_BUILDTIME",
     "tag": "IMAGE_TAG",

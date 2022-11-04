@@ -2,7 +2,8 @@
   "frontend": {
     "proxyPath": "/api/traction",
     "apiPath": "api/",
-    "basePath": "/"
+    "basePath": "/",
+    "innkeeperAuthType": "all"
   },
   "image": {
     "buildtime": "",
