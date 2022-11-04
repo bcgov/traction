@@ -16,14 +16,6 @@ docker run -it -p 3000:3000 -p 3001:3001 --rm basicmessage_storage
 
 ### notes
 
-there are 2 implementations:
-
-- v0_1: it implements is own version of the `connections/{id}/send-message` endpoint which will persist the sent
-  message. in order to "overwrite" the endpoint, it requires blocking
-  the `aries_cloudagent.aries_cloudagent.protocols.basicmessage` plugin and then registering its messages types,
-- v0_2: uses a middleware wrapper around the existing basicmessage `connections/{id}/send-message` api, and will persist
-  the sent message.
-
-in this case, the `v0_2` pattern is probably best, as we are not changing the signature
-of `connections/{id}/send-message`.
+- v1_0: uses a middleware wrapper around the existing basicmessage `connections/{id}/send-message` api, and will persist
+  the sent message. messages between all agents/connections can be fetched via `GET /basicmessages` with optional query params for `connection_id` and `state`.
 
