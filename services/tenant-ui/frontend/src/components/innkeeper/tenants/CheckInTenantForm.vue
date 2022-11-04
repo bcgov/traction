@@ -137,14 +137,9 @@ const copy_to_clipboard = (): void => {
   toast.info('Wallet information copied to clipboard');
 };
 
-// Define the close button event type.
-interface CloseForm extends Event {
-  target: HTMLButtonElement;
-}
-
 // Close the form after check in
 // Parent will not let the form close by other avenues once checked-in
-const closeForm = (event: CloseForm): void => {
+const closeForm = (event: any): void => {
   confirm.require({
     target: event.target,
     message:
