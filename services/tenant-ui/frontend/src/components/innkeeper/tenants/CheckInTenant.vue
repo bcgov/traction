@@ -35,13 +35,13 @@ const emit = defineEmits(['success']);
 
 // Open popup
 const displayModal = ref(false);
-const openModal = async () => {
+const openModal = async (): Promise<void> => {
   allowClose.value = true;
   displayModal.value = true;
 };
 
 // Handle the successful check in and set a flag so that we can't close without our warn-prompt button
-const tenantCreated = async () => {
+const tenantCreated = async (): Promise<void> => {
   allowClose.value = false;
   // Propagate the success up in case anyone else needs to pay attention (even if we're not closing this yet)
   emit('success');
