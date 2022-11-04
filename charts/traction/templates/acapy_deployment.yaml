@@ -75,7 +75,10 @@ spec:
            {{- end }}
            {{- if .Values.acapy.plugins.multitenantProvider }}
            --plugin traction_plugins.multitenant_provider \
-           --plugin-config-value {{ .Values.acapy.pluginValues.multitenantProvider.managerClass }}
+           --plugin-config-value {{ .Values.acapy.pluginValues.multitenantProvider.managerClass }} \
+           {{- end }}           
+           {{- if .Values.acapy.plugins.basicmessageStorage }}
+           --plugin traction_plugins.basicmessage_storage.v1_0 \
            {{- end }}
            "
           ]

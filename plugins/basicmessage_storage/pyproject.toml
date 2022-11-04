@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "basicmessage_storage"
+version = "0.1.0"
+description = ""
+authors = ["Jason Sherman <tools@usingtechnolo.gy>"]
+
+[tool.poetry.dependencies]
+python = ">=3.6.13,<4.0"
+aries-cloudagent = { version = "^0.7.4" }
+
+[tool.poetry.dev-dependencies]
+black = "^22.6.0"
+flake8 = "^5.0.4"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+

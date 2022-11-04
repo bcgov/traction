@@ -51,6 +51,12 @@ services:
       - 4052:4040
     command: ngrok http traction-agent:${ACAPY_HTTP_PORT} --log stdout
 
+  traction-acapy:
+    build:
+      context: ../plugins
+      dockerfile: ./docker/Dockerfile
+    image: traction-local:acapy
+
   traction-agent:
     build:
       context: ../services/aca-py

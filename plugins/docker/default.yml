@@ -15,12 +15,17 @@ endpoint:
 
 # plugins
 plugin:
+  - traction_plugins.basicmessage_storage.v1_0
   - traction_plugins.multitenant_provider
   - traction_plugins.traction_innkeeper
   - traction_plugins.traction_metadata
 
+# block-plugin:
+
+ 
 plugin-config-value:
   - multitenant_provider.manager_class="traction_plugins.multitenant_provider.manager.BasicMultitokenMultitenantManager"
+
 
 #config 
 genesis-url: https://indy.igrant.io/genesis
@@ -37,3 +42,23 @@ multitenant-admin: true
 # auto-provision: true
 
 log-level: info
+
+multitenant: true
+multitenant-admin: true
+
+emit-new-didcomm-prefix: true
+
+auto-accept-invites: true
+auto-accept-requests: true
+auto-respond-messages: false
+auto-respond-credential-proposal: true
+auto-respond-credential-offer: true
+auto-respond-credential-request: true
+auto-respond-presentation-proposal: true
+auto-respond-presentation-request: true
+auto-store-credential: true
+auto-verify-presentation: true
+auto-ping-connection: true
+auto-provision: true
+monitor-ping: true
+public-invites: true
