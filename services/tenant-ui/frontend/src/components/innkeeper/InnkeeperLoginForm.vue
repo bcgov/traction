@@ -83,15 +83,14 @@ const { loading, token } = storeToRefs(useInnkeeperTokenStore());
 
 // Form submission
 const submitted = ref(false);
-const handleSubmit = async (isFormValid: boolean) => {
+const handleSubmit = async (isFormValid: boolean): Promise<void> => {
   submitted.value = true;
 
   if (!isFormValid) {
     return;
   }
   try {
-    await innkeeperTokenStore.login(formFields.adminName, formFields.adminKey);
-    console.log(token.value);
+    await innkeeperTokenStore.login(formFields);
   } catch (err) {
     console.error(err);
     toast.error(`Failure getting token: ${err}`);

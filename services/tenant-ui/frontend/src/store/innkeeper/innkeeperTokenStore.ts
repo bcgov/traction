@@ -21,14 +21,15 @@ export const useInnkeeperTokenStore = defineStore(
      * The format of the token request is:
      */
     interface LoginParameters {
-      username: string;
-      password: string;
+      adminName: string;
+      adminKey: string;
     }
 
     // actions
     async function login(params: LoginParameters): Promise<string | null> {
       console.log('> innkeeperTokenStore.load');
-      const payload = `username=${params.username}&password=${params.password}`;
+      console.log('params', params);
+      const payload = `username=${params.adminName}&password=${params.adminKey}`;
       token.value = null;
       error.value = null;
       loading.value = true;
