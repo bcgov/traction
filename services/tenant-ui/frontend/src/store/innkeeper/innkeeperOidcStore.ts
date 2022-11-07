@@ -43,13 +43,14 @@ export const useInnkeeperOidcStore = defineStore('innkeeperOidcStore', () => {
     _userManager.getUser().then((usr) => {
       console.log('USER LOADED');
       user.value = usr;
-      axios
-      .get('/api/innkeeperLogin')
-      .then((res) => {
+      const config = {
+        headers: { Authorization: `Bearer ${usr?.access_token}` },
+      };
+      axios.get('/api/innkeeperLogin', config).then((res) => {
         console.log(res);
         debugger;
         alert(JSON.stringify(res.data));
-      })
+      });
     });
   });
 
@@ -72,7 +73,7 @@ export const useInnkeeperOidcStore = defineStore('innkeeperOidcStore', () => {
     error,
     innkeeperReady,
     login,
-    user
+    user,
   };
 });
 
