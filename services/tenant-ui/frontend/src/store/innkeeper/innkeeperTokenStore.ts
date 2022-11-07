@@ -13,7 +13,7 @@ export const useInnkeeperTokenStore = defineStore(
     const error: Ref<string | null> = ref(null);
 
     // getters
-    const innkeeperReady = computed(() => {
+    const innkeeperReady = computed((): boolean => {
       return token.value != null;
     });
 
@@ -47,7 +47,6 @@ export const useInnkeeperTokenStore = defineStore(
         data: payload,
       })
         .then((res) => {
-          console.log(res);
           token.value = res.data.access_token;
         })
         .catch((err) => {
