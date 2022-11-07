@@ -43,6 +43,13 @@ export const useInnkeeperOidcStore = defineStore('innkeeperOidcStore', () => {
     _userManager.getUser().then((usr) => {
       console.log('USER LOADED');
       user.value = usr;
+      axios
+      .get('/api/innkeeperLogin')
+      .then((res) => {
+        console.log(res);
+        debugger;
+        alert(JSON.stringify(res.data));
+      })
     });
   });
 
