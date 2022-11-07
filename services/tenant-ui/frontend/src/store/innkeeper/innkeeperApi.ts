@@ -40,7 +40,7 @@ export const useInnkeeperApi = defineStore('innkeeperApi', () => {
       };
       return result;
     },
-    async (error: any) => {
+    async (error: string) => {
       console.error('innkeeperApi.request.error');
       console.error(error);
       return Promise.reject(error);

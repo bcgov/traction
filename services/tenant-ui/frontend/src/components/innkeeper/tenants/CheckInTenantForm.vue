@@ -113,11 +113,12 @@ const handleSubmit = async (isFormValid: boolean): Promise<void> => {
     return;
   }
   try {
+    const data = {
+      name: formFields.name,
+      allowIssue: formFields.allowIssue,
+    };
     // call store
-    const result = await innkeeperTenantsStore.checkInTenant(
-      formFields.name,
-      formFields.allowIssue
-    );
+    const result = await innkeeperTenantsStore.checkInTenant(data);
     if (result != null) {
       checkinResponse.value = result;
       toast.success(`Tenant ${formFields.name} Checked In Successfully`);

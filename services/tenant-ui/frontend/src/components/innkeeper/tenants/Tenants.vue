@@ -72,6 +72,7 @@ const { t } = useI18n();
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
 
 const { loading, tenants } = storeToRefs(useInnkeeperTenantsStore());
+console.log('tenants', tenants);
 
 const loadTable = async () => {
   innkeeperTenantsStore.listTenants().catch((err: any) => {
