@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { ref, Ref } from 'vue';
 import { useInnkeeperApi } from './innkeeperApi';
 import { fetchList } from '../utils';
-
+import { AxiosRequestConfig } from 'axios';
 export interface TenantResponseData {
   tenant_id?: string;
   name?: string;
@@ -46,18 +46,18 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
         name: data.name,
         allow_issue_credentials: data.allowIssue,
       })
-      .then((res) => {
+      .then((res: AxiosRequestConfig): void => {
         tenantData = res.data.item;
       })
-      .then(() => {
+      .then((): void => {
         // Tenant created, reload the list in state
         listTenants();
       })
-      .catch((err) => {
+      .catch((err: string): void => {
         error.value = err;
         console.error(error.value);
       })
-      .finally(() => {
+      .finally((): void => {
         loading.value = false;
       });
     console.log('< innkeeperTenantsStore.checkInTenant');
