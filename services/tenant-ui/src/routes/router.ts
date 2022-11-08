@@ -6,7 +6,7 @@ import express, { Request, Response } from "express";
 import config from "config";
 import * as helloComponent from "../components/hello";
 import * as innkeeperComponent from "../components/innkeeper";
-const { secure } = require("express-oauth-jwt");
+import { secure } from "express-oauth-jwt";
 import { createRemoteJWKSet } from "jose";
 
 const jwksService = createRemoteJWKSet(
@@ -22,7 +22,7 @@ router.get("/hello", async (req: Request, res: Response) => {
 
 router.get(
   "/innkeeperLogin",
-  secure(jwksService, { realm: config.get("server.oidc.realm")}),
+  secure(jwksService),
   async (req: any, res: Response) => {
     // Validate JWT from OIDC login before moving on
     // The realm access check below is pretty Keycloak specific

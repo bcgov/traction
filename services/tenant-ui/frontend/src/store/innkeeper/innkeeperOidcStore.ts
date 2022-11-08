@@ -38,14 +38,14 @@ export const useInnkeeperOidcStore = defineStore('innkeeperOidcStore', () => {
       const usr = await _userManager.getUser();
       user.value = usr;
 
-      // Use the user's access token JWT from the OIDC provider to call the innkeeper API 
+      // Use the user's access token JWT from the OIDC provider to call the innkeeper API
       // and get an innkeeper token
       const config = {
         headers: { Authorization: `Bearer ${usr?.access_token}` },
       };
       const response: any = await axios.get('/api/innkeeperLogin', config);
       token.value = response.data.access_token;
-      
+
       // strip the oidc return params
       window.history.pushState({}, document.title, '/innkeeper');
     } catch (err: any) {

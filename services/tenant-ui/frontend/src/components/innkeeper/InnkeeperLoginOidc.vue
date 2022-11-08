@@ -1,8 +1,11 @@
 <template>
-  <Button class="w-full mt-5" label="IDIR" @click="oidcLogin" :loading="loading"/>
-  <div v-if="error">
-    ERROR: {{ error }}
-  </div>
+  <Button
+    class="w-full mt-5"
+    label="IDIR"
+    :loading="loading"
+    @click="oidcLogin"
+  />
+  <div v-if="error">ERROR: {{ error }}</div>
 </template>
 
 <script setup lang="ts">
@@ -22,7 +25,6 @@ const oidcLogin = async () => {
   try {
     await innkeeperOidcStore.login();
   } catch (error: any) {
-    debugger;
     toast.error(`Failure: ${error}`);
   }
 };

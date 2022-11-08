@@ -1,9 +1,11 @@
 {
   "frontend": {
-    "innkeeperAuthType": "FRONTEND_INNKEEPER_AUTH_TYPE",
+    "showInnkeeperAdminLogin": "FRONTEND_INNKEEPER_SHOW_ADMIN",
     "innkeeperOidc": {
+      "active": "FRONTEND_INNKEEPER_OIDC_ACTIVE",
       "authority": "FRONTEND_INNKEEPER_OIDC_AUTHORITY",
-      "client": "FRONTEND_INNKEEPER_OIDC_CLIENT"
+      "client": "FRONTEND_INNKEEPER_OIDC_CLIENT",
+      "label": "FRONTEND_INNKEEPER_OIDC_LABEL"
     } 
   },
   "image": {

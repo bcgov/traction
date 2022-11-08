@@ -3,10 +3,12 @@
     "proxyPath": "/api/traction",
     "apiPath": "api/",
     "basePath": "/",
-    "innkeeperAuthType": "all",
+    "showInnkeeperAdminLogin": true,
     "oidc": {
+      "active": true,
       "authority": "https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm",
-      "client": "innkeeper-frontend"
+      "client": "innkeeper-frontend",
+      "label": "IDIR"
     }
   },
   "image": {
