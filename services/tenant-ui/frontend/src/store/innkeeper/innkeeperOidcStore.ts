@@ -54,36 +54,6 @@ export const useInnkeeperOidcStore = defineStore('innkeeperOidcStore', () => {
       loading.value = false;
     }
   });
-  // }
-  // await _userManager
-  //   .getUser()
-  //   .then((usr) => {
-  //     user.value = usr;
-  //     const config = {
-  //       headers: { Authorization: `Bearer ${usr?.access_token}` },
-  //     };
-  //     axios
-  //       .get('/api/innkeeperLogin', config)
-  //       .then((res) => {
-  //         token.value = res.data.access_token;
-  //         // strip the oidc return params
-  //         window.history.pushState({}, document.title, '/innkeeper');
-  //       })
-  //       .catch((err) => {
-  //         debugger;
-  //         error.value = err;
-  //       });
-  //   })
-  //   .catch((err) => {
-  //     debugger;
-  //     error.value = err;
-  //   });
-
-  // if (error.value != null) {
-  //   debugger;
-  //   // throw error so callers can handle appropriately
-  //   throw error.value;
-  // }
 
   // state
   const loading: any = ref(false);
