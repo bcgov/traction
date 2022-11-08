@@ -122,8 +122,8 @@ const emit = defineEmits(['closed', 'success']);
 
 const selectedSchema = computed(() => {
   if (governanceStore.schemaTemplateDropdown != null) {
-    return governanceStore.schemaTemplateDropdown.find(
-      (x) => x.value == props.schemaTemplateId
+    return (governanceStore.schemaTemplateDropdown as any).find(
+      (x: any) => x.value == props.schemaTemplateId
     );
   }
   return null;
