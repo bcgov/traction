@@ -12,7 +12,7 @@ export interface TenantResponseData {
 
 export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
   // state
-  const tenants: Ref<any[] | null | undefined> = ref(null);
+  const tenants: Ref<any> = ref(null);
   const loading: Ref<boolean> = ref(false);
   const error: Ref<string | null> = ref(null);
 

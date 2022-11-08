@@ -75,7 +75,7 @@ const { loading, tenants } = storeToRefs(useInnkeeperTenantsStore());
 console.log('tenants', tenants);
 
 const loadTable = async () => {
-  innkeeperTenantsStore.listTenants().catch((err: any) => {
+  innkeeperTenantsStore.listTenants().catch((err: string) => {
     console.error(err);
     toast.error(`Failure: ${err}`);
   });
