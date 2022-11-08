@@ -1,26 +1,29 @@
 <template>
-  {{ config }}
-  <Button @click="oidcLogin" class="w-full mt-5" label="IDIR" />
-
-  {{ user }}
+  <Button class="w-full mt-5" label="IDIR" @click="oidcLogin" :loading="loading"/>
+  <div v-if="error">
+    ERROR: {{ error }}
+  </div>
 </template>
 
 <script setup lang="ts">
-//Vue
-import { ref, reactive } from 'vue';
 // State
-import { useConfigStore } from '@/store';
 import { useInnkeeperOidcStore } from '@/store';
 import { storeToRefs } from 'pinia';
-// PrimeVue/Validation/etc
+// PrimeVue/etc
 import Button from 'primevue/button';
+import { useToast } from 'vue-toastification';
+const toast = useToast();
 
-const { config } = storeToRefs(useConfigStore());
 const innkeeperOidcStore = useInnkeeperOidcStore();
-const { user } = storeToRefs(useInnkeeperOidcStore());
+const { loading, error } = storeToRefs(useInnkeeperOidcStore());
 
 // OIDC Login
-const oidcLogin = () => {
-  innkeeperOidcStore.login();
+const oidcLogin = async () => {
+  try {
+    await innkeeperOidcStore.login();
+  } catch (error: any) {
+    debugger;
+    toast.error(`Failure: ${error}`);
+  }
 };
 </script>

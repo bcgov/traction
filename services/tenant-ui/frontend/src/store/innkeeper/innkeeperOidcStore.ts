@@ -11,7 +11,6 @@ export const useInnkeeperOidcStore = defineStore('innkeeperOidcStore', () => {
   const { token } = storeToRefs(useInnkeeperTokenStore());
 
   // private (move to other file maybe?)
-  let _userManager: UserManager;
   const _settings: any = {
     authority: config.value.frontend.oidc.authority,
     client_id: config.value.frontend.oidc.client,
@@ -21,11 +20,12 @@ export const useInnkeeperOidcStore = defineStore('innkeeperOidcStore', () => {
     post_logout_redirect_uri: `${window.location.origin}/innkeeper`,
     loadUserInfo: true,
   };
-  _userManager = new UserManager(_settings);
+  const _userManager: UserManager = new UserManager(_settings);
 
   _userManager
     .signinRedirectCallback()
     .then(function (user) {
+      loading.value = true;
       console.log('signed in', user);
     })
     .catch(function (err) {
@@ -33,33 +33,57 @@ export const useInnkeeperOidcStore = defineStore('innkeeperOidcStore', () => {
     });
 
   _userManager.events.addUserLoaded(async () => {
-    await _userManager
-      .getUser()
-      .then((usr) => {
-        user.value = usr;
-        const config = {
-          headers: { Authorization: `Bearer ${usr?.access_token}` },
-        };
-        axios
-          .get('/api/innkeeperLogin', config)
-          .then((res) => {
-            token.value = res.data.access_token;
-          })
-          .catch((err) => {
-            error.value = err;
-            console.error(error.value);
-          });
-      })
-      .catch((err) => {
-        error.value = err;
-        console.error(error.value);
-      });
+    try {
+      // Get the logged in user from the OIDC library
+      const usr = await _userManager.getUser();
+      user.value = usr;
 
-    if (error.value != null) {
-      // throw error so callers can handle appropriately
-      throw error.value;
+      // Use the user's access token JWT from the OIDC provider to call the innkeeper API 
+      // and get an innkeeper token
+      const config = {
+        headers: { Authorization: `Bearer ${usr?.access_token}` },
+      };
+      const response: any = await axios.get('/api/innkeeperLogin', config);
+      token.value = response.data.access_token;
+      
+      // strip the oidc return params
+      window.history.pushState({}, document.title, '/innkeeper');
+    } catch (err: any) {
+      error.value = err;
+    } finally {
+      loading.value = false;
     }
   });
+  // }
+  // await _userManager
+  //   .getUser()
+  //   .then((usr) => {
+  //     user.value = usr;
+  //     const config = {
+  //       headers: { Authorization: `Bearer ${usr?.access_token}` },
+  //     };
+  //     axios
+  //       .get('/api/innkeeperLogin', config)
+  //       .then((res) => {
+  //         token.value = res.data.access_token;
+  //         // strip the oidc return params
+  //         window.history.pushState({}, document.title, '/innkeeper');
+  //       })
+  //       .catch((err) => {
+  //         debugger;
+  //         error.value = err;
+  //       });
+  //   })
+  //   .catch((err) => {
+  //     debugger;
+  //     error.value = err;
+  //   });
+
+  // if (error.value != null) {
+  //   debugger;
+  //   // throw error so callers can handle appropriately
+  //   throw error.value;
+  // }
 
   // state
   const loading: any = ref(false);
@@ -70,6 +94,7 @@ export const useInnkeeperOidcStore = defineStore('innkeeperOidcStore', () => {
 
   // actions
   async function login() {
+    loading.value = true;
     return _userManager.signinRedirect();
   }
 

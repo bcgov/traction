@@ -2,6 +2,7 @@
   "frontend": {
     "innkeeperAuthType": "FRONTEND_INNKEEPER_AUTH_TYPE",
     "innkeeperOidc": {
+      "authority": "FRONTEND_INNKEEPER_OIDC_AUTHORITY",
       "client": "FRONTEND_INNKEEPER_OIDC_CLIENT"
     } 
   },
@@ -11,7 +12,16 @@
     "version": "IMAGE_VERSION"
   },
   "server": {
-    "tractionUrl": "SERVER_TRACTION_URL"
+    "tractionUrl": "SERVER_TRACTION_URL",
+    "oidc": {
+      "jwksUri": "SERVER_OIDC_JWKS",
+      "realm": "SERVER_OIDC_REALM",
+      "roleName": "SERVER_OIDC_ROLE"
+    },
+    "innkeeper": {
+      "user": "SERVER_INNKEEPER_USER",
+      "key": "SERVER_INNKEEPER_KEY"
+    }
   },
   "ux": {
     "appTitle": "UX_APP_TITLE",

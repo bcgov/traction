@@ -6,9 +6,7 @@
     "innkeeperAuthType": "all",
     "oidc": {
       "authority": "https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm",
-      "client": "innkeeper-frontend",
-      "realm": "",
-      "jwks_uri": ""
+      "client": "innkeeper-frontend"
     }
   },
   "image": {
@@ -25,7 +23,14 @@
     "port": "8080",
     "staticFiles": "../../frontend/dist",
     "tractionUrl": "http://localhost:5100",
-    "oidc": {}
+    "oidc": {
+      "jwksUri": "https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm/protocol/openid-connect/certs",
+      "realm": "digitaltrust-nrm",
+      "roleName": "innkeeper"
+    },
+    "innkeeper": {
+      "user": "innkeeper"
+    }
   },
   "ux": {
     "appTitle": "Traction Tenant",

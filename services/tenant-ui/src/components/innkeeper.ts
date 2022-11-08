@@ -1,6 +1,8 @@
 import axios from "axios";
 import config from "config";
 const TRACURL: string = config.get("server.tractionUrl");
+const INN_USER = config.get("server.innkeeper.user");
+const INN_PW = config.get("server.innkeeper.key");
 
 /**
  * @function login
@@ -8,11 +10,8 @@ const TRACURL: string = config.get("server.tractionUrl");
  * @returns {string} The inkeeper token
  */
 export const login = async () => {
-  //config these
-  const username = 'innkeeper';
-  const password = 'vOQnXutMYVjBfDOuqK9rC2dgEDfU1Mpv';
   const loginUrl: string = `${TRACURL}innkeeper/token`;
-  const payload = `username=${username}&password=${password}`;
+  const payload = `username=${INN_USER}&password=${INN_PW}`;
   const res = await axios({
     method: "post",
     url: loginUrl,
