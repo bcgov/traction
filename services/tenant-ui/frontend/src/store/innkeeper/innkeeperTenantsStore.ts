@@ -12,7 +12,7 @@ export interface TenantResponseData {
 
 export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
   // state
-  const tenants: Ref<Array<object> | null> = ref(null);
+  const tenants: Ref<object | null> = ref(null);
   const loading: Ref<boolean> = ref(false);
   const error: Ref<string | null> = ref(null);
 
@@ -23,7 +23,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
   // grab the tenant api
   const innkeeperApi = useInnkeeperApi();
 
-  async function listTenants(): Promise<Array<object> | null> {
+  async function listTenants(): Promise<object | null> {
     return fetchList('/innkeeper/v1/tenants/', tenants, error, loading);
   }
 
