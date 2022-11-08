@@ -31,7 +31,8 @@
       "roleName": "innkeeper"
     },
     "innkeeper": {
-      "user": "innkeeper"
+      "user": "innkeeper",
+      "key": "REDACTED"
     }
   },
   "ux": {

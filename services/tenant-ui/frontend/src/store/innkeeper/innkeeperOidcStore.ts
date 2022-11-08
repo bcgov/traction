@@ -24,11 +24,11 @@ export const useInnkeeperOidcStore = defineStore('innkeeperOidcStore', () => {
 
   _userManager
     .signinRedirectCallback()
-    .then(function (user) {
+    .then((usr) => {
       loading.value = true;
-      console.log('signed in', user);
+      console.log('signed in', usr);
     })
-    .catch(function (err) {
+    .catch((err) => {
       console.error(err);
     });
 
@@ -40,10 +40,10 @@ export const useInnkeeperOidcStore = defineStore('innkeeperOidcStore', () => {
 
       // Use the user's access token JWT from the OIDC provider to call the innkeeper API
       // and get an innkeeper token
-      const config = {
+      const loginCfg = {
         headers: { Authorization: `Bearer ${usr?.access_token}` },
       };
-      const response: any = await axios.get('/api/innkeeperLogin', config);
+      const response: any = await axios.get('/api/innkeeperLogin', loginCfg);
       token.value = response.data.access_token;
 
       // strip the oidc return params
