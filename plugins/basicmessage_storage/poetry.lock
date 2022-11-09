@@ -90,7 +90,7 @@ yaml = ["PyYAML (>=3.10)"]
 
 [[package]]
 name = "aries-cloudagent"
-version = "0.7.5"
+version = "0.7.4"
 description = ""
 category = "main"
 optional = false
@@ -865,7 +865,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6.13,<4.0"
-content-hash = "dc21abd47a7a81b4894f8bda213b2e735bf6343fc20da5e5ce8313cc712fdda2"
+content-hash = "e6e95bb093f7f995713a3345c78d584f67f0fca861478b551886c09d657f2e68"
 
 [metadata.files]
 aiohttp = []
