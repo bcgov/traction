@@ -1,4 +1,5 @@
 import { useTenantApi } from '../tenantApi';
+import { AxiosRequestConfig } from 'axios';
 import { Ref } from 'vue';
 
 export async function fetchList(
@@ -6,7 +7,7 @@ export async function fetchList(
   list: Ref<any>,
   error: Ref<any>,
   loading: Ref<boolean>,
-  params: any = {}
+  params: object = {}
 ) {
   const tenantApi = useTenantApi();
   console.log(`> fetchList(${url})`);
@@ -18,16 +19,16 @@ export async function fetchList(
   // console.log(params);
   await tenantApi
     .getHttp(url, params)
-    .then((res) => {
+    .then((res: AxiosRequestConfig): void => {
       // console.log(res);
       list.value = res.data.items;
       // console.log(list.value);
     })
-    .catch((err) => {
+    .catch((err: string): void => {
       error.value = err;
       // console.log(error.value);
     })
-    .finally(() => {
+    .finally((): void => {
       loading.value = false;
     });
   console.log(`< fetchList(${url})`);

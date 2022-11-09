@@ -4,7 +4,7 @@
  * This is to allow calls to the Innkeeper API with the specific Innkeeper token usage
  */
 import { defineStore, storeToRefs } from 'pinia';
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { useConfigStore } from '../configStore';
 import { useInnkeeperTokenStore } from '../index';
 
@@ -12,7 +12,7 @@ export const useInnkeeperApi = defineStore('innkeeperApi', () => {
   const innkeeperTokenStore = useInnkeeperTokenStore();
   const { config } = storeToRefs(useConfigStore());
 
-  function createAxios(options = {}) {
+  function createAxios(options: object = {}): AxiosInstance {
     console.log('creating axios instance...');
     console.log(options);
     return axios.create({
@@ -28,7 +28,7 @@ export const useInnkeeperApi = defineStore('innkeeperApi', () => {
 
   // need to add authorization before we make traction tenant requests...
   innkeeperApi.interceptors.request.use(
-    async (apiConfig: AxiosRequestConfig) => {
+    async (apiConfig: AxiosRequestConfig): Promise<object> => {
       const result = {
         ...apiConfig,
         headers: {
@@ -40,7 +40,7 @@ export const useInnkeeperApi = defineStore('innkeeperApi', () => {
       };
       return result;
     },
-    async (error: any) => {
+    async (error: string): Promise<object> => {
       console.error('innkeeperApi.request.error');
       console.error(error);
       return Promise.reject(error);
@@ -48,12 +48,12 @@ export const useInnkeeperApi = defineStore('innkeeperApi', () => {
   );
 
   innkeeperApi.interceptors.response.use(
-    (response) => {
+    (response): object => {
       // console.log('tenantApi.response.fulfilled');
       // console.log(response);
       return response;
     },
-    (error: any) => {
+    (error: any): Promise<object> => {
       console.error('innkeeperApi.response.error');
       console.error(error);
       if (error.response.status === 401) {
@@ -69,7 +69,7 @@ export const useInnkeeperApi = defineStore('innkeeperApi', () => {
     url: string,
     method: string,
     options = {}
-  ): Promise<any> {
+  ): Promise<object> {
     return innkeeperApi({
       method: method.toUpperCase(),
       url,
@@ -79,9 +79,9 @@ export const useInnkeeperApi = defineStore('innkeeperApi', () => {
 
   async function getHttp(
     url: string,
-    params: any = {},
-    options: any = {}
-  ): Promise<any> {
+    params: object = {},
+    options: object = {}
+  ): Promise<object> {
     return callInnkeepertApi(url, 'get', {
       ...options,
       params,
@@ -90,9 +90,9 @@ export const useInnkeeperApi = defineStore('innkeeperApi', () => {
 
   async function postHttp(
     url: string,
-    data: any = {},
-    options: any = {}
-  ): Promise<any> {
+    data: object = {},
+    options: object = {}
+  ): Promise<object> {
     return callInnkeepertApi(url, 'post', {
       data,
       ...options,
@@ -101,9 +101,9 @@ export const useInnkeeperApi = defineStore('innkeeperApi', () => {
 
   async function updateHttp(
     url: string,
-    data: any = {},
-    options: any = {}
-  ): Promise<any> {
+    data: object = {},
+    options: object = {}
+  ): Promise<object> {
     return callInnkeepertApi(url, 'update', {
       data,
       ...options,
@@ -112,9 +112,9 @@ export const useInnkeeperApi = defineStore('innkeeperApi', () => {
 
   async function putHttp(
     url: string,
-    data: any = {},
-    options: any = {}
-  ): Promise<any> {
+    data: object = {},
+    options: object = {}
+  ): Promise<object> {
     return callInnkeepertApi(url, 'put', {
       data,
       ...options,
@@ -123,9 +123,9 @@ export const useInnkeeperApi = defineStore('innkeeperApi', () => {
 
   async function patchHttp(
     url: string,
-    data: any = {},
-    options: any = {}
-  ): Promise<any> {
+    data: object = {},
+    options: object = {}
+  ): Promise<object> {
     return callInnkeepertApi(url, 'patch', {
       data,
       ...options,
@@ -134,8 +134,8 @@ export const useInnkeeperApi = defineStore('innkeeperApi', () => {
 
   async function deleteHttp(
     url: string,
-    data: any = {},
-    options: any = {}
+    data: object = {},
+    options: object = {}
   ): Promise<any> {
     return callInnkeepertApi(url, 'delete', {
       data,

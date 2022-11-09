@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { ref, Ref } from 'vue';
 import { useInnkeeperApi } from './innkeeperApi';
 import { fetchList } from '../utils';
-
+import { AxiosRequestConfig } from 'axios';
 export interface TenantResponseData {
   tenant_id?: string;
   name?: string;
@@ -12,9 +12,9 @@ export interface TenantResponseData {
 
 export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
   // state
-  const tenants: any = ref(null);
-  const loading: any = ref(false);
-  const error: any = ref(null);
+  const tenants: Ref<any> = ref(null);
+  const loading: Ref<boolean> = ref(false);
+  const error: Ref<string | null> = ref(null);
 
   // getters
 
@@ -23,11 +23,19 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
   // grab the tenant api
   const innkeeperApi = useInnkeeperApi();
 
-  async function listTenants() {
+  async function listTenants(): Promise<object | null> {
     return fetchList('/innkeeper/v1/tenants/', tenants, error, loading);
   }
 
-  async function checkInTenant(name: string, allowIssue: boolean) {
+  // TODO: Test out creating a tenant
+  interface CreateTenantParams {
+    name: string;
+    allowIssue: boolean;
+  }
+
+  async function checkInTenant(
+    data: CreateTenantParams
+  ): Promise<TenantResponseData | undefined> {
     console.log('> innkeeperTenantsStore.checkInTenant');
     error.value = null;
     loading.value = true;
@@ -35,21 +43,21 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     let tenantData: TenantResponseData | undefined;
     await innkeeperApi
       .postHttp('/innkeeper/v1/tenants/check-in', {
-        name,
-        allow_issue_credentials: allowIssue,
+        name: data.name,
+        allow_issue_credentials: data.allowIssue,
       })
-      .then((res) => {
+      .then((res: AxiosRequestConfig): void => {
         tenantData = res.data.item;
       })
-      .then(() => {
+      .then((): void => {
         // Tenant created, reload the list in state
         listTenants();
       })
-      .catch((err) => {
+      .catch((err: string): void => {
         error.value = err;
         console.error(error.value);
       })
-      .finally(() => {
+      .finally((): void => {
         loading.value = false;
       });
     console.log('< innkeeperTenantsStore.checkInTenant');

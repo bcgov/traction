@@ -180,20 +180,24 @@ const v$ = useVuelidate(rules, formFields);
 // These can maybe be generalized into a util function (for all dropdown searches)
 const searchContacts = (event: any) => {
   if (!event.query.trim().length) {
-    filteredContacts.value = [...contactsDropdown.value];
+    filteredContacts.value = [...(contactsDropdown as any).value];
   } else {
-    filteredContacts.value = contactsDropdown.value.filter((contact) => {
-      return contact.label.toLowerCase().includes(event.query.toLowerCase());
-    });
+    filteredContacts.value = (contactsDropdown.value as any).filter(
+      (contact: any) => {
+        return contact.label.toLowerCase().includes(event.query.toLowerCase());
+      }
+    );
   }
 };
 const searchCreds = (event: any) => {
   if (!event.query.trim().length) {
-    filteredCreds.value = [...credentialTemplateDropdown.value];
+    filteredCreds.value = [...(credentialTemplateDropdown.value as any)];
   } else {
-    filteredCreds.value = credentialTemplateDropdown.value.filter((cred) => {
-      return cred.label.toLowerCase().includes(event.query.toLowerCase());
-    });
+    filteredCreds.value = (credentialTemplateDropdown.value as any).filter(
+      (cred: any) => {
+        return cred.label.toLowerCase().includes(event.query.toLowerCase());
+      }
+    );
   }
 };
 

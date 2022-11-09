@@ -2,24 +2,34 @@ import axios from 'axios';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { useConfigStore } from '../configStore';
+import { Ref } from 'vue';
 
 export const useInnkeeperTokenStore = defineStore(
   'useInnkeeperTokenStore',
   () => {
     // state
-    const token: any = ref(null);
-    const loading: any = ref(false);
-    const error: any = ref(null);
+    const token: Ref<string | null> = ref(null);
+    const loading: Ref<boolean> = ref(false);
+    const error: Ref<string | null> = ref(null);
 
     // getters
-    const innkeeperReady = computed(() => {
+    const innkeeperReady = computed((): boolean => {
       return token.value != null;
     });
 
+    /**
+     * The format of the token request is:
+     */
+    interface LoginParameters {
+      adminName: string;
+      adminKey: string;
+    }
+
     // actions
-    async function login(username: string, password: string) {
+    async function login(params: LoginParameters): Promise<string | null> {
       console.log('> innkeeperTokenStore.load');
-      const payload = `username=${username}&password=${password}`;
+      console.log('params', params);
+      const payload = `username=${params.adminName}&password=${params.adminKey}`;
       token.value = null;
       error.value = null;
       loading.value = true;
@@ -37,7 +47,6 @@ export const useInnkeeperTokenStore = defineStore(
         data: payload,
       })
         .then((res) => {
-          console.log(res);
           token.value = res.data.access_token;
         })
         .catch((err) => {
@@ -57,7 +66,7 @@ export const useInnkeeperTokenStore = defineStore(
       return token.value;
     }
 
-    function clearToken() {
+    function clearToken(): void {
       console.log('> clearToken');
       token.value = null;
       console.log('< clearToken');

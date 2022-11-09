@@ -107,17 +107,18 @@ const v$ = useVuelidate(rules, formFields);
 
 // Form submission
 const submitted = ref(false);
-const handleSubmit = async (isFormValid: boolean) => {
+const handleSubmit = async (isFormValid: boolean): Promise<void> => {
   submitted.value = true;
   if (!isFormValid) {
     return;
   }
   try {
+    const data = {
+      name: formFields.name,
+      allowIssue: formFields.allowIssue,
+    };
     // call store
-    const result = await innkeeperTenantsStore.checkInTenant(
-      formFields.name,
-      formFields.allowIssue
-    );
+    const result = await innkeeperTenantsStore.checkInTenant(data);
     if (result != null) {
       checkinResponse.value = result;
       toast.success(`Tenant ${formFields.name} Checked In Successfully`);
@@ -131,18 +132,17 @@ const handleSubmit = async (isFormValid: boolean) => {
 };
 
 // Copying key to clipboard
-const copy_to_clipboard = () => {
+const copy_to_clipboard = (): void => {
   navigator.clipboard.writeText(`Wallet ID: ${checkinResponse.value?.wallet_id}
   \r\nWallet Key: ${checkinResponse.value?.wallet_key}`);
   toast.info('Wallet information copied to clipboard');
-  return;
 };
 
 // Close the form after check in
 // Parent will not let the form close by other avenues once checked-in
-const closeForm = (event: any) => {
+const closeForm = (event: any): void => {
   confirm.require({
-    target: event.currentTarget,
+    target: event.target,
     message:
       'Are you sure? You will not be able to retrieve this wallet key again after this.',
     header: 'Confirmation',
