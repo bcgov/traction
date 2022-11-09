@@ -2,7 +2,14 @@
   "frontend": {
     "proxyPath": "/api/traction",
     "apiPath": "api/",
-    "basePath": "/"
+    "basePath": "/",
+    "showInnkeeperAdminLogin": true,
+    "oidc": {
+      "active": false,
+      "authority": "https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm",
+      "client": "innkeeper-frontend",
+      "label": "IDIR"
+    }
   },
   "image": {
     "buildtime": "",
@@ -17,7 +24,16 @@
     "logLevel": "http",
     "port": "8080",
     "staticFiles": "../../frontend/dist",
-    "tractionUrl": "http://localhost:5100"
+    "tractionUrl": "http://localhost:5100",
+    "oidc": {
+      "jwksUri": "https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm/protocol/openid-connect/certs",
+      "realm": "digitaltrust-nrm",
+      "roleName": "innkeeper"
+    },
+    "innkeeper": {
+      "user": "innkeeper",
+      "key": "REDACTED"
+    }
   },
   "ux": {
     "appTitle": "Traction Tenant",
@@ -27,4 +43,3 @@
     "coverImageCopyright": "Photo by Kristoffer Fredriksson on StockSnap"
   }
 }
-  

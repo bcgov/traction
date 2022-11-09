@@ -12,3 +12,4 @@ export { useMessageStore } from './messageStore';
 // Innkeeper
 export { useInnkeeperTokenStore } from './innkeeper/innkeeperTokenStore';
 export { useInnkeeperTenantsStore } from './innkeeper/innkeeperTenantsStore';
+export { useInnkeeperOidcStore } from './innkeeper/innkeeperOidcStore';
