@@ -9,7 +9,7 @@
     "start": "node dist/src/index.js",
     "dev": "ts-node-dev --respawn --pretty --transpile-only src/index.ts",
     "lint": "eslint . --ext .ts --max-warnings=0 --ignore-path .gitignore --ignore-pattern 'frontend/*' .",
-    "api": "openapi-typescript https://traction-api-test.apps.silver.devops.gov.bc.ca/tenant/openapi.json --output schema.ts"
+    "generate-schema": "openapi-typescript https://traction-api-test.apps.silver.devops.gov.bc.ca/tenant/openapi.json --output schema.ts"
   },
   "keywords": [],
   "author": "",
