@@ -15,6 +15,7 @@ config/local.json
 *.swp
 *.zip
 *.tgz
+schema.ts
 
 # Temporary Code
 node_modules
