@@ -8,7 +8,8 @@
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "lint": "eslint --ext .ts,vue --max-warnings=0 .",
-    "lintfix": "eslint --fix --ext .ts,vue ."
+    "lintfix": "eslint --fix --ext .ts,vue .",
+    "generate-schema": "openapi-typescript $npm_config_url --output schema.ts"
   },
   "dependencies": {
     "@vuelidate/core": "^2.0.0",
@@ -37,6 +38,7 @@
     "eslint": "^8.25.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-vue": "^9.6.0",
+    "openapi-typescript": "^6.0.3",
     "prettier": "^2.7.1",
     "sass": "^1.55.0",
     "typescript": "^4.8.4",
