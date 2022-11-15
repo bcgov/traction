@@ -9,6 +9,8 @@ tenant_ui:
     pullPolicy: Always
   traction_api:
     endpoint: https://pr-00-traction-api-dev.apps.silver.devops.gov.bc.ca
+  traction_api:
+    endpoint: https://pr-00-traction-acapy-admin-dev.apps.silver.devops.gov.bc.ca
   resources:
     limits:
       cpu: 200m

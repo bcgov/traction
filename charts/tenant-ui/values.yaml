@@ -32,11 +32,13 @@ tenant_ui:
     owner: ''
     coverImageCopyright: 'Photo by Kristoffer Fredriksson on StockSnap'
 
-
   traction_api:
     # this is the private endpoint
     endpoint: http://traction-api:5000
 
+  traction_api:
+    # this is the private endpoint
+    endpoint: http://traction-agent:8031
 
   serviceAccount:
     # -- Specifies whether a service account should be created

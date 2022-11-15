@@ -15,6 +15,7 @@
   },
   "server": {
     "tractionUrl": "SERVER_TRACTION_URL",
+    "acapyAdminUrl": "SERVER_ACAPY_ADMIN_URL",
     "oidc": {
       "jwksUri": "SERVER_OIDC_JWKS",
       "realm": "SERVER_OIDC_REALM",
