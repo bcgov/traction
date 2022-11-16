@@ -24,7 +24,7 @@ plugin:
   - aries_cloudagent.messaging.jsonld
   - traction_plugins.basicmessage_storage.v1_0
   - traction_plugins.multitenant_provider
-  - traction_plugins.traction_innkeeper
+  - traction_plugins.traction_innkeeper.v1_0
   - traction_plugins.traction_metadata
 
 # block-plugin:

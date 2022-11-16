@@ -59,3 +59,4 @@ exec aca-py start \
     --plugin traction_plugins.multitenant_provider \
     --plugin-config-value multitenant_provider.manager_class=traction_plugins.multitenant_provider.manager.BasicMultitokenMultitenantManager \
     --plugin traction_plugins.basicmessage_storage.v1_0 \
+    --plugin traction_plugins.traction_innkeeper.v1_0 \

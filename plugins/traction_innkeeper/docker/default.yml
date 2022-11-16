@@ -15,7 +15,7 @@ endpoint:
 
 # plugins
 plugin:
-  - traction_innkeeper
+  - traction_innkeeper.v1_0
 
 #config 
 genesis-url: https://indy.igrant.io/genesis
