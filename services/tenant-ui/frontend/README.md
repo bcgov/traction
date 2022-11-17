@@ -31,3 +31,19 @@ npm run lint
 ```sh
 npm run lintfix
 ```
+
+## Generating Typescript Schema for the API
+
+### Examples
+
+Generate schema from the **test** API
+
+```bash
+npm run generate-schema --url=https://traction-api-test.apps.silver.devops.gov.bc.ca/tenant/openapi.json
+```
+
+Generate schema from the local API
+
+```bash
+npm run generate-schema --url=https://localhost:5100/tenant/openapi.json
+```
