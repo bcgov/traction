@@ -39,6 +39,11 @@ const items = [
     to: { name: 'Settings' },
   },
   {
+    label: 'Developer',
+    icon: 'pi pi-cog',
+    to: { name: 'Developer' },
+  },
+  {
     label: 'Logout',
     icon: 'pi pi-sign-out',
     url: '/', // TODO: this should be a logout route
