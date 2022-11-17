@@ -6,6 +6,7 @@ import path from "path";
 import { router } from "./routes/router";
 import { tractionProxy } from "./routes/tractionRouter";
 import { acapyProxy } from "./routes/acapyRouter";
+import { handleAcapy } from "./middelware/acapy";
 
 const PORT: number = parseInt(config.get("server.port") as string, 10);
 const APIROOT: string = config.get("server.apiPath");
@@ -14,6 +15,9 @@ const PROXYACAPYROOT: string = config.get("server.proxyAcapyPath");
 const STATIC_FILES_PATH: string = config.get("server.staticFiles");
 
 import history from "connect-history-api-fallback";
+
+
+
 
 const app = express();
 app.use(history());
@@ -40,12 +44,13 @@ app.use("/config", (_, res, next) => {
 // This service's api endpoints
 app.use(APIROOT, router);
 
-// Proxy any api/traction calls over to Traction
-app.use(`${PROXYROOT}`, tractionProxy);
-
 // Proxy any api/traction/acapy calls over to acapy
 // This is just to support developing the FE against both paths for now
-app.use(`${PROXYACAPYROOT}`, acapyProxy);
+// See comments in acapy.ts middleware
+app.use(`${PROXYACAPYROOT}/`, handleAcapy, acapyProxy);
+
+// Proxy any api/traction calls over to Traction
+app.use(`${PROXYROOT}`, tractionProxy);
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);

@@ -28,6 +28,7 @@
     "staticFiles": "../../frontend/dist",
     "tractionUrl": "http://localhost:5100",
     "acapyAdminUrl": "http://localhost:8031",
+    "acapyAdminApiKey": "REDACTED",
     "oidc": {
       "jwksUri": "https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm/protocol/openid-connect/certs",
       "realm": "digitaltrust-nrm",

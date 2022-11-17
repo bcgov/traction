@@ -15,7 +15,7 @@ export const useMessageStore = defineStore('messages', () => {
   const tenantApi = useTenantApi();
 
   async function listMessages() {
-    return fetchList('/tenant/v1/messages/', messages, error, loading);
+    return fetchList('acapy/basicmessages', messages, error, loading);
   }
 
   return {

@@ -23,6 +23,7 @@
     "express-oauth-jwt": "^2.0.1",
     "http-proxy-middleware": "^2.0.6",
     "jose": "^4.10.4",
+    "jsonwebtoken": "^8.5.1",
     "path": "^0.12.7",
     "rimraf": "^3.0.2"
   },
@@ -32,6 +33,7 @@
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.14",
     "@types/helmet": "^4.0.0",
+    "@types/jsonwebtoken": "^8.5.9",
     "@types/node": "^18.11.3",
     "@typescript-eslint/eslint-plugin": "^5.40.1",
     "@typescript-eslint/parser": "^5.40.1",
