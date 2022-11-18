@@ -1,5 +1,6 @@
 global:
   fullnameOverride: "int-tenant-ui"
+  tractionNameOverride: "int-traction"
   ingressSuffix: -test.apps.silver.devops.gov.bc.ca
 tenant_ui:
   image:

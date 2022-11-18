@@ -9,6 +9,8 @@ global:
   # use the global.fullnameOverride to install a different named helm instance and will affect naming of all objects and routes for that chart.
   # for pull requests, can set to something like pr-NN-tenant-ui.
   fullnameOverride: "tenant-ui"
+  # The name of the sibling Traction deployment so that the tenant UI can reference Traction/acapy config and secrets
+  tractionNameOverride: "traction"
 
   # -- Domain suffix to be used for default hostpaths in ingress
   # override in different environments, or for each app

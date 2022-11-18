@@ -23,6 +23,14 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 {{- end }}
 
+{{/*
+Define the Traction instance name 
+So tenant UI can access config and secrets for traction and acapy in the same namespace
+*/}}
+{{- define "global.tractionName" -}}
+{{- .Values.global.tractionNameOverride | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
 
 {{/*
 Create chart name and version as used by the chart label.
@@ -71,7 +79,7 @@ Create a default fully qualified acapy name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "acapy.fullname" -}}
-{{ template "global.fullname" . }}-acapy
+{{ template "global.tractionName" . }}-acapy
 {{- end -}}
 
 {{/*
@@ -79,7 +87,7 @@ Create a default fully qualified acapy name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "acapy.api.secret.name" -}}
-pr-329-traction-acapy-api
+{{ template "acapy.fullname" . }}-api
 {{- end -}}
 
 {{/*
