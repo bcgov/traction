@@ -1,7 +1,9 @@
-from typing import Optional
+from datetime import datetime, timezone, timedelta
+from typing import Optional, Union
 
 from aries_cloudagent.core.profile import ProfileSession
 from aries_cloudagent.messaging.models.base_record import BaseRecord, BaseRecordSchema
+from aries_cloudagent.messaging.util import datetime_to_str, str_to_datetime
 from aries_cloudagent.messaging.valid import UUIDFour
 from aries_cloudagent.storage.error import StorageDuplicateError, StorageNotFoundError
 from marshmallow import fields, EXCLUDE, validate
@@ -39,6 +41,7 @@ class ReservationRecord(BaseRecord):
         tenant_id: str = None,
         wallet_id: str = None,
         reservation_token: str = None,
+        reservation_token_expiry: Union[str, datetime] = None,
         **kwargs,
     ):
         """Construct record."""
@@ -54,11 +57,35 @@ class ReservationRecord(BaseRecord):
         self.wallet_id = wallet_id
 
         self.reservation_token = reservation_token
+        self._reservation_token_expiry: str = datetime_to_str(reservation_token_expiry)
 
     @property
     def reservation_id(self) -> Optional[str]:
         """Return record id."""
         return self._id
+
+    @property
+    def reservation_token_expiry(self) -> str:
+        return self._reservation_token_expiry
+
+    @reservation_token_expiry.setter
+    def reservation_token_expiry(self, value: Union[str, datetime] = None) -> None:
+        self._reservation_token_expiry = datetime_to_str(value)
+
+    def set_default_reservation_token_expiry(self):
+        #  TODO: read a default value from settings and use that...
+        # set to 7 days...
+        exp = datetime.utcnow() + timedelta(minutes=24*7*60)
+        self.reservation_token_expiry = exp
+
+    @property
+    def expired(self) -> bool:
+        if not self._reservation_token_expiry:
+            return False
+        else:
+            return datetime.now(tz=timezone.utc) > str_to_datetime(
+                self._reservation_token_expiry
+            )
 
     @property
     def record_value(self) -> dict:
@@ -72,6 +99,7 @@ class ReservationRecord(BaseRecord):
                 "contact_email",
                 "contact_phone",
                 "reservation_token",
+                "reservation_token_expiry",
                 "tenant_id",
                 "wallet_id",
             )

@@ -1,6 +1,7 @@
 import functools
 import logging
 import uuid
+from datetime import datetime, timedelta
 
 import bcrypt
 from aiohttp import web
@@ -202,6 +203,10 @@ async def tenant_signin(request: web.BaseRequest):
                 res_rec = await ReservationRecord.query_by_reservation_token(
                     session, reservation_token.decode("utf-8")
                 )
+
+                if res_rec.expired:
+                    raise web.HTTPUnauthorized(reason="Reservation has expired")
+
                 if res_rec.state == ReservationRecord.STATE_APPROVED:
                     # ok, let's update this, create a tenant, create a wallet
                     tenant, wallet_record, token = await mgr.create_wallet(
@@ -212,7 +217,9 @@ async def tenant_signin(request: web.BaseRequest):
                     res_rec.state = ReservationRecord.STATE_COMPLETED
                     res_rec.wallet_id = wallet_record.wallet_id
                     res_rec.tenant_id = tenant.tenant_id
+                    # do not need reservation token or expiry
                     res_rec.reservation_token = None
+                    res_rec.reservation_token_expiry = None
                     await res_rec.save(session)
         except Exception as err:
             LOGGER.error(err)
@@ -282,6 +289,9 @@ async def innkeeper_reservations_approve(request: web.BaseRequest):
                 reservation_pwd = str(uuid.uuid4())  # we need to return this...
                 reservation_token = bcrypt.hashpw(reservation_pwd.encode("utf-8"), SALT)
                 rec.reservation_token = reservation_token.decode("utf-8")
+                # reservation token set, so set the default expiry
+                rec.set_default_reservation_token_expiry()
+
                 rec.state = ReservationRecord.STATE_APPROVED
                 await rec.save(session)
             LOGGER.info(rec)
