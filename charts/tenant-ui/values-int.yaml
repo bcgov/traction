@@ -11,5 +11,5 @@ tenant_ui:
   traction_api:
     endpoint: https://int-traction-api-test.apps.silver.devops.gov.bc.ca
   acapy_admin_api:
-    endpoint: https://int-traction-acapy-admin-test.apps.silver.devops.gov.bc.ca/
+    endpoint: https://int-traction-acapy-admin-test.apps.silver.devops.gov.bc.ca
 
