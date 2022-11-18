@@ -67,6 +67,22 @@ it randomly.
 
 
 {{/*
+Create a default fully qualified acapy name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "acapy.fullname" -}}
+{{ template "global.fullname" . }}-acapy
+{{- end -}}
+
+{{/*
+Create a default fully qualified acapy name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "acapy.api.secret.name" -}}
+{{ template "acapy.fullname" . }}-api
+{{- end -}}
+
+{{/*
 Create a default fully qualified traction tenant ui name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
