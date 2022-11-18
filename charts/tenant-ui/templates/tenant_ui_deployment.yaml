@@ -52,7 +52,7 @@ spec:
               value: {{ .Values.tenant_ui.traction_api.endpoint }}
             - name: SERVER_ACAPY_ADMIN_URL
               value: {{ .Values.tenant_ui.acapy_admin_api.endpoint }}
-            - name: ACAPY_ADMIN_URL_API_KEY
+            - name: SERVER_ACAPY_ADMIN_URL_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: {{ template "acapy.api.secret.name" . }}
