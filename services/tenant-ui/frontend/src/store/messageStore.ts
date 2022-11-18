@@ -56,7 +56,7 @@ export const useMessageStore = defineStore('messages', () => {
     loading,
     error,
     listMessages,
-    sendMessage
+    sendMessage,
   };
 });
 

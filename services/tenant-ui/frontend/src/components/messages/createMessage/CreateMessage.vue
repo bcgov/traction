@@ -24,9 +24,7 @@ import { ref } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 // State
-import {
-  useContactsStore
-} from '@/store';
+import { useContactsStore } from '@/store';
 // Custom Components
 import CreateMessageForm from './CreateMessageForm.vue';
 // Other Imports
@@ -44,13 +42,9 @@ defineEmits(['success']);
 const displayModal = ref(false);
 const openModal = async () => {
   // Kick of the loading asyncs in the store to fetch contacts/creds
-  Promise.all([
-    contactsStore.listContacts()
-  ]).catch((err) => {
+  Promise.all([contactsStore.listContacts()]).catch((err) => {
     console.error(err);
-    toast.error(
-      `An error occurred loading your contacts: ${err}`
-    );
+    toast.error(`An error occurred loading your contacts: ${err}`);
   });
   displayModal.value = true;
 };

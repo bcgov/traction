@@ -9,7 +9,7 @@ export async function fetchList(
   error: Ref<any>,
   loading: Ref<boolean>,
   params: object = {},
-  isAcapy: boolean = false
+  isAcapy = false
 ) {
   const tenantApi = useTenantApi();
   console.log(`> fetchList(${url})`);

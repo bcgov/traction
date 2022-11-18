@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-0">{{ t('messages.messages')}}</h3>
+  <h3 class="mt-0">{{ t('messages.messages') }}</h3>
   <DataTable
     v-model:expandedRows="expandedRows"
     v-model:selection="selectedMessage"
