@@ -20,7 +20,7 @@ export const useMessageStore = defineStore('messages', () => {
     content: string;
   };
 
-  async function sendMessage(conn_id: string, payload: SendPayload) {
+  async function sendMessage(connId: string, payload: SendPayload) {
     console.log('> messageStore.sendMessage');
     error.value = null;
     loading.value = true;
@@ -28,7 +28,7 @@ export const useMessageStore = defineStore('messages', () => {
     let result = null;
 
     await tenantApi
-      .postHttp(`/acapy/connections/${conn_id}/send-message`, payload)
+      .postHttp(`/acapy/connections/${connId}/send-message`, payload)
       .then((res) => {
         console.log(res);
         result = res.data.item;

@@ -15,7 +15,7 @@ export function handleAcapy(req: any, res: any, next: any) {
   if (!isMatch) return res.sendStatus(403);
 
   // Extract the ACAPY token from the TRACTION token (likely not needed down the line)
-  const authHeader = req.headers["authorization"];
+  const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.split(" ")[1];
   if (!token) return res.sendStatus(401);
 
