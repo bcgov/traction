@@ -14,6 +14,7 @@ typing-extensions = "^3.7.4"
 python-dateutil = "^2.8.1"
 PyJWT = "^2.4.0"
 python3-indy = { version = ">=1.11.1,<2" }
+basicmessage_storage = {path = "./basicmessage_storage", develop = true}
 multitenant-provider = {path = "./multitenant_provider", develop = true}
 traction-innkeeper = {path = "./traction_innkeeper", develop = true}
 traction-metadata = {path = "./traction_metadata", develop = true}
