@@ -33,7 +33,9 @@ export const useContactsStore = defineStore('contacts', () => {
 
   async function listContacts() {
     selectedContact.value = null;
-    return fetchList('/tenant/v1/contacts/', contacts, error, loading);
+    return fetchList('/tenant/v1/contacts/', contacts, error, loading, {
+      acapy: true,
+    });
   }
 
   async function createInvitation(alias: string) {
@@ -195,6 +197,7 @@ export const useContactsStore = defineStore('contacts', () => {
       result = {
         label: `${item.alias}`,
         value: item.contact_id,
+        conn_id: item.acapy.connection.connection_id,
         status: item.status,
       };
     }
