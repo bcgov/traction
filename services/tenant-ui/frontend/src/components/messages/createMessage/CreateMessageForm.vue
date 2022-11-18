@@ -57,7 +57,7 @@
 
       <Button
         type="submit"
-        label="Send Offer"
+        label="Send Message"
         class="mt-5 w-full"
         :disabled="loading"
       />
