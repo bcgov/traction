@@ -209,6 +209,7 @@ services:
         condition: service_started
     environment:
       - SERVER_TRACTION_URL=${SERVER_TRACTION_URL}
+      - SERVER_ACAPY_ADMIN_URL=${SERVER_ACAPY_ADMIN_URL}
       - IMAGE_BUILDTIME=${IMAGE_BUILDTIME}
       - IMAGE_TAG=${IMAGE_TAG}
       - IMAGE_VERSION=${IMAGE_VERSION}

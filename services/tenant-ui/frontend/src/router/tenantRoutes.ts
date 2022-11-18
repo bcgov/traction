@@ -5,6 +5,7 @@ import About from '@/views/About.vue';
 import TenantUi from '@/views/TenantUi.vue';
 import Profile from '@/views/tenant/Profile.vue';
 import Settings from '@/views/tenant/Settings.vue';
+import Developer from '@/views/tenant/Developer.vue';
 // Connections
 import MyContacts from '@/views/connections/MyContacts.vue';
 // Issuance
@@ -49,6 +50,11 @@ const tenantRoutes = [
             path: 'settings',
             name: 'Settings',
             component: Settings,
+          },
+          {
+            path: 'developer',
+            name: 'Developer',
+            component: Developer,
           },
         ],
       },

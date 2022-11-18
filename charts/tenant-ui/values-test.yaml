@@ -9,4 +9,6 @@ tenant_ui:
     pullPolicy: Always
   traction_api:
     endpoint: https://traction-api-test.apps.silver.devops.gov.bc.ca
+  acapy_admin_api:
+    endpoint: https://traction-acapy-admin-test.apps.silver.devops.gov.bc.ca
 

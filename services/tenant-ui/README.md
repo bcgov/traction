@@ -63,7 +63,7 @@ Build and run a docker image (example shows using environment variable to point 
 
 ```bash
 docker build . -t local/traction-ui
-docker run --env SERVER_TRACTION_URL=https://traction-api-test.apps.silver.devops.gov.bc.ca/ -p 8080:8080 -d local/traction-ui
+docker run --env SERVER_TRACTION_URL=https://traction-api-test.apps.silver.devops.gov.bc.ca/ SERVER_ACAPY_ADMIN_URL=https://traction-acapy-admin-test.apps.silver.devops.gov.bc.ca/ -p 8080:8080 -d local/traction-ui
 ```
 
 ## Internationalization

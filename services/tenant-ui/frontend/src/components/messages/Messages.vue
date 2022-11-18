@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-0">Messages</h3>
+  <h3 class="mt-0">{{ t('messages.messages') }}</h3>
   <DataTable
     v-model:expandedRows="expandedRows"
     v-model:selection="selectedMessage"
@@ -13,13 +13,7 @@
     <template #header>
       <div class="flex justify-content-between">
         <div class="flex justify-content-start">
-          <SuperYou
-            :api-url="apiUrl"
-            :template-json="templateJson"
-            text="Create a Message"
-            icon="pi-envelope"
-            @success="loadTable"
-          />
+          <CreateMessage @success="loadTable" />
         </div>
         <div class="flex justify-content-end">
           <Button
@@ -33,24 +27,14 @@
     </template>
     <template #empty> No records found. </template>
     <template #loading> Loading data. Please wait... </template>
-    <Column :expander="true" header-style="width: 3rem" />
-    <Column field="contact.alias" header="Contact" />
-    <Column field="role" header="Role" />
+    <Column field="connection_id" header="Connection ID" />
     <Column field="state" header="State" />
     <Column field="content" header="Content" />
-    <Column field="tags" header="Tags" />
-    <Column field="created_at" header="Created">
+    <Column field="sent_time" header="Sent">
       <template #body="{ data }">
         {{ formatDateLong(data.created_at) }}
       </template>
     </Column>
-    <template #expansion="{ data }">
-      <RowExpandData
-        :id="data.message_id"
-        :url="'/tenant/v1/messages/'"
-        :params="{ acapy: true }"
-      />
-    </template>
   </DataTable>
 </template>
 <script setup lang="ts">
@@ -64,13 +48,13 @@ import { useToast } from 'vue-toastification';
 // State
 import { useMessageStore } from '@/store';
 import { storeToRefs } from 'pinia';
-
 // Other components
 import { formatDateLong } from '@/helpers';
-import SuperYou from '@/components/common/SuperYou.vue';
-import RowExpandData from '../common/RowExpandData.vue';
+import CreateMessage from './createMessage/CreateMessage.vue';
+import { useI18n } from 'vue-i18n';
 
 const toast = useToast();
+const { t } = useI18n();
 
 const messageStore = useMessageStore();
 
@@ -81,21 +65,9 @@ const loadTable = async () => {
     toast.error(`Failure: ${err}`);
   });
 };
-
-// The API end point
-const apiUrl = '/tenant/v1/messages/send-message';
-
-// Some boilerplate JSON
-const templateJson = {
-  content: 'Here is a bunch of content',
-  contact_id: 'e2711758-2f05-47ea-8365-0e9cc96244c4',
-  tags: ['touchbase', 'reminder'],
-};
-
 const expandedRows = ref([]);
 
 onMounted(async () => {
   loadTable();
 });
 </script>
-<style scoped></style>
