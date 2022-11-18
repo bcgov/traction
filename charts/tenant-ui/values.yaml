@@ -38,7 +38,7 @@ tenant_ui:
     # this is the private endpoint
     endpoint: http://traction-api:5000
 
-  traction_api:
+  acapy_admin_api:
     # this is the private endpoint
     endpoint: http://traction-agent:8031
 
