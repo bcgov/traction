@@ -57,6 +57,11 @@ spec:
                 secretKeyRef:
                   name: {{ template "acapy.api.secret.name" . }}
                   key: adminurl
+            - name: SERVER_INNKEEPER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "traction.api.secret.name" . }}
+                  key: api_admin_key
             {{- include "tenant_ui.configmap.env.vars" . | nindent 10}}
           resources:
             {{- toYaml .Values.tenant_ui.resources | nindent 12 }}
