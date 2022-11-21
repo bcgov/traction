@@ -78,3 +78,13 @@ When developing the Tenant UI, adhere to localization best practices including
 - Use proper responsive design principles, and do not space UI components based on english language text lengths. Translated UI elements might end up shorter or much longer, so overflows of text should always work accordingly.
 
 Currently localization is handled at the Tenant UI frontend level, but data that returns to the frontend from the Traction and AcaPy APIs may not include localization of text and status codes, etc. As such, full localization is a work in progress and will require some future work in integrating with Traction and AcaPy.
+
+## OIDC Login for Innkeeper
+
+The Tenant UI Inkeeper functionality can be configured to log in with either (or both)
+- the Innkeeper secret
+- a configured OIDC provider
+
+To set up the OIDC provider of your choice, add configuration values in your deployment to match the `frontend.innkeeperOidc` fields for a auth code grant client,a nd configure the `server.oidc` fields appropriately to veify the JWKS for tokens from that client. 
+
+As well, the Innkeeper secret must be available to the Tenant UI server, this is set in `server.innkeeper` configuration.
