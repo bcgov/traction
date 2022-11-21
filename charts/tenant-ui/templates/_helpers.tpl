@@ -73,6 +73,22 @@ it randomly.
 {{- end -}}
 {{- end }}
 
+{{/*
+Create a default fully qualified traction name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "traction.fullname" -}}
+{{ template "global.tractionName" . }}
+{{- end -}}
+
+{{/*
+Create a default fully qualified traction API name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "traction.api.secret.name" -}}
+{{ template "traction.fullname" . }}-api
+{{- end -}}
+
 
 {{/*
 Create a default fully qualified acapy name.
@@ -83,7 +99,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- end -}}
 
 {{/*
-Create a default fully qualified acapy name.
+Create a default fully qualified acapy API name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "acapy.api.secret.name" -}}

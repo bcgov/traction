@@ -1,5 +1,5 @@
 <template>
-  <h2>Config</h2>
+  <h2>Config:</h2>
   <vue-json-pretty :data="config" />
 </template>
 

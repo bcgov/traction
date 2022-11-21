@@ -7,3 +7,8 @@ tenant_ui:
     endpoint: https://traction-api-prod.apps.silver.devops.gov.bc.ca
   acapy_admin_api:
     endpoint: https://traction-acapy-admin-prod.apps.silver.devops.gov.bc.ca
+  oidc:
+    active: true
+    showInnkeeperAdminLogin: true
+    authority: https://loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm
+    jwksUri: https://loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm/protocol/openid-connect/certs

@@ -34,6 +34,16 @@ tenant_ui:
     owner: ''
     coverImageCopyright: 'Photo by Kristoffer Fredriksson on StockSnap'
 
+  oidc:
+    showInnkeeperAdminLogin: true
+    active: true
+    authority: ''
+    client:  'innkeeper-frontend'
+    label: 'IDIR'
+    jwksUri: ''
+    realm: 'Traction'
+    roleName: 'innkeeper'
+
   traction_api:
     # this is the private endpoint
     endpoint: http://traction-api:5000
