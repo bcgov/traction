@@ -1,7 +1,7 @@
 {
   "frontend": {
     "showInnkeeperAdminLogin": "FRONTEND_INNKEEPER_SHOW_ADMIN",
-    "innkeeperOidc": {
+    "oidc": {
       "active": "FRONTEND_INNKEEPER_OIDC_ACTIVE",
       "authority": "FRONTEND_INNKEEPER_OIDC_AUTHORITY",
       "client": "FRONTEND_INNKEEPER_OIDC_CLIENT",
