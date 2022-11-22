@@ -1,16 +1,20 @@
 import functools
 import logging
-import uuid
-from datetime import datetime, timedelta
 
-import bcrypt
 from aiohttp import web
 from aiohttp_apispec import docs, request_schema, response_schema, match_info_schema
 from aries_cloudagent.admin.request_context import AdminRequestContext
 from aries_cloudagent.messaging.models.base import BaseModelError
 from aries_cloudagent.messaging.models.openapi import OpenAPISchema
 from aries_cloudagent.messaging.valid import UUIDFour, JSONWebToken
-from aries_cloudagent.storage.error import StorageError
+from aries_cloudagent.multitenant.admin.routes import (
+    CreateWalletTokenRequestSchema,
+    CreateWalletTokenResponseSchema,
+)
+from aries_cloudagent.multitenant.base import BaseMultitenantManager
+from aries_cloudagent.multitenant.error import WalletKeyMissingError
+from aries_cloudagent.storage.error import StorageError, StorageNotFoundError
+from aries_cloudagent.wallet.models.wallet_record import WalletRecord
 from marshmallow import fields
 
 from . import TenantManager
@@ -24,8 +28,6 @@ from .models import (
 LOGGER = logging.getLogger(__name__)
 SWAGGER_INNKEEPER = "traction-innkeeper"
 SWAGGER_TENANT = "traction-tenant"
-
-SALT = b"$2b$12$xnIis84MXfK8E4B3Qrmkne"  # get from settings.
 
 
 def innkeeper_only(func):
@@ -87,18 +89,25 @@ class ReservationRequestSchema(OpenAPISchema):
 class ReservationResponseSchema(ReservationRecordSchema):
     """Response schema for tenant reservation."""
 
+    reservation_id = fields.Str(
+        required=True,
+        description="The reservation record identifier",
+        example=UUIDFour.EXAMPLE,
+    )
 
-class SigninSchema(OpenAPISchema):
-    """Request schema for tenant signin."""
+
+class CheckinSchema(OpenAPISchema):
+    """Request schema for reservation Check-in."""
 
     reservation_pwd = fields.Str(
         required=True,
         description="The reservation password",
+        example=UUIDFour.EXAMPLE,
     )
 
 
-class SigninResponseSchema(OpenAPISchema):
-    """Response schema for tenant signin."""
+class CheckinResponseSchema(OpenAPISchema):
+    """Response schema for reservation Check-in."""
 
     wallet_id = fields.Str(
         description="Subwallet identifier", required=True, example=UUIDFour.EXAMPLE
@@ -177,15 +186,16 @@ async def tenant_reservation(request: web.BaseRequest):
         LOGGER.error(err)
         raise err
 
-    return web.json_response(rec.serialize())
+    return web.json_response({"reservation_id": rec.reservation_id})
 
 
 @docs(
     tags=["multitenancy"],
 )
-@request_schema(SigninSchema())
-@response_schema(SigninResponseSchema(), 200, description="")
-async def tenant_signin(request: web.BaseRequest):
+@match_info_schema(ReservationIdMatchInfoSchema())
+@request_schema(CheckinSchema())
+@response_schema(CheckinResponseSchema(), 200, description="")
+async def tenant_checkin(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
 
     body = await request.json()
@@ -194,36 +204,37 @@ async def tenant_signin(request: web.BaseRequest):
     mgr = context.inject(TenantManager)
     profile = mgr.profile
 
-    reservation_pwd = body.get("reservation_pwd")
-    reservation_token = bcrypt.hashpw(reservation_pwd.encode("utf-8"), SALT)
-    if bcrypt.checkpw(reservation_pwd.encode("utf-8"), reservation_token):
-        # we should be able to get the record since we have the correct pwd...
-        try:
-            async with profile.session() as session:
-                res_rec = await ReservationRecord.query_by_reservation_token(
-                    session, reservation_token.decode("utf-8")
+    reservation_id = request.match_info["reservation_id"]
+
+    try:
+        async with profile.session() as session:
+            res_rec = await ReservationRecord.retrieve_by_id(session, reservation_id)
+            reservation_pwd = body.get("reservation_pwd")
+            reservation_token = mgr.check_reservation_password(reservation_pwd, res_rec)
+            if not reservation_token:
+                raise web.HTTPUnauthorized(reason="Reservation password incorrect")
+
+            if res_rec.expired:
+                raise web.HTTPUnauthorized(reason="Reservation has expired")
+
+            if res_rec.state == ReservationRecord.STATE_APPROVED:
+                # ok, let's update this, create a tenant, create a wallet
+                tenant, wallet_record, token = await mgr.create_wallet(
+                    res_rec.tenant_name
                 )
 
-                if res_rec.expired:
-                    raise web.HTTPUnauthorized(reason="Reservation has expired")
-
-                if res_rec.state == ReservationRecord.STATE_APPROVED:
-                    # ok, let's update this, create a tenant, create a wallet
-                    tenant, wallet_record, token = await mgr.create_wallet(
-                        res_rec.tenant_name
-                    )
-
-                    # update this reservation
-                    res_rec.state = ReservationRecord.STATE_COMPLETED
-                    res_rec.wallet_id = wallet_record.wallet_id
-                    res_rec.tenant_id = tenant.tenant_id
-                    # do not need reservation token or expiry
-                    res_rec.reservation_token = None
-                    res_rec.reservation_token_expiry = None
-                    await res_rec.save(session)
-        except Exception as err:
-            LOGGER.error(err)
-            raise err
+                # update this reservation
+                res_rec.state = ReservationRecord.STATE_CHECKED_IN
+                res_rec.wallet_id = wallet_record.wallet_id
+                res_rec.tenant_id = tenant.tenant_id
+                # do not need reservation token data
+                res_rec.reservation_token_hash = None
+                res_rec.reservation_token_salt = None
+                res_rec.reservation_token_expiry = None
+                await res_rec.save(session)
+    except Exception as err:
+        LOGGER.error(err)
+        raise err
 
     return web.json_response(
         {
@@ -232,6 +243,50 @@ async def tenant_signin(request: web.BaseRequest):
             "token": token,
         }
     )
+
+
+@docs(tags=["multitenancy"], summary="Get auth token for a tenant")
+@match_info_schema(TenantIdMatchInfoSchema())
+@request_schema(CreateWalletTokenRequestSchema)
+@response_schema(CreateWalletTokenResponseSchema(), 200, description="")
+async def tenant_create_token(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+
+    # records are under base/root profile, use Tenant Manager profile
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+
+    tenant_id = request.match_info["tenant_id"]
+    wallet_key = None
+
+    if request.can_read_body:
+        body = await request.json()
+        wallet_key = body.get("wallet_key")
+
+    try:
+        # first look up the tenant...
+        async with profile.session() as session:
+            tenant_record = await TenantRecord.retrieve_by_id(session, tenant_id)
+
+        # now just do the same wallet_id based token create.
+        wallet_id = tenant_record.wallet_id
+        multitenant_mgr = profile.inject(BaseMultitenantManager)
+        async with profile.session() as session:
+            wallet_record = await WalletRecord.retrieve_by_id(session, wallet_id)
+
+        if (not wallet_record.requires_external_key) and wallet_key:
+            raise web.HTTPBadRequest(
+                reason=f"Wallet {wallet_id} doesn't require"
+                       " the wallet key to be provided"
+            )
+
+        token = await multitenant_mgr.create_auth_token(wallet_record, wallet_key)
+    except StorageNotFoundError as err:
+        raise web.HTTPNotFound(reason=err.roll_up) from err
+    except WalletKeyMissingError as err:
+        raise web.HTTPUnauthorized(reason=err.roll_up) from err
+
+    return web.json_response({"token": token})
 
 
 @docs(
@@ -285,13 +340,10 @@ async def innkeeper_reservations_approve(request: web.BaseRequest):
                 session, reservation_id, for_update=True
             )
             if rec.state == ReservationRecord.STATE_REQUESTED:
-                # create the token...
-                reservation_pwd = str(uuid.uuid4())  # we need to return this...
-                reservation_token = bcrypt.hashpw(reservation_pwd.encode("utf-8"), SALT)
-                rec.reservation_token = reservation_token.decode("utf-8")
-                # reservation token set, so set the default expiry
-                rec.set_default_reservation_token_expiry()
-
+                _pwd, _salt, _hash, _expiry = mgr.generate_reservation_token_data()
+                rec.reservation_token_salt = _salt.decode("utf-8")
+                rec.reservation_token_hash = _hash.decode("utf-8")
+                rec.reservation_token_expiry = _expiry
                 rec.state = ReservationRecord.STATE_APPROVED
                 await rec.save(session)
             LOGGER.info(rec)
@@ -299,7 +351,7 @@ async def innkeeper_reservations_approve(request: web.BaseRequest):
         LOGGER.error(err)
         raise err
 
-    return web.json_response({"reservation_pwd": reservation_pwd})
+    return web.json_response({"reservation_pwd": _pwd})
 
 
 @docs(
@@ -387,8 +439,11 @@ async def register(app: web.Application):
     # routes that do not require a tenant token can be easily slotted under multitenancy.
     app.add_routes(
         [
-            web.post("/multitenancy/tenant/reservation", tenant_reservation),
-            web.post("/multitenancy/tenant/signin", tenant_signin),
+            web.post("/multitenancy/reservations", tenant_reservation),
+            web.post(
+                "/multitenancy/reservations/{reservation_id}/check-in", tenant_checkin
+            ),
+            web.post("/multitenancy/tenant/{tenant_id}/token", tenant_create_token),
         ]
     )
     # routes that require a tenant token.

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 from typing import Optional, Union
 
 from aries_cloudagent.core.profile import ProfileSession
@@ -21,28 +21,28 @@ class ReservationRecord(BaseRecord):
     RECORD_ID_NAME = "reservation_id"
     TAG_NAMES = {
         "state",
-        "reservation_token",
     }
 
     STATE_REQUESTED = "requested"
     STATE_APPROVED = "approved"
-    STATE_COMPLETED = "completed"
+    STATE_CHECKED_IN = "checked_in"
 
     def __init__(
-        self,
-        *,
-        reservation_id: str = None,
-        state: str = None,
-        tenant_name: str = None,
-        tenant_reason: str = None,
-        contact_name: str = None,
-        contact_email: str = None,
-        contact_phone: str = None,
-        tenant_id: str = None,
-        wallet_id: str = None,
-        reservation_token: str = None,
-        reservation_token_expiry: Union[str, datetime] = None,
-        **kwargs,
+            self,
+            *,
+            reservation_id: str = None,
+            state: str = None,
+            tenant_name: str = None,
+            tenant_reason: str = None,
+            contact_name: str = None,
+            contact_email: str = None,
+            contact_phone: str = None,
+            tenant_id: str = None,
+            wallet_id: str = None,
+            reservation_token_salt: str = None,
+            reservation_token_hash: str = None,
+            reservation_token_expiry: Union[str, datetime] = None,
+            **kwargs,
     ):
         """Construct record."""
         super().__init__(reservation_id, state or self.STATE_REQUESTED, **kwargs)
@@ -56,7 +56,8 @@ class ReservationRecord(BaseRecord):
         self.tenant_id = tenant_id
         self.wallet_id = wallet_id
 
-        self.reservation_token = reservation_token
+        self.reservation_token_salt = reservation_token_salt
+        self.reservation_token_hash = reservation_token_hash
         self._reservation_token_expiry: str = datetime_to_str(reservation_token_expiry)
 
     @property
@@ -71,12 +72,6 @@ class ReservationRecord(BaseRecord):
     @reservation_token_expiry.setter
     def reservation_token_expiry(self, value: Union[str, datetime] = None) -> None:
         self._reservation_token_expiry = datetime_to_str(value)
-
-    def set_default_reservation_token_expiry(self):
-        #  TODO: read a default value from settings and use that...
-        # set to 7 days...
-        exp = datetime.utcnow() + timedelta(minutes=24*7*60)
-        self.reservation_token_expiry = exp
 
     @property
     def expired(self) -> bool:
@@ -98,42 +93,13 @@ class ReservationRecord(BaseRecord):
                 "contact_name",
                 "contact_email",
                 "contact_phone",
-                "reservation_token",
-                "reservation_token_expiry",
                 "tenant_id",
                 "wallet_id",
+                "reservation_token_salt",
+                "reservation_token_hash",
+                "reservation_token_expiry",
             )
         }
-
-    @classmethod
-    async def query_by_reservation_token(
-        cls,
-        session: ProfileSession,
-        reservation_token: str,
-    ) -> "ReservationRecord":
-        """Retrieve ReservationRecord by reservation_token.
-        Args:
-            session: the profile session to use
-            reservation_token: the reservation_token by which to filter
-        """
-        tag_filter = {
-            **{
-                "reservation_token": reservation_token
-                for _ in [""]
-                if reservation_token
-            },
-        }
-
-        result = await cls.query(session, tag_filter)
-        if len(result) > 1:
-            raise StorageDuplicateError(
-                "More than one ReservationRecord was found for the given Tokens"
-            )
-        if not result:
-            raise StorageNotFoundError(
-                "No ReservationRecord found for the given Tokens"
-            )
-        return result[0]
 
 
 class ReservationRecordSchema(BaseRecordSchema):
@@ -186,7 +152,7 @@ class ReservationRecordSchema(BaseRecordSchema):
             [
                 ReservationRecord.STATE_REQUESTED,
                 ReservationRecord.STATE_APPROVED,
-                ReservationRecord.STATE_COMPLETED,
+                ReservationRecord.STATE_CHECKED_IN,
             ]
         ),
     )
@@ -217,22 +183,27 @@ class TenantRecord(BaseRecord):
     TAG_NAMES = {
         "state",
         "wallet_id",
+        "tenant_name",
     }
 
     STATE_ACTIVE = "active"
     STATE_DELETED = "deleted"  # TODO: figure out states and other data...
 
     def __init__(
-        self,
-        *,
-        tenant_id: str = None,
-        state: str = None,
-        tenant_name: str = None,
-        wallet_id: str = None,
-        **kwargs,
+            self,
+            *,
+            tenant_id: str = None,
+            state: str = None,
+            tenant_name: str = None,
+            wallet_id: str = None,
+            **kwargs,
     ):
         """Construct record."""
-        super().__init__(tenant_id, state or self.STATE_ACTIVE, **kwargs)
+        super().__init__(
+            tenant_id,
+            state or self.STATE_ACTIVE,
+            **kwargs,
+        )
         self.tenant_name = tenant_name
         self.wallet_id = wallet_id
 
@@ -254,9 +225,9 @@ class TenantRecord(BaseRecord):
 
     @classmethod
     async def query_by_wallet_id(
-        cls,
-        session: ProfileSession,
-        wallet_id: str,
+            cls,
+            session: ProfileSession,
+            wallet_id: str,
     ) -> "TenantRecord":
         """Retrieve TenantRecord by wallet_id.
         Args:

@@ -6,6 +6,7 @@ from aries_cloudagent.core.profile import Profile
 from aries_cloudagent.core.protocol_registry import ProtocolRegistry
 from aries_cloudagent.core.util import STARTUP_EVENT_PATTERN
 
+from .config import get_config
 from .tenant_manager import TenantManager
 
 LOGGER = logging.getLogger(__name__)
@@ -32,7 +33,8 @@ async def on_startup(profile: Profile, event: Event):
     if profile.context.settings.get("multitenant.enabled"):
         # create a tenant manager, this will use the root profile for its sessions
         # this will create reservations and tenants under the same profile (base/root) as wallets
-        mgr = TenantManager(profile)
+        _config = get_config(profile.settings)
+        mgr = TenantManager(profile, _config)
         profile.context.injector.bind_instance(TenantManager, mgr)
         await mgr.create_innkeeper()
     else:

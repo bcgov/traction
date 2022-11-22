@@ -20,8 +20,9 @@ docker run -it -p 3000:3000 -p 3001:3001 --rm traction_innkeeper
 #### traction_innkeeper plugin
 
 - creates an innkeeper wallet and tenant on start up (if not already created)
+- we can configure the innkeeper `tenant_id` and `wallet_key`, however, we cannot configure a `wallet_id`
 - prints out the traction_innkeeper wallet_id/key and a token 
-- will need to set up configuration to set the name, wallet_id/key so it's known and consistent
+
 
 *IMPORTANT* will need the `X-API-KEY` (default = change-me) for all calls in swagger
 
@@ -29,7 +30,8 @@ docker run -it -p 3000:3000 -p 3001:3001 --rm traction_innkeeper
 
 1) prospective tenant (think hitting public page, possibly with captcha)
 
-- call `/multitenancy/reservation` to start the process (provide contact info, reason etc)
+- call `/multitenancy/reservations` to start the process (provide contact info, reason etc)
+- result of call is a `reservation_id`, caller will need this later for `check-in`
 - todo: notification to innkeeper (and associated persons) that a request has come in
 
 2) innkeeper
@@ -39,17 +41,21 @@ docker run -it -p 3000:3000 -p 3001:3001 --rm traction_innkeeper
 - result of this call is a `reservation_pwd`, this needs to be delivered to the reservation's contact
 
 3) prospective tenant (another public page, could be scanned from delivered qr code?)
-- once prospective tenant has been approved and provided with the `reservation_pwd`, they call `/multitenancy/signin` with the `reservation_pwd`.
+- once prospective tenant has been approved and provided with the `reservation_pwd`, they call `/multitenancy/reservations/{reservation_id}/check-in` with the `reservation_id` and `reservation_pwd`.
 - result of `/multitenancy/signin` call is `wallet_id`, `wallet_key`, `token` -> they save this themselves
 
 
 #### "public" endpoints
 
-- `POST /multitencancy/reservation`
-- `POST /multitenancy/signin`
+- `POST /multitenancy/reservations`
+- `POST /multitenancy/reservations/{reservation_id}/check-in`
+- `POST /multitenancy/tenant/{tenant_id}/token`
 
 We have to use /multitenancy because there are no ways to put in "public" endpoints in the admin server with multi-tenancy enabled.
-These endpoints do not require a Bearer token, so we can call them from our app (app still needs X-API-KEY)
+These endpoints do not require a Bearer token, so we can call them from our app (app still needs X-API-KEY).  
+The `/multitenancy/tenant/{tenant_id}/token` exactly mirrors the built-in `/multitenancy/wallet/{wallet_id}/token` but is called with the tenant id.  
+This is useful for the innkeeper as the `tenant_id` can be configured, so it is a consistent and well known ID.  
+
 
 #### innkeeper endpoints (secured to only allow innkeeper wallet/tenant - need Bearer token)
 
@@ -58,7 +64,8 @@ These endpoints do not require a Bearer token, so we can call them from our app 
 - `GET /innkeeper/tenants`
 - `GET /innkeeper/tenants/{tenant_id}`
 
-innkeeper is a "special" tenant, use middleware to restrict these calls.
+innkeeper is a "special" tenant, use middleware to restrict these calls.  
+See above about innkeeper calling `/multitenancy/tenant/{tenant_id}/token` to get tokens for the innkeeper.
 
 #### tenant endpoints (secured to any wallet/tenant - need Bearer token)
 - `GET /tenant` (basically get self)
