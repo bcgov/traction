@@ -52,7 +52,12 @@ acapy:
 
   pluginValues:
     multitenantProvider:
-      managerClass: multitenant_provider.manager_class=traction_plugins.multitenant_provider.manager.BasicMultitokenMultitenantManager
+      managerClass: traction_plugins.multitenant_provider.manager.BasicMultitokenMultitenantManager
+    tractionInnkeeper:
+      walletName: traction_innkeeper
+      printKey: false
+      printToken: false
+      reservationExpiryMinutes: 10080
 
   imagePullSecrets: []
   nameOverride: ""

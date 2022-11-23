@@ -10,6 +10,11 @@ acapy:
   secret:
     adminurl:
       generated: false
+  pluginValues:
+    tractionInnkeeper:
+      printKey: true
+      printToken: true
+      reservationExpiryMinutes: 120
   resources:
     limits:
       cpu: 200m
