@@ -159,6 +159,10 @@ acapy:
       # set to false and provide a value to "hardcode" the password value
       generated: true
       value: "change-me"
+    pluginInnkeeper:
+      generated: true
+      walletkey: "change-me"
+      tenantid: "innkeeper"
 
 postgresql:
   # when overriding global.fullnameOverride, you must override this to match.

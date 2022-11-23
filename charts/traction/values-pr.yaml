@@ -10,6 +10,8 @@ acapy:
   secret:
     adminurl:
       generated: false
+    pluginInnkeeper:
+      generated: false
   pluginValues:
     tractionInnkeeper:
       printKey: true

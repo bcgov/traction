@@ -9,6 +9,13 @@ acapy:
   secret:
     adminurl:
       generated: false
+    pluginInnkeeper:
+      generated: false
+  pluginValues:
+    tractionInnkeeper:
+      printKey: true
+      printToken: true
+      reservationExpiryMinutes: 120
   resources:
     limits:
       cpu: 400m

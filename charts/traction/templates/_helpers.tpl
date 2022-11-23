@@ -74,7 +74,7 @@ it randomly.
 {{- if $obj }}
 {{- index $obj .Key -}}
 {{- else if (eq (lower .Kind) "secret") -}}
-{{- uuidv4 -}}
+{{- uuidv4 | b64enc -}}
 {{- end -}}
 {{- end }}
 
