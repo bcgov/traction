@@ -66,6 +66,19 @@ it randomly.
 {{- end }}
 
 {{/*
+Returns a secret if it already in Kubernetes, otherwise it creates
+it randomly.
+*/}}
+{{- define "getOrGenerateUUID" }}
+{{- $obj := (lookup "v1" .Kind .Namespace .Name).data -}}
+{{- if $obj }}
+{{- index $obj .Key -}}
+{{- else if (eq (lower .Kind) "secret") -}}
+{{- uuidv4 | b64enc -}}
+{{- end -}}
+{{- end }}
+
+{{/*
 Create a default fully qualified postgresql name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
@@ -88,6 +101,15 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- define "acapy.api.secret.name" -}}
 {{ template "acapy.fullname" . }}-api
 {{- end -}}
+
+{{/*
+Create a default fully qualified acapy innkeeper plugin name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "acapy.plugin.innkeeper.name" -}}
+{{ template "acapy.fullname" . }}-plugin-innkeeper
+{{- end -}}
+
 
 {{/*
 generate ledger browser url

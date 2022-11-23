@@ -75,10 +75,19 @@ spec:
            {{- end }}
            {{- if .Values.acapy.plugins.multitenantProvider }}
            --plugin traction_plugins.multitenant_provider \
-           --plugin-config-value {{ .Values.acapy.pluginValues.multitenantProvider.managerClass }} \
+           --plugin-config-value multitenant_provider.manager_class={{ .Values.acapy.pluginValues.multitenantProvider.managerClass }} \
            {{- end }}           
            {{- if .Values.acapy.plugins.basicmessageStorage }}
            --plugin traction_plugins.basicmessage_storage.v1_0 \
+           {{- end }}
+           {{- if .Values.acapy.plugins.tractionInnkeeper }}
+           --plugin traction_plugins.traction_innkeeper.v1_0 \
+           --plugin-config-value traction_innkeeper.innkeeper_wallet.tenant_id=\"$(INNKEEPER_WALLET_TENANT_ID)\" \
+           --plugin-config-value traction_innkeeper.innkeeper_wallet.wallet_key=\"$(INNKEEPER_WALLET_WALLET_KEY)\" \
+           --plugin-config-value traction_innkeeper.innkeeper_wallet.wallet_name={{ .Values.acapy.pluginValues.tractionInnkeeper.walletName }} \
+           --plugin-config-value traction_innkeeper.innkeeper_wallet.print_key={{ .Values.acapy.pluginValues.tractionInnkeeper.printKey }} \
+           --plugin-config-value traction_innkeeper.innkeeper_wallet.print_token={{ .Values.acapy.pluginValues.tractionInnkeeper.printToken }} \
+           --plugin-config-value traction_innkeeper.reservation.expiry_minutes={{ .Values.acapy.pluginValues.tractionInnkeeper.reservationExpiryMinutes }} \
            {{- end }}
            "
           ]
@@ -117,6 +126,16 @@ spec:
                 secretKeyRef:
                   name: {{ template "acapy.api.secret.name" . }}
                   key: adminurl
+            - name: INNKEEPER_WALLET_TENANT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "acapy.plugin.innkeeper.name" . }}
+                  key: tenantid
+            - name: INNKEEPER_WALLET_WALLET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "acapy.plugin.innkeeper.name" . }}
+                  key: walletkey
           livenessProbe:
             httpGet:
               path: /status/live

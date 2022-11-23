@@ -59,3 +59,11 @@ exec aca-py start \
     --plugin traction_plugins.multitenant_provider \
     --plugin-config-value multitenant_provider.manager_class=traction_plugins.multitenant_provider.manager.BasicMultitokenMultitenantManager \
     --plugin traction_plugins.basicmessage_storage.v1_0 \
+    --plugin traction_plugins.traction_innkeeper.v1_0 \
+    --plugin-config-value traction_innkeeper.innkeeper_wallet.tenant_id=${TRACTION_INNKEEPER_TENANT_ID} \
+    --plugin-config-value traction_innkeeper.innkeeper_wallet.wallet_name=${TRACTION_INNKEEPER_WALLET_NAME} \
+    --plugin-config-value traction_innkeeper.innkeeper_wallet.wallet_key=${TRACTION_INNKEEPER_WALLET_KEY} \
+    --plugin-config-value traction_innkeeper.innkeeper_wallet.print_key=${TRACTION_INNKEEPER_PRINT_KEY} \
+    --plugin-config-value traction_innkeeper.innkeeper_wallet.print_token=${TRACTION_INNKEEPER_PRINT_TOKEN} \
+    --plugin-config-value traction_innkeeper.reservation.expiry_minutes=${TRACTION_INNKEEPER_RESERVATION_EXPIRY_MINUTES} \
+
