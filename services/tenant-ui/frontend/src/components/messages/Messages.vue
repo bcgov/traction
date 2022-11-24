@@ -27,7 +27,11 @@
     </template>
     <template #empty> No records found. </template>
     <template #loading> Loading data. Please wait... </template>
-    <Column field="connection_id" header="Connection ID" />
+    <Column field="connection_id" header="Contact">
+      <template #body="{ data }">
+        {{ findContactName(data.connection_id) }}
+      </template>
+    </Column>
     <Column field="state" header="State" />
     <Column field="content" header="Content" />
     <Column field="sent_time" header="Sent">
@@ -46,7 +50,7 @@ import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import { useToast } from 'vue-toastification';
 // State
-import { useMessageStore } from '@/store';
+import { useMessageStore, useContactsStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other components
 import { formatDateLong } from '@/helpers';
@@ -59,6 +63,20 @@ const { t } = useI18n();
 const messageStore = useMessageStore();
 
 const { loading, messages, selectedMessage } = storeToRefs(useMessageStore());
+const { contacts } = storeToRefs(useContactsStore());
+
+/**
+ * ## findContactName
+ * Givin a connection id, find the contact name
+ * @param {string} connectionId ID of the connection
+ * @returns {string} Contact name
+ */
+const findContactName = (connectionId: string) => {
+  const contact = contacts.value.find((c: any) => {
+    return c.acapy.connection.connection_id === connectionId;
+  });
+  return contact ? contact.alias : 'Unknown';
+};
 
 const loadTable = async () => {
   // should return latest message first
