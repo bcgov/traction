@@ -61,6 +61,7 @@ const messageStore = useMessageStore();
 const { loading, messages, selectedMessage } = storeToRefs(useMessageStore());
 
 const loadTable = async () => {
+  // should return latest message first
   messageStore.listMessages().catch((err: any) => {
     toast.error(`Failure: ${err}`);
   });
