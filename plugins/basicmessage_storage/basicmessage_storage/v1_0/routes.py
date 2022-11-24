@@ -8,7 +8,7 @@ from aiohttp_apispec import docs, response_schema, querystring_schema
 from aries_cloudagent.admin.request_context import AdminRequestContext
 from aries_cloudagent.messaging.models.base import BaseModelError
 from aries_cloudagent.messaging.models.openapi import OpenAPISchema
-from aries_cloudagent.messaging.util import time_now
+from aries_cloudagent.messaging.util import time_now, str_to_epoch
 from aries_cloudagent.messaging.valid import UUIDFour
 from aries_cloudagent.protocols.basicmessage.v1_0.message_types import SPEC_URI
 from aries_cloudagent.storage.error import StorageError
@@ -43,18 +43,6 @@ class BasicMessageListQueryStringSchema(OpenAPISchema):
             [BasicMessageRecord.STATE_SENT, BasicMessageRecord.STATE_RECV]
         ),
     )
-
-
-def messages_sort_key(rec):
-    """Get the sorting key for a basic messages."""
-    if rec["state"] == BasicMessageRecord.STATE_SENT:
-        pfx = "2"
-    elif rec["state"] == BasicMessageRecord.STATE_RECV:
-        pfx = "1"
-    else:  # GRANTED
-        pfx = "0"
-    return pfx + rec["created_at"]
-
 
 @web.middleware
 async def save_message_middleware(
@@ -129,7 +117,8 @@ async def all_messages_list(request: web.BaseRequest):
                 alt=True
             )
         results = [record.serialize() for record in records]
-        results.sort(key=messages_sort_key)
+        # return sorted by most recent first
+        results.sort(key=lambda x: str_to_epoch(x["created_at"]), reverse=True)
     except (StorageError, BaseModelError) as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
