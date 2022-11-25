@@ -4,12 +4,20 @@
     "proxyAcapyPath": "/api/traction/acapy",
     "apiPath": "api/",
     "basePath": "/",
+    "showDeveloper": true,
     "showInnkeeperAdminLogin": true,
     "oidc": {
       "active": false,
       "authority": "https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm",
       "client": "innkeeper-frontend",
       "label": "IDIR"
+    },
+    "ux": {
+      "appTitle": "Traction Tenant",
+      "sidebarTitle": "TRACTION",
+      "copyright": "",
+      "owner": "",
+      "coverImageCopyright": "Photo by Kristoffer Fredriksson on StockSnap"
     }
   },
   "image": {
@@ -38,12 +46,5 @@
       "user": "innkeeper",
       "key": "REDACTED"
     }
-  },
-  "ux": {
-    "appTitle": "Traction Tenant",
-    "sidebarTitle": "TRACTION",
-    "copyright": "",
-    "owner": "",
-    "coverImageCopyright": "Photo by Kristoffer Fredriksson on StockSnap"
   }
 }

@@ -7,7 +7,7 @@ import { useConfigStore } from './store';
 const { config } = storeToRefs(useConfigStore());
 
 onMounted(() => {
-  document.title = config.value.ux.appTitle;
+  document.title = config.value.frontend.ux.appTitle;
 });
 </script>
 

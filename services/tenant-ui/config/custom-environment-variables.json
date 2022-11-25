@@ -6,6 +6,13 @@
       "authority": "FRONTEND_INNKEEPER_OIDC_AUTHORITY",
       "client": "FRONTEND_INNKEEPER_OIDC_CLIENT",
       "label": "FRONTEND_INNKEEPER_OIDC_LABEL"
+    },
+    "ux": {
+      "appTitle": "UX_APP_TITLE",
+      "sidebarTitle": "UX_SIDEBAR_TITLE",
+      "copyright": "UX_COPYRIGHT",
+      "owner": "UX_OWNER",
+      "coverImageCopyright": "UX_COVERIMAGE_COPYRIGHT"
     } 
   },
   "image": {
@@ -26,12 +33,5 @@
       "user": "SERVER_INNKEEPER_USER",
       "key": "SERVER_INNKEEPER_KEY"
     }
-  },
-  "ux": {
-    "appTitle": "UX_APP_TITLE",
-    "sidebarTitle": "UX_SIDEBAR_TITLE",
-    "copyright": "UX_COPYRIGHT",
-    "owner": "UX_OWNER",
-    "coverImageCopyright": "UX_COVERIMAGE_COPYRIGHT"
   }
 }

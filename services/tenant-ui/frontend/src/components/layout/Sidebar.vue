@@ -10,7 +10,7 @@
 import { ref } from 'vue';
 import PanelMenu from 'primevue/panelmenu';
 import { storeToRefs } from 'pinia';
-import { useTenantStore } from '../../store';
+import { useTenantStore } from '@/store';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();

@@ -15,8 +15,10 @@ import { ref } from 'vue';
 import Button from 'primevue/button';
 import Menu from 'primevue/menu';
 // State
+import { useConfigStore } from '@/store';
 import { useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
+const { config } = storeToRefs(useConfigStore());
 const { isIssuer } = storeToRefs(useTenantStore());
 
 const menu = ref();
@@ -49,6 +51,14 @@ const items = [
     url: '/', // TODO: this should be a logout route
   },
 ];
+
+if (config.value.showDeveloper) {
+  items.push({
+    label: 'Developer',
+    icon: 'pi pi-cog',
+    to: { name: 'Developer' },
+  });
+}
 </script>
 
 <style scoped>
