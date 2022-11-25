@@ -1,7 +1,7 @@
 <template>
   <div class="traction-sidebar">
     <h1 v-if="tenant" class="sidebar-app-title">{{ tenant.name }}</h1>
-    <!--<h1 class="sidebar-app-title">{{ config.ux.sidebarTitle }}</h1>-->
+    <!--<h1 class="sidebar-app-title">{{ config.frontend.ux.sidebarTitle }}</h1>-->
     <PanelMenu :model="items" class="mt-5" />
   </div>
 </template>
