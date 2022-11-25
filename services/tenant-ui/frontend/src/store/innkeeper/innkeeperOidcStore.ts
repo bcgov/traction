@@ -12,8 +12,8 @@ export const useInnkeeperOidcStore = defineStore('innkeeperOidcStore', () => {
 
   // private (move to other file maybe?)
   const _settings: any = {
-    authority: config.value.frontend.oidc.authority,
-    client_id: config.value.frontend.oidc.client,
+    authority: config.value.oidc.authority,
+    client_id: config.value.oidc.client,
     redirect_uri: `${window.location.origin}/innkeeper`,
     response_type: 'code',
     automaticSilentRenew: false, // don't need to renew for our needs at this point

@@ -28,7 +28,7 @@ export const useTenantApi = defineStore('tenantApi', () => {
   // setup our tenant api calls to use the configured proxy path "prefix"
   // now callers can just put in the actual traction api url
   const tenantApi = createAxios({
-    baseURL: config.value.frontend.proxyPath,
+    baseURL: config.value.proxyPath,
   });
 
   // need to add authorization before we make traction tenant requests...

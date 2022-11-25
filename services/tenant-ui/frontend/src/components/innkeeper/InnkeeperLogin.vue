@@ -12,10 +12,10 @@
         </div>
 
         <div class="py-8">
-          <InnkeeperLoginForm v-if="config.frontend.showInnkeeperAdminLogin" />
-          <div v-if="config.frontend.oidc.active" class="oidc-login">
+          <InnkeeperLoginForm v-if="config.showInnkeeperAdminLogin" />
+          <div v-if="config.oidc.active" class="oidc-login">
             <div
-              v-if="config.frontend.showInnkeeperAdminLogin"
+              v-if="config.showInnkeeperAdminLogin"
               class="oidc-choice"
             >
               <hr />

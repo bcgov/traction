@@ -35,7 +35,7 @@ app.use("/", express.static(path.join(__dirname, STATIC_FILES_PATH)));
 app.use("/config", (_, res, next) => {
   try {
     // if we have passwords or sensitive information, strip it out!!!
-    res.status(200).json(config);
+    res.status(200).json(config.get('frontend'));
   } catch (err) {
     next(err);
   }

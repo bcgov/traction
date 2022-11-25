@@ -18,8 +18,8 @@
     </div>
 
     <div class="cover-image hidden md:block col-0 md:col-6 xl:col-8 p-0">
-      <span v-if="config.frontend.ux.coverImageCopyright" class="copyright">
-        {{ config.frontend.ux.coverImageCopyright }}
+      <span v-if="config.ux.coverImageCopyright" class="copyright">
+        {{ config.ux.coverImageCopyright }}
       </span>
     </div>
   </div>
