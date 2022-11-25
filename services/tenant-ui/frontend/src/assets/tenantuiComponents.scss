@@ -1,3 +1,7 @@
+@import 'variables.scss';
+// For styling UI pieces that we are adding to the Tenant UI ourselves
+
+// The chip that displays api response statuses etc
 .status-chip {
   background-color: $tenant-ui-status-default-background;
   color: $tenant-ui-status-default-color;
@@ -42,5 +46,15 @@
   &.offer-received {
     background-color: $tenant-ui-status-blue-background;
     color: $tenant-ui-status-blue-color;
+  }
+}
+
+// Logout button in the menu
+.logout-menu-item .p-menuitem-link {
+  &,
+  &:hover {
+    .p-menuitem-text {
+      color: $tenant-ui-text-danger !important;
+    }
   }
 }

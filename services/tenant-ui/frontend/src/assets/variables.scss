@@ -7,6 +7,9 @@ $tenant-ui-secondary-active: darken( $tenant-ui-secondary-color, 10% );
 $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 $tenant-ui-flat-highlight: #ebeef3;
 
+// General text colors
+$tenant-ui-text-danger: #F84949;
+
 $tenant-ui-status-default-background: #c8c8c8; // status chip backgrounds
 $tenant-ui-status-green-background: #C8E6C9;
 $tenant-ui-status-amber-background: #FFD8B2;

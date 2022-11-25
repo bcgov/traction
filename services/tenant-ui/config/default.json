@@ -4,6 +4,7 @@
     "proxyAcapyPath": "/api/traction/acapy",
     "apiPath": "api/",
     "basePath": "/",
+    "showDeveloper": true,
     "showInnkeeperAdminLogin": true,
     "oidc": {
       "active": false,

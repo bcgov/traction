@@ -15,8 +15,10 @@ import { ref } from 'vue';
 import Button from 'primevue/button';
 import Menu from 'primevue/menu';
 // State
+import { useConfigStore } from '@/store';
 import { useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
+const { config } = storeToRefs(useConfigStore());
 const { isIssuer } = storeToRefs(useTenantStore());
 
 const menu = ref();
@@ -30,22 +32,23 @@ const toggleProfile = (event: any) => {
 const items = [
   {
     label: 'Profile',
-    icon: 'pi pi-user',
     to: { name: 'Profile' },
   },
   {
     label: 'Settings',
-    icon: 'pi pi-cog',
     to: { name: 'Settings' },
   },
   {
     label: 'Developer',
-    icon: 'pi pi-cog',
+    visible: config.value.frontend.showDeveloper,
     to: { name: 'Developer' },
   },
   {
+    separator: true,
+  },
+  {
     label: 'Logout',
-    icon: 'pi pi-sign-out',
+    class: 'logout-menu-item',
     url: '/', // TODO: this should be a logout route
   },
 ];
