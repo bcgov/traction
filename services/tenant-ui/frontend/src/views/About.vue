@@ -17,6 +17,15 @@
       <li
         class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap"
       >
+        <div class="text-500 w-6 md:w-2 font-medium">ACA-Py Admin URL</div>
+        <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
+          {{ config.server.acapyAdminUrl }}
+        </div>
+        <div class="w-6 md:w-2 flex justify-content-end">&nbsp;</div>
+      </li>
+      <li
+        class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap"
+      >
         <div class="text-500 w-6 md:w-2 font-medium">Image Tag</div>
         <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
           {{ config.image.tag }}
@@ -46,7 +55,7 @@
       >
         <div class="text-500 w-6 md:w-2 font-medium">Copyright</div>
         <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
-          {{ config.ux.copyright }}
+          {{ config.frontend.ux.copyright }}
         </div>
         <div class="w-6 md:w-2 flex justify-content-end">&nbsp;</div>
       </li>
@@ -55,7 +64,7 @@
       >
         <div class="text-500 w-6 md:w-2 font-medium">Owner / Operator</div>
         <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
-          {{ config.ux.owner }}
+          {{ config.frontend.ux.owner }}
         </div>
         <div class="w-6 md:w-2 flex justify-content-end">&nbsp;</div>
       </li>

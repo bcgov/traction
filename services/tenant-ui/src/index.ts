@@ -16,9 +16,6 @@ const STATIC_FILES_PATH: string = config.get("server.staticFiles");
 
 import history from "connect-history-api-fallback";
 
-
-
-
 const app = express();
 app.use(history());
 app.use(cors());
@@ -31,11 +28,23 @@ app.use("/favicon.ico", (_, res) => {
 });
 app.use("/", express.static(path.join(__dirname, STATIC_FILES_PATH)));
 
+// Since the server config can have important secret values in, you must opt-in
+// for server values (or other non FE config) that should return from /config
+function _setupConfig() {
+  return {
+    frontend: config.get("frontend"),
+    image: config.get("image"),
+    server: {
+      tractionUrl: config.get("server.tractionUrl"),
+      acapyAdminUrl: config.get("server.acapyAdminUrl"),
+    },
+  };
+}
+
 // Frontend configuration endpoint, return config section at /config so UI can get it
 app.use("/config", (_, res, next) => {
   try {
-    // if we have passwords or sensitive information, strip it out!!!
-    res.status(200).json(config);
+    res.status(200).json(_setupConfig());
   } catch (err) {
     next(err);
   }
