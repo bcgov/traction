@@ -98,7 +98,10 @@ const handleSubmit = async (isFormValid: boolean) => {
     console.log(token.value);
   } catch (err) {
     console.error(err);
-    toast.error(`Failure getting token: ${err}`);
+    toast.error(`Failure getting token: ${err}`, { timeout: false });
+    toast.warning(`Failure getting token: ${err}`, { timeout: false });
+    toast.info(`Failure getting token: ${err}`, { timeout: false });
+    toast.success(`Failure getting token: ${err}`, { timeout: false });
   }
   try {
     // token is loaded, now go fetch the tenant data...

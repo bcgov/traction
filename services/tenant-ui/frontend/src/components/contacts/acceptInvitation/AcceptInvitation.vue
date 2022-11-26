@@ -1,6 +1,10 @@
 <template>
   <div>
-    <Button :label="t('contact.accept')" icon="pi pi-plus" @click="openModal" />
+    <Button
+      :label="t('contact.accept')"
+      icon="pi pi-check"
+      @click="openModal"
+    />
     <Dialog
       v-model:visible="displayModal"
       :header="t('contact.accept')"
