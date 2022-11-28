@@ -72,7 +72,7 @@ const { contacts } = storeToRefs(useContactsStore());
  * @returns {string} Contact name
  */
 const findContactName = (connectionId: string) => {
-  const contact = contacts.value.find((c: any) => {
+  const contact = contacts.value?.find((c: any) => {
     return c.acapy.connection.connection_id === connectionId;
   });
   return contact ? contact.alias : 'Unknown';
