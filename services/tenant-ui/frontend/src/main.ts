@@ -22,7 +22,7 @@ import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
 // https://github.com/Maronato/vue-toastification
 import Toast from 'vue-toastification';
-import toastOptions from '@/plugins/toasts/vueToastification'
+import toastOptions from '@/plugins/toasts/vueToastification';
 
 async function loadApp() {
   // 1. create app
