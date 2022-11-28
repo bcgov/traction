@@ -13,8 +13,13 @@ const localeList = ['en', 'fr', 'jp'];
 
 <style lang="scss" scoped>
 .p-dropdown {
+  border: none;
+  padding: 0 1.5em;
+  :deep(.p-dropdown-trigger) {
+    display: none;
+  }
   :deep(.p-dropdown-label) {
-    padding: 0 0 0 6px !important;
+    color: $tenant-ui-link-color;
   }
 }
 </style>

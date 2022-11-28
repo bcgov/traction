@@ -1,17 +1,11 @@
 import router from './router';
 import { createApp } from 'vue';
-import createI18n from './i18n/i18n';
+import createI18n from './plugins/i18n/i18n';
 import './style.css';
 import App from './App.vue';
 
 import { createPinia } from 'pinia';
 import { useConfigStore } from './store/configStore';
-
-/**
- * For notifications. The one included in PrimeVue is not working.
- */
-import Toast, { PluginOptions } from 'vue-toastification';
-import 'vue-toastification/dist/index.css';
 
 /*
   UI framework PrimeVue
@@ -26,6 +20,9 @@ import './assets/style.scss'; // includes '~primevue/resources/themes/nova/theme
 import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
+// https://github.com/Maronato/vue-toastification
+import Toast from 'vue-toastification';
+import toastOptions from '@/plugins/toasts/vueToastification';
 
 async function loadApp() {
   // 1. create app
@@ -62,8 +59,7 @@ async function loadApp() {
   app.use(ConfirmationService);
   app.directive('tooltip', Tooltip);
   // 5. initialize the toast notification plugin
-  const options: PluginOptions = {};
-  app.use(Toast, options);
+  app.use(Toast, toastOptions);
   // 6. mount the configured app!
   app.mount('#app');
 }

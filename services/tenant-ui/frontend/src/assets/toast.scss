@@ -1,0 +1,44 @@
+@import 'variables.scss';
+// For overriding the Vue-Toastification library
+// https://github.com/Maronato/vue-toastification/blob/main/src/scss/_variables.scss
+
+// Override the variables or import a file that overrides them
+$vt-color-error: $tenant-ui-status-red-background;
+$vt-text-color-error: $tenant-ui-status-red-color;
+$vt-color-success: #76c078;
+$vt-text-color-success: white;
+$vt-color-info: #b3e5fc;
+$vt-text-color-info: #0c5ea0;
+$vt-color-warning: $tenant-ui-status-amber-background;
+$vt-text-color-warning: $tenant-ui-status-amber-color;
+
+// Import the regular Vue Toastification stylesheets (or create your own)
+@import 'vue-toastification/src/scss/_variables';
+@import 'vue-toastification/src/scss/_toastContainer';
+@import 'vue-toastification/src/scss/_toast';
+@import 'vue-toastification/src/scss/_closeButton';
+@import 'vue-toastification/src/scss/_progressBar';
+@import 'vue-toastification/src/scss/_icon';
+@import 'vue-toastification/src/scss/animations/_bounce';
+
+// Some custom styling
+.Vue-Toastification__toast {
+  border-left-width: 15px;
+  border-left-style: solid;
+  border-radius: 5px;
+  &.Vue-Toastification__toast--error {
+    border-left-color: $tenant-ui-status-red-color;
+  }
+  &.Vue-Toastification__toast--success {
+    border-left-color: #569956;
+  }
+  &.Vue-Toastification__toast--info {
+    border-left-color: #04a9f4;
+  }
+  &.Vue-Toastification__toast--warning {
+    border-left-color: $tenant-ui-status-amber-color;
+  }
+  .Vue-Toastification__icon {
+    font-size: 1.5em;
+  }
+}
