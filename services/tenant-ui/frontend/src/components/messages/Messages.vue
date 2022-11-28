@@ -66,6 +66,19 @@ const { loading, messages, selectedMessage } = storeToRefs(useMessageStore());
 const { contacts } = storeToRefs(useContactsStore());
 
 /**
+ * The contact name is required to display in the table.
+ * If the user has not yet loaded the contacts,
+ * we need to wait for them to load.
+ */
+if (!contacts.value) {
+  const contactsStore = useContactsStore();
+  contactsStore.listContacts().catch((err) => {
+    console.error(err);
+    toast.error(`Failure: ${err}`);
+  });
+}
+
+/**
  * ## findContactName
  * Givin a connection id, find the contact name
  * @param {string} connectionId ID of the connection
