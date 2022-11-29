@@ -4,19 +4,28 @@
   <DataTable
     v-model:selection="selectedContact"
     v-model:expandedRows="expandedRows"
+    v-model:filters="filter"
     :loading="loading"
     :value="contacts"
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
+    :globalFilterFields="['alias']"
     selection-mode="single"
-    data-key="contact_id"
+    dataKey="alias"
   >
     <template #header>
       <div class="flex justify-content-between">
         <div class="flex justify-content-start">
           <CreateContact />
           <AcceptInvitation class="ml-4" />
+          <span class="p-input-icon-left contact-search">
+            <i class="pi pi-search" />
+            <InputText
+              v-model="filter.alias.value"
+              placeholder="Search Contacts"
+            />
+          </span>
         </div>
         <div class="flex justify-content-end">
           <Button
@@ -70,9 +79,11 @@ import { onMounted, ref } from 'vue';
 // PrimeVue
 import Button from 'primevue/button';
 import Column from 'primevue/column';
+import InputText from 'primevue/inputtext';
 import DataTable from 'primevue/datatable';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';
+import { FilterMatchMode } from 'primevue/api';
 // State
 import { useContactsStore } from '@/store';
 import { storeToRefs } from 'pinia';
@@ -85,6 +96,7 @@ import RowExpandData from '../common/RowExpandData.vue';
 import StatusChip from '../common/StatusChip.vue';
 import EditContact from './editContact/EditContact.vue';
 import { useI18n } from 'vue-i18n';
+import { allowedNodeEnvironmentFlags } from 'process';
 
 const confirm = useConfirm();
 const toast = useToast();
@@ -130,6 +142,16 @@ const doDelete = (schema: any) => {
 
 // necessary for expanding rows, we don't do anything with this
 const expandedRows = ref([]);
+
+const filter = ref({
+  alias: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
+
+const initFilter = () => {
+  filter.value = {
+    alias: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  };
+};
 </script>
 
 <style scoped>
@@ -145,5 +167,8 @@ fieldset {
 }
 .p-datatable-header input {
   padding-left: 3rem;
+}
+.contact-search {
+  margin-left: 1.5rem;
 }
 </style>
