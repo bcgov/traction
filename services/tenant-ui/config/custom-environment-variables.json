@@ -1,6 +1,6 @@
 {
   "frontend": {
-    "proxyAcapyPath": "SERVER_ACAPY_ADMIN_URL",
+    "tenantProxyPath": "FRONTEND_TENANT_PROXY_URL",
     "showInnkeeperAdminLogin": "FRONTEND_INNKEEPER_SHOW_ADMIN",
     "oidc": {
       "active": "FRONTEND_INNKEEPER_OIDC_ACTIVE",

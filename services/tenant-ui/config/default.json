@@ -1,7 +1,7 @@
 {
   "frontend": {
     "proxyPath": "/api/traction",
-    "proxyAcapyPath": "http://localhost:8032",
+    "tenantProxyPath": "http://localhost:8032",
     "apiPath": "api/",
     "basePath": "/",
     "showDeveloper": true,

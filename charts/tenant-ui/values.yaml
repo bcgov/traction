@@ -48,9 +48,9 @@ tenant_ui:
     # this is the private endpoint
     endpoint: http://traction-api:5000
 
-  acapy_admin_api:
+  tenant_proxy:
     # this is the private endpoint
-    endpoint: http://traction-agent:8031
+    endpoint: http://traction-tenant-proxy:8032
 
   serviceAccount:
     # -- Specifies whether a service account should be created

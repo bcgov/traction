@@ -50,13 +50,8 @@ spec:
           env:
             - name: SERVER_TRACTION_URL
               value: {{ .Values.tenant_ui.traction_api.endpoint }}
-            - name: SERVER_ACAPY_ADMIN_URL
-              value: {{ .Values.tenant_ui.acapy_admin_api.endpoint }}
-            - name: SERVER_ACAPY_ADMIN_URL_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "acapy.api.secret.name" . }}
-                  key: adminurl
+            - name: FRONTEND_TENANT_PROXY_URL
+              value: {{ .Values.tenant_ui.tenant_proxy.endpoint }}
             - name: SERVER_INNKEEPER_KEY
               valueFrom:
                 secretKeyRef:

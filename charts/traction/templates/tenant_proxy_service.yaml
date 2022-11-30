@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "tenant_proxy.fullname" . }}
+  labels:
+    {{- include "tenant_proxy.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.tenant_proxy.service.type }}
+  ports:
+    - port: {{ .Values.tenant_proxy.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "tenant_proxy.selectorLabels" . | nindent 4 }}

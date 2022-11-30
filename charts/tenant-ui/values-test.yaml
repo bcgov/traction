@@ -9,8 +9,8 @@ tenant_ui:
     pullPolicy: Always
   traction_api:
     endpoint: https://traction-api-test.apps.silver.devops.gov.bc.ca
-  acapy_admin_api:
-    endpoint: https://traction-acapy-admin-test.apps.silver.devops.gov.bc.ca
+  tenant_proxy:
+    endpoint: https://traction-tenant-proxy-test.apps.silver.devops.gov.bc.ca
   oidc:
     active: true
     showInnkeeperAdminLogin: true

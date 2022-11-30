@@ -5,8 +5,8 @@ tenant_ui:
     buildtime: '2022-08-04T22:16:25.869Z'
   traction_api:
     endpoint: https://traction-api-prod.apps.silver.devops.gov.bc.ca
-  acapy_admin_api:
-    endpoint: https://traction-acapy-admin-prod.apps.silver.devops.gov.bc.ca
+  tenant_proxy:
+    endpoint: https://traction-tenant-proxy-prod.apps.silver.devops.gov.bc.ca
   oidc:
     active: true
     showInnkeeperAdminLogin: true

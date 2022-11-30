@@ -53,3 +53,9 @@ traction_api:
     requests:
       cpu: 120m
       memory: 400Mi
+tenant_proxy:
+  image:
+    tag: "ghcr.io/bcgov/traction-tenant-proxy:sha-2aa3709"
+    version: 'sha-2aa3709'
+    buildtime: "2022-01-28T18:19:10.574Z"
+    pullPolicy: Always

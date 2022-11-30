@@ -110,6 +110,14 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{ template "acapy.fullname" . }}-plugin-innkeeper
 {{- end -}}
 
+{{/*
+Create a default fully qualified tenant proxy name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "tenant_proxy.fullname" -}}
+{{ template "global.fullname" . }}-tenant-proxy
+{{- end -}}
+
 
 {{/*
 generate ledger browser url
@@ -370,3 +378,59 @@ tls:
   termination: {{ .Values.traction_api.openshift.route.tls.termination }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Common tenant proxy labels
+*/}}
+{{- define "tenant_proxy.labels" -}}
+{{ include "common.labels" . }}
+{{ include "tenant_proxy.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+Selector tenant proxy labels
+*/}}
+{{- define "tenant_proxy.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "tenant_proxy.fullname" . }}
+{{ include "common.selectorLabels" . }}
+{{- end }}
+
+{{/*
+Create the name of the tenant proxy service account to use
+*/}}
+{{- define "tenant_proxy.serviceAccountName" -}}
+{{- if .Values.tenant_proxy.serviceAccount.create }}
+{{- default (include "tenant_proxy.fullname" .) .Values.tenant_proxy.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.tenant_proxy.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
+{{/*
+Mount the tenant proxy config map as env vars
+*/}}
+{{- define "tenant_proxy.configmap.env.vars" -}}
+envFrom:
+  - configMapRef:
+      name: {{ template "tenant_proxy.fullname" . }}-img
+{{- end -}}
+
+{{/*
+generate tenant proxy hosts if not overriden
+*/}}
+{{- define "tenant_proxy.host" -}}
+{{- include "tenant_proxy.fullname" . }}{{ .Values.global.ingressSuffix -}}
+{{- end }}
+
+{{- define "tenant_proxy.openshift.route.tls" -}}
+{{- if (.Values.tenant_proxy.openshift.route.tls.enabled) -}}
+tls:
+  insecureEdgeTerminationPolicy: {{ .Values.tenant_proxy.openshift.route.tls.insecureEdgeTerminationPolicy }}
+  termination: {{ .Values.tenant_proxy.openshift.route.tls.termination }}
+{{- end -}}
+{{- end -}}
+
