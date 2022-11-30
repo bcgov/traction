@@ -1,0 +1,2 @@
+FROM nginx:stable-alpine
+COPY docker/tenant-proxy.conf.template /etc/nginx/templates/default.conf.template

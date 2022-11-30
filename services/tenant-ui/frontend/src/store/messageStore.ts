@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
-import { useTenantApi } from './tenantApi';
-import { fetchList } from './utils';
+import { useAcapyApi } from './acapyApi';
+import { fetchListFromAPI } from './utils';
 
 export const useMessageStore = defineStore('messages', () => {
   const messages: any = ref(null);
@@ -10,10 +10,18 @@ export const useMessageStore = defineStore('messages', () => {
   const error: any = ref(null);
 
   // grab the tenant api
-  const tenantApi = useTenantApi();
+  const acapyApi = useAcapyApi();
 
   async function listMessages() {
-    return fetchList('acapy/basicmessages', messages, error, loading, {}, true);
+    return fetchListFromAPI(
+      acapyApi,
+      '/basicmessages',
+      messages,
+      error,
+      loading,
+      {},
+      true
+    );
   }
 
   type SendPayload = {
@@ -27,8 +35,8 @@ export const useMessageStore = defineStore('messages', () => {
 
     let result = null;
 
-    await tenantApi
-      .postHttp(`/acapy/connections/${connId}/send-message`, payload)
+    await acapyApi
+      .postHttp(`/connections/${connId}/send-message`, payload)
       .then((res) => {
         console.log(res);
         result = res.data.item;
@@ -40,7 +48,7 @@ export const useMessageStore = defineStore('messages', () => {
       .finally(() => {
         loading.value = false;
       });
-    console.log('< issuerStore.createSchemaTemplate');
+    console.log('< messageStore.sendMessage');
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler

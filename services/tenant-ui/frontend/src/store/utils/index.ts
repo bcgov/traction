@@ -1,4 +1,4 @@
-export { fetchList } from './fetchList';
+export { fetchList, fetchListFromAPI } from './fetchList';
 export { fetchItem } from './fetchItem';
 
 /**

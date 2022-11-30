@@ -1,5 +1,6 @@
 {
   "frontend": {
+    "proxyAcapyPath": "SERVER_ACAPY_ADMIN_URL",
     "showInnkeeperAdminLogin": "FRONTEND_INNKEEPER_SHOW_ADMIN",
     "oidc": {
       "active": "FRONTEND_INNKEEPER_OIDC_ACTIVE",
@@ -22,8 +23,6 @@
   },
   "server": {
     "tractionUrl": "SERVER_TRACTION_URL",
-    "acapyAdminUrl": "SERVER_ACAPY_ADMIN_URL",
-    "acapyAdminApiKey": "SERVER_ACAPY_ADMIN_URL_API_KEY",
     "oidc": {
       "jwksUri": "SERVER_OIDC_JWKS",
       "realm": "SERVER_OIDC_REALM",

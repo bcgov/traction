@@ -34,5 +34,18 @@ services:
       timeout: 5s
       retries: 5
 
+  tenant-proxy:
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile.tenant-proxy
+    restart: unless-stopped
+    environment:
+      - ACAPY_ADMIN_URL=http://traction-agent:3001
+      - ACAPY_ADMIN_URL_API_KEY=change-me
+    ports:
+      - 8001:80
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
 volumes:
   traction-wallet:
