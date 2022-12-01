@@ -5,7 +5,8 @@
     v-model:selection="selectedMessage"
     :loading="loading"
     :paginator="true"
-    :rows="10"
+    :rows="TABLE_OPT.ROWS_DEFAULT"
+    :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
     :value="messages"
     selection-mode="single"
     data-key="message_id"
@@ -27,14 +28,14 @@
     </template>
     <template #empty> No records found. </template>
     <template #loading> Loading data. Please wait... </template>
-    <Column field="connection_id" header="Contact">
+    <Column :sortable="true" field="connection_id" header="Contact">
       <template #body="{ data }">
         {{ findContactName(data.connection_id) }}
       </template>
     </Column>
-    <Column field="state" header="State" />
-    <Column field="content" header="Content" />
-    <Column field="sent_time" header="Sent">
+    <Column :sortable="true" field="state" header="State" />
+    <Column :sortable="true" field="content" header="Content" />
+    <Column :sortable="true" field="sent_time" header="Sent">
       <template #body="{ data }">
         {{ formatDateLong(data.created_at) }}
       </template>
@@ -53,6 +54,7 @@ import { useToast } from 'vue-toastification';
 import { useMessageStore, useContactsStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other components
+import { TABLE_OPT } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 import CreateMessage from './createMessage/CreateMessage.vue';
 import { useI18n } from 'vue-i18n';

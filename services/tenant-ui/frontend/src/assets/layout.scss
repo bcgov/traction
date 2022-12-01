@@ -41,6 +41,14 @@ body {
     flex: 1;
     background-color: #e4e4e4;
     padding: 0.5em;
+
+    // The card container for pages
+    .p-card .p-card-body {
+      padding-bottom: 0;
+      .p-card-content {
+        padding-bottom: 8px;
+      }
+    }
   }
 }
 

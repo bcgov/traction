@@ -6,11 +6,17 @@ $tenant-ui-accent-color: #96c230;
 $tenant-ui-secondary-active: darken( $tenant-ui-secondary-color, 10% );
 $tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
 $tenant-ui-flat-highlight: #ebeef3;
-$tenant-ui-link-color: #3a5b8b;
 
 // General text colors
 $tenant-ui-text-danger: #F84949;
+$tenant-ui-link-color: #3a5b8b;
+$tenant-ui-button-link-color: #385A8A;
 
+// Backgrounds/ borders
+$tenant-ui-panel-back-color: #F8F9FA;
+$tenant-ui-panel-border-color: #DEE2E6;
+
+// Status Colors
 $tenant-ui-status-default-background: #c8c8c8; // status chip backgrounds
 $tenant-ui-status-green-background: #C8E6C9;
 $tenant-ui-status-amber-background: #FFD8B2;

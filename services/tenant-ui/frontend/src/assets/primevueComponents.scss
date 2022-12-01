@@ -1,9 +1,68 @@
 // Global modifications to PrimeVue components here
 // Note if general global theming (colors mostly) needs changing, look to the pulled in _theme file
-// Can adjust ALL instances of a PrimeVue component her by just overriding the classes,
-// or if you want a component that only sometimes gets modified, can add another .traction class to it
-// like if we want a bunch of tables to get overriden style (but still want other customizable or default,
-// add .traction-table and nest style from that
+// Can adjust ALL instances of a PrimeVue component here by just overriding the classes,
+
+// Data Tables
+.p-datatable {
+  .p-datatable-header,
+  .p-datatable-wrapper .p-datatable-thead > tr > th {
+    background-color: $tenant-ui-panel-back-color;
+    border-color: $tenant-ui-panel-border-color;
+  }
+
+  .p-datatable-wrapper .p-datatable-thead > tr > th,
+  .p-datatable-wrapper tbody > tr > td {
+    border-width: 1px 0;
+    border-color: $tenant-ui-panel-border-color;
+    font-weight: medium;
+    &:first-child {
+      border-left-width: 1px;
+    }
+    &:last-child {
+      border-right-width: 1px;
+    }
+  }
+
+  // Sort Columns
+  .p-sortable-column.p-highlight {
+    background-color: $tenant-ui-panel-back-color !important;
+    &,
+    .p-sortable-column-icon {
+      color: black !important;
+    }
+  }
+
+  // Paginator in table footer (more other general paginator tweaks below)
+  .p-paginator {
+    background-color: white;
+    border: none;
+    display: flex;
+    justify-content: flex-start;
+    padding-top: 5px;
+    .p-paginator-rpp-options {
+      margin-left: auto;
+    }
+  }
+}
+
+// Paginator
+.p-paginator {
+  .p-link {
+    color: $tenant-ui-button-link-color !important;
+    &.p-highlight {
+      background-color: #e9ecf1 !important;
+      border-radius: 2em;
+      padding: 0;
+    }
+    &:hover {
+      border-radius: 2em;
+    }
+  }
+  .p-paginator-rpp-options .p-dropdown-label {
+    padding-top: 3px;
+    margin-right: 15px;
+  }
+}
 
 // Dialogs
 .p-dialog-content {
@@ -15,7 +74,7 @@
 // Input Switches
 .p-inputswitch {
   &.p-inputswitch-checked .p-inputswitch-slider {
-    background:darken($tenant-ui-status-green-background, 20%);
+    background: darken($tenant-ui-status-green-background, 20%);
     &::before {
       background-color: white !important;
     }

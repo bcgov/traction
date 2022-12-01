@@ -7,7 +7,8 @@
     :loading="loading"
     :value="credentials"
     :paginator="true"
-    :rows="10"
+    :rows="TABLE_OPT.ROWS_DEFAULT"
+    :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
     selection-mode="single"
     data-key="issuer_credential_id"
   >
@@ -51,13 +52,13 @@
       field="credential_template.name"
       header="Credential Name"
     />
-    <Column field="contact.alias" header="Contact Name" />
-    <Column field="status" header="Status">
+    <Column :sortable="true" field="contact.alias" header="Contact Name" />
+    <Column :sortable="true" field="status" header="Status">
       <template #body="{ data }">
         <StatusChip :status="data.status" />
       </template>
     </Column>
-    <Column field="created_at" header="Created at">
+    <Column :sortable="true" field="created_at" header="Created at">
       <template #body="{ data }">
         {{ formatDateLong(data.created_at) }}
       </template>
@@ -87,6 +88,7 @@ import { useConfirm } from 'primevue/useconfirm';
 // Other Components
 import OfferCredential from './offerCredential/OfferCredential.vue';
 import RowExpandData from '../common/RowExpandData.vue';
+import { TABLE_OPT } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 import StatusChip from '../common/StatusChip.vue';
 import { useI18n } from 'vue-i18n';

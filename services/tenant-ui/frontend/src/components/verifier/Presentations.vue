@@ -8,7 +8,8 @@
     :value="presentations"
     data-key="verifier_presentation_id"
     :paginator="true"
-    :rows="10"
+    :rows="TABLE_OPT.ROWS_DEFAULT"
+    :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
     selection-mode="single"
   >
     <template #header>
@@ -36,13 +37,13 @@
     <template #loading> Loading data. Please wait... </template>
     <Column :expander="true" header-style="width: 3rem" />
     <Column :sortable="true" field="name" header="Name" />
-    <Column field="contact.alias" header="Contact Name" />
-    <Column field="status" header="Status">
+    <Column :sortable="true" field="contact.alias" header="Contact Name" />
+    <Column :sortable="true" field="status" header="Status">
       <template #body="{ data }">
         <StatusChip :status="data.status" />
       </template>
     </Column>
-    <Column field="created_at" header="Created at">
+    <Column :sortable="true" field="created_at" header="Created at">
       <template #body="{ data }">
         {{ formatDateLong(data.created_at) }}
       </template>
@@ -68,6 +69,7 @@ import { useVerifierStore } from '../../store';
 import { storeToRefs } from 'pinia';
 
 import PresentationRowExpandData from './PresentationRowExpandData.vue';
+import { TABLE_OPT } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 import StatusChip from '../common/StatusChip.vue';
 import SuperYou from '@/components/common/SuperYou.vue';
