@@ -2,10 +2,12 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import axios from 'axios';
 import { useConfigStore } from './configStore';
+import jwtDecode from 'jwt-decode';
 
 export const useTokenStore = defineStore('token', () => {
   // state
   const token: any = ref(null);
+  const acapyToken: any = ref(null);
   const loading: any = ref(false);
   const error: any = ref(null);
 
@@ -16,6 +18,7 @@ export const useTokenStore = defineStore('token', () => {
     console.log('> tokenStore.load');
     const payload = `username=${username}&password=${password}`;
     token.value = null;
+    acapyToken.value = null;
     error.value = null;
     loading.value = true;
 
@@ -34,6 +37,13 @@ export const useTokenStore = defineStore('token', () => {
       .then((res) => {
         console.log(res);
         token.value = res.data.access_token;
+        // parse out the acapy token and store that...
+        try {
+          const decoded = jwtDecode<any>(res.data.access_token);
+          acapyToken.value = decoded.key;
+        } catch (error) {
+          console.error(`Error decoding acapy token : {}`, error);
+        }
       })
       .catch((err) => {
         error.value = err;
@@ -55,10 +65,11 @@ export const useTokenStore = defineStore('token', () => {
   function clearToken() {
     console.log('> clearToken');
     token.value = null;
+    acapyToken.value = null;
     console.log('< clearToken');
   }
 
-  return { token, loading, error, clearToken, login };
+  return { acapyToken, token, loading, error, clearToken, login };
 });
 
 export default {

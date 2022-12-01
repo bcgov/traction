@@ -12,7 +12,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { useConfigStore } from './configStore';
 import { useTenantStore, useTokenStore } from './index';
 
-export const useTenantApi = defineStore('tenantApi', () => {
+export const useAcapyApi = defineStore('acapyApi', () => {
   const tokenStore = useTokenStore();
   const tenantStore = useTenantStore();
   const { config } = storeToRefs(useConfigStore());
@@ -27,40 +27,40 @@ export const useTenantApi = defineStore('tenantApi', () => {
 
   // setup our tenant api calls to use the configured proxy path "prefix"
   // now callers can just put in the actual traction api url
-  const tenantApi = createAxios({
-    baseURL: config.value.frontend.proxyPath,
+  const acapyApi = createAxios({
+    baseURL: config.value.frontend.tenantProxyPath,
   });
 
   // need to add authorization before we make traction tenant requests...
-  tenantApi.interceptors.request.use(
+  acapyApi.interceptors.request.use(
     async (dataConfig: AxiosRequestConfig) => {
-      // console.log('tenantApi.request.fulfilled');
+      // console.log('acapyApi.request.fulfilled');
       const result = {
         ...dataConfig,
         headers: {
           'Content-Type': 'application/json',
           accept: 'application/json',
           ...dataConfig.headers,
-          Authorization: `Bearer ${tokenStore.token}`,
+          Authorization: `Bearer ${tokenStore.acapyToken}`,
         },
       };
       return result;
     },
     async (error: any) => {
-      console.error('tenantApi.request.error');
+      console.error('acapyApi.request.error');
       console.error(error);
       return Promise.reject(error);
     }
   );
 
-  tenantApi.interceptors.response.use(
+  acapyApi.interceptors.response.use(
     (response) => {
-      // console.log('tenantApi.response.fulfilled');
+      // console.log('acapyApi.response.fulfilled');
       // console.log(response);
       return response;
     },
     (error: any) => {
-      console.error('tenantApi.response.error');
+      console.error('acapyApi.response.error');
       console.error(error);
       if (error.response.status === 401) {
         tokenStore.clearToken();
@@ -72,12 +72,12 @@ export const useTenantApi = defineStore('tenantApi', () => {
   );
 
   // private function that calls axios instance configured for tenant calls
-  async function callTenantApi(
+  async function callAcapyApi(
     url: string,
     method: string,
     options = {}
   ): Promise<any> {
-    return tenantApi({
+    return acapyApi({
       method: method.toUpperCase(),
       url,
       ...options,
@@ -89,7 +89,7 @@ export const useTenantApi = defineStore('tenantApi', () => {
     params: any = {},
     options: any = {}
   ): Promise<any> {
-    return callTenantApi(url, 'get', {
+    return callAcapyApi(url, 'get', {
       ...options,
       params,
     });
@@ -100,7 +100,7 @@ export const useTenantApi = defineStore('tenantApi', () => {
     data: any = {},
     options: any = {}
   ): Promise<any> {
-    return callTenantApi(url, 'post', {
+    return callAcapyApi(url, 'post', {
       data,
       ...options,
     });
@@ -111,7 +111,7 @@ export const useTenantApi = defineStore('tenantApi', () => {
     data: any = {},
     options: any = {}
   ): Promise<any> {
-    return callTenantApi(url, 'update', {
+    return callAcapyApi(url, 'update', {
       data,
       ...options,
     });
@@ -122,7 +122,7 @@ export const useTenantApi = defineStore('tenantApi', () => {
     data: any = {},
     options: any = {}
   ): Promise<any> {
-    return callTenantApi(url, 'put', {
+    return callAcapyApi(url, 'put', {
       data,
       ...options,
     });
@@ -133,7 +133,7 @@ export const useTenantApi = defineStore('tenantApi', () => {
     data: any = {},
     options: any = {}
   ): Promise<any> {
-    return callTenantApi(url, 'patch', {
+    return callAcapyApi(url, 'patch', {
       data,
       ...options,
     });
@@ -144,7 +144,7 @@ export const useTenantApi = defineStore('tenantApi', () => {
     data: any = {},
     options: any = {}
   ): Promise<any> {
-    return callTenantApi(url, 'delete', {
+    return callAcapyApi(url, 'delete', {
       data,
       ...options,
     });
@@ -154,5 +154,5 @@ export const useTenantApi = defineStore('tenantApi', () => {
 });
 
 export default {
-  useTenantApi,
+  useAcapyApi,
 };

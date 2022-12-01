@@ -1,0 +1,149 @@
+server {
+    listen *:8080;
+    listen [::]:8080;
+    server_name localhost;
+
+    # set default headers
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+
+    proxy_redirect off;
+    proxy_buffering off;
+
+    # =============================================
+    # Block list
+    # =============================================
+    location /multitenancy {
+        deny all;
+    }
+
+    location /shutdown {
+        deny all;
+    }
+
+    location /status {
+        deny all;
+    }
+
+
+    # =============================================
+    # Blocklist Exceptions
+    # =============================================
+    
+    
+    location ~ ^/multitenancy/wallet/([0-9a-zA-Z/-]+)/token$ {
+        proxy_set_header X-API-KEY ${ACAPY_ADMIN_URL_API_KEY};
+        proxy_pass ${ACAPY_ADMIN_URL};
+        allow all;
+
+        proxy_set_header Proxy '';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        proxy_hide_header Access-Control-Allow-Origin;
+        proxy_hide_header Access-Control-Allow-Credentials;
+
+        set $CORS_CREDS true;
+        set $CORS_ORIGIN $http_origin;
+        set $CORS_PREFLIGHT_CACHE_AGE 600;
+
+        if ($request_method = 'OPTIONS') {
+            add_header Access-Control-Allow-Origin $CORS_ORIGIN;
+            add_header Access-Control-Allow-Methods $http_access_control_request_methods;
+            add_header Access-Control-Allow-Headers $http_access_control_request_headers;
+            add_header Access-Control-Allow-Credentials $CORS_CREDS;
+
+            add_header Access-Control-Max-Age $CORS_PREFLIGHT_CACHE_AGE;
+            add_header Content-Type 'text/plain; charset=utf-8';
+            add_header Content-Length 0;
+            return 204;
+        }
+        if ($request_method != 'OPTIONS') {
+            add_header Access-Control-Allow-Origin $CORS_ORIGIN;
+            add_header Access-Control-Allow-Methods $http_access_control_request_methods;
+            add_header Access-Control-Allow-Headers $http_access_control_request_headers;
+            add_header Access-Control-Allow-Credentials $CORS_CREDS;
+        }
+    }
+
+    location ~ ^/status/(live|ready)$ {
+        proxy_set_header X-API-KEY ${ACAPY_ADMIN_URL_API_KEY};
+        proxy_pass ${ACAPY_ADMIN_URL};
+        allow all;
+
+        proxy_set_header Proxy '';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        proxy_hide_header Access-Control-Allow-Origin;
+        proxy_hide_header Access-Control-Allow-Credentials;
+
+        set $CORS_CREDS true;
+        set $CORS_ORIGIN $http_origin;
+        set $CORS_PREFLIGHT_CACHE_AGE 600;
+
+        if ($request_method = 'OPTIONS') {
+            add_header Access-Control-Allow-Origin $CORS_ORIGIN;
+            add_header Access-Control-Allow-Methods $http_access_control_request_methods;
+            add_header Access-Control-Allow-Headers $http_access_control_request_headers;
+            add_header Access-Control-Allow-Credentials $CORS_CREDS;
+
+            add_header Access-Control-Max-Age $CORS_PREFLIGHT_CACHE_AGE;
+            add_header Content-Type 'text/plain; charset=utf-8';
+            add_header Content-Length 0;
+            return 204;
+        }
+        if ($request_method != 'OPTIONS') {
+            add_header Access-Control-Allow-Origin $CORS_ORIGIN;
+            add_header Access-Control-Allow-Methods $http_access_control_request_methods;
+            add_header Access-Control-Allow-Headers $http_access_control_request_headers;
+            add_header Access-Control-Allow-Credentials $CORS_CREDS;
+        }
+    }
+
+    # =============================================
+    # Allow Everything else
+    # =============================================
+
+    location / {
+        proxy_set_header X-API-KEY ${ACAPY_ADMIN_URL_API_KEY};
+        proxy_pass ${ACAPY_ADMIN_URL};
+        allow all;
+
+        proxy_set_header Proxy '';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        proxy_hide_header Access-Control-Allow-Origin;
+        proxy_hide_header Access-Control-Allow-Credentials;
+
+        set $CORS_CREDS true;
+        set $CORS_ORIGIN $http_origin;
+        set $CORS_PREFLIGHT_CACHE_AGE 600;
+
+        if ($request_method = 'OPTIONS') {
+            add_header Access-Control-Allow-Origin $CORS_ORIGIN;
+            add_header Access-Control-Allow-Methods $http_access_control_request_methods;
+            add_header Access-Control-Allow-Headers $http_access_control_request_headers;
+            add_header Access-Control-Allow-Credentials $CORS_CREDS;
+
+            add_header Access-Control-Max-Age $CORS_PREFLIGHT_CACHE_AGE;
+            add_header Content-Type 'text/plain; charset=utf-8';
+            add_header Content-Length 0;
+            return 204;
+        }
+        if ($request_method != 'OPTIONS') {
+            add_header Access-Control-Allow-Origin $CORS_ORIGIN;
+            add_header Access-Control-Allow-Methods $http_access_control_request_methods;
+            add_header Access-Control-Allow-Headers $http_access_control_request_headers;
+            add_header Access-Control-Allow-Credentials $CORS_CREDS;
+        }
+    }
+
+}

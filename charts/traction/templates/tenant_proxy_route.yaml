@@ -1,0 +1,22 @@
+{{- if .Values.tenant_proxy.openshift.route.enabled -}}
+{{- $fullName := include "tenant_proxy.fullname" . -}}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "tenant_proxy.fullname" . }}
+  annotations:
+    haproxy.router.openshift.io/timeout: {{ .Values.tenant_proxy.openshift.route.timeout }}
+  labels:
+    {{- include "tenant_proxy.labels" . | nindent 4 }}
+spec:
+  host: {{ include "tenant_proxy.host" . | quote }}
+  path: {{ .Values.tenant_proxy.openshift.route.path }}
+  to:
+    kind: Service
+    name: {{ $fullName }}
+    weight: 100
+  port:
+    targetPort: {{ .Values.tenant_proxy.openshift.route.targetPort }}
+  wildcardPolicy: {{ .Values.tenant_proxy.openshift.route.wildcardPolicy }}
+{{ include "tenant_proxy.openshift.route.tls" . | indent 2}}
+{{- end }}

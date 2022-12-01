@@ -75,6 +75,27 @@ jobs:
       image_version: ${{ steps.builder.outputs.image_version }}
       buildtime: ${{ steps.builder.outputs.buildtime }}
 
+  build_proxy:
+    name: 'Build Traction Tenant Proxy'
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'bcgov'
+    steps:      
+      - uses: actions/checkout@v3        
+      - name: Build Aca-Py Image
+        uses: ./.github/actions/build_acapy
+        id: builder
+        with:
+          context: './plugins'
+          dockerfile: './plugins/docker/Dockerfile.tenant-proxy'
+          image_name: ${{ github.repository_owner}}/traction-tenant-proxy
+          registry: ghcr.io
+          registry_username: ${{ github.repository_owner}}
+          registry_password: ${{ secrets.GITHUB_TOKEN }}
+    outputs:
+      image_tag: ${{ steps.builder.outputs.image_tag }}
+      image_version: ${{ steps.builder.outputs.image_version }}
+      buildtime: ${{ steps.builder.outputs.buildtime }}
+
   deploy:
     name: Deploy Dev
     environment: development
@@ -83,6 +104,7 @@ jobs:
       - build_api
       - build_ui
       - build_acapy
+      - build_proxy
     if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) && (github.repository_owner == 'bcgov') }}
 
     steps:  
@@ -104,6 +126,9 @@ jobs:
           yq eval '.acapy.image.tag = "${{ needs.build_acapy.outputs.image_tag }}"' -i ./charts/traction/values-development.yaml
           yq eval '.acapy.image.version = "${{ needs.build_acapy.outputs.image_version }}"' -i ./charts/traction/values-development.yaml
           yq eval '.acapy.image.buildtime = "${{ needs.build_acapy.outputs.buildtime }}"' -i ./charts/traction/values-development.yaml
+          yq eval '.tenant_proxy.image.tag = "${{ needs.build_proxy.outputs.image_tag }}"' -i ./charts/traction/values-development.yaml
+          yq eval '.tenant_proxy.image.version = "${{ needs.build_proxy.outputs.image_version }}"' -i ./charts/traction/values-development.yaml
+          yq eval '.tenant_proxy.image.buildtime = "${{ needs.build_proxy.outputs.buildtime }}"' -i ./charts/traction/values-development.yaml
           helm upgrade -f ./charts/traction/values.yaml -f ./charts/traction/values-development.yaml traction ./charts/traction --install --wait
       
       - name: Tenant UI Dev Helm 

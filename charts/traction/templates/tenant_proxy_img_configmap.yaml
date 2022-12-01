@@ -1,0 +1,11 @@
+{{- $fullName := include "tenant_proxy.fullname" . -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "tenant_proxy.fullname" . }}-img
+  labels:
+    {{- include "tenant_proxy.labels" . | nindent 4 }}
+data:
+  IMAGE_TAG: {{ .Values.tenant_proxy.image.tag | quote }}
+  IMAGE_VERSION: {{ .Values.tenant_proxy.image.version | quote }}
+  IMAGE_BUILDTIME: {{ .Values.tenant_proxy.image.buildtime | quote }}

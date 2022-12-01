@@ -215,7 +215,7 @@ services:
         condition: service_started
     environment:
       - SERVER_TRACTION_URL=${SERVER_TRACTION_URL}
-      - SERVER_ACAPY_ADMIN_URL=${SERVER_ACAPY_ADMIN_URL}
+      - FRONTEND_TENANT_PROXY_URL=${FRONTEND_TENANT_PROXY_URL}
       - IMAGE_BUILDTIME=${IMAGE_BUILDTIME}
       - IMAGE_TAG=${IMAGE_TAG}
       - IMAGE_VERSION=${IMAGE_VERSION}
@@ -226,6 +226,22 @@ services:
     ports:
       - ${TENANT_UI_PORT}:8080
 
+  tenant-proxy:
+    build:
+      context: ../plugins
+      dockerfile: ./docker/Dockerfile.tenant-proxy
+    image: traction-local:tenant-proxy
+    depends_on:
+      traction-agent:
+        condition: service_started
+    restart: unless-stopped
+    environment:
+      - ACAPY_ADMIN_URL=${ACAPY_ADMIN_URL}
+      - ACAPY_ADMIN_URL_API_KEY=${ACAPY_ADMIN_URL_API_KEY}
+    ports:
+      - ${TENANT_PROXY_PORT}:8080
+    extra_hosts:
+      - host.docker.internal:host-gateway
 
 volumes:
   traction-wallet:

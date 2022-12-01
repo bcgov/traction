@@ -12,6 +12,26 @@ export async function fetchList(
   isAcapy = false
 ) {
   const tenantApi = useTenantApi();
+  return fetchListFromAPI(
+    tenantApi,
+    url,
+    list,
+    error,
+    loading,
+    params,
+    isAcapy
+  );
+}
+
+export async function fetchListFromAPI(
+  api: any,
+  url: string,
+  list: Ref<any>,
+  error: Ref<any>,
+  loading: Ref<boolean>,
+  params: object = {},
+  isAcapy = false
+) {
   console.log(`> fetchList(${url})`);
   list.value = null;
   error.value = null;
@@ -19,7 +39,7 @@ export async function fetchList(
   // console.log(params);
   params = { ...params, page_num: 1, page_size: 100 };
   // console.log(params);
-  await tenantApi
+  await api
     .getHttp(url, params)
     .then((res: AxiosRequestConfig): void => {
       // console.log(res);
