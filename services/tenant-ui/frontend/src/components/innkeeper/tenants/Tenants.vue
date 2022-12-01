@@ -6,7 +6,8 @@
     :loading="loading"
     :value="tenants"
     :paginator="true"
-    :rows="10"
+    :rows="TABLE_OPT.ROWS_DEFAULT"
+    :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
     selection-mode="single"
     data-key="tenant_id"
     sort-field="created_at"
@@ -62,6 +63,7 @@ import { useInnkeeperTenantsStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other components
 import CheckInTenant from './CheckInTenant.vue';
+import { TABLE_OPT } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 import RowExpandData from '@/components/common/RowExpandData.vue';
 import { useI18n } from 'vue-i18n';
