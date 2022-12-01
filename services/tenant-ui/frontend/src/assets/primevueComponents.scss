@@ -43,6 +43,14 @@
       margin-left: auto;
     }
   }
+
+  // Buttons specifically in DataTable bodies
+  .p-datatable-tbody > tr > td {
+    .p-button,
+    .p-row-toggler {
+      color: $tenant-ui-button-link-color;
+    }
+  }
 }
 
 // Paginator
