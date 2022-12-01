@@ -33,7 +33,6 @@ function _setupConfig() {
     image: config.get("image"),
     server: {
       tractionUrl: config.get("server.tractionUrl"),
-      acapyAdminUrl: config.get("server.acapyAdminUrl"),
     },
   };
 }
