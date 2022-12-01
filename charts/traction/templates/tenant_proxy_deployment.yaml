@@ -33,18 +33,18 @@ spec:
           imagePullPolicy: {{ .Values.tenant_proxy.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 8032
+              containerPort: 8080
               protocol: TCP
           readinessProbe:
             httpGet:
               path: /
-              port: 8032
+              port: 8080
             initialDelaySeconds: 90
             periodSeconds: 10  
           livenessProbe:
             httpGet:
               path: /
-              port: 8032
+              port: 8080
             initialDelaySeconds: 90
             periodSeconds: 30   
           env:

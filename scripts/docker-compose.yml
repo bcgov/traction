@@ -239,7 +239,7 @@ services:
       - ACAPY_ADMIN_URL=${ACAPY_ADMIN_URL}
       - ACAPY_ADMIN_URL_API_KEY=${ACAPY_ADMIN_URL_API_KEY}
     ports:
-      - ${TENANT_PROXY_PORT}:80
+      - ${TENANT_PROXY_PORT}:8080
     extra_hosts:
       - host.docker.internal:host-gateway
 
