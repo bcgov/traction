@@ -7,7 +7,8 @@
     :loading="loading"
     :value="schemaTemplates"
     :paginator="true"
-    :rows="10"
+    :rows="TABLE_OPT.ROWS_DEFAULT"
+    :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
     selection-mode="single"
     data-key="schema_template_id"
   >
@@ -40,15 +41,19 @@
         />
       </template>
     </Column>
-    <Column field="name" header="Schema" filter-field="name" />
-    <Column field="version" header="Version" />
-    <Column field="status" header="Status">
+    <Column :sortable="true" field="name" header="Schema" filter-field="name" />
+    <Column :sortable="true" field="version" header="Version" />
+    <Column :sortable="true" field="status" header="Status">
       <template #body="{ data }">
         <StatusChip :status="data.status" />
       </template>
     </Column>
-    <Column field="attributes" header="Attributes" />
-    <Column field="credential_templates" header="Credential Template">
+    <Column :sortable="true" field="attributes" header="Attributes" />
+    <Column
+      :sortable="true"
+      field="credential_templates"
+      header="Credential Template"
+    >
       <template #body="{ data }">
         <CreateCredentialTemplate :schema-template="data" />
       </template>
@@ -75,6 +80,7 @@ import CopySchema from './copySchema/CopySchema.vue';
 import CreateCredentialTemplate from './credentialtemplate/CreateCredentialTemplate.vue';
 import RowExpandData from '../common/RowExpandData.vue';
 import StatusChip from '../common/StatusChip.vue';
+import { TABLE_OPT } from '@/helpers/constants';
 
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';

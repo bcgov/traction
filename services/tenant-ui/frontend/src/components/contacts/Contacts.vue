@@ -7,7 +7,8 @@
     :loading="loading"
     :value="contacts"
     :paginator="true"
-    :rows="10"
+    :rows="TABLE_OPT.ROWS_DEFAULT"
+    :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
     selection-mode="single"
     data-key="contact_id"
   >
@@ -42,13 +43,13 @@
       </template>
     </Column>
     <Column :sortable="true" field="alias" header="Name" />
-    <Column field="role" header="Role" />
-    <Column field="status" header="Status">
+    <Column :sortable="true" field="role" header="Role" />
+    <Column :sortable="true" field="status" header="Status">
       <template #body="{ data }">
         <StatusChip :status="data.status" />
       </template>
     </Column>
-    <Column field="created_at" header="Created at">
+    <Column :sortable="true" field="created_at" header="Created at">
       <template #body="{ data }">
         {{ formatDateLong(data.created_at) }}
       </template>
@@ -78,6 +79,7 @@ import { storeToRefs } from 'pinia';
 // Other components
 import AcceptInvitation from './acceptInvitation/AcceptInvitation.vue';
 import CreateContact from './createContact/CreateContact.vue';
+import { TABLE_OPT } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 import RowExpandData from '../common/RowExpandData.vue';
 import StatusChip from '../common/StatusChip.vue';
