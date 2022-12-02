@@ -146,12 +146,6 @@ const expandedRows = ref([]);
 const filter = ref({
   alias: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
-
-const initFilter = () => {
-  filter.value = {
-    alias: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  };
-};
 </script>
 
 <style scoped>
