@@ -32,7 +32,7 @@ export const useInnkeeperApi = defineStore('innkeeperApi', () => {
       const result = {
         ...apiConfig,
         headers: {
-          contentType: 'application/json',
+          'Content-Type': 'application/json',
           accept: 'application/json',
           ...apiConfig.headers,
           Authorization: `Bearer ${innkeeperTokenStore.token}`,

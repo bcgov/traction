@@ -9,6 +9,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import SuperYou from '@/components/common/SuperYou.vue';
+import { API_PATH } from '@/helpers/constants';
 
 /**
  * Convenient functionality for devs to test the API
@@ -39,5 +40,5 @@ const templateJson = ref({
     non_revoked: {},
   },
 });
-const apiUrl = ref('/tenant/v1/verifier/presentation_templates');
+const apiUrl = ref(API_PATH.VERIFIER_PRESENTATION_TEMPLATES);
 </script>

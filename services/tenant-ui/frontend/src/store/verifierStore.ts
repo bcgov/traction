@@ -1,3 +1,4 @@
+import { API_PATH } from '@/helpers/constants';
 import { defineStore } from 'pinia';
 import { Ref, ref } from 'vue';
 import { fetchItem } from './utils/fetchItem';
@@ -17,7 +18,7 @@ export const useVerifierStore = defineStore('verifier', () => {
   async function listPresentations() {
     selectedPresentation.value = null;
     return fetchList(
-      '/tenant/v1/verifier/presentations/',
+      API_PATH.VERIFIER_PRESENTATIONS,
       presentations,
       error,
       loading
@@ -27,7 +28,7 @@ export const useVerifierStore = defineStore('verifier', () => {
   async function getPresentation(id: string, params: any = {}) {
     const getloading: any = ref(false);
     return fetchItem(
-      '/tenant/v1/verifier/presentations/',
+      API_PATH.VERIFIER_PRESENTATIONS,
       id,
       error,
       getloading,

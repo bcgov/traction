@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { useConfigStore } from '../configStore';
 import { Ref } from 'vue';
+import { API_PATH } from '@/helpers/constants';
 
 export const useInnkeeperTokenStore = defineStore(
   'useInnkeeperTokenStore',
@@ -36,7 +37,7 @@ export const useInnkeeperTokenStore = defineStore(
 
       // TODO: isolate this to something reusable when we grab an axios connection.
       const configStore = useConfigStore();
-      const url = configStore.proxyPath('/innkeeper/token');
+      const url = configStore.proxyPath(API_PATH.INNKEEPER_TOKEN);
       await axios({
         method: 'post',
         url,

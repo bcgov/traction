@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import axios from 'axios';
 import { useConfigStore } from './configStore';
 import jwtDecode from 'jwt-decode';
+import { API_PATH } from '@/helpers/constants';
 
 export const useTokenStore = defineStore('token', () => {
   // state
@@ -24,7 +25,7 @@ export const useTokenStore = defineStore('token', () => {
 
     // TODO: isolate this to something reusable when we grab an axios connection.
     const configStore = useConfigStore();
-    const url = configStore.proxyPath('/tenant/token');
+    const url = configStore.proxyPath(API_PATH.TENANT_TOKEN);
     await axios({
       method: 'post',
       url,

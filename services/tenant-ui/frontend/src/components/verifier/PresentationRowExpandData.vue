@@ -1,7 +1,7 @@
 <template>
   <RowExpandData
     :id="props.row.verifier_presentation_id"
-    :url="'/tenant/v1/verifier/presentations/'"
+    :url="API_PATH.VERIFIER_PRESENTATIONS"
     :params="{ acapy: true }"
   >
     <template #details="presentation">
@@ -50,6 +50,7 @@ import { PropType } from 'vue';
 import { formatDateLong } from '@/helpers';
 import RowExpandData from '../common/RowExpandData.vue';
 import VerifiedPresentationData from './VerifiedPresentationData.vue';
+import { API_PATH } from '@/helpers/constants';
 
 const props = defineProps({
   row: {

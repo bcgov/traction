@@ -37,6 +37,7 @@ import { onMounted, reactive, ref, PropType } from 'vue';
 import { useContactsStore } from '../../../store';
 import useGetItem from '@/composables/useGetItem';
 import { formatDateLong } from '@/helpers';
+import { API_PATH } from '@/helpers/constants';
 // PrimeVue / Validation
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
@@ -88,7 +89,7 @@ const handleSubmit = async (isFormValid: boolean) => {
 };
 
 // Get the latest details about this contact when opening
-const { loading, item, fetchItem } = useGetItem('/tenant/v1/contacts/');
+const { loading, item, fetchItem } = useGetItem(API_PATH.CONTACTS);
 onMounted(async () => {
   try {
     await fetchItem(props.contactId);

@@ -29,7 +29,7 @@
     <template #expansion="{ data }">
       <RowExpandData
         :id="data.holder_credential_id"
-        :url="'/tenant/v1/holder/credentials/'"
+        :url="API_PATH.HOLDER_CREDENTIALS"
         :params="{ acapy: true }"
       />
     </template>
@@ -90,7 +90,7 @@ import { useConfirm } from 'primevue/useconfirm';
 import RowExpandData from '../common/RowExpandData.vue';
 import StatusChip from '../common/StatusChip.vue';
 
-import { TABLE_OPT } from '@/helpers/constants';
+import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 
 const toast = useToast();

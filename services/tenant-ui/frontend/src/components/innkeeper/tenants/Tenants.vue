@@ -45,7 +45,7 @@
       </template>
     </Column>
     <template #expansion="{ data }">
-      <RowExpandData :id="data.tenant_id" :url="'/innkeeper/v1/tenants/'" />
+      <RowExpandData :id="data.tenant_id" :url="API_PATH.INNKEEPER_TENANTS" />
     </template>
   </DataTable>
 </template>
@@ -63,7 +63,7 @@ import { useInnkeeperTenantsStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other components
 import CheckInTenant from './CheckInTenant.vue';
-import { TABLE_OPT } from '@/helpers/constants';
+import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 import RowExpandData from '@/components/common/RowExpandData.vue';
 import { useI18n } from 'vue-i18n';
