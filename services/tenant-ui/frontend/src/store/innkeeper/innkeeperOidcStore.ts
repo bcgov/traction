@@ -15,10 +15,10 @@ export const useInnkeeperOidcStore = defineStore('innkeeperOidcStore', () => {
   const _settings: any = {
     authority: config.value.frontend.oidc.authority,
     client_id: config.value.frontend.oidc.client,
-    redirect_uri: API_PATH.OIDC_INNKEEPER_REDIRECT_URI,
+    redirect_uri: `${window.location.origin}/innkeeper`,
     response_type: 'code',
     automaticSilentRenew: false, // don't need to renew for our needs at this point
-    post_logout_redirect_uri: API_PATH.OIDC_INNKEEPER_REDIRECT_URI,
+    post_logout_redirect_uri: `${window.location.origin}/innkeeper`,
     loadUserInfo: true,
   };
   const _userManager: UserManager = new UserManager(_settings);

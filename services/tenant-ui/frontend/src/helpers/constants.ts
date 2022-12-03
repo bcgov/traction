@@ -12,7 +12,6 @@ export const API_PATH = {
   INNKEEPER_TENANT_CHECK_IN: '/innkeeper/v1/tenants/check-in',
 
   OIDC_INNKEEPER_LOGIN: '/api/innkeeperLogin',
-  OIDC_INNKEEPER_REDIRECT_URI: `${window.location.origin}/innkeeper`,
 
   TENANT_TOKEN: '/tenant/token',
 
