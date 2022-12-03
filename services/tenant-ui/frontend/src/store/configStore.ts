@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import axios from 'axios';
+import { API_PATH } from '@/helpers/constants';
 
 export const useConfigStore = defineStore('config', () => {
   // state
@@ -33,7 +34,7 @@ export const useConfigStore = defineStore('config', () => {
     error.value = null;
     loading.value = true;
     await axios
-      .get('/config')
+      .get(API_PATH.CONFIG)
       .then((res) => {
         console.log(res);
         config.value = res.data;

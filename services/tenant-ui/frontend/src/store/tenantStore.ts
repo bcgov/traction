@@ -1,3 +1,4 @@
+import { API_PATH } from '@/helpers/constants';
 import { defineStore, storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 import { useTenantApi } from './tenantApi';
@@ -35,7 +36,7 @@ export const useTenantStore = defineStore('tenant', () => {
     loading.value = true;
 
     tenantApi
-      .getHttp('/tenant/v1/admin/self')
+      .getHttp(API_PATH.TENANT_SELF)
       .then((res) => {
         console.log(res);
         tenant.value = res.data.item;
@@ -65,7 +66,7 @@ export const useTenantStore = defineStore('tenant', () => {
     loading.value = true;
 
     tenantApi
-      .postHttp('/tenant/v1/admin/make-issuer')
+      .postHttp(API_PATH.TENANT_MAKE_ISSUER)
       .then((res) => {
         console.log(res);
         tenant.value = res.data.item;
@@ -94,7 +95,7 @@ export const useTenantStore = defineStore('tenant', () => {
     loading.value = true;
 
     await tenantApi
-      .getHttp('/tenant/v1/admin/configuration')
+      .getHttp(API_PATH.TENANT_CONFIGURATION)
       .then((res) => {
         console.log(res);
         tenantConfig.value = res.data.item;
@@ -123,7 +124,7 @@ export const useTenantStore = defineStore('tenant', () => {
     loading.value = true;
     console.log(payload);
     await tenantApi
-      .putHttp('/tenant/v1/admin/configuration', payload)
+      .putHttp(API_PATH.TENANT_CONFIGURATION, payload)
       .then((res) => {
         console.log(res);
         tenantConfig.value = res.data.item;

@@ -69,13 +69,13 @@ import { useVerifierStore } from '../../store';
 import { storeToRefs } from 'pinia';
 
 import PresentationRowExpandData from './PresentationRowExpandData.vue';
-import { TABLE_OPT } from '@/helpers/constants';
+import { API_PATH, TABLE_OPT } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 import StatusChip from '../common/StatusChip.vue';
 import SuperYou from '@/components/common/SuperYou.vue';
 const toast = useToast();
 
-const apiUrl = '/tenant/v1/verifier/presentations/adhoc-request';
+const apiUrl = API_PATH.VERIFIER_PRESENTATION_ADHOC_REQUEST;
 
 const templateJson = {
   contact_id: '67f68781-4dd9-49ad-9a5e-1e9a06e901f4',

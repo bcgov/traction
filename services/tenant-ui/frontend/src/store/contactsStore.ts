@@ -1,3 +1,4 @@
+import { API_PATH } from '@/helpers/constants';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { useTenantApi } from './tenantApi';
@@ -33,7 +34,7 @@ export const useContactsStore = defineStore('contacts', () => {
 
   async function listContacts() {
     selectedContact.value = null;
-    return fetchList('/tenant/v1/contacts/', contacts, error, loading, {
+    return fetchList(API_PATH.CONTACTS, contacts, error, loading, {
       acapy: true,
     });
   }
@@ -46,7 +47,7 @@ export const useContactsStore = defineStore('contacts', () => {
     let invitationData = null;
     // need the await here since the returned invitationData is not one of our stored refs...
     await tenantApi
-      .postHttp('/tenant/v1/contacts/create-invitation', { alias })
+      .postHttp(API_PATH.CONTACTS_CREATE_INVITATION, { alias })
       .then((res) => {
         console.log(res);
         // don't grab the item, there are other parts of the response data we need (invitation, invitation url)
@@ -84,7 +85,7 @@ export const useContactsStore = defineStore('contacts', () => {
     let acceptedData = null;
     // need the await here since the returned invitation_data is not one of our stored refs...
     await tenantApi
-      .postHttp('/tenant/v1/contacts/receive-invitation', {
+      .postHttp(API_PATH.CONTACTS_RECEIVE_INVITATION, {
         alias,
         invitation_url: inviteUrl,
       })
@@ -128,7 +129,7 @@ export const useContactsStore = defineStore('contacts', () => {
     let result = null;
 
     await tenantApi
-      .deleteHttp(`/tenant/v1/contacts/${contactId}`, payload)
+      .deleteHttp(API_PATH.CONTACT(contactId), payload)
       .then((res) => {
         result = res.data.item;
       })
@@ -153,7 +154,7 @@ export const useContactsStore = defineStore('contacts', () => {
 
   async function getContact(id: string, params: any = {}) {
     const getloading: any = ref(false);
-    return fetchItem('/tenant/v1/contacts/', id, error, getloading, params);
+    return fetchItem(API_PATH.CONTACTS, id, error, getloading, params);
   }
 
   // Only going to do alias right now but expand to other params as needed later
@@ -164,7 +165,7 @@ export const useContactsStore = defineStore('contacts', () => {
 
     let contactData = null;
     await tenantApi
-      .putHttp(`/tenant/v1/contacts/${contactId}`, {
+      .putHttp(`${API_PATH.CONTACTS}${contactId}`, {
         contact_id: contactId,
         alias,
       })

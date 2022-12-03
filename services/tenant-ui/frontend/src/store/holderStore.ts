@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { fetchItem } from './utils/fetchItem';
 import { fetchList } from './utils/fetchList.js';
 import { useTenantApi } from './tenantApi';
+import { API_PATH } from '@/helpers/constants';
 
 export const useHolderStore = defineStore('holder', () => {
   // state
@@ -19,18 +20,13 @@ export const useHolderStore = defineStore('holder', () => {
 
   async function listCredentials() {
     selectedCredential.value = null;
-    return fetchList(
-      '/tenant/v1/holder/credentials/',
-      credentials,
-      error,
-      loading
-    );
+    return fetchList(API_PATH.HOLDER_CREDENTIALS, credentials, error, loading);
   }
 
   async function listPresentations() {
     selectedPresentation.value = null;
     return fetchList(
-      '/tenant/v1/holder/presentations/',
+      API_PATH.HOLDER_PRESENTATIONS,
       presentations,
       error,
       loading
@@ -40,7 +36,7 @@ export const useHolderStore = defineStore('holder', () => {
   async function getCredential(id: string, params: any = {}) {
     const getloading: any = ref(false);
     return fetchItem(
-      '/tenant/v1/holder/credentials/',
+      API_PATH.HOLDER_CREDENTIALS,
       id,
       error,
       getloading,
@@ -51,7 +47,7 @@ export const useHolderStore = defineStore('holder', () => {
   async function getPresentation(id: string, params: any = {}) {
     const getloading: any = ref(false);
     return fetchItem(
-      '/tenant/v1/holder/presentations/',
+      API_PATH.HOLDER_PRESENTATIONS,
       id,
       error,
       getloading,
@@ -70,7 +66,7 @@ export const useHolderStore = defineStore('holder', () => {
     let result = null;
 
     await tenantApi
-      .postHttp(`/tenant/v1/holder/credentials/${credId}/accept-offer`, {
+      .postHttp(API_PATH.HOLDER_CREDENTIALS_ACCEPT_OFFER(credId), {
         holder_credential_id: credId,
       })
       .then((res) => {
@@ -103,7 +99,7 @@ export const useHolderStore = defineStore('holder', () => {
     let result = null;
 
     await tenantApi
-      .postHttp(`/tenant/v1/holder/credentials/${credId}/reject-offer`, {
+      .postHttp(API_PATH.HOLDER_CREDENTIALS_REJECT_OFFER(credId), {
         holder_credential_id: credId,
       })
       .then((res) => {
@@ -136,7 +132,7 @@ export const useHolderStore = defineStore('holder', () => {
     let result = null;
 
     await tenantApi
-      .deleteHttp(`/tenant/v1/holder/credentials/${credId}`)
+      .deleteHttp(API_PATH.HOLDER_CREDENTIAL(credId))
       .then((res) => {
         result = res.data.item;
       })

@@ -66,7 +66,7 @@
     <template #expansion="{ data }">
       <RowExpandData
         :id="data.issuer_credential_id"
-        :url="'/tenant/v1/issuer/credentials/'"
+        :url="API_PATH.ISSUER_CREDENTIALS"
         :params="{ acapy: true }"
       />
     </template>
@@ -88,7 +88,7 @@ import { useConfirm } from 'primevue/useconfirm';
 // Other Components
 import OfferCredential from './offerCredential/OfferCredential.vue';
 import RowExpandData from '../common/RowExpandData.vue';
-import { TABLE_OPT } from '@/helpers/constants';
+import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 import StatusChip from '../common/StatusChip.vue';
 import { useI18n } from 'vue-i18n';

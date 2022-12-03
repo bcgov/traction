@@ -57,7 +57,7 @@
     <template #expansion="{ data }">
       <RowExpandData
         :id="data.contact_id"
-        :url="'/tenant/v1/contacts/'"
+        :url="API_PATH.CONTACTS"
         :params="{ acapy: true }"
       />
     </template>
@@ -79,7 +79,7 @@ import { storeToRefs } from 'pinia';
 // Other components
 import AcceptInvitation from './acceptInvitation/AcceptInvitation.vue';
 import CreateContact from './createContact/CreateContact.vue';
-import { TABLE_OPT } from '@/helpers/constants';
+import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 import RowExpandData from '../common/RowExpandData.vue';
 import StatusChip from '../common/StatusChip.vue';

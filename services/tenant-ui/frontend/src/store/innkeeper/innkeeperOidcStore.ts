@@ -4,6 +4,7 @@ import { computed, ref } from 'vue';
 import { useConfigStore } from '../configStore';
 import { useInnkeeperTokenStore } from './innkeeperTokenStore';
 import { UserManager } from 'oidc-client-ts';
+import { API_PATH } from '@/helpers/constants';
 
 export const useInnkeeperOidcStore = defineStore('innkeeperOidcStore', () => {
   // other stores
@@ -43,7 +44,10 @@ export const useInnkeeperOidcStore = defineStore('innkeeperOidcStore', () => {
       const loginCfg = {
         headers: { Authorization: `Bearer ${usr?.access_token}` },
       };
-      const response: any = await axios.get('/api/innkeeperLogin', loginCfg);
+      const response: any = await axios.get(
+        API_PATH.OIDC_INNKEEPER_LOGIN,
+        loginCfg
+      );
       token.value = response.data.access_token;
 
       // strip the oidc return params

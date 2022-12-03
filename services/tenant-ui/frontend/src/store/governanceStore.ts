@@ -1,3 +1,4 @@
+import { API_PATH } from '@/helpers/constants';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { useTenantApi } from './tenantApi';
@@ -72,7 +73,7 @@ export const useGovernanceStore = defineStore('governance', () => {
     selectedSchemaTemplate.value = null;
     schemaTemplates.value = null;
     return fetchList(
-      '/tenant/v1/governance/schema_templates/',
+      API_PATH.GOVERNANCE_SCHEMA_TEMPLATES,
       schemaTemplates,
       error,
       loading,
@@ -84,7 +85,7 @@ export const useGovernanceStore = defineStore('governance', () => {
     selectedCredentialTemplate.value = null;
     credentialTemplates.value = null;
     return fetchList(
-      '/tenant/v1/governance/credential_templates/',
+      API_PATH.GOVERNANCE_CREDENTIAL_TEMPLATES,
       credentialTemplates,
       error,
       loading
@@ -99,7 +100,7 @@ export const useGovernanceStore = defineStore('governance', () => {
     let result = null;
 
     await tenantApi
-      .postHttp('/tenant/v1/governance/schema_templates/', payload)
+      .postHttp(API_PATH.GOVERNANCE_SCHEMA_TEMPLATES, payload)
       .then((res) => {
         console.log(res);
         result = res.data.item;
@@ -137,7 +138,7 @@ export const useGovernanceStore = defineStore('governance', () => {
     let result = null;
 
     await tenantApi
-      .postHttp('/tenant/v1/governance/credential_templates/', payload)
+      .postHttp(API_PATH.GOVERNANCE_CREDENTIAL_TEMPLATES, payload)
       .then((res) => {
         console.log(res);
         result = res.data.item;
@@ -180,7 +181,7 @@ export const useGovernanceStore = defineStore('governance', () => {
     let result = null;
 
     await tenantApi
-      .postHttp('/tenant/v1/governance/schema_templates/import', payload)
+      .postHttp(API_PATH.GOVERNANCE_SCHEMA_TEMPLATES_IMPORT, payload)
       .then((res) => {
         console.log(res);
         result = res.data.item;
@@ -216,7 +217,7 @@ export const useGovernanceStore = defineStore('governance', () => {
       params.credential_templates = true;
     }
     return fetchItem(
-      '/tenant/v1/governance/schema_templates/',
+      API_PATH.GOVERNANCE_SCHEMA_TEMPLATES,
       id,
       error,
       getloading,
@@ -227,7 +228,7 @@ export const useGovernanceStore = defineStore('governance', () => {
   async function getCredentialTemplate(id: string, params: any = {}) {
     const getloading: any = ref(false);
     return fetchItem(
-      '/tenant/v1/governance/credential_templates/',
+      API_PATH.GOVERNANCE_CREDENTIAL_TEMPLATES,
       id,
       error,
       getloading,
@@ -252,7 +253,7 @@ export const useGovernanceStore = defineStore('governance', () => {
     let result = null;
 
     await tenantApi
-      .deleteHttp(`/tenant/v1/governance/schema_templates/${schemaId}`, payload)
+      .deleteHttp(API_PATH.GOVERNANCE_SCHEMA_TEMPLATE(schemaId), payload)
       .then((res) => {
         result = res.data.item;
       })

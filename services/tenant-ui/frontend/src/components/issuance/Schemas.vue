@@ -61,7 +61,7 @@
     <template #expansion="{ data }">
       <RowExpandData
         :id="data.schema_template_id"
-        :url="'/tenant/v1/governance/schema_templates/'"
+        :url="API_PATH.GOVERNANCE_SCHEMA_TEMPLATES"
         :params="{ acapy: true, credential_templates: true }"
       />
     </template>
@@ -80,7 +80,7 @@ import CopySchema from './copySchema/CopySchema.vue';
 import CreateCredentialTemplate from './credentialtemplate/CreateCredentialTemplate.vue';
 import RowExpandData from '../common/RowExpandData.vue';
 import StatusChip from '../common/StatusChip.vue';
-import { TABLE_OPT } from '@/helpers/constants';
+import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';

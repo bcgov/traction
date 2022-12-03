@@ -2,6 +2,7 @@ import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { useAcapyApi } from './acapyApi';
 import { fetchListFromAPI } from './utils';
+import { API_PATH } from '@/helpers/constants';
 
 export const useMessageStore = defineStore('messages', () => {
   const messages: any = ref(null);
@@ -15,7 +16,7 @@ export const useMessageStore = defineStore('messages', () => {
   async function listMessages() {
     return fetchListFromAPI(
       acapyApi,
-      '/basicmessages',
+      API_PATH.BASICMESSAGES,
       messages,
       error,
       loading,
@@ -36,7 +37,7 @@ export const useMessageStore = defineStore('messages', () => {
     let result = null;
 
     await acapyApi
-      .postHttp(`/connections/${connId}/send-message`, payload)
+      .postHttp(API_PATH.BASICMESSAGES_SEND(connId), payload)
       .then((res) => {
         console.log(res);
         result = res.data.item;

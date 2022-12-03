@@ -3,6 +3,7 @@ import { ref, Ref } from 'vue';
 import { useInnkeeperApi } from './innkeeperApi';
 import { fetchList } from '../utils';
 import { AxiosRequestConfig } from 'axios';
+import { API_PATH } from '@/helpers/constants';
 export interface TenantResponseData {
   tenant_id?: string;
   name?: string;
@@ -24,7 +25,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
   const innkeeperApi = useInnkeeperApi();
 
   async function listTenants(): Promise<object | null> {
-    return fetchList('/innkeeper/v1/tenants/', tenants, error, loading);
+    return fetchList(API_PATH.INNKEEPER_TENANTS, tenants, error, loading);
   }
 
   // TODO: Test out creating a tenant
@@ -42,7 +43,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
 
     let tenantData: TenantResponseData | undefined;
     await innkeeperApi
-      .postHttp('/innkeeper/v1/tenants/check-in', {
+      .postHttp(API_PATH.INNKEEPER_TENANT_CHECK_IN, {
         name: data.name,
         allow_issue_credentials: data.allowIssue,
       })

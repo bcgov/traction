@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { fetchList } from './utils/fetchList.js';
 import { useTenantApi } from './tenantApi';
 import { fetchItem } from './utils/fetchItem';
+import { API_PATH } from '@/helpers/constants';
 
 export const useIssuerStore = defineStore('issuer', () => {
   const tenantApi = useTenantApi();
@@ -19,12 +20,7 @@ export const useIssuerStore = defineStore('issuer', () => {
 
   async function listCredentials() {
     selectedCredential.value = null;
-    return fetchList(
-      '/tenant/v1/issuer/credentials/',
-      credentials,
-      error,
-      loading
-    );
+    return fetchList(API_PATH.ISSUER_CREDENTIALS, credentials, error, loading);
   }
 
   async function offerCredential(payload: any = {}) {
@@ -35,7 +31,7 @@ export const useIssuerStore = defineStore('issuer', () => {
     let result = null;
 
     await tenantApi
-      .postHttp('/tenant/v1/issuer/credentials/', payload)
+      .postHttp(API_PATH.ISSUER_CREDENTIALS, payload)
       .then((res) => {
         console.log(res);
         result = res.data.item;
@@ -63,7 +59,7 @@ export const useIssuerStore = defineStore('issuer', () => {
   async function getCredential(id: string, params: any = {}) {
     const getloading: any = ref(false);
     return fetchItem(
-      '/tenant/v1/issuer/credentials/',
+      API_PATH.ISSUER_CREDENTIALS,
       id,
       error,
       getloading,
@@ -80,7 +76,7 @@ export const useIssuerStore = defineStore('issuer', () => {
 
     await tenantApi
       .postHttp(
-        `/tenant/v1/issuer/credentials/${payload.issuer_credential_id}/revoke-credential`,
+        API_PATH.ISSUER_CREDENTIAL_REVOKE(payload.issuer_credential_id),
         payload
       )
       .then((res) => {
@@ -114,7 +110,7 @@ export const useIssuerStore = defineStore('issuer', () => {
     let result = null;
 
     await tenantApi
-      .deleteHttp(`/tenant/v1/issuer/credentials/${issuerCredentialId}`)
+      .deleteHttp(API_PATH.ISSUER_CREDENTIAL(issuerCredentialId))
       .then((res) => {
         result = res.data.item;
       })
