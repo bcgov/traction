@@ -22,6 +22,13 @@
             icon="pi-key"
             @success="loadTable"
           />
+          <span class="p-input-icon-left varification-search">
+            <i class="pi pi-search" />
+            <InputText
+              v-model="filter.name.value"
+              placeholder="Search Varifications"
+            />
+          </span>
         </div>
         <div class="flex justify-content-end">
           <Button
@@ -64,6 +71,8 @@ import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import Button from 'primevue/button';
 import { useToast } from 'vue-toastification';
+import InputText from 'primevue/inputtext';
+import { FilterMatchMode } from 'primevue/api';
 
 import { useVerifierStore } from '../../store';
 import { storeToRefs } from 'pinia';
@@ -124,10 +133,20 @@ const loadTable = async () => {
 onMounted(async () => {
   loadTable();
 });
+
+const filter = ref({
+  name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
 </script>
 
 <style scoped>
 .p-datatable-header input {
   padding-left: 3rem;
+}
+.varification-search {
+  margin-left: 1.5rem;
+}
+.varification-search input {
+  padding-left: 3rem !important;
 }
 </style>
