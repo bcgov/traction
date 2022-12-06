@@ -2,7 +2,9 @@
   <form @submit.prevent="handleSubmit(!v$.$invalid)">
     <!-- Email -->
     <div class="field mt-5 w-full">
-      <label for="email" :class="{ 'p-error': v$.contact_email.$invalid && submitted }"
+      <label
+        for="email"
+        :class="{ 'p-error': v$.contact_email.$invalid && submitted }"
         >Email Address
       </label>
       <InputText
@@ -20,9 +22,11 @@
           <small class="p-error block">{{ error.$message }}</small>
         </span>
       </span>
-      <small v-else-if="v$.contact_email.$invalid && submitted" class="p-error">{{
-        v$.contact_email.required.$message
-      }}</small>
+      <small
+        v-else-if="v$.contact_email.$invalid && submitted"
+        class="p-error"
+        >{{ v$.contact_email.required.$message }}</small
+      >
     </div>
 
     <!-- FullName -->
@@ -46,7 +50,9 @@
 
     <!-- Phone -->
     <div class="field mt-5 w-full">
-      <label for="phone" :class="{ 'p-error': v$.contact_phone.$invalid && submitted }"
+      <label
+        for="phone"
+        :class="{ 'p-error': v$.contact_phone.$invalid && submitted }"
         >Phone / Mobile
       </label>
       <InputText
