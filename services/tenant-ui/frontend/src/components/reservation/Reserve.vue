@@ -2,12 +2,12 @@
   <form @submit.prevent="handleSubmit(!v$.$invalid)">
     <!-- Email -->
     <div class="field mt-5 w-full">
-      <label for="email" :class="{ 'p-error': v$.email.$invalid && submitted }"
+      <label for="email" :class="{ 'p-error': v$.contact_email.$invalid && submitted }"
         >Email Address
       </label>
       <InputText
         id="email"
-        v-model="v$.email.$model"
+        v-model="v$.contact_email.$model"
         type="text"
         option-label="label"
         autocomplete="email"
@@ -15,13 +15,13 @@
         autofocus
         class="w-full"
       />
-      <span v-if="v$.email.$error && submitted">
-        <span v-for="(error, index) of v$.email.$errors" :key="index">
+      <span v-if="v$.contact_email.$error && submitted">
+        <span v-for="(error, index) of v$.contact_email.$errors" :key="index">
           <small class="p-error block">{{ error.$message }}</small>
         </span>
       </span>
-      <small v-else-if="v$.email.$invalid && submitted" class="p-error">{{
-        v$.email.required.$message
+      <small v-else-if="v$.contact_email.$invalid && submitted" class="p-error">{{
+        v$.contact_email.required.$message
       }}</small>
     </div>
 
@@ -29,35 +29,35 @@
     <div class="field mt-5 w-full">
       <label
         for="full-name"
-        :class="{ 'p-error': v$.fullName.$invalid && submitted }"
+        :class="{ 'p-error': v$.contact_name.$invalid && submitted }"
         >Full Name
       </label>
       <InputText
         id="full-name"
-        v-model="v$.fullName.$model"
+        v-model="v$.contact_name.$model"
         autocomplete="name"
         name="fullName"
         class="w-full"
       />
-      <small v-if="v$.fullName.$invalid && submitted" class="p-error">{{
-        v$.fullName.required.$message
+      <small v-if="v$.contact_name.$invalid && submitted" class="p-error">{{
+        v$.contact_name.required.$message
       }}</small>
     </div>
 
     <!-- Phone -->
     <div class="field mt-5 w-full">
-      <label for="phone" :class="{ 'p-error': v$.phone.$invalid && submitted }"
+      <label for="phone" :class="{ 'p-error': v$.contact_phone.$invalid && submitted }"
         >Phone / Mobile
       </label>
       <InputText
         id="phone"
-        v-model="v$.phone.$model"
+        v-model="v$.contact_phone.$model"
         autocomplete="phone"
         name="phone"
         class="w-full"
       />
-      <small v-if="v$.phone.$invalid && submitted" class="p-error">{{
-        v$.phone.required.$message
+      <small v-if="v$.contact_phone.$invalid && submitted" class="p-error">{{
+        v$.contact_phone.required.$message
       }}</small>
     </div>
 
@@ -65,17 +65,17 @@
     <div class="field mt-5 w-full">
       <label
         for="tenant-name"
-        :class="{ 'p-error': v$.tenantName.$invalid && submitted }"
+        :class="{ 'p-error': v$.tenant_name.$invalid && submitted }"
         >Tenant Name
       </label>
       <InputText
         id="tenant-name"
-        v-model="v$.tenantName.$model"
+        v-model="v$.tenant_name.$model"
         name="tenant-name"
         class="w-full"
       />
-      <small v-if="v$.tenantName.$invalid && submitted" class="p-error">{{
-        v$.tenantName.required.$message
+      <small v-if="v$.tenant_name.$invalid && submitted" class="p-error">{{
+        v$.tenant_name.required.$message
       }}</small>
     </div>
 
@@ -83,19 +83,19 @@
     <div class="field mt-5 w-full">
       <label
         for="tenant-reason"
-        :class="{ 'p-error': v$.tenantReason.$invalid && submitted }"
+        :class="{ 'p-error': v$.tenant_reason.$invalid && submitted }"
         >Tenant Name
       </label>
       <Textarea
         id="tenant-reason"
-        v-model="v$.tenantReason.$model"
+        v-model="v$.tenant_reason.$model"
         name="tenant-reason"
         class="w-full"
         :auto-resize="true"
         rows="2"
       />
-      <small v-if="v$.tenantReason.$invalid && submitted" class="p-error">{{
-        v$.tenantReason.required.$message
+      <small v-if="v$.tenant_reason.$invalid && submitted" class="p-error">{{
+        v$.tenant_reason.required.$message
       }}</small>
     </div>
 
@@ -127,18 +127,18 @@ const toast = useToast();
 
 // Login Form and validation
 const formFields = reactive({
-  email: '',
-  fullName: '',
-  phone: '',
-  tenantName: '',
-  tenantReason: '',
+  contact_email: '',
+  contact_name: '',
+  contact_phone: '',
+  tenant_name: '',
+  tenant_reason: '',
 });
 const rules = {
-  email: { required, email },
-  fullName: { required },
-  phone: { required },
-  tenantName: { required },
-  tenantReason: { required },
+  contact_email: { required, email },
+  contact_name: { required },
+  contact_phone: { required },
+  tenant_name: { required },
+  tenant_reason: { required },
 };
 const v$ = useVuelidate(rules, formFields);
 
