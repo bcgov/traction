@@ -8,6 +8,7 @@ export { useTenantStore } from './tenantStore';
 export { useTokenStore } from './tokenStore';
 export { useVerifierStore } from './verifierStore';
 export { useMessageStore } from './messageStore';
+export { useReservationStore } from './reservationStore';
 
 // Innkeeper
 export { useInnkeeperTokenStore } from './innkeeper/innkeeperTokenStore';
