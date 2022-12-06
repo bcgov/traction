@@ -1,7 +1,6 @@
 import router from './router';
 import { createApp } from 'vue';
 import createI18n from './plugins/i18n/i18n';
-import './style.css';
 import App from './App.vue';
 
 import { createPinia } from 'pinia';

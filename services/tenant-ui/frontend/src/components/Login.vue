@@ -11,8 +11,19 @@
           />
         </div>
 
-        <div class="py-8">
+        <div class="py-6">
           <LoginForm />
+          <div class="mt-6">
+            <p>
+              Don't have an account?
+              <a
+                href="#"
+                @click.prevent="toggleLogin()"
+                class="p-button-link login-mode"
+                >Create Request!</a
+              >
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -26,10 +37,16 @@
 </template>
 
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
+// Components
 import LoginForm from '@/components/LoginForm.vue';
+// State
+import { storeToRefs } from 'pinia';
 import { useConfigStore } from '@/store';
 const { config } = storeToRefs(useConfigStore());
+
+const toggleLogin = () => {
+  alert('hi');
+};
 </script>
 
 <style scoped lang="scss">
