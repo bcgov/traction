@@ -44,7 +44,7 @@ export const useReservationStore = defineStore('reservation', () => {
     reservation,
     loading,
     error,
-    makeReservation
+    makeReservation,
   };
 });
 

@@ -59,5 +59,5 @@ export const API_PATH = {
   TENANT_MAKE_ISSUER: '/tenant/v1/admin/make-issuer',
   TENANT_CONFIGURATION: '/tenant/v1/admin/configuration',
 
-  MULTITENANCY_RESERVATION: '/multitenancy/reservations'
+  MULTITENANCY_RESERVATION: '/multitenancy/reservations',
 };

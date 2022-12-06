@@ -12,15 +12,15 @@
         </div>
 
         <!-- Logging In -->
-        <div class="py-6" v-if="loginMode === LOGIN_MODE.SIGNIN">
+        <div v-if="loginMode === LOGIN_MODE.SIGNIN" class="py-6">
           <LoginForm />
           <div class="mt-6">
             <p>
               Don't have an account?
               <a
                 href="#"
-                @click.prevent="loginMode = LOGIN_MODE.RESERVE"
                 class="p-button-link login-mode"
+                @click.prevent="loginMode = LOGIN_MODE.RESERVE"
                 >Create Request!</a
               >
             </p>
@@ -28,12 +28,12 @@
         </div>
 
         <!-- Making Reservation -->
-        <div class="py-6" v-else-if="loginMode === LOGIN_MODE.RESERVE">
+        <div v-else-if="loginMode === LOGIN_MODE.RESERVE" class="py-6">
           <Button
             label="Go Back to Sign-in"
             icon="pi pi-arrow-left"
             class="p-button-text"
-            @click="(loginMode = LOGIN_MODE.SIGNIN)"
+            @click="loginMode = LOGIN_MODE.SIGNIN"
           />
           <Reserve />
         </div>
