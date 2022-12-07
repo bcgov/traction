@@ -9,7 +9,7 @@
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
     :value="messages"
-    :globalFilterFields="['content']"
+    :global-filter-fields="['content']"
     selection-mode="single"
     data-key="message_id"
   >

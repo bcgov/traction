@@ -10,7 +10,7 @@
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
-    :globalFilterFields="['name', 'version']"
+    :global-filter-fields="['name', 'version']"
     selection-mode="single"
     data-key="schema_template_id"
   >

@@ -10,9 +10,9 @@
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
-    :globalFilterFields="['alias']"
+    :global-filter-fields="['alias']"
     selection-mode="single"
-    dataKey="alias"
+    data-key="alias"
   >
     <template #header>
       <div class="flex justify-content-between">
