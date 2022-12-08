@@ -19,6 +19,8 @@
         <div class="flex justify-content-start">
           <CreateContact />
           <AcceptInvitation class="ml-4" />
+        </div>
+        <div class="flex justify-content-end">
           <span class="p-input-icon-left contact-search">
             <i class="pi pi-search" />
             <InputText
@@ -26,8 +28,6 @@
               placeholder="Search Contacts"
             />
           </span>
-        </div>
-        <div class="flex justify-content-end">
           <Button
             icon="pi pi-refresh"
             class="p-button-rounded p-button-outlined"
@@ -161,6 +161,7 @@ fieldset {
 }
 .p-datatable-header input {
   padding-left: 3rem;
+  margin-right: 1rem;
 }
 .contact-search {
   margin-left: 1.5rem;

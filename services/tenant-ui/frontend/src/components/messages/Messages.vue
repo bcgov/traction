@@ -17,6 +17,8 @@
       <div class="flex justify-content-between">
         <div class="flex justify-content-start">
           <CreateMessage @success="loadTable" />
+        </div>
+        <div class="flex justify-content-end">
           <span class="p-input-icon-left message-search">
             <i class="pi pi-search" />
             <InputText
@@ -24,8 +26,6 @@
               placeholder="Search Messages"
             />
           </span>
-        </div>
-        <div class="flex justify-content-end">
           <Button
             icon="pi pi-refresh"
             class="p-button-rounded p-button-outlined"
@@ -123,7 +123,7 @@ onMounted(async () => {
 
 <style>
 .message-search {
-  margin-left: 1.5rem;
+  margin-right: 1.5rem;
 }
 .message-search input {
   padding-left: 3rem !important;
