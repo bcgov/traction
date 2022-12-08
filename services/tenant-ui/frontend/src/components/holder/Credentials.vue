@@ -13,7 +13,8 @@
   >
     <template #header>
       <div class="flex justify-content-between">
-        <div class="flex justify-content-start">
+        <div class="flex justify-content-start"></div>
+        <div class="flex justify-content-end">
           <span class="p-input-icon-left credential-search">
             <i class="pi pi-search" />
             <InputText
@@ -21,8 +22,6 @@
               placeholder="Search Credentials"
             />
           </span>
-        </div>
-        <div class="flex justify-content-end">
           <Button
             icon="pi pi-refresh"
             class="p-button-rounded p-button-outlined"
@@ -157,6 +156,7 @@ const filter = ref({
 <style scoped>
 .p-datatable-header input {
   padding-left: 3rem;
+  margin-right: 1rem;
 }
 
 .action-col Button {

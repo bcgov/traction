@@ -16,6 +16,8 @@
       <div class="flex justify-content-between">
         <div class="flex justify-content-start">
           <OfferCredential />
+        </div>
+        <div class="flex justify-content-end">
           <span class="p-input-icon-left credential-search">
             <i class="pi pi-search" />
             <InputText
@@ -23,14 +25,13 @@
               placeholder="Search Credentials"
             />
           </span>
+          <Button
+            icon="pi pi-refresh"
+            class="p-button-rounded p-button-outlined"
+            title="Refresh Table"
+            @click="loadTable"
+          ></Button>
         </div>
-        <div class="flex justify-content-start"></div>
-        <Button
-          icon="pi pi-refresh"
-          class="p-button-rounded p-button-outlined"
-          title="Refresh Table"
-          @click="loadTable"
-        ></Button>
       </div>
     </template>
     <template #empty> No records found. </template>
@@ -183,5 +184,6 @@ const filter = ref({
 }
 .credential-search input {
   padding-left: 3rem !important;
+  margin-right: 1rem;
 }
 </style>

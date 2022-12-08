@@ -22,6 +22,8 @@
             icon="pi-key"
             @success="loadTable"
           />
+        </div>
+        <div class="flex justify-content-end">
           <span class="p-input-icon-left varification-search">
             <i class="pi pi-search" />
             <InputText
@@ -29,8 +31,6 @@
               placeholder="Search Varifications"
             />
           </span>
-        </div>
-        <div class="flex justify-content-end">
           <Button
             icon="pi pi-refresh"
             class="p-button-rounded p-button-outlined"
@@ -142,6 +142,7 @@ const filter = ref({
 <style scoped>
 .p-datatable-header input {
   padding-left: 3rem;
+  margin-right: 1.5rem;
 }
 .varification-search {
   margin-left: 1.5rem;

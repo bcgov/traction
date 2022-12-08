@@ -19,6 +19,8 @@
         <div class="flex justify-content-start">
           <CreateSchema />
           <CopySchema class="ml-4" />
+        </div>
+        <div class="flex justify-content-end">
           <span class="p-input-icon-left schema-search">
             <i class="pi pi-search" />
             <InputText
@@ -26,8 +28,6 @@
               placeholder="Search Schemas"
             />
           </span>
-        </div>
-        <div class="flex justify-content-end">
           <Button
             icon="pi pi-refresh"
             class="p-button-rounded p-button-outlined"
@@ -160,6 +160,7 @@ const filter = ref({
 
 .p-datatable-header input {
   padding-left: 3rem;
+  margin-right: 1rem;
 }
 
 .create-btn {
