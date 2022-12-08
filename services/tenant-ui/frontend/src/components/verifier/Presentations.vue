@@ -28,7 +28,7 @@
             <i class="pi pi-search" />
             <InputText
               v-model="filter.name.value"
-              placeholder="Search Varifications"
+              placeholder="Search Verifications"
             />
           </span>
           <Button
