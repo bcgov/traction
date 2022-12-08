@@ -162,6 +162,7 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
   try {
     await reservationStore.makeReservation(formFields);
+    toast.success(`Your request was recieved.`);
   } catch (err) {
     console.error(err);
     toast.error(`Failure making request: ${err}`);

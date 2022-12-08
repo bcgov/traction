@@ -1,15 +1,21 @@
 import { API_PATH } from '@/helpers/constants';
-import { defineStore } from 'pinia';
+import axios from 'axios';
+import { defineStore, storeToRefs } from 'pinia';
 import { ref } from 'vue';
-import { useAcapyApi } from './acapyApi';
+import { useConfigStore } from './configStore';
 
 export const useReservationStore = defineStore('reservation', () => {
+  const { config } = storeToRefs(useConfigStore());
+  // A raw api call without using the interceptors from the acapyApiStore
+  // Needed for the open call to reservation at this point
+  const api = axios.create({
+    baseURL: config.value.frontend.tenantProxyPath,
+  });
+
   // state
   const loading: any = ref(false);
   const error: any = ref(null);
   const reservation: any = ref(null);
-
-  const acapyApi = useAcapyApi();
 
   // actions
   async function makeReservation(payload: any = {}) {
@@ -17,8 +23,8 @@ export const useReservationStore = defineStore('reservation', () => {
     error.value = null;
     loading.value = true;
     console.log(payload);
-    await acapyApi
-      .postHttp(API_PATH.MULTITENANCY_RESERVATION, payload)
+    await api
+      .post(API_PATH.MULTITENANCY_RESERVATION, payload)
       .then((res) => {
         console.log(res);
         reservation.value = res.data.item;
