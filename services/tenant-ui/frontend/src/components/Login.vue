@@ -11,8 +11,31 @@
           />
         </div>
 
-        <div class="py-8">
+        <!-- Logging In -->
+        <div v-if="loginMode === LOGIN_MODE.SIGNIN" class="py-6">
           <LoginForm />
+          <div class="mt-6">
+            <p>
+              Don't have an account?
+              <a
+                href="#"
+                class="p-button-link login-mode"
+                @click.prevent="loginMode = LOGIN_MODE.RESERVE"
+                >Create Request!</a
+              >
+            </p>
+          </div>
+        </div>
+
+        <!-- Making Reservation -->
+        <div v-else-if="loginMode === LOGIN_MODE.RESERVE" class="py-6">
+          <Button
+            label="Go Back to Sign-in"
+            icon="pi pi-arrow-left"
+            class="p-button-text"
+            @click="loginMode = LOGIN_MODE.SIGNIN"
+          />
+          <Reserve />
         </div>
       </div>
     </div>
@@ -26,10 +49,28 @@
 </template>
 
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
+// Vue
+import { ref } from 'vue';
+// PrimeVue
+import Button from 'primevue/button';
+// Components
 import LoginForm from '@/components/LoginForm.vue';
+import Reserve from './reservation/Reserve.vue';
+// State
+import { storeToRefs } from 'pinia';
 import { useConfigStore } from '@/store';
 const { config } = storeToRefs(useConfigStore());
+
+// Other login form swtiching
+enum LOGIN_MODE {
+  SIGNIN,
+  RESERVE,
+  STATUS,
+}
+const loginMode = ref(LOGIN_MODE.SIGNIN);
+const toggleLogin = () => {
+  alert('hi');
+};
 </script>
 
 <style scoped lang="scss">
