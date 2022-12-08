@@ -4,11 +4,13 @@
   <DataTable
     v-model:selection="selectedSchemaTemplate"
     v-model:expandedRows="expandedRows"
+    v-model:filters="filter"
     :loading="loading"
     :value="schemaTemplates"
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
+    :global-filter-fields="['name', 'version']"
     selection-mode="single"
     data-key="schema_template_id"
   >
@@ -19,6 +21,13 @@
           <CopySchema class="ml-4" />
         </div>
         <div class="flex justify-content-end">
+          <span class="p-input-icon-left schema-search">
+            <i class="pi pi-search" />
+            <InputText
+              v-model="filter.name.value"
+              placeholder="Search Schemas"
+            />
+          </span>
           <Button
             icon="pi pi-refresh"
             class="p-button-rounded p-button-outlined"
@@ -73,6 +82,8 @@ import { onMounted, ref } from 'vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
+import InputText from 'primevue/inputtext';
+import { FilterMatchMode } from 'primevue/api';
 
 // Custom components
 import CreateSchema from './createSchema/CreateSchema.vue';
@@ -134,6 +145,11 @@ const doDelete = (schema: any) => {
 
 // necessary for expanding rows, we don't do anything with this
 const expandedRows = ref([]);
+
+const filter = ref({
+  version: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
 </script>
 
 <style scoped>
@@ -144,9 +160,14 @@ const expandedRows = ref([]);
 
 .p-datatable-header input {
   padding-left: 3rem;
+  margin-right: 1rem;
 }
 
 .create-btn {
   margin-right: 1rem;
+}
+
+.schema-search {
+  margin-left: 1.5rem;
 }
 </style>

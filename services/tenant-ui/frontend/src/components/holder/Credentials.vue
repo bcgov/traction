@@ -15,6 +15,13 @@
       <div class="flex justify-content-between">
         <div class="flex justify-content-start"></div>
         <div class="flex justify-content-end">
+          <span class="p-input-icon-left credential-search">
+            <i class="pi pi-search" />
+            <InputText
+              v-model="filter.alias.value"
+              placeholder="Search Credentials"
+            />
+          </span>
           <Button
             icon="pi pi-refresh"
             class="p-button-rounded p-button-outlined"
@@ -83,6 +90,8 @@ import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import { useToast } from 'vue-toastification';
+import InputText from 'primevue/inputtext';
+import { FilterMatchMode } from 'primevue/api';
 
 import { useHolderStore } from '../../store';
 import { storeToRefs } from 'pinia';
@@ -139,10 +148,15 @@ onMounted(async () => {
 });
 // necessary for expanding rows, we don't do anything with this
 const expandedRows = ref([]);
+
+const filter = ref({
+  alias: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
 </script>
 <style scoped>
 .p-datatable-header input {
   padding-left: 3rem;
+  margin-right: 1rem;
 }
 
 .action-col Button {

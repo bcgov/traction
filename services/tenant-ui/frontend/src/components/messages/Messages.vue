@@ -3,11 +3,13 @@
   <DataTable
     v-model:expandedRows="expandedRows"
     v-model:selection="selectedMessage"
+    v-model:filters="filter"
     :loading="loading"
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
     :value="messages"
+    :global-filter-fields="['content']"
     selection-mode="single"
     data-key="message_id"
   >
@@ -17,6 +19,13 @@
           <CreateMessage @success="loadTable" />
         </div>
         <div class="flex justify-content-end">
+          <span class="p-input-icon-left message-search">
+            <i class="pi pi-search" />
+            <InputText
+              v-model="filter.content.value"
+              placeholder="Search Messages"
+            />
+          </span>
           <Button
             icon="pi pi-refresh"
             class="p-button-rounded p-button-outlined"
@@ -49,7 +58,9 @@ import { onMounted, ref } from 'vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
+import InputText from 'primevue/inputtext';
 import { useToast } from 'vue-toastification';
+import { FilterMatchMode } from 'primevue/api';
 // State
 import { useMessageStore, useContactsStore } from '@/store';
 import { storeToRefs } from 'pinia';
@@ -101,7 +112,20 @@ const loadTable = async () => {
 };
 const expandedRows = ref([]);
 
+const filter = ref({
+  content: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
+
 onMounted(async () => {
   loadTable();
 });
 </script>
+
+<style>
+.message-search {
+  margin-right: 1.5rem;
+}
+.message-search input {
+  padding-left: 3rem !important;
+}
+</style>

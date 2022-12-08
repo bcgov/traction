@@ -14,13 +14,24 @@
   >
     <template #header>
       <div class="flex justify-content-between">
-        <OfferCredential />
-        <Button
-          icon="pi pi-refresh"
-          class="p-button-rounded p-button-outlined"
-          title="Refresh Table"
-          @click="loadTable"
-        ></Button>
+        <div class="flex justify-content-start">
+          <OfferCredential />
+        </div>
+        <div class="flex justify-content-end">
+          <span class="p-input-icon-left credential-search">
+            <i class="pi pi-search" />
+            <InputText
+              v-model="filter.alias.value"
+              placeholder="Search Credentials"
+            />
+          </span>
+          <Button
+            icon="pi pi-refresh"
+            class="p-button-rounded p-button-outlined"
+            title="Refresh Table"
+            @click="loadTable"
+          ></Button>
+        </div>
       </div>
     </template>
     <template #empty> No records found. </template>
@@ -85,6 +96,8 @@ import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import { useToast } from 'vue-toastification';
 import { useConfirm } from 'primevue/useconfirm';
+import InputText from 'primevue/inputtext';
+import { FilterMatchMode } from 'primevue/api';
 // Other Components
 import OfferCredential from './offerCredential/OfferCredential.vue';
 import RowExpandData from '../common/RowExpandData.vue';
@@ -159,4 +172,18 @@ onMounted(async () => {
 });
 // necessary for expanding rows, we don't do anything with this
 const expandedRows = ref([]);
+
+const filter = ref({
+  alias: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
 </script>
+
+<style scoped>
+.credential-search {
+  margin-left: 1.5rem;
+}
+.credential-search input {
+  padding-left: 3rem !important;
+  margin-right: 1rem;
+}
+</style>
