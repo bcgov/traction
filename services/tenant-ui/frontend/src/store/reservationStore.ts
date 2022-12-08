@@ -18,7 +18,7 @@ export const useReservationStore = defineStore('reservation', () => {
     loading.value = true;
     console.log(payload);
     await acapyApi
-      .putHttp(API_PATH.MULTITENANCY_RESERVATION, payload)
+      .postHttp(API_PATH.MULTITENANCY_RESERVATION, payload)
       .then((res) => {
         console.log(res);
         reservation.value = res.data.item;

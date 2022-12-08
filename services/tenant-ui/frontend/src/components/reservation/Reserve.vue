@@ -90,7 +90,7 @@
       <label
         for="tenant-reason"
         :class="{ 'p-error': v$.tenant_reason.$invalid && submitted }"
-        >Tenant Name
+        >Tenant Reason
       </label>
       <Textarea
         id="tenant-reason"
