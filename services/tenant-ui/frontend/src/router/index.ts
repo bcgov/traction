@@ -21,4 +21,16 @@ const router = createRouter({
   routes,
 });
 
+/**
+ * Global router guard to set the page title.
+ * Override only if in the non-default tenant UI.
+ * In this case, the innkeeper UI is the non-default.
+ * TBD: Could move this into a Helm chart value.
+ */
+router.afterEach((to) => {
+  if (to.meta.isInnkeeper === true) {
+    document.title = 'Traction Innkeeper Console';
+  }
+});
+
 export default router;
