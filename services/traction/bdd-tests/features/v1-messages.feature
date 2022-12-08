@@ -57,13 +57,15 @@ Feature: messaging contacts
         Then "alice" can find 1 message(s) as "Sender" with "faber"
         And we sadly wait for 5 seconds because we have not figured out how to listen for events
         Then "faber" can find 1 message(s) as "Recipient" with "alice"
-        And "alice" can get message with "faber" by message_id
-        And "alice" can update message with "faber"
+        # messages no longer work here, so we cannot store them for re-use in tests
+        # comment these steps out, perhaps bring them back in if we do BDD for plugins
+        # And "alice" can get message with "faber" by message_id
+        # And "alice" can update message with "faber"
         | attribute  | value    |
         | tags | my,message |
         Then "alice" can find 1 message(s) as "Sender" with "faber" and tags "my,message"
-        And "alice" can delete message with "faber"
-        Then "alice" cannot find message with "faber" by role
-        And "alice" cannot get message with "faber"
-        But "alice" can find message with "faber" by role with deleted flag
-        And "alice" can get message with "faber" with deleted flag
+        # And "alice" can delete message with "faber"
+        # Then "alice" cannot find message with "faber" by role
+        # And "alice" cannot get message with "faber"
+        # But "alice" can find message with "faber" by role with deleted flag
+        # And "alice" can get message with "faber" with deleted flag
