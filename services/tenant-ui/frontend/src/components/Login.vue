@@ -24,6 +24,16 @@
                 >Create Request!</a
               >
             </p>
+
+            <p>
+              Already Submitted Request?
+              <a
+                href="#"
+                class="p-button-link login-mode"
+                @click.prevent="(loginMode = LOGIN_MODE.STATUS)"
+                >Check Status!</a
+              >
+            </p>
           </div>
         </div>
 
@@ -36,6 +46,17 @@
             @click="loginMode = LOGIN_MODE.SIGNIN"
           />
           <Reserve />
+        </div>
+
+        <!-- Checking Status -->
+        <div v-else-if="loginMode === LOGIN_MODE.STATUS" class="py-6">
+          <Button
+            label="Go Back to Sign-in"
+            icon="pi pi-arrow-left"
+            class="p-button-text"
+            @click="loginMode = LOGIN_MODE.SIGNIN"
+          />
+          <Status />
         </div>
       </div>
     </div>
@@ -56,6 +77,7 @@ import Button from 'primevue/button';
 // Components
 import LoginForm from '@/components/LoginForm.vue';
 import Reserve from './reservation/Reserve.vue';
+import Status from './reservation/Status.vue';
 // State
 import { storeToRefs } from 'pinia';
 import { useConfigStore } from '@/store';
@@ -68,9 +90,6 @@ enum LOGIN_MODE {
   STATUS,
 }
 const loginMode = ref(LOGIN_MODE.SIGNIN);
-const toggleLogin = () => {
-  alert('hi');
-};
 </script>
 
 <style scoped lang="scss">
