@@ -86,6 +86,7 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
   try {
     // TODO: IMPLEMENT THIS
+    alert('To Implement');
   } catch (err) {
     console.error(err);
     toast.error(`Failure checking status: ${err}`);
