@@ -8,7 +8,6 @@ data:
   IMAGE_VERSION: { { .Values.tenant_ui.image.version | quote } }
   IMAGE_BUILDTIME: { { .Values.tenant_ui.image.buildtime | quote } }
   UX_APP_TITLE: { { .Values.tenant_ui.ux.appTitle | quote } }
-  UX_APP_INNKEEPER_TITLE: { { .Values.tenant_ui.ux.appInnkeeperTitle | quote } }
   UX_SIDEBAR_TITLE: { { .Values.tenant_ui.ux.sidebarTitle | quote } }
   UX_COPYRIGHT: { { .Values.tenant_ui.ux.copyright | quote } }
   UX_OWNER: { { .Values.tenant_ui.ux.owner | quote } }
