@@ -86,7 +86,7 @@ class ReservationRequestSchema(OpenAPISchema):
     )
 
 
-class ReservationResponseSchema(ReservationRecordSchema):
+class ReservationResponseSchema(OpenAPISchema):
     """Response schema for tenant reservation."""
 
     reservation_id = fields.Str(
@@ -149,6 +149,26 @@ class ReservationApproveResponseSchema(OpenAPISchema):
     )
 
 
+class ReservationApproveRequestSchema(OpenAPISchema):
+    """Request schema for tenant reservation approved/denied."""
+
+    state_notes = fields.Str(
+        required=False,
+        description="Reason(s) for approving a tenant reservation",
+        example="Welcome",
+    )
+
+
+class ReservationDenyRequestSchema(OpenAPISchema):
+    """Request schema for tenant reservation approved/denied."""
+
+    state_notes = fields.Str(
+        required=True,
+        description="Reason(s) for approving or denying a tenant reservation",
+        example="No room at the inn.",
+    )
+
+
 class TenantIdMatchInfoSchema(OpenAPISchema):
     tenant_id = fields.Str(
         description="Tenant identifier", required=True, example=UUIDFour.EXAMPLE
@@ -187,6 +207,31 @@ async def tenant_reservation(request: web.BaseRequest):
         raise err
 
     return web.json_response({"reservation_id": rec.reservation_id})
+
+
+@docs(
+    tags=["multitenancy"],
+)
+@match_info_schema(ReservationIdMatchInfoSchema())
+@response_schema(ReservationRecordSchema(), 200, description="")
+async def tenant_reservation_get(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+
+    # records are under base/root profile, use Tenant Manager profile
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+
+    reservation_id = request.match_info["reservation_id"]
+
+    try:
+        async with profile.session() as session:
+            rec = await ReservationRecord.retrieve_by_id(session, reservation_id)
+            LOGGER.info(rec)
+    except Exception as err:
+        LOGGER.error(err)
+        raise err
+
+    return web.json_response(rec.serialize())
 
 
 @docs(
@@ -323,12 +368,16 @@ async def innkeeper_reservations_list(request: web.BaseRequest):
     tags=[SWAGGER_INNKEEPER],
 )
 @match_info_schema(ReservationIdMatchInfoSchema())
+@request_schema(ReservationApproveRequestSchema)
 @response_schema(ReservationApproveResponseSchema(), 200, description="")
 @innkeeper_only
 async def innkeeper_reservations_approve(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
 
     reservation_id = request.match_info["reservation_id"]
+
+    body = await request.json()
+    state_notes = body.get("state_notes")
 
     # records are under base/root profile, use Tenant Manager profile
     mgr = context.inject(TenantManager)
@@ -344,15 +393,57 @@ async def innkeeper_reservations_approve(request: web.BaseRequest):
                 rec.reservation_token_salt = _salt.decode("utf-8")
                 rec.reservation_token_hash = _hash.decode("utf-8")
                 rec.reservation_token_expiry = _expiry
+                rec.state_notes = state_notes
                 rec.state = ReservationRecord.STATE_APPROVED
                 await rec.save(session)
-            LOGGER.info(rec)
+                LOGGER.info(rec)
+            else:
+                raise web.HTTPConflict(
+                    reason=f"Reservation state is currently '{rec.state}' and cannot be set to '{ReservationRecord.STATE_DENIED}'.")
     except Exception as err:
         LOGGER.error(err)
         raise err
 
     return web.json_response({"reservation_pwd": _pwd})
 
+
+@docs(
+    tags=[SWAGGER_INNKEEPER],
+)
+@match_info_schema(ReservationIdMatchInfoSchema())
+@request_schema(ReservationDenyRequestSchema)
+@response_schema(ReservationResponseSchema(), 200, description="")
+@innkeeper_only
+async def innkeeper_reservations_deny(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+
+    reservation_id = request.match_info["reservation_id"]
+
+    body = await request.json()
+    state_notes = body.get("state_notes")
+
+    # records are under base/root profile, use Tenant Manager profile
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+    try:
+        async with profile.session() as session:
+            # innkeeper can access all reservation records.
+            rec = await ReservationRecord.retrieve_by_id(
+                session, reservation_id, for_update=True
+            )
+            if rec.state == ReservationRecord.STATE_REQUESTED:
+                rec.state_notes = state_notes
+                rec.state = ReservationRecord.STATE_DENIED
+                await rec.save(session)
+                LOGGER.info(rec)
+            else:
+                raise web.HTTPConflict(
+                    reason=f"Reservation state is currently '{rec.state}' and cannot be set to '{ReservationRecord.STATE_DENIED}'.")
+    except Exception as err:
+        LOGGER.error(err)
+        raise err
+
+    return web.json_response(rec.serialize())
 
 @docs(
     tags=[SWAGGER_INNKEEPER],
@@ -440,6 +531,9 @@ async def register(app: web.Application):
     app.add_routes(
         [
             web.post("/multitenancy/reservations", tenant_reservation),
+            web.get(
+                "/multitenancy/reservations/{reservation_id}", tenant_reservation_get, allow_head=False
+            ),
             web.post(
                 "/multitenancy/reservations/{reservation_id}/check-in", tenant_checkin
             ),
@@ -464,6 +558,10 @@ async def register(app: web.Application):
             web.put(
                 "/innkeeper/reservations/{reservation_id}/approve",
                 innkeeper_reservations_approve,
+            ),
+            web.put(
+                "/innkeeper/reservations/{reservation_id}/deny",
+                innkeeper_reservations_deny,
             ),
             web.get("/innkeeper/tenants/", innkeeper_tenants_list, allow_head=False),
             web.get(

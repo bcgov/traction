@@ -25,6 +25,7 @@ class ReservationRecord(BaseRecord):
 
     STATE_REQUESTED = "requested"
     STATE_APPROVED = "approved"
+    STATE_DENIED = "denied"
     STATE_CHECKED_IN = "checked_in"
 
     def __init__(
@@ -42,6 +43,7 @@ class ReservationRecord(BaseRecord):
             reservation_token_salt: str = None,
             reservation_token_hash: str = None,
             reservation_token_expiry: Union[str, datetime] = None,
+            state_notes: str = None,
             **kwargs,
     ):
         """Construct record."""
@@ -59,6 +61,7 @@ class ReservationRecord(BaseRecord):
         self.reservation_token_salt = reservation_token_salt
         self.reservation_token_hash = reservation_token_hash
         self._reservation_token_expiry: str = datetime_to_str(reservation_token_expiry)
+        self.state_notes = state_notes
 
     @property
     def reservation_id(self) -> Optional[str]:
@@ -98,6 +101,7 @@ class ReservationRecord(BaseRecord):
                 "reservation_token_salt",
                 "reservation_token_hash",
                 "reservation_token_expiry",
+                "state_notes",
             )
         }
 
@@ -155,6 +159,11 @@ class ReservationRecordSchema(BaseRecordSchema):
                 ReservationRecord.STATE_CHECKED_IN,
             ]
         ),
+    )
+
+    state_notes = fields.Str(
+        required=False,
+        description="Notes about the state of the tenant request",
     )
 
     tenant_id = fields.Str(
