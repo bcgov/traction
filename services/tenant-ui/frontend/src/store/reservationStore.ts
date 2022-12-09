@@ -27,7 +27,7 @@ export const useReservationStore = defineStore('reservation', () => {
       .post(API_PATH.MULTITENANCY_RESERVATION, payload)
       .then((res) => {
         console.log(res);
-        reservation.value = res.data.item;
+        reservation.value = res.data;
       })
       .catch((err) => {
         error.value = err;
