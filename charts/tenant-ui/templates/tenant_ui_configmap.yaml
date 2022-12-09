@@ -1,25 +1,23 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: { { include "tenant_ui.fullname" . } }
-  labels: { { - include "tenant_ui.labels" . | nindent 4 } }
+  name: {{ include "tenant_ui.fullname" . }}
+  labels:
+    {{- include "tenant_ui.labels" . | nindent 4 }}
 data:
-  IMAGE_TAG: { { .Values.tenant_ui.image.tag | quote } }
-  IMAGE_VERSION: { { .Values.tenant_ui.image.version | quote } }
-  IMAGE_BUILDTIME: { { .Values.tenant_ui.image.buildtime | quote } }
-  UX_APP_TITLE: { { .Values.tenant_ui.ux.appTitle | quote } }
-  UX_SIDEBAR_TITLE: { { .Values.tenant_ui.ux.sidebarTitle | quote } }
-  UX_COPYRIGHT: { { .Values.tenant_ui.ux.copyright | quote } }
-  UX_OWNER: { { .Values.tenant_ui.ux.owner | quote } }
-  UX_COVERIMAGE_COPYRIGHT:
-    { { .Values.tenant_ui.ux.coverImageCopyright | quote } }
-  FRONTEND_INNKEEPER_SHOW_ADMIN:
-    { { .Values.tenant_ui.oidc.showInnkeeperAdminLogin | quote } }
-  FRONTEND_INNKEEPER_OIDC_ACTIVE: { { .Values.tenant_ui.oidc.active | quote } }
-  FRONTEND_INNKEEPER_OIDC_AUTHORITY:
-    { { .Values.tenant_ui.oidc.authority | quote } }
-  FRONTEND_INNKEEPER_OIDC_CLIENT: { { .Values.tenant_ui.oidc.client | quote } }
-  FRONTEND_INNKEEPER_OIDC_LABEL: { { .Values.tenant_ui.oidc.label | quote } }
-  SERVER_OIDC_JWKS: { { .Values.tenant_ui.oidc.jwksUri | quote } }
-  SERVER_OIDC_REALM: { { .Values.tenant_ui.oidc.realm | quote } }
-  SERVER_OIDC_ROLE: { { .Values.tenant_ui.oidc.roleName | quote } }
+  IMAGE_TAG: {{ .Values.tenant_ui.image.tag | quote }}
+  IMAGE_VERSION: {{ .Values.tenant_ui.image.version | quote }}
+  IMAGE_BUILDTIME: {{ .Values.tenant_ui.image.buildtime | quote }}
+  UX_APP_TITLE: {{ .Values.tenant_ui.ux.appTitle | quote }}
+  UX_SIDEBAR_TITLE: {{ .Values.tenant_ui.ux.sidebarTitle | quote }}
+  UX_COPYRIGHT: {{ .Values.tenant_ui.ux.copyright | quote }}
+  UX_OWNER: {{ .Values.tenant_ui.ux.owner | quote }}
+  UX_COVERIMAGE_COPYRIGHT: {{ .Values.tenant_ui.ux.coverImageCopyright | quote }}
+  FRONTEND_INNKEEPER_SHOW_ADMIN: {{ .Values.tenant_ui.oidc.showInnkeeperAdminLogin | quote }}
+  FRONTEND_INNKEEPER_OIDC_ACTIVE: {{ .Values.tenant_ui.oidc.active | quote }}
+  FRONTEND_INNKEEPER_OIDC_AUTHORITY: {{ .Values.tenant_ui.oidc.authority | quote }}
+  FRONTEND_INNKEEPER_OIDC_CLIENT: {{ .Values.tenant_ui.oidc.client | quote }}
+  FRONTEND_INNKEEPER_OIDC_LABEL: {{ .Values.tenant_ui.oidc.label | quote }}
+  SERVER_OIDC_JWKS: {{ .Values.tenant_ui.oidc.jwksUri | quote }}
+  SERVER_OIDC_REALM: {{ .Values.tenant_ui.oidc.realm | quote }}
+  SERVER_OIDC_ROLE: {{ .Values.tenant_ui.oidc.roleName | quote }}
