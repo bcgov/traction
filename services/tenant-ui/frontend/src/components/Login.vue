@@ -30,7 +30,7 @@
               <a
                 href="#"
                 class="p-button-link login-mode"
-                @click.prevent="(loginMode = LOGIN_MODE.STATUS)"
+                @click.prevent="loginMode = LOGIN_MODE.STATUS"
                 >Check Status!</a
               >
             </p>

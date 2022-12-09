@@ -43,11 +43,7 @@
       }}</small>
     </div>
 
-    <Button
-      type="submit"
-      class="w-full mt-5"
-      label="Check Status"
-    />
+    <Button type="submit" class="w-full mt-5" label="Check Status" />
   </form>
 </template>
 

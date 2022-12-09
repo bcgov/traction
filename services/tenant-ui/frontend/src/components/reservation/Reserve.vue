@@ -1,7 +1,10 @@
 <template>
   <!-- Request successful -->
-  <div v-if="reservationResult">
-    <ReservationConfirmation />
+  <div v-if="reservationIdResult">
+    <ReservationConfirmation
+      :id="reservationIdResult"
+      :email="formFields.contact_email"
+    />
   </div>
 
   <!-- Submit Request -->
@@ -32,8 +35,9 @@
         <small
           v-else-if="v$.contact_email.$invalid && submitted"
           class="p-error"
-          >{{ v$.contact_email.required.$message }}</small
         >
+          {{ v$.contact_email.required.$message }}
+        </small>
       </div>
 
       <!-- FullName -->
@@ -162,7 +166,7 @@ const reservationStore = useReservationStore();
 const { loading } = storeToRefs(useReservationStore());
 
 // The reservation return object
-const reservationResult: any = ref(null);
+const reservationIdResult: any = ref('');
 
 // Form submission
 const submitted = ref(false);
@@ -173,10 +177,8 @@ const handleSubmit = async (isFormValid: boolean) => {
     return;
   }
   try {
-    reservationResult.value = await reservationStore.makeReservation(formFields);
-    console.log(reservationResult.value);
-    debugger;
-    toast.success(`Your request was received.`);
+    const res = await reservationStore.makeReservation(formFields);
+    reservationIdResult.value = res.reservation_id;
   } catch (err) {
     console.error(err);
     toast.error(`Failure making request: ${err}`);
