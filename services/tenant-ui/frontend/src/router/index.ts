@@ -6,6 +6,9 @@ import NotFound from '@/views/NotFound.vue';
 import innkeeperRoutes from './innkeeperRoutes';
 import tenantRoutes from './tenantRoutes';
 
+import { storeToRefs } from 'pinia';
+import { useConfigStore } from '../store';
+
 const routes = [
   { path: '/:pathMatch(.*)', component: NotFound },
 
@@ -25,11 +28,12 @@ const router = createRouter({
  * Global router guard to set the page title.
  * Override only if in the non-default tenant UI.
  * In this case, the innkeeper UI is the non-default.
- * TBD: Could move this into a Helm chart value.
  */
 router.afterEach((to) => {
-  if (to.meta.isInnkeeper === true) {
-    document.title = 'Traction Innkeeper Console';
+  // The Configuration Store also has to be loaded
+  if (useConfigStore().config && to.meta.isInnkeeper === true) {
+    const { config } = storeToRefs(useConfigStore());
+    document.title = config.value.frontend.ux.appInnkeeperTitle;
   }
 });
 
