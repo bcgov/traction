@@ -29,6 +29,7 @@ tenant_ui:
     pullPolicy: IfNotPresent
   ux:
     appTitle: 'Traction Tenant Console'
+    appInnkeeperTitle: 'Traction Innkeeper Console'
     sidebarTitle: 'Traction'
     copyright: ''
     owner: ''
