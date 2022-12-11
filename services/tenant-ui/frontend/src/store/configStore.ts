@@ -36,7 +36,6 @@ export const useConfigStore = defineStore('config', () => {
     await axios
       .get(API_PATH.CONFIG)
       .then((res) => {
-        console.log(res);
         config.value = res.data;
       })
       .catch((err) => {

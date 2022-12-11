@@ -10,6 +10,7 @@
     },
     "ux": {
       "appTitle": "UX_APP_TITLE",
+      "appInnkeeperTitle": "UX_APP_INNKEEPER_TITLE",
       "sidebarTitle": "UX_SIDEBAR_TITLE",
       "copyright": "UX_COPYRIGHT",
       "owner": "UX_OWNER",
