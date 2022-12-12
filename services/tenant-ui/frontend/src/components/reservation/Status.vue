@@ -44,6 +44,9 @@
     </div>
 
     <Button type="submit" class="w-full mt-5" label="Check Status" />
+
+    <Approved />
+    <!-- TODO: Place the Approved/Declined components here -->
   </form>
 </template>
 
@@ -59,6 +62,7 @@ import { useVuelidate } from '@vuelidate/core';
 // State
 import { useReservationStore } from '@/store';
 import { storeToRefs } from 'pinia';
+import Approved from './Approved.vue';
 
 const toast = useToast();
 
