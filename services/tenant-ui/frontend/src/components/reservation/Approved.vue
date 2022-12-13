@@ -36,10 +36,17 @@
         placeholder="Password"
       />
       <Button label="Validate" @click="submit" />
+      <p>
+        The reservation password is only valid for 48 hours from the time it was
+        sent to your email address. <br />
+        Please <a href="/contact">click here</a> to request a new reservation
+        password.
+      </p>
     </div>
     <div class="footer">
       <hr />
-      footer
+      (Please check your junk/spam folder before contacting us, as it is very
+      common to have the email delivery problems because of automated filters.)
     </div>
   </div>
 </template>
@@ -58,7 +65,7 @@ const submit = () => {
 <style scoped>
 .container {
   display: grid;
-  grid-template-rows: 80px 1fr 100px;
+  grid-template-rows: 90px 1fr 80px;
   grid-template-columns: 1fr;
   grid-template-areas:
     'header'
@@ -89,7 +96,12 @@ const submit = () => {
 }
 .content,
 .footer {
-  padding: 1.5rem;
+  padding: 0 1.5rem;
+}
+.footer {
+  font-weight: bolder;
+  font-size: 0.9rem;
+  line-height: normal;
 }
 :deep(.p-password),
 :deep(input) {
