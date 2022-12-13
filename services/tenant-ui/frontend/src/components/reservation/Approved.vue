@@ -35,6 +35,7 @@
         :feedback="false"
         placeholder="Password"
       />
+      <Button label="Validate" @click="submit" />
     </div>
     <div class="footer">
       <hr />
@@ -45,8 +46,13 @@
 
 <script setup lang="ts">
 import Password from 'primevue/password';
+import Button from 'primevue/button';
+import { ref } from 'vue';
 const sentAt = 'fake date';
-let password = '';
+const password = ref('');
+const submit = () => {
+  console.log('submit', password.value);
+};
 </script>
 
 <style scoped>
@@ -88,5 +94,9 @@ let password = '';
 :deep(.p-password),
 :deep(input) {
   width: 100%;
+}
+button {
+  width: 100%;
+  margin-top: 1rem;
 }
 </style>
