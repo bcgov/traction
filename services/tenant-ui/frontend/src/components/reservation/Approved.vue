@@ -21,14 +21,38 @@
       </div>
       <div class="message">approved!</div>
     </div>
-    <div class="content">content</div>
-    <div class="footer">footer</div>
+    <div class="content">
+      <p>
+        We have sent a reservation password to your email address on
+        {{ sentAt }}.
+      </p>
+      <p>
+        Please enter the reservation password below to validate your account.
+      </p>
+      <Password
+        v-model="password"
+        toggleMask
+        :feedback="false"
+        placeholder="Password"
+      />
+    </div>
+    <div class="footer">
+      <hr />
+      footer
+    </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import Password from 'primevue/password';
+const sentAt = 'fake date';
+let password = '';
+</script>
+
 <style scoped>
 .container {
   display: grid;
-  grid-template-rows: 100px 1fr 100px;
+  grid-template-rows: 80px 1fr 100px;
   grid-template-columns: 1fr;
   grid-template-areas:
     'header'
@@ -56,5 +80,13 @@
 .header .symbol svg {
   stroke: #2b3651;
   height: 50px;
+}
+.content,
+.footer {
+  padding: 1.5rem;
+}
+:deep(.p-password),
+:deep(input) {
+  width: 100%;
 }
 </style>
