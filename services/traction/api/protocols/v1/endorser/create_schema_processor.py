@@ -56,7 +56,10 @@ class CreateSchemaProcessor(DefaultEndorserProtocol):
         self.logger.info("> approve_for_processing()")
         has_schema_id = "schema_id" in payload["meta_data"]["context"]
         has_no_cred_def_id = "cred_def_id" not in payload["meta_data"]["context"]
-        data_json = json.loads(payload["messages_attach"][0]["data"]["json"])
+        try:
+            data_json = json.loads(payload["messages_attach"][0]["data"]["json"])
+        except TypeError:
+            data_json = payload["messages_attach"][0]["data"]["json"]
         is_operation_type_101 = data_json and data_json["operation"]["type"] == "101"
 
         template = await self.get_schema_template(profile, payload)

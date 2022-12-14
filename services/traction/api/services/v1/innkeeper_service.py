@@ -99,7 +99,7 @@ async def check_in_tenant(payload: CheckInPayload) -> CheckInItem:
             "label": payload.name,
             "wallet_key": wallet_key,
             "wallet_name": wallet_name,
-            "wallet_type": "indy",
+            "wallet_type": settings.ACAPY_WALLET_TYPE,
             "wallet_dispatch_type": "default",
             "wallet_webhook_urls": [
                 webhook_url,

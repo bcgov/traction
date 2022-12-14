@@ -84,6 +84,9 @@ class GlobalConfig(BaseSettings):
 
     ACAPY_GENESIS_URL: str = os.environ.get("ACAPY_GENESIS_URL")
 
+    # askar, indy, in_memory (basic)
+    ACAPY_WALLET_TYPE: str = os.environ.get("ACAPY_WALLET_TYPE", "askar")
+
     DB_ECHO_LOG: bool = False
 
     DEFAULT_PAGE_SIZE: int = os.environ.get("DEFAULT_PAGE_SIZE", 10)

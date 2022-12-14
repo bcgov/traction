@@ -32,9 +32,9 @@ plugin:
 
 plugin-config-value:
   # if wallet_type = indy, configure to load this class... 
-  - multitenant_provider.manager_class="traction_plugins.multitenant_provider.manager.BasicMultitokenMultitenantManager"
+  # - multitenant_provider.manager_class="traction_plugins.multitenant_provider.manager.BasicMultitokenMultitenantManager"
   # if wallet_type = askar, configure to load this class...
-  # - multitenant_provider.manager_class="traction_plugins.multitenant_provider.manager.AskarMultitokenMultitenantManager"
+  - multitenant_provider.manager_class="traction_plugins.multitenant_provider.manager.AskarMultitokenMultitenantManager"
   - traction_innkeeper.innkeeper_wallet.tenant_id=innkeeper
   - traction_innkeeper.innkeeper_wallet.wallet_name=traction_innkeeper
   - traction_innkeeper.innkeeper_wallet.wallet_key=change-me
@@ -48,13 +48,14 @@ plugin-config-value:
 #config 
 genesis-url: http://test.bcovrin.vonx.io/genesis
 
-wallet-type: indy
-# wallet-type: askar
+# wallet-type: indy
+wallet-type: askar
 wallet-name: traction-wallet
 wallet-key: 'insecure-change-me'
 wallet-storage-type: postgres_storage
-wallet-storage-config: '{"url":"host.docker.internal:5432","max_connections":5,"wallet_scheme":"MultiWalletSingleTableSharedPool"}'
+wallet-storage-config: '{"url":"host.docker.internal:5432","max_connections":5,"wallet_scheme":"DatabasePerWallet"}'
 wallet-storage-creds: '{"account":"postgres","password":"postgresPass","admin_account":"postgres","admin_password":"postgresPass"}'
+multitenancy-config: '{"wallet-type":"askar-profile","wallet-name":"askar-wallet"}'
 
 log-level: info
 

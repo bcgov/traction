@@ -14,7 +14,6 @@ monitor-ping: true
 public-invites: true
 plugin: 'aries_cloudagent.messaging.jsonld'
 outbound-transport: http
-wallet-type: 'indy'
 log-level: info
 multitenant: true
 multitenant-admin: true

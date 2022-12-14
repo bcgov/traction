@@ -123,7 +123,7 @@ async def send_request_from_template(
     )
     task_payload = {
         "verifier_presentation_id": item.verifier_presentation_id,
-        "contact_id": item.contact_id,
+        "contact_id": item.contact.contact_id,
         "proof_request": proof_request,
     }
     await SendPresentProofTask.assign(tenant_id, wallet_id, task_payload)

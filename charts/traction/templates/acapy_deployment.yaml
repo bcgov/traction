@@ -73,6 +73,9 @@ spec:
            {{- if .Values.acapy.readOnlyMode }}
            --read-only-ledger \
            {{- end }}
+           {{- if .Values.acapy.staticArgs.multitenant }}
+           --multitenancy-config '{\"wallet_type\":\"{{ .Values.acapy.multitenancyConfig.walletType }}\",\"wallet_name\":\"{{ .Values.acapy.multitenancyConfig.walletName }}\"}' \
+           {{- end }}
            {{- if .Values.acapy.plugins.multitenantProvider }}
            --plugin traction_plugins.multitenant_provider \
            --plugin-config-value multitenant_provider.manager_class={{ .Values.acapy.pluginValues.multitenantProvider.managerClass }} \

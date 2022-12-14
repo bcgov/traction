@@ -56,7 +56,10 @@ class CreateCredDefProcessor(DefaultEndorserProtocol):
     async def approve_for_processing(self, profile: Profile, payload: dict) -> bool:
         self.logger.info("> approve_for_processing()")
         has_schema_id = "schema_id" in payload["meta_data"]["context"]
-        data_json = json.loads(payload["messages_attach"][0]["data"]["json"])
+        try:
+            data_json = json.loads(payload["messages_attach"][0]["data"]["json"])
+        except TypeError:
+            data_json = payload["messages_attach"][0]["data"]["json"]
         is_operation_type_102 = data_json and data_json["operation"]["type"] == "102"
 
         template = await self.get_credential_template(profile, payload)

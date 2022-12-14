@@ -36,6 +36,7 @@ exec aca-py start \
     --endpoint ${ACAPY_ENDPOINT} \
     --wallet-name "${ACAPY_WALLET_DATABASE}" \
     --wallet-key "${ACAPY_WALLET_ENCRYPTION_KEY}" \
+    --wallet-type "${ACAPY_WALLET_TYPE}" \
     --wallet-storage-type "${ACAPY_WALLET_STORAGE_TYPE}" \
     --wallet-storage-config "{\"url\":\"${POSTGRESQL_HOST}:5432\",\"max_connections\":5, \"wallet_scheme\":\"${ACAPY_WALLET_SCHEME}\"}" \
     --wallet-storage-creds "{\"account\":\"${POSTGRESQL_USER}\",\"password\":\"${POSTGRESQL_PASSWORD}\",\"admin_account\":\"${POSTGRESQL_USER}\",\"admin_password\":\"${POSTGRESQL_PASSWORD}\"}" \
@@ -57,7 +58,7 @@ exec aca-py start \
     --notify-revocation \
     --monitor-revocation-notification \
     --plugin traction_plugins.multitenant_provider \
-    --plugin-config-value multitenant_provider.manager_class=traction_plugins.multitenant_provider.manager.BasicMultitokenMultitenantManager \
+    --plugin-config-value multitenant_provider.manager_class=traction_plugins.multitenant_provider.manager.AskarMultitokenMultitenantManager \
     --plugin traction_plugins.basicmessage_storage.v1_0 \
     --plugin traction_plugins.traction_innkeeper.v1_0 \
     --plugin-config-value traction_innkeeper.innkeeper_wallet.tenant_id=${TRACTION_INNKEEPER_TENANT_ID} \

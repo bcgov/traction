@@ -52,7 +52,7 @@ acapy:
 
   pluginValues:
     multitenantProvider:
-      managerClass: traction_plugins.multitenant_provider.manager.BasicMultitokenMultitenantManager
+      managerClass: traction_plugins.multitenant_provider.manager.AskarMultitokenMultitenantManager
     tractionInnkeeper:
       walletName: traction_innkeeper
       printKey: false
@@ -82,8 +82,8 @@ acapy:
     adminPort: 8031
     httpPort: 8030
     endorserAlias: endorser
-    endorserPublicDID: AKaFAVGCZoDMZrydWtjUev
-    walletScheme: MultiWalletSingleTableSharedPool
+    endorserPublicDID: UjmxKBZe1qv1NBE7GaohdP
+    walletScheme: DatabasePerWallet
 
   openshift:
     route:
@@ -135,6 +135,10 @@ acapy:
 
   affinity: {}
 
+  multitenancyConfig:
+    walletType: askar-profile
+    walletName: askar-wallet
+
   staticArgs:
     autoAcceptInvites: true
     autoAcceptRequests: true
@@ -153,6 +157,7 @@ acapy:
     logLevel: info
     multitenant: true
     multitenantAdmin: true
+    walletType: askar
 
   secret:
     adminurl:

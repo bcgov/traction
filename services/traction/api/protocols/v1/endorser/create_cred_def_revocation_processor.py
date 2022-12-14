@@ -38,7 +38,10 @@ class CreateCredDefRevocationProcessor(CreateCredDefProcessor):
         has_auto_create_rev_reg = (
             "auto_create_rev_reg" in payload["meta_data"]["processing"]
         )
-        data_json = json.loads(payload["messages_attach"][0]["data"]["json"])
+        try:
+            data_json = json.loads(payload["messages_attach"][0]["data"]["json"])
+        except TypeError:
+            data_json = payload["messages_attach"][0]["data"]["json"]
         is_operation_type_114 = data_json and data_json["operation"]["type"] == "114"
 
         template_exists = False
