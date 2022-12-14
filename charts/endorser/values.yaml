@@ -128,8 +128,9 @@ acapy:
     monitorPing: true
     publicInvites: true
     logLevel: info
-    multitenant: true
-    multitenantAdmin: true
+    walletType: askar
+    endorserProtocolRole: endorser
+    autoEndorseTransactions: true
 
 postgresql:
   # when overriding global.fullnameOverride, you must override this to match.
