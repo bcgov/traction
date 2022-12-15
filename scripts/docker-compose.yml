@@ -36,6 +36,7 @@ services:
       - DEFAULT_RETRY_ATTEMPTS=${DEFAULT_RETRY_ATTEMPTS:-10}
       - DEFAULT_PAUSE_BETWEEN_ATTEMPTS=${DEFAULT_PAUSE_BETWEEN_ATTEMPTS:-2}
       - TRACTION_CORS_URLS=${TRACTION_CORS_URLS}
+      - ACAPY_WALLET_TYPE=${TRACION_ACAPY_WALLET_TYPE}
     ports:
       - ${TRACTION_SERVICE_PORT}:5000
     extra_hosts:
@@ -74,8 +75,9 @@ services:
       - ACAPY_GENESIS_URL=${ACAPY_GENESIS_URL}
       - ACAPY_ENDPOINT=${ACAPY_ENDPOINT}
       - ACAPY_WALLET_DATABASE=${ACAPY_WALLET_DATABASE}
+      - ACAPY_WALLET_TYPE=${ACAPY_WALLET_TYPE}
       - ACAPY_WALLET_ENCRYPTION_KEY=${ACAPY_WALLET_ENCRYPTION_KEY}
-      - ACAPY_WALLET_STORAGE_TYPE=${ACAPY_WALLET_TYPE}
+      - ACAPY_WALLET_STORAGE_TYPE=${ACAPY_WALLET_STORAGE_TYPE}
       - ACAPY_WALLET_SCHEME=${ACAPY_WALLET_SCHEME}
       - POSTGRESQL_HOST=${POSTGRESQL_HOST}
       - POSTGRESQL_USER=${POSTGRESQL_USER}
@@ -173,7 +175,7 @@ services:
         --endpoint ${ACAPY_ENDORSER_ENDPOINT} \
         --wallet-name '${ACAPY_WALLET_DATABASE}' \
         --wallet-key '${ACAPY_WALLET_ENCRYPTION_KEY}' \
-        --wallet-storage-type '${ACAPY_WALLET_TYPE}' \
+        --wallet-storage-type '${ENDORSER_ACAPY_WALLET_STORAGE_TYPE}' \
         --wallet-storage-config '{\"url\":\"${ENDORSER_POSTGRESQL_HOST}:5432\",\"max_connections\":5}' \
         --wallet-storage-creds '{\"account\":\"${ENDORSER_POSTGRESQL_USER}\",\"password\":\"${ENDORSER_POSTGRESQL_PASSWORD}\",\"admin_account\":\"${ENDORSER_POSTGRESQL_USER}\",\"admin_password\":\"${ENDORSER_POSTGRESQL_PASSWORD}\"}' \
         --wallet-name endorser-wallet  \

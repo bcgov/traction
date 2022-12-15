@@ -22,7 +22,7 @@ data:
     public-invites: {{ .Values.acapy.staticArgs.publicInvites }}
     plugin: 'aries_cloudagent.messaging.jsonld'
     outbound-transport: http
-    wallet-type: 'indy'
+    wallet-type: {{ .Values.acapy.staticArgs.walletType }}
     log-level: {{ .Values.acapy.staticArgs.logLevel }}
     multitenant: {{ .Values.acapy.staticArgs.multitenant }}
     multitenant-admin: {{ .Values.acapy.staticArgs.multitenantAdmin }}

@@ -7,10 +7,8 @@ monitor-ping: true
 public-invites: true
 plugin: 'aries_cloudagent.messaging.jsonld'
 outbound-transport: http
-wallet-type: 'indy'
+wallet-type: askar
 log-level: info
-jwt-secret: 1234567
-
 endorser-protocol-role: endorser
 #endorser-public-did: <for author>
 #endorser-alias: <for author>
