@@ -50,6 +50,17 @@
     "tenants": "Tenants <FR>",
     "checkIn": "Check-In Tenant <FR>"
   },
+  "reservations": {
+    "reservations": "Reservations <FR>",
+    "requests": "Requests <FR>",
+    "contactEmail": "Contact Email <FR>",
+    "contactName": "Contact Name <FR>",
+    "contactPhone": "Contact Phone <FR>",
+    "tenantName": "Tenant Name <FR>",
+    "tenantReason": "Tenant Reason <FR>",
+    "approveRequest": "Approve Request <FR>",
+    "denyRequest": "Deny Request <FR>"
+  },
   "about": {
     "about": "About <FR>"
   }

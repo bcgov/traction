@@ -79,7 +79,7 @@ const v$ = useVuelidate(rules, formFields);
 // State setup
 const innkeeperTokenStore = useInnkeeperTokenStore();
 // use the loading state from the store to disable the button...
-const { loading, token } = storeToRefs(useInnkeeperTokenStore());
+const { loading } = storeToRefs(useInnkeeperTokenStore());
 
 // Form submission
 const submitted = ref(false);

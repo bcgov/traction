@@ -10,6 +10,7 @@ export const API_PATH = {
   INNKEEPER_TENANTS: '/innkeeper/v1/tenants/',
   INNKEEPER_TENANT: (id: string) => `/innkeeper/v1/tenants/${id}`,
   INNKEEPER_TENANT_CHECK_IN: '/innkeeper/v1/tenants/check-in',
+  INNKEEPER_RESERVATIONS: '/innkeeper/reservations/',
 
   OIDC_INNKEEPER_LOGIN: '/api/innkeeperLogin',
 
@@ -60,4 +61,6 @@ export const API_PATH = {
   TENANT_CONFIGURATION: '/tenant/v1/admin/configuration',
 
   MULTITENANCY_RESERVATION: '/multitenancy/reservations',
+  MULTITENANCY_TENANT_TOKEN: (tenantId: string) =>
+    `/multitenancy/tenant/${tenantId}/token`,
 };

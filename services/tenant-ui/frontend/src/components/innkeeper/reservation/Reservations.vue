@@ -1,24 +1,17 @@
 <template>
-  <h3 class="mt-0">{{ t('tenants.tenants') }}</h3>
+  <h3 class="mt-0">{{ t('reservations.reservations') }}</h3>
 
-  <h2>Broken at this time as the login has moved over to Aca-py</h2>
-  <p>New results coming soon</p>
-  <!-- <DataTable
-    v-model:expandedRows="expandedRows"
+  <DataTable
     :loading="loading"
-    :value="tenants"
+    :value="reservations"
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
     selection-mode="single"
-    data-key="tenant_id"
-    sort-field="created_at"
-    :sort-order="-1"
+    data-key="reservation_id"
   >
     <template #header>
       <div class="flex justify-content-between">
-        <div class="flex justify-content-start">
-        </div>
         <div class="flex justify-content-end">
           <Button
             icon="pi pi-refresh"
@@ -31,24 +24,35 @@
     </template>
     <template #empty> No records found. </template>
     <template #loading> Loading data. Please wait... </template>
-    <Column :expander="true" header-style="width: 3rem" />
-    <Column :sortable="true" field="name" header="Name" />
-    <Column :sortable="true" field="wallet_id" header="Wallet ID" />
-    <Column :sortable="true" field="public_did" header="Public DID" />
-    <Column :sortable="true" field="issuer" header="Issuer">
+    <Column :sortable="false" header="Actions">
       <template #body="{ data }">
-        <i v-if="data.issuer" class="pi pi-check-circle" />
+        <Button
+          title="Approve Reservation"
+          icon="pi pi-check"
+          class="p-button-rounded p-button-icon-only p-button-text"
+          @click="approve($event, data)"
+        />
+        <Button
+          title="Deny Reservation"
+          icon="pi pi-trash"
+          class="p-button-rounded p-button-icon-only p-button-text"
+          @click="deny($event, data)"
+        />
       </template>
     </Column>
+    <Column :sortable="true" field="reservation_id" header="ID" />
+    <Column :sortable="true" field="state" header="State" />
+    <Column :sortable="true" field="contact_email" header="Contact Email" />
+    <Column :sortable="true" field="contact_name" header="Contact Name" />
+    <Column :sortable="true" field="contact_phone" header="Contact Phone" />
+    <Column :sortable="true" field="tenant_name" header="Tenant Name" />
+    <Column :sortable="true" field="tenant_reason" header="Tenant Reason" />
     <Column :sortable="true" field="created_at" header="Created at">
       <template #body="{ data }">
         {{ formatDateLong(data.created_at) }}
       </template>
     </Column>
-    <template #expansion="{ data }">
-      <RowExpandData :id="data.tenant_id" :url="API_PATH.INNKEEPER_TENANTS" />
-    </template>
-  </DataTable> -->
+  </DataTable>
 </template>
 
 <script setup lang="ts">
@@ -63,9 +67,8 @@ import { useToast } from 'vue-toastification';
 import { useInnkeeperTenantsStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other components
-import { TABLE_OPT, API_PATH } from '@/helpers/constants';
+import { TABLE_OPT } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
-import RowExpandData from '@/components/common/RowExpandData.vue';
 import { useI18n } from 'vue-i18n';
 
 const toast = useToast();
@@ -73,20 +76,25 @@ const { t } = useI18n();
 
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
 
-const { loading, tenants } = storeToRefs(useInnkeeperTenantsStore());
-console.log('tenants', tenants);
+const { loading, reservations } = storeToRefs(useInnkeeperTenantsStore());
 
+// Approve/deny reservation
+const approve = (event: any, row: any) => {
+  alert('approve');
+};
+const deny = (event: any, row: any) => {
+  alert('deny');
+};
+
+// Loading table contents
 const loadTable = async () => {
-  // innkeeperTenantsStore.listTenants().catch((err: string) => {
-  //   console.error(err);
-  //   toast.error(`Failure: ${err}`);
-  // });
+  innkeeperTenantsStore.listReservations().catch((err: string) => {
+    console.error(err);
+    toast.error(`Failure: ${err}`);
+  });
 };
 
 onMounted(async () => {
   loadTable();
 });
-
-// necessary for expanding rows, we don't do anything with this
-const expandedRows = ref([]);
 </script>

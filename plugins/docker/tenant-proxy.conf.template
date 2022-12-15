@@ -31,7 +31,7 @@ server {
     # =============================================
     
     
-    location ~ ^/multitenancy/wallet/([0-9a-zA-Z/-]+)/token$ {
+    location ~ ^/multitenancy/(wallet|tenant)/([0-9a-zA-Z/-]+)/token$ {
         proxy_set_header X-API-KEY ${ACAPY_ADMIN_URL_API_KEY};
         proxy_pass ${ACAPY_ADMIN_URL};
         allow all;
