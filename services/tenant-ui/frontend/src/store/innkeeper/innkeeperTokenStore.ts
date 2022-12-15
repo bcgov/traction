@@ -1,13 +1,15 @@
 import axios from 'axios';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
-import { useConfigStore } from '../configStore';
+import { useAcapyApi } from '../acapyApi';
 import { Ref } from 'vue';
 import { API_PATH } from '@/helpers/constants';
 
 export const useInnkeeperTokenStore = defineStore(
   'useInnkeeperTokenStore',
   () => {
+    const acapyApi = useAcapyApi();
+
     // state
     const token: Ref<string | null> = ref(null);
     const loading: Ref<boolean> = ref(false);
@@ -30,25 +32,16 @@ export const useInnkeeperTokenStore = defineStore(
     async function login(params: LoginParameters): Promise<string | null> {
       console.log('> innkeeperTokenStore.load');
       console.log('params', params);
-      const payload = `username=${params.adminName}&password=${params.adminKey}`;
+      const payload = { wallet_key: params.adminKey };
       token.value = null;
       error.value = null;
       loading.value = true;
 
       // TODO: isolate this to something reusable when we grab an axios connection.
-      const configStore = useConfigStore();
-      const url = configStore.proxyPath(API_PATH.INNKEEPER_TOKEN);
-      await axios({
-        method: 'post',
-        url,
-        headers: {
-          accept: 'application/json',
-          'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        },
-        data: payload,
-      })
+      await acapyApi
+        .postHttp(API_PATH.MULTITENANCY_TENANT_TOKEN(params.adminName), payload)
         .then((res) => {
-          token.value = res.data.access_token;
+          token.value = res.data.token;
         })
         .catch((err) => {
           error.value = err;

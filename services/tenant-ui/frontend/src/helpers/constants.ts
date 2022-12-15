@@ -60,4 +60,5 @@ export const API_PATH = {
   TENANT_CONFIGURATION: '/tenant/v1/admin/configuration',
 
   MULTITENANCY_RESERVATION: '/multitenancy/reservations',
+  MULTITENANCY_TENANT_TOKEN: (tenantId: string) => `/multitenancy/tenant/${tenantId}/token`,
 };
