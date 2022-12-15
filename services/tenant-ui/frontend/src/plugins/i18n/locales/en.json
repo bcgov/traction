@@ -52,6 +52,17 @@
     "tenants": "Tenants",
     "checkIn": "Check-In Tenant"
   },
+  "reservations": {
+    "reservations": "Reservations",
+    "requests": "Requests",
+    "contactEmail": "Contact Email",
+    "contactName": "Contact Name",
+    "contactPhone": "Contact Phone",
+    "tenantName": "Tenant Name",
+    "tenantReason": "Tenant Reason",
+    "approveRequest": "Approve Request",
+    "denyRequest": "Deny Request"
+  },
   "about": {
     "about": "About"
   }

@@ -10,6 +10,7 @@ export const API_PATH = {
   INNKEEPER_TENANTS: '/innkeeper/v1/tenants/',
   INNKEEPER_TENANT: (id: string) => `/innkeeper/v1/tenants/${id}`,
   INNKEEPER_TENANT_CHECK_IN: '/innkeeper/v1/tenants/check-in',
+  INNKEEPER_RESERVATIONS: '/innkeeper/reservations/',
 
   OIDC_INNKEEPER_LOGIN: '/api/innkeeperLogin',
 

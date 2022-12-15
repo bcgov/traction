@@ -2,6 +2,7 @@ import About from '@/views/About.vue';
 // Innkeeper
 import InnkeeperUi from '@/views/InnkeeperUi.vue';
 import InnkeeperTenants from '@/views/innkeeper/InnkeeperTenants.vue';
+import InnkeeperReservations from '@/views/innkeeper/InnkeeperReservations.vue';
 
 const innkeeperRoutes = [
   {
@@ -12,6 +13,13 @@ const innkeeperRoutes = [
     children: [
       // Blank route uses dashboard view
       { path: '', name: 'InnkeeperTenants', component: InnkeeperTenants },
+
+      // Reservations
+      {
+        path: '',
+        name: 'InnkeeperReservations',
+        component: InnkeeperReservations,
+      },
 
       // About
       {

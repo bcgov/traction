@@ -14,6 +14,11 @@ const { t } = useI18n();
 
 const items = ref([
   {
+    label: () => t('reservations.reservations'),
+    icon: 'pi pi-fw pi-book',
+    to: { name: 'InnkeeperReservations' },
+  },
+  {
     label: () => t('tenants.tenants'),
     icon: 'pi pi-fw pi-users',
     to: { name: 'InnkeeperTenants' },

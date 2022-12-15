@@ -1,15 +1,15 @@
 import axios from 'axios';
 import { defineStore, storeToRefs } from 'pinia';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { useConfigStore } from '../configStore';
-import { useInnkeeperTokenStore } from './innkeeperTokenStore';
 import { UserManager } from 'oidc-client-ts';
 import { API_PATH } from '@/helpers/constants';
+import { useTokenStore } from '../tokenStore';
 
 export const useInnkeeperOidcStore = defineStore('innkeeperOidcStore', () => {
   // other stores
   const { config } = storeToRefs(useConfigStore());
-  const { token } = storeToRefs(useInnkeeperTokenStore());
+  const { acapyToken } = storeToRefs(useTokenStore());
 
   // private (move to other file maybe?)
   const _settings: any = {
@@ -48,7 +48,7 @@ export const useInnkeeperOidcStore = defineStore('innkeeperOidcStore', () => {
         API_PATH.OIDC_INNKEEPER_LOGIN,
         loginCfg
       );
-      token.value = response.data.access_token;
+      acapyToken.value = response.data.access_token;
 
       // strip the oidc return params
       window.history.pushState({}, document.title, '/innkeeper');

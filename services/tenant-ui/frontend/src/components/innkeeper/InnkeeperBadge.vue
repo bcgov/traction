@@ -26,7 +26,7 @@ const toggleProfile = (event: any) => {
 const items = [
   {
     label: 'Logout',
-    icon: 'pi pi-sign-out',
+    class: 'logout-menu-item',
     url: '/innkeeper', // TODO: this should be a logout route
   },
 ];
