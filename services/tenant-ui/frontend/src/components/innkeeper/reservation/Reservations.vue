@@ -9,6 +9,8 @@
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
     selection-mode="single"
     data-key="reservation_id"
+    sort-field="created_at"
+    :sort-order="-1"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -29,6 +31,7 @@
         <ApproveReservation
           :id="data.reservation_id"
           :email="data.contact_email"
+          @success="showApproveModal"
         />
         <DenyReservation
           :id="data.reservation_id"
@@ -52,6 +55,23 @@
       </template>
     </Column>
   </DataTable>
+
+  <!-- Post-approve dialog -->
+  <Dialog
+    v-model:visible="displayModal"
+    :header="t('reservations.approved.title')"
+    :modal="true"
+  >
+    <p>
+      {{ t('reservations.approved.text', { email: approvedEmail }) }} (EMAIL NOT
+      IMPLEMENTED)
+    </p>
+    <p>
+      The password is shown below one-time if you need to communicate it via
+      other means <br />
+      <strong>{{ approvedPassword }}</strong>
+    </p>
+  </Dialog>
 </template>
 
 <script setup lang="ts">
@@ -61,6 +81,7 @@ import { onMounted, ref } from 'vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
+import Dialog from 'primevue/dialog';
 import { useToast } from 'vue-toastification';
 import { useI18n } from 'vue-i18n';
 // State
@@ -80,10 +101,6 @@ const innkeeperTenantsStore = useInnkeeperTenantsStore();
 
 const { loading, reservations } = storeToRefs(useInnkeeperTenantsStore());
 
-const deny = (event: any, row: any) => {
-  alert('deny');
-};
-
 // Loading table contents
 const loadTable = async () => {
   innkeeperTenantsStore.listReservations().catch((err: string) => {
@@ -95,4 +112,14 @@ const loadTable = async () => {
 onMounted(async () => {
   loadTable();
 });
+
+// Handling approvals
+const displayModal = ref(false);
+const approvedPassword = ref('');
+const approvedEmail = ref('');
+const showApproveModal = (password: string, email: string) => {
+  approvedPassword.value = password;
+  approvedEmail.value = email;
+  displayModal.value = true;
+};
 </script>

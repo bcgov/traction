@@ -1,8 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, Ref } from 'vue';
 import { useAcapyTenantApi } from '../acapyTenantApi';
-import { fetchList, fetchListFromAPI } from '../utils';
-import { AxiosRequestConfig } from 'axios';
+import { fetchListFromAPI } from '../utils';
 import { API_PATH } from '@/helpers/constants';
 export interface TenantResponseData {
   tenant_id?: string;
@@ -56,8 +55,6 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
       .putHttp(API_PATH.INNKEEPER_RESERVATIONS_APPROVE(id), payload)
       .then((res) => {
         approveResponse = res.data;
-        // Refresh the reservation list
-        listReservations();
       })
       .catch((err) => {
         error.value = err;
@@ -76,12 +73,38 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     return approveResponse;
   }
 
+  async function denyReservation(id: string, payload: any = {}) {
+    console.log('> reservationStore.denyReservation');
+    error.value = null;
+    loading.value = true;
+
+    await acapyTenantApi
+      .putHttp(API_PATH.INNKEEPER_RESERVATIONS_DENY(id), payload)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        error.value = err;
+        console.log(error.value);
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< reservationStore.denyReservation');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+  }
+
   return {
     loading,
     error,
     tenants,
     reservations,
     approveReservation,
+    denyReservation,
     listTenants,
     listReservations,
   };

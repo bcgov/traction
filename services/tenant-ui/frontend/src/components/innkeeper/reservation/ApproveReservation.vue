@@ -5,17 +5,6 @@
     class="p-button-rounded p-button-icon-only p-button-text"
     @click="confirmApprove($event)"
   />
-  <Dialog
-    v-model:visible="displayModal"
-    :header="t('reservations.approved.title')"
-    :modal="true"
-  >
-    <p>{{ t('reservations.approved.title') }}</p>
-    <p>
-      The password is shown below one-time if you need to communicate it via
-      other means
-    </p>
-  </Dialog>
 </template>
 
 <script setup lang="ts">
@@ -23,7 +12,6 @@
 import { ref } from 'vue';
 // PrimeVue / etc
 import Button from 'primevue/button';
-import Dialog from 'primevue/dialog';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';
 import { useI18n } from 'vue-i18n';
@@ -46,6 +34,8 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(['success']);
+
 // Approve reservation
 const confirmApprove = (event: any) => {
   console.log('here');
@@ -63,24 +53,13 @@ const confirmApprove = (event: any) => {
 const approve = async () => {
   try {
     const res = await innkeeperTenantsStore.approveReservation(props.id);
-    alert(res.reservation_pwd);
+    // Have to handle the dialog up a level or it deletes when the rows re-draw after reload
+    emit('success', res.reservation_pwd, props.email);
     toast.success(t('reservations.approved.toast', { email: props.email }));
-    displayModal.value = true;
   } catch (error) {
     toast.error(`Failure: ${error}`);
+  } finally {
+    innkeeperTenantsStore.listReservations();
   }
 };
-
-// Open popup
-const displayModal = ref(false);
-// const openModal = async (): Promise<void> => {
-//   allowClose.value = true;
-//   displayModal.value = true;
-// };
-// // Handle the successful check in and set a flag so that we can't close without our warn-prompt button
-// const tenantCreated = async (): Promise<void> => {
-//   allowClose.value = false;
-//   // Propagate the success up in case anyone else needs to pay attention (even if we're not closing this yet)
-//   emit('success');
-// };
 </script>

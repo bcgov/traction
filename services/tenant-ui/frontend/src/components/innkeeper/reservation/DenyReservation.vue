@@ -14,17 +14,19 @@
       {{ t('reservations.denied.reasonText') }}
     </p>
 
-    <!-- Reason -->
-    <div class="field">
-      <InputText id="reason" v-model="reason" class="w-full" />
-    </div>
-    <Button
-      type="submit"
-      :label="t('reservations.denyRequest')"
-      class="mt-5 w-full"
-      :disabled="loading"
-      :loading="loading"
-    />
+    <form @submit.prevent="deny()">
+      <!-- Reason -->
+      <div class="field">
+        <InputText id="reason" v-model="reason" class="w-full" />
+      </div>
+      <Button
+        type="submit"
+        :label="t('reservations.denyRequest')"
+        class="mt-5 w-full"
+        :disabled="loading"
+        :loading="loading"
+      />
+    </form>
   </Dialog>
 </template>
 
@@ -60,6 +62,7 @@ const props = defineProps({
 });
 
 // Deny reservation
+const displayModal = ref(false);
 const reason = ref('');
 const confirmDeny = (event: any) => {
   confirm.require({
@@ -73,27 +76,17 @@ const confirmDeny = (event: any) => {
   });
 };
 
-const approve = async () => {
+const deny = async () => {
   try {
-    const res = await innkeeperTenantsStore.approveReservation(props.id);
-    alert(res.reservation_pwd);
-    toast.success(t('reservations.approved.toast', { email: props.email }));
-    displayModal.value = true;
+    await innkeeperTenantsStore.denyReservation(props.id, {
+      state_notes: reason.value,
+    });
+    toast.success(`Reservation for ${props.email} Denied`);
+    displayModal.value = false;
   } catch (error) {
     toast.error(`Failure: ${error}`);
+  } finally {
+    innkeeperTenantsStore.listReservations();
   }
 };
-
-// Open popup
-const displayModal = ref(false);
-// const openModal = async (): Promise<void> => {
-//   allowClose.value = true;
-//   displayModal.value = true;
-// };
-// // Handle the successful check in and set a flag so that we can't close without our warn-prompt button
-// const tenantCreated = async (): Promise<void> => {
-//   allowClose.value = false;
-//   // Propagate the success up in case anyone else needs to pay attention (even if we're not closing this yet)
-//   emit('success');
-// };
 </script>
