@@ -26,21 +26,16 @@
     <template #loading> Loading data. Please wait... </template>
     <Column :sortable="false" header="Actions">
       <template #body="{ data }">
-        <Button
-          title="Approve Reservation"
-          icon="pi pi-check"
-          class="p-button-rounded p-button-icon-only p-button-text"
-          @click="approve($event, data)"
+        <ApproveReservation
+          :id="data.reservation_id"
+          :email="data.contact_email"
         />
-        <Button
-          title="Deny Reservation"
-          icon="pi pi-trash"
-          class="p-button-rounded p-button-icon-only p-button-text"
-          @click="deny($event, data)"
+        <DenyReservation
+          :id="data.reservation_id"
+          :email="data.contact_email"
         />
       </template>
     </Column>
-    <Column :sortable="true" field="reservation_id" header="ID" />
     <Column :sortable="true" field="state" header="State" />
     <Column :sortable="true" field="contact_email" header="Contact Email" />
     <Column :sortable="true" field="contact_name" header="Contact Name" />
@@ -63,13 +58,15 @@ import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import { useToast } from 'vue-toastification';
+import { useI18n } from 'vue-i18n';
 // State
 import { useInnkeeperTenantsStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other components
+import ApproveReservation from './ApproveReservation.vue';
+import DenyReservation from './DenyReservation.vue';
 import { TABLE_OPT } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
-import { useI18n } from 'vue-i18n';
 
 const toast = useToast();
 const { t } = useI18n();
@@ -78,10 +75,6 @@ const innkeeperTenantsStore = useInnkeeperTenantsStore();
 
 const { loading, reservations } = storeToRefs(useInnkeeperTenantsStore());
 
-// Approve/deny reservation
-const approve = (event: any, row: any) => {
-  alert('approve');
-};
 const deny = (event: any, row: any) => {
   alert('deny');
 };

@@ -41,11 +41,47 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     );
   }
 
+  // Accept a prospective tenant's reservation and make their check-in password
+  interface ApproveResponse {
+    reservation_pwd?: string;
+  }
+  async function approveReservation(id: string, payload: any = {}) {
+    console.log('> reservationStore.approveReservation');
+    error.value = null;
+    loading.value = true;
+
+    // Don't keep this as state, make sure the password doesn't hang around in memory
+    let approveResponse: ApproveResponse = {};
+    await acapyTenantApi
+      .putHttp(API_PATH.INNKEEPER_RESERVATIONS_APPROVE(id), payload)
+      .then((res) => {
+        approveResponse = res.data;
+        // Refresh the reservation list
+        listReservations();
+      })
+      .catch((err) => {
+        error.value = err;
+        console.log(error.value);
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< reservationStore.approveReservation');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return the reservation password
+    return approveResponse;
+  }
+
   return {
     loading,
     error,
     tenants,
     reservations,
+    approveReservation,
     listTenants,
     listReservations,
   };

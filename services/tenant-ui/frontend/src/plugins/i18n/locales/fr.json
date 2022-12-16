@@ -59,7 +59,15 @@
     "tenantName": "Tenant Name <FR>",
     "tenantReason": "Tenant Reason <FR>",
     "approveRequest": "Approve Request <FR>",
-    "denyRequest": "Deny Request <FR>"
+    "denyRequest": "Deny Request <FR>",
+    "approved": {
+      "title": "Reservation Approved",
+      "toast": "Reservation Approved for {email}",
+      "text": "The Check-In password has been generated. An email has been sent to <strong>{email}</strong> <br> The password is shown below one-time if you need to communicate it via other means"
+    },
+    "denied": {
+      "toast": "Reservation Denied for {email}"
+    }
   },
   "about": {
     "about": "About <FR>"
