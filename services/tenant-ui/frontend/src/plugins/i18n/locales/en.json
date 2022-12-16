@@ -65,7 +65,7 @@
     "approved": {
       "title": "Reservation Approved",
       "toast": "Reservation Approved for {email}",
-      "text": "The Check-In password has been generated. An email has been sent to <strong>{email}</strong> <br> The password is shown below one-time if you need to communicate it via other means"
+      "text": "The Check-In password has been generated. An email has been sent to {email}"
     },
     "denied": {
       "toast": "Reservation Denied for {email}"

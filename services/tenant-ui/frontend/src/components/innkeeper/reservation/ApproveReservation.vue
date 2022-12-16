@@ -9,9 +9,12 @@
     v-model:visible="displayModal"
     :header="t('reservations.approved.title')"
     :modal="true"
-    :closable="allowClose"
   >
-    <p v-html="$t('reservations.approved.text', { email: props.email })"></p>
+    <p>{{ t('reservations.approved.title') }}</p>
+    <p>
+      The password is shown below one-time if you need to communicate it via
+      other means
+    </p>
   </Dialog>
 </template>
 
@@ -70,15 +73,14 @@ const approve = async () => {
 
 // Open popup
 const displayModal = ref(false);
-const openModal = async (): Promise<void> => {
-  allowClose.value = true;
-  displayModal.value = true;
-};
-// Handle the successful check in and set a flag so that we can't close without our warn-prompt button
-const tenantCreated = async (): Promise<void> => {
-  allowClose.value = false;
-  // Propagate the success up in case anyone else needs to pay attention (even if we're not closing this yet)
-  emit('success');
-};
-const allowClose = ref(true);
+// const openModal = async (): Promise<void> => {
+//   allowClose.value = true;
+//   displayModal.value = true;
+// };
+// // Handle the successful check in and set a flag so that we can't close without our warn-prompt button
+// const tenantCreated = async (): Promise<void> => {
+//   allowClose.value = false;
+//   // Propagate the success up in case anyone else needs to pay attention (even if we're not closing this yet)
+//   emit('success');
+// };
 </script>
