@@ -33,7 +33,7 @@ server {
         try_files $uri $uri/ @proxy;
     }
 
-    location ~ ^/multitenancy/reservations {
+    location ~ ^/multitenancy/reservations$ {
         try_files $uri $uri/ @proxy;
     }
 

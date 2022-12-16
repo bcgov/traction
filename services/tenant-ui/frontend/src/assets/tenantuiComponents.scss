@@ -17,6 +17,7 @@
   /* green */
   &.active,
   &.accepted,
+  &.approved,
   &.offer-accepted,
   &.issued,
   &.verified {
@@ -32,6 +33,7 @@
 
   /* red */
   &.error,
+  &.denied,
   &.rejected,
   &.revoked,
   &.offer-not-accepted {
@@ -41,6 +43,7 @@
 
   /* blue */
   &.in-progress,
+  &.requested,
   &.request-sent,
   &.offer-sent,
   &.offer-received {

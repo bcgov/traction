@@ -7,10 +7,24 @@
   />
   <Dialog
     v-model:visible="displayModal"
-    :header="t('reservations.approved.title')"
+    :header="t('reservations.denyRequest')"
     :modal="true"
   >
-    <p></p>
+    <p>
+      {{ t('reservations.denied.reasonText') }}
+    </p>
+
+    <!-- Reason -->
+    <div class="field">
+      <InputText id="reason" v-model="reason" class="w-full" />
+    </div>
+    <Button
+      type="submit"
+      :label="t('reservations.denyRequest')"
+      class="mt-5 w-full"
+      :disabled="loading"
+      :loading="loading"
+    />
   </Dialog>
 </template>
 
@@ -25,7 +39,10 @@ import { useToast } from 'vue-toastification';
 import { useI18n } from 'vue-i18n';
 // State
 import { useInnkeeperTenantsStore } from '@/store';
+import { storeToRefs } from 'pinia';
+import InputText from 'primevue/inputtext';
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
+const { loading } = storeToRefs(useInnkeeperTenantsStore());
 
 const confirm = useConfirm();
 const { t } = useI18n();
@@ -42,7 +59,8 @@ const props = defineProps({
   },
 });
 
-// Approve reservation
+// Deny reservation
+const reason = ref('');
 const confirmDeny = (event: any) => {
   confirm.require({
     target: event.currentTarget,
@@ -50,7 +68,7 @@ const confirmDeny = (event: any) => {
     header: 'Deny Reservation',
     icon: 'pi pi-exclamation-triangle',
     accept: () => {
-      approve();
+      displayModal.value = true;
     },
   });
 };

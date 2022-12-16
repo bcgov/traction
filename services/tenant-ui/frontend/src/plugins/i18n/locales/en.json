@@ -68,7 +68,8 @@
       "text": "The Check-In password has been generated. An email has been sent to {email}"
     },
     "denied": {
-      "toast": "Reservation Denied for {email}"
+      "toast": "Reservation Denied for {email}",
+      "reasonText": "Enter an optional reason to communicate why this reservation is being denied"
     }
   },
   "about": {

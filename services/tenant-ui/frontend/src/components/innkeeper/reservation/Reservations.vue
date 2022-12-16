@@ -36,7 +36,11 @@
         />
       </template>
     </Column>
-    <Column :sortable="true" field="state" header="State" />
+    <Column :sortable="true" field="state" header="State">
+      <template #body="{ data }">
+        <StatusChip :status="data.state" />
+      </template>
+    </Column>
     <Column :sortable="true" field="contact_email" header="Contact Email" />
     <Column :sortable="true" field="contact_name" header="Contact Name" />
     <Column :sortable="true" field="contact_phone" header="Contact Phone" />
@@ -65,6 +69,7 @@ import { storeToRefs } from 'pinia';
 // Other components
 import ApproveReservation from './ApproveReservation.vue';
 import DenyReservation from './DenyReservation.vue';
+import StatusChip from '@/components/common/StatusChip.vue';
 import { TABLE_OPT } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 
