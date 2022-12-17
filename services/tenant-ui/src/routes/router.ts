@@ -20,6 +20,7 @@ router.get("/hello", async (req: Request, res: Response) => {
   res.status(200).send(result);
 });
 
+// For the secured innkeepr OIDC login request to verify the token and get a token from Traction  
 router.get(
   "/innkeeperLogin",
   secure(jwksService),
@@ -40,3 +41,5 @@ router.get(
     }
   }
 );
+
+// Email endpoint
