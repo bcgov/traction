@@ -61,7 +61,16 @@
     "tenantName": "Tenant Name",
     "tenantReason": "Tenant Reason",
     "approveRequest": "Approve Request",
-    "denyRequest": "Deny Request"
+    "denyRequest": "Deny Request",
+    "approved": {
+      "title": "Reservation Approved",
+      "toast": "Reservation Approved for {email}",
+      "text": "The Check-In password has been generated. An email has been sent to {email}"
+    },
+    "denied": {
+      "toast": "Reservation Denied for {email}",
+      "reasonText": "Enter an optional reason to communicate why this reservation is being denied"
+    }
   },
   "about": {
     "about": "About"

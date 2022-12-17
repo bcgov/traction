@@ -11,6 +11,10 @@ export const API_PATH = {
   INNKEEPER_TENANT: (id: string) => `/innkeeper/v1/tenants/${id}`,
   INNKEEPER_TENANT_CHECK_IN: '/innkeeper/v1/tenants/check-in',
   INNKEEPER_RESERVATIONS: '/innkeeper/reservations/',
+  INNKEEPER_RESERVATIONS_APPROVE: (id: string) =>
+    `/innkeeper/reservations/${id}/approve`,
+  INNKEEPER_RESERVATIONS_DENY: (id: string) =>
+    `/innkeeper/reservations/${id}/deny`,
 
   OIDC_INNKEEPER_LOGIN: '/api/innkeeperLogin',
 

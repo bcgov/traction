@@ -59,7 +59,15 @@
     "tenantName": "Tenant Name <JP>",
     "tenantReason": "Tenant Reason <JP>",
     "approveRequest": "Approve Request <JP>",
-    "denyRequest": "Deny Request <JP>"
+    "denyRequest": "Deny Request <JP>",
+    "approved": {
+      "title": "Reservation Approved",
+      "toast": "Reservation Approved for {email}",
+      "text": "The Check-In password has been generated. An email has been sent to {email}"
+    },
+    "denied": {
+      "toast": "Reservation Denied for {email}"
+    }
   },
   "about": {
     "about": "About <JP>"

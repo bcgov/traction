@@ -9,6 +9,8 @@
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
     selection-mode="single"
     data-key="reservation_id"
+    sort-field="created_at"
+    :sort-order="-1"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -26,22 +28,22 @@
     <template #loading> Loading data. Please wait... </template>
     <Column :sortable="false" header="Actions">
       <template #body="{ data }">
-        <Button
-          title="Approve Reservation"
-          icon="pi pi-check"
-          class="p-button-rounded p-button-icon-only p-button-text"
-          @click="approve($event, data)"
+        <ApproveReservation
+          :id="data.reservation_id"
+          :email="data.contact_email"
+          @success="showApproveModal"
         />
-        <Button
-          title="Deny Reservation"
-          icon="pi pi-trash"
-          class="p-button-rounded p-button-icon-only p-button-text"
-          @click="deny($event, data)"
+        <DenyReservation
+          :id="data.reservation_id"
+          :email="data.contact_email"
         />
       </template>
     </Column>
-    <Column :sortable="true" field="reservation_id" header="ID" />
-    <Column :sortable="true" field="state" header="State" />
+    <Column :sortable="true" field="state" header="State">
+      <template #body="{ data }">
+        <StatusChip :status="data.state" />
+      </template>
+    </Column>
     <Column :sortable="true" field="contact_email" header="Contact Email" />
     <Column :sortable="true" field="contact_name" header="Contact Name" />
     <Column :sortable="true" field="contact_phone" header="Contact Phone" />
@@ -53,6 +55,23 @@
       </template>
     </Column>
   </DataTable>
+
+  <!-- Post-approve dialog -->
+  <Dialog
+    v-model:visible="displayModal"
+    :header="t('reservations.approved.title')"
+    :modal="true"
+  >
+    <p>
+      {{ t('reservations.approved.text', { email: approvedEmail }) }} (EMAIL NOT
+      IMPLEMENTED)
+    </p>
+    <p>
+      The password is shown below one-time if you need to communicate it via
+      other means <br />
+      <strong>{{ approvedPassword }}</strong>
+    </p>
+  </Dialog>
 </template>
 
 <script setup lang="ts">
@@ -62,14 +81,18 @@ import { onMounted, ref } from 'vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
+import Dialog from 'primevue/dialog';
 import { useToast } from 'vue-toastification';
+import { useI18n } from 'vue-i18n';
 // State
 import { useInnkeeperTenantsStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other components
+import ApproveReservation from './ApproveReservation.vue';
+import DenyReservation from './DenyReservation.vue';
+import StatusChip from '@/components/common/StatusChip.vue';
 import { TABLE_OPT } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
-import { useI18n } from 'vue-i18n';
 
 const toast = useToast();
 const { t } = useI18n();
@@ -77,14 +100,6 @@ const { t } = useI18n();
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
 
 const { loading, reservations } = storeToRefs(useInnkeeperTenantsStore());
-
-// Approve/deny reservation
-const approve = (event: any, row: any) => {
-  alert('approve');
-};
-const deny = (event: any, row: any) => {
-  alert('deny');
-};
 
 // Loading table contents
 const loadTable = async () => {
@@ -97,4 +112,14 @@ const loadTable = async () => {
 onMounted(async () => {
   loadTable();
 });
+
+// Handling approvals
+const displayModal = ref(false);
+const approvedPassword = ref('');
+const approvedEmail = ref('');
+const showApproveModal = (password: string, email: string) => {
+  approvedPassword.value = password;
+  approvedEmail.value = email;
+  displayModal.value = true;
+};
 </script>
