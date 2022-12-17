@@ -55,6 +55,25 @@ def innkeeper_only(func):
     return wrapper
 
 
+def error_handler(func):
+    @functools.wraps(func)
+    async def wrapper(request):
+        try:
+            ret = await func(request)
+            return ret
+        except StorageNotFoundError as err:
+            raise web.HTTPNotFound(reason=err.roll_up) from err
+        except WalletKeyMissingError as err:
+            raise web.HTTPUnauthorized(reason=err.roll_up) from err
+        except (StorageError, BaseModelError) as err:
+            raise web.HTTPBadRequest(reason=err.roll_up) from err
+        except Exception as err:
+            LOGGER.error(err)
+            raise err
+
+    return wrapper
+
+
 class ReservationRequestSchema(OpenAPISchema):
     """Request schema for tenant reservation."""
 
@@ -189,6 +208,7 @@ class TenantListSchema(OpenAPISchema):
 )
 @request_schema(ReservationRequestSchema())
 @response_schema(ReservationResponseSchema(), 200, description="")
+@error_handler
 async def tenant_reservation(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
 
@@ -198,13 +218,9 @@ async def tenant_reservation(request: web.BaseRequest):
     # reservations are under base/root profile, use Tenant Manager profile
     mgr = context.inject(TenantManager)
     profile = mgr.profile
-    try:
-        async with profile.session() as session:
-            await rec.save(session, reason="New tenant reservation")
-            LOGGER.info(rec)
-    except Exception as err:
-        LOGGER.error(err)
-        raise err
+    async with profile.session() as session:
+        await rec.save(session, reason="New tenant reservation")
+        LOGGER.info(rec)
 
     return web.json_response({"reservation_id": rec.reservation_id})
 
@@ -214,6 +230,7 @@ async def tenant_reservation(request: web.BaseRequest):
 )
 @match_info_schema(ReservationIdMatchInfoSchema())
 @response_schema(ReservationRecordSchema(), 200, description="")
+@error_handler
 async def tenant_reservation_get(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
 
@@ -223,13 +240,9 @@ async def tenant_reservation_get(request: web.BaseRequest):
 
     reservation_id = request.match_info["reservation_id"]
 
-    try:
-        async with profile.session() as session:
-            rec = await ReservationRecord.retrieve_by_id(session, reservation_id)
-            LOGGER.info(rec)
-    except Exception as err:
-        LOGGER.error(err)
-        raise err
+    async with profile.session() as session:
+        rec = await ReservationRecord.retrieve_by_id(session, reservation_id)
+        LOGGER.info(rec)
 
     return web.json_response(rec.serialize())
 
@@ -240,6 +253,7 @@ async def tenant_reservation_get(request: web.BaseRequest):
 @match_info_schema(ReservationIdMatchInfoSchema())
 @request_schema(CheckinSchema())
 @response_schema(CheckinResponseSchema(), 200, description="")
+@error_handler
 async def tenant_checkin(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
 
@@ -251,35 +265,29 @@ async def tenant_checkin(request: web.BaseRequest):
 
     reservation_id = request.match_info["reservation_id"]
 
-    try:
-        async with profile.session() as session:
-            res_rec = await ReservationRecord.retrieve_by_id(session, reservation_id)
-            reservation_pwd = body.get("reservation_pwd")
-            reservation_token = mgr.check_reservation_password(reservation_pwd, res_rec)
-            if not reservation_token:
-                raise web.HTTPUnauthorized(reason="Reservation password incorrect")
+    async with profile.session() as session:
+        res_rec = await ReservationRecord.retrieve_by_id(session, reservation_id)
+        reservation_pwd = body.get("reservation_pwd")
+        reservation_token = mgr.check_reservation_password(reservation_pwd, res_rec)
+        if not reservation_token:
+            raise web.HTTPUnauthorized(reason="Reservation password incorrect")
 
-            if res_rec.expired:
-                raise web.HTTPUnauthorized(reason="Reservation has expired")
+        if res_rec.expired:
+            raise web.HTTPUnauthorized(reason="Reservation has expired")
 
-            if res_rec.state == ReservationRecord.STATE_APPROVED:
-                # ok, let's update this, create a tenant, create a wallet
-                tenant, wallet_record, token = await mgr.create_wallet(
-                    res_rec.tenant_name
-                )
+        if res_rec.state == ReservationRecord.STATE_APPROVED:
+            # ok, let's update this, create a tenant, create a wallet
+            tenant, wallet_record, token = await mgr.create_wallet(res_rec.tenant_name)
 
-                # update this reservation
-                res_rec.state = ReservationRecord.STATE_CHECKED_IN
-                res_rec.wallet_id = wallet_record.wallet_id
-                res_rec.tenant_id = tenant.tenant_id
-                # do not need reservation token data
-                res_rec.reservation_token_hash = None
-                res_rec.reservation_token_salt = None
-                res_rec.reservation_token_expiry = None
-                await res_rec.save(session)
-    except Exception as err:
-        LOGGER.error(err)
-        raise err
+            # update this reservation
+            res_rec.state = ReservationRecord.STATE_CHECKED_IN
+            res_rec.wallet_id = wallet_record.wallet_id
+            res_rec.tenant_id = tenant.tenant_id
+            # do not need reservation token data
+            res_rec.reservation_token_hash = None
+            res_rec.reservation_token_salt = None
+            res_rec.reservation_token_expiry = None
+            await res_rec.save(session)
 
     return web.json_response(
         {
@@ -294,6 +302,7 @@ async def tenant_checkin(request: web.BaseRequest):
 @match_info_schema(TenantIdMatchInfoSchema())
 @request_schema(CreateWalletTokenRequestSchema)
 @response_schema(CreateWalletTokenResponseSchema(), 200, description="")
+@error_handler
 async def tenant_create_token(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
 
@@ -308,28 +317,23 @@ async def tenant_create_token(request: web.BaseRequest):
         body = await request.json()
         wallet_key = body.get("wallet_key")
 
-    try:
-        # first look up the tenant...
-        async with profile.session() as session:
-            tenant_record = await TenantRecord.retrieve_by_id(session, tenant_id)
+    # first look up the tenant...
+    async with profile.session() as session:
+        tenant_record = await TenantRecord.retrieve_by_id(session, tenant_id)
 
-        # now just do the same wallet_id based token create.
-        wallet_id = tenant_record.wallet_id
-        multitenant_mgr = profile.inject(BaseMultitenantManager)
-        async with profile.session() as session:
-            wallet_record = await WalletRecord.retrieve_by_id(session, wallet_id)
+    # now just do the same wallet_id based token create.
+    wallet_id = tenant_record.wallet_id
+    multitenant_mgr = profile.inject(BaseMultitenantManager)
+    async with profile.session() as session:
+        wallet_record = await WalletRecord.retrieve_by_id(session, wallet_id)
 
-        if (not wallet_record.requires_external_key) and wallet_key:
-            raise web.HTTPBadRequest(
-                reason=f"Wallet {wallet_id} doesn't require"
-                       " the wallet key to be provided"
-            )
+    if (not wallet_record.requires_external_key) and wallet_key:
+        raise web.HTTPBadRequest(
+            reason=f"Wallet {wallet_id} doesn't require"
+            " the wallet key to be provided"
+        )
 
-        token = await multitenant_mgr.create_auth_token(wallet_record, wallet_key)
-    except StorageNotFoundError as err:
-        raise web.HTTPNotFound(reason=err.roll_up) from err
-    except WalletKeyMissingError as err:
-        raise web.HTTPUnauthorized(reason=err.roll_up) from err
+    token = await multitenant_mgr.create_auth_token(wallet_record, wallet_key)
 
     return web.json_response({"token": token})
 
@@ -339,6 +343,7 @@ async def tenant_create_token(request: web.BaseRequest):
 )
 @response_schema(ReservationListSchema(), 200, description="")
 @innkeeper_only
+@error_handler
 async def innkeeper_reservations_list(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
 
@@ -348,18 +353,15 @@ async def innkeeper_reservations_list(request: web.BaseRequest):
 
     tag_filter = {}
     post_filter = {}
-    try:
-        async with profile.session() as session:
-            # innkeeper can access all reservation records
-            records = await ReservationRecord.query(
-                session=session,
-                tag_filter=tag_filter,
-                post_filter_positive=post_filter,
-                alt=True,
-            )
-        results = [record.serialize() for record in records]
-    except (StorageError, BaseModelError) as err:
-        raise web.HTTPBadRequest(reason=err.roll_up) from err
+    async with profile.session() as session:
+        # innkeeper can access all reservation records
+        records = await ReservationRecord.query(
+            session=session,
+            tag_filter=tag_filter,
+            post_filter_positive=post_filter,
+            alt=True,
+        )
+    results = [record.serialize() for record in records]
 
     return web.json_response({"results": results})
 
@@ -371,6 +373,7 @@ async def innkeeper_reservations_list(request: web.BaseRequest):
 @request_schema(ReservationApproveRequestSchema)
 @response_schema(ReservationApproveResponseSchema(), 200, description="")
 @innkeeper_only
+@error_handler
 async def innkeeper_reservations_approve(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
 
@@ -382,27 +385,25 @@ async def innkeeper_reservations_approve(request: web.BaseRequest):
     # records are under base/root profile, use Tenant Manager profile
     mgr = context.inject(TenantManager)
     profile = mgr.profile
-    try:
-        async with profile.session() as session:
-            # innkeeper can access all reservation records.
-            rec = await ReservationRecord.retrieve_by_id(
-                session, reservation_id, for_update=True
+
+    async with profile.session() as session:
+        # innkeeper can access all reservation records.
+        rec = await ReservationRecord.retrieve_by_id(
+            session, reservation_id, for_update=True
+        )
+        if rec.state == ReservationRecord.STATE_REQUESTED:
+            _pwd, _salt, _hash, _expiry = mgr.generate_reservation_token_data()
+            rec.reservation_token_salt = _salt.decode("utf-8")
+            rec.reservation_token_hash = _hash.decode("utf-8")
+            rec.reservation_token_expiry = _expiry
+            rec.state_notes = state_notes
+            rec.state = ReservationRecord.STATE_APPROVED
+            await rec.save(session)
+            LOGGER.info(rec)
+        else:
+            raise web.HTTPConflict(
+                reason=f"Reservation state is currently '{rec.state}' and cannot be set to '{ReservationRecord.STATE_APPROVED}'."
             )
-            if rec.state == ReservationRecord.STATE_REQUESTED:
-                _pwd, _salt, _hash, _expiry = mgr.generate_reservation_token_data()
-                rec.reservation_token_salt = _salt.decode("utf-8")
-                rec.reservation_token_hash = _hash.decode("utf-8")
-                rec.reservation_token_expiry = _expiry
-                rec.state_notes = state_notes
-                rec.state = ReservationRecord.STATE_APPROVED
-                await rec.save(session)
-                LOGGER.info(rec)
-            else:
-                raise web.HTTPConflict(
-                    reason=f"Reservation state is currently '{rec.state}' and cannot be set to '{ReservationRecord.STATE_DENIED}'.")
-    except Exception as err:
-        LOGGER.error(err)
-        raise err
 
     return web.json_response({"reservation_pwd": _pwd})
 
@@ -414,6 +415,7 @@ async def innkeeper_reservations_approve(request: web.BaseRequest):
 @request_schema(ReservationDenyRequestSchema)
 @response_schema(ReservationResponseSchema(), 200, description="")
 @innkeeper_only
+@error_handler
 async def innkeeper_reservations_deny(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
 
@@ -425,31 +427,31 @@ async def innkeeper_reservations_deny(request: web.BaseRequest):
     # records are under base/root profile, use Tenant Manager profile
     mgr = context.inject(TenantManager)
     profile = mgr.profile
-    try:
-        async with profile.session() as session:
-            # innkeeper can access all reservation records.
-            rec = await ReservationRecord.retrieve_by_id(
-                session, reservation_id, for_update=True
+
+    async with profile.session() as session:
+        # innkeeper can access all reservation records.
+        rec = await ReservationRecord.retrieve_by_id(
+            session, reservation_id, for_update=True
+        )
+        if rec.state == ReservationRecord.STATE_REQUESTED:
+            rec.state_notes = state_notes
+            rec.state = ReservationRecord.STATE_DENIED
+            await rec.save(session)
+            LOGGER.info(rec)
+        else:
+            raise web.HTTPConflict(
+                reason=f"Reservation state is currently '{rec.state}' and cannot be set to '{ReservationRecord.STATE_DENIED}'."
             )
-            if rec.state == ReservationRecord.STATE_REQUESTED:
-                rec.state_notes = state_notes
-                rec.state = ReservationRecord.STATE_DENIED
-                await rec.save(session)
-                LOGGER.info(rec)
-            else:
-                raise web.HTTPConflict(
-                    reason=f"Reservation state is currently '{rec.state}' and cannot be set to '{ReservationRecord.STATE_DENIED}'.")
-    except Exception as err:
-        LOGGER.error(err)
-        raise err
 
     return web.json_response(rec.serialize())
+
 
 @docs(
     tags=[SWAGGER_INNKEEPER],
 )
 @response_schema(TenantListSchema(), 200, description="")
 @innkeeper_only
+@error_handler
 async def innkeeper_tenants_list(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
 
@@ -459,18 +461,16 @@ async def innkeeper_tenants_list(request: web.BaseRequest):
 
     tag_filter = {}
     post_filter = {}
-    try:
-        async with profile.session() as session:
-            # innkeeper can access all tenant records
-            records = await TenantRecord.query(
-                session=session,
-                tag_filter=tag_filter,
-                post_filter_positive=post_filter,
-                alt=True,
-            )
-        results = [record.serialize() for record in records]
-    except (StorageError, BaseModelError) as err:
-        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    async with profile.session() as session:
+        # innkeeper can access all tenant records
+        records = await TenantRecord.query(
+            session=session,
+            tag_filter=tag_filter,
+            post_filter_positive=post_filter,
+            alt=True,
+        )
+    results = [record.serialize() for record in records]
 
     return web.json_response({"results": results})
 
@@ -481,6 +481,7 @@ async def innkeeper_tenants_list(request: web.BaseRequest):
 @match_info_schema(TenantIdMatchInfoSchema())
 @response_schema(TenantRecordSchema(), 200, description="")
 @innkeeper_only
+@error_handler
 async def innkeeper_tenant_get(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     tenant_id = request.match_info["tenant_id"]
@@ -488,14 +489,11 @@ async def innkeeper_tenant_get(request: web.BaseRequest):
     # records are under base/root profile, use Tenant Manager profile
     mgr = context.inject(TenantManager)
     profile = mgr.profile
-    try:
-        async with profile.session() as session:
-            # innkeeper can access all tenants..
-            rec = await TenantRecord.retrieve_by_id(session, tenant_id)
-            LOGGER.info(rec)
-    except Exception as err:
-        LOGGER.error(err)
-        raise err
+
+    async with profile.session() as session:
+        # innkeeper can access all tenants..
+        rec = await TenantRecord.retrieve_by_id(session, tenant_id)
+        LOGGER.info(rec)
 
     return web.json_response(rec.serialize())
 
@@ -504,6 +502,7 @@ async def innkeeper_tenant_get(request: web.BaseRequest):
     tags=[SWAGGER_TENANT],
 )
 @response_schema(TenantRecordSchema(), 200, description="")
+@error_handler
 async def tenant_self(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     # we need the caller's wallet id
@@ -512,14 +511,11 @@ async def tenant_self(request: web.BaseRequest):
     # records are under base/root profile, use Tenant Manager profile
     mgr = context.inject(TenantManager)
     profile = mgr.profile
-    try:
-        async with profile.session() as session:
-            # tenant's must always fetch by their wallet id.
-            rec = await TenantRecord.query_by_wallet_id(session, wallet_id)
-            LOGGER.info(rec)
-    except Exception as err:
-        LOGGER.error(err)
-        raise err
+
+    async with profile.session() as session:
+        # tenant's must always fetch by their wallet id.
+        rec = await TenantRecord.query_by_wallet_id(session, wallet_id)
+        LOGGER.info(rec)
 
     return web.json_response(rec.serialize())
 
@@ -532,7 +528,9 @@ async def register(app: web.Application):
         [
             web.post("/multitenancy/reservations", tenant_reservation),
             web.get(
-                "/multitenancy/reservations/{reservation_id}", tenant_reservation_get, allow_head=False
+                "/multitenancy/reservations/{reservation_id}",
+                tenant_reservation_get,
+                allow_head=False,
             ),
             web.post(
                 "/multitenancy/reservations/{reservation_id}/check-in", tenant_checkin
