@@ -51,7 +51,7 @@ export const API_PATH = {
   VERIFIER_PRESENTATION_TEMPLATES:
     '/tenant/v1/verifier/presentation_templates/',
 
-  GOVERNANCE_SCHEMA_TEMPLATES: '/tenant/v1/governance/schema_templates/',
+  OVERNANCE_SCHEMA_TEMPLATES: '/tenant/v1/governance/schema_templates/',
   GOVERNANCE_SCHEMA_TEMPLATES_IMPORT:
     '/tenant/v1/governance/schema_templates/import',
   GOVERNANCE_SCHEMA_TEMPLATE: (id: string) =>

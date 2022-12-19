@@ -45,7 +45,11 @@
 
     <Button type="submit" class="w-full mt-5" label="Check Status" />
 
-    <Approved />
+    <Approved
+      v-if="status && !v$.email.$invalid && v$.reservationId.$model"
+      :email="v$.email.$model"
+      :reservation-id="v$.reservationId.$model"
+    />
     <!-- TODO: Place the Approved/Declined components here -->
   </form>
 </template>
@@ -78,10 +82,14 @@ const rules = {
 const v$ = useVuelidate(rules, formFields);
 
 // State setup
-// TODO: IMPLEMENT THIS
+const status = ref(false);
+const checkStatus = () => {
+  status.value = status.value ? false : true;
+};
 
 // Form submission
 const submitted = ref(false);
+
 const handleSubmit = async (isFormValid: boolean) => {
   submitted.value = true;
 
@@ -89,8 +97,7 @@ const handleSubmit = async (isFormValid: boolean) => {
     return;
   }
   try {
-    // TODO: IMPLEMENT THIS
-    alert('To Implement');
+    checkStatus();
   } catch (err) {
     console.error(err);
     toast.error(`Failure checking status: ${err}`);
