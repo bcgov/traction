@@ -32,6 +32,12 @@
     "innkeeper": {
       "user": "SERVER_INNKEEPER_USER",
       "key": "SERVER_INNKEEPER_KEY"
+    },
+    "smtp": {
+      "server": "SERVER_SMTP_SERVER",
+      "port": "SERVER_SMTP_PORT",
+      "senderAddress": "SERVER_SMTP_SENDER_ADDRESS",
+      "innkeeperInbox": "SERVER_SMTP_INNKEEPER_INBOX"
     }
   }
 }

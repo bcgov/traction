@@ -1,9 +1,10 @@
 import { Request } from "express";
 import config from "config";
 import nodemailer from "nodemailer";
-const TRACURL: string = config.get("server.tractionUrl");
-const INN_USER = config.get("server.innkeeper.user");
-const INN_PW = config.get("server.innkeeper.key");
+const SERVER: string = config.get("server.smtp.server");
+const PORT: number = config.get("server.smtp.port");
+const FROM: string = config.get("server.smtp.senderAddress");
+const INNKEEPER: string = config.get("server.smtp.innkeeperInbox");
 
 /**
  * @function sendEmail
@@ -12,18 +13,17 @@ const INN_PW = config.get("server.innkeeper.key");
  */
 export const sendEmail = async (req: Request) => {
   try {
-    let transporter = nodemailer.createTransport({
-      host: "apps.smtp.gov.bc.ca",
-      port: 25,
+    const transporter = nodemailer.createTransport({
+      host: SERVER,
+      port: PORT,
       secure: false,
     });
 
-    let info = await transporter.sendMail({
-      from: "DoNotReplyTraction@gov.bc.ca", // sender address
-      to: "lucas.oneil@gov.bc.ca", // list of receivers
-      subject: "Hello ✔", // Subject line
-      text: "Hello world?", // plain text body
-      html: "<b>Hello world?</b>", // html body
+    const info = await transporter.sendMail({
+      from: FROM,
+      to: INNKEEPER,
+      subject: "Your reservation details",
+      text: `Hello, your reservation was recieved. Your reservation ID is ${123} and your password is ${123}`,
     });
 
     return info;
