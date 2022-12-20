@@ -53,7 +53,11 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
   interface ApproveResponse {
     reservation_pwd?: string;
   }
-  async function approveReservation(id: string, email: string, payload: any = {}) {
+  async function approveReservation(
+    id: string,
+    email: string,
+    payload: any = {}
+  ) {
     console.log('> reservationStore.approveReservation');
     error.value = null;
     loading.value = true;
@@ -83,7 +87,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
       state: 'Tenant Reservation Approved',
       contactEmail: email,
       reservationId: id,
-      reservationPassword: approveResponse.reservation_pwd
+      reservationPassword: approveResponse.reservation_pwd,
     });
 
     // return the reservation password
@@ -118,7 +122,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
       state: 'Tenant Reservation Denied',
       contactEmail: email,
       reservationId: id,
-      stateNotes: payload.state_notes
+      stateNotes: payload.state_notes,
     });
   }
 

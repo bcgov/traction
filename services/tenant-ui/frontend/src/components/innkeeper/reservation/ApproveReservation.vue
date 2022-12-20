@@ -52,7 +52,10 @@ const confirmApprove = (event: any) => {
 
 const approve = async () => {
   try {
-    const res = await innkeeperTenantsStore.approveReservation(props.id, props.email);
+    const res = await innkeeperTenantsStore.approveReservation(
+      props.id,
+      props.email
+    );
     // Have to handle the dialog up a level or it deletes when the rows re-draw after reload
     emit('success', res.reservation_pwd, props.email);
     toast.success(t('reservations.approved.toast', { email: props.email }));
