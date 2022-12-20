@@ -13,17 +13,17 @@ const INNKEEPER: string = config.get("server.smtp.innkeeperInbox");
  */
 export const sendEmail = async (req: Request) => {
   try {
-    const transporter = nodemailer.createTransport({
+    let transporter = nodemailer.createTransport({
       host: SERVER,
       port: PORT,
       secure: false,
     });
 
-    const info = await transporter.sendMail({
+    let info = await transporter.sendMail({
       from: FROM,
-      to: INNKEEPER,
-      subject: "Your reservation details",
-      text: `Hello, your reservation was recieved. Your reservation ID is ${123} and your password is ${123}`,
+      to: req.body.contact_email,
+      subject: "Your reservation details", // Subject line
+      html: `<h2>We recieved your reservation</h2> <p>Your reservation details are: <br> ID: ${req.body.reservationId} <br> PW: ${req.body.reservationPassword}`, // html body
     });
 
     return info;
