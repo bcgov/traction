@@ -13,20 +13,28 @@ const INNKEEPER: string = config.get("server.smtp.innkeeperInbox");
  */
 export const sendEmail = async (req: Request) => {
   try {
-    let transporter = nodemailer.createTransport({
+    const transporter = nodemailer.createTransport({
       host: SERVER,
       port: PORT,
       secure: false,
     });
 
-    let info = await transporter.sendMail({
+    // Send a confirmation email to the person doing the reservation
+    await transporter.sendMail({
       from: FROM,
       to: req.body.contact_email,
       subject: "Your reservation details", // Subject line
-      html: `<h2>We recieved your reservation</h2> <p>Your reservation details are: <br> ID: ${req.body.reservationId} <br> PW: ${req.body.reservationPassword}`, // html body
+      html: `<h2>We recieved your reservation</h2> <p>Your reservation details are: <br> ID: ${req.body.reservationId} <br> PW: ${req.body.reservationPassword}</p>`, // html body
     });
 
-    return info;
+    // Send a notification email to the Innkeeper team
+    await transporter.sendMail({
+      from: FROM,
+      to: INNKEEPER,
+      subject: "New tenant reservation", // Subject line
+      html: `<h2>There is a new tenant reservation request</h2> <p>${req.body.contact_email} has requested a tenant</p>`, // html body
+    });
+
   } catch (error) {
     console.error(`Error sending email: ${error}`);
     throw error;
