@@ -153,7 +153,7 @@ const formFields = reactive({
   tenant_reason: '',
 });
 const rules = {
-  contact_email: { required },
+  contact_email: { required, email },
   contact_name: { required },
   contact_phone: { required },
   tenant_name: { required },

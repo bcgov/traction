@@ -25,8 +25,6 @@
 </template>
 
 <script setup lang="ts">
-// Vue
-import { ref, reactive } from 'vue';
 // PrimeVue/Validation/etc
 import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';

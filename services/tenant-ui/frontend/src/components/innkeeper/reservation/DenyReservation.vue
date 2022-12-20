@@ -78,7 +78,7 @@ const confirmDeny = (event: any) => {
 
 const deny = async () => {
   try {
-    await innkeeperTenantsStore.denyReservation(props.id, {
+    await innkeeperTenantsStore.denyReservation(props.id, props.email, {
       state_notes: reason.value,
     });
     toast.success(`Reservation for ${props.email} Denied`);

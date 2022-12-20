@@ -44,7 +44,8 @@ router.get(
 // Email endpoint
 router.post(
   "/email/reservationConfirmation",
-  body("contact_email").isEmail(),
+  body("contactEmail").isEmail(),
+  body("reservationId").not().isEmpty(),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const errors = validationResult(req);
@@ -52,14 +53,29 @@ router.post(
         return res.status(422).json({ errors: errors.array() });
       }
 
-      const result = await emailComponent.sendEmail(req);
+      const result = await emailComponent.sendConfirmationEmail(req);
       res.send(result);
     } catch (error) {
       next(error);
     }
   }
 );
-router.post("/email/reservationStatus", async (req: Request, res: Response) => {
-  const result = await emailComponent.sendEmail(req);
-  res.send(result);
-});
+router.post(
+  "/email/reservationStatus",
+  body("contactEmail").isEmail(),
+  body("reservationId").not().isEmpty(),
+  body("state").not().isEmpty(),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+      }
+
+      const result = await emailComponent.sendStatusEmail(req);
+      res.send(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
