@@ -17,7 +17,8 @@ const app = express();
 app.use(history());
 app.use(cors());
 app.use(express.json());
-// app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
+
 
 // Host the static frontend assets
 app.use("/favicon.ico", (_, res) => {

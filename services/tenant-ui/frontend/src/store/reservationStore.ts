@@ -12,6 +12,11 @@ export const useReservationStore = defineStore('reservation', () => {
     baseURL: config.value.frontend.tenantProxyPath,
   });
 
+  // A different axios instance with a basepath just of the tenant UI backend
+  const backendApi = axios.create({
+    baseURL: config.value.frontend.apiPath,
+  });
+
   // state
   const loading: any = ref(false);
   const error: any = ref(null);
@@ -23,8 +28,8 @@ export const useReservationStore = defineStore('reservation', () => {
     error.value = null;
     loading.value = true;
     console.log(payload);
-    await api
-      .post(API_PATH.MULTITENANCY_RESERVATION, payload)
+    await backendApi
+      .post(API_PATH.EMAIL_CONFIRMATION, payload)
       .then((res) => {
         console.log(res);
         reservation.value = res.data;
@@ -36,6 +41,19 @@ export const useReservationStore = defineStore('reservation', () => {
       .finally(() => {
         loading.value = false;
       });
+    // await api
+    //   .post(API_PATH.MULTITENANCY_RESERVATION, payload)
+    //   .then((res) => {
+    //     console.log(res);
+    //     reservation.value = res.data;
+    //   })
+    //   .catch((err) => {
+    //     error.value = err;
+    //     console.log(error.value);
+    //   })
+    //   .finally(() => {
+    //     loading.value = false;
+    //   });
     console.log('< reservationStore.makeReservation');
 
     if (error.value != null) {
