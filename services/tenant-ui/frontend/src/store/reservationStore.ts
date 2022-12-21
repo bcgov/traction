@@ -70,11 +70,40 @@ export const useReservationStore = defineStore('reservation', () => {
     return reservation.value;
   }
 
+  async function checkReservation(reservationId: string) {
+    console.log('> reservationStore.makeReservation');
+    error.value = null;
+    loading.value = true;
+    await api
+      .get(`${API_PATH.MULTITENANCY_RESERVATION}/${reservationId}`)
+      .then((res) => {
+        console.log('result in store', res);
+        reservation.value = res.data;
+      })
+      .catch((err) => {
+        // TODO: if the error is a 404, return something like "not found"
+        error.value = err;
+        console.log('error in store', error.value);
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< reservationStore.makeReservation');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return reservation.value;
+  }
+
   return {
     reservation,
     loading,
     error,
     makeReservation,
+    checkReservation,
   };
 });
 

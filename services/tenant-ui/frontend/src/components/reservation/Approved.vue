@@ -58,26 +58,35 @@ import { ref } from 'vue';
 import { useTenantApi } from '@/store/tenantApi';
 import { API_PATH } from '@/helpers/constants';
 import { useToast } from 'vue-toastification';
+import { useReservationStore } from '@/store';
+import { storeToRefs } from 'pinia';
 const sentAt = 'fake date';
 const password = ref('');
 const tenantApi = useTenantApi();
 const api = API_PATH.MULTITENANCY_RESERVATION;
 const toast = useToast();
 
-const submit = async () => {
-  const url = `${api}/${props.reservationId}/check-in`;
-  await tenantApi
-    .postHttp(url, {
-      reservation_pwd: password.value,
-    })
-    .then((response) => {
-      // TBD: redirect to the tenant's home page
-      toast.success(response.message);
-    })
-    .catch((error) => {
-      toast.error(error.message);
-    });
+const reservationStore = useReservationStore();
+
+console.log('approved');
+const submit = () => {
+  console.log('submit');
 };
+// TODO: Convert to useReservationStore
+// const submit = async () => {
+//   const url = `${api}/${props.reservationId}/check-in`;
+//   await tenantApi
+//     .postHttp(url, {
+//       reservation_pwd: password.value,
+//     })
+//     .then((response) => {
+//       // TBD: redirect to the tenant's home page
+//       toast.success(response.message);
+//     })
+//     .catch((error) => {
+//       toast.error(error.message);
+//     });
+// };
 
 /**
  * Accepts the following props:

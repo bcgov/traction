@@ -65,10 +65,11 @@ import { email, required } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
 // State
 import { useReservationStore } from '@/store';
-import { storeToRefs } from 'pinia';
 import Approved from './Approved.vue';
 
 const toast = useToast();
+
+const reservationStore = useReservationStore();
 
 // Login Form and validation
 const formFields = reactive({
@@ -83,21 +84,29 @@ const v$ = useVuelidate(rules, formFields);
 
 // State setup
 const status = ref(false);
-const checkStatus = () => {
-  status.value = status.value ? false : true;
-};
 
 // Form submission
 const submitted = ref(false);
 
 const handleSubmit = async (isFormValid: boolean) => {
+  console.log('handleSubmit', isFormValid);
   submitted.value = true;
 
   if (!isFormValid) {
     return;
   }
   try {
-    checkStatus();
+    console.log('formFields', formFields);
+    reservationStore
+      .checkReservation(formFields.reservationId)
+      .then((res) => {
+        console.log('res', res);
+        status.value = true;
+      })
+      .catch((err) => {
+        console.log('err', err);
+        toast.error(`Failure checking status: ${err}`);
+      });
   } catch (err) {
     console.error(err);
     toast.error(`Failure checking status: ${err}`);
