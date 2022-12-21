@@ -43,6 +43,12 @@
     "innkeeper": {
       "user": "innkeeper",
       "key": "REDACTED"
+    },
+    "smtp": {
+      "server": "apps.smtp.gov.bc.ca",
+      "port": 25,
+      "senderAddress": "DoNotReplyTraction@gov.bc.ca",
+      "innkeeperInbox": "lucas.oneil@gov.bc.ca"
     }
   }
 }

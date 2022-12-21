@@ -63,8 +63,7 @@
     :modal="true"
   >
     <p>
-      {{ t('reservations.approved.text', { email: approvedEmail }) }} (EMAIL NOT
-      IMPLEMENTED)
+      {{ t('reservations.approved.text', { email: approvedEmail }) }}
     </p>
     <p>
       The password is shown below one-time if you need to communicate it via

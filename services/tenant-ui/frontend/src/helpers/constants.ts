@@ -4,8 +4,12 @@ export const TABLE_OPT = {
 };
 
 export const API_PATH = {
+  // The tenant UI backend
   CONFIG: '/config',
+  EMAIL_CONFIRMATION: '/email/reservationConfirmation',
+  EMAIL_STATUS: '/email/reservationStatus',
 
+  // Acapy and plugins (and Traction for now)
   INNKEEPER_TOKEN: '/innkeeper/token',
   INNKEEPER_TENANTS: '/innkeeper/v1/tenants/',
   INNKEEPER_TENANT: (id: string) => `/innkeeper/v1/tenants/${id}`,

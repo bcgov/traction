@@ -4,10 +4,12 @@
 
 import express, { Request, Response } from "express";
 import config from "config";
-import * as helloComponent from "../components/hello";
+import * as emailComponent from "../components/email";
 import * as innkeeperComponent from "../components/innkeeper";
 import { secure } from "express-oauth-jwt";
+import { body, validationResult } from "express-validator";
 import { createRemoteJWKSet } from "jose";
+import { NextFunction } from "express";
 
 const jwksService = createRemoteJWKSet(
   new URL(config.get("server.oidc.jwksUri"))
@@ -15,11 +17,9 @@ const jwksService = createRemoteJWKSet(
 
 export const router = express.Router();
 
-router.get("/hello", async (req: Request, res: Response) => {
-  const result = helloComponent.getHello();
-  res.status(200).send(result);
-});
+router.use(express.json());
 
+// For the secured innkeepr OIDC login request to verify the token and get a token from Traction
 router.get(
   "/innkeeperLogin",
   secure(jwksService),
@@ -37,6 +37,45 @@ router.get(
       res.status(200).send(result);
     } else {
       res.status(403).send();
+    }
+  }
+);
+
+// Email endpoint
+router.post(
+  "/email/reservationConfirmation",
+  body("contactEmail").isEmail(),
+  body("reservationId").not().isEmpty(),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+      }
+
+      const result = await emailComponent.sendConfirmationEmail(req);
+      res.send(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+router.post(
+  "/email/reservationStatus",
+  body("contactEmail").isEmail(),
+  body("reservationId").not().isEmpty(),
+  body("state").not().isEmpty(),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+      }
+
+      const result = await emailComponent.sendStatusEmail(req);
+      res.send(result);
+    } catch (error) {
+      next(error);
     }
   }
 );
