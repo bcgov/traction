@@ -77,18 +77,15 @@ export const useReservationStore = defineStore('reservation', () => {
     await api
       .get(`${API_PATH.MULTITENANCY_RESERVATION}/${reservationId}`)
       .then((res) => {
-        console.log('result in store', res);
         reservation.value = res.data;
       })
       .catch((err) => {
-        // TODO: if the error is a 404, return something like "not found"
         error.value = err;
-        console.log('error in store', error.value);
       })
       .finally(() => {
         loading.value = false;
       });
-    console.log('< reservationStore.makeReservation');
+    console.log('< reservationStore.checkReservation');
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
