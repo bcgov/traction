@@ -22,3 +22,7 @@ data:
   SERVER_OIDC_JWKS: {{ .Values.tenant_ui.oidc.jwksUri | quote }}
   SERVER_OIDC_REALM: {{ .Values.tenant_ui.oidc.realm | quote }}
   SERVER_OIDC_ROLE: {{ .Values.tenant_ui.oidc.roleName | quote }}
+  SERVER_SMTP_SERVER: {{ .Values.tenant_ui.smtp.server | quote }}
+  SERVER_SMTP_PORT: {{ .Values.tenant_ui.smtp.port | quote }}
+  SERVER_SMTP_SENDER_ADDRESS: {{ .Values.tenant_ui.smtp.senderAddress | quote }}
+  SERVER_SMTP_INNKEEPER_INBOX: {{ .Values.tenant_ui.smtp.innkeeperInbox | quote }}
