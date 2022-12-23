@@ -14,6 +14,7 @@
         name="email"
         autofocus
         class="w-full"
+        @change="clearStatus"
       />
       <span v-if="v$.email.$error && submitted">
         <span v-for="(error, index) of v$.email.$errors" :key="index">
@@ -37,6 +38,7 @@
         v-model="v$.reservationId.$model"
         name="reservationId"
         class="w-full"
+        @change="clearStatus"
       />
       <small v-if="v$.reservationId.$invalid && submitted" class="p-error">{{
         v$.reservationId.required.$message
@@ -46,11 +48,31 @@
     <Button type="submit" class="w-full mt-5" label="Check Status" />
 
     <Approved
-      v-if="status && !v$.email.$invalid && v$.reservationId.$model"
+      v-if="
+        status === 'approved' && !v$.email.$invalid && v$.reservationId.$model
+      "
       :email="v$.email.$model"
       :reservation-id="v$.reservationId.$model"
     />
-    <!-- TODO: Place the Approved/Declined components here -->
+    <Pending
+      v-else-if="
+        status === 'requested' && !v$.email.$invalid && v$.reservationId.$model
+      "
+      :email="v$.email.$model"
+      :reservation-id="v$.reservationId.$model"
+    />
+    <Declined
+      v-else-if="
+        status === 'denied' && !v$.email.$invalid && v$.reservationId.$model
+      "
+      :email="v$.email.$model"
+      :reservation-id="v$.reservationId.$model"
+    />
+    <NotFound
+      v-else-if="
+        status === 'not-found' && !v$.email.$invalid && v$.reservationId.$model
+      "
+    />
   </form>
 </template>
 
@@ -66,6 +88,9 @@ import { useVuelidate } from '@vuelidate/core';
 // State
 import { useReservationStore } from '@/store';
 import Approved from './Approved.vue';
+import Declined from './Declined.vue';
+import Pending from './Pending.vue';
+import NotFound from './NotFound.vue';
 
 const toast = useToast();
 
@@ -82,8 +107,17 @@ const rules = {
 };
 const v$ = useVuelidate(rules, formFields);
 
+/**
+ * Clear the status.
+ * Needed to prevent the status from showing when the form is invalid,
+ * or changed before the Check Status button is clicked.
+ */
+const clearStatus = () => {
+  status.value = '';
+};
+
 // State setup
-const status = ref(false);
+const status = ref('');
 
 // Form submission
 const submitted = ref(false);
@@ -96,19 +130,16 @@ const handleSubmit = async (isFormValid: boolean) => {
     return;
   }
   try {
-    console.log('formFields', formFields);
     reservationStore
       .checkReservation(formFields.reservationId)
       .then((res) => {
-        console.log('res', res);
-        status.value = true;
+        console.log('status', res.state);
+        status.value = res.state;
       })
       .catch((err) => {
-        console.log('err', err);
         toast.error(`Failure checking status: ${err}`);
       });
   } catch (err) {
-    console.error(err);
     toast.error(`Failure checking status: ${err}`);
   }
 };

@@ -21,6 +21,7 @@ export const useReservationStore = defineStore('reservation', () => {
   const loading: any = ref(false);
   const error: any = ref(null);
   const reservation: any = ref(null);
+  const status: any = ref(null);
 
   // actions
   async function makeReservation(payload: any = {}) {
@@ -33,7 +34,7 @@ export const useReservationStore = defineStore('reservation', () => {
     await api
       .post(API_PATH.MULTITENANCY_RESERVATION, payload)
       .then((res) => {
-        console.log(res);
+        console.log('res from creating a res', res);
         reservation.value = res.data;
       })
       .catch((err) => {
@@ -71,16 +72,18 @@ export const useReservationStore = defineStore('reservation', () => {
   }
 
   async function checkReservation(reservationId: string) {
-    console.log('> reservationStore.makeReservation');
+    console.log('> reservationStore.checkReservation');
     error.value = null;
     loading.value = true;
     await api
       .get(`${API_PATH.MULTITENANCY_RESERVATION}/${reservationId}`)
       .then((res) => {
-        reservation.value = res.data;
+        status.value = res.data;
       })
       .catch((err) => {
+        // If no reservation is found
         error.value = err;
+        status.value = 'not-found';
       })
       .finally(() => {
         loading.value = false;
@@ -92,7 +95,7 @@ export const useReservationStore = defineStore('reservation', () => {
       throw error.value;
     }
     // return data so $onAction.after listeners can add their own handler
-    return reservation.value;
+    return status.value;
   }
 
   return {
