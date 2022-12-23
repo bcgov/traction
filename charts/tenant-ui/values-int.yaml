@@ -17,5 +17,9 @@ tenant_ui:
     showInnkeeperAdminLogin: true
     authority: https://test.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm
     jwksUri: https://test.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm/protocol/openid-connect/certs
-
+  smtp:
+    server: apps.smtp.gov.bc.ca
+    port: 25
+    senderAddress: DoNotReplyTractionINT@gov.bc.ca
+    innkeeperInbox: lucas.oneil@gov.bc.ca
 

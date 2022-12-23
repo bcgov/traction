@@ -45,6 +45,12 @@ tenant_ui:
     realm: 'Traction'
     roleName: 'innkeeper'
 
+  smtp:
+    server: apps.smtp.gov.bc.ca
+    port: 25
+    senderAddress: ''
+    innkeeperInbox: ''
+
   traction_api:
     # this is the private endpoint
     endpoint: http://traction-api:5000
