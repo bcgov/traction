@@ -3,7 +3,7 @@
     :label="t('reservations.denyRequest')"
     icon="pi pi-trash"
     class="p-button-rounded p-button-icon-only p-button-text"
-    @click="confirmDeny($event)"
+    @click="confirmDeny"
   />
   <Dialog
     v-model:visible="displayModal"
@@ -17,6 +17,7 @@
     <form @submit.prevent="deny()">
       <!-- Reason -->
       <div class="field">
+        <label for="reason"> Reason for Denial (Optional) </label>
         <InputText id="reason" v-model="reason" class="w-full" />
       </div>
       <Button
@@ -36,7 +37,6 @@ import { ref } from 'vue';
 // PrimeVue / etc
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
-import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';
 import { useI18n } from 'vue-i18n';
 // State
@@ -46,7 +46,6 @@ import InputText from 'primevue/inputtext';
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
 const { loading } = storeToRefs(useInnkeeperTenantsStore());
 
-const confirm = useConfirm();
 const { t } = useI18n();
 const toast = useToast();
 
@@ -64,16 +63,8 @@ const props = defineProps({
 // Deny reservation
 const displayModal = ref(false);
 const reason = ref('');
-const confirmDeny = (event: any) => {
-  confirm.require({
-    target: event.currentTarget,
-    message: `Are you sure you want to deny this reservation for ${props.email}?`,
-    header: 'Deny Reservation',
-    icon: 'pi pi-exclamation-triangle',
-    accept: () => {
-      displayModal.value = true;
-    },
-  });
+const confirmDeny = () => {
+  displayModal.value = true;
 };
 
 const deny = async () => {
