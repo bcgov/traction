@@ -15,6 +15,7 @@ from aries_cloudagent.multitenant.base import (
 )
 from aries_cloudagent.multitenant.error import WalletKeyMissingError
 from aries_cloudagent.multitenant.manager import MultitenantManager
+from aries_cloudagent.storage.error import StorageError
 from aries_cloudagent.wallet.models.wallet_record import WalletRecord
 
 from .config import MultitenantProviderConfig
@@ -32,6 +33,39 @@ class MulittokenHandler:
 
     def get_profile(self):
         return self.manager._profile
+
+    async def find_or_create_wallet_token_record(
+        self, wallet_id: str, wallet_key: str = None
+    ):
+        # first, try and find the wallet token record
+        try:
+            async with self.get_profile().session() as session:
+                return await WalletTokenRecord.query_by_wallet_id(session, wallet_id)
+        except StorageError:
+            async with self.get_profile().session() as session:
+                # need the wallet record...
+                wallet_record = await WalletRecord.retrieve_by_id(session, wallet_id)
+                # determine what wallet_key to use...
+                token_key = (
+                    wallet_key
+                    if wallet_record.requires_external_key
+                    else wallet_record.wallet_key
+                )
+                # hash and salt...
+                wallet_key_salt = bcrypt.gensalt()
+                wallet_key_hash = bcrypt.hashpw(
+                    token_key.encode("utf-8"), wallet_key_salt
+                )
+                # save the hash and salt for security checks.
+                wallet_token_record = WalletTokenRecord(
+                    wallet_id=wallet_record.wallet_id,
+                    wallet_key_salt=wallet_key_salt.decode("utf-8"),
+                    wallet_key_hash=wallet_key_hash.decode("utf-8"),
+                )
+                await wallet_token_record.save(session)
+                self.logger.debug(wallet_token_record)
+
+            return wallet_token_record
 
     def check_wallet_key(self, wallet_token_record: WalletTokenRecord, wallet_key: str):
         # make a hash from passed in value with saved salt...
@@ -79,31 +113,17 @@ class MulittokenHandler:
         wallet_key = settings.get("wallet.key")
         try:
             # do the default create wallet...
-            base_wallet_record = await self.manager._super_create_wallet(
+            wallet_record = await self.manager._super_create_wallet(
                 settings, key_management_mode
             )
-            # ok, wallet exists, set up the multiple tokens and token validation (hasehd wallet_key)
-            async with self.get_profile().session() as session:
-                wallet_record = await WalletRecord.retrieve_by_id(
-                    session, base_wallet_record.wallet_id
-                )
-                self.logger.debug(wallet_record)
+            # ok, wallet exists, set up the token record
             try:
-                # create a hash of the wallet_key and store it to check when getting token
-                wallet_key_salt = bcrypt.gensalt()
-                wallet_key_hash = bcrypt.hashpw(
-                    wallet_key.encode("utf-8"), wallet_key_salt
+                await self.find_or_create_wallet_token_record(
+                    wallet_record.wallet_id, wallet_key
                 )
-                async with self.get_profile().session() as session:
-                    wallet_token_record = WalletTokenRecord(
-                        wallet_id=wallet_record.wallet_id,
-                        wallet_key_salt=wallet_key_salt.decode("utf-8"),
-                        wallet_key_hash=wallet_key_hash.decode("utf-8"),
-                    )
-                    await wallet_token_record.save(session)
-                    self.logger.debug(wallet_token_record)
             except Exception:
-                await wallet_record.delete_record(session)
+                async with self.get_profile().session() as session:
+                    await wallet_record.delete_record(session)
                 raise
         except Exception:
             raise
@@ -116,8 +136,8 @@ class MulittokenHandler:
         self.logger.info("> create_auth_token")
         config = self.get_profile().context.inject(MultitenantProviderConfig)
         async with self.get_profile().session() as session:
-            wallet_token_record = await WalletTokenRecord.query_by_wallet_id(
-                session, wallet_record.wallet_id
+            wallet_token_record = await self.find_or_create_wallet_token_record(
+                wallet_record.wallet_id, wallet_key
             )
             self.logger.debug(wallet_token_record)
 
