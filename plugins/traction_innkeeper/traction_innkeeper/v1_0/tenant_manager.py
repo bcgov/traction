@@ -41,19 +41,13 @@ class TenantManager:
 
     async def create_wallet(
             self,
-            wallet_name: str = None,
-            wallet_key: str = None,
+            wallet_name: str,
+            wallet_key: str,
             extra_settings: dict = {},
             tenant_id: str = None,
     ):
-        if not wallet_name:
-            wallet_name = str(uuid.uuid4())  # can we generate random words?
-
-        if not wallet_key:
-            wallet_key = str(uuid.uuid4())
-
         try:
-            key_management_mode = WalletRecord.MODE_MANAGED
+            key_management_mode = WalletRecord.MODE_UNMANAGED
             wallet_webhook_urls = []
             wallet_dispatch_type = "base"
 
@@ -74,7 +68,7 @@ class TenantManager:
             wallet_record = await multitenant_mgr.create_wallet(
                 settings, key_management_mode
             )
-            token = await self.get_token(wallet_record)
+            token = await self.get_token(wallet_record, wallet_key)
         except BaseError as err:
             self._logger.error(f"Error creating wallet ('{wallet_name}').", err)
             raise err
@@ -84,26 +78,18 @@ class TenantManager:
 
         return tenant, wallet_record, token
 
-    async def get_token(self, wallet_record: WalletRecord):
+    async def get_token(self, wallet_record: WalletRecord, wallet_key):
         try:
+            # we are using unmanaged wallets, so the wallet key needs to be provided
             multitenant_mgr = self._profile.inject(BaseMultitenantManager)
             token = await multitenant_mgr.create_auth_token(
-                wallet_record, wallet_record.wallet_key
+                wallet_record, wallet_key
             )
         except BaseError as err:
             self._logger.error(
                 f"Error getting token for wallet ('{wallet_record.wallet_name}').", err
             )
             raise err
-        return token
-
-    async def get_token_by_wallet_id(self, wallet_id: str):
-        try:
-            async with self._profile.session() as session:
-                wallet_record = await WalletRecord.retrieve_by_id(session, wallet_id)
-                token = await self.get_token(wallet_record)
-        except (StorageError, BaseModelError):
-            self._logger.info(f"Wallet not found with ID '{wallet_id}'")
         return token
 
     async def create_tenant(self, wallet_id: str, tenant_id: str = None):
@@ -144,7 +130,7 @@ class TenantManager:
 
         if tenant_record and wallet_record:
             self._logger.info(f"'{wallet_name}' wallet exists.")
-            token = await self.get_token(wallet_record)
+            token = await self.get_token(wallet_record, wallet_key)
         else:
             self._logger.info(f"creating '{wallet_name}' wallet...")
             tenant_record, wallet_record, token = await self.create_wallet(

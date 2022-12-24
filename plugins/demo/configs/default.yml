@@ -23,7 +23,7 @@ endpoint:
 plugin:
   - aries_cloudagent.messaging.jsonld
   - traction_plugins.basicmessage_storage.v1_0
-  - traction_plugins.multitenant_provider
+  - traction_plugins.multitenant_provider.v1_0
   - traction_plugins.traction_innkeeper.v1_0
   - traction_plugins.traction_metadata
 
@@ -31,10 +31,10 @@ plugin:
 
 
 plugin-config-value:
-  # if wallet_type = indy, configure to load this class... 
-  # - multitenant_provider.manager_class="traction_plugins.multitenant_provider.manager.BasicMultitokenMultitenantManager"
-  # if wallet_type = askar, configure to load this class...
-  - multitenant_provider.manager_class="traction_plugins.multitenant_provider.manager.AskarMultitokenMultitenantManager"
+  - multitenant_provider.manager.class_name="traction_plugins.multitenant_provider.v1_0.manager.AskarMultitokenMultitenantManager"
+  - multitenant_provider.errors.on_unneeded_wallet_key=false
+  - multitenant_provider.token_expiry.units=days
+  - multitenant_provider.token_expiry.amount=1
   - traction_innkeeper.innkeeper_wallet.tenant_id=innkeeper
   - traction_innkeeper.innkeeper_wallet.wallet_name=traction_innkeeper
   - traction_innkeeper.innkeeper_wallet.wallet_key=change-me

@@ -1,5 +1,6 @@
 import functools
 import logging
+import uuid
 
 from aiohttp import web
 from aiohttp_apispec import docs, request_schema, response_schema, match_info_schema
@@ -277,7 +278,10 @@ async def tenant_checkin(request: web.BaseRequest):
 
         if res_rec.state == ReservationRecord.STATE_APPROVED:
             # ok, let's update this, create a tenant, create a wallet
-            tenant, wallet_record, token = await mgr.create_wallet(res_rec.tenant_name)
+            wallet_key = str(uuid.uuid4())
+            tenant, wallet_record, token = await mgr.create_wallet(
+                res_rec.tenant_name, wallet_key
+            )
 
             # update this reservation
             res_rec.state = ReservationRecord.STATE_CHECKED_IN
@@ -292,7 +296,7 @@ async def tenant_checkin(request: web.BaseRequest):
     return web.json_response(
         {
             "wallet_id": wallet_record.wallet_id,
-            "wallet_key": wallet_record.wallet_key,
+            "wallet_key": wallet_key,
             "token": token,
         }
     )
@@ -313,7 +317,7 @@ async def tenant_create_token(request: web.BaseRequest):
     tenant_id = request.match_info["tenant_id"]
     wallet_key = None
 
-    if request.can_read_body:
+    if request.body_exists:
         body = await request.json()
         wallet_key = body.get("wallet_key")
 
@@ -328,9 +332,8 @@ async def tenant_create_token(request: web.BaseRequest):
         wallet_record = await WalletRecord.retrieve_by_id(session, wallet_id)
 
     if (not wallet_record.requires_external_key) and wallet_key:
-        raise web.HTTPBadRequest(
-            reason=f"Wallet {wallet_id} doesn't require"
-            " the wallet key to be provided"
+        LOGGER.warning(
+            f"Wallet {wallet_id} doesn't require the wallet key but one was provided"
         )
 
     token = await multitenant_mgr.create_auth_token(wallet_record, wallet_key)

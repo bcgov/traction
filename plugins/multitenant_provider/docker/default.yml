@@ -15,15 +15,24 @@ endpoint:
 
 # plugins
 plugin:
-  - multitenant_provider
+  - multitenant_provider.v1_0
 
 # this is the default value (which manager class we want to load)...
 plugin-config-value:
-  # wallet_type = indy default...
-  # - multitenant_provider.manager_class="multitenant_provider.manager.BasicMultitokenMultitenantManager"
-  # wallet_type = askar default...
-  # - multitenant_provider.manager_class="multitenant_provider.manager.AskarMultitokenMultitenantManager"
-
+  # default configuration...
+  # - multitenant_provider.manager.class_name="multitenant_provider.v1_0.manager.BasicMultitokenMultitenantManager"
+  # - multitenant_provider.errors.on_unneeded_wallet_key=true
+  # - multitenant_provider.token_expiry.units=weeks
+  # - multitenant_provider.token_expiry.amount=52
+  # when wallet_type = indy, default configuration will be...
+  # - multitenant_provider.manager.class_name="multitenant_provider.v1_0.manager.BasicMultitokenMultitenantManager"
+  # when wallet_type = askar, default configuration will be...
+  - multitenant_provider.manager.class_name="multitenant_provider.v1_0.manager.AskarMultitokenMultitenantManager"
+  # do we throw an error if managed wallet provides wallet_key when getting a token? true/false
+  - multitenant_provider.errors.on_unneeded_wallet_key=false
+  # how long tokens are valid, provide units (weeks, days, hours, minutes) and amount (integer)
+  - multitenant_provider.token_expiry.units=days
+  - multitenant_provider.token_expiry.amount=1
 
 #config 
 genesis-url: https://indy.igrant.io/genesis
