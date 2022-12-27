@@ -233,6 +233,11 @@ class MulittokenHandler:
             if claim == iat:
                 token_valid = True
 
+        # check the top level iat, this could be an old token from before this plugin
+        # was loaded into this acapy instance
+        if not token_valid:
+            token_valid = wallet_record.jwt_iat and wallet_record.jwt_iat == iat
+
         if not token_valid:
             raise MultitenantManagerError("Token not valid")
 

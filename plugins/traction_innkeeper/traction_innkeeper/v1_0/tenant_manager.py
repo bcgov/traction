@@ -40,11 +40,11 @@ class TenantManager:
         return self._profile
 
     async def create_wallet(
-            self,
-            wallet_name: str,
-            wallet_key: str,
-            extra_settings: dict = {},
-            tenant_id: str = None,
+        self,
+        wallet_name: str,
+        wallet_key: str,
+        extra_settings: dict = {},
+        tenant_id: str = None,
     ):
         try:
             key_management_mode = WalletRecord.MODE_UNMANAGED
@@ -82,9 +82,7 @@ class TenantManager:
         try:
             # we are using unmanaged wallets, so the wallet key needs to be provided
             multitenant_mgr = self._profile.inject(BaseMultitenantManager)
-            token = await multitenant_mgr.create_auth_token(
-                wallet_record, wallet_key
-            )
+            token = await multitenant_mgr.create_auth_token(wallet_record, wallet_key)
         except BaseError as err:
             self._logger.error(
                 f"Error getting token for wallet ('{wallet_record.wallet_name}').", err
@@ -165,8 +163,11 @@ class TenantManager:
         return _pwd, _salt, _hash, _expiry
 
     def check_reservation_password(
-            self, reservation_pwd: str, reservation: ReservationRecord
+        self, reservation_pwd: str, reservation: ReservationRecord
     ):
+        if reservation_pwd is None or reservation is None:
+            return None
+
         # make a hash from passed in value with saved salt...
         reservation_token = bcrypt.hashpw(
             reservation_pwd.encode("utf-8"),
