@@ -1,4 +1,5 @@
 import functools
+import json
 import logging
 import uuid
 
@@ -219,6 +220,21 @@ async def tenant_reservation(request: web.BaseRequest):
     # reservations are under base/root profile, use Tenant Manager profile
     mgr = context.inject(TenantManager)
     profile = mgr.profile
+
+    unique_tenant_name = await mgr.get_unique_tenant_name(
+        tenant_name=rec.tenant_name, check_reservations=True
+    )
+    if unique_tenant_name != rec.tenant_name:
+        body = json.dumps({
+                "tenant_name": rec.tenant_name,
+                "suggested_tenant_name": unique_tenant_name,
+            }).encode('utf-8')
+        raise web.HTTPConflict(
+            reason=f"There is currently a tenant with the name'{rec.tenant_name}'.",
+            body=body,
+            content_type="application/json"
+        )
+
     async with profile.session() as session:
         await rec.save(session, reason="New tenant reservation")
         LOGGER.info(rec)

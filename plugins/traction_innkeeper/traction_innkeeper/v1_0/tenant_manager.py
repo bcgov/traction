@@ -51,6 +51,13 @@ class TenantManager:
             wallet_webhook_urls = []
             wallet_dispatch_type = "base"
 
+            label = wallet_name  # use the name they provided as the label
+
+            unique_wallet_name = await self.get_unique_tenant_name(wallet_name, False)
+            if unique_wallet_name == wallet_name:
+                # but... we have to change the actual wallet name
+                wallet_name = unique_wallet_name
+
             settings = {
                 "wallet.type": self._profile.context.settings["wallet.type"],
                 "wallet.name": wallet_name,
@@ -59,8 +66,7 @@ class TenantManager:
                 "wallet.dispatch_type": wallet_dispatch_type,
             }
             settings.update(extra_settings)
-
-            label = wallet_name
+            # set the default label (our provided wallet name)
             settings["default_label"] = label
 
             multitenant_mgr = self._profile.inject(BaseMultitenantManager)
@@ -194,3 +200,46 @@ class TenantManager:
         else:
             # else return None
             return None
+
+    async def get_unique_tenant_name(self, tenant_name: str, check_reservations: bool = False):
+        self._logger.info(f"> get_unique_tenant_name('{tenant_name}')")
+        unique_tenant_name = tenant_name
+        async with self._profile.session() as session:
+            r, t, w = await self.check_tables_for_tenant_name(
+                session, unique_tenant_name, check_reservations
+            )
+            idx = 1
+            while r or t or w:
+                self._logger.info(
+                    f"'{unique_tenant_name}': reservation_exists = {r}, tenant_exists = {t}, wallet_exists = {w}"
+                )
+                unique_tenant_name = f"{unique_tenant_name}-{idx}"
+                r, t, w = await self.check_tables_for_tenant_name(
+                    session, unique_tenant_name
+                )
+                idx += 1
+        # return a unique wallet/tenant name, either the input or calculated...
+        self._logger.info(
+            f"< get_unique_tenant_name('{tenant_name}') = '{unique_tenant_name}'"
+        )
+        return unique_tenant_name
+
+    async def check_tables_for_tenant_name(self, session, tenant_name: str, check_reservations: bool = False):
+        if check_reservations:
+            reservation_records = await ReservationRecord.query(
+                session, {"tenant_name": tenant_name}
+            )
+            reservation_exists = len(reservation_records) > 0
+        else:
+            reservation_exists = False
+
+        wallet_records = await WalletRecord.query(
+            session, {"wallet_name": tenant_name}
+        )
+        wallet_exists = len(wallet_records) > 0
+
+        tenant_records = await TenantRecord.query(
+            session, {"tenant_name": tenant_name}
+        )
+        tenant_exists = len(tenant_records) > 0
+        return reservation_exists, tenant_exists, wallet_exists

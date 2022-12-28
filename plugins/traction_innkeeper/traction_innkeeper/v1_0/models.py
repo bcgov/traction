@@ -21,6 +21,7 @@ class ReservationRecord(BaseRecord):
     RECORD_ID_NAME = "reservation_id"
     TAG_NAMES = {
         "state",
+        "tenant_name",
     }
 
     STATE_REQUESTED = "requested"
