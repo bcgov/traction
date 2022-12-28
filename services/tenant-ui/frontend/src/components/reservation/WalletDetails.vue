@@ -28,8 +28,8 @@
           :value="walletKey"
           readonly
           class="w-full"
-          inputClass="w-full"
-          toggleMask
+          input-class="w-full"
+          toggle-mask
           :feedback="false"
           placeholder="Password"
         />

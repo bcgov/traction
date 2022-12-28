@@ -19,8 +19,8 @@
           <Password
             v-model="v$.password.$model"
             class="w-full"
-            inputClass="w-full"
-            toggleMask
+            input-class="w-full"
+            toggle-mask
             :feedback="false"
             placeholder="Password"
           />
@@ -42,7 +42,7 @@
     </template>
   </Card>
   <!-- PW verified, show wallet details -->
-  <WalletDetails v-else :walletId="walletId" :walletKey="walletKey" />
+  <WalletDetails v-else :wallet-id="walletId" :wallet-key="walletKey" />
 </template>
 
 <script setup lang="ts">
