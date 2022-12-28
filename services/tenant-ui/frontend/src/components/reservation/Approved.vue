@@ -1,149 +1,111 @@
 <template>
-  <div class="container">
-    <div class="header">
-      <div class="symbol">
-        <svg
-          class="w-6 h-6"
-          data-darkreader-inline-stroke=""
-          fill="none"
-          stroke="currentColor"
-          style="--darkreader-inline-stroke: currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"
-          ></path>
-        </svg>
-      </div>
-      <div class="message">approved!</div>
-    </div>
-    <div class="content">
+  <!-- Approved and ready to get wallet details with PW -->
+  <Card v-if="!walletKey" class="info-card mt-4 mb-6">
+    <template #title>
+      <i class="pi pi-thumbs-up info-card-icon"></i> <br />
+      APPROVED!
+    </template>
+    <template #content>
       <p>
         We have sent a reservation password to your email address on
-        {{ sentAt }}.
+        {{ formatDateLong(reservation.updated_at) }}.
       </p>
       <p>
         Please enter the reservation password below to validate your account.
       </p>
-      <Password
-        v-model="password"
-        toggleMask
-        :feedback="false"
-        placeholder="Password"
-      />
-      <Button label="Validate" @click="submit" />
+
+      <form @submit.prevent="handleSubmit(!v$.$invalid)">
+        <div class="field">
+          <Password
+            v-model="v$.password.$model"
+            class="w-full"
+            inputClass="w-full"
+            toggleMask
+            :feedback="false"
+            placeholder="Password"
+          />
+          <small v-if="v$.password.$invalid && submitted" class="p-error">
+            {{ v$.password.required.$message }}
+          </small>
+          <Button type="submit" label="Validate" class="w-full mt-3" />
+        </div>
+      </form>
       <p>
         The reservation password is only valid for 48 hours from the time it was
-        sent to your email address. <br />
-        Please <a href="/contact">click here</a> to request a new reservation
-        password.
+        sent to your email address.
       </p>
-    </div>
-    <div class="footer">
+    </template>
+    <template #footer>
       <hr />
       (Please check your junk/spam folder before contacting us, as it is very
       common to have the email delivery problems because of automated filters.)
-    </div>
-  </div>
+    </template>
+  </Card>
+  <!-- PW verified, show wallet details -->
+  <WalletDetails v-else :walletId="walletId" :walletKey="walletKey" />
 </template>
 
 <script setup lang="ts">
-import Password from 'primevue/password';
+// Vue
+import { reactive, ref } from 'vue';
+// PrimeVue/Validation/etc
 import Button from 'primevue/button';
-import { ref } from 'vue';
-import { useTenantApi } from '@/store/tenantApi';
-import { API_PATH } from '@/helpers/constants';
+import Card from 'primevue/card';
+import Password from 'primevue/password';
+import { required } from '@vuelidate/validators';
+import { useVuelidate } from '@vuelidate/core';
 import { useToast } from 'vue-toastification';
+// Other Components
+import WalletDetails from './WalletDetails.vue';
+import { formatDateLong } from '@/helpers';
+// State
 import { useReservationStore } from '@/store';
 import { storeToRefs } from 'pinia';
-const sentAt = 'fake date';
-const password = ref('');
-const tenantApi = useTenantApi();
-const api = API_PATH.MULTITENANCY_RESERVATION;
+
 const toast = useToast();
 
 const reservationStore = useReservationStore();
+const { reservation } = storeToRefs(useReservationStore());
 
-console.log('approved');
-const submit = () => {
-  console.log('submit');
-};
-// TODO: Convert to useReservationStore
-// const submit = async () => {
-//   const url = `${api}/${props.reservationId}/check-in`;
-//   await tenantApi
-//     .postHttp(url, {
-//       reservation_pwd: password.value,
-//     })
-//     .then((response) => {
-//       // TBD: redirect to the tenant's home page
-//       toast.success(response.message);
-//     })
-//     .catch((error) => {
-//       toast.error(error.message);
-//     });
-// };
-
-/**
- * Accepts the following props:
- */
-const props = defineProps({
-  email: String,
-  reservationId: String,
+// Validation
+const formFields = reactive({
+  password: '',
 });
-</script>
+const rules = {
+  password: { required },
+};
+const v$ = useVuelidate(rules, formFields);
 
-<style scoped>
-.container {
-  display: grid;
-  grid-template-rows: 90px 1fr 80px;
-  grid-template-columns: 1fr;
-  grid-template-areas:
-    'header'
-    'content'
-    'footer';
-  background-color: #d6deec;
-  margin-top: 2rem;
-  border-radius: 5px;
-  border-style: solid;
-  border-width: 4px;
-  border-color: rgba(43, 54, 81, 0.1);
-}
-.header {
-  grid-area: header;
-  align-items: center;
-  text-align: center;
-  color: #2b3651;
-  font-size: 1.6rem;
-  font-weight: 800;
-  padding: 1rem;
-}
-.header .message {
-  text-transform: uppercase;
-}
-.header .symbol svg {
-  stroke: #2b3651;
-  height: 50px;
-}
-.content,
-.footer {
-  padding: 0 1.5rem;
-}
-.footer {
-  font-weight: bolder;
-  font-size: 0.9rem;
-  line-height: normal;
-}
-:deep(.p-password),
-:deep(input) {
-  width: 100%;
-}
-button {
-  width: 100%;
-  margin-top: 1rem;
-}
-</style>
+// Password form submission
+const submitted = ref(false);
+const handleSubmit = async (isFormValid: boolean) => {
+  submitted.value = true;
+
+  if (!isFormValid) {
+    return;
+  }
+
+  try {
+    const wallet = await reservationStore.checkIn(
+      reservation.value.reservation_id,
+      formFields.password
+    );
+    if (wallet) {
+      // TODO: Temp
+      alert(
+        `CHECKED-IN!   ID: ${wallet.wallet_id}      Key: ${wallet.wallet_key}`
+      );
+      walletId.value = wallet.wallet_id;
+      walletKey.value = wallet.wallet_key;
+    }
+  } catch (error) {
+    toast.error(`Failure: ${error}`);
+  } finally {
+    submitted.value = false;
+  }
+};
+
+// Password success (show wallet details)
+const walletId = ref('');
+const walletKey = ref('');
+</script>

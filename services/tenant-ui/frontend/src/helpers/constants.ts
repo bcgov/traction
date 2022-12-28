@@ -51,7 +51,7 @@ export const API_PATH = {
   VERIFIER_PRESENTATION_TEMPLATES:
     '/tenant/v1/verifier/presentation_templates/',
 
-  OVERNANCE_SCHEMA_TEMPLATES: '/tenant/v1/governance/schema_templates/',
+  GOVERNANCE_SCHEMA_TEMPLATES: '/tenant/v1/governance/schema_templates/',
   GOVERNANCE_SCHEMA_TEMPLATES_IMPORT:
     '/tenant/v1/governance/schema_templates/import',
   GOVERNANCE_SCHEMA_TEMPLATE: (id: string) =>
@@ -68,7 +68,18 @@ export const API_PATH = {
   TENANT_MAKE_ISSUER: '/tenant/v1/admin/make-issuer',
   TENANT_CONFIGURATION: '/tenant/v1/admin/configuration',
 
-  MULTITENANCY_RESERVATION: '/multitenancy/reservations',
+  MULTITENANCY_RESERVATIONS: '/multitenancy/reservations',
+  MULTITENANCY_RESERVATION: (resId: string) =>
+    `/multitenancy/reservations/${resId}`,
+  MULTITENANCY_RESERVATION_CHECK_IN: (resId: string) =>
+    `/multitenancy/reservations/${resId}/check-in`,
   MULTITENANCY_TENANT_TOKEN: (tenantId: string) =>
     `/multitenancy/tenant/${tenantId}/token`,
+};
+
+export const RESERVATION_STATUSES = {
+  APPROVED: 'approved',
+  REQUESTED: 'requested',
+  CHECKED_IN: 'checked_in',
+  DENIED: 'denied',
 };

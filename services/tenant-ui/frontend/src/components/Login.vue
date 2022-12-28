@@ -43,7 +43,7 @@
             label="Go Back to Sign-in"
             icon="pi pi-arrow-left"
             class="p-button-text"
-            @click="loginMode = LOGIN_MODE.SIGNIN"
+            @click="goBack"
           />
           <Reserve />
         </div>
@@ -54,7 +54,7 @@
             label="Go Back to Sign-in"
             icon="pi pi-arrow-left"
             class="p-button-text"
-            @click="loginMode = LOGIN_MODE.SIGNIN"
+            @click="goBack"
           />
           <Status />
         </div>
@@ -81,7 +81,9 @@ import Status from './reservation/Status.vue';
 // State
 import { storeToRefs } from 'pinia';
 import { useConfigStore } from '@/store';
+import { useReservationStore } from '@/store';
 const { config } = storeToRefs(useConfigStore());
+const reservationStore = useReservationStore();
 
 // Other login form swtiching
 enum LOGIN_MODE {
@@ -90,6 +92,11 @@ enum LOGIN_MODE {
   STATUS,
 }
 const loginMode = ref(LOGIN_MODE.SIGNIN);
+
+const goBack = () => {
+  loginMode.value = LOGIN_MODE.SIGNIN;
+  reservationStore.resetState();
+};
 </script>
 
 <style scoped lang="scss">
