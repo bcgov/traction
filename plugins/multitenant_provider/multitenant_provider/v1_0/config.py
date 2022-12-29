@@ -15,6 +15,7 @@ def _alias_generator(key: str) -> str:
 
 class ManagerConfig(BaseModel):
     class_name: Optional[str]  # real world, this is a UUID
+    always_check_provided_wallet_key: bool = False
 
     class Config:
         alias_generator = _alias_generator
@@ -25,6 +26,7 @@ class ManagerConfig(BaseModel):
         # consider this for local development only...
         return cls(
             class_name="multitenant_provider.v1_0.manager.BasicMultitokenMultitenantManager",
+            always_check_provided_wallet_key=True,
         )
 
 

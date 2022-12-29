@@ -47,9 +47,11 @@ class TenantManager:
         tenant_id: str = None,
     ):
         try:
-            key_management_mode = WalletRecord.MODE_UNMANAGED
+            # we must stick with managed until AcaPy has full support for unmanaged.
+            # transport/inbound/session.py only deals with managed.
+            key_management_mode = WalletRecord.MODE_MANAGED
             wallet_webhook_urls = []
-            wallet_dispatch_type = "base"
+            wallet_dispatch_type = "default"
 
             label = wallet_name  # use the name they provided as the label
 
@@ -86,7 +88,6 @@ class TenantManager:
 
     async def get_token(self, wallet_record: WalletRecord, wallet_key):
         try:
-            # we are using unmanaged wallets, so the wallet key needs to be provided
             multitenant_mgr = self._profile.inject(BaseMultitenantManager)
             token = await multitenant_mgr.create_auth_token(wallet_record, wallet_key)
         except BaseError as err:

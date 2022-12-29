@@ -12,6 +12,8 @@ this plugin requires that acapy is running in multitenant mode. this plugin will
 the default manager classes provided in this plugin allow multiple tokens per wallet.
 
 the `class_name` is the fully qualified class name/path.
+the `always_check_provided_wallet_key` indicates whether we should check provided wallet_key values (required or not) when creating a token.
+
 ```
 # Multi-tenancy
 multitenant: true
@@ -24,6 +26,7 @@ plugin:
 
 plugin-config-value:
   - multitenant_provider.manager.class_name="multitenant_provider.v1_0.manager.BasicMultitokenMultitenantManager"
+  - multitenant_provider.manager.always_check_provided_wallet_key=true
 ```
 
 The expiry time for the token is also configurable. By default, a token is valid for 52 weeks.  

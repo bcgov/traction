@@ -150,12 +150,15 @@ class MulittokenHandler:
         if wallet_record.requires_external_key:
             if not wallet_key:
                 raise WalletKeyMissingError()
-
-        if wallet_key:
-            if not self.check_wallet_key(wallet_token_record, wallet_key):
-                raise WalletKeyMismatchError()
-
+            # add wallet key to token if external key is required...
             jwt_payload["wallet_key"] = wallet_key
+
+        if config.manager.always_check_provided_wallet_key:
+            # if a wallet key was passed in, we need to check it
+            if wallet_key and not self.check_wallet_key(
+                wallet_token_record, wallet_key
+            ):
+                raise WalletKeyMismatchError()
 
         encoded = jwt.encode(jwt_payload, jwt_secret, algorithm="HS256")
         decoded = jwt.decode(encoded, jwt_secret, algorithms=["HS256"])
@@ -223,7 +226,7 @@ class MulittokenHandler:
 
             extra_settings["wallet.key"] = wallet_key
 
-        # ok, if we have a wallet key, ensure it matches!
+        # if wallet key in token, check it
         if wallet_key and not self.check_wallet_key(wallet_token_record, wallet_key):
             raise WalletKeyMismatchError()
 

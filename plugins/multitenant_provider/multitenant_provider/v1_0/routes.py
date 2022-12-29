@@ -25,18 +25,6 @@ LOGGER = logging.getLogger(__name__)
 class PluginCreateWalletRequestSchema(CreateWalletRequestSchema):
     """Request schema for adding a new wallet which will be registered by the agent."""
 
-    key_management_mode = fields.Str(
-        description="Key management method to use for this wallet.",
-        example=WalletRecord.MODE_MANAGED,
-        default=WalletRecord.MODE_MANAGED,
-        validate=validate.OneOf(
-            (
-                WalletRecord.MODE_MANAGED,
-                WalletRecord.MODE_UNMANAGED,
-            )
-        ),
-    )
-
     @validates_schema
     def validate_fields(self, data, **kwargs):
         """
@@ -70,7 +58,7 @@ async def plugin_wallet_create(request: web.BaseRequest):
         request: aiohttp request object
     """
 
-    # we are just overriding the validation (allow unmanaged mode, expect askar to have a wallet key)
+    # we are just overriding the validation (expect askar to have a wallet_name and wallet key)
     # so use the existing create_wallet call
     return await wallet_create(request)
 
@@ -114,7 +102,6 @@ async def plugin_wallet_create_token(request: web.BaseRequest):
         # this logic is weird, a managed wallet cannot pass in a key.
         # i guess this means that a controller determines who can call this endpoint?
         # and there is some other way of ensuring the caller is using the correct wallet_id?
-
         if (not wallet_record.requires_external_key) and wallet_key:
             if config.errors.on_unneeded_wallet_key:
                 raise web.HTTPBadRequest(
@@ -124,7 +111,11 @@ async def plugin_wallet_create_token(request: web.BaseRequest):
                 LOGGER.warning(
                     f"Wallet {wallet_id} doesn't require the wallet key but one was provided"
                 )
-                wallet_key = None
+
+        if not config.manager.always_check_provided_wallet_key:
+            # if passed in, remove this wallet key from create auth token logic
+            # since we are not going to check it.
+            wallet_key = None
 
         token = await multitenant_mgr.create_auth_token(wallet_record, wallet_key)
     except StorageNotFoundError as err:
@@ -142,9 +133,9 @@ async def register(app: web.Application):
     LOGGER.info("> registering routes")
 
     # we need to replace the current multitenant endpoints...
-    # 1) to allow unmanaged wallets
+    # 1) to enforce validation on askar wallets
     has_wallet_create = False
-    # 2) and to ensure that we pass along the wallet key
+    # 2) and to ensure that we can pass along and check the wallet key
     has_wallet_create_token = False
     for r in app.router.routes():
         if r.method == "POST":

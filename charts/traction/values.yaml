@@ -54,6 +54,7 @@ acapy:
     multitenantProvider:
       manager:
         className: traction_plugins.multitenant_provider.v1_0.manager.AskarMultitokenMultitenantManager
+        alwaysCheckProvidedWalletKey: true
       errors:
         onUnneededWalletKey: false
       tokenExpiry:
