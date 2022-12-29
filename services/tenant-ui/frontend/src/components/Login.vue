@@ -43,7 +43,7 @@
             label="Go Back to Sign-in"
             icon="pi pi-arrow-left"
             class="p-button-text"
-            @click="goBack"
+            @click="goBack($event)"
           />
           <Reserve />
         </div>
@@ -54,7 +54,7 @@
             label="Go Back to Sign-in"
             icon="pi pi-arrow-left"
             class="p-button-text"
-            @click="goBack"
+            @click="goBack($event)"
           />
           <Status />
         </div>
@@ -74,6 +74,7 @@
 import { ref } from 'vue';
 // PrimeVue
 import Button from 'primevue/button';
+import { useConfirm } from 'primevue/useconfirm';
 // Components
 import LoginForm from '@/components/LoginForm.vue';
 import Reserve from './reservation/Reserve.vue';
@@ -82,8 +83,12 @@ import Status from './reservation/Status.vue';
 import { storeToRefs } from 'pinia';
 import { useConfigStore } from '@/store';
 import { useReservationStore } from '@/store';
+import { RESERVATION_STATUSES } from '@/helpers/constants';
 const { config } = storeToRefs(useConfigStore());
 const reservationStore = useReservationStore();
+const { status } = storeToRefs(useReservationStore());
+
+const confirm = useConfirm();
 
 // Other login form swtiching
 enum LOGIN_MODE {
@@ -93,7 +98,23 @@ enum LOGIN_MODE {
 }
 const loginMode = ref(LOGIN_MODE.SIGNIN);
 
-const goBack = () => {
+const goBack = (event: any) => {
+  if (status.value === RESERVATION_STATUSES.SHOW_WALLET) {
+    confirm.require({
+      target: event.currentTarget,
+      message:
+        'Are you sure you want to leave this page? You will not be able to retrive these details again.',
+      header: 'Have you saved your Wallet ID and Key Somewhere?',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        doGoBack();
+      },
+    });
+  } else {
+    doGoBack();
+  }
+};
+const doGoBack = () => {
   loginMode.value = LOGIN_MODE.SIGNIN;
   reservationStore.resetState();
 };

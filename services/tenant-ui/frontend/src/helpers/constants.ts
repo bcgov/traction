@@ -79,7 +79,10 @@ export const API_PATH = {
 
 export const RESERVATION_STATUSES = {
   APPROVED: 'approved',
-  REQUESTED: 'requested',
   CHECKED_IN: 'checked_in',
   DENIED: 'denied',
+  REQUESTED: 'requested',
+  // Not an API status, but the state on the FE when just checked-in
+  // so they can one-time see the wallet key
+  SHOW_WALLET: 'show_wallet',
 };

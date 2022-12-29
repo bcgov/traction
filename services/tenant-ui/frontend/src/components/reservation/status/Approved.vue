@@ -1,6 +1,6 @@
 <template>
   <!-- Approved and ready to get wallet details with PW -->
-  <Card v-if="!walletKey" class="info-card mt-4 mb-6">
+  <Card class="info-card mt-4 mb-6">
     <template #title>
       <i class="pi pi-thumbs-up info-card-icon"></i> <br />
       APPROVED!
@@ -41,8 +41,6 @@
       common to have the email delivery problems because of automated filters.)
     </template>
   </Card>
-  <!-- PW verified, show wallet details -->
-  <WalletDetails v-else :wallet-id="walletId" :wallet-key="walletKey" />
 </template>
 
 <script setup lang="ts">
@@ -56,7 +54,6 @@ import { required } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
 import { useToast } from 'vue-toastification';
 // Other Components
-import WalletDetails from './WalletDetails.vue';
 import { formatDateLong } from '@/helpers';
 // State
 import { useReservationStore } from '@/store';
@@ -74,7 +71,7 @@ const formFields = reactive({
 const rules = {
   password: { required },
 };
-const v$ = useVuelidate(rules, formFields);
+const v$ = useVuelidate(rules, formFields, { $scope: false });
 
 // Password form submission
 const submitted = ref(false);
@@ -86,26 +83,14 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 
   try {
-    const wallet = await reservationStore.checkIn(
+    await reservationStore.checkIn(
       reservation.value.reservation_id,
       formFields.password
     );
-    if (wallet) {
-      // TODO: Temp
-      alert(
-        `CHECKED-IN!   ID: ${wallet.wallet_id}      Key: ${wallet.wallet_key}`
-      );
-      walletId.value = wallet.wallet_id;
-      walletKey.value = wallet.wallet_key;
-    }
   } catch (error) {
     toast.error(`Failure: ${error}`);
   } finally {
     submitted.value = false;
   }
 };
-
-// Password success (show wallet details)
-const walletId = ref('');
-const walletKey = ref('');
 </script>

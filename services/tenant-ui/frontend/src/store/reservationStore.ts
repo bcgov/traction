@@ -3,6 +3,7 @@ import axios from 'axios';
 import { defineStore, storeToRefs } from 'pinia';
 import { ref, Ref } from 'vue';
 import { useConfigStore } from './configStore';
+import { RESERVATION_STATUSES } from '@/helpers/constants';
 
 export const useReservationStore = defineStore('reservation', () => {
   const { config } = storeToRefs(useConfigStore());
@@ -22,11 +23,15 @@ export const useReservationStore = defineStore('reservation', () => {
   const error: any = ref(null);
   const reservation: any = ref(null);
   const status: Ref<string> = ref('');
+  const walletId: Ref<string> = ref('');
+  const walletKey: Ref<string> = ref('');
 
   // actions
   function resetState() {
     reservation.value = null;
     status.value = '';
+    walletId.value = '';
+    walletKey.value = '';
   }
 
   async function makeReservation(payload: any = {}) {
@@ -118,13 +123,15 @@ export const useReservationStore = defineStore('reservation', () => {
     console.log('> reservationStore.checkIn');
     error.value = null;
     loading.value = true;
-    let checkInResponse: any = null;
     await api
       .post(API_PATH.MULTITENANCY_RESERVATION_CHECK_IN(reservationId), {
         reservation_pwd: password,
       })
       .then((res) => {
-        checkInResponse = res.data;
+        // A successful check in, set the status and display the returned wallet key and ID
+        status.value = RESERVATION_STATUSES.SHOW_WALLET;
+        walletId.value = res.data.wallet_id;
+        walletKey.value = res.data.wallet_key;
       })
       .catch((err) => {
         error.value = err;
@@ -139,8 +146,6 @@ export const useReservationStore = defineStore('reservation', () => {
       // throw error so $onAction.onError listeners can add their own handler
       throw error.value;
     }
-    // return data so $onAction.after listeners can add their own handler
-    return checkInResponse;
   }
 
   return {
@@ -148,6 +153,8 @@ export const useReservationStore = defineStore('reservation', () => {
     loading,
     error,
     status,
+    walletId,
+    walletKey,
     resetState,
     makeReservation,
     checkReservation,
