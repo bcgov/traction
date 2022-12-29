@@ -20,7 +20,8 @@
   &.approved,
   &.offer-accepted,
   &.issued,
-  &.verified {
+  &.verified,
+  &.checked-in {
     background-color: $tenant-ui-status-green-background;
     color: $tenant-ui-status-green-color;
   }
@@ -61,10 +62,30 @@
   .p-card-title {
     text-align: center;
     color: $tenant-ui-card-info-text-color;
-    padding-top: 1em;
     .info-card-icon {
       font-size: 2.5em;
     }
+  }
+  .info-card-warning {
+    color: #fc7b19;
+  }
+  .info-card-danger {
+    color: #ff3045;
+  }
+  .p-card-footer {
+    font-size: 0.9rem;
+    font-weight: bold;
+    line-height: 1.5rem;
+    hr {
+      height: 1px;
+      background-color: rgb(186, 186, 186);
+      border: 0;
+    }
+  }
+  .p-card-title,
+  .p-card-content,
+  .p-card-footer {
+    padding-top: 0;
   }
 }
 

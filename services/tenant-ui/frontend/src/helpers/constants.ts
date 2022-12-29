@@ -68,7 +68,21 @@ export const API_PATH = {
   TENANT_MAKE_ISSUER: '/tenant/v1/admin/make-issuer',
   TENANT_CONFIGURATION: '/tenant/v1/admin/configuration',
 
-  MULTITENANCY_RESERVATION: '/multitenancy/reservations',
+  MULTITENANCY_RESERVATIONS: '/multitenancy/reservations',
+  MULTITENANCY_RESERVATION: (resId: string) =>
+    `/multitenancy/reservations/${resId}`,
+  MULTITENANCY_RESERVATION_CHECK_IN: (resId: string) =>
+    `/multitenancy/reservations/${resId}/check-in`,
   MULTITENANCY_TENANT_TOKEN: (tenantId: string) =>
     `/multitenancy/tenant/${tenantId}/token`,
+};
+
+export const RESERVATION_STATUSES = {
+  APPROVED: 'approved',
+  CHECKED_IN: 'checked_in',
+  DENIED: 'denied',
+  REQUESTED: 'requested',
+  // Not an API status, but the state on the FE when just checked-in
+  // so they can one-time see the wallet key
+  SHOW_WALLET: 'show_wallet',
 };
