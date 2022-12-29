@@ -96,7 +96,6 @@ import RowExpandData from '../common/RowExpandData.vue';
 import StatusChip from '../common/StatusChip.vue';
 import EditContact from './editContact/EditContact.vue';
 import { useI18n } from 'vue-i18n';
-import { allowedNodeEnvironmentFlags } from 'process';
 
 const confirm = useConfirm();
 const toast = useToast();
