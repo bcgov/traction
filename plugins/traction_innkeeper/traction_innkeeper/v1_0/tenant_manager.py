@@ -40,22 +40,25 @@ class TenantManager:
         return self._profile
 
     async def create_wallet(
-            self,
-            wallet_name: str = None,
-            wallet_key: str = None,
-            extra_settings: dict = {},
-            tenant_id: str = None,
+        self,
+        wallet_name: str,
+        wallet_key: str,
+        extra_settings: dict = {},
+        tenant_id: str = None,
     ):
-        if not wallet_name:
-            wallet_name = str(uuid.uuid4())  # can we generate random words?
-
-        if not wallet_key:
-            wallet_key = str(uuid.uuid4())
-
         try:
+            # we must stick with managed until AcaPy has full support for unmanaged.
+            # transport/inbound/session.py only deals with managed.
             key_management_mode = WalletRecord.MODE_MANAGED
             wallet_webhook_urls = []
-            wallet_dispatch_type = "base"
+            wallet_dispatch_type = "default"
+
+            label = wallet_name  # use the name they provided as the label
+
+            unique_wallet_name = await self.get_unique_tenant_name(wallet_name, False)
+            if unique_wallet_name == wallet_name:
+                # but... we have to change the actual wallet name
+                wallet_name = unique_wallet_name
 
             settings = {
                 "wallet.type": self._profile.context.settings["wallet.type"],
@@ -65,8 +68,7 @@ class TenantManager:
                 "wallet.dispatch_type": wallet_dispatch_type,
             }
             settings.update(extra_settings)
-
-            label = wallet_name
+            # set the default label (our provided wallet name)
             settings["default_label"] = label
 
             multitenant_mgr = self._profile.inject(BaseMultitenantManager)
@@ -74,7 +76,7 @@ class TenantManager:
             wallet_record = await multitenant_mgr.create_wallet(
                 settings, key_management_mode
             )
-            token = await self.get_token(wallet_record)
+            token = await self.get_token(wallet_record, wallet_key)
         except BaseError as err:
             self._logger.error(f"Error creating wallet ('{wallet_name}').", err)
             raise err
@@ -84,26 +86,15 @@ class TenantManager:
 
         return tenant, wallet_record, token
 
-    async def get_token(self, wallet_record: WalletRecord):
+    async def get_token(self, wallet_record: WalletRecord, wallet_key):
         try:
             multitenant_mgr = self._profile.inject(BaseMultitenantManager)
-            token = await multitenant_mgr.create_auth_token(
-                wallet_record, wallet_record.wallet_key
-            )
+            token = await multitenant_mgr.create_auth_token(wallet_record, wallet_key)
         except BaseError as err:
             self._logger.error(
                 f"Error getting token for wallet ('{wallet_record.wallet_name}').", err
             )
             raise err
-        return token
-
-    async def get_token_by_wallet_id(self, wallet_id: str):
-        try:
-            async with self._profile.session() as session:
-                wallet_record = await WalletRecord.retrieve_by_id(session, wallet_id)
-                token = await self.get_token(wallet_record)
-        except (StorageError, BaseModelError):
-            self._logger.info(f"Wallet not found with ID '{wallet_id}'")
         return token
 
     async def create_tenant(self, wallet_id: str, tenant_id: str = None):
@@ -144,7 +135,7 @@ class TenantManager:
 
         if tenant_record and wallet_record:
             self._logger.info(f"'{wallet_name}' wallet exists.")
-            token = await self.get_token(wallet_record)
+            token = await self.get_token(wallet_record, wallet_key)
         else:
             self._logger.info(f"creating '{wallet_name}' wallet...")
             tenant_record, wallet_record, token = await self.create_wallet(
@@ -179,8 +170,11 @@ class TenantManager:
         return _pwd, _salt, _hash, _expiry
 
     def check_reservation_password(
-            self, reservation_pwd: str, reservation: ReservationRecord
+        self, reservation_pwd: str, reservation: ReservationRecord
     ):
+        if reservation_pwd is None or reservation is None:
+            return None
+
         # make a hash from passed in value with saved salt...
         reservation_token = bcrypt.hashpw(
             reservation_pwd.encode("utf-8"),
@@ -207,3 +201,46 @@ class TenantManager:
         else:
             # else return None
             return None
+
+    async def get_unique_tenant_name(self, tenant_name: str, check_reservations: bool = False):
+        self._logger.info(f"> get_unique_tenant_name('{tenant_name}')")
+        unique_tenant_name = tenant_name
+        async with self._profile.session() as session:
+            r, t, w = await self.check_tables_for_tenant_name(
+                session, unique_tenant_name, check_reservations
+            )
+            idx = 1
+            while r or t or w:
+                self._logger.info(
+                    f"'{unique_tenant_name}': reservation_exists = {r}, tenant_exists = {t}, wallet_exists = {w}"
+                )
+                unique_tenant_name = f"{unique_tenant_name}-{idx}"
+                r, t, w = await self.check_tables_for_tenant_name(
+                    session, unique_tenant_name
+                )
+                idx += 1
+        # return a unique wallet/tenant name, either the input or calculated...
+        self._logger.info(
+            f"< get_unique_tenant_name('{tenant_name}') = '{unique_tenant_name}'"
+        )
+        return unique_tenant_name
+
+    async def check_tables_for_tenant_name(self, session, tenant_name: str, check_reservations: bool = False):
+        if check_reservations:
+            reservation_records = await ReservationRecord.query(
+                session, {"tenant_name": tenant_name}
+            )
+            reservation_exists = len(reservation_records) > 0
+        else:
+            reservation_exists = False
+
+        wallet_records = await WalletRecord.query(
+            session, {"wallet_name": tenant_name}
+        )
+        wallet_exists = len(wallet_records) > 0
+
+        tenant_records = await TenantRecord.query(
+            session, {"tenant_name": tenant_name}
+        )
+        tenant_exists = len(tenant_records) > 0
+        return reservation_exists, tenant_exists, wallet_exists

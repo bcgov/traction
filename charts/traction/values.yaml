@@ -52,7 +52,14 @@ acapy:
 
   pluginValues:
     multitenantProvider:
-      managerClass: traction_plugins.multitenant_provider.manager.AskarMultitokenMultitenantManager
+      manager:
+        className: traction_plugins.multitenant_provider.v1_0.manager.AskarMultitokenMultitenantManager
+        alwaysCheckProvidedWalletKey: true
+      errors:
+        onUnneededWalletKey: false
+      tokenExpiry:
+        units: days
+        amount: 1  
     tractionInnkeeper:
       walletName: traction_innkeeper
       printKey: false

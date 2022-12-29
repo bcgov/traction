@@ -57,8 +57,12 @@ exec aca-py start \
     --auto-create-revocation-transactions \
     --notify-revocation \
     --monitor-revocation-notification \
-    --plugin traction_plugins.multitenant_provider \
-    --plugin-config-value multitenant_provider.manager_class=traction_plugins.multitenant_provider.manager.AskarMultitokenMultitenantManager \
+    --plugin traction_plugins.multitenant_provider.v1_0 \
+    --plugin-config-value multitenant_provider.manager.class_name=${TRACTION_MULTITENANT_MANAGER_CLASS} \
+    --plugin-config-value multitenant_provider.manager.always_check_provided_wallet_key=${TRACTION_MULTITENANT_ALWAYS_CHECK_PROVIDED_WALLET_KEY} \
+    --plugin-config-value multitenant_provider.errors.on_unneeded_wallet_key=${TRACTION_MULTITENANT_ERRORS_UNNNEEDED_KEY} \
+    --plugin-config-value multitenant_provider.token_expiry.units=${TRACTION_MULTITENANT_TOKENEXPIRY_UNITS} \
+    --plugin-config-value multitenant_provider.token_expiry.amount=${TRACTION_MULTITENANT_TOKENEXPIRY_AMOUNT} \
     --plugin traction_plugins.basicmessage_storage.v1_0 \
     --plugin traction_plugins.traction_innkeeper.v1_0 \
     --plugin-config-value traction_innkeeper.innkeeper_wallet.tenant_id=${TRACTION_INNKEEPER_TENANT_ID} \

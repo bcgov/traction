@@ -1,5 +1,7 @@
 import functools
+import json
 import logging
+import uuid
 
 from aiohttp import web
 from aiohttp_apispec import docs, request_schema, response_schema, match_info_schema
@@ -218,6 +220,21 @@ async def tenant_reservation(request: web.BaseRequest):
     # reservations are under base/root profile, use Tenant Manager profile
     mgr = context.inject(TenantManager)
     profile = mgr.profile
+
+    unique_tenant_name = await mgr.get_unique_tenant_name(
+        tenant_name=rec.tenant_name, check_reservations=True
+    )
+    if unique_tenant_name != rec.tenant_name:
+        body = json.dumps({
+                "tenant_name": rec.tenant_name,
+                "suggested_tenant_name": unique_tenant_name,
+            }).encode('utf-8')
+        raise web.HTTPConflict(
+            reason=f"There is currently a tenant with the name'{rec.tenant_name}'.",
+            body=body,
+            content_type="application/json"
+        )
+
     async with profile.session() as session:
         await rec.save(session, reason="New tenant reservation")
         LOGGER.info(rec)
@@ -268,16 +285,20 @@ async def tenant_checkin(request: web.BaseRequest):
     async with profile.session() as session:
         res_rec = await ReservationRecord.retrieve_by_id(session, reservation_id)
         reservation_pwd = body.get("reservation_pwd")
-        reservation_token = mgr.check_reservation_password(reservation_pwd, res_rec)
-        if not reservation_token:
-            raise web.HTTPUnauthorized(reason="Reservation password incorrect")
 
         if res_rec.expired:
             raise web.HTTPUnauthorized(reason="Reservation has expired")
 
         if res_rec.state == ReservationRecord.STATE_APPROVED:
+            reservation_token = mgr.check_reservation_password(reservation_pwd, res_rec)
+            if not reservation_token:
+                raise web.HTTPUnauthorized(reason="Reservation password incorrect")
+
             # ok, let's update this, create a tenant, create a wallet
-            tenant, wallet_record, token = await mgr.create_wallet(res_rec.tenant_name)
+            wallet_key = str(uuid.uuid4())
+            tenant, wallet_record, token = await mgr.create_wallet(
+                res_rec.tenant_name, wallet_key
+            )
 
             # update this reservation
             res_rec.state = ReservationRecord.STATE_CHECKED_IN
@@ -288,11 +309,15 @@ async def tenant_checkin(request: web.BaseRequest):
             res_rec.reservation_token_salt = None
             res_rec.reservation_token_expiry = None
             await res_rec.save(session)
+        else:
+            raise web.HTTPConflict(
+                reason=f"Reservation state is currently '{res_rec.state}' and cannot be set to '{ReservationRecord.STATE_CHECKED_IN}'."
+            )
 
     return web.json_response(
         {
             "wallet_id": wallet_record.wallet_id,
-            "wallet_key": wallet_record.wallet_key,
+            "wallet_key": wallet_key,
             "token": token,
         }
     )
@@ -313,7 +338,7 @@ async def tenant_create_token(request: web.BaseRequest):
     tenant_id = request.match_info["tenant_id"]
     wallet_key = None
 
-    if request.can_read_body:
+    if request.body_exists:
         body = await request.json()
         wallet_key = body.get("wallet_key")
 
@@ -328,9 +353,8 @@ async def tenant_create_token(request: web.BaseRequest):
         wallet_record = await WalletRecord.retrieve_by_id(session, wallet_id)
 
     if (not wallet_record.requires_external_key) and wallet_key:
-        raise web.HTTPBadRequest(
-            reason=f"Wallet {wallet_id} doesn't require"
-            " the wallet key to be provided"
+        LOGGER.warning(
+            f"Wallet {wallet_id} doesn't require the wallet key but one was provided"
         )
 
     token = await multitenant_mgr.create_auth_token(wallet_record, wallet_key)

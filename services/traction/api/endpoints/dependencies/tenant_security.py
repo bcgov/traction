@@ -2,7 +2,7 @@ import logging
 import uuid
 
 from fastapi.security import OAuth2PasswordRequestForm
-from jose import jwt, ExpiredSignatureError
+from jose import jwt, ExpiredSignatureError, JWTError
 from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
@@ -53,6 +53,7 @@ class JWTTFetchingMiddleware(BaseHTTPMiddleware):
         auth_header = request.headers.get("Authorization")
         if auth_header and auth_header.startswith("Bearer "):
             token = auth_header.replace("Bearer ", "")
+            logger.info(f"token = {token}")
             try:
                 payload = jwt.decode(
                     token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
@@ -80,6 +81,10 @@ class JWTTFetchingMiddleware(BaseHTTPMiddleware):
                         "links": [],
                     },
                 )
+            except JWTError as err:
+                logger.error(f"token = {token}")
+                logger.error(err)
+                raise err
 
         response = await call_next(request)
         return response
@@ -96,6 +101,7 @@ async def authenticate_tenant(username: str, password: str, db: AsyncSession):
             wallet_id, **{"body": token_request}
         )
         jwt_token = token_response.token
+        logger.info(f"token_response.token = {token_response.token}")
         try:
             # fetch the tenant, we can confirm the id is valid in traction too...
             tenant_repo = TenantsRepository(db)

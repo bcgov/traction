@@ -1,9 +1,12 @@
+import logging
 from datetime import datetime, timedelta
 
 from jose import jwt
 from pydantic import BaseModel
 
 from api.core.config import settings
+
+logger = logging.getLogger(__name__)
 
 
 class AccessToken(BaseModel):

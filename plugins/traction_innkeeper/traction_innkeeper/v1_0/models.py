@@ -21,6 +21,7 @@ class ReservationRecord(BaseRecord):
     RECORD_ID_NAME = "reservation_id"
     TAG_NAMES = {
         "state",
+        "tenant_name",
     }
 
     STATE_REQUESTED = "requested"
@@ -29,22 +30,22 @@ class ReservationRecord(BaseRecord):
     STATE_CHECKED_IN = "checked_in"
 
     def __init__(
-            self,
-            *,
-            reservation_id: str = None,
-            state: str = None,
-            tenant_name: str = None,
-            tenant_reason: str = None,
-            contact_name: str = None,
-            contact_email: str = None,
-            contact_phone: str = None,
-            tenant_id: str = None,
-            wallet_id: str = None,
-            reservation_token_salt: str = None,
-            reservation_token_hash: str = None,
-            reservation_token_expiry: Union[str, datetime] = None,
-            state_notes: str = None,
-            **kwargs,
+        self,
+        *,
+        reservation_id: str = None,
+        state: str = None,
+        tenant_name: str = None,
+        tenant_reason: str = None,
+        contact_name: str = None,
+        contact_email: str = None,
+        contact_phone: str = None,
+        tenant_id: str = None,
+        wallet_id: str = None,
+        reservation_token_salt: str = None,
+        reservation_token_hash: str = None,
+        reservation_token_expiry: Union[str, datetime] = None,
+        state_notes: str = None,
+        **kwargs,
     ):
         """Construct record."""
         super().__init__(reservation_id, state or self.STATE_REQUESTED, **kwargs)
@@ -199,13 +200,13 @@ class TenantRecord(BaseRecord):
     STATE_DELETED = "deleted"  # TODO: figure out states and other data...
 
     def __init__(
-            self,
-            *,
-            tenant_id: str = None,
-            state: str = None,
-            tenant_name: str = None,
-            wallet_id: str = None,
-            **kwargs,
+        self,
+        *,
+        tenant_id: str = None,
+        state: str = None,
+        tenant_name: str = None,
+        wallet_id: str = None,
+        **kwargs,
     ):
         """Construct record."""
         super().__init__(
@@ -234,9 +235,9 @@ class TenantRecord(BaseRecord):
 
     @classmethod
     async def query_by_wallet_id(
-            cls,
-            session: ProfileSession,
-            wallet_id: str,
+        cls,
+        session: ProfileSession,
+        wallet_id: str,
     ) -> "TenantRecord":
         """Retrieve TenantRecord by wallet_id.
         Args:

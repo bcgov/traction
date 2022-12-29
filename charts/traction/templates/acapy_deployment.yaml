@@ -78,7 +78,11 @@ spec:
            {{- end }}
            {{- if .Values.acapy.plugins.multitenantProvider }}
            --plugin traction_plugins.multitenant_provider \
-           --plugin-config-value multitenant_provider.manager_class={{ .Values.acapy.pluginValues.multitenantProvider.managerClass }} \
+           --plugin-config-value multitenant_provider.manager.class_name={{ .Values.acapy.pluginValues.multitenantProvider.manager.className }} \
+           --plugin-config-value multitenant_provider.manager.always_check_provided_wallet_key={{ .Values.acapy.pluginValues.multitenantProvider.manager.alwaysCheckProvidedWalletKey }} \
+           --plugin-config-value multitenant_provider.errors.on_unneeded_wallet_key={{ .Values.acapy.pluginValues.multitenantProvider.errors.onUnneededWalletKey }} \
+           --plugin-config-value multitenant_provider.token_expiry.units={{ .Values.acapy.pluginValues.multitenantProvider.tokenExpiry.units }} \
+           --plugin-config-value multitenant_provider.token_expiry.amount={{ .Values.acapy.pluginValues.multitenantProvider.tokenExpiry.amount }} \
            {{- end }}           
            {{- if .Values.acapy.plugins.basicmessageStorage }}
            --plugin traction_plugins.basicmessage_storage.v1_0 \
