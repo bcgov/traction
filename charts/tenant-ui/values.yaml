@@ -53,7 +53,7 @@ tenant_ui:
 
   traction_api:
     # this is the private endpoint
-    endpoint: http://traction-api:5000
+    endpoint: http://traction-tenant-proxy:8032
 
   tenant_proxy:
     # this is the private endpoint

@@ -9,7 +9,7 @@ tenant_ui:
     buildtime: '2022-08-04T22:16:25.869Z'
     pullPolicy: Always
   traction_api:
-    endpoint: https://int-traction-api-test.apps.silver.devops.gov.bc.ca
+    endpoint: https://int-traction-tenant-proxy-test.apps.silver.devops.gov.bc.ca
   tenant_proxy:
     endpoint: https://int-traction-tenant-proxy-test.apps.silver.devops.gov.bc.ca
   oidc:
