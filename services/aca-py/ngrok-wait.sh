@@ -31,7 +31,6 @@ exec aca-py start \
     --auto-provision \
     --arg-file acapy-static-args.yml \
     --inbound-transport http "0.0.0.0" ${ACAPY_HTTP_PORT} \
-    --webhook-url "${TRACTION_WEBHOOK_URL}" \
     --genesis-url "${ACAPY_GENESIS_URL}" \
     --endpoint ${ACAPY_ENDPOINT} \
     --wallet-name "${ACAPY_WALLET_DATABASE}" \
@@ -43,20 +42,17 @@ exec aca-py start \
     --wallet-name traction-wallet  \
     --admin "0.0.0.0" ${ACAPY_ADMIN_PORT} \
     --emit-new-didcomm-prefix \
+    --emit-new-didcomm-mime-type \
     --label "${AGENT_NAME}" \
     --jwt-secret "${JWT_SECRET}" \
     ${ACAPY_ADMIN_CONFIG} \
     ${ACAPY_READ_ONLY_MODE} \
     ${ACAPY_TAILS_BASE_URL} \
     ${ACAPY_TAILS_UPLOAD_URL} \
-    --endorser-protocol-role author \
-    --endorser-public-did ${ACAPY_ENDORSER_PUBLIC_DID} \
-    --endorser-alias ${ENDORSER_CONNECTION_ALIAS} \
-    --auto-request-endorsement \
-    --auto-write-transactions \
-    --auto-create-revocation-transactions \
     --notify-revocation \
     --monitor-revocation-notification \
+    --preserve-exchange-records \
+    --auto-store-credential \
     --plugin traction_plugins.multitenant_provider.v1_0 \
     --plugin-config-value multitenant_provider.manager.class_name=${TRACTION_MULTITENANT_MANAGER_CLASS} \
     --plugin-config-value multitenant_provider.manager.always_check_provided_wallet_key=${TRACTION_MULTITENANT_ALWAYS_CHECK_PROVIDED_WALLET_KEY} \
