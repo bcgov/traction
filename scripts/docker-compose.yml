@@ -1,49 +1,5 @@
 version: "3.9"
 services:
-  traction-api:
-    build:
-      context: ../services/traction
-      dockerfile: Dockerfile
-    depends_on:
-      endorser-agent:
-        condition: service_started
-      traction-agent:
-        condition: service_started
-      traction-db:
-        condition: service_healthy
-    entrypoint: bash -c "alembic upgrade head && uvicorn api.main:app --reload --host 0.0.0.0 --port 5000 --log-level info"
-    environment:
-      - POSTGRESQL_HOST=${POSTGRESQL_HOST}
-      - POSTGRESQL_PORT=${POSTGRESQL_PORT}
-      - POSTGRESQL_DB=${TRACTION_PSQL_DB}
-      - TRACTION_DB_ADMIN=${TRACTION_PSQL_ADMIN}
-      - TRACTION_DB_ADMIN_PWD=${TRACTION_PSQL_ADMIN_PWD}
-      - TRACTION_DB_USER=${TRACTION_PSQL_USER}
-      - TRACTION_DB_USER_PWD=${TRACTION_PSQL_USER_PWD}
-      - TRACTION_API_ADMIN_USER=${TRACTION_API_ADMIN_USER}
-      - TRACTION_API_ADMIN_KEY=${TRACTION_API_ADMIN_KEY}
-      - ACAPY_ADMIN_URL=${ACAPY_ADMIN_URL}
-      - ACAPY_ADMIN_URL_API_KEY=${ACAPY_ADMIN_URL_API_KEY}
-      - ENVIRONMENT=production
-      - WEB_CONCURRENCY=${WEB_CONCURRENCY}
-      - TRACTION_HOST_URL=${TRACTION_HOST_URL}
-      - TRACTION_WEBHOOK_URL=${TRACTION_WEBHOOK_URL}
-      - TRACTION_TENANT_WEBHOOK_URL=${TRACTION_TENANT_WEBHOOK_URL}
-      - ACAPY_WEBHOOK_URL_API_KEY=${ACAPY_WEBHOOK_URL_API_KEY}
-      - ACAPY_ENDORSER_PUBLIC_DID=${ACAPY_ENDORSER_PUBLIC_DID}
-      - ENDORSER_CONNECTION_ALIAS=${ENDORSER_CONNECTION_ALIAS}
-      - ACAPY_GENESIS_URL=${ACAPY_GENESIS_URL}
-      - DEFAULT_RETRY_ATTEMPTS=${DEFAULT_RETRY_ATTEMPTS:-10}
-      - DEFAULT_PAUSE_BETWEEN_ATTEMPTS=${DEFAULT_PAUSE_BETWEEN_ATTEMPTS:-2}
-      - TRACTION_CORS_URLS=${TRACTION_CORS_URLS}
-      - ACAPY_WALLET_TYPE=${TRACION_ACAPY_WALLET_TYPE}
-    ports:
-      - ${TRACTION_SERVICE_PORT}:5000
-    extra_hosts:
-      - host.docker.internal:host-gateway
-    volumes:
-      - ../services/traction:/app:rw
-
   ngrok-traction-agent:
     image: wernight/ngrok
     environment:
@@ -63,15 +19,12 @@ services:
       context: ../services/aca-py
       dockerfile: Dockerfile.acapy
     depends_on:
-      endorser-agent:
-        condition: service_started
       traction-db:
         condition: service_healthy
     environment:
       - TRACTION_ENV=${TRACTION_ENV}
       - NGROK_NAME=ngrok-traction-agent
       - ACAPY_HTTP_PORT=${ACAPY_HTTP_PORT}
-      - TRACTION_WEBHOOK_URL=${TRACTION_WEBHOOK_URL}
       - ACAPY_GENESIS_URL=${ACAPY_GENESIS_URL}
       - ACAPY_ENDPOINT=${ACAPY_ENDPOINT}
       - ACAPY_WALLET_DATABASE=${ACAPY_WALLET_DATABASE}
@@ -89,8 +42,6 @@ services:
       - ACAPY_READ_ONLY_MODE=${ACAPY_READ_ONLY_MODE}
       - ACAPY_TAILS_BASE_URL=${ACAPY_TAILS_BASE_URL}
       - ACAPY_TAILS_UPLOAD_URL=${ACAPY_TAILS_UPLOAD_URL}
-      - ACAPY_ENDORSER_PUBLIC_DID=${ACAPY_ENDORSER_PUBLIC_DID}
-      - ENDORSER_CONNECTION_ALIAS=${ENDORSER_CONNECTION_ALIAS}
       - TRACTION_INNKEEPER_TENANT_ID=${TRACTION_INNKEEPER_TENANT_ID}
       - TRACTION_INNKEEPER_WALLET_NAME=${TRACTION_INNKEEPER_WALLET_NAME}
       - TRACTION_INNKEEPER_WALLET_KEY=${TRACTION_INNKEEPER_WALLET_KEY}
@@ -115,98 +66,13 @@ services:
   traction-db:
     image: "postgres:12"
     environment:
+      - POSTGRES_USER=${POSTGRESQL_USER}
       - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
+      - POSTGRES_DB=${POSTGRESQL_DB}
     ports:
       - ${POSTGRESQL_PORT}:5432
     volumes:
       - traction-wallet:/var/lib/postgresql/data
-      - ./db_init.sql:/docker-entrypoint-initdb.d/1-init.sql
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  endorser-api:
-    build:
-      context: ../services/endorser
-      dockerfile: Dockerfile
-    depends_on:
-      endorser-agent:
-        condition: service_started
-      endorser-db:
-        condition: service_healthy
-    environment:
-      - POSTGRESQL_HOST=${ENDORSER_POSTGRESQL_HOST}
-      - POSTGRESQL_PORT=${ENDORSER_POSTGRESQL_PORT}
-      - POSTGRESQL_DB=${ENDORSER_PSQL_DB}
-      - ENDORSER_DB_ADMIN=${ENDORSER_PSQL_ADMIN}
-      - ENDORSER_DB_ADMIN_PWD=${ENDORSER_PSQL_ADMIN_PWD}
-      - ENDORSER_DB_USER=${ENDORSER_PSQL_USER}
-      - ENDORSER_DB_USER_PWD=${ENDORSER_PSQL_USER_PWD}
-      - ENDORSER_API_ADMIN_USER=${ENDORSER_API_ADMIN_USER}
-      - ENDORSER_API_ADMIN_KEY=${ENDORSER_API_ADMIN_KEY}
-      - ACAPY_ADMIN_URL=${ENDORSER_ACAPY_ADMIN_URL}
-      - ACAPY_ADMIN_URL_API_KEY=${ENDORSER_ACAPY_ADMIN_URL_API_KEY}
-      - ENVIRONMENT=production
-      - WEB_CONCURRENCY=${WEB_CONCURRENCY}
-      - TRACTION_WEBHOOK_URL=${ENDORSER_WEBHOOK_URL}
-      - ACAPY_WEBHOOK_URL_API_KEY=${ENDORSER_ACAPY_WEBHOOK_URL_API_KEY}
-    ports:
-      - ${ENDORSER_SERVICE_PORT}:5000
-    extra_hosts:
-      - host.docker.internal:host-gateway
-    volumes:
-      - ../services/endorser:/app:rw
-
-  endorser-agent:
-    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.4
-    depends_on:
-      endorser-db:
-        condition: service_healthy
-    ports:
-      - ${ACAPY_ENDORSER_ADMIN_PORT}:${ACAPY_ENDORSER_ADMIN_PORT}
-      - ${ACAPY_ENDORSER_HTTP_PORT}:${ACAPY_ENDORSER_HTTP_PORT}
-    entrypoint: /bin/bash
-    command: [
-        "-c",
-        "sleep 5;
-        aca-py start \
-        --auto-provision
-        --arg-file endorser-acapy-args.yml \
-        --inbound-transport http '0.0.0.0' ${ACAPY_ENDORSER_HTTP_PORT} \
-        --webhook-url '${ENDORSER_WEBHOOK_URL}' \
-        --genesis-url '${ACAPY_GENESIS_URL}' \
-        --endpoint ${ACAPY_ENDORSER_ENDPOINT} \
-        --wallet-name '${ACAPY_WALLET_DATABASE}' \
-        --wallet-key '${ACAPY_WALLET_ENCRYPTION_KEY}' \
-        --wallet-storage-type '${ENDORSER_ACAPY_WALLET_STORAGE_TYPE}' \
-        --wallet-storage-config '{\"url\":\"${ENDORSER_POSTGRESQL_HOST}:5432\",\"max_connections\":5}' \
-        --wallet-storage-creds '{\"account\":\"${ENDORSER_POSTGRESQL_USER}\",\"password\":\"${ENDORSER_POSTGRESQL_PASSWORD}\",\"admin_account\":\"${ENDORSER_POSTGRESQL_USER}\",\"admin_password\":\"${ENDORSER_POSTGRESQL_PASSWORD}\"}' \
-        --wallet-name endorser-wallet  \
-        --seed '${ACAPY_ENDORSER_SEED}' \
-        --admin '0.0.0.0' ${ACAPY_ENDORSER_ADMIN_PORT} \
-        --label '${ENDORSER_AGENT_NAME}' \
-        ${ACAPY_ADMIN_CONFIG} \
-        ${ACAPY_READ_ONLY_MODE} \
-        --endorser-protocol-role endorser \
-        --auto-endorse-transactions \
-        ",
-      ]
-    volumes:
-      - "./endorser-acapy-args.yml:/home/indy/endorser-acapy-args.yml"
-    extra_hosts:
-      - host.docker.internal:host-gateway
-
-  endorser-db:
-    image: "postgres:12"
-    environment:
-      - POSTGRES_PASSWORD=${ENDORSER_POSTGRESQL_PASSWORD}
-    ports:
-      - ${ENDORSER_POSTGRESQL_PORT}:5432
-    volumes:
-      - endorser-wallet:/var/lib/postgresql/data
-      - ./db_init.sql:/docker-entrypoint-initdb.d/1-init.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -218,7 +84,7 @@ services:
       context: ../services/tenant-ui
       dockerfile: Dockerfile
     depends_on:
-      traction-api:
+      tenant-proxy:
         condition: service_started
     environment:
       - SERVER_TRACTION_URL=${SERVER_TRACTION_URL}
@@ -253,4 +119,3 @@ services:
 
 volumes:
   traction-wallet:
-  endorser-wallet:

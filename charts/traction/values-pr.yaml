@@ -35,24 +35,6 @@ postgresql:
     requests:
       cpu: 120m
       memory: 400Mi
-traction_api:
-  image:
-    tag: "ghcr.io/bcgov/traction-api:sha-87c2eb2"
-    version: 'sha-87c2eb2'
-    buildtime: '2022-01-20T22:37:11.102Z'
-    pullPolicy: Always
-  secret:
-    apiAdminKey:
-      generated: false
-  config:
-    gunicornWorkers: 2
-  resources:
-    limits:
-      cpu: 200m
-      memory: 820Mi
-    requests:
-      cpu: 120m
-      memory: 400Mi
 tenant_proxy:
   image:
     tag: "ghcr.io/bcgov/traction-tenant-proxy:sha-2aa3709"

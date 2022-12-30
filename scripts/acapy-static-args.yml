@@ -17,9 +17,8 @@ outbound-transport: http
 log-level: info
 multitenant: true
 multitenant-admin: true
-endorser-alias: 'endorser'
-endorser-public-did: 'SVfHGCEEvEFmpBPcxgNqRR'
-auto-request-endorsement: true
-# auto-endorse-transactions: <for Endorsers>
-auto-write-transactions: true
-auto-create-revocation-transactions: true
+notify-revocation: true
+monitor-revocation-notification: true
+preserve-exchange-records: true
+emit-new-didcomm-prefix: true
+emit-new-didcomm-mime-type: true

@@ -88,8 +88,6 @@ acapy:
     type: ClusterIP
     adminPort: 8031
     httpPort: 8030
-    endorserAlias: endorser
-    endorserPublicDID: UjmxKBZe1qv1NBE7GaohdP
     walletScheme: DatabasePerWallet
 
   openshift:
@@ -165,6 +163,12 @@ acapy:
     multitenant: true
     multitenantAdmin: true
     walletType: askar
+    notifyRevocation: true
+    monitorRevocationNotification: true
+    preserveExchangeRecords: true
+    emitNewDidcommPrefix: true
+    emitNewDidcommMimeType: true
+
 
   secret:
     adminurl:
@@ -192,61 +196,6 @@ postgresql:
   # -- PostgreSQL Database to create.
   postgresqlDatabase: traction
 
-  extraEnv:
-    - name: ADMIN_PWD
-      valueFrom:
-        secretKeyRef:
-          key: admin_pwd
-          name: '{{ template "traction_api.secret.name" . }}'
-    - name: USER_PWD
-      valueFrom:
-        secretKeyRef:
-          key: user_pwd
-          name: '{{ template "traction_api.secret.name" . }}'
-
-  lifecycleHooks:
-    postStart:
-      exec:
-        command:
-          - '/bin/bash'
-          - '-c'
-          - |
-            sleep 30;
-            USER_LOG=/dev/shm/01_user.log
-            if [ -s "$USER_LOG" ]; then
-              echo "$USER_LOG exists with data."
-            else
-              echo "$USER_LOG does not exist or has no data."
-              user_sql=$(cat <<-EOF
-                CREATE USER tractionadminuser PASSWORD '$ADMIN_PWD';
-                CREATE USER tractionuser PASSWORD '$USER_PWD';
-                ALTER DATABASE traction OWNER TO tractionadminuser;
-            EOF
-            )
-            echo $user_sql > /dev/shm/01_user.sql
-            echo $user_sql | psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$HOSTNAME" -o /dev/shm/01_user.log
-            fi
-
-            SCHEMA_LOG=/dev/shm/02_schema.log
-            if [ -s "$SCHEMA_LOG" ]; then
-              echo "$SCHEMA_LOG exists with data."
-            else
-              echo "$SCHEMA_LOG does not exist or has no data."
-              schema_sql=$(cat <<-EOF
-                CREATE EXTENSION IF NOT EXISTS pgcrypto;
-                REVOKE ALL ON SCHEMA public FROM PUBLIC;
-                GRANT USAGE ON SCHEMA public TO tractionadminuser;
-                GRANT USAGE ON SCHEMA public TO tractionuser;
-                GRANT ALL ON SCHEMA public TO tractionadminuser;
-                ALTER DEFAULT PRIVILEGES FOR USER tractionadminuser IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO tractionuser;
-                ALTER DEFAULT PRIVILEGES FOR USER tractionadminuser IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO tractionuser;
-                ALTER DEFAULT PRIVILEGES FOR USER tractionadminuser IN SCHEMA public GRANT EXECUTE ON FUNCTIONS TO tractionuser;
-            EOF
-            )
-            echo $schema_sql > /dev/shm/02_schema.sql
-            echo $schema_sql | psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$HOSTNAME/$POSTGRES_DB" -o /dev/shm/02_schema.log
-            fi
-
   # --  Persistent Volume Storage configuration. ref: https://kubernetes.io/docs/user-guide/persistent-volumes
   persistence:
     enabled: true
@@ -268,88 +217,11 @@ postgresql:
       cpu: 300m
       memory: 1300Mi
 
-traction_api:
-  image:
-    tag: "ghcr.io/bcgov/traction-api:sha-0bd01da"
-    version: 'sha-0bd01da'
-    buildtime: '2022-01-20T22:37:11.102Z'
-    pullPolicy: IfNotPresent
-
+traction:
   config:
     ledger:
       browserUrlOverride: ""
       genesisUrlOverride: ""
-    webConcurrency: 4
-    defaultRetryAttempts: 30
-    defaultPauseBetweenAttempts: 3
-  db:
-    admin: tractionadminuser
-    user: tractionuser
-  api:
-    adminuser: innkeeper
-
-  secret:
-    apiAdminKey:
-      # set to false and provide a value to "hardcode" the password value
-      generated: true
-      value: "change-me"
-
-  serviceAccount:
-    # -- Specifies whether a service account should be created
-    create: false
-    # -- Annotations to add to the service account
-    annotations: {}
-    # -- The name of the service account to use. If not set and create is true, a name is generated using the fullname template
-    name: ""
-
-  imagePullSecrets: []
-
-  podAnnotations: {}
-
-  podSecurityContext: {}
-    # fsGroup: 2000
-
-  securityContext: {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
-
-  service:
-    type: ClusterIP
-    port: 5000
-
-  openshift:
-    route:
-      enabled: true
-      path: "/"
-      targetPort: http
-      timeout: 2m
-      tls:
-        enabled: true
-        insecureEdgeTerminationPolicy: None
-        termination: edge
-      wildcardPolicy: None
-
-  resources:
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    limits:
-      cpu: 1000m
-      memory: 2600Mi
-    requests:
-      cpu: 500m
-      memory: 1300Mi
-
-  nodeSelector: {}
-
-  tolerations: []
-
-  affinity: {}
 
 tenant_proxy:
   image:

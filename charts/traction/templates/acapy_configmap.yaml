@@ -26,3 +26,8 @@ data:
     log-level: {{ .Values.acapy.staticArgs.logLevel }}
     multitenant: {{ .Values.acapy.staticArgs.multitenant }}
     multitenant-admin: {{ .Values.acapy.staticArgs.multitenantAdmin }}
+    notify-revocation: {{ .Values.acapy.staticArgs.notifyRevocation }}
+    monitor-revocation-notification: {{ .Values.acapy.staticArgs.monitorRevocationNotification }}
+    preserve-exchange-records: {{ .Values.acapy.staticArgs.preserveExchangeRecords }}
+    emit-new-didcomm-prefix: {{ .Values.acapy.staticArgs.emitNewDidcommPrefix }}
+    emit-new-didcomm-mime-type: {{ .Values.acapy.staticArgs.emitNewDidcommMimeType }}

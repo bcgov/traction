@@ -11,7 +11,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/traction_api_configmap.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/tenant_proxy_img_configmap.yaml") . | sha256sum }}
     {{- with .Values.tenant_proxy.podAnnotations -}}
         {{- toYaml . | nindent 8 }}
     {{- end }}

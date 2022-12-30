@@ -40,8 +40,7 @@ spec:
            --auto-provision \
            --arg-file acapy-static-args.yml \
            --inbound-transport http '0.0.0.0' {{ .Values.acapy.service.httpPort }} \
-           --webhook-url 'http://{{ include "traction_api.fullname" . }}:{{ .Values.traction_api.service.port }}/webhook#${WEBHOOK_API_KEY}'  \
-           --genesis-url '{{ include "traction_api.genesisUrl" . }}' \
+           --genesis-url '{{ include "traction.genesisUrl" . }}' \
            --endpoint https://{{ include "acapy.host" . }} \
            --wallet-storage-type 'postgres_storage' \
            --wallet-name 'mywallet' \
@@ -51,16 +50,13 @@ spec:
            --seed \"$(WALLET_SEED)\" \
            --admin '0.0.0.0' {{ .Values.acapy.service.adminPort }} \
            --emit-new-didcomm-prefix \
+           --emit-new-didcomm-mime-type \
            --label {{ $acapyLabel }} \
            --jwt-secret \"$(JWT_SECRET)\" \
-           --endorser-protocol-role author \
-           --endorser-public-did {{ .Values.acapy.service.endorserPublicDID }} \
-           --endorser-alias {{ .Values.acapy.service.endorserAlias }} \
-           --auto-request-endorsement \
-           --auto-write-transactions \
-           --auto-create-revocation-transactions \
            --notify-revocation \
            --monitor-revocation-notification \
+           --preserve-exchange-records \
+           --auto-store-credential \
            {{- if .Values.acapy.adminInsecureMode }}
            --admin-insecure-mode \
            {{ else }}

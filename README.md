@@ -1,6 +1,5 @@
 # traction [![Lifecycle:Maturing](https://img.shields.io/badge/Lifecycle-Maturing-007EC6)](<Redirect-URL>)
 [![Maintainability](https://api.codeclimate.com/v1/badges/e6df50041dd4373c7e15/maintainability)](https://codeclimate.com/github/bcgov/traction/maintainability)
-[![Behaviour Driven Tests](https://github.com/bcgov/traction/actions/workflows/run_bdd_tests_dev.yml/badge.svg)](https://github.com/bcgov/traction/actions/workflows/run_bdd_tests_dev.yml)
 
 Hyperledger Aries Traction - a digital wallet solution for organizations. The focus of Traction is for line of businesses to easily integrate Aries ([aca-py](https://github.com/hyperledger/aries-cloudagent-python)) into their applications; without having to stand up, maintain and manage and instance of aca-py themselves.
 
@@ -20,29 +19,23 @@ docker-compose up
 
 By default, this will start an environment with:
 
-* postgres database for traction and aca-py data
-* endorser (database, aca-py agent and api)
-* aca-py agent in multitenancy mode (access through ngrok)
-* traction api
+* postgres database for aca-py data
+* aca-py agent in multitenancy mode with traction plugins (access through ngrok)
+* tenant proxy
 * tenant ui
 
 This will be using the [BCovrin Test Ledger](http://test.bcovrin.vonx.io).
 
 | Service | Url | Credentials |
 | --- | --- | --- |
-| Innkeeper API (Swagger) | http://localhost:5100/innkeeper/docs | innkeeper / change-me |
-| Tenant API (Swagger) | http://localhost:5100/tenant/docs | wallet\_id / wallet\_key |
+| Tenant Proxy (Swagger) | http://localhost:8032/api/doc | |
 | Tenant UI | http://localhost:5101 | wallet\_id / wallet\_key |
 
 Tenants are provided with a `wallet_id` and `wallet_key` by the Innkeeper. Only the tenant retains the `wallet_key`. 
 
-**Important**: the tenant can currently log in to one service/interface at a time. Getting a token invalidates the previous token. This is a limitiation in aca-py
-
 Open the following in a browser: `http://localhost:5100/innkeeper/docs` - this is the swagger UI for the innkeeper.
 
-After you authenticate using `innkeeper/change-me` you can create a new tenant using the `v1/tenants/check-in` function.  Make a note of the `wallet_id` and `wallet_key` - you will need these to access traction as a tenant.
-
-Open another browser and connect to `http://localhost:5100/tenant/docs` or `http://localhost:5101`.  Authenticate using the `wallet_id/wallet_key` from the previous step.
+TODO: write some quick onboarding instructions - create tenants, login, etc.
 
 See the [use case](./docs/USE-CASE.md) document for more detailed information about traction services.
 
