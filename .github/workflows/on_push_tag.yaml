@@ -70,46 +70,6 @@ jobs:
       version: ${{ env.CI_VERSION }}
       cm_tenant_ui: ${{ env.CM_TENANT_UI }}
 
-  read_config:
-    name: Read Image Configuration
-    needs: 
-      - init
-    environment: ${{ needs.init.outputs.promote_from }}
-    runs-on: ubuntu-20.04
-    if: github.repository_owner == 'bcgov'
-    env:
-      IMAGE_BUILDTIME: ''
-      IMAGE_TAG: ''
-      IMAGE_VERSION: ''   
-    steps:  
-      - uses: actions/checkout@v3  
-
-      - name: Authenticate and set context
-        uses: redhat-actions/oc-login@v1
-        with:
-          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
-          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-          certificate_authority_data: ${{ secrets.OPENSHIFT_CA_CRT }}
-          namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
-      
-      - name: OC
-        run: |
-          echo "IMAGE_BUILDTIME=$(oc get configmap/traction-api -o 'jsonpath={ .data}' | jq .IMAGE_BUILDTIME)" >> $GITHUB_ENV
-          echo "IMAGE_TAG=$(oc get configmap/traction-api -o 'jsonpath={ .data}' | jq .IMAGE_TAG)" >> $GITHUB_ENV
-          echo "IMAGE_VERSION=$(oc get configmap/traction-api -o 'jsonpath={ .data}' | jq .IMAGE_VERSION)" >> $GITHUB_ENV
-
-
-      - name: print outputs
-        run: |
-          echo "IMAGE_BUILDTIME: ${{ env.IMAGE_BUILDTIME }}"
-          echo "IMAGE_TAG: ${{ env.IMAGE_TAG }}"
-          echo "IMAGE_VERSION: ${{ env.IMAGE_VERSION }}"
-
-    outputs:
-      buildtime: ${{ env.IMAGE_BUILDTIME }}
-      image_tag: ${{ env.IMAGE_TAG }}
-      image_version: ${{ env.IMAGE_VERSION }}
-
   read_config_acapy:
     name: Read Image Configuration
     needs: 
@@ -234,7 +194,6 @@ jobs:
     name: Deploy Tag
     needs: 
       - init
-      - read_config
       - read_config_acapy
       - read_config_ui
       - read_config_proxy
@@ -255,9 +214,6 @@ jobs:
       
       - name: Run Traction Helm 
         run: |
-          yq eval '.traction_api.image.tag = ${{ needs.read_config.outputs.image_tag }}' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml
-          yq eval '.traction_api.image.version = ${{ needs.read_config.outputs.image_version }}' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml
-          yq eval '.traction_api.image.buildtime = ${{ needs.read_config.outputs.buildtime }}' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml
           yq eval '.acapy.image.tag = ${{ needs.read_config_acapy.outputs.image_tag }}' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml
           yq eval '.acapy.image.version = ${{ needs.read_config_acapy.outputs.image_version }}' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml
           yq eval '.acapy.image.buildtime = ${{ needs.read_config_acapy.outputs.buildtime }}' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml

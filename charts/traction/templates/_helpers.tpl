@@ -122,16 +122,16 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{/*
 generate ledger browser url
 */}}
-{{- define "traction_api.ledgerBrowser" -}}
+{{- define "traction.ledgerBrowser" -}}
 {{- $ledgerBrowser := dict "bcovrin-test" "http://test.bcovrin.vonx.io" -}}
-{{ .Values.traction_api.config.ledger.browserUrlOverride | default ( get $ledgerBrowser .Values.global.ledger ) }}
+{{ .Values.traction.config.ledger.browserUrlOverride | default ( get $ledgerBrowser .Values.global.ledger ) }}
 {{- end }}
 
 {{/*
 generate genesisfileurl
 */}}
-{{- define "traction_api.genesisUrl" -}}
-{{ default (printf "%s%s" (include "traction_api.ledgerBrowser" .) "/genesis") .Values.traction_api.config.ledger.genesisUrlOverride }}
+{{- define "traction.genesisUrl" -}}
+{{ default (printf "%s%s" (include "traction.ledgerBrowser" .) "/genesis") .Values.traction.config.ledger.genesisUrlOverride }}
 {{- end }}
 
 
@@ -201,7 +201,7 @@ Return acapy initialization call
 */}}
 {{- define "acapy.registerLedger" -}}
 {{- if (eq .Values.global.ledger "bcovrin-test") -}}
-curl -d '{\"seed\":\"$(WALLET_SEED)\", \"role\":\"TRUST_ANCHOR\", \"alias\":\"{{ include "acapy.fullname" . }}\"}' -X POST {{ include "traction_api.ledgerBrowser" . }}/register;
+curl -d '{\"seed\":\"$(WALLET_SEED)\", \"role\":\"TRUST_ANCHOR\", \"alias\":\"{{ include "acapy.fullname" . }}\"}' -X POST {{ include "traction.ledgerBrowser" . }}/register;
 {{- end -}}
 {{- end -}}
 
@@ -305,77 +305,6 @@ tls:
 tls:
   insecureEdgeTerminationPolicy: {{ .Values.acapy.openshift.adminRoute.tls.insecureEdgeTerminationPolicy }}
   termination: {{ .Values.acapy.openshift.adminRoute.tls.termination }}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Create a default fully qualified traction api name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-*/}}
-{{- define "traction_api.fullname" -}}
-{{ template "global.fullname" . }}-api
-{{- end -}}
-
-{{/*
-Create a default fully qualified traction api name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-*/}}
-{{- define "traction_api.secret.name" -}}
-{{ template "traction_api.fullname" . }}
-{{- end -}}
-
-{{/*
-Common traction api labels
-*/}}
-{{- define "traction_api.labels" -}}
-{{ include "common.labels" . }}
-{{ include "traction_api.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
-
-{{/*
-Selector traction api labels
-*/}}
-{{- define "traction_api.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "traction_api.fullname" . }}
-{{ include "common.selectorLabels" . }}
-{{- end }}
-
-{{/*
-Mount the traction api config map as env vars
-*/}}
-{{- define "traction_api.configmap.env.vars" -}}
-envFrom:
-  - configMapRef:
-      name: {{ template "traction_api.fullname" . }}
-{{- end -}}
-
-{{/*
-Create the name of the traction api service account to use
-*/}}
-{{- define "traction_api.serviceAccountName" -}}
-{{- if .Values.traction_api.serviceAccount.create }}
-{{- default (include "traction_api.fullname" .) .Values.traction_api.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.traction_api.serviceAccount.name }}
-{{- end }}
-{{- end }}
-
-{{/*
-generate traction api hosts if not overriden
-*/}}
-{{- define "traction_api.host" -}}
-{{- include "traction_api.fullname" . }}{{ .Values.global.ingressSuffix -}}
-{{- end }}
-
-{{- define "traction_api.openshift.route.tls" -}}
-{{- if (.Values.traction_api.openshift.route.tls.enabled) -}}
-tls:
-  insecureEdgeTerminationPolicy: {{ .Values.traction_api.openshift.route.tls.insecureEdgeTerminationPolicy }}
-  termination: {{ .Values.traction_api.openshift.route.tls.termination }}
 {{- end -}}
 {{- end -}}
 
