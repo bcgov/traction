@@ -70,8 +70,14 @@ def error_handler(func):
         except (StorageError, BaseModelError) as err:
             raise web.HTTPBadRequest(reason=err.roll_up) from err
         except Exception as err:
-            LOGGER.error(err)
-            raise err
+            # We do not want a hard dependency on multitenant_provider plugin.
+            # It throws a WalletKeyMismatchError, so let's "soft" handle it.
+            # That plugin throws a 409 when wallet_key is incorrect...
+            if "WalletKeyMismatchError" == type(err).__name__:
+                raise web.HTTPConflict(reason=err.roll_up) from err
+            else:
+                LOGGER.error(err)
+                raise err
 
     return wrapper
 
@@ -225,14 +231,16 @@ async def tenant_reservation(request: web.BaseRequest):
         tenant_name=rec.tenant_name, check_reservations=True
     )
     if unique_tenant_name != rec.tenant_name:
-        body = json.dumps({
+        body = json.dumps(
+            {
                 "tenant_name": rec.tenant_name,
                 "suggested_tenant_name": unique_tenant_name,
-            }).encode('utf-8')
+            }
+        ).encode("utf-8")
         raise web.HTTPConflict(
             reason=f"There is currently a tenant with the name'{rec.tenant_name}'.",
             body=body,
-            content_type="application/json"
+            content_type="application/json",
         )
 
     async with profile.session() as session:
