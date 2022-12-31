@@ -9,7 +9,7 @@ packages = [{include = "traction_innkeeper"}]
 
 [tool.poetry.dependencies]
 python = ">=3.6.13,<4.0"
-aries-cloudagent = { version = "0.7.4" }
+aries-cloudagent = { version = "0.7.5" }
 typing-extensions = "^3.7.4"
 python-dateutil = "^2.8.1"
 PyJWT = "^2.4.0"
