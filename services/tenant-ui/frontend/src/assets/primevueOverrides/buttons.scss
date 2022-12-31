@@ -1,0 +1,27 @@
+@import '../variables.scss';
+
+button {
+  &.p-button {
+    &:not(.p-button-rounded):not(.p-button-text) {
+      padding: 0.45rem;
+      border-radius: 5px;
+      background-color: $tenant-ui-secondary-color;
+      border-color: $tenant-ui-secondary-color;
+      &:hover,
+      &:active {
+        background-color: $tenant-ui-secondary-active !important;
+        border-color: $tenant-ui-secondary-color !important;
+      }
+      > .p-button-label {
+        font-weight: normal;
+      }
+    }
+  }
+  &.p-button-rounded,
+  &.p-button-text {
+    color: $tenant-ui-secondary-color !important;
+    > .p-button-label {
+      font-weight: normal;
+    }
+  }
+}

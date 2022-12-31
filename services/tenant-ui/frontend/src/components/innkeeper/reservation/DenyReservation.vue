@@ -10,14 +10,10 @@
     :header="t('reservations.denyRequest')"
     :modal="true"
   >
-    <p>
-      {{ t('reservations.denied.reasonText') }}
-    </p>
-
     <form @submit.prevent="deny()">
       <!-- Reason -->
       <div class="field">
-        <label for="reason"> Reason for Denial (Optional) </label>
+        <label for="reason"> {{ t('reservations.denied.reasonText') }} </label>
         <InputText id="reason" v-model="reason" class="w-full" />
       </div>
       <Button

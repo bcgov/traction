@@ -1,26 +1,33 @@
-// Global modifications to PrimeVue components here
-// Note if general global theming (colors mostly) needs changing, look to the pulled in _theme file
-// Can adjust ALL instances of a PrimeVue component here by just overriding the classes,
+@import '../variables.scss';
 
 // Data Tables
 .p-datatable {
+  // Headers
+  .p-datatable-header {
+    border-left-width: 1px;
+    border-right-width: 1px;
+  }
   .p-datatable-header,
   .p-datatable-wrapper .p-datatable-thead > tr > th {
     background-color: $tenant-ui-panel-back-color;
     border-color: $tenant-ui-panel-border-color;
   }
-
   .p-datatable-wrapper .p-datatable-thead > tr > th,
   .p-datatable-wrapper tbody > tr > td {
-    border-width: 1px 0;
     border-color: $tenant-ui-panel-border-color;
-    font-weight: medium;
     &:first-child {
       border-left-width: 1px;
     }
     &:last-child {
       border-right-width: 1px;
     }
+  }
+
+  // Cells
+  .p-datatable-wrapper td[role='cell'],
+  .p-datatable-wrapper th[role='columnheader'] {
+    padding-top: 5px;
+    padding-bottom: 5px;
   }
 
   // Sort Columns
@@ -39,6 +46,7 @@
     display: flex;
     justify-content: flex-start;
     padding-top: 5px;
+    padding-left: 0;
     .p-paginator-rpp-options {
       margin-left: auto;
     }
@@ -67,37 +75,7 @@
     }
   }
   .p-paginator-rpp-options .p-dropdown-label {
-    padding-top: 3px;
+    padding-top: 8px;
     margin-right: 15px;
   }
 }
-
-// Dialogs
-.p-dialog-content {
-  input {
-    min-width: 400px;
-  }
-}
-
-// Input Switches
-.p-inputswitch {
-  &.p-inputswitch-checked .p-inputswitch-slider {
-    background: darken($tenant-ui-status-green-background, 20%);
-    &::before {
-      background-color: white !important;
-    }
-  }
-  .p-inputswitch-slider {
-    background: darken($tenant-ui-status-red-background, 20%);
-  }
-  &:hover {
-    &.p-inputswitch-checked .p-inputswitch-slider {
-      background: darken($tenant-ui-status-green-background, 40%) !important;
-    }
-    .p-inputswitch-slider {
-      background: darken($tenant-ui-status-red-background, 40%) !important;
-    }
-  }
-}
-
-// TODO: move more customization into here
