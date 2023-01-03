@@ -75,8 +75,8 @@ export const API_PATH = {
     `/multitenancy/reservations/${resId}/check-in`,
   MULTITENANCY_TENANT_TOKEN: (tenantId: string) =>
     `/multitenancy/tenant/${tenantId}/token`,
-    MULTITENANCY_WALLET_TOKEN: (tenantId: string) =>
-      `/multitenancy/wallet/${tenantId}/token`,
+  MULTITENANCY_WALLET_TOKEN: (tenantId: string) =>
+    `/multitenancy/wallet/${tenantId}/token`,
 };
 
 export const RESERVATION_STATUSES = {

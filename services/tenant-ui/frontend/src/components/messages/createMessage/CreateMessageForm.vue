@@ -3,21 +3,24 @@
     <form @submit.prevent="handleSubmit(!v$.$invalid)">
       <!-- Connection ID -->
       <div class="field">
-      <label for="connectionId" :class="{ 'p-error': v$.connectionId.$invalid && submitted }">
-        Connection ID
-      </label>
-      <InputText
-        id="connectionId"
-        v-model="v$.connectionId.$model"
-        class="w-full"
-        :class="{ 'p-invalid': v$.connectionId.$invalid && submitted }"
-      />
-      <span v-if="v$.connectionId.$error && submitted">
-        <span v-for="(error, index) of v$.connectionId.$errors" :key="index">
-          <small class="p-error">{{ error.$message }}</small>
+        <label
+          for="connectionId"
+          :class="{ 'p-error': v$.connectionId.$invalid && submitted }"
+        >
+          Connection ID
+        </label>
+        <InputText
+          id="connectionId"
+          v-model="v$.connectionId.$model"
+          class="w-full"
+          :class="{ 'p-invalid': v$.connectionId.$invalid && submitted }"
+        />
+        <span v-if="v$.connectionId.$error && submitted">
+          <span v-for="(error, index) of v$.connectionId.$errors" :key="index">
+            <small class="p-error">{{ error.$message }}</small>
+          </span>
         </span>
-      </span>
-    </div>
+      </div>
 
       <!-- TODO: add back once connections are in -->
       <!-- Contact -->
