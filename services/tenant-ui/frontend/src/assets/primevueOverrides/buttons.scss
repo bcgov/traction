@@ -3,7 +3,7 @@
 button {
   &.p-button {
     &:not(.p-button-rounded):not(.p-button-text) {
-      padding: 0.45rem;
+      padding: 0.5rem 1rem;
       border-radius: 5px;
       background-color: $tenant-ui-secondary-color;
       border-color: $tenant-ui-secondary-color;
