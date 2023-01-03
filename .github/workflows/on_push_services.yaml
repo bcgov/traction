@@ -6,9 +6,9 @@ on:
       - develop
     paths:
       - 'plugins/**'
+      - 'services/tenant-ui/**'
       - 'charts/traction/**'
-      - 'charts/tenant-ui/**'
-      
+      - 'charts/tenant-ui/**'      
 jobs:
 
   build_ui:
