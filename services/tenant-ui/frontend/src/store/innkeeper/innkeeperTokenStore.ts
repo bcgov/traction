@@ -10,7 +10,7 @@ export const useInnkeeperTokenStore = defineStore(
   'useInnkeeperTokenStore',
   () => {
     const { config } = storeToRefs(useConfigStore());
-    const { acapyToken } = storeToRefs(useTokenStore());
+    const { token } = storeToRefs(useTokenStore());
     // A raw api call without using the interceptors from the acapyApiTenantStore
     const api = axios.create({
       baseURL: config.value.frontend.tenantProxyPath,
@@ -22,7 +22,7 @@ export const useInnkeeperTokenStore = defineStore(
 
     // getters
     const innkeeperReady = computed((): boolean => {
-      return acapyToken.value != null;
+      return token.value != null;
     });
 
     /**
@@ -38,7 +38,7 @@ export const useInnkeeperTokenStore = defineStore(
       console.log('> innkeeperTokenStore.load');
       console.log('params', params);
       const payload = { wallet_key: params.adminKey };
-      acapyToken.value = null;
+      token.value = null;
       error.value = null;
       loading.value = true;
 
@@ -46,7 +46,7 @@ export const useInnkeeperTokenStore = defineStore(
       await api
         .post(API_PATH.MULTITENANCY_TENANT_TOKEN(params.adminName), payload)
         .then((res) => {
-          acapyToken.value = res.data.token;
+          token.value = res.data.token;
         })
         .catch((err) => {
           error.value = err;
@@ -62,12 +62,12 @@ export const useInnkeeperTokenStore = defineStore(
         throw error.value;
       }
       // return data so $onAction.after listeners can add their own handler
-      return acapyToken.value;
+      return token.value;
     }
 
     function clearToken(): void {
       console.log('> clearToken');
-      acapyToken.value = null;
+      token.value = null;
       console.log('< clearToken');
     }
 

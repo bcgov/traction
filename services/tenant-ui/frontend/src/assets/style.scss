@@ -1,8 +1,7 @@
-@import '_theme.scss'; // copied from '~primevue/resources/themes/nova/theme.css'
+@import 'primevue/resources/themes/lara-light-blue/theme.css'; // includes '~primevue/resources/themes/nova/theme.css'
 @import 'layout.scss';
-@import 'forms.scss';
 @import 'tenantuiComponents.scss';
-@import 'primevueComponents.scss';
+@import 'primevueOverrides/primevueOverrides.scss';
 @import 'toast.scss';
 
 // General HTML

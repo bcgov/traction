@@ -1,0 +1,22 @@
+@import '../variables.scss';
+
+// Input Switches
+.p-inputswitch {
+  &.p-inputswitch-checked .p-inputswitch-slider {
+    background: darken($tenant-ui-status-green-background, 20%);
+    &::before {
+      background-color: white !important;
+    }
+  }
+  .p-inputswitch-slider {
+    background: darken($tenant-ui-status-red-background, 20%);
+  }
+  &:hover {
+    &.p-inputswitch-checked .p-inputswitch-slider {
+      background: darken($tenant-ui-status-green-background, 40%) !important;
+    }
+    .p-inputswitch-slider {
+      background: darken($tenant-ui-status-red-background, 40%) !important;
+    }
+  }
+}

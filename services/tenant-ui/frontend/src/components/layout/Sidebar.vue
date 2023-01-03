@@ -1,7 +1,7 @@
 <template>
   <div class="traction-sidebar">
-    <h1 v-if="tenant" class="sidebar-app-title">{{ tenant.name }}</h1>
-    <!--<h1 class="sidebar-app-title">{{ config.frontend.ux.sidebarTitle }}</h1>-->
+    <!-- <h1 v-if="tenant" class="sidebar-app-title">{{ tenant.name }}</h1> -->
+    <h1 class="sidebar-app-title">Tenant UI</h1>
     <PanelMenu :model="items" class="mt-5" />
   </div>
 </template>
@@ -24,29 +24,29 @@ const items = ref([
     icon: 'pi pi-fw pi-chart-bar',
     to: { name: 'Dashboard' },
   },
-  {
-    label: () => t('contact.contacts'),
-    icon: 'pi pi-fw pi-users',
-    to: { name: 'MyContacts' },
-  },
+  // {
+  //   label: () => t('contact.contacts'),
+  //   icon: 'pi pi-fw pi-users',
+  //   to: { name: 'MyContacts' },
+  // },
 
-  {
-    label: () => t('issue.issuance'),
-    icon: 'pi pi-fw pi-wallet',
-    to: { name: 'MyIssuedCredentials' },
-  },
+  // {
+  //   label: () => t('issue.issuance'),
+  //   icon: 'pi pi-fw pi-wallet',
+  //   to: { name: 'MyIssuedCredentials' },
+  // },
 
-  {
-    label: () => t('verify.verification'),
-    icon: 'pi pi-fw pi-check-square',
-    to: { name: 'MyPresentations' },
-  },
+  // {
+  //   label: () => t('verify.verification'),
+  //   icon: 'pi pi-fw pi-check-square',
+  //   to: { name: 'MyPresentations' },
+  // },
 
-  {
-    label: () => t('holder.holder'),
-    icon: 'pi pi-fw pi-id-card',
-    to: { name: 'MyHeldCredentials' },
-  },
+  // {
+  //   label: () => t('holder.holder'),
+  //   icon: 'pi pi-fw pi-id-card',
+  //   to: { name: 'MyHeldCredentials' },
+  // },
 
   {
     label: () => t('messages.messages'),
@@ -54,20 +54,20 @@ const items = ref([
     to: { name: 'MyMessages' },
   },
 
-  {
-    label: () => t('configuration.configuration'),
-    icon: 'pi pi-fw pi-file',
-    items: [
-      {
-        label: () => t('configuration.schemasCreds.schemas'),
-        to: { name: 'Schemas' },
-      },
-      {
-        label: () => t('configuration.presentationTemplates.templates'),
-        to: { name: 'PresentationTemplates' },
-      },
-    ],
-  },
+  // {
+  //   label: () => t('configuration.configuration'),
+  //   icon: 'pi pi-fw pi-file',
+  //   items: [
+  //     {
+  //       label: () => t('configuration.schemasCreds.schemas'),
+  //       to: { name: 'Schemas' },
+  //     },
+  //     {
+  //       label: () => t('configuration.presentationTemplates.templates'),
+  //       to: { name: 'PresentationTemplates' },
+  //     },
+  //   ],
+  // },
 
   {
     label: () => t('about.about'),

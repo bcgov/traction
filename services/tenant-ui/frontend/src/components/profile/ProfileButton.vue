@@ -30,14 +30,14 @@ const toggleProfile = (event: any) => {
 };
 
 const items = [
-  {
-    label: 'Profile',
-    to: { name: 'Profile' },
-  },
-  {
-    label: 'Settings',
-    to: { name: 'Settings' },
-  },
+  // {
+  //   label: 'Profile',
+  //   to: { name: 'Profile' },
+  // },
+  // {
+  //   label: 'Settings',
+  //   to: { name: 'Settings' },
+  // },
   {
     label: 'Developer',
     visible: config.value.frontend.showDeveloper,
@@ -54,11 +54,15 @@ const items = [
 ];
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .parent {
   position: relative;
   top: 0;
   left: 0;
+  button,
+  button:hover {
+    background-color: transparent !important;
+  }
 }
 button {
   background-color: rgba(0, 0, 0, 0);

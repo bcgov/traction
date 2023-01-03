@@ -16,11 +16,13 @@ export const useTenantStore = defineStore('tenant', () => {
 
   // getters
   const tenantReady = computed(() => {
-    return token.value != null && tenant.value != null;
+    return token.value != null;
+    // return token.value != null && tenant.value != null;
   });
 
   const isIssuer = computed(() => {
-    return tenant.value.issuer;
+    return false;
+    // return tenant.value.issuer;
   });
 
   // actions

@@ -12,7 +12,7 @@ export const useConfigStore = defineStore('config', () => {
   // getters
   function proxyPath(p: string) {
     if (config.value) {
-      let pp = config.value.frontend.proxyPath;
+      let pp = config.value.frontend.tenantProxyPath;
       if (pp.endsWith('/')) {
         pp = pp.slice(0, -1);
       }

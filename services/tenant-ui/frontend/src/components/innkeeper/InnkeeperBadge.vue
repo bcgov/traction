@@ -1,6 +1,6 @@
 <template>
   <div class="parent">
-    <Button @click="toggleProfile">
+    <Button class="p-button-rounded" @click="toggleProfile">
       <div class="badge-img" />
     </Button>
   </div>

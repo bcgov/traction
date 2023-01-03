@@ -69,7 +69,7 @@
     },
     "denied": {
       "toast": "Reservation Denied for {email}",
-      "reasonText": "Enter an optional reason to communicate why this reservation is being denied"
+      "reasonText": "Reason for Denial (Optional)"
     }
   },
   "about": {

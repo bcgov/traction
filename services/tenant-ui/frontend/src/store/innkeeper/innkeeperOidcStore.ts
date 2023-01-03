@@ -9,7 +9,7 @@ import { useTokenStore } from '../tokenStore';
 export const useInnkeeperOidcStore = defineStore('innkeeperOidcStore', () => {
   // other stores
   const { config } = storeToRefs(useConfigStore());
-  const { acapyToken } = storeToRefs(useTokenStore());
+  const { token } = storeToRefs(useTokenStore());
 
   // private (move to other file maybe?)
   const _settings: any = {
@@ -48,7 +48,7 @@ export const useInnkeeperOidcStore = defineStore('innkeeperOidcStore', () => {
         API_PATH.OIDC_INNKEEPER_LOGIN,
         loginCfg
       );
-      acapyToken.value = response.data.access_token;
+      token.value = response.data.access_token;
 
       // strip the oidc return params
       window.history.pushState({}, document.title, '/innkeeper');
