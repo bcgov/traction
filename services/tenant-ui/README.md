@@ -87,4 +87,4 @@ The Tenant UI Inkeeper functionality can be configured to log in with either (or
 
 To set up the OIDC provider of your choice, add configuration values in your deployment to match the `frontend.innkeeperOidc` fields for a auth code grant client,a nd configure the `server.oidc` fields appropriately to veify the JWKS for tokens from that client. 
 
-As well, the Innkeeper secret must be available to the Tenant UI server, this is set in `server.innkeeper` configuration.
+As well, the Innkeeper secret must be available to the Tenant UI server, this is set in `server.innkeeper` configuration...
