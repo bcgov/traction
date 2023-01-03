@@ -41,7 +41,7 @@ export const useAcapyTenantApi = defineStore('acapyApi', () => {
           'Content-Type': 'application/json',
           accept: 'application/json',
           ...dataConfig.headers,
-          Authorization: `Bearer ${tokenStore.acapyToken}`,
+          Authorization: `Bearer ${tokenStore.token}`,
         },
       };
       return result;

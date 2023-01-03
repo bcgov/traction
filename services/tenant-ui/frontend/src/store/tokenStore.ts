@@ -8,7 +8,6 @@ import { API_PATH } from '@/helpers/constants';
 export const useTokenStore = defineStore('token', () => {
   // state
   const token: any = ref(null);
-  const acapyToken: any = ref(null);
   const loading: any = ref(false);
   const error: any = ref(null);
 
@@ -17,34 +16,26 @@ export const useTokenStore = defineStore('token', () => {
   // actions
   async function login(username: string, password: string) {
     console.log('> tokenStore.load');
-    const payload = `username=${username}&password=${password}`;
+    const payload = {
+      wallet_key: password,
+    };
     token.value = null;
-    acapyToken.value = null;
     error.value = null;
     loading.value = true;
 
     // TODO: isolate this to something reusable when we grab an axios connection.
     const configStore = useConfigStore();
-    const url = configStore.proxyPath(API_PATH.TENANT_TOKEN);
+    const url = configStore.proxyPath(
+      API_PATH.MULTITENANCY_WALLET_TOKEN(username)
+    );
     await axios({
       method: 'post',
       url,
-      headers: {
-        accept: 'application/json',
-        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-      },
       data: payload,
     })
       .then((res) => {
         console.log(res);
-        token.value = res.data.access_token;
-        // parse out the acapy token and store that...
-        try {
-          const decoded = jwtDecode<any>(res.data.access_token);
-          acapyToken.value = decoded.key;
-        } catch (error) {
-          console.error(`Error decoding acapy token : {}`, error);
-        }
+        token.value = res.data.token;
       })
       .catch((err) => {
         error.value = err;
@@ -66,11 +57,10 @@ export const useTokenStore = defineStore('token', () => {
   function clearToken() {
     console.log('> clearToken');
     token.value = null;
-    acapyToken.value = null;
     console.log('< clearToken');
   }
 
-  return { acapyToken, token, loading, error, clearToken, login };
+  return { token, loading, error, clearToken, login };
 });
 
 export default {

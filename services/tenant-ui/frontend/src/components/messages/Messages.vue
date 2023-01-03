@@ -84,11 +84,11 @@ const { contacts } = storeToRefs(useContactsStore());
  * we need to wait for them to load.
  */
 if (!contacts.value) {
-  const contactsStore = useContactsStore();
-  contactsStore.listContacts().catch((err) => {
-    console.error(err);
-    toast.error(`Failure: ${err}`);
-  });
+  // const contactsStore = useContactsStore();
+  // contactsStore.listContacts().catch((err) => {
+  //   console.error(err);
+  //   toast.error(`Failure: ${err}`);
+  // });
 }
 
 /**
@@ -101,7 +101,7 @@ const findContactName = (connectionId: string) => {
   const contact = contacts.value?.find((c: any) => {
     return c.acapy.connection.connection_id === connectionId;
   });
-  return contact ? contact.alias : 'Unknown';
+  return contact ? contact.alias : '...';
 };
 
 const loadTable = async () => {

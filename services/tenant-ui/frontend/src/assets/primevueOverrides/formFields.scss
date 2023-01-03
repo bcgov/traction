@@ -29,4 +29,15 @@
       box-shadow: 0 0 0.3rem 0.1rem $tenant-ui-shadow !important;
     }
   }
+
+  .p-autocomplete-dd {
+    input {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    button {
+      border-top-left-radius: 0 !important;
+      border-bottom-left-radius: 0 !important;
+    }
+  }
 }

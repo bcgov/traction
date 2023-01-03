@@ -102,7 +102,7 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
   try {
     // token is loaded, now go fetch the tenant data...
-    await tenantStore.getSelf();
+    // await tenantStore.getSelf();
     console.log(tenant.value);
   } catch (err) {
     console.error(err);
