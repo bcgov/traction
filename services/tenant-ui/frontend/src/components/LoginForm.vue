@@ -1,5 +1,4 @@
 <template>
-  TEST 1.0.0-rc
   <form @submit.prevent="handleSubmit(!v$.$invalid)">
     <div class="field mt-5 w-full">
       <!-- ID -->
