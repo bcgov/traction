@@ -8,15 +8,16 @@
 </template>
 
 <script setup lang="ts">
-// Vue
-import { ref } from 'vue';
 // PrimeVue / etc
 import Button from 'primevue/button';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';
 import { useI18n } from 'vue-i18n';
 // State
+import { storeToRefs } from 'pinia';
+import { useConfigStore } from '@/store';
 import { useInnkeeperTenantsStore } from '@/store';
+const { config } = storeToRefs(useConfigStore());
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
 
 const confirm = useConfirm();
@@ -56,9 +57,13 @@ const approve = async () => {
       props.id,
       props.email
     );
-    // Have to handle the dialog up a level or it deletes when the rows re-draw after reload
-    emit('success', res.reservation_pwd, props.email);
-    toast.success(t('reservations.approved.toast', { email: props.email }));
+    if (config.value.frontend.showInnkeeperReservationPassword) {
+      // Have to handle the dialog up a level or it deletes when the rows re-draw after reload
+      emit('success', res.reservation_pwd, props.email);
+      toast.success(t('reservations.approved.toast', { email: props.email }));
+    } else {
+      toast.success(t('reservations.approved.text', { email: props.email }));
+    }
   } catch (error) {
     toast.error(`Failure: ${error}`);
   } finally {

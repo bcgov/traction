@@ -4,6 +4,7 @@
     "apiPath": "api/",
     "basePath": "/",
     "showDeveloper": true,
+    "showInnkeeperReservationPassword": true,
     "showInnkeeperAdminLogin": true,
     "oidc": {
       "active": false,
