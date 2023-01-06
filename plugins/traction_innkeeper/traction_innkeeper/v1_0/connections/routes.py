@@ -28,11 +28,27 @@ async def connections_invitation(request: web.BaseRequest):
     try:
         async with profile.session() as session:
             connection = await ConnRecord.retrieve_by_id(session, connection_id)
-            invitation = await connection.retrieve_invitation(session)
     except StorageNotFoundError as err:
         raise web.HTTPNotFound(reason=err.roll_up) from err
     except BaseModelError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    try:
+        async with profile.session() as session:
+            invitation = await connection.retrieve_invitation(session)
+    except StorageNotFoundError:
+        # if connection is a result of multi-use, then there is no invitation
+        # ... go grab the multi-use connection's invitation
+        try:
+            async with profile.session() as session:
+                multi_use = await ConnRecord.retrieve_by_invitation_key(
+                    connection.invitation_key
+                )
+                invitation = await multi_use.retrieve_invitation(session)
+        except StorageNotFoundError as err:
+            raise web.HTTPNotFound(reason=err.roll_up) from err
+        except BaseModelError as err:
+            raise web.HTTPBadRequest(reason=err.roll_up) from err
 
     invitation_url = invitation.to_url(base_url)
     result = {
