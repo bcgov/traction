@@ -1,0 +1,63 @@
+import logging
+
+from aiohttp import web
+from aiohttp_apispec import docs, response_schema, match_info_schema
+from aries_cloudagent.admin.request_context import AdminRequestContext
+from aries_cloudagent.connections.models.conn_record import ConnRecord
+from aries_cloudagent.messaging.models.base import BaseModelError
+from aries_cloudagent.protocols.connections.v1_0.routes import (
+    ConnectionsConnIdMatchInfoSchema,
+    InvitationResultSchema,
+)
+from aries_cloudagent.storage.error import StorageNotFoundError
+
+
+LOGGER = logging.getLogger(__name__)
+
+
+@docs(tags=["connection"], summary="Fetch connection invitation")
+@match_info_schema(ConnectionsConnIdMatchInfoSchema())
+@response_schema(InvitationResultSchema(), 200, description="")
+async def connections_invitation(request: web.BaseRequest):
+    """Handle fetching invitation associated with a single connection record."""
+    context: AdminRequestContext = request["context"]
+    connection_id = request.match_info["conn_id"]
+
+    profile = context.profile
+    base_url = profile.settings.get("invite_base_url")
+    try:
+        async with profile.session() as session:
+            connection = await ConnRecord.retrieve_by_id(session, connection_id)
+            invitation = await connection.retrieve_invitation(session)
+    except StorageNotFoundError as err:
+        raise web.HTTPNotFound(reason=err.roll_up) from err
+    except BaseModelError as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    invitation_url = invitation.to_url(base_url)
+    result = {
+        "connection_id": connection_id,
+        "invitation": invitation.serialize(),
+        "invitation_url": f"{invitation.endpoint}{invitation_url}"
+        if invitation_url.startswith("?")
+        else invitation_url,
+    }
+    if connection.alias:
+        result["alias"] = connection.alias
+
+    return web.json_response(result)
+
+
+async def register(app: web.Application):
+    """Register routes."""
+    LOGGER.info("> registering routes")
+    app.add_routes(
+        [
+            web.get(
+                "/connections/{conn_id}/invitation",
+                connections_invitation,
+                allow_head=False,
+            ),
+        ]
+    )
+    LOGGER.info("< registering routes")

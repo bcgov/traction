@@ -2,12 +2,14 @@ import logging
 
 from aries_cloudagent.config.injection_context import InjectionContext
 from aries_cloudagent.core.event_bus import EventBus, Event
+from aries_cloudagent.core.plugin_registry import PluginRegistry
 from aries_cloudagent.core.profile import Profile
 from aries_cloudagent.core.protocol_registry import ProtocolRegistry
 from aries_cloudagent.core.util import STARTUP_EVENT_PATTERN
 
 from .config import get_config
 from .tenant_manager import TenantManager
+from .connections import routes
 
 LOGGER = logging.getLogger(__name__)
 
@@ -18,6 +20,17 @@ async def setup(context: InjectionContext):
     protocol_registry = context.inject(ProtocolRegistry)
     if not protocol_registry:
         raise ValueError("ProtocolRegistry missing in context")
+
+    plugin_registry = context.inject(PluginRegistry)
+    if not plugin_registry:
+        raise ValueError("PluginRegistry missing in context")
+
+    # find ourself...
+    for plugin_name in plugin_registry.plugin_names:
+        if plugin_name.endswith("traction_innkeeper.v1_0"):
+            LOGGER.info("> > register subordinate plugins")
+            plugin_registry.register_plugin(f"{plugin_name}.connections")
+            LOGGER.info("< < register subordinate plugins")
 
     bus = context.inject(EventBus)
     if not bus:

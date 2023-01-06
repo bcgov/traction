@@ -202,7 +202,9 @@ class TenantManager:
             # else return None
             return None
 
-    async def get_unique_tenant_name(self, tenant_name: str, check_reservations: bool = False):
+    async def get_unique_tenant_name(
+        self, tenant_name: str, check_reservations: bool = False
+    ):
         self._logger.info(f"> get_unique_tenant_name('{tenant_name}')")
         unique_tenant_name = tenant_name
         async with self._profile.session() as session:
@@ -225,7 +227,9 @@ class TenantManager:
         )
         return unique_tenant_name
 
-    async def check_tables_for_tenant_name(self, session, tenant_name: str, check_reservations: bool = False):
+    async def check_tables_for_tenant_name(
+        self, session, tenant_name: str, check_reservations: bool = False
+    ):
         if check_reservations:
             reservation_records = await ReservationRecord.query(
                 session, {"tenant_name": tenant_name}
@@ -234,13 +238,9 @@ class TenantManager:
         else:
             reservation_exists = False
 
-        wallet_records = await WalletRecord.query(
-            session, {"wallet_name": tenant_name}
-        )
+        wallet_records = await WalletRecord.query(session, {"wallet_name": tenant_name})
         wallet_exists = len(wallet_records) > 0
 
-        tenant_records = await TenantRecord.query(
-            session, {"tenant_name": tenant_name}
-        )
+        tenant_records = await TenantRecord.query(session, {"tenant_name": tenant_name})
         tenant_exists = len(tenant_records) > 0
         return reservation_exists, tenant_exists, wallet_exists
