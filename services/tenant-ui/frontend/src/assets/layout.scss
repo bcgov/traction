@@ -113,21 +113,25 @@ body {
         color: $tenant-ui-text-on-primary !important;
       }
       .p-submenu-list {
-        padding-left: 1.5em !important;
+        padding-left: 2.5em;
       }
       // Override the order of the drop down icon
       .p-panelmenu-header {
+        .p-panelmenu-header-content {
+          width: 100%;
+        }
         display: flex;
         span {
           &.pi-chevron-right,
           &.pi-chevron-down {
+            display: flex;
             order: 2;
             margin-left: auto;
           }
         }
         .p-panelmenu-header-action {
-          padding-top: .75em;
-          padding-bottom: .75em;
+          padding-top: 0.75em;
+          padding-bottom: 0.75em;
         }
         .p-menuitem-icon {
           font-size: 1.3em;

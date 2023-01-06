@@ -16,7 +16,16 @@ const items = ref([
   {
     label: () => t('reservations.reservations'),
     icon: 'pi pi-fw pi-book',
-    to: { name: 'InnkeeperReservations' },
+    items: [
+      {
+        label: () => t('reservations.current'),
+        to: { name: 'InnkeeperReservations' },
+      },
+      {
+        label: () => t('reservations.history'),
+        to: { name: 'InnkeeperReservationsHistory' },
+      },
+    ],
   },
   {
     label: () => t('tenants.tenants'),
