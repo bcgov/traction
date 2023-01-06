@@ -42,7 +42,7 @@ async def connections_invitation(request: web.BaseRequest):
         try:
             async with profile.session() as session:
                 multi_use = await ConnRecord.retrieve_by_invitation_key(
-                    connection.invitation_key
+                    session, connection.invitation_key
                 )
                 invitation = await multi_use.retrieve_invitation(session)
         except StorageNotFoundError as err:
