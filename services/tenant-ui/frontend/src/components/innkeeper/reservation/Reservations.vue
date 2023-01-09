@@ -3,7 +3,7 @@
 
   <DataTable
     :loading="loading"
-    :value="reservations"
+    :value="currentReservations"
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
@@ -13,15 +13,13 @@
     :sort-order="-1"
   >
     <template #header>
-      <div class="flex justify-content-between">
-        <div class="flex justify-content-end">
-          <Button
-            icon="pi pi-refresh"
-            class="p-button-rounded p-button-outlined"
-            title="Refresh Table"
-            @click="loadTable"
-          />
-        </div>
+      <div class="flex justify-content-end">
+        <Button
+          icon="pi pi-refresh"
+          class="p-button-rounded p-button-outlined"
+          title="Refresh Table"
+          @click="loadTable"
+        />
       </div>
     </template>
     <template #empty> No records found. </template>
@@ -39,12 +37,6 @@
         />
       </template>
     </Column>
-    <Column :sortable="true" field="state" header="State">
-      <template #body="{ data }">
-        <StatusChip :status="data.state" />
-      </template>
-    </Column>
-    <Column :sortable="true" field="reservation_id" header="id" />
     <Column :sortable="true" field="contact_email" header="Contact Email" />
     <Column :sortable="true" field="contact_name" header="Contact Name" />
     <Column :sortable="true" field="contact_phone" header="Contact Phone" />
@@ -90,7 +82,6 @@ import { storeToRefs } from 'pinia';
 // Other components
 import ApproveReservation from './ApproveReservation.vue';
 import DenyReservation from './DenyReservation.vue';
-import StatusChip from '@/components/common/StatusChip.vue';
 import { TABLE_OPT } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 
@@ -99,7 +90,9 @@ const { t } = useI18n();
 
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
 
-const { loading, reservations } = storeToRefs(useInnkeeperTenantsStore());
+const { loading, currentReservations } = storeToRefs(
+  useInnkeeperTenantsStore()
+);
 
 // Loading table contents
 const loadTable = async () => {

@@ -52,6 +52,7 @@
   },
   "reservations": {
     "reservations": "Reservations <JP>",
+    "reservationHistory": "Reservation History <JP>",
     "requests": "Requests <JP>",
     "contactEmail": "Contact Email <JP>",
     "contactName": "Contact Name <JP>",

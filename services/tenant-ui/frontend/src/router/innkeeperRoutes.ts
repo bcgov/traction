@@ -22,7 +22,7 @@ const innkeeperRoutes = [
         component: InnkeeperReservations,
       },
       {
-        path: '',
+        path: 'reservations/history',
         name: 'InnkeeperReservationsHistory',
         component: InnkeeperReservationsHistory,
       },

@@ -54,6 +54,7 @@
   },
   "reservations": {
     "reservations": "Reservations",
+    "reservationHistory": "Reservation History",
     "current": "Current",
     "history": "History",
     "requests": "Requests",
