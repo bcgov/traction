@@ -1,9 +1,9 @@
 <template>
-  <h3 class="mt-0">{{ t('reservations.reservations') }}</h3>
+  <h3 class="mt-0">{{ t('reservations.reservationHistory') }}</h3>
 
   <DataTable
     :loading="loading"
-    :value="currentReservations"
+    :value="reservationHistory"
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
@@ -24,19 +24,12 @@
     </template>
     <template #empty> No records found. </template>
     <template #loading> Loading data. Please wait... </template>
-    <Column :sortable="false" header="Actions">
+    <Column :sortable="true" field="state" header="State">
       <template #body="{ data }">
-        <ApproveReservation
-          :id="data.reservation_id"
-          :email="data.contact_email"
-          @success="showApproveModal"
-        />
-        <DenyReservation
-          :id="data.reservation_id"
-          :email="data.contact_email"
-        />
+        <StatusChip :status="data.state" />
       </template>
     </Column>
+    <Column :sortable="true" field="reservation_id" header="id" />
     <Column :sortable="true" field="contact_email" header="Contact Email" />
     <Column :sortable="true" field="contact_name" header="Contact Name" />
     <Column :sortable="true" field="contact_phone" header="Contact Phone" />
@@ -80,8 +73,7 @@ import { useI18n } from 'vue-i18n';
 import { useInnkeeperTenantsStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other components
-import ApproveReservation from './ApproveReservation.vue';
-import DenyReservation from './DenyReservation.vue';
+import StatusChip from '@/components/common/StatusChip.vue';
 import { TABLE_OPT } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 
@@ -90,9 +82,7 @@ const { t } = useI18n();
 
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
 
-const { loading, currentReservations } = storeToRefs(
-  useInnkeeperTenantsStore()
-);
+const { loading, reservationHistory } = storeToRefs(useInnkeeperTenantsStore());
 
 // Loading table contents
 const loadTable = async () => {

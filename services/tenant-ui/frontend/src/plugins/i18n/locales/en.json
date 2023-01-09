@@ -54,6 +54,9 @@
   },
   "reservations": {
     "reservations": "Reservations",
+    "reservationHistory": "Reservation History",
+    "current": "Current",
+    "history": "History",
     "requests": "Requests",
     "contactEmail": "Contact Email",
     "contactName": "Contact Name",

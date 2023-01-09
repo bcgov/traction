@@ -1,9 +1,9 @@
 import { defineStore, storeToRefs } from 'pinia';
-import { ref, Ref } from 'vue';
+import { computed, ref, Ref } from 'vue';
 import axios from 'axios';
 import { useAcapyTenantApi } from '../acapyTenantApi';
 import { fetchListFromAPI } from '../utils';
-import { API_PATH } from '@/helpers/constants';
+import { API_PATH, RESERVATION_STATUSES } from '@/helpers/constants';
 import { useConfigStore } from '../configStore';
 export interface TenantResponseData {
   tenant_id?: string;
@@ -17,11 +17,17 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
 
   // state
   const tenants: Ref<any> = ref(null);
-  const reservations: Ref<any> = ref(null);
+  const reservations: Ref<any[]> = ref([]);
   const loading: Ref<boolean> = ref(false);
   const error: Ref<string | null> = ref(null);
 
   // getters
+  const currentReservations = computed(() =>
+    reservations.value.filter((r) => r.state === RESERVATION_STATUSES.REQUESTED)
+  );
+  const reservationHistory = computed(() =>
+    reservations.value.filter((r) => r.state !== RESERVATION_STATUSES.REQUESTED)
+  );
 
   // actions
 
@@ -144,6 +150,8 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     error,
     tenants,
     reservations,
+    currentReservations,
+    reservationHistory,
     approveReservation,
     denyReservation,
     listTenants,

@@ -52,6 +52,7 @@
   },
   "reservations": {
     "reservations": "Reservations <FR>",
+    "reservationHistory": "Reservation History <FR>",
     "requests": "Requests <FR>",
     "contactEmail": "Contact Email <FR>",
     "contactName": "Contact Name <FR>",

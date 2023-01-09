@@ -3,6 +3,7 @@ import About from '@/views/About.vue';
 import InnkeeperUi from '@/views/InnkeeperUi.vue';
 import InnkeeperTenants from '@/views/innkeeper/InnkeeperTenants.vue';
 import InnkeeperReservations from '@/views/innkeeper/InnkeeperReservations.vue';
+import InnkeeperReservationsHistory from '@/views/innkeeper/InnkeeperReservationsHistory.vue';
 
 const innkeeperRoutes = [
   {
@@ -16,9 +17,14 @@ const innkeeperRoutes = [
 
       // Reservations
       {
-        path: '',
+        path: 'reservations',
         name: 'InnkeeperReservations',
         component: InnkeeperReservations,
+      },
+      {
+        path: 'reservations/history',
+        name: 'InnkeeperReservationsHistory',
+        component: InnkeeperReservationsHistory,
       },
 
       // About
