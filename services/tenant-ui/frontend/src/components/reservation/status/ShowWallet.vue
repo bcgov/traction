@@ -79,10 +79,16 @@ const toast = useToast();
 
 const { walletId, walletKey } = storeToRefs(useReservationStore());
 
+/**
+ * Copy wallet ID to clipboard
+ */
 const copyWalletId = () => {
   navigator.clipboard.writeText(walletId.value);
   toast.info('Copied wallet ID to clipboard!');
 };
+/**
+ * Copy wallet key to clipboard
+ */
 const copyWalletKey = () => {
   navigator.clipboard.writeText(walletKey.value);
   toast.info('Copied wallet key to clipboard!');
