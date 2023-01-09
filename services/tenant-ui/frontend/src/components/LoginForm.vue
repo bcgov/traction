@@ -49,20 +49,6 @@
         :loading="!!loading"
       />
     </div>
-
-    <!-- Delme for testing only -->
-    <div class="field mt-5 w-full">
-      <label for="wallet-id">Wallet ID</label>
-      <div class="p-inputgroup">
-        <InputText id="wallet-id" readonly name="wallet-id" class="w-full" />
-        <Button
-          icon="pi pi-copy"
-          class="p-button-secondary"
-          title="Copy to clipboard"
-        />
-      </div>
-    </div>
-    <!---------------------------->
   </form>
 </template>
 
@@ -126,14 +112,3 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 };
 </script>
-
-<style>
-.field .p-inputgroup .p-inputtext {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
-.field .p-inputgroup button.p-button {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-}
-</style>

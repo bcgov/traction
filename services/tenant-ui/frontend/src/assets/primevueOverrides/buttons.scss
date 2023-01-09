@@ -25,3 +25,9 @@ button {
     }
   }
 }
+
+// Fixing small bug in PrimeVue for input groups
+.field .p-inputgroup button.p-button {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
