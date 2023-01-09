@@ -25,8 +25,8 @@
           <Button
             icon="pi pi-copy"
             title="Copy to clipboard"
-            @click="copyWalletId"
             class="p-button-secondary"
+            @click="copyWalletId"
           />
         </div>
       </div>
@@ -47,8 +47,8 @@
           <Button
             icon="pi pi-copy"
             title="Copy to clipboard"
-            @click="copyWalletKey"
             class="p-button-secondary"
+            @click="copyWalletKey"
           />
         </div>
       </div>
