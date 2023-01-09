@@ -94,3 +94,18 @@ const copyWalletKey = () => {
   toast.info('Copied wallet key to clipboard!');
 };
 </script>
+
+<style>
+/*
+ There currently is a small bug in PrimeVue where the button and input
+  in the input group is not styled correctly. This is a workaround for that.
+*/
+.field .p-inputgroup .p-inputtext {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.field .p-inputgroup button.p-button {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+</style>
