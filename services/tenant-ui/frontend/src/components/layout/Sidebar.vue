@@ -24,11 +24,20 @@ const items = ref([
     icon: 'pi pi-fw pi-chart-bar',
     to: { name: 'Dashboard' },
   },
-  // {
-  //   label: () => t('contact.contacts'),
-  //   icon: 'pi pi-fw pi-users',
-  //   to: { name: 'MyContacts' },
-  // },
+  {
+    label: () => t('connect.connections'),
+    icon: 'pi pi-fw pi-users',
+    items: [
+      {
+        label: () => t('connect.connections'),
+        to: { name: 'MyContacts' },
+      },
+      {
+        label: () => t('connect.invitations.invitations'),
+        to: { name: 'MyInvitations' },
+      },
+    ],
+  },
 
   // {
   //   label: () => t('issue.issuance'),

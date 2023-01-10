@@ -23,10 +23,10 @@ export const API_PATH = {
 
   TENANT_TOKEN: '/tenant/token',
 
-  CONTACTS: '/tenant/v1/contacts/',
-  CONTACTS_CREATE_INVITATION: '/tenant/v1/contacts/create-invitation',
-  CONTACTS_RECEIVE_INVITATION: '/tenant/v1/contacts/receive-invitation',
-  CONTACT: (id: string) => `/tenant/v1/contacts/${id}`,
+  CONNECTIONS: '/connections',
+  // CONTACTS_CREATE_INVITATION: '/tenant/v1/contacts/create-invitation',
+  // CONTACTS_RECEIVE_INVITATION: '/tenant/v1/contacts/receive-invitation',
+  CONNECTION: (id: string) => `/connections/${id}`,
 
   HOLDER_CREDENTIALS: '/tenant/v1/holder/credentials/',
   HOLDER_CREDENTIALS_ACCEPT_OFFER: (id: string) =>

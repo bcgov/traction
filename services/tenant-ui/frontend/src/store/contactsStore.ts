@@ -1,7 +1,7 @@
 import { API_PATH } from '@/helpers/constants';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
-import { useTenantApi } from './tenantApi';
+import { useAcapyApi } from './acapyApi';
 import {
   fetchList,
   filterByStatusActive,
@@ -30,166 +30,164 @@ export const useContactsStore = defineStore('contacts', () => {
   // actions
 
   // grab the tenant api
-  const tenantApi = useTenantApi();
+  const acapyApi = useAcapyApi();
 
   async function listContacts() {
     selectedContact.value = null;
-    return fetchList(API_PATH.CONTACTS, contacts, error, loading, {
-      acapy: true,
-    });
+    return fetchList(API_PATH.CONNECTIONS, contacts, error, loading, {});
   }
 
-  async function createInvitation(alias: string) {
-    console.log('> contactsStore.createInvitation');
-    error.value = null;
-    loading.value = true;
+  // async function createInvitation(alias: string) {
+  //   console.log('> contactsStore.createInvitation');
+  //   error.value = null;
+  //   loading.value = true;
 
-    let invitationData = null;
-    // need the await here since the returned invitationData is not one of our stored refs...
-    await tenantApi
-      .postHttp(API_PATH.CONTACTS_CREATE_INVITATION, { alias })
-      .then((res) => {
-        console.log(res);
-        // don't grab the item, there are other parts of the response data we need (invitation, invitation url)
-        invitationData = res.data;
-      })
-      .then(() => {
-        // do we want to automatically reload? or have the caller of this to load?
-        console.log(
-          'invitation created. the store calls load automatically, but do we want this done "manually"?'
-        );
-        listContacts();
-      })
-      .catch((err) => {
-        error.value = err;
-        // console.log(error.value);
-      })
-      .finally(() => {
-        loading.value = false;
-      });
-    console.log('< contactsStore.createInvitation');
+  //   let invitationData = null;
+  //   // need the await here since the returned invitationData is not one of our stored refs...
+  //   await acapyApi
+  //     .postHttp(API_PATH.CONTACTS_CREATE_INVITATION, { alias })
+  //     .then((res) => {
+  //       console.log(res);
+  //       // don't grab the item, there are other parts of the response data we need (invitation, invitation url)
+  //       invitationData = res.data;
+  //     })
+  //     .then(() => {
+  //       // do we want to automatically reload? or have the caller of this to load?
+  //       console.log(
+  //         'invitation created. the store calls load automatically, but do we want this done "manually"?'
+  //       );
+  //       listContacts();
+  //     })
+  //     .catch((err) => {
+  //       error.value = err;
+  //       // console.log(error.value);
+  //     })
+  //     .finally(() => {
+  //       loading.value = false;
+  //     });
+  //   console.log('< contactsStore.createInvitation');
 
-    if (error.value != null) {
-      // throw error so $onAction.onError listeners can add their own handler
-      throw error.value;
-    }
-    // return data so $onAction.after listeners can add their own handler
-    return invitationData;
-  }
+  //   if (error.value != null) {
+  //     // throw error so $onAction.onError listeners can add their own handler
+  //     throw error.value;
+  //   }
+  //   // return data so $onAction.after listeners can add their own handler
+  //   return invitationData;
+  // }
 
-  async function acceptInvitation(inviteUrl: string, alias: string) {
-    console.log('> contactsStore.acceptInvitation');
-    error.value = null;
-    loading.value = true;
+  // async function acceptInvitation(inviteUrl: string, alias: string) {
+  //   console.log('> contactsStore.acceptInvitation');
+  //   error.value = null;
+  //   loading.value = true;
 
-    let acceptedData = null;
-    // need the await here since the returned invitation_data is not one of our stored refs...
-    await tenantApi
-      .postHttp(API_PATH.CONTACTS_RECEIVE_INVITATION, {
-        alias,
-        invitation_url: inviteUrl,
-      })
-      .then((res) => {
-        console.log(res);
-        // don't grab the item, there are other parts of the response data we need (invitation, invitation url)
-        acceptedData = res.data;
-      })
-      .then(() => {
-        // do we want to automatically reload? or have the caller of this to load?
-        console.log(
-          'invitation accepted. the store calls load automatically, but do we want this done "manually"?'
-        );
-        listContacts();
-      })
-      .catch((err) => {
-        error.value = err;
-        // console.log(error.value);
-      })
-      .finally(() => {
-        loading.value = false;
-      });
-    console.log('< contactsStore.acceptInvitation');
+  //   let acceptedData = null;
+  //   // need the await here since the returned invitation_data is not one of our stored refs...
+  //   await acapyApi
+  //     .postHttp(API_PATH.CONTACTS_RECEIVE_INVITATION, {
+  //       alias,
+  //       invitation_url: inviteUrl,
+  //     })
+  //     .then((res) => {
+  //       console.log(res);
+  //       // don't grab the item, there are other parts of the response data we need (invitation, invitation url)
+  //       acceptedData = res.data;
+  //     })
+  //     .then(() => {
+  //       // do we want to automatically reload? or have the caller of this to load?
+  //       console.log(
+  //         'invitation accepted. the store calls load automatically, but do we want this done "manually"?'
+  //       );
+  //       listContacts();
+  //     })
+  //     .catch((err) => {
+  //       error.value = err;
+  //       // console.log(error.value);
+  //     })
+  //     .finally(() => {
+  //       loading.value = false;
+  //     });
+  //   console.log('< contactsStore.acceptInvitation');
 
-    if (error.value != null) {
-      // throw error so $onAction.onError listeners can add their own handler
-      throw error.value;
-    }
-    // return data so $onAction.after listeners can add their own handler
-    return acceptedData;
-  }
+  //   if (error.value != null) {
+  //     // throw error so $onAction.onError listeners can add their own handler
+  //     throw error.value;
+  //   }
+  //   // return data so $onAction.after listeners can add their own handler
+  //   return acceptedData;
+  // }
 
-  async function deleteContact(payload: any = {}) {
-    console.log('> contactsStore.deleteContact');
+  // async function deleteContact(payload: any = {}) {
+  //   console.log('> contactsStore.deleteContact');
 
-    const contactId = payload.contact_id;
+  //   const contactId = payload.contact_id;
 
-    error.value = null;
-    loading.value = true;
+  //   error.value = null;
+  //   loading.value = true;
 
-    let result = null;
+  //   let result = null;
 
-    await tenantApi
-      .deleteHttp(API_PATH.CONTACT(contactId), payload)
-      .then((res) => {
-        result = res.data.item;
-      })
-      .then(() => {
-        listContacts(); // Refresh table
-      })
-      .catch((err) => {
-        error.value = err;
-      })
-      .finally(() => {
-        loading.value = false;
-      });
-    console.log('< contactsStore.deleteContact');
+  //   await acapyApi
+  //     .deleteHttp(API_PATH.CONTACT(contactId), payload)
+  //     .then((res) => {
+  //       result = res.data.item;
+  //     })
+  //     .then(() => {
+  //       listContacts(); // Refresh table
+  //     })
+  //     .catch((err) => {
+  //       error.value = err;
+  //     })
+  //     .finally(() => {
+  //       loading.value = false;
+  //     });
+  //   console.log('< contactsStore.deleteContact');
 
-    if (error.value != null) {
-      // throw error so $onAction.onError listeners can add their own handler
-      throw error.value;
-    }
-    // return data so $onAction.after listeners can add their own handler
-    return result;
-  }
+  //   if (error.value != null) {
+  //     // throw error so $onAction.onError listeners can add their own handler
+  //     throw error.value;
+  //   }
+  //   // return data so $onAction.after listeners can add their own handler
+  //   return result;
+  // }
 
   async function getContact(id: string, params: any = {}) {
     const getloading: any = ref(false);
-    return fetchItem(API_PATH.CONTACTS, id, error, getloading, params);
+    return fetchItem(API_PATH.CONNECTIONS, id, error, getloading, params);
   }
 
   // Only going to do alias right now but expand to other params as needed later
-  async function updateContact(contactId: string, alias: string) {
-    console.log('> contactsStore.updateContact');
-    error.value = null;
-    loading.value = true;
+  // async function updateContact(contactId: string, alias: string) {
+  //   console.log('> contactsStore.updateContact');
+  //   error.value = null;
+  //   loading.value = true;
 
-    let contactData = null;
-    await tenantApi
-      .putHttp(`${API_PATH.CONTACTS}${contactId}`, {
-        contact_id: contactId,
-        alias,
-      })
-      .then((res) => {
-        contactData = res.data;
-      })
-      .then(() => {
-        listContacts();
-      })
-      .catch((err) => {
-        error.value = err;
-      })
-      .finally(() => {
-        loading.value = false;
-      });
-    console.log('< contactsStore.updateContact');
+  //   let contactData = null;
+  //   await acapyApi
+  //     .putHttp(`${API_PATH.CONTACTS}${contactId}`, {
+  //       contact_id: contactId,
+  //       alias,
+  //     })
+  //     .then((res) => {
+  //       contactData = res.data;
+  //     })
+  //     .then(() => {
+  //       listContacts();
+  //     })
+  //     .catch((err) => {
+  //       error.value = err;
+  //     })
+  //     .finally(() => {
+  //       loading.value = false;
+  //     });
+  //   console.log('< contactsStore.updateContact');
 
-    if (error.value != null) {
-      // throw error so $onAction.onError listeners can add their own handler
-      throw error.value;
-    }
-    // return data so $onAction.after listeners can add their own handler
-    return contactData;
-  }
+  //   if (error.value != null) {
+  //     // throw error so $onAction.onError listeners can add their own handler
+  //     throw error.value;
+  //   }
+  //   // return data so $onAction.after listeners can add their own handler
+  //   return contactData;
+  // }
 
   // private functions
   const contactLabelValue = (item: any) => {
@@ -212,11 +210,11 @@ export const useContactsStore = defineStore('contacts', () => {
     loading,
     error,
     listContacts,
-    createInvitation,
-    acceptInvitation,
-    deleteContact,
+    // createInvitation,
+    // acceptInvitation,
+    // deleteContact,
     getContact,
-    updateContact,
+    // updateContact,
   };
 });
 

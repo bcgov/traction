@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-0">{{ t('contact.contacts') }}</h3>
+  <h3 class="mt-0">{{ t('connect.connections') }}</h3>
 
   <DataTable
     v-model:selection="selectedContact"
@@ -17,8 +17,7 @@
     <template #header>
       <div class="flex justify-content-between">
         <div class="flex justify-content-start">
-          <CreateContact />
-          <AcceptInvitation class="ml-4" />
+          <!-- <AcceptInvitation class="ml-4" /> -->
         </div>
         <div class="flex justify-content-end">
           <span class="p-input-icon-left contact-search">
@@ -51,11 +50,11 @@
         <EditContact :contact-id="data.contact_id" />
       </template>
     </Column>
-    <Column :sortable="true" field="alias" header="Name" />
-    <Column :sortable="true" field="role" header="Role" />
+    <Column :sortable="true" field="alias" header="Alias" />
+    <Column :sortable="true" field="their_role" header="Role" />
     <Column :sortable="true" field="status" header="Status">
       <template #body="{ data }">
-        <StatusChip :status="data.status" />
+        <StatusChip :status="data.state" />
       </template>
     </Column>
     <Column :sortable="true" field="created_at" header="Created at">
@@ -65,9 +64,8 @@
     </Column>
     <template #expansion="{ data }">
       <RowExpandData
-        :id="data.contact_id"
-        :url="API_PATH.CONTACTS"
-        :params="{ acapy: true }"
+        :id="data.connection_id"
+        :url="API_PATH.CONNECTIONS"
       />
     </template>
   </DataTable>
@@ -88,13 +86,12 @@ import { FilterMatchMode } from 'primevue/api';
 import { useContactsStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other components
-import AcceptInvitation from './acceptInvitation/AcceptInvitation.vue';
-import CreateContact from './createContact/CreateContact.vue';
-import { TABLE_OPT, API_PATH } from '@/helpers/constants';
-import { formatDateLong } from '@/helpers';
+// import AcceptInvitation from './acceptInvitation/AcceptInvitation.vue';
+import EditContact from './editContact/EditContact.vue';
 import RowExpandData from '../common/RowExpandData.vue';
 import StatusChip from '../common/StatusChip.vue';
-import EditContact from './editContact/EditContact.vue';
+import { TABLE_OPT, API_PATH } from '@/helpers/constants';
+import { formatDateLong } from '@/helpers';
 import { useI18n } from 'vue-i18n';
 
 const confirm = useConfirm();
@@ -119,7 +116,7 @@ onMounted(async () => {
 const deleteContact = (event: any, schema: any) => {
   confirm.require({
     target: event.currentTarget,
-    message: 'Are you sure you want to delete this contact?',
+    message: 'Are you sure you want to delete this connection?',
     header: 'Confirmation',
     icon: 'pi pi-exclamation-triangle',
     accept: () => {
@@ -131,7 +128,7 @@ const doDelete = (schema: any) => {
   contactsStore
     .deleteContact(schema)
     .then(() => {
-      toast.success(`Contact successfully deleted`);
+      toast.success(`Connection successfully deleted`);
     })
     .catch((err) => {
       console.error(err);

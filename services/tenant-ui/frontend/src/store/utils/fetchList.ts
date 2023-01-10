@@ -1,4 +1,4 @@
-import { useAcapyTenantApi } from '../acapyTenantApi';
+import { useAcapyApi } from '../acapyApi';
 import { AxiosRequestConfig } from 'axios';
 import { Ref } from 'vue';
 
@@ -9,7 +9,7 @@ export async function fetchList(
   loading: Ref<boolean>,
   params: object = {}
 ) {
-  const acapyApi = useAcapyTenantApi();
+  const acapyApi = useAcapyApi();
   return fetchListFromAPI(acapyApi, url, list, error, loading, params);
 }
 
@@ -25,17 +25,16 @@ export async function fetchListFromAPI(
   list.value = [];
   error.value = null;
   loading.value = true;
-
   params = { ...params };
   await api
     .getHttp(url, params)
     .then((res: AxiosRequestConfig): void => {
       // console.log(res);
       list.value = res.data.results;
+      // console.log(list.value);
     })
     .catch((err: string): void => {
       error.value = err;
-      // console.log(error.value);
     })
     .finally((): void => {
       loading.value = false;

@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
-import { useAcapyTenantApi } from './acapyTenantApi';
+import { useAcapyApi } from './acapyApi';
 import { fetchListFromAPI } from './utils';
 import { API_PATH } from '@/helpers/constants';
 
@@ -11,11 +11,11 @@ export const useMessageStore = defineStore('messages', () => {
   const error: any = ref(null);
 
   // grab the tenant api
-  const acapyTenantApi = useAcapyTenantApi();
+  const acapyApi = useAcapyApi();
 
   async function listMessages() {
     return fetchListFromAPI(
-      acapyTenantApi,
+      acapyApi,
       API_PATH.BASICMESSAGES,
       messages,
       error,
@@ -35,7 +35,7 @@ export const useMessageStore = defineStore('messages', () => {
 
     let result = null;
 
-    await acapyTenantApi
+    await acapyApi
       .postHttp(API_PATH.BASICMESSAGES_SEND(connId), payload)
       .then((res) => {
         console.log(res);
