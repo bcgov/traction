@@ -14,27 +14,43 @@
 
       <div class="field mt-5 w-full">
         <label for="wallet-id">Wallet ID</label>
-        <InputText
-          id="wallet-id"
-          readonly
-          :value="walletId"
-          name="wallet-id"
-          class="w-full"
-        />
+        <div class="p-inputgroup">
+          <InputText
+            id="wallet-id"
+            readonly
+            :value="walletId"
+            name="wallet-id"
+            class="w-full"
+          />
+          <Button
+            icon="pi pi-copy"
+            title="Copy to clipboard"
+            class="p-button-secondary"
+            @click="copyWalletId"
+          />
+        </div>
       </div>
 
       <div class="field">
         <label for="wallet-key">Wallet Key</label>
-        <Password
-          id="wallet-key"
-          v-model="walletKey"
-          readonly
-          class="w-full"
-          input-class="w-full"
-          toggle-mask
-          :feedback="false"
-          placeholder="Password"
-        />
+        <div class="p-inputgroup">
+          <Password
+            id="wallet-key"
+            v-model="walletKey"
+            readonly
+            class="w-full"
+            input-class="w-full"
+            toggle-mask
+            :feedback="false"
+            placeholder="Password"
+          />
+          <Button
+            icon="pi pi-copy"
+            title="Copy to clipboard"
+            class="p-button-secondary"
+            @click="copyWalletKey"
+          />
+        </div>
       </div>
     </template>
     <template #footer>
@@ -52,9 +68,29 @@
 import Card from 'primevue/card';
 import Password from 'primevue/password';
 import InputText from 'primevue/inputtext';
+import Button from 'primevue/button';
 // State
 import { useReservationStore } from '@/store';
 import { storeToRefs } from 'pinia';
 
+// Notifications
+import { useToast } from 'vue-toastification';
+const toast = useToast();
+
 const { walletId, walletKey } = storeToRefs(useReservationStore());
+
+/**
+ * Copy wallet ID to clipboard
+ */
+const copyWalletId = () => {
+  navigator.clipboard.writeText(walletId.value);
+  toast.info('Copied wallet ID to clipboard!');
+};
+/**
+ * Copy wallet key to clipboard
+ */
+const copyWalletKey = () => {
+  navigator.clipboard.writeText(walletKey.value);
+  toast.info('Copied wallet key to clipboard!');
+};
 </script>

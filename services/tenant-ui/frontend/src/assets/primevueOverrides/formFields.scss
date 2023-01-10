@@ -30,6 +30,12 @@
     }
   }
 
+  // Fixing small bug in PrimeVue for input groups
+  .p-inputgroup .p-inputtext {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
   .p-autocomplete-dd {
     input {
       border-top-right-radius: 0;
