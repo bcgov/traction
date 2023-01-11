@@ -2,6 +2,7 @@
   <h3 class="mt-0">{{ t('reservations.reservations') }}</h3>
 
   <DataTable
+    v-model:filters="filter"
     :loading="loading"
     :value="currentReservations"
     :paginator="true"
@@ -14,6 +15,13 @@
   >
     <template #header>
       <div class="flex justify-content-end">
+        <span class="p-input-icon-left mr-3">
+          <i class="pi pi-search ml-0" />
+          <InputText
+            v-model="filter.global.value"
+            placeholder="Search Reservations"
+          />
+        </span>
         <Button
           icon="pi pi-refresh"
           class="p-button-rounded p-button-outlined"
@@ -74,6 +82,8 @@ import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import Dialog from 'primevue/dialog';
+import InputText from 'primevue/inputtext';
+import { FilterMatchMode } from 'primevue/api';
 import { useToast } from 'vue-toastification';
 import { useI18n } from 'vue-i18n';
 // State
@@ -89,7 +99,6 @@ const toast = useToast();
 const { t } = useI18n();
 
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
-
 const { loading, currentReservations } = storeToRefs(
   useInnkeeperTenantsStore()
 );
@@ -101,7 +110,6 @@ const loadTable = async () => {
     toast.error(`Failure: ${err}`);
   });
 };
-
 onMounted(async () => {
   loadTable();
 });
@@ -115,4 +123,9 @@ const showApproveModal = (password: string, email: string) => {
   approvedEmail.value = email;
   displayModal.value = true;
 };
+
+// Filter for search
+const filter = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
 </script>

@@ -11,9 +11,8 @@ export const API_PATH = {
 
   // Acapy and plugins (and Traction for now)
   INNKEEPER_TOKEN: '/innkeeper/token',
-  INNKEEPER_TENANTS: '/innkeeper/v1/tenants/',
-  INNKEEPER_TENANT: (id: string) => `/innkeeper/v1/tenants/${id}`,
-  INNKEEPER_TENANT_CHECK_IN: '/innkeeper/v1/tenants/check-in',
+  INNKEEPER_TENANTS: '/innkeeper/tenants/',
+  INNKEEPER_TENANT: (id: string) => `/innkeeper/tenants/${id}`,
   INNKEEPER_RESERVATIONS: '/innkeeper/reservations/',
   INNKEEPER_RESERVATIONS_APPROVE: (id: string) =>
     `/innkeeper/reservations/${id}/approve`,

@@ -39,8 +39,15 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     baseURL: `${window.location.origin}/${config.value.frontend.apiPath}`,
   });
 
-  async function listTenants(): Promise<object | null> {
-    return null;
+  async function listTenants() {
+    return fetchListFromAPI(
+      acapyTenantApi,
+      API_PATH.INNKEEPER_TENANTS,
+      tenants,
+      error,
+      loading,
+      {}
+    );
   }
 
   async function listReservations() {
@@ -50,8 +57,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
       reservations,
       error,
       loading,
-      {},
-      true
+      {}
     );
   }
 

@@ -1,4 +1,4 @@
-import { useTenantApi } from '../tenantApi';
+import { useAcapyTenantApi } from '../acapyTenantApi';
 import { AxiosRequestConfig } from 'axios';
 import { Ref } from 'vue';
 
@@ -9,16 +9,16 @@ export async function fetchItem(
   loading: Ref<boolean>,
   params: object = {}
 ): Promise<object | null | undefined> {
-  const tenantApi = useTenantApi();
+  const acapyApi = useAcapyTenantApi();
   const dataUrl = `${url}${id}`;
   console.log(` > fetchItem(${dataUrl})`);
   error.value = null;
   let result = null;
 
-  await tenantApi
+  await acapyApi
     .getHttp(dataUrl, params)
     .then((res: AxiosRequestConfig): void => {
-      result = res.data.item;
+      result = res.data;
       console.log(result);
     })
     .catch((err: string): void => {
