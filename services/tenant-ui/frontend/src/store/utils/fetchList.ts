@@ -1,55 +1,37 @@
-import { useTenantApi } from '../tenantApi';
+import { useAcapyTenantApi } from '../acapyTenantApi';
 import { AxiosRequestConfig } from 'axios';
 import { Ref } from 'vue';
-import e from 'cors';
 
 export async function fetchList(
   url: string,
   list: Ref<any>,
   error: Ref<any>,
   loading: Ref<boolean>,
-  params: object = {},
-  isAcapy = false
+  params: object = {}
 ) {
-  const tenantApi = useTenantApi();
-  return fetchListFromAPI(
-    tenantApi,
-    url,
-    list,
-    error,
-    loading,
-    params,
-    isAcapy
-  );
+  const acapyApi = useAcapyTenantApi();
+  return fetchListFromAPI(acapyApi, url, list, error, loading, params);
 }
 
 export async function fetchListFromAPI(
   api: any,
   url: string,
-  list: Ref<any>,
+  list: Ref<any[]>,
   error: Ref<any>,
   loading: Ref<boolean>,
-  params: object = {},
-  isAcapy = false
+  params: object = {}
 ) {
   console.log(`> fetchList(${url})`);
-  list.value = null;
+  list.value = [];
   error.value = null;
   loading.value = true;
-  // console.log(params);
-  params = { ...params, page_num: 1, page_size: 100 };
-  // console.log(params);
+
+  params = { ...params };
   await api
     .getHttp(url, params)
     .then((res: AxiosRequestConfig): void => {
       // console.log(res);
-      if (isAcapy) {
-        // This is a hack while the UI is supporting both Traction and Acapy plugin calls
-        list.value = res.data.results;
-      } else {
-        list.value = res.data.items;
-      }
-      // console.log(list.value);
+      list.value = res.data.results;
     })
     .catch((err: string): void => {
       error.value = err;

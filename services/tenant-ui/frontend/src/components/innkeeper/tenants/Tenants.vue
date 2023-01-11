@@ -1,10 +1,9 @@
 <template>
   <h3 class="mt-0">{{ t('tenants.tenants') }}</h3>
 
-  <h2>Broken at this time as the login has moved over to Aca-py</h2>
-  <p>New results coming soon</p>
-  <!-- <DataTable
+  <DataTable
     v-model:expandedRows="expandedRows"
+    v-model:filters="filter"
     :loading="loading"
     :value="tenants"
     :paginator="true"
@@ -17,9 +16,16 @@
   >
     <template #header>
       <div class="flex justify-content-between">
-        <div class="flex justify-content-start">
-        </div>
+        <div class="flex justify-content-start"></div>
         <div class="flex justify-content-end">
+          <span class="p-input-icon-left mr-3">
+            <i class="pi pi-search ml-0" />
+            <InputText
+              v-model="filter.global.value"
+              placeholder="Search Tenants"
+            />
+          </span>
+
           <Button
             icon="pi pi-refresh"
             class="p-button-rounded p-button-outlined"
@@ -32,14 +38,7 @@
     <template #empty> No records found. </template>
     <template #loading> Loading data. Please wait... </template>
     <Column :expander="true" header-style="width: 3rem" />
-    <Column :sortable="true" field="name" header="Name" />
-    <Column :sortable="true" field="wallet_id" header="Wallet ID" />
-    <Column :sortable="true" field="public_did" header="Public DID" />
-    <Column :sortable="true" field="issuer" header="Issuer">
-      <template #body="{ data }">
-        <i v-if="data.issuer" class="pi pi-check-circle" />
-      </template>
-    </Column>
+    <Column :sortable="true" field="tenant_name" header="Name" />
     <Column :sortable="true" field="created_at" header="Created at">
       <template #body="{ data }">
         {{ formatDateLong(data.created_at) }}
@@ -48,7 +47,7 @@
     <template #expansion="{ data }">
       <RowExpandData :id="data.tenant_id" :url="API_PATH.INNKEEPER_TENANTS" />
     </template>
-  </DataTable> -->
+  </DataTable>
 </template>
 
 <script setup lang="ts">
@@ -58,6 +57,8 @@ import { onMounted, ref } from 'vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
+import InputText from 'primevue/inputtext';
+import { FilterMatchMode } from 'primevue/api';
 import { useToast } from 'vue-toastification';
 // State
 import { useInnkeeperTenantsStore } from '@/store';
@@ -73,18 +74,22 @@ const { t } = useI18n();
 
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
 
+// Populating the Table
 const { loading, tenants } = storeToRefs(useInnkeeperTenantsStore());
-console.log('tenants', tenants);
-
 const loadTable = async () => {
-  // innkeeperTenantsStore.listTenants().catch((err: string) => {
-  //   console.error(err);
-  //   toast.error(`Failure: ${err}`);
-  // });
+  innkeeperTenantsStore.listTenants().catch((err: string) => {
+    console.error(err);
+    toast.error(`Failure: ${err}`);
+  });
 };
 
 onMounted(async () => {
   loadTable();
+});
+
+// Filter for search
+const filter = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 
 // necessary for expanding rows, we don't do anything with this

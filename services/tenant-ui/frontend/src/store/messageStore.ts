@@ -20,8 +20,7 @@ export const useMessageStore = defineStore('messages', () => {
       messages,
       error,
       loading,
-      {},
-      true
+      {}
     );
   }
 

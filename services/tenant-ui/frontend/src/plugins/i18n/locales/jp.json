@@ -53,6 +53,8 @@
   "reservations": {
     "reservations": "Reservations <JP>",
     "reservationHistory": "Reservation History <JP>",
+    "current": "Current <JP>",
+    "history": "History <JP>",
     "requests": "Requests <JP>",
     "contactEmail": "Contact Email <JP>",
     "contactName": "Contact Name <JP>",
@@ -62,12 +64,13 @@
     "approveRequest": "Approve Request <JP>",
     "denyRequest": "Deny Request <JP>",
     "approved": {
-      "title": "Reservation Approved",
-      "toast": "Reservation Approved for {email}",
-      "text": "The Check-In password has been generated. An email has been sent to {email}"
+      "title": "Reservation Approved <JP>",
+      "toast": "Reservation Approved for {email} <JP>",
+      "text": "The Check-In password has been generated. An email has been sent to {email} <JP>"
     },
     "denied": {
-      "toast": "Reservation Denied for {email}"
+      "toast": "Reservation Denied for {email}",
+      "reasonText": "Reason for Denial (Optional) <JP>"
     }
   },
   "about": {

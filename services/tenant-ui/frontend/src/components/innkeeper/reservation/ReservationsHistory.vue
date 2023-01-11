@@ -2,6 +2,7 @@
   <h3 class="mt-0">{{ t('reservations.reservationHistory') }}</h3>
 
   <DataTable
+    v-model:filters="filter"
     :loading="loading"
     :value="reservationHistory"
     :paginator="true"
@@ -14,6 +15,13 @@
   >
     <template #header>
       <div class="flex justify-content-end">
+        <span class="p-input-icon-left mr-3">
+          <i class="pi pi-search ml-0" />
+          <InputText
+            v-model="filter.global.value"
+            placeholder="Search History"
+          />
+        </span>
         <Button
           icon="pi pi-refresh"
           class="p-button-rounded p-button-outlined"
@@ -41,22 +49,6 @@
       </template>
     </Column>
   </DataTable>
-
-  <!-- Post-approve dialog -->
-  <Dialog
-    v-model:visible="displayModal"
-    :header="t('reservations.approved.title')"
-    :modal="true"
-  >
-    <p>
-      {{ t('reservations.approved.text', { email: approvedEmail }) }}
-    </p>
-    <p>
-      The password is shown below one-time if you need to communicate it via
-      other means <br />
-      <strong>{{ approvedPassword }}</strong>
-    </p>
-  </Dialog>
 </template>
 
 <script setup lang="ts">
@@ -66,7 +58,8 @@ import { onMounted, ref } from 'vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import Dialog from 'primevue/dialog';
+import InputText from 'primevue/inputtext';
+import { FilterMatchMode } from 'primevue/api';
 import { useToast } from 'vue-toastification';
 import { useI18n } from 'vue-i18n';
 // State
@@ -96,13 +89,8 @@ onMounted(async () => {
   loadTable();
 });
 
-// Handling approvals
-const displayModal = ref(false);
-const approvedPassword = ref('');
-const approvedEmail = ref('');
-const showApproveModal = (password: string, email: string) => {
-  approvedPassword.value = password;
-  approvedEmail.value = email;
-  displayModal.value = true;
-};
+// Filter for search
+const filter = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
 </script>
