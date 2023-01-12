@@ -76,7 +76,7 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 
   try {
-    await contactsStore.updateContact(props.contactId, formFields.alias);
+    // await contactsStore.updateContact(props.contactId, formFields.alias);
     emit('success');
     // close up on success
     emit('closed');
@@ -89,7 +89,7 @@ const handleSubmit = async (isFormValid: boolean) => {
 };
 
 // Get the latest details about this contact when opening
-const { loading, item, fetchItem } = useGetItem(API_PATH.CONTACTS);
+const { loading, item, fetchItem } = useGetItem(API_PATH.CONNECTIONS);
 onMounted(async () => {
   try {
     await fetchItem(props.contactId);

@@ -1,33 +1,54 @@
 <template>
   <div>
-    <Button :label="t('contact.create')" icon="pi pi-plus" @click="openModal" />
+    <Button
+      :label="
+        props.multi
+          ? t('connect.invitations.multi')
+          : t('connect.invitations.single')
+      "
+      icon="pi pi-user-edit"
+      @click="openModal"
+    />
     <Dialog
       v-model:visible="displayModal"
-      :header="t('contact.create')"
+      :header="
+        props.multi
+          ? t('connect.invitations.multiCreate')
+          : t('connect.invitations.singleCreate')
+      "
       :modal="true"
       @update:visible="handleClose"
     >
-      <CreateContactForm @success="$emit('success')" @closed="handleClose" />
+      <CreateContactForm
+        :multi="props.multi"
+        @success="$emit('success')"
+        @closed="handleClose"
+      />
     </Dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 // Vue
-import { ref } from 'vue';
-// PrimeVue
+import { ref, PropType } from 'vue';
+// PrimeVue etc
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
-// State
-
+import { useI18n } from 'vue-i18n';
 // Custom Components
 import CreateContactForm from './CreateContactForm.vue';
-// Other Imports
-import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 
 defineEmits(['success']);
+
+// Props
+const props = defineProps({
+  multi: {
+    type: Boolean as PropType<boolean>,
+    required: true,
+  },
+});
 
 // Display popup
 const displayModal = ref(false);

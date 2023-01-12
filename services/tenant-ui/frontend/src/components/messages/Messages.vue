@@ -37,11 +37,11 @@
     </template>
     <template #empty> No records found. </template>
     <template #loading> Loading data. Please wait... </template>
-    <Column :sortable="true" field="connection_id" header="Contact">
+    <!-- <Column :sortable="true" field="connection_id" header="Contact">
       <template #body="{ data }">
         {{ findContactName(data.connection_id) }}
       </template>
-    </Column>
+    </Column> -->
     <Column :sortable="true" field="state" header="State" />
     <Column :sortable="true" field="content" header="Content" />
     <Column :sortable="true" field="sent_time" header="Sent">

@@ -24,7 +24,7 @@ export const API_PATH = {
   TENANT_TOKEN: '/tenant/token',
 
   CONNECTIONS: '/connections',
-  // CONTACTS_CREATE_INVITATION: '/tenant/v1/contacts/create-invitation',
+  CONNECTIONS_CREATE_INVITATION: '/connections/create-invitation',
   // CONTACTS_RECEIVE_INVITATION: '/tenant/v1/contacts/receive-invitation',
   CONNECTION: (id: string) => `/connections/${id}`,
 

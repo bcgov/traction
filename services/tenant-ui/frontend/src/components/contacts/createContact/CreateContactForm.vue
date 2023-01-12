@@ -2,8 +2,8 @@
   <form @submit.prevent="handleSubmit(!v$.$invalid)">
     <!-- Alias -->
     <div class="field">
-      <label for="alias" :class="{ 'p-error': v$.alias.$invalid && submitted }"
-        >Contact Alias
+      <label for="alias" :class="{ 'p-error': v$.alias.$invalid && submitted }">
+        Contact Alias
       </label>
       <InputText
         v-model="v$.alias.$model"
@@ -30,7 +30,7 @@
 
 <script setup lang="ts">
 // Vue
-import { reactive, ref } from 'vue';
+import { reactive, ref, PropType } from 'vue';
 // State
 import { useContactsStore } from '../../../store';
 // PrimeVue / Validation
@@ -44,16 +44,20 @@ import QRCode from '../../common/QRCode.vue';
 
 const contactsStore = useContactsStore();
 
-// For notifications
 const toast = useToast();
+
+const emit = defineEmits(['closed', 'success']);
+
+// Props
+const props = defineProps({
+  multi: {
+    type: Boolean as PropType<boolean>,
+    required: true,
+  },
+});
 
 // To store local data
 const invitation_url = ref('');
-
-// ----------------------------------------------------------------
-// Creating a new contact
-// ----------------------------------------------------------------
-const emit = defineEmits(['closed', 'success']);
 
 // Validation
 const formFields = reactive({
@@ -64,7 +68,7 @@ const rules = {
 };
 const v$ = useVuelidate(rules, formFields);
 
-// Form submission
+// Create a new connection
 const submitted = ref(false);
 const handleSubmit = async (isFormValid: boolean) => {
   submitted.value = true;
@@ -73,7 +77,10 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
   try {
     // call store
-    const result = await contactsStore.createInvitation(formFields.alias);
+    const result = await contactsStore.createInvitation(
+      formFields.alias,
+      props.multi
+    );
     if (result != null && result['invitation_url']) {
       invitation_url.value = result['invitation_url'];
       console.log(`invitation_url: ${invitation_url.value}`);
@@ -87,6 +94,4 @@ const handleSubmit = async (isFormValid: boolean) => {
     submitted.value = false;
   }
 };
-
-// ---------------------------------------------------/create contact
 </script>
