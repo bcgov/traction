@@ -1,4 +1,5 @@
 <template>
+  <!-- TODO: add class based on state variable -->
   <div class="traction-sidebar">
     <!-- <h1 v-if="tenant" class="sidebar-app-title">{{ tenant.name }}</h1> -->
     <h1 class="sidebar-app-title">Tenant UI</h1>
