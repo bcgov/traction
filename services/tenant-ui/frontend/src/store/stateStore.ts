@@ -6,12 +6,13 @@ import { ref } from 'vue';
 
 export const useGlobalStateStore = defineStore('globalState', () => {
   // state
-  const sidebarOpen = ref(null);
+  const sidebarOpen: any = ref(null);
 
   // actions
   function setSidebarOpen(sidebarState: any) {
     sidebarOpen.value = sidebarState;
   }
 
-  return { sidebarOpen, setSidebarOpen };
+  // return { sidebarOpen, setSidebarOpen };
+  return { sidebarOpen };
 });
