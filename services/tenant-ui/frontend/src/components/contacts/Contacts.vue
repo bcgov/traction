@@ -1,19 +1,17 @@
 <template>
   <h3 class="mt-0">{{ t('connect.connections') }}</h3>
 
-  (Table content filter TBD - need to divide invitations and contacts)
   <DataTable
-    v-model:selection="selectedContact"
     v-model:expandedRows="expandedRows"
     v-model:filters="filter"
     :loading="loading"
-    :value="contacts"
+    :value="filteredConnections"
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
     :global-filter-fields="['alias']"
     selection-mode="single"
-    data-key="alias"
+    data-key="connection_id"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -25,7 +23,7 @@
             <i class="pi pi-search" />
             <InputText
               v-model="filter.alias.value"
-              placeholder="Search Contacts"
+              placeholder="Search Connections"
             />
           </span>
           <Button
@@ -52,7 +50,7 @@
       </template>
     </Column>
     <Column :sortable="true" field="alias" header="Alias" />
-    <Column :sortable="true" field="their_role" header="Role" />
+    <Column :sortable="true" field="their_label" header="Their Label" />
     <Column :sortable="true" field="status" header="Status">
       <template #body="{ data }">
         <StatusChip :status="data.state" />
@@ -98,7 +96,7 @@ const { t } = useI18n();
 
 const contactsStore = useContactsStore();
 
-const { loading, contacts, selectedContact } = storeToRefs(useContactsStore());
+const { loading, filteredConnections } = storeToRefs(useContactsStore());
 
 const loadTable = async () => {
   contactsStore.listContacts().catch((err) => {

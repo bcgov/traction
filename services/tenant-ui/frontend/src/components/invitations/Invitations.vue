@@ -1,14 +1,11 @@
 <template>
   <h3 class="mt-0">{{ t('connect.invitations.invitations') }}</h3>
 
-  (Table content filter TBD - need to divide invitations and contacts)
-
   <DataTable
-    v-model:selection="selectedContact"
     v-model:expandedRows="expandedRows"
     v-model:filters="filter"
     :loading="loading"
-    :value="contacts"
+    :value="filteredInvitations"
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
@@ -49,11 +46,6 @@
     </Column>
     <Column :sortable="true" field="alias" header="Alias" />
     <Column :sortable="true" field="invitation_mode" header="Invitation Mode" />
-    <Column :sortable="true" field="status" header="Status">
-      <template #body="{ data }">
-        <StatusChip :status="data.state" />
-      </template>
-    </Column>
     <Column :sortable="true" field="created_at" header="Created at">
       <template #body="{ data }">
         {{ formatDateLong(data.created_at) }}
@@ -82,7 +74,6 @@ import { storeToRefs } from 'pinia';
 import CreateContact from '@/components/contacts/createContact/CreateContact.vue';
 import DeleteContact from '@/components/contacts/editContact/DeleteContact.vue';
 import RowExpandData from '@/components/common/RowExpandData.vue';
-import StatusChip from '@/components/common/StatusChip.vue';
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 import { useI18n } from 'vue-i18n';
@@ -92,7 +83,7 @@ const { t } = useI18n();
 
 const contactsStore = useContactsStore();
 
-const { loading, contacts, selectedContact } = storeToRefs(useContactsStore());
+const { loading, filteredInvitations } = storeToRefs(useContactsStore());
 
 const loadTable = async () => {
   contactsStore.listContacts().catch((err) => {

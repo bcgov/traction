@@ -78,6 +78,12 @@ export const API_PATH = {
     `/multitenancy/wallet/${tenantId}/token`,
 };
 
+export const CONNECTION_STATUSES = {
+  INVITATION: 'invitation',
+  ACTIVE: 'active',
+  RESPONSE: 'response',
+};
+
 export const RESERVATION_STATUSES = {
   APPROVED: 'approved',
   CHECKED_IN: 'checked_in',

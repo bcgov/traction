@@ -1,6 +1,10 @@
-import { API_PATH } from '@/helpers/constants';
+import {
+  API_PATH,
+  CONNECTION_STATUSES,
+  RESERVATION_STATUSES,
+} from '@/helpers/constants';
 import { defineStore } from 'pinia';
-import { computed, ref } from 'vue';
+import { computed, ref, Ref } from 'vue';
 import { useAcapyApi } from './acapyApi';
 import {
   fetchList,
@@ -12,10 +16,10 @@ import { fetchItem } from './utils/fetchItem';
 
 export const useContactsStore = defineStore('contacts', () => {
   // state
-  const contacts: any = ref(null);
+  const contacts: Ref<any[]> = ref([]);
   const selectedContact: any = ref(null);
-  const loading: any = ref(false);
-  const error: any = ref(null);
+  const loading: Ref<boolean> = ref(false);
+  const error: Ref<string | null> = ref(null);
 
   // getters
   const contactsDropdown = computed(() => {
@@ -26,6 +30,13 @@ export const useContactsStore = defineStore('contacts', () => {
       filterByStatusActive
     );
   });
+
+  const filteredConnections = computed(() =>
+    contacts.value.filter((c) => c.state !== CONNECTION_STATUSES.INVITATION)
+  );
+  const filteredInvitations = computed(() =>
+    contacts.value.filter((c) => c.state === CONNECTION_STATUSES.INVITATION)
+  );
 
   // actions
 
@@ -208,6 +219,8 @@ export const useContactsStore = defineStore('contacts', () => {
     selectedContact,
     loading,
     error,
+    filteredConnections,
+    filteredInvitations,
     listContacts,
     createInvitation,
     // acceptInvitation,
