@@ -48,7 +48,7 @@ export const useContactsStore = defineStore('contacts', () => {
     return fetchList(API_PATH.CONNECTIONS, contacts, error, loading, {});
   }
 
-  async function createInvitation(alias: string, multi_use: boolean) {
+  async function createInvitation(alias: string, multiUse: boolean) {
     console.log('> contactsStore.createInvitation');
     error.value = null;
     loading.value = true;
@@ -60,7 +60,7 @@ export const useContactsStore = defineStore('contacts', () => {
         API_PATH.CONNECTIONS_CREATE_INVITATION,
         {},
         {
-          params: { alias, multi_use },
+          params: { alias, multi_use: multiUse },
         }
       )
       .then((res) => {
