@@ -53,6 +53,13 @@ spec:
            --emit-new-didcomm-mime-type \
            --label {{ $acapyLabel }} \
            --jwt-secret \"$(JWT_SECRET)\" \
+           --endorser-protocol-role author \
+           --endorser-public-did {{ .Values.acapy.service.endorserPublicDID }} \
+           --endorser-alias {{ .Values.acapy.service.endorserAlias }} \
+           --auto-request-endorsement \
+           --auto-write-transactions \
+           --auto-create-revocation-transactions \
+           --auto-promote-author-did \
            --notify-revocation \
            --monitor-revocation-notification \
            --preserve-exchange-records \

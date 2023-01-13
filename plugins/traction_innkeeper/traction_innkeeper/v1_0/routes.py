@@ -3,12 +3,24 @@ import json
 import logging
 import uuid
 
+import requests
 from aiohttp import web
-from aiohttp_apispec import docs, request_schema, response_schema, match_info_schema
+from aiohttp_apispec import (
+    docs,
+    request_schema,
+    response_schema,
+    match_info_schema,
+    querystring_schema,
+)
 from aries_cloudagent.admin.request_context import AdminRequestContext
 from aries_cloudagent.messaging.models.base import BaseModelError
 from aries_cloudagent.messaging.models.openapi import OpenAPISchema
-from aries_cloudagent.messaging.valid import UUIDFour, JSONWebToken
+from aries_cloudagent.messaging.valid import (
+    UUIDFour,
+    JSONWebToken,
+    INDY_DID,
+    INDY_RAW_PUBLIC_KEY,
+)
 from aries_cloudagent.multitenant.admin.routes import (
     CreateWalletTokenRequestSchema,
     CreateWalletTokenResponseSchema,
@@ -16,6 +28,8 @@ from aries_cloudagent.multitenant.admin.routes import (
 from aries_cloudagent.multitenant.base import BaseMultitenantManager
 from aries_cloudagent.multitenant.error import WalletKeyMissingError
 from aries_cloudagent.storage.error import StorageError, StorageNotFoundError
+from aries_cloudagent.wallet.base import BaseWallet
+from aries_cloudagent.wallet.error import WalletError
 from aries_cloudagent.wallet.models.wallet_record import WalletRecord
 from marshmallow import fields
 
@@ -208,6 +222,24 @@ class TenantListSchema(OpenAPISchema):
     results = fields.List(
         fields.Nested(TenantRecordSchema()),
         description="List of tenants",
+    )
+
+
+class RegisterPublicDidSchema(OpenAPISchema):
+    """Query string parameters and validators for register ledger nym request."""
+
+    did = fields.Str(
+        description="DID to register",
+        required=True,
+        **INDY_DID,
+    )
+    verkey = fields.Str(
+        description="Verification key", required=True, **INDY_RAW_PUBLIC_KEY
+    )
+    alias = fields.Str(
+        description="Alias",
+        required=False,
+        example="Barry",
     )
 
 
@@ -552,6 +584,52 @@ async def tenant_self(request: web.BaseRequest):
     return web.json_response(rec.serialize())
 
 
+@docs(tags=[SWAGGER_TENANT], summary="Register a Public DID")
+@querystring_schema(RegisterPublicDidSchema())
+@response_schema(schema=RegisterPublicDidSchema, code=200, description="")
+@error_handler
+async def register_public_did(request: web.BaseRequest):
+    LOGGER.info("> tenant_register_public_did()")
+    context: AdminRequestContext = request["context"]
+
+    # check if there is a public did
+    info = None
+    async with context.session() as session:
+        wallet = session.inject_or(BaseWallet)
+        if not wallet:
+            raise web.HTTPForbidden(reason="No wallet available")
+        try:
+            info = await wallet.get_public_did()
+        except WalletError as err:
+            raise web.HTTPBadRequest(reason=err.roll_up) from err
+    if info:
+        raise web.HTTPConflict(reason=f"Wallet already has a public DID: `{info.did}`")
+
+    did = request.query.get("did")
+    verkey = request.query.get("verkey")
+    if not did or not verkey:
+        raise web.HTTPBadRequest(
+            reason="Request query must include both did and verkey"
+        )
+
+    alias = request.query.get("alias")
+    if not alias:
+        alias = context.profile.settings.get("wallet.id")
+
+    genesis_url = context.profile.settings.get("ledger.genesis_url")
+    did_registration_url = genesis_url.replace("genesis", "register")
+    data = {
+        "did": did,
+        "verkey": verkey,
+        "alias": alias,
+    }
+    requests.post(did_registration_url, json=data)
+    LOGGER.info(f"did_registration_url = {did_registration_url}, data = {data}")
+
+    LOGGER.info("< tenant_register_public_did()")
+    return web.json_response(data)
+
+
 async def register(app: web.Application):
     """Register routes."""
     LOGGER.info("> registering routes")
@@ -574,6 +652,7 @@ async def register(app: web.Application):
     app.add_routes(
         [
             web.get("/tenant", tenant_self, allow_head=False),
+            web.post("/tenant/register-public-did", register_public_did),
         ]
     )
     # routes that require a tenant token for the innkeeper wallet/tenant/agent.
