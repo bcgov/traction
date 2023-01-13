@@ -12,7 +12,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { useConfigStore } from './configStore';
 import { useTenantStore, useTokenStore } from './index';
 
-export const useAcapyTenantApi = defineStore('acapyApi', () => {
+export const useAcapyApi = defineStore('acapyApi', () => {
   const tokenStore = useTokenStore();
   const tenantStore = useTenantStore();
   const { config } = storeToRefs(useConfigStore());
@@ -154,5 +154,5 @@ export const useAcapyTenantApi = defineStore('acapyApi', () => {
 });
 
 export default {
-  useAcapyTenantApi,
+  useAcapyApi,
 };

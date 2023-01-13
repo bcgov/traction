@@ -1,7 +1,7 @@
 import { defineStore, storeToRefs } from 'pinia';
 import { computed, ref, Ref } from 'vue';
 import axios from 'axios';
-import { useAcapyTenantApi } from '../acapyTenantApi';
+import { useAcapyApi } from '../acapyApi';
 import { fetchListFromAPI } from '../utils';
 import { API_PATH, RESERVATION_STATUSES } from '@/helpers/constants';
 import { useConfigStore } from '../configStore';
@@ -32,7 +32,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
   // actions
 
   // (using both things temporarily)
-  const acapyTenantApi = useAcapyTenantApi();
+  const acapyApi = useAcapyApi();
 
   // A different axios instance with a basepath just of the tenant UI backend
   const backendApi = axios.create({
@@ -41,7 +41,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
 
   async function listTenants() {
     return fetchListFromAPI(
-      acapyTenantApi,
+      acapyApi,
       API_PATH.INNKEEPER_TENANTS,
       tenants,
       error,
@@ -52,7 +52,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
 
   async function listReservations() {
     return fetchListFromAPI(
-      acapyTenantApi,
+      acapyApi,
       API_PATH.INNKEEPER_RESERVATIONS,
       reservations,
       error,
@@ -76,7 +76,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
 
     // Don't keep this as state, make sure the password doesn't hang around in memory
     let approveResponse: ApproveResponse = {};
-    await acapyTenantApi
+    await acapyApi
       .putHttp(API_PATH.INNKEEPER_RESERVATIONS_APPROVE(id), payload)
       .then((res) => {
         approveResponse = res.data;
@@ -111,7 +111,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     error.value = null;
     loading.value = true;
 
-    await acapyTenantApi
+    await acapyApi
       .putHttp(API_PATH.INNKEEPER_RESERVATIONS_DENY(id), payload)
       .then((res) => {
         console.log(res);

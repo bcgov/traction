@@ -96,10 +96,10 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 
   try {
-    await contactsStore.acceptInvitation(
-      formFields.inviteUrl,
-      formFields.alias
-    );
+    // await contactsStore.acceptInvitation(
+    //   formFields.inviteUrl,
+    //   formFields.alias
+    // );
     emit('success');
     // close up on success
     emit('closed');

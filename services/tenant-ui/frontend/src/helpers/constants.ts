@@ -23,10 +23,10 @@ export const API_PATH = {
 
   TENANT_TOKEN: '/tenant/token',
 
-  CONTACTS: '/tenant/v1/contacts/',
-  CONTACTS_CREATE_INVITATION: '/tenant/v1/contacts/create-invitation',
-  CONTACTS_RECEIVE_INVITATION: '/tenant/v1/contacts/receive-invitation',
-  CONTACT: (id: string) => `/tenant/v1/contacts/${id}`,
+  CONNECTIONS: '/connections',
+  CONNECTIONS_CREATE_INVITATION: '/connections/create-invitation',
+  // CONTACTS_RECEIVE_INVITATION: '/tenant/v1/contacts/receive-invitation',
+  CONNECTION: (id: string) => `/connections/${id}`,
 
   HOLDER_CREDENTIALS: '/tenant/v1/holder/credentials/',
   HOLDER_CREDENTIALS_ACCEPT_OFFER: (id: string) =>
@@ -76,6 +76,12 @@ export const API_PATH = {
     `/multitenancy/tenant/${tenantId}/token`,
   MULTITENANCY_WALLET_TOKEN: (tenantId: string) =>
     `/multitenancy/wallet/${tenantId}/token`,
+};
+
+export const CONNECTION_STATUSES = {
+  INVITATION: 'invitation',
+  ACTIVE: 'active',
+  RESPONSE: 'response',
 };
 
 export const RESERVATION_STATUSES = {

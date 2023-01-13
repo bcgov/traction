@@ -13,10 +13,18 @@
     "settings": "Settings",
     "logout": "Logout"
   },
-  "contact": {
-    "contacts": "Contacts",
-    "create": "Create Contact",
-    "accept": "Accept Invitation"
+  "connect": {
+    "connections": "Connections",
+    "edit": "Edit Connection",
+    "delete": "Delete Connection",
+    "invitations": {
+      "invitations": "Invitations",
+      "create": "Create Invitation",
+      "single": "Single Use",
+      "singleCreate": "Create Single Use Invitation",
+      "multi": "Multi Use",
+      "multiCreate": "Create Multi Use Invitation"
+    }
   },
   "issue": {
     "issuance": "Issuance",
