@@ -12,6 +12,8 @@
     :global-filter-fields="['alias']"
     selection-mode="single"
     data-key="connection_id"
+    sort-field="created_at"
+    :sort-order="-1"
   >
     <template #header>
       <div class="flex justify-content-between">
