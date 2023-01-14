@@ -38,8 +38,6 @@ import { useGlobalStateStore } from '@/store/stateStore';
 const { sidebarOpen } = storeToRefs(useGlobalStateStore());
 
 const calcOpen = () => {
-  // TODO: Check page width to make sure the current state of the sidebar.
-  console.log('sidebarOpen.value', sidebarOpen.value);
   if (sidebarOpen.value === null) {
     // Use media queries
     return null;
@@ -98,7 +96,7 @@ const calcOpen = () => {
   determine the state.
  */
 .layout-sidebar:not(.open, .closed) {
-  @media (max-width: 70rem) {
+  @media (max-width: 1000px) {
     min-width: 6rem !important;
     width: 6rem;
     @include closed;
@@ -117,5 +115,10 @@ const calcOpen = () => {
   min-width: '';
   width: '';
   @include open;
+}
+
+.layout-sidebar {
+  transition: width 0.2s ease-in-out;
+  transition: min-width 0.2s ease-in-out;
 }
 </style>

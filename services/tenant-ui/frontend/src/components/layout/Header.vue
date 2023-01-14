@@ -34,15 +34,25 @@ const { sidebarOpen } = storeToRefs(useGlobalStateStore());
  * Toggle the sidebar open or closed
  */
 const toggleSidebar = () => {
-  if (sidebarOpen.value) {
+  if (sidebarOpen.value === null) {
+    /* This is the first click so check current page size */
+    if (window.innerWidth > 1000) {
+      sidebarOpen.value = false;
+    } else {
+      sidebarOpen.value = true;
+    }
+  } else if (sidebarOpen.value) {
+    /* If the sidebar is open, close it */
     sidebarOpen.value = false;
   } else {
+    /* If the sidebar is closed, open it */
     sidebarOpen.value = true;
   }
 };
 </script>
 
 <style scoped>
+/* Make the hamburger button slightly reactive */
 .hamburger {
   cursor: pointer;
   padding: 0.75rem;
