@@ -53,10 +53,69 @@ const calcOpen = () => {
 </script>
 
 <style lang="scss" scoped>
-@media (max-width: 100rem) {
-  .layout-sidebar {
+/* By default the small title is hidden, and the large title is shown */
+:deep(.sidebar-app-title.small) {
+  display: none;
+  font-size: 2rem;
+}
+
+/* When the sidebar is closed */
+@mixin closed {
+  :deep(.p-menuitem-text) {
+    display: none;
+  }
+  :deep(.p-menuitem-icon) {
+    font-size: 2rem !important;
+    margin-left: 0.5rem;
+  }
+  :deep(.sidebar-app-title) {
+    display: none;
+  }
+  :deep(.sidebar-app-title.small) {
+    display: block;
+  }
+}
+
+/* When the sidebar is open */
+@mixin open {
+  :deep(.p-menuitem-text) {
+    display: '';
+  }
+  :deep(.p-menuitem-icon) {
+    font-size: '';
+    margin-left: '';
+  }
+  :deep(.sidebar-app-title) {
+    display: '';
+  }
+  :deep(.sidebar-app-title.small) {
+    display: '';
+  }
+}
+
+/*
+ If the user has not selected a sidebar state, then use media queries to
+  determine the state.
+ */
+.layout-sidebar:not(.open, .closed) {
+  @media (max-width: 70rem) {
     min-width: 6rem !important;
     width: 6rem;
+    @include closed;
   }
+}
+
+/*
+ If the user has selected a sidebar state, then use that state.
+ */
+.layout-sidebar.closed {
+  min-width: 6rem !important;
+  width: 6rem;
+  @include closed;
+}
+.layout-sidebar.open {
+  min-width: '';
+  width: '';
+  @include open;
 }
 </style>
