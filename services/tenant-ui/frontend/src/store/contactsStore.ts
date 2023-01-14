@@ -163,15 +163,11 @@ export const useContactsStore = defineStore('contacts', () => {
 
   async function getContact(id: string, params: any = {}) {
     loadingItem.value = true;
-    await new Promise((r) => setTimeout(r, 2000));
-
     return fetchItem(API_PATH.CONNECTIONS, id, error, loadingItem, params);
   }
 
   async function getInvitation(id: string, params: any = {}) {
     loadingItem.value = true;
-    await new Promise((r) => setTimeout(r, 2000));
-
     return fetchItem(
       API_PATH.CONNECTIONS_INVITATION(id),
       '',
