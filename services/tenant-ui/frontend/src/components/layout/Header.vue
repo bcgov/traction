@@ -3,8 +3,8 @@
     <template #start>
       <div
         class="hamburger"
-        @click="toggleSidebar"
         title="Toggle the side menu"
+        @click="toggleSidebar"
       >
         <i class="pi pi-bars p-toolbar-separator mr-2" />
       </div>
