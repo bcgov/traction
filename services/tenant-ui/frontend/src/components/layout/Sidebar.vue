@@ -2,6 +2,7 @@
   <div class="traction-sidebar" :class="calcOpen()">
     <!-- <h1 v-if="tenant" class="sidebar-app-title">{{ tenant.name }}</h1> -->
     <h1 class="sidebar-app-title">Tenant UI</h1>
+    <h1 class="sidebar-app-title small">T</h1>
     <PanelMenu :model="items" class="mt-5" />
   </div>
 </template>
@@ -106,8 +107,24 @@ const items = ref([
 </script>
 
 <style scoped>
-/*
-TODO: Add media queries to make the sidebar responsive
-  Has to be smart enough to consider the 'open' and 'closed' states
-*/
+.sidebar-app-title.small {
+  display: none;
+  font-size: 2rem;
+}
+/* media queries */
+@media (max-width: 100rem) {
+  :deep(.p-menuitem-text) {
+    display: none;
+  }
+  :deep(.p-menuitem-icon) {
+    font-size: 2rem !important;
+    margin-left: 0.5rem;
+  }
+  .sidebar-app-title {
+    display: none;
+  }
+  .sidebar-app-title.small {
+    display: block;
+  }
+}
 </style>

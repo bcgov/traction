@@ -31,3 +31,12 @@ import Header from './Header.vue';
 import Footer from './Footer.vue';
 import Sidebar from './Sidebar.vue';
 </script>
+
+<style lang="scss" scoped>
+@media (max-width: 100rem) {
+  .layout-sidebar {
+    min-width: 6rem;
+    width: 6rem;
+  }
+}
+</style>
