@@ -3,7 +3,7 @@
     <!-- the suspense tag is so we can await any of these components.
          sidebar loads the tenant async -->
     <div class="layout-container">
-      <nav class="layout-sidebar">
+      <nav class="layout-sidebar" :class="calcOpen()">
         <Sidebar />
       </nav>
       <div class="layout-page">
@@ -30,12 +30,32 @@ import Card from 'primevue/card';
 import Header from './Header.vue';
 import Footer from './Footer.vue';
 import Sidebar from './Sidebar.vue';
+
+// State
+import { storeToRefs } from 'pinia';
+import { useGlobalStateStore } from '@/store/stateStore';
+
+const { sidebarOpen } = storeToRefs(useGlobalStateStore());
+
+const calcOpen = () => {
+  // TODO: Check page width to make sure the current state of the sidebar.
+  console.log('sidebarOpen.value', sidebarOpen.value);
+  if (sidebarOpen.value === null) {
+    // Use media queries
+    return null;
+  } else if (sidebarOpen.value) {
+    // Default width
+    return 'open';
+  } else {
+    return 'closed'; // Mobile width
+  }
+};
 </script>
 
 <style lang="scss" scoped>
 @media (max-width: 100rem) {
   .layout-sidebar {
-    min-width: 6rem;
+    min-width: 6rem !important;
     width: 6rem;
   }
 }

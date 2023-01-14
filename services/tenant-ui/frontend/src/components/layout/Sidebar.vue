@@ -1,5 +1,6 @@
 <template>
-  <div class="traction-sidebar" :class="calcOpen()">
+  <div class="traction-sidebar">
+    <!-- <div class="traction-sidebar" :class="calcOpen()"> -->
     <!-- <h1 v-if="tenant" class="sidebar-app-title">{{ tenant.name }}</h1> -->
     <h1 class="sidebar-app-title">Tenant UI</h1>
     <h1 class="sidebar-app-title small">T</h1>
@@ -19,19 +20,19 @@ import { useGlobalStateStore } from '@/store/stateStore';
 
 const { sidebarOpen } = storeToRefs(useGlobalStateStore());
 
-const calcOpen = () => {
-  // TODO: Check page width to make sure the current state of the sidebar.
-  console.log('sidebarOpen.value', sidebarOpen.value);
-  if (sidebarOpen.value === null) {
-    // Use media queries
-    return null;
-  } else if (sidebarOpen.value) {
-    // Default width
-    return 'open';
-  } else {
-    return 'closed'; // Mobile width
-  }
-};
+// const calcOpen = () => {
+//   // TODO: Check page width to make sure the current state of the sidebar.
+//   console.log('sidebarOpen.value', sidebarOpen.value);
+//   if (sidebarOpen.value === null) {
+//     // Use media queries
+//     return null;
+//   } else if (sidebarOpen.value) {
+//     // Default width
+//     return 'open';
+//   } else {
+//     return 'closed'; // Mobile width
+//   }
+// };
 
 const { t } = useI18n();
 
