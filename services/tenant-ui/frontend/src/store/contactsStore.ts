@@ -19,6 +19,7 @@ export const useContactsStore = defineStore('contacts', () => {
   const contacts: Ref<any[]> = ref([]);
   const selectedContact: any = ref(null);
   const loading: Ref<boolean> = ref(false);
+  const loadingItem: Ref<boolean> = ref(false);
   const error: Ref<string | null> = ref(null);
 
   // getters
@@ -161,8 +162,23 @@ export const useContactsStore = defineStore('contacts', () => {
   }
 
   async function getContact(id: string, params: any = {}) {
-    const getloading: any = ref(false);
-    return fetchItem(API_PATH.CONNECTIONS, id, error, getloading, params);
+    loadingItem.value = true;
+    await new Promise((r) => setTimeout(r, 2000));
+
+    return fetchItem(API_PATH.CONNECTIONS, id, error, loadingItem, params);
+  }
+
+  async function getInvitation(id: string, params: any = {}) {
+    loadingItem.value = true;
+    await new Promise((r) => setTimeout(r, 2000));
+
+    return fetchItem(
+      API_PATH.CONNECTIONS_INVITATION(id),
+      '',
+      error,
+      loadingItem,
+      params
+    );
   }
 
   // Only going to do alias right now but expand to other params as needed later
@@ -218,6 +234,7 @@ export const useContactsStore = defineStore('contacts', () => {
     contactsDropdown,
     selectedContact,
     loading,
+    loadingItem,
     error,
     filteredConnections,
     filteredInvitations,
@@ -226,6 +243,7 @@ export const useContactsStore = defineStore('contacts', () => {
     // acceptInvitation,
     deleteContact,
     getContact,
+    getInvitation,
     // updateContact,
   };
 });

@@ -17,6 +17,7 @@
           : t('connect.invitations.singleCreate')
       "
       :modal="true"
+      :style="{ minWidth: '400px' }"
       @update:visible="handleClose"
     >
       <CreateContactForm

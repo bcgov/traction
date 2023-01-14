@@ -1,22 +1,6 @@
-<script setup lang="ts">
-import Button from 'primevue/button';
-import QrcodeVue from 'qrcode.vue';
-import Accordion from 'primevue/accordion';
-import AccordionTab from 'primevue/accordiontab';
-
-// For notifications
-import { useToast } from 'vue-toastification';
-const toast = useToast();
-
-const copy_to_clipboard = (content: string) => {
-  navigator.clipboard.writeText(content);
-  toast.info('URL copied to clipboard');
-  return;
-};
-</script>
-
 <template>
   <div v-if="qrContent" class="qr-container">
+    <!-- QR Code encoded link -->
     <qrcode-vue
       v-if="qrContent"
       class="qr-image"
@@ -24,48 +8,56 @@ const copy_to_clipboard = (content: string) => {
       :size="400"
       level="H"
     />
-    <Button
-      class="clipboard-button"
-      label="Copy to Clipboard"
-      icon="pi pi-paperclip"
-      @click="copy_to_clipboard(qrContent!)"
-    ></Button>
-    <Accordion class="qr-accordion">
-      <AccordionTab header="View Raw Content">
-        <p style="word-wrap: break-word">{{ qrContent }}</p>
-      </AccordionTab>
-    </Accordion>
+
+    <!-- Plain text of link -->
+    <div class="field mt-5 w-full">
+      <label for="inviteUrl">Invitation URL</label>
+      <div class="p-inputgroup">
+        <InputText
+          id="inviteUrl"
+          readonly
+          :value="qrContent"
+          name="invite-url"
+          class="w-full"
+        />
+        <Button
+          icon="pi pi-copy"
+          title="Copy to clipboard"
+          class="p-button-secondary"
+          @click="copy_to_clipboard"
+        />
+      </div>
+    </div>
   </div>
   <span v-else>No Content Found</span>
 </template>
 
-<script lang="ts">
-export default {
-  name: 'QRCode',
-  props: {
-    qrContent: {
-      type: String,
-      default: null,
-    },
+<script setup lang="ts">
+import { PropType } from 'vue';
+import Button from 'primevue/button';
+import InputText from 'primevue/inputtext';
+import QrcodeVue from 'qrcode.vue';
+import { useToast } from 'vue-toastification';
+const toast = useToast();
+
+// Props
+const props = defineProps({
+  qrContent: {
+    type: String as PropType<string>,
+    required: true,
   },
+});
+
+const copy_to_clipboard = () => {
+  navigator.clipboard.writeText(props.qrContent);
+  toast.info('URL copied to clipboard');
+  return;
 };
 </script>
 
 <style>
-.qr-accordion {
-  margin-top: 10px;
-}
-
 .qr-image {
   display: flex;
   margin-bottom: 25px;
-}
-
-.qr-container {
-  max-width: 400px;
-}
-
-i {
-  margin: 10px;
 }
 </style>
