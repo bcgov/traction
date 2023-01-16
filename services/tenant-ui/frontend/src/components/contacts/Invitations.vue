@@ -44,6 +44,7 @@
     <Column :sortable="false" header="Actions">
       <template #body="{ data }">
         <DeleteContact :connection-id="data.connection_id" />
+        <RegenerateInvitation :connection-id="data.connection_id" />
       </template>
     </Column>
     <Column :sortable="true" field="alias" header="Alias" />
@@ -75,6 +76,7 @@ import { storeToRefs } from 'pinia';
 // Other components
 import CreateContact from '@/components/contacts/createContact/CreateContact.vue';
 import DeleteContact from '@/components/contacts/editContact/DeleteContact.vue';
+import RegenerateInvitation from '@/components/contacts/createContact/RegenerateInvitation.vue';
 import RowExpandData from '@/components/common/RowExpandData.vue';
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';

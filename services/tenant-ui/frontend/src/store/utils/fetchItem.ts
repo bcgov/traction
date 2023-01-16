@@ -10,7 +10,7 @@ export async function fetchItem(
   params: object = {}
 ): Promise<object | null | undefined> {
   const acapyApi = useAcapyApi();
-  const dataUrl = `${url}/${id}`;
+  const dataUrl = id ? `${url}/${id}` : url;
   console.log(` > fetchItem(${dataUrl})`);
   error.value = null;
   let result = null;
