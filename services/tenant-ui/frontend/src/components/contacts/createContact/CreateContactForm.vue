@@ -1,13 +1,14 @@
 <template>
   <form @submit.prevent="handleSubmit(!v$.$invalid)">
     <!-- Alias -->
-    <div class="field">
+    <div class="field w-full">
       <label for="alias" :class="{ 'p-error': v$.alias.$invalid && submitted }">
         Contact Alias
       </label>
       <InputText
         v-model="v$.alias.$model"
         :class="{ 'p-invalid': v$.alias.$invalid && submitted }"
+        class="w-full"
         type="text"
         name="alias"
         autofocus

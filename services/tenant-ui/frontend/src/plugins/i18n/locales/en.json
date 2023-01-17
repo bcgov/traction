@@ -23,7 +23,8 @@
       "single": "Single Use",
       "singleCreate": "Create Single Use Invitation",
       "multi": "Multi Use",
-      "multiCreate": "Create Multi Use Invitation"
+      "multiCreate": "Create Multi Use Invitation",
+      "regenerate": "Regenerate Invitation"
     }
   },
   "issue": {
