@@ -89,7 +89,9 @@ acapy:
     adminPort: 8031
     httpPort: 8030
     walletScheme: DatabasePerWallet
-
+    endorserAlias: endorser
+    endorserPublicDID: UjmxKBZe1qv1NBE7GaohdP
+    
   openshift:
     route:
       enabled: true

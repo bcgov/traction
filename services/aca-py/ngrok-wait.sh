@@ -49,6 +49,13 @@ exec aca-py start \
     ${ACAPY_READ_ONLY_MODE} \
     ${ACAPY_TAILS_BASE_URL} \
     ${ACAPY_TAILS_UPLOAD_URL} \
+    --endorser-protocol-role author \
+    --endorser-public-did ${ACAPY_ENDORSER_PUBLIC_DID} \
+    --endorser-alias ${ENDORSER_CONNECTION_ALIAS} \
+    --auto-request-endorsement \
+    --auto-write-transactions \
+    --auto-create-revocation-transactions \
+    --auto-promote-author-did \
     --notify-revocation \
     --monitor-revocation-notification \
     --preserve-exchange-records \

@@ -1,0 +1,17 @@
+auto-accept-invites: true
+auto-accept-requests: true
+auto-respond-messages: true
+auto-ping-connection: true
+auto-provision: true
+monitor-ping: true
+public-invites: true
+plugin: 'aries_cloudagent.messaging.jsonld'
+outbound-transport: http
+log-level: info
+endorser-protocol-role: endorser
+#endorser-public-did: <for author>
+#endorser-alias: <for author>
+#auto-request-endorsement: <for author>
+auto-endorse-transactions: true
+#auto-write-transactions: <for author>
+#auto-create-revocation-transactions: <for author>
