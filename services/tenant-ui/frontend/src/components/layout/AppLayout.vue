@@ -33,9 +33,9 @@ import Sidebar from './Sidebar.vue';
 
 // State
 import { storeToRefs } from 'pinia';
-import { useGlobalStateStore } from '@/store/stateStore';
+import { useCommonStore } from '@/store/commonStore';
 
-const { sidebarOpen } = storeToRefs(useGlobalStateStore());
+const { sidebarOpen } = storeToRefs(useCommonStore());
 
 const calcOpen = () => {
   if (sidebarOpen.value === null) {

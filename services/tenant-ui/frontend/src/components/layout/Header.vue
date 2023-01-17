@@ -25,10 +25,10 @@ import LocaleSwitcher from '../common/LocaleSwitcher.vue';
 
 // State
 import { storeToRefs } from 'pinia';
-import { useGlobalStateStore } from '@/store/stateStore';
+import { useCommonStore } from '@/store/commonStore';
 
 // Whether the sidebar is open or not
-const { sidebarOpen } = storeToRefs(useGlobalStateStore());
+const { sidebarOpen } = storeToRefs(useCommonStore());
 
 /**
  * Toggle the sidebar open or closed
