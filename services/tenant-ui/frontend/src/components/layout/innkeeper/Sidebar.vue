@@ -1,6 +1,7 @@
 <template>
   <div class="traction-sidebar innkeeper-sidebar">
     <h1 class="sidebar-app-title">Innkeeper</h1>
+    <h1 class="sidebar-app-title small">I</h1>
     <PanelMenu :model="items" class="mt-5" />
   </div>
 </template>
