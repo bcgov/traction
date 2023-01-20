@@ -40,3 +40,10 @@ const items = ref([
   },
 ]);
 </script>
+<style scoped lang="scss">
+.sidebar-app-title.small {
+  margin: 1rem;
+  width: 4rem;
+  padding-left: 1.4rem;
+}
+</style>
