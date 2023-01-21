@@ -51,7 +51,7 @@ class TenantManager:
             # transport/inbound/session.py only deals with managed.
             key_management_mode = WalletRecord.MODE_MANAGED
             wallet_webhook_urls = []
-            wallet_dispatch_type = "default"
+            wallet_dispatch_type = "both"
 
             label = wallet_name  # use the name they provided as the label
 

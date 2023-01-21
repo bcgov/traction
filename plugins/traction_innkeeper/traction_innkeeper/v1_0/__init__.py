@@ -10,6 +10,7 @@ from aries_cloudagent.core.profile import Profile
 from aries_cloudagent.core.protocol_registry import ProtocolRegistry
 from aries_cloudagent.core.util import STARTUP_EVENT_PATTERN
 
+from . import schema_cache
 from .config import get_config
 from .endorser_connection_handler import endorser_connections_event_handler
 from .tenant_manager import TenantManager
@@ -17,6 +18,7 @@ from .connections import routes
 
 MODULES = [
     connections,
+    schema_cache,
 ]
 
 LOGGER = logging.getLogger(__name__)
@@ -52,6 +54,7 @@ async def setup(context: InjectionContext):
             if plugin_name.endswith("traction_innkeeper.v1_0"):
                 LOGGER.info("> > register plugins")
                 plugin_registry.register_plugin(f"{plugin_name}.connections")
+                plugin_registry.register_plugin(f"{plugin_name}.schema_cache")
                 LOGGER.info("< < register plugins")
 
     bus.subscribe(CONNECTIONS_EVENT_PATTERN, endorser_connections_event_handler)
