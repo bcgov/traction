@@ -45,6 +45,9 @@ tenant_ui:
     realm: 'Traction'
     roleName: 'innkeeper'
 
+  ariesDetails:
+    ledgerDescription: 'bcovrin-test'
+
   smtp:
     server: apps.smtp.gov.bc.ca
     port: 25
