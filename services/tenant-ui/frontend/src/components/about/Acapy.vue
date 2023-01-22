@@ -3,7 +3,11 @@
     <div class="col-12 md:col-6">
       <strong>{{ t('about.acaPy.info') }}</strong>
       <p class="mt-0">
-        {{ t('about.acaPy.acapyVersion', { version: config.frontend.ariesDetails.acapyVersion }) }}
+        {{
+          t('about.acaPy.acapyVersion', {
+            version: config.frontend.ariesDetails.acapyVersion,
+          })
+        }}
       </p>
     </div>
     <div class="col-12 md:col-6 flex justify-content-end pt-0">
