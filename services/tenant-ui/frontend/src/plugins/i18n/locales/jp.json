@@ -74,6 +74,26 @@
     }
   },
   "about": {
-    "about": "About <JP>"
+    "about": "About <JP>",
+    "traction": {
+      "traction": "Traction <JP>",
+      "info": "Licence information for TRACTION <JP>",
+      "tractionVersion": "Traction version {version} <JP>",
+      "uiVersion": "Tenant UI version {version} <JP>",
+      "url": "Traction URL <JP>",
+      "imageTag": "Image tag <JP>",
+      "imageVersion": "Image version <JP>",
+      "imageCreated": "Image created at <JP>",
+      "repository": "GitHub repo for Traction <JP>"
+    },
+    "acaPy": {
+      "acaPy": "ACA-Py <JP>",
+      "info": "Licence information for ACA-Py <JP>",
+      "acapyVersion": "ACA-Py version {version} <JP>",
+      "ledger": "Ledger <JP>",
+      "ledgerBrowser": "Ledger Browser <JP>",
+      "tailsServer": "Tails Server <JP>",
+      "endorser": "Endorser <JP>"
+    }
   }
 }

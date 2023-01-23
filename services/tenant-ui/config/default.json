@@ -18,7 +18,19 @@
       "sidebarTitle": "TRACTION",
       "copyright": "",
       "owner": "",
-      "coverImageCopyright": "Photo by Kristoffer Fredriksson on StockSnap"
+      "coverImageCopyright": "Photo by Kristoffer Fredriksson on StockSnap",
+      "aboutBusiness": {
+        "title": "Government of British Columbia",
+        "linkTitle": "BC Digital Trust Service Agreement",
+        "link": "https://github.com/bcgov/bc-vcpedia/blob/main/agents/bc-gov-agent-service.md",
+        "imageUrl": "/img/bc/bc_logo.png"
+      }
+    },
+    "ariesDetails": {
+      "acapyVersion": "1.0.0-rc",
+      "ledgerName": "bcovrin-test",
+      "ledgerBrowser": "http://test.bcovrin.vonx.io",
+      "tailsServer": "https://tails-dev.vonx.io"
     }
   },
   "image": {

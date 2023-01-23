@@ -15,7 +15,19 @@
       "sidebarTitle": "UX_SIDEBAR_TITLE",
       "copyright": "UX_COPYRIGHT",
       "owner": "UX_OWNER",
-      "coverImageCopyright": "UX_COVERIMAGE_COPYRIGHT"
+      "coverImageCopyright": "UX_COVERIMAGE_COPYRIGHT",
+      "aboutBusiness": {
+        "title": "UX_ABOUT_TITLE",
+        "linkTitle": "UX_ABOUT_LINK_TITLE",
+        "linkText": "UX_ABOUT_LINK_TEXT",
+        "imageUrl": "UX_ABOUT_IMAGE_URL"
+      }
+    },
+    "ariesDetails": {
+      "acapyVersion": "FRONTEND_ACAPY_VERSION_DISPLAY",
+      "ledgerName": "FRONTEND_ARIES_LEDGER_DESCRIPTION",
+      "ledgerBrowser": "ACAPY_LEDGER_BROWSER_URL",
+      "tailsServer": "ACAPY_TAILS_BASE_URL"
     }
   },
   "image": {

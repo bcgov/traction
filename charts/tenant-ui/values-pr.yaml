@@ -17,6 +17,8 @@ tenant_ui:
     showInnkeeperAdminLogin: true
     authority: https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm
     jwksUri: https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm/protocol/openid-connect/certs
+  ariesDetails:
+    ledgerDescription: 'bcovrin-test'
   smtp:
     server: apps.smtp.gov.bc.ca
     port: 25

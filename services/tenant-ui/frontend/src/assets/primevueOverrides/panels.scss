@@ -1,0 +1,20 @@
+@import '../variables.scss';
+
+// The Accordion and its tabs
+.p-accordion {
+  .p-accordion-tab {
+    margin-bottom: 0;
+    &:not(:first-of-type) {
+      .p-accordion-header-link{ 
+        border-top-right-radius: 0;
+        border-top-left-radius: 0;
+      }
+    }
+    &:not(:last-of-type) {
+      .p-accordion-header-link, .p-accordion-content{ 
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+    }
+  }
+}

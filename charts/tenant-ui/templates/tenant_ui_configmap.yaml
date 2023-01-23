@@ -19,6 +19,7 @@ data:
   FRONTEND_INNKEEPER_OIDC_AUTHORITY: {{ .Values.tenant_ui.oidc.authority | quote }}
   FRONTEND_INNKEEPER_OIDC_CLIENT: {{ .Values.tenant_ui.oidc.client | quote }}
   FRONTEND_INNKEEPER_OIDC_LABEL: {{ .Values.tenant_ui.oidc.label | quote }}
+  FRONTEND_ARIES_LEDGER_DESCRIPTION: {{ .Values.tenant_ui.ariesDetails.ledgerDescription | quote }}
   SERVER_OIDC_JWKS: {{ .Values.tenant_ui.oidc.jwksUri | quote }}
   SERVER_OIDC_REALM: {{ .Values.tenant_ui.oidc.realm | quote }}
   SERVER_OIDC_ROLE: {{ .Values.tenant_ui.oidc.roleName | quote }}
