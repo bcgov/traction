@@ -28,9 +28,9 @@
     },
     "ariesDetails": {
       "acapyVersion": "1.0.0-rc",
-      "ledgerName": "default ledger",
-      "ledgerBrowser": "",
-      "tailsServer": ""
+      "ledgerName": "bcovrin-test",
+      "ledgerBrowser": "http://test.bcovrin.vonx.io",
+      "tailsServer": "https://tails-dev.vonx.io"
     }
   },
   "image": {
