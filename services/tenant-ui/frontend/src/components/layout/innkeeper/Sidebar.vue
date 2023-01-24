@@ -20,10 +20,12 @@ const items = ref([
     items: [
       {
         label: () => t('reservations.current'),
+        icon: 'pi pi-fw pi-calendar',
         to: { name: 'InnkeeperReservations' },
       },
       {
         label: () => t('reservations.history'),
+        icon: 'pi pi-fw pi-history',
         to: { name: 'InnkeeperReservationsHistory' },
       },
     ],
@@ -42,8 +44,10 @@ const items = ref([
 </script>
 <style scoped lang="scss">
 .sidebar-app-title.small {
-  margin: 1rem;
-  width: 4rem;
+  position: relative;
+  left: -0.5rem;
+  width: 3.2rem;
   padding-left: 1.4rem;
+  padding-right: 1.4rem;
 }
 </style>
