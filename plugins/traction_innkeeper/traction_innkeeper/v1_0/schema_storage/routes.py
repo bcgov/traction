@@ -11,16 +11,16 @@ from aries_cloudagent.messaging.models.openapi import OpenAPISchema
 from aries_cloudagent.storage.error import StorageNotFoundError, StorageError
 from marshmallow import fields
 
-from .models import SchemaCacheRecordSchema
-from .schema_cache_service import (
-    list_schemas_from_cache,
-    get_schema_from_cache,
-    add_schema_to_cache,
+from .models import SchemaStorageRecordSchema
+from .schema_storage_service import (
+    list_items,
+    read_item,
+    add_item,
 )
 
 LOGGER = logging.getLogger(__name__)
 
-SWAGGER_SCHEMA_CACHE = "schema-cache"
+SWAGGER_CATEGORY = "schema-storage"
 
 
 def error_handler(func):
@@ -40,12 +40,12 @@ def error_handler(func):
     return wrapper
 
 
-class SchemaCacheListSchema(OpenAPISchema):
-    """Response schema for schema cache list."""
+class SchemaStorageListSchema(OpenAPISchema):
+    """Response schema for schema storage list."""
 
     results = fields.List(
-        fields.Nested(SchemaCacheRecordSchema()),
-        description="List of schema cache records",
+        fields.Nested(SchemaStorageRecordSchema()),
+        description="List of schema storage records",
     )
 
 
@@ -53,55 +53,55 @@ class SchemaIdMatchInfoSchema(OpenAPISchema):
     schema_id = fields.Str(description="Schema identifier", required=True)
 
 
-class SchemaCacheAddSchema(OpenAPISchema):
+class SchemaStorageAddSchema(OpenAPISchema):
     schema_id = fields.Str(description="Schema identifier", required=True)
 
 
 @docs(
-    tags=[SWAGGER_SCHEMA_CACHE],
+    tags=[SWAGGER_CATEGORY],
 )
-@response_schema(SchemaCacheListSchema(), 200, description="")
+@response_schema(SchemaStorageListSchema(), 200, description="")
 @error_handler
-async def schema_cache_list(request: web.BaseRequest):
+async def schema_storage_list(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     profile = context.profile
 
     tag_filter = {}
     post_filter = {}
-    records = await list_schemas_from_cache(profile, tag_filter, post_filter)
+    records = await list_items(profile, tag_filter, post_filter)
     results = [record.serialize() for record in records]
 
     return web.json_response({"results": results})
 
 
 @docs(
-    tags=[SWAGGER_SCHEMA_CACHE],
+    tags=[SWAGGER_CATEGORY],
 )
-@request_schema(SchemaCacheAddSchema())
-@response_schema(SchemaCacheRecordSchema(), 200, description="")
+@request_schema(SchemaStorageAddSchema())
+@response_schema(SchemaStorageRecordSchema(), 200, description="")
 @error_handler
-async def schema_cache_add(request: web.BaseRequest):
+async def schema_storage_add(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     profile = context.profile
     body = await request.json()
 
-    record = await add_schema_to_cache(profile, body["schema_id"])
+    record = await add_item(profile, body["schema_id"])
 
     return web.json_response(record.serialize())
 
 
 @docs(
-    tags=[SWAGGER_SCHEMA_CACHE],
+    tags=[SWAGGER_CATEGORY],
 )
 @match_info_schema(SchemaIdMatchInfoSchema())
-@response_schema(SchemaCacheRecordSchema(), 200, description="")
+@response_schema(SchemaStorageRecordSchema(), 200, description="")
 @error_handler
-async def schema_cache_get(request: web.BaseRequest):
+async def schema_storage_get(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     profile = context.profile
     schema_id = request.match_info["schema_id"]
 
-    record = await get_schema_from_cache(profile, schema_id)
+    record = await read_item(profile, schema_id)
 
     return web.json_response(record.serialize())
 
@@ -112,14 +112,14 @@ async def register(app: web.Application):
     app.add_routes(
         [
             web.get(
-                f"/schema-cache",
-                schema_cache_list,
+                f"/schema-storage",
+                schema_storage_list,
                 allow_head=False,
             ),
-            web.post("/schema-cache", schema_cache_add),
+            web.post("/schema-storage", schema_storage_add),
             web.get(
-                "/schema-cache/{schema_id}",
-                schema_cache_get,
+                "/schema-storage/{schema_id}",
+                schema_storage_get,
                 allow_head=False,
             ),
         ]
@@ -136,7 +136,7 @@ def post_process_routes(app: web.Application):
 
     app._state["swagger_dict"]["tags"].append(
         {
-            "name": SWAGGER_SCHEMA_CACHE,
-            "description": "Traction Schema Cache - ledger schema cache (traction_innkeeper/schema_cache v1_0 plugin)",
+            "name": SWAGGER_CATEGORY,
+            "description": "Traction Schema Storage - Local storage of schema metadata (traction_innkeeper/schema_storage v1_0 plugin)",
         }
     )

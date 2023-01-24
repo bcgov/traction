@@ -10,37 +10,37 @@ from aries_cloudagent.ledger.multiple_ledger.ledger_requests_executor import (
 from aries_cloudagent.multitenant.base import BaseMultitenantManager
 from aries_cloudagent.storage.error import StorageNotFoundError
 
-from .models import SchemaCacheRecord
+from .models import SchemaStorageRecord
 
 LOGGER = logging.getLogger(__name__)
 
 
-async def get_schema_from_cache(profile: Profile, schema_id: str):
-    LOGGER.info(f"> get_schema_from_cache({schema_id})")
+async def read_item(profile: Profile, schema_id: str):
+    LOGGER.info(f"> read_item({schema_id})")
     try:
         async with profile.session() as session:
-            rec = await SchemaCacheRecord.retrieve_by_id(session, schema_id)
+            rec = await SchemaStorageRecord.retrieve_by_id(session, schema_id)
             LOGGER.debug(rec)
     except StorageNotFoundError:
         # this is to be expected... do nothing, do not log
         rec = None
     except Exception as err:
-        LOGGER.error(f"Error fetching schema cache record for id {schema_id}", err)
+        LOGGER.error(f"Error fetching schema storage record for id {schema_id}", err)
         rec = None
 
-    LOGGER.info(f"< get_schema_from_cache({schema_id}): {rec}")
+    LOGGER.info(f"< read_item({schema_id}): {rec}")
     return rec
 
 
-async def list_schemas_from_cache(
+async def list_items(
     profile: Profile, tag_filter: Optional[dict] = {}, post_filter: Optional[dict] = {}
 ):
-    LOGGER.info(f"> list_schemas_from_cache({tag_filter}, {post_filter})")
+    LOGGER.info(f"> list_items({tag_filter}, {post_filter})")
 
     records = []
     async with profile.session() as session:
         # innkeeper can access all reservation records
-        records = await SchemaCacheRecord.query(
+        records = await SchemaStorageRecord.query(
             session=session,
             tag_filter=tag_filter,
             post_filter_positive=post_filter,
@@ -48,15 +48,15 @@ async def list_schemas_from_cache(
         )
 
     LOGGER.info(
-        f"< list_schemas_from_cache({tag_filter}, {post_filter}): {len(records)}"
+        f"< list_items({tag_filter}, {post_filter}): {len(records)}"
     )
     return records
 
 
-async def add_schema_to_cache(profile: Profile, schema_id: str):
-    LOGGER.info(f"> add_schema_to_cache({schema_id})")
+async def add_item(profile: Profile, schema_id: str):
+    LOGGER.info(f"> add_item({schema_id})")
     # check if
-    rec = await get_schema_from_cache(profile, schema_id)
+    rec = await read_item(profile, schema_id)
     if not rec:
 
         async with profile.session() as session:
@@ -82,13 +82,13 @@ async def add_schema_to_cache(profile: Profile, schema_id: str):
             data = {"schema_id": schema_id, "schema": schema}
             if ledger_id:
                 data["ledger_id"] = ledger_id
-            rec: SchemaCacheRecord = SchemaCacheRecord.deserialize(data)
-            LOGGER.debug(f"schema_cache_rec = {rec}")
+            rec: SchemaStorageRecord = SchemaStorageRecord.deserialize(data)
+            LOGGER.debug(f"schema_storage_rec = {rec}")
             async with profile.session() as session:
-                await rec.save(session, reason="New schema cache record")
+                await rec.save(session, reason="New schema storage record")
         except Exception as err:
-            LOGGER.error(f"Error adding schema cache record.", err)
+            LOGGER.error(f"Error adding schema storage record.", err)
             raise err
 
-    LOGGER.info(f"< add_schema_to_cache({schema_id}): {rec}")
+    LOGGER.info(f"< add_item({schema_id}): {rec}")
     return rec

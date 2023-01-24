@@ -10,8 +10,8 @@ from aries_cloudagent.messaging.schemas.util import (
     EVENT_LISTENER_PATTERN as SCHEMAS_EVENT_LISTENER_PATTERN,
 )
 
-from .models import SchemaCacheRecord
-from .schema_cache_service import add_schema_to_cache
+from .models import SchemaStorageRecord
+from .schema_storage_service import add_item
 
 LOGGER = logging.getLogger(__name__)
 
@@ -42,8 +42,7 @@ async def schemas_event_handler(profile: Profile, event: Event):
     LOGGER.debug(f"event = {event}")
 
     schema_id = event.payload["context"]["schema_id"]
-    schema_cache_record = await add_schema_to_cache(profile, schema_id)
-    LOGGER.debug(f"schema_cache_record = {schema_cache_record}")
-    await add_schema_to_cache(profile, schema_id)
+    schema_storage_record = await add_item(profile, schema_id)
+    LOGGER.debug(f"schema_storage_record = {schema_storage_record}")
 
     LOGGER.info("< schemas_event_handler")

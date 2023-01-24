@@ -4,15 +4,15 @@ from aries_cloudagent.messaging.models.base_record import BaseRecord, BaseRecord
 from marshmallow import EXCLUDE, fields
 
 
-class SchemaCacheRecord(BaseRecord):
-    """Traction Schema Cache Record."""
+class SchemaStorageRecord(BaseRecord):
+    """Traction Schema Storage Record."""
 
     class Meta:
-        """SchemaCacheRecord Meta."""
+        """SchemaStorageRecord Meta."""
 
-        schema_class = "SchemaCacheRecordSchema"
+        schema_class = "SchemaStorageRecordSchema"
 
-    RECORD_TYPE = "schema_cache"
+    RECORD_TYPE = "schema_storage"
     RECORD_ID_NAME = "schema_id"
     TAG_NAMES = {}
 
@@ -49,13 +49,13 @@ class SchemaCacheRecord(BaseRecord):
         }
 
 
-class SchemaCacheRecordSchema(BaseRecordSchema):
-    """Traction Schema Cache Record Schema."""
+class SchemaStorageRecordSchema(BaseRecordSchema):
+    """Traction Schema Storage Record Schema."""
 
     class Meta:
-        """SchemaRecord Meta."""
+        """SchemaStorageRecord Meta."""
 
-        model_class = "SchemaCacheRecord"
+        model_class = "SchemaStorageRecord"
         unknown = EXCLUDE
 
     schema_id = fields.Str(required=True, description="Schema identifier")
