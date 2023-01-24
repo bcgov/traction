@@ -159,3 +159,87 @@ body {
   flex-direction: row;
   margin: 10px;
 }
+
+/* By default the small title is hidden, and the large title is shown */
+.sidebar-app-title.small {
+  display: none;
+  font-size: 2rem;
+}
+
+/* When the sidebar is closed */
+@mixin closed {
+  .p-menuitem-text {
+    display: none;
+  }
+  .p-menuitem-icon {
+    font-size: 2rem !important;
+    margin-left: 0.5rem;
+  }
+  .sidebar-app-title {
+    display: none;
+  }
+  .sidebar-app-title.small {
+    display: block;
+  }
+
+  .p-submenu-list {
+    padding-left: 1.5rem !important;
+    .p-menuitem-icon {
+      position: relative;
+      font-size: 1.5rem !important;
+      margin-left: 0;
+    }
+  }
+}
+
+/* When the sidebar is open */
+@mixin open {
+  .p-menuitem-text {
+    display: '';
+  }
+  .p-menuitem-icon {
+    font-size: '';
+    margin-left: '';
+  }
+  .sidebar-app-title {
+    display: '';
+  }
+  .sidebar-app-title.small {
+    display: '';
+  }
+}
+
+/*
+ If the user has not selected a sidebar state, then use media queries to
+  determine the state.
+ */
+.layout-sidebar:not(.open, .closed) {
+  @media (max-width: 1000px) {
+    min-width: 6rem !important;
+    width: 6rem;
+    @include closed;
+  }
+}
+
+/*
+ If the user has selected a sidebar state, then use that state.
+ */
+.layout-sidebar.closed {
+  min-width: 6rem !important;
+  width: 6rem;
+  @include closed;
+}
+.layout-sidebar.open {
+  min-width: '';
+  width: '';
+  @include open;
+}
+
+/**
+  * The sidebar transition is not smooth, so we need to add a transition
+  *  to the sidebar width.
+  */
+.layout-sidebar {
+  transition: width 0.2s ease-in-out;
+  transition: min-width 0.2s ease-in-out;
+}
