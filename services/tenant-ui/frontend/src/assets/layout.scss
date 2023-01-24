@@ -181,6 +181,15 @@ body {
   .sidebar-app-title.small {
     display: block;
   }
+
+  .p-submenu-list {
+    padding-left: 1.5rem !important;
+    .p-menuitem-icon {
+      position: relative;
+      font-size: 1.5rem !important;
+      margin-left: 0;
+    }
+  }
 }
 
 /* When the sidebar is open */
@@ -224,21 +233,6 @@ body {
   min-width: '';
   width: '';
   @include open;
-}
-
-/*
- Style the submenu icons when closed
- TODO: Move to mixin
- */
-.layout-sidebar.closed {
-  .p-submenu-list {
-    padding-left: 1.5rem !important;
-    .p-menuitem-icon {
-      position: relative;
-      font-size: 1.5rem !important;
-      margin-left: 0;
-    }
-  }
 }
 
 /**
