@@ -7,7 +7,9 @@ from aries_cloudagent.ledger.multiple_ledger.ledger_requests_executor import (
     IndyLedgerRequestsExecutor,
     GET_SCHEMA,
 )
+from aries_cloudagent.messaging.schemas.util import SCHEMA_SENT_RECORD_TYPE
 from aries_cloudagent.multitenant.base import BaseMultitenantManager
+from aries_cloudagent.storage.base import BaseStorage
 from aries_cloudagent.storage.error import StorageNotFoundError
 
 from .models import SchemaStorageRecord
@@ -47,9 +49,7 @@ async def list_items(
             alt=True,
         )
 
-    LOGGER.info(
-        f"< list_items({tag_filter}, {post_filter}): {len(records)}"
-    )
+    LOGGER.info(f"< list_items({tag_filter}, {post_filter}): {len(records)}")
     return records
 
 
@@ -92,3 +92,25 @@ async def add_item(profile: Profile, schema_id: str):
 
     LOGGER.info(f"< add_item({schema_id}): {rec}")
     return rec
+
+
+async def sync_created(profile: Profile):
+    LOGGER.info("> sync_created()")
+
+    # find all known schema ids that i created...
+    session = await profile.session()
+    storage = session.inject(BaseStorage)
+    schema_ids = await storage.find_all_records(
+        type_filter=SCHEMA_SENT_RECORD_TYPE,
+        tag_query={},
+    )
+    LOGGER.info(f"created count = {len(schema_ids)}")
+
+    # for all found... go get details from ledger and put schema into storage.
+    for schema_id in schema_ids:
+        await add_item(profile, schema_id.value)
+
+    records = await list_items(profile)
+
+    LOGGER.info(f"< sync_created(): {len(records)}")
+    return records

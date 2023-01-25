@@ -11,17 +11,15 @@ from aries_cloudagent.messaging.models.openapi import OpenAPISchema
 from aries_cloudagent.storage.error import StorageNotFoundError, StorageError
 from marshmallow import fields
 
-from .models import SchemaStorageRecordSchema
-from .schema_storage_service import (
+from .models import CredDefStorageRecordSchema
+from .creddef_storage_service import (
     list_items,
     read_item,
-    add_item,
-    sync_created,
 )
 
 LOGGER = logging.getLogger(__name__)
 
-SWAGGER_CATEGORY = "schema-storage"
+SWAGGER_CATEGORY = "credential-definition-storage"
 
 
 def error_handler(func):
@@ -41,27 +39,25 @@ def error_handler(func):
     return wrapper
 
 
-class SchemaStorageListSchema(OpenAPISchema):
+class CredDefStorageListSchema(OpenAPISchema):
     """Response schema for schema storage list."""
 
     results = fields.List(
-        fields.Nested(SchemaStorageRecordSchema()),
-        description="List of schema storage records",
+        fields.Nested(CredDefStorageRecordSchema()),
+        description="List of cred def storage records",
     )
 
 
-class SchemaIdMatchInfoSchema(OpenAPISchema):
-    schema_id = fields.Str(description="Schema identifier", required=True)
-
-
-class SchemaStorageAddSchema(OpenAPISchema):
-    schema_id = fields.Str(description="Schema identifier", required=True)
+class CredDefIdMatchInfoSchema(OpenAPISchema):
+    cred_def_id = fields.Str(
+        description="Credential Definition identifier", required=True
+    )
 
 
 @docs(
     tags=[SWAGGER_CATEGORY],
 )
-@response_schema(SchemaStorageListSchema(), 200, description="")
+@response_schema(CredDefStorageListSchema(), 200, description="")
 @error_handler
 async def schema_storage_list(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
@@ -78,48 +74,17 @@ async def schema_storage_list(request: web.BaseRequest):
 @docs(
     tags=[SWAGGER_CATEGORY],
 )
-@request_schema(SchemaStorageAddSchema())
-@response_schema(SchemaStorageRecordSchema(), 200, description="")
-@error_handler
-async def schema_storage_add(request: web.BaseRequest):
-    context: AdminRequestContext = request["context"]
-    profile = context.profile
-    body = await request.json()
-
-    record = await add_item(profile, body["schema_id"])
-
-    return web.json_response(record.serialize())
-
-
-@docs(
-    tags=[SWAGGER_CATEGORY],
-)
-@match_info_schema(SchemaIdMatchInfoSchema())
-@response_schema(SchemaStorageRecordSchema(), 200, description="")
+@match_info_schema(CredDefIdMatchInfoSchema())
+@response_schema(CredDefStorageRecordSchema(), 200, description="")
 @error_handler
 async def schema_storage_get(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     profile = context.profile
-    schema_id = request.match_info["schema_id"]
+    cred_def_id = request.match_info["cred_def_id"]
 
-    record = await read_item(profile, schema_id)
+    record = await read_item(profile, cred_def_id)
 
     return web.json_response(record.serialize())
-
-
-@docs(
-    tags=[SWAGGER_CATEGORY],
-)
-@response_schema(SchemaStorageListSchema(), 200, description="")
-@error_handler
-async def schema_storage_sync_created(request: web.BaseRequest):
-    context: AdminRequestContext = request["context"]
-    profile = context.profile
-
-    records = await sync_created(profile)
-    results = [record.serialize() for record in records]
-
-    return web.json_response({"results": results})
 
 
 async def register(app: web.Application):
@@ -128,17 +93,15 @@ async def register(app: web.Application):
     app.add_routes(
         [
             web.get(
-                f"/schema-storage",
+                f"/credential-definition-storage",
                 schema_storage_list,
                 allow_head=False,
             ),
-            web.post("/schema-storage", schema_storage_add),
             web.get(
-                "/schema-storage/{schema_id}",
+                "/credential-definition-storage/{cred_def_id}",
                 schema_storage_get,
                 allow_head=False,
             ),
-            web.post("/schema-storage/sync-created", schema_storage_sync_created),
         ]
     )
     LOGGER.info("< registering routes")
@@ -154,6 +117,6 @@ def post_process_routes(app: web.Application):
     app._state["swagger_dict"]["tags"].append(
         {
             "name": SWAGGER_CATEGORY,
-            "description": "Traction Schema Storage - Local storage of schema metadata (traction_innkeeper/schema_storage v1_0 plugin)",
+            "description": "Traction Credential Definition Storage - Local storage of credential definition metadata (traction_innkeeper/creddef_storage v1_0 plugin)",
         }
     )

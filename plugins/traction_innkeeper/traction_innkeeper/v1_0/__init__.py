@@ -10,7 +10,7 @@ from aries_cloudagent.core.profile import Profile
 from aries_cloudagent.core.protocol_registry import ProtocolRegistry
 from aries_cloudagent.core.util import STARTUP_EVENT_PATTERN
 
-from . import schema_storage
+from . import schema_storage, creddef_storage
 from .config import get_config
 from .endorser_connection_handler import endorser_connections_event_handler
 from .tenant_manager import TenantManager
@@ -18,6 +18,7 @@ from .connections import routes
 
 MODULES = [
     connections,
+    creddef_storage,
     schema_storage,
 ]
 
