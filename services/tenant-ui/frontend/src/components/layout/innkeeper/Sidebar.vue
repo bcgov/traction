@@ -1,6 +1,7 @@
 <template>
   <div class="traction-sidebar innkeeper-sidebar">
     <h1 class="sidebar-app-title">Innkeeper</h1>
+    <h1 class="sidebar-app-title small">I</h1>
     <PanelMenu :model="items" class="mt-5" />
   </div>
 </template>
@@ -19,10 +20,12 @@ const items = ref([
     items: [
       {
         label: () => t('reservations.current'),
+        icon: 'pi pi-fw pi-calendar',
         to: { name: 'InnkeeperReservations' },
       },
       {
         label: () => t('reservations.history'),
+        icon: 'pi pi-fw pi-history',
         to: { name: 'InnkeeperReservationsHistory' },
       },
     ],
@@ -39,3 +42,12 @@ const items = ref([
   },
 ]);
 </script>
+<style scoped lang="scss">
+.sidebar-app-title.small {
+  position: relative;
+  left: -0.5rem;
+  width: 3.2rem;
+  padding-left: 1.4rem;
+  padding-right: 1.4rem;
+}
+</style>
