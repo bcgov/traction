@@ -79,6 +79,30 @@ class CredDefStorageService:
         self.logger.info(f"< add_item({cred_def_id}): {rec}")
         return rec
 
+    async def remove_item(self, profile: Profile, cred_def_id: str):
+        self.logger.info(f"> remove_item({cred_def_id})")
+        result = False
+        try:
+            async with profile.session() as session:
+                self.logger.info("fetch record...")
+                rec = await CredDefStorageRecord.retrieve_by_id(session, cred_def_id)
+                self.logger.info(rec)
+                self.logger.info("delete record...")
+                await rec.delete_record(session)
+                self.logger.info("fetch record again... should throw not found")
+                await CredDefStorageRecord.retrieve_by_id(session, cred_def_id)
+        except StorageNotFoundError:
+            self.logger.info("record not found!!!")
+            # this is to be expected... do nothing, do not log
+            result = True
+        except Exception as err:
+            self.logger.error(
+                f"Error removing cred def storage record for id {cred_def_id}", err
+            )
+
+        self.logger.info(f"< remove_item({cred_def_id}): {result}")
+        return result
+
 
 def subscribe(bus: EventBus):
     bus.subscribe(CREDDEF_EVENT_LISTENER_PATTERN, creddef_event_handler)

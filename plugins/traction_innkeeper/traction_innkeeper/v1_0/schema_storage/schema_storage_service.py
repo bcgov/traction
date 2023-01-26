@@ -108,6 +108,30 @@ class SchemaStorageService:
         self.logger.info(f"< add_item({schema_id}): {rec}")
         return rec
 
+    async def remove_item(self, profile: Profile, schema_id: str):
+        self.logger.info(f"> remove_item({schema_id})")
+        result = True
+        try:
+            async with profile.session() as session:
+                self.logger.info("fetch record...")
+                rec = await SchemaStorageRecord.retrieve_by_id(session, schema_id)
+                self.logger.info(rec)
+                self.logger.info("delete record...")
+                await rec.delete_record(session)
+                self.logger.info("fetch record again... should throw not found")
+                await SchemaStorageRecord.retrieve_by_id(session, schema_id)
+        except StorageNotFoundError:
+            self.logger.info("record not found!!!")
+            # this is to be expected... do nothing, do not log
+            result = True
+        except Exception as err:
+            self.logger.error(
+                f"Error removing schema storage record for id {schema_id}", err
+            )
+
+        self.logger.info(f"< remove_item({schema_id}): {result}")
+        return result
+
     async def sync_created(self, profile: Profile):
         self.logger.info("> sync_created()")
 

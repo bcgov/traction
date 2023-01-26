@@ -53,6 +53,15 @@ class SchemaStorageAddSchema(OpenAPISchema):
     schema_id = fields.Str(description="Schema identifier", required=True)
 
 
+class OperationResponseSchema(OpenAPISchema):
+    """Response schema for simple operations."""
+
+    success = fields.Bool(
+        required=True,
+        description="True if operation successful, false if otherwise",
+    )
+
+
 @docs(
     tags=[SWAGGER_CATEGORY],
 )
@@ -108,6 +117,23 @@ async def schema_storage_get(request: web.BaseRequest):
 @docs(
     tags=[SWAGGER_CATEGORY],
 )
+@match_info_schema(SchemaIdMatchInfoSchema())
+@response_schema(OperationResponseSchema(), 200, description="")
+@error_handler
+async def schema_storage_remove(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    profile = context.profile
+    storage_srv = context.inject_or(SchemaStorageService)
+    schema_id = request.match_info["schema_id"]
+
+    success = await storage_srv.remove_item(profile, schema_id)
+
+    return web.json_response({"success": success})
+
+
+@docs(
+    tags=[SWAGGER_CATEGORY],
+)
 @response_schema(SchemaStorageListSchema(), 200, description="")
 @error_handler
 async def schema_storage_sync_created(request: web.BaseRequest):
@@ -136,6 +162,10 @@ async def register(app: web.Application):
                 "/schema-storage/{schema_id}",
                 schema_storage_get,
                 allow_head=False,
+            ),
+            web.delete(
+                "/schema-storage/{schema_id}",
+                schema_storage_remove,
             ),
             web.post("/schema-storage/sync-created", schema_storage_sync_created),
         ]

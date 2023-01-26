@@ -51,12 +51,21 @@ class CredDefIdMatchInfoSchema(OpenAPISchema):
     )
 
 
+class OperationResponseSchema(OpenAPISchema):
+    """Response schema for simple operations."""
+
+    success = fields.Bool(
+        required=True,
+        description="True if operation successful, false if otherwise",
+    )
+
+
 @docs(
     tags=[SWAGGER_CATEGORY],
 )
 @response_schema(CredDefStorageListSchema(), 200, description="")
 @error_handler
-async def schema_storage_list(request: web.BaseRequest):
+async def creddef_storage_list(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     profile = context.profile
     storage_srv = context.inject_or(CredDefStorageService)
@@ -75,7 +84,7 @@ async def schema_storage_list(request: web.BaseRequest):
 @match_info_schema(CredDefIdMatchInfoSchema())
 @response_schema(CredDefStorageRecordSchema(), 200, description="")
 @error_handler
-async def schema_storage_get(request: web.BaseRequest):
+async def creddef_storage_get(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     profile = context.profile
     storage_srv = context.inject_or(CredDefStorageService)
@@ -86,6 +95,23 @@ async def schema_storage_get(request: web.BaseRequest):
     return web.json_response(record.serialize())
 
 
+@docs(
+    tags=[SWAGGER_CATEGORY],
+)
+@match_info_schema(CredDefIdMatchInfoSchema())
+@response_schema(OperationResponseSchema(), 200, description="")
+@error_handler
+async def creddef_storage_remove(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    profile = context.profile
+    storage_srv = context.inject_or(CredDefStorageService)
+    cred_def_id = request.match_info["cred_def_id"]
+
+    success = await storage_srv.remove_item(profile, cred_def_id)
+
+    return web.json_response({"success": success})
+
+
 async def register(app: web.Application):
     """Register routes."""
     LOGGER.info("> registering routes")
@@ -93,13 +119,17 @@ async def register(app: web.Application):
         [
             web.get(
                 "/credential-definition-storage",
-                schema_storage_list,
+                creddef_storage_list,
                 allow_head=False,
             ),
             web.get(
                 "/credential-definition-storage/{cred_def_id}",
-                schema_storage_get,
+                creddef_storage_get,
                 allow_head=False,
+            ),
+            web.delete(
+                "/credential-definition-storage/{cred_def_id}",
+                creddef_storage_remove,
             ),
         ]
     )
