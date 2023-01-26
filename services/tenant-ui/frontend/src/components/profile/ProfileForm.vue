@@ -22,10 +22,16 @@
   <!-- Name -->
   <div class="field">
     <label for="nameField">Name</label>
-    <InputText id="nameField" class="w-full" readonly :value="tenant.name" />
+    <InputText
+      id="nameField"
+      class="w-full"
+      readonly
+      :value="tenant.tenant_name"
+    />
   </div>
+
   <!-- Public DID -->
-  <div class="field">
+  <!-- <div class="field">
     <label for="publicDid">Public DID</label>
     <InputText
       id="publicDid"
@@ -33,9 +39,9 @@
       readonly
       :value="tenant.public_did"
     />
-  </div>
+  </div> -->
   <!-- Public DID Status -->
-  <div class="field">
+  <!-- <div class="field">
     <label for="publicDidStatus">Public DID Status</label>
     <InputText
       id="publicDidStatus"
@@ -43,12 +49,17 @@
       readonly
       :value="tenant.public_did_status"
     />
-  </div>
+  </div> -->
+
   <!-- Make Issuer -->
-  <h5 class="mb-0">Issuer</h5>
-  <Issuance />
+  <h3 class="mt-5 mb-3">Issuer</h3>
+  <h5 class="my-0">Endorser</h5>
+  Adding 
+  <h5 class="mb-0 mt-3">Public DID</h5>
+  Adding
+  <!-- <Issuance />  -->
   <!-- Issuer Status -->
-  <div class="field mt-3">
+  <!-- <div class="field mt-3">
     <label for="issStatus">Issuer Status</label>
     <InputText
       id="issStatus"
@@ -56,12 +67,12 @@
       readonly
       :value="tenant.issuer_status"
     />
-  </div>
+  </div> -->
 </template>
 
 <script setup lang="ts">
 import InputText from 'primevue/inputtext';
-import Issuance from '@/components/profile/Issuance.vue';
+// import Issuance from '@/components/profile/Issuance.vue';
 
 import { storeToRefs } from 'pinia';
 import { useTenantStore } from '@/store';

@@ -22,18 +22,15 @@ const { config } = storeToRefs(useConfigStore());
 const { isIssuer } = storeToRefs(useTenantStore());
 
 const menu = ref();
-/**
- * Toggle the profile menu
- */
 const toggleProfile = (event: any) => {
   menu.value.toggle(event);
 };
 
 const items = [
-  // {
-  //   label: 'Profile',
-  //   to: { name: 'Profile' },
-  // },
+  {
+    label: 'Profile',
+    to: { name: 'Profile' },
+  },
   // {
   //   label: 'Settings',
   //   to: { name: 'Settings' },

@@ -147,7 +147,7 @@ const handleSubmit = async (isFormValid: boolean) => {
   try {
     // await tenantStore.updateConfiguration(formFields);
     // toast.info('Your Settings have been Updated');
-    toast.error("unimplimented");
+    toast.error('unimplimented');
   } catch (error) {
     toast.error(`Failure: ${error}`);
   } finally {
