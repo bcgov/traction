@@ -5,7 +5,10 @@ from aries_cloudagent.core.event_bus import EventBus
 from aries_cloudagent.core.plugin_registry import PluginRegistry
 from aries_cloudagent.core.protocol_registry import ProtocolRegistry
 
-from .schema_storage_service import SchemaStorageService, subscribe
+from .endorser_connection_service import (
+    EndorserConnectionService,
+    subscribe,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -25,8 +28,8 @@ async def setup(context: InjectionContext):
     if not bus:
         raise ValueError("EventBus missing in context")
 
-    srv = SchemaStorageService()
-    context.injector.bind_instance(SchemaStorageService, srv)
+    srv = EndorserConnectionService()
+    context.injector.bind_instance(EndorserConnectionService, srv)
 
     subscribe(bus)
 

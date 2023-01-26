@@ -7,7 +7,7 @@ from aries_cloudagent.core.error import BaseError
 from aries_cloudagent.core.profile import Profile
 from aries_cloudagent.messaging.models.base import BaseModelError
 from aries_cloudagent.multitenant.base import BaseMultitenantManager
-from aries_cloudagent.storage.error import StorageError
+from aries_cloudagent.storage.error import StorageError, StorageNotFoundError
 from aries_cloudagent.wallet.models.wallet_record import WalletRecord
 
 from .config import TractionInnkeeperConfig
@@ -244,3 +244,23 @@ class TenantManager:
         tenant_records = await TenantRecord.query(session, {"tenant_name": tenant_name})
         tenant_exists = len(tenant_records) > 0
         return reservation_exists, tenant_exists, wallet_exists
+
+    async def get_wallet_and_tenant(self, wallet_id: str):
+        self._logger.info(f"> get_wallet_and_tenant('{wallet_id}')")
+        tenant_record = None
+        wallet_record = None
+        try:
+            async with self._profile.session() as session:
+                wallet_record = await WalletRecord.retrieve_by_id(session, wallet_id)
+                tenant_record = await TenantRecord.query_by_wallet_id(
+                    session, wallet_id
+                )
+        except (StorageError, BaseModelError):
+            self._logger.warning(f"Tenant not found with wallet_id '{wallet_id}'")
+
+        self._logger.info(
+            f"< get_wallet_and_tenant('{wallet_id}'): wallet_record = {wallet_record} & tenant_record = {tenant_record}"
+        )
+        if not wallet_record:
+            raise StorageNotFoundError(f"Tenant not found with wallet_id '{wallet_id}'")
+        return wallet_record, tenant_record

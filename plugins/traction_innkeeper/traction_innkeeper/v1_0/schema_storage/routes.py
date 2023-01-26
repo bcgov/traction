@@ -12,12 +12,7 @@ from aries_cloudagent.storage.error import StorageNotFoundError, StorageError
 from marshmallow import fields
 
 from .models import SchemaStorageRecordSchema
-from .schema_storage_service import (
-    list_items,
-    read_item,
-    add_item,
-    sync_created,
-)
+from .schema_storage_service import SchemaStorageService
 
 LOGGER = logging.getLogger(__name__)
 
@@ -66,10 +61,11 @@ class SchemaStorageAddSchema(OpenAPISchema):
 async def schema_storage_list(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     profile = context.profile
+    storage_srv = context.inject_or(SchemaStorageService)
 
     tag_filter = {}
     post_filter = {}
-    records = await list_items(profile, tag_filter, post_filter)
+    records = await storage_srv.list_items(profile, tag_filter, post_filter)
     results = [record.serialize() for record in records]
 
     return web.json_response({"results": results})
@@ -84,9 +80,10 @@ async def schema_storage_list(request: web.BaseRequest):
 async def schema_storage_add(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     profile = context.profile
+    storage_srv = context.inject_or(SchemaStorageService)
     body = await request.json()
 
-    record = await add_item(profile, body["schema_id"])
+    record = await storage_srv.add_item(profile, body["schema_id"])
 
     return web.json_response(record.serialize())
 
@@ -100,9 +97,10 @@ async def schema_storage_add(request: web.BaseRequest):
 async def schema_storage_get(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     profile = context.profile
+    storage_srv = context.inject_or(SchemaStorageService)
     schema_id = request.match_info["schema_id"]
 
-    record = await read_item(profile, schema_id)
+    record = await storage_srv.read_item(profile, schema_id)
 
     return web.json_response(record.serialize())
 
@@ -115,8 +113,9 @@ async def schema_storage_get(request: web.BaseRequest):
 async def schema_storage_sync_created(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     profile = context.profile
+    storage_srv = context.inject_or(SchemaStorageService)
 
-    records = await sync_created(profile)
+    records = await storage_srv.sync_created(profile)
     results = [record.serialize() for record in records]
 
     return web.json_response({"results": results})
@@ -128,7 +127,7 @@ async def register(app: web.Application):
     app.add_routes(
         [
             web.get(
-                f"/schema-storage",
+                "/schema-storage",
                 schema_storage_list,
                 allow_head=False,
             ),

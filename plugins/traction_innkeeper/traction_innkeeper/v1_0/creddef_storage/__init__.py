@@ -1,16 +1,12 @@
 import logging
 
 from aries_cloudagent.config.injection_context import InjectionContext
-from aries_cloudagent.core.event_bus import EventBus, Event
+from aries_cloudagent.core.event_bus import EventBus
 from aries_cloudagent.core.plugin_registry import PluginRegistry
-from aries_cloudagent.core.profile import Profile
+
 from aries_cloudagent.core.protocol_registry import ProtocolRegistry
 
-from aries_cloudagent.messaging.credential_definitions.util import (
-    EVENT_LISTENER_PATTERN as CREDDEF_EVENT_LISTENER_PATTERN,
-)
-
-from .creddef_storage_service import add_item
+from .creddef_storage_service import CredDefStorageService, subscribe
 
 LOGGER = logging.getLogger(__name__)
 
@@ -30,16 +26,9 @@ async def setup(context: InjectionContext):
     if not bus:
         raise ValueError("EventBus missing in context")
 
-    bus.subscribe(CREDDEF_EVENT_LISTENER_PATTERN, creddef_event_handler)
+    srv = CredDefStorageService()
+    context.injector.bind_instance(CredDefStorageService, srv)
+
+    subscribe(bus)
 
     LOGGER.info("< plugin setup.")
-
-
-async def creddef_event_handler(profile: Profile, event: Event):
-    LOGGER.info("> creddef_event_handler")
-    LOGGER.debug(f"profile = {profile}")
-    LOGGER.debug(f"event = {event}")
-    storage_record = await add_item(profile, event.payload["context"])
-    LOGGER.debug(f"creddef_storage_record = {storage_record}")
-
-    LOGGER.info("< creddef_event_handler")

@@ -2,7 +2,7 @@ import functools
 import logging
 
 from aiohttp import web
-from aiohttp_apispec import docs, response_schema, match_info_schema, request_schema
+from aiohttp_apispec import docs, response_schema, match_info_schema
 from aries_cloudagent.admin.request_context import AdminRequestContext
 
 from aries_cloudagent.messaging.models.base import BaseModelError
@@ -12,10 +12,7 @@ from aries_cloudagent.storage.error import StorageNotFoundError, StorageError
 from marshmallow import fields
 
 from .models import CredDefStorageRecordSchema
-from .creddef_storage_service import (
-    list_items,
-    read_item,
-)
+from .creddef_storage_service import CredDefStorageService
 
 LOGGER = logging.getLogger(__name__)
 
@@ -62,10 +59,11 @@ class CredDefIdMatchInfoSchema(OpenAPISchema):
 async def schema_storage_list(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     profile = context.profile
+    storage_srv = context.inject_or(CredDefStorageService)
 
     tag_filter = {}
     post_filter = {}
-    records = await list_items(profile, tag_filter, post_filter)
+    records = await storage_srv.list_items(profile, tag_filter, post_filter)
     results = [record.serialize() for record in records]
 
     return web.json_response({"results": results})
@@ -80,9 +78,10 @@ async def schema_storage_list(request: web.BaseRequest):
 async def schema_storage_get(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     profile = context.profile
+    storage_srv = context.inject_or(CredDefStorageService)
     cred_def_id = request.match_info["cred_def_id"]
 
-    record = await read_item(profile, cred_def_id)
+    record = await storage_srv.read_item(profile, cred_def_id)
 
     return web.json_response(record.serialize())
 
@@ -93,7 +92,7 @@ async def register(app: web.Application):
     app.add_routes(
         [
             web.get(
-                f"/credential-definition-storage",
+                "/credential-definition-storage",
                 schema_storage_list,
                 allow_head=False,
             ),
