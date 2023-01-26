@@ -3,7 +3,7 @@ FROM bcgovimages/von-image:py36-1.16-1 AS base
 
 # Install and Configure Poetry
 USER root
-ENV POETRY_VERSION=1.1.11
+ENV POETRY_VERSION=1.1.15
 ENV POETRY_HOME=/opt/poetry
 RUN curl -sSL https://install.python-poetry.org | python -
 
@@ -20,12 +20,12 @@ COPY --chown=indy:indy basicmessage_storage ./basicmessage_storage
 COPY --chown=indy:indy multitenant_provider ./multitenant_provider
 COPY --chown=indy:indy traction_innkeeper ./traction_innkeeper
 COPY --chown=indy:indy traction_metadata ./traction_metadata
+COPY --chown=indy:indy issuer_registration ./issuer_registration
 
 RUN poetry install --no-dev
 
 # Make site packages location more accessible (for use with volumes)
 RUN ln -s $(poetry env info -p)/lib/python3.6/site-packages site-packages
-
 
 FROM bcgovimages/aries-cloudagent:py36-1.16-1_1.0.0-rc1
 COPY --from=base --chown=indy:indy /home/indy/.venv /home/indy/.venv
@@ -36,6 +36,7 @@ COPY --chown=indy:indy basicmessage_storage/basicmessage_storage traction_plugin
 COPY --chown=indy:indy multitenant_provider/multitenant_provider traction_plugins/multitenant_provider
 COPY --chown=indy:indy traction_innkeeper/traction_innkeeper traction_plugins/traction_innkeeper
 COPY --chown=indy:indy traction_metadata/traction_metadata traction_plugins/traction_metadata
+COPY --chown=indy:indy issuer_registration/indy_catalyst_issuer_registration issuer_registration/indy_catalyst_issuer_registration
 
 ENTRYPOINT ["/bin/bash", "-c", "aca-py \"$@\"", "--"]
 CMD ["start", "--arg-file", "default.yml"]

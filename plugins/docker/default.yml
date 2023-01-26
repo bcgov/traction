@@ -15,13 +15,13 @@ endpoint:
 
 # plugins
 plugin:
+  - indy_catalyst_issuer_registration
   - traction_plugins.basicmessage_storage.v1_0
   - traction_plugins.multitenant_provider.v1_0
   - traction_plugins.traction_innkeeper.v1_0
   - traction_plugins.traction_metadata
 
 # block-plugin:
-
  
 plugin-config-value:
   - multitenant_provider.manager.class_name="traction_plugins.multitenant_provider.v1_0.manager.AskarMultitokenMultitenantManager"

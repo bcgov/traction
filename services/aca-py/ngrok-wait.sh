@@ -60,6 +60,7 @@ exec aca-py start \
     --monitor-revocation-notification \
     --preserve-exchange-records \
     --auto-store-credential \
+    --plugin indy_catalyst_issuer_registration \
     --plugin traction_plugins.multitenant_provider.v1_0 \
     --plugin-config-value multitenant_provider.manager.class_name=${TRACTION_MULTITENANT_MANAGER_CLASS} \
     --plugin-config-value multitenant_provider.manager.always_check_provided_wallet_key=${TRACTION_MULTITENANT_ALWAYS_CHECK_PROVIDED_WALLET_KEY} \
@@ -74,4 +75,3 @@ exec aca-py start \
     --plugin-config-value traction_innkeeper.innkeeper_wallet.print_key=${TRACTION_INNKEEPER_PRINT_KEY} \
     --plugin-config-value traction_innkeeper.innkeeper_wallet.print_token=${TRACTION_INNKEEPER_PRINT_TOKEN} \
     --plugin-config-value traction_innkeeper.reservation.expiry_minutes=${TRACTION_INNKEEPER_RESERVATION_EXPIRY_MINUTES} \
-

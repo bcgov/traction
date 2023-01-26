@@ -18,6 +18,7 @@ basicmessage_storage = {path = "./basicmessage_storage", develop = true}
 multitenant-provider = {path = "./multitenant_provider", develop = true}
 traction-innkeeper = {path = "./traction_innkeeper", develop = true}
 traction-metadata = {path = "./traction_metadata", develop = true}
+indy-catalyst-issuer-registration = {path = "./issuer_registration", develop = true}
 
 [tool.poetry.dev-dependencies]
 black = "^22.6.0"
