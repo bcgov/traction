@@ -64,7 +64,7 @@ export const API_PATH = {
   BASICMESSAGES: '/basicmessages',
   BASICMESSAGES_SEND: (connId: string) => `/connections/${connId}/send-message`,
 
-  TENANT_SELF: '/tenant/v1/admin/self',
+  TENANT_SELF: '/tenant',
   TENANT_MAKE_ISSUER: '/tenant/v1/admin/make-issuer',
   TENANT_CONFIGURATION: '/tenant/v1/admin/configuration',
 

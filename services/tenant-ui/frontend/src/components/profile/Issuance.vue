@@ -53,20 +53,20 @@ tenantStore.$subscribe((state) => {
 const requestAccess = async () => {
   loading.value = true; // Set the spinner
 
-  const res = await tenantStore.makeIssuer();
-  if (res.issuer_status === 'N/A') {
-    toast.error(
-      'Sorry you do not have access yet. Please contact your Innkeeper directly.'
-    );
-  } else {
-    await tenantStore.getSelf(); // Reload profile data
-    if (pending.value === false) {
-      toast.success(
-        'Successfully sent approval request! Check back later for status.'
-      );
-    }
-    pending.value = true;
-  }
+  // const res = await tenantStore.makeIssuer();
+  // if (res.issuer_status === 'N/A') {
+  //   toast.error(
+  //     'Sorry you do not have access yet. Please contact your Innkeeper directly.'
+  //   );
+  // } else {
+  //   await tenantStore.getSelf(); // Reload profile data
+  //   if (pending.value === false) {
+  //     toast.success(
+  //       'Successfully sent approval request! Check back later for status.'
+  //     );
+  //   }
+  //   pending.value = true;
+  // }
   loading.value = false; // Remove the spinner
 };
 

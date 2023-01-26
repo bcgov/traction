@@ -1,7 +1,7 @@
 import { API_PATH } from '@/helpers/constants';
 import { defineStore, storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
-import { useTenantApi } from './tenantApi';
+import { useAcapyApi } from './acapyApi';
 import { useTokenStore } from './tokenStore';
 
 export const useTenantStore = defineStore('tenant', () => {
@@ -12,7 +12,7 @@ export const useTenantStore = defineStore('tenant', () => {
   const tenantConfig: any = ref(null);
 
   const { token } = storeToRefs(useTokenStore());
-  const tenantApi = useTenantApi();
+  const acapyApi = useAcapyApi();
 
   // getters
   const tenantReady = computed(() => {
@@ -37,17 +37,14 @@ export const useTenantStore = defineStore('tenant', () => {
     error.value = null;
     loading.value = true;
 
-    tenantApi
+    acapyApi
       .getHttp(API_PATH.TENANT_SELF)
-      .then((res) => {
-        console.log(res);
-        tenant.value = res.data.item;
-        console.log(tenant.value);
+      .then((res: any) => {
+        tenant.value = res.data;
       })
       .catch((err) => {
         error.value = err;
         tenant.value = null;
-        // console.log(error.value);
       })
       .finally(() => {
         loading.value = false;
@@ -62,92 +59,92 @@ export const useTenantStore = defineStore('tenant', () => {
     return tenant.value;
   }
 
-  async function makeIssuer() {
-    console.log('> tenantStore.makeIssuer');
-    error.value = null;
-    loading.value = true;
+  // async function makeIssuer() {
+  //   console.log('> tenantStore.makeIssuer');
+  //   error.value = null;
+  //   loading.value = true;
 
-    tenantApi
-      .postHttp(API_PATH.TENANT_MAKE_ISSUER)
-      .then((res) => {
-        console.log(res);
-        tenant.value = res.data.item;
-        console.log(tenant.value);
-      })
-      .catch((err) => {
-        error.value = err;
-        console.log(error.value);
-      })
-      .finally(() => {
-        loading.value = false;
-      });
-    console.log('< tenantStore.makeIssuer');
+  //   tenantApi
+  //     .postHttp(API_PATH.TENANT_MAKE_ISSUER)
+  //     .then((res) => {
+  //       console.log(res);
+  //       tenant.value = res.data.item;
+  //       console.log(tenant.value);
+  //     })
+  //     .catch((err) => {
+  //       error.value = err;
+  //       console.log(error.value);
+  //     })
+  //     .finally(() => {
+  //       loading.value = false;
+  //     });
+  //   console.log('< tenantStore.makeIssuer');
 
-    if (error.value != null) {
-      // throw error so $onAction.onError listeners can add their own handler
-      throw error.value;
-    }
-    // return data so $onAction.after listeners can add their own handler
-    return tenant.value;
-  }
+  //   if (error.value != null) {
+  //     // throw error so $onAction.onError listeners can add their own handler
+  //     throw error.value;
+  //   }
+  //   // return data so $onAction.after listeners can add their own handler
+  //   return tenant.value;
+  // }
 
-  async function getConfiguration() {
-    console.log('> tenantStore.getConfiguration');
-    error.value = null;
-    loading.value = true;
+  // async function getConfiguration() {
+  //   console.log('> tenantStore.getConfiguration');
+  //   error.value = null;
+  //   loading.value = true;
 
-    await tenantApi
-      .getHttp(API_PATH.TENANT_CONFIGURATION)
-      .then((res) => {
-        console.log(res);
-        tenantConfig.value = res.data.item;
-        console.log(tenant.value);
-      })
-      .catch((err) => {
-        error.value = err;
-        tenantConfig.value = null;
-      })
-      .finally(() => {
-        loading.value = false;
-      });
-    console.log('< tenantStore.getConfiguration');
+  //   await tenantApi
+  //     .getHttp(API_PATH.TENANT_CONFIGURATION)
+  //     .then((res) => {
+  //       console.log(res);
+  //       tenantConfig.value = res.data.item;
+  //       console.log(tenant.value);
+  //     })
+  //     .catch((err) => {
+  //       error.value = err;
+  //       tenantConfig.value = null;
+  //     })
+  //     .finally(() => {
+  //       loading.value = false;
+  //     });
+  //   console.log('< tenantStore.getConfiguration');
 
-    if (error.value != null) {
-      // throw error so $onAction.onError listeners can add their own handler
-      throw error.value;
-    }
-    // return data so $onAction.after listeners can add their own handler
-    return tenantConfig.value;
-  }
+  //   if (error.value != null) {
+  //     // throw error so $onAction.onError listeners can add their own handler
+  //     throw error.value;
+  //   }
+  //   // return data so $onAction.after listeners can add their own handler
+  //   return tenantConfig.value;
+  // }
 
-  async function updateConfiguration(payload: any = {}) {
-    console.log('> tenantStore.updateConfiguration');
-    error.value = null;
-    loading.value = true;
-    console.log(payload);
-    await tenantApi
-      .putHttp(API_PATH.TENANT_CONFIGURATION, payload)
-      .then((res) => {
-        console.log(res);
-        tenantConfig.value = res.data.item;
-        console.log(tenant.value);
-      })
-      .catch((err) => {
-        error.value = err;
-        console.log(error.value);
-      })
-      .finally(() => {
-        loading.value = false;
-      });
-    console.log('< tenantStore.updateConfiguration');
+  // async function updateConfiguration(payload: any = {}) {
+  //   console.log('> tenantStore.updateConfiguration');
+  //   error.value = null;
+  //   loading.value = true;
+  //   console.log(payload);
+  //   await tenantApi
+  //     .putHttp(API_PATH.TENANT_CONFIGURATION, payload)
+  //     .then((res) => {
+  //       console.log(res);
+  //       tenantConfig.value = res.data.item;
+  //       console.log(tenant.value);
+  //     })
+  //     .catch((err) => {
+  //       error.value = err;
+  //       console.log(error.value);
+  //     })
+  //     .finally(() => {
+  //       loading.value = false;
+  //     });
+  //   console.log('< tenantStore.updateConfiguration');
 
-    if (error.value != null) {
-      // throw error so $onAction.onError listeners can add their own handler
-      throw error.value;
-    }
-    // return data so $onAction.after listeners can add their own handler
-    return tenantConfig.value;
-  }
+  //   if (error.value != null) {
+  //     // throw error so $onAction.onError listeners can add their own handler
+  //     throw error.value;
+  //   }
+  //   // return data so $onAction.after listeners can add their own handler
+  //   return tenantConfig.value;
+  // }
 
   return {
     tenant,
@@ -155,11 +152,11 @@ export const useTenantStore = defineStore('tenant', () => {
     error,
     tenantReady,
     getSelf,
-    makeIssuer,
+    // makeIssuer,
     clearTenant,
     isIssuer,
-    getConfiguration,
-    updateConfiguration,
+    // getConfiguration,
+    // updateConfiguration,
     tenantConfig,
   };
 });
