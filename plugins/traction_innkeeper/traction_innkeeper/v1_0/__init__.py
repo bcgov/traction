@@ -10,13 +10,15 @@ from aries_cloudagent.core.profile import Profile
 from aries_cloudagent.core.protocol_registry import ProtocolRegistry
 from aries_cloudagent.core.util import STARTUP_EVENT_PATTERN
 
+from . import schema_storage, creddef_storage, endorser, connections
 from .config import get_config
-from .endorser_connection_handler import endorser_connections_event_handler
 from .tenant_manager import TenantManager
-from .connections import routes
 
 MODULES = [
     connections,
+    endorser,
+    creddef_storage,
+    schema_storage,
 ]
 
 LOGGER = logging.getLogger(__name__)
@@ -45,16 +47,12 @@ async def setup(context: InjectionContext):
     if context.settings.get("multitenant.enabled"):
         LOGGER.info("> > setup plugins...")
         for mod in MODULES:
+            # call the setup explicitly...
             await mod.setup(context)
+            # do this to load routes...
+            plugin_registry.register_plugin(mod.__name__)
         LOGGER.info("< < setup plugins.")
-        # calling setup will not load routes, so register the plugins and let it do the work.
-        for plugin_name in plugin_registry.plugin_names:
-            if plugin_name.endswith("traction_innkeeper.v1_0"):
-                LOGGER.info("> > register plugins")
-                plugin_registry.register_plugin(f"{plugin_name}.connections")
-                LOGGER.info("< < register plugins")
 
-    bus.subscribe(CONNECTIONS_EVENT_PATTERN, endorser_connections_event_handler)
     LOGGER.info("< plugin setup.")
 
 
