@@ -8,7 +8,11 @@ export const useTenantStore = defineStore('tenant', () => {
   // state
   const tenant: any = ref(null);
   const loading: any = ref(false);
+  const loadingIssuance: any = ref(false);
   const error: any = ref(null);
+  const endorserConnection: any = ref(null);
+  const endorserInfo: any = ref(null);
+  const publicDid: any = ref(null);
   const tenantConfig: any = ref(null);
 
   const { token } = storeToRefs(useTokenStore());
@@ -37,7 +41,7 @@ export const useTenantStore = defineStore('tenant', () => {
     error.value = null;
     loading.value = true;
 
-    acapyApi
+    await acapyApi
       .getHttp(API_PATH.TENANT_SELF)
       .then((res: any) => {
         tenant.value = res.data;
@@ -57,6 +61,60 @@ export const useTenantStore = defineStore('tenant', () => {
     }
     // return data so $onAction.after listeners can add their own handler
     return tenant.value;
+  }
+
+  async function getEndorserConnection() {
+    console.log('> tenantStore.getEndorserConnection');
+    error.value = null;
+    loadingIssuance.value = true;
+
+    await acapyApi
+      .getHttp(API_PATH.TENANT_ENDORSER_CONNECTION)
+      .then((res: any) => {
+        endorserConnection.value = res.data;
+      })
+      .catch((err) => {
+        error.value = err;
+        endorserConnection.value = null;
+      })
+      .finally(() => {
+        loadingIssuance.value = false;
+      });
+    console.log('< tenantStore.getEndorserConnection');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return endorserConnection.value;
+  }
+
+  async function getEndorserInfo() {
+    console.log('> tenantStore.getEndorserInfo');
+    error.value = null;
+    loadingIssuance.value = true;
+
+    await acapyApi
+      .getHttp(API_PATH.TENANT_ENDORSER_INFO)
+      .then((res: any) => {
+        endorserConnection.value = res.data;
+      })
+      .catch((err) => {
+        error.value = err;
+        endorserInfo.value = null;
+      })
+      .finally(() => {
+        loadingIssuance.value = false;
+      });
+    console.log('< tenantStore.getEndorserInfo');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return endorserInfo.value;
   }
 
   // async function makeIssuer() {
@@ -148,12 +206,17 @@ export const useTenantStore = defineStore('tenant', () => {
 
   return {
     tenant,
+    endorserConnection,
+    endorserInfo,
     loading,
+    loadingIssuance,
     error,
     tenantReady,
     getSelf,
     // makeIssuer,
     clearTenant,
+    getEndorserConnection,
+    getEndorserInfo,
     isIssuer,
     // getConfiguration,
     // updateConfiguration,

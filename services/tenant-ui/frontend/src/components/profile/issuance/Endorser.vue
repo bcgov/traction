@@ -1,12 +1,29 @@
 <template>
-  <Button
+  <!-- Make Issuer -->
+  <h3 class="mt-5 mb-3">Issuer</h3>
+  <h5 class="my-0">Endorser</h5>
+  Adding
+  <h5 class="mb-0 mt-3">Public DID</h5>
+  Adding
+  <!-- <Issuance />  -->
+  <!-- Issuer Status -->
+  <!-- <div class="field mt-3">
+    <label for="issStatus">Issuer Status</label>
+    <InputText
+      id="issStatus"
+      class="w-full"
+      readonly
+      :value="tenant.issuer_status"
+    />
+  </div> -->
+  <!-- <Button
     :label="label()"
     :icon="issuer ? 'pi pi-check' : 'pi pi-flag'"
     class="p-button"
     :disabled="issuer"
     :loading="loading"
     @click="requestAccess"
-  ></Button>
+  ></Button> -->
 </template>
 
 <script setup lang="ts">

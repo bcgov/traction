@@ -65,8 +65,9 @@ export const API_PATH = {
   BASICMESSAGES_SEND: (connId: string) => `/connections/${connId}/send-message`,
 
   TENANT_SELF: '/tenant',
-  TENANT_MAKE_ISSUER: '/tenant/v1/admin/make-issuer',
-  TENANT_CONFIGURATION: '/tenant/v1/admin/configuration',
+  TENANT_ENDORSER_CONNECTION: '/tenant/endorser-connection',
+  TENANT_ENDORSER_INFO: '/tenant/endorser-info',
+  TENANT_REGISTER_PUBLIC_DID: '/tenant/register-public-did',
 
   MULTITENANCY_RESERVATIONS: '/multitenancy/reservations',
   MULTITENANCY_RESERVATION: (resId: string) =>
@@ -77,6 +78,8 @@ export const API_PATH = {
     `/multitenancy/tenant/${tenantId}/token`,
   MULTITENANCY_WALLET_TOKEN: (tenantId: string) =>
     `/multitenancy/wallet/${tenantId}/token`,
+
+  WALLET_DID_PUBLIC: '/wallet/did/public',
 };
 
 export const CONNECTION_STATUSES = {
