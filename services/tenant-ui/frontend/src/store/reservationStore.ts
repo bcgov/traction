@@ -9,8 +9,13 @@ export const useReservationStore = defineStore('reservation', () => {
   const { config } = storeToRefs(useConfigStore());
   // A raw api call without using the interceptors from the acapyApiStore
   // Needed for the open call to reservation at this point
+  // TODO: Allow 404 to pass through to the UI
   const api = axios.create({
-    baseURL: config.value.frontend.tenantProxyPath,
+    validateStatus: function (status: any) {
+      console.log('status', status);
+      return true;
+    },
+    baseURL: config.value.frontend.apiPath,
   });
 
   // A different axios instance with a basepath just of the tenant UI backend
@@ -90,6 +95,7 @@ export const useReservationStore = defineStore('reservation', () => {
     await api
       .get(API_PATH.MULTITENANCY_RESERVATION(reservationId))
       .then((res) => {
+        console.log('res from checking a res', res);
         if (res.data) {
           // The API doesn't check email address against res ID but we can do it on the front end at least
           if (res.data.contact_email !== email) {
@@ -102,14 +108,12 @@ export const useReservationStore = defineStore('reservation', () => {
         }
       })
       .catch((err) => {
+        console.log('err from catch', err);
         error.value = err;
-        console.log(error.value);
-        // TODO: detect 404 differently to display specifically that it can't be found?
       })
       .finally(() => {
         loading.value = false;
       });
-    console.log('< reservationStore.checkReservation');
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
