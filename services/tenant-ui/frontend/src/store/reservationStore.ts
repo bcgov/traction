@@ -15,7 +15,7 @@ export const useReservationStore = defineStore('reservation', () => {
       console.log('status', status);
       return true;
     },
-    baseURL: config.value.frontend.apiPath,
+    baseURL: config.value.frontend.tenantProxyPath,
   });
 
   // A different axios instance with a basepath just of the tenant UI backend
