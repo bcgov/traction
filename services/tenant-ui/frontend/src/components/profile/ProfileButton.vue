@@ -31,10 +31,10 @@ const items = [
     label: 'Profile',
     to: { name: 'Profile' },
   },
-  // {
-  //   label: 'Settings',
-  //   to: { name: 'Settings' },
-  // },
+  {
+    label: 'Settings',
+    to: { name: 'Settings' },
+  },
   {
     label: 'Developer',
     visible: config.value.frontend.showDeveloper,

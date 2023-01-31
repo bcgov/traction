@@ -45,6 +45,7 @@
         />
       </template>
     </Column>
+    <Column :sortable="true" field="reservation_id" header="Contact Email" />
     <Column :sortable="true" field="contact_email" header="Contact Email" />
     <Column :sortable="true" field="contact_name" header="Contact Name" />
     <Column :sortable="true" field="contact_phone" header="Contact Phone" />

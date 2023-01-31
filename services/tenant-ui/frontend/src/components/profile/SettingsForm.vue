@@ -21,7 +21,6 @@
           </span>
         </span>
       </div>
-      <!-- WebHook Key -->
       <div class="field">
         <label for="webhookKey">WebHook Key</label>
         <InputText
@@ -58,9 +57,9 @@
 
     <hr class="my-4" />
 
-    <div v-if="tenantConfig" class="grid mb-6">
+    <div class="grid mb-6">
       <div class="col-fixed w-8rem"><strong>Updated at</strong></div>
-      <div class="col">{{ formatDateLong(tenantConfig.updated_at) }}</div>
+      <div class="col">Jan 1 2023</div>
     </div>
 
     <Button
