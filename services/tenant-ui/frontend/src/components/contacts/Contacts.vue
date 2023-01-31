@@ -46,7 +46,8 @@
           title="Delete Contact"
           icon="pi pi-trash"
           class="p-button-rounded p-button-icon-only p-button-text"
-          @click="deleteContact($event, data)"
+          @click="deleteContact($event, data.connection_id)"
+          :disabled="deleteDisabled(data.alias)"
         />
         <!-- <EditContact :contact-id="data.contact_id" /> -->
       </template>
@@ -81,7 +82,7 @@ import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';
 import { FilterMatchMode } from 'primevue/api';
 // State
-import { useContactsStore } from '@/store';
+import { useContactsStore, useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other components
 // import AcceptInvitation from './acceptInvitation/AcceptInvitation.vue';
@@ -97,8 +98,10 @@ const toast = useToast();
 const { t } = useI18n();
 
 const contactsStore = useContactsStore();
+const tenantStore = useTenantStore();
 
 const { loading, filteredConnections } = storeToRefs(useContactsStore());
+const { endorserInfo } = storeToRefs(useTenantStore());
 
 const loadTable = async () => {
   contactsStore.listContacts().catch((err) => {
@@ -108,23 +111,26 @@ const loadTable = async () => {
 };
 
 onMounted(async () => {
-  loadTable();
+  // So we can check endorser connection
+  tenantStore.getEndorserInfo(),
+    // Load your contact list
+    loadTable();
 });
 
-const deleteContact = (event: any, schema: any) => {
+const deleteContact = (event: any, id: string) => {
   confirm.require({
     target: event.currentTarget,
     message: 'Are you sure you want to delete this connection?',
     header: 'Confirmation',
     icon: 'pi pi-exclamation-triangle',
     accept: () => {
-      doDelete(schema);
+      doDelete(id);
     },
   });
 };
-const doDelete = (schema: any) => {
+const doDelete = (id: string) => {
   contactsStore
-    .deleteContact(schema)
+    .deleteContact(id)
     .then(() => {
       toast.success(`Connection successfully deleted`);
     })
@@ -132,6 +138,10 @@ const doDelete = (schema: any) => {
       console.error(err);
       toast.error(`Failure: ${err}`);
     });
+};
+// Can't delete if it's endorser
+const deleteDisabled = (contactAlias: string) => {
+  return endorserInfo.value && endorserInfo.value.endorser_name === contactAlias;
 };
 
 // necessary for expanding rows, we don't do anything with this

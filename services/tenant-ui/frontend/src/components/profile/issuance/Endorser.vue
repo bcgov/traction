@@ -31,17 +31,31 @@ import InputSwitch from 'primevue/inputswitch';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import VueJsonPretty from 'vue-json-pretty';
+import { useToast } from 'vue-toastification';
 // State
 import { useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
 
+const toast = useToast();
+
 const tenantStore = useTenantStore();
-const { endorserConnection, endorserInfo } = storeToRefs(tenantStore);
+const { endorserConnection, endorserInfo, loadingIssuance } =
+  storeToRefs(tenantStore);
 
 // Connect to endorser
-const connectToEndorser = () => {
-  if (!hasEndorserConn.value) {
-    tenantStore.connectToEndorser();
+const connectToEndorser = async () => {
+  try {
+    if (!hasEndorserConn.value) {
+      await tenantStore.connectToEndorser();
+      // Give a couple seconds to wait for active. If not done by then a message
+      // appears to the user saying to refresh themselves
+      loadingIssuance.value = true;
+      await new Promise((r) => setTimeout(r, 2000));
+      await tenantStore.getEndorserConnection();
+      toast.success('Endorser connection request sent');
+    }
+  } catch (error) {
+    toast.error(`Failure while connecting: ${error}`);
   }
 };
 
