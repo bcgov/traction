@@ -7,14 +7,7 @@ import { RESERVATION_STATUSES } from '@/helpers/constants';
 
 export const useReservationStore = defineStore('reservation', () => {
   const { config } = storeToRefs(useConfigStore());
-  // A raw api call without using the interceptors from the acapyApiStore
-  // Needed for the open call to reservation at this point
-  // TODO: Allow 404 to pass through to the UI
   const api = axios.create({
-    validateStatus: function (status: any) {
-      console.log('status', status);
-      return true;
-    },
     baseURL: config.value.frontend.tenantProxyPath,
   });
 
@@ -92,11 +85,20 @@ export const useReservationStore = defineStore('reservation', () => {
     error.value = null;
     loading.value = true;
 
-    await api
-      .get(API_PATH.MULTITENANCY_RESERVATION(reservationId))
+    /**
+     * The status code of 404 needs to be propagated to the UI.
+     * Axios currently has a bug that doesn't allow error status codes
+     * to be passed to the "catch" block. This is a workaround to
+     * allow the 404 to be passed to the UI.
+     */
+    await axios(API_PATH.MULTITENANCY_RESERVATION(reservationId), {
+      method: 'GET',
+      // Allow 404 to still approve the promise
+      validateStatus: (status: number) => status === 404,
+    })
       .then((res) => {
-        console.log('res from checking a res', res);
-        if (res.data) {
+        // If the reservation exists
+        if (res.data && res.status !== 404) {
           // The API doesn't check email address against res ID but we can do it on the front end at least
           if (res.data.contact_email !== email) {
             error.value =
@@ -106,6 +108,11 @@ export const useReservationStore = defineStore('reservation', () => {
             status.value = res.data.state;
           }
         }
+        // 404's no longer throw an error
+        if (res.status === 404) {
+          reservation.value = null;
+          status.value = 'Not Found';
+        }
       })
       .catch((err) => {
         console.log('err from catch', err);
@@ -114,6 +121,28 @@ export const useReservationStore = defineStore('reservation', () => {
       .finally(() => {
         loading.value = false;
       });
+
+    // await api
+    //   .get(API_PATH.MULTITENANCY_RESERVATION(reservationId))
+    //   .then((res) => {
+    //     if (res.data) {
+    //       // The API doesn't check email address against res ID but we can do it on the front end at least
+    //       if (res.data.contact_email !== email) {
+    //         error.value =
+    //           'The email provided does not match with the email from the reservation ID.';
+    //       } else {
+    //         reservation.value = res.data;
+    //         status.value = res.data.state;
+    //       }
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     console.log('err from catch', err);
+    //     error.value = err;
+    //   })
+    //   .finally(() => {
+    //     loading.value = false;
+    //   });
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
