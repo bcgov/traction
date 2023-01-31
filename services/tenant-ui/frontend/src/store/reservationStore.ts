@@ -88,8 +88,10 @@ export const useReservationStore = defineStore('reservation', () => {
     /**
      * The status code of 404 needs to be propagated to the UI.
      * Axios currently has a bug that doesn't allow error status codes
-     * to be passed to the "catch" block. This is a workaround to
-     * allow the 404 to be passed to the UI.
+     * to be passed to the "catch" block. It appears this only happens when
+     * Axios is preconfigured with the "create" method.
+     *
+     * This is a workaround to allow the 404 to be passed to the UI.
      */
     await axios(API_PATH.MULTITENANCY_RESERVATION(reservationId), {
       method: 'GET',
