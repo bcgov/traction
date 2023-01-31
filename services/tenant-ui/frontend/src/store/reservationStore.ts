@@ -122,28 +122,6 @@ export const useReservationStore = defineStore('reservation', () => {
         loading.value = false;
       });
 
-    // await api
-    //   .get(API_PATH.MULTITENANCY_RESERVATION(reservationId))
-    //   .then((res) => {
-    //     if (res.data) {
-    //       // The API doesn't check email address against res ID but we can do it on the front end at least
-    //       if (res.data.contact_email !== email) {
-    //         error.value =
-    //           'The email provided does not match with the email from the reservation ID.';
-    //       } else {
-    //         reservation.value = res.data;
-    //         status.value = res.data.state;
-    //       }
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     console.log('err from catch', err);
-    //     error.value = err;
-    //   })
-    //   .finally(() => {
-    //     loading.value = false;
-    //   });
-
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
       throw error.value;
