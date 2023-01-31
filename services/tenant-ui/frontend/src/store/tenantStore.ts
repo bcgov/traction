@@ -23,7 +23,6 @@ export const useTenantStore = defineStore('tenant', () => {
     return token.value != null;
     // return token.value != null && tenant.value != null;
   });
-
   const isIssuer = computed(() => {
     return false;
     // return tenant.value.issuer;
@@ -98,7 +97,7 @@ export const useTenantStore = defineStore('tenant', () => {
     await acapyApi
       .getHttp(API_PATH.TENANT_ENDORSER_INFO)
       .then((res: any) => {
-        endorserConnection.value = res.data;
+        endorserInfo.value = res.data;
       })
       .catch((err) => {
         error.value = err;
@@ -115,6 +114,32 @@ export const useTenantStore = defineStore('tenant', () => {
     }
     // return data so $onAction.after listeners can add their own handler
     return endorserInfo.value;
+  }
+
+  async function connectToEndorser() {
+    console.log('> contactsStore.createInvitation');
+    error.value = null;
+    loadingIssuance.value = true;
+
+    // need the await here since the returned invitationData is not one of our stored refs...
+    await acapyApi
+      .postHttp(API_PATH.TENANT_ENDORSER_CONNECTION, {})
+      .then((res) => {
+        console.log(res);
+        endorserConnection.value = res.data;
+      })
+      .catch((err) => {
+        error.value = err;
+      })
+      .finally(() => {
+        loadingIssuance.value = false;
+      });
+    console.log('< contactsStore.connectToEndorser');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
   }
 
   // async function makeIssuer() {
@@ -217,6 +242,7 @@ export const useTenantStore = defineStore('tenant', () => {
     clearTenant,
     getEndorserConnection,
     getEndorserInfo,
+    connectToEndorser,
     isIssuer,
     // getConfiguration,
     // updateConfiguration,
