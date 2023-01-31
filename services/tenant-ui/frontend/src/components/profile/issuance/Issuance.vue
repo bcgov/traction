@@ -51,7 +51,6 @@ const loadIssuer = async () => {
 onMounted(async () => {
   loadIssuer();
 });
-
 </script>
 
 <style lang="scss" scoped>

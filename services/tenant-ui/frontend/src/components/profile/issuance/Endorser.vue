@@ -1,7 +1,7 @@
 <template>
   <p class="my-1">Connect Tenant To Endorser</p>
   <InputSwitch
-    :modelValue="hasEndorserConn"
+    :model-value="hasEndorserConn"
     :disabled="hasEndorserConn"
     @change="connectToEndorser"
   />
