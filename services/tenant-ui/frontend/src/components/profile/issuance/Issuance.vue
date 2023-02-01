@@ -10,8 +10,7 @@
       <Endorser />
 
       <h5 class="mb-0 mt-3">Public DID</h5>
-      <p class="my-1">Register a public DID</p>
-      <InputSwitch />
+      <PublicDid />
     </div>
     <div v-else class="no-endorser">
       <i class="pi pi-exclamation-circle"></i>
@@ -22,30 +21,28 @@
 
 <script setup lang="ts">
 // Vue
-import { onMounted, ref, computed } from 'vue';
-// PrimeVue etc
+import { onMounted } from 'vue';
+// PrimeVue
 import ProgressSpinner from 'primevue/progressspinner';
-import InputSwitch from 'primevue/inputswitch';
-import { useToast } from 'vue-toastification';
 // State
 import { useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other Components
-import Endorser from '@/components/profile/issuance/Endorser.vue';
-
-// Notifications
-const toast = useToast();
+import Endorser from './Endorser.vue';
+import PublicDid from './PublicDid.vue';
 
 // Get the tenant store
 const tenantStore = useTenantStore();
-const { loadingIssuance, endorserConnection, endorserInfo } =
-  storeToRefs(tenantStore);
+const { loadingIssuance, endorserInfo } = storeToRefs(tenantStore);
 
 // Load the issuer details
 const loadIssuer = async () => {
   await tenantStore.getEndorserInfo();
   if (endorserInfo) {
-    await tenantStore.getEndorserConnection();
+    await Promise.all([
+      tenantStore.getEndorserConnection(),
+      tenantStore.getPublicDid(),
+    ]);
   }
 };
 onMounted(async () => {

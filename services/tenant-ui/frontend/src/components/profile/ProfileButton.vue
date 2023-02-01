@@ -1,6 +1,6 @@
 <template>
   <div class="parent">
-    <Button @click="toggleProfile">
+    <Button class="p-button-rounded" @click="toggleProfile">
       <div class="wallet-img" />
     </Button>
     <div v-if="isIssuer" class="issuer-badge" />
@@ -31,10 +31,10 @@ const items = [
     label: 'Profile',
     to: { name: 'Profile' },
   },
-  {
-    label: 'Settings',
-    to: { name: 'Settings' },
-  },
+  // {
+  //   label: 'Settings',
+  //   to: { name: 'Settings' },
+  // },
   {
     label: 'Developer',
     visible: config.value.frontend.showDeveloper,
@@ -62,7 +62,6 @@ const items = [
   }
 }
 button {
-  background-color: rgba(0, 0, 0, 0);
   border: 0;
   border-radius: 50%;
   padding: 0;
@@ -79,12 +78,11 @@ button {
   width: 16px;
   height: 16px;
   position: absolute;
-  bottom: -6px;
+  bottom: -8px;
   left: 15px;
   background-size: cover;
 }
 button:enabled:hover {
-  background-color: rgba(0, 0, 0, 0);
   border: 0;
   transform: scale(1.1);
 }

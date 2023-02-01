@@ -80,6 +80,7 @@ export const API_PATH = {
     `/multitenancy/wallet/${tenantId}/token`,
 
   WALLET_DID_PUBLIC: '/wallet/did/public',
+  WALLET_DID_CREATE: '/wallet/did/create',
 };
 
 export const CONNECTION_STATUSES = {

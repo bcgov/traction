@@ -46,8 +46,8 @@
           title="Delete Contact"
           icon="pi pi-trash"
           class="p-button-rounded p-button-icon-only p-button-text"
-          @click="deleteContact($event, data.connection_id)"
           :disabled="deleteDisabled(data.alias)"
+          @click="deleteContact($event, data.connection_id)"
         />
         <!-- <EditContact :contact-id="data.contact_id" /> -->
       </template>
@@ -117,6 +117,7 @@ onMounted(async () => {
     loadTable();
 });
 
+// Deleting a contact
 const deleteContact = (event: any, id: string) => {
   confirm.require({
     target: event.currentTarget,
@@ -141,7 +142,9 @@ const doDelete = (id: string) => {
 };
 // Can't delete if it's endorser
 const deleteDisabled = (contactAlias: string) => {
-  return endorserInfo.value && endorserInfo.value.endorser_name === contactAlias;
+  return (
+    endorserInfo.value && endorserInfo.value.endorser_name === contactAlias
+  );
 };
 
 // necessary for expanding rows, we don't do anything with this

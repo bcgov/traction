@@ -21,11 +21,15 @@ export const useTenantStore = defineStore('tenant', () => {
   // getters
   const tenantReady = computed(() => {
     return token.value != null;
-    // return token.value != null && tenant.value != null;
   });
   const isIssuer = computed(() => {
-    return false;
-    // return tenant.value.issuer;
+    return (
+      endorserConnection.value &&
+      endorserConnection.value.state === 'active' &&
+      publicDid.value &&
+      publicDid.value.result &&
+      publicDid.value.result.did
+    );
   });
 
   // actions
@@ -121,7 +125,6 @@ export const useTenantStore = defineStore('tenant', () => {
     error.value = null;
     loadingIssuance.value = true;
 
-    // need the await here since the returned invitationData is not one of our stored refs...
     await acapyApi
       .postHttp(API_PATH.TENANT_ENDORSER_CONNECTION, {})
       .then((res) => {
@@ -135,6 +138,86 @@ export const useTenantStore = defineStore('tenant', () => {
         loadingIssuance.value = false;
       });
     console.log('< contactsStore.connectToEndorser');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+  }
+
+  async function getPublicDid() {
+    console.log('> tenantStore.getPublicDid');
+    error.value = null;
+    loadingIssuance.value = true;
+
+    await acapyApi
+      .getHttp(API_PATH.WALLET_DID_PUBLIC)
+      .then((res: any) => {
+        publicDid.value = res.data;
+      })
+      .catch((err) => {
+        error.value = err;
+        publicDid.value = null;
+      })
+      .finally(() => {
+        loadingIssuance.value = false;
+      });
+    console.log('< tenantStore.getPublicDid');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return publicDid.value;
+  }
+
+  async function registerPublicDid() {
+    console.log('> contactsStore.registerPublicDid');
+    error.value = null;
+    loadingIssuance.value = true;
+
+    try {
+      // Create a DID
+      const cRes = await acapyApi.postHttp(API_PATH.WALLET_DID_CREATE, {
+        method: 'sov',
+        options: { key_type: 'ed25519' },
+      });
+      console.log(cRes);
+      if (!cRes.data.result) {
+        throw Error('No result in create DID response');
+      }
+
+      // Use the did and verkey
+      const did = cRes.data.result.did;
+      const verkey = cRes.data.result.verkey;
+      // Register the DID
+      const rRes = await acapyApi.postHttp(
+        `${API_PATH.TENANT_REGISTER_PUBLIC_DID}?did=${did}&verkey=${verkey}`,
+        {}
+      );
+      console.log(rRes);
+
+      // Give 2 seconds to wait
+      // TODO: should this be here? Or register and assign as 2 different buttons...?
+      await new Promise((r) => setTimeout(r, 2000));
+
+      // Assign the public DID
+      const aRes = await acapyApi.postHttp(
+        `${API_PATH.WALLET_DID_PUBLIC}?did=${did}`,
+        {}
+      );
+      console.log(aRes);
+
+      // Give 2 seconds to wait then fetch it
+      await new Promise((r) => setTimeout(r, 2000));
+      getPublicDid();
+    } catch (err) {
+      error.value = err;
+    } finally {
+      loadingIssuance.value = false;
+    }
+    console.log('< contactsStore.registerPublicDid');
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
@@ -230,23 +313,26 @@ export const useTenantStore = defineStore('tenant', () => {
   // }
 
   return {
-    tenant,
-    endorserConnection,
-    endorserInfo,
     loading,
     loadingIssuance,
     error,
+    tenant,
+    endorserConnection,
+    endorserInfo,
+    publicDid,
     tenantReady,
+    isIssuer,
+    tenantConfig,
     getSelf,
     // makeIssuer,
     clearTenant,
     getEndorserConnection,
     getEndorserInfo,
     connectToEndorser,
-    isIssuer,
+    getPublicDid,
+    registerPublicDid,
     // getConfiguration,
     // updateConfiguration,
-    tenantConfig,
   };
 });
 
