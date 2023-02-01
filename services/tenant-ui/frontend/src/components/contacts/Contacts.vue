@@ -112,9 +112,9 @@ const loadTable = async () => {
 
 onMounted(async () => {
   // So we can check endorser connection
-  tenantStore.getEndorserInfo(),
-    // Load your contact list
-    loadTable();
+  tenantStore.getEndorserInfo();
+  // Load your contact list
+  loadTable();
 });
 
 // Deleting a contact
