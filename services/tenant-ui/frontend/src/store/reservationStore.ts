@@ -42,12 +42,10 @@ export const useReservationStore = defineStore('reservation', () => {
     await api
       .post(API_PATH.MULTITENANCY_RESERVATIONS, payload)
       .then((res) => {
-        console.log('res from creating a res', res);
         reservation.value = res.data;
       })
       .catch((err) => {
         error.value = err;
-        console.log(error.value);
       })
       .finally(() => {
         loading.value = false;
