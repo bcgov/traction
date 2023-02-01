@@ -7,7 +7,7 @@ Traction provides a series of Aca-Py plugins to manage Aries agent instances in 
 
 ## Quick start
 
-To run a local instance of traction, see the documentation in Scripts](./scripts/README.md).
+To run a local instance of traction, see the documentation in [scripts](./scripts/README.md).
 
 
 ## Deploying Traction
