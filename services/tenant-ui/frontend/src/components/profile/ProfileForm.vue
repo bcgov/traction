@@ -31,27 +31,6 @@
       />
     </div>
   </div>
-
-  <!-- Public DID -->
-  <!-- <div class="field">
-    <label for="publicDid">Public DID</label>
-    <InputText
-      id="publicDid"
-      class="w-full"
-      readonly
-      :value="tenant.public_did"
-    />
-  </div> -->
-  <!-- Public DID Status -->
-  <!-- <div class="field">
-    <label for="publicDidStatus">Public DID Status</label>
-    <InputText
-      id="publicDidStatus"
-      class="w-full"
-      readonly
-      :value="tenant.public_did_status"
-    />
-  </div> -->
 </template>
 
 <script setup lang="ts">
