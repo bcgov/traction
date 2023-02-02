@@ -97,20 +97,20 @@ const { tenant, tenantConfig, loading } = storeToRefs(useTenantStore());
 
 // Get Tenant Configuration
 const loadTenantSettings = async () => {
-  await tenantStore
-    .getConfiguration()
-    .then(() => {
-      // set the local form settings (don't bind controls directly to state for this)
-      Object.assign(formFields, tenantConfig.value);
-      // Set the 'default' if nothing there to show the user the default auto-response
-      if (!formFields.auto_response_message) {
-        formFields.auto_response_message = `'${tenant.value.name}' has recieved your message but does not correspond via messages`;
-      }
-    })
-    .catch((err: any) => {
-      console.error(err);
-      toast.error(`Failure: ${err}`);
-    });
+  // await tenantStore
+  //   .getConfiguration()
+  //   .then(() => {
+  //     // set the local form settings (don't bind controls directly to state for this)
+  //     Object.assign(formFields, tenantConfig.value);
+  //     // Set the 'default' if nothing there to show the user the default auto-response
+  //     if (!formFields.auto_response_message) {
+  //       formFields.auto_response_message = `'${tenant.value.name}' has recieved your message but does not correspond via messages`;
+  //     }
+  //   })
+  //   .catch((err: any) => {
+  //     console.error(err);
+  //     toast.error(`Failure: ${err}`);
+  //   });
 };
 onMounted(async () => {
   loadTenantSettings();
@@ -145,8 +145,9 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 
   try {
-    await tenantStore.updateConfiguration(formFields);
-    toast.info('Your Settings have been Updated');
+    // await tenantStore.updateConfiguration(formFields);
+    // toast.info('Your Settings have been Updated');
+    toast.error('unimplimented');
   } catch (error) {
     toast.error(`Failure: ${error}`);
   } finally {

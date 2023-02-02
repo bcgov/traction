@@ -10,7 +10,11 @@ export async function fetchItem(
   params: object = {}
 ): Promise<object | null | undefined> {
   const acapyApi = useAcapyApi();
-  const dataUrl = id ? `${url}/${id}` : url;
+  let dataUrl = url;
+  if (id) {
+    // Normalize if the caller supplies a trailing slash or not
+    dataUrl = `${dataUrl.replace(/\/$/, '')}/${id}`;
+  }
   console.log(` > fetchItem(${dataUrl})`);
   error.value = null;
   let result = null;
