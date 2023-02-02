@@ -111,7 +111,7 @@ export const useReservationStore = defineStore('reservation', () => {
         // 404's no longer throw an error
         if (res.status === 404) {
           reservation.value = null;
-          status.value = 'Not Found';
+          status.value = 'not_found';
         }
       })
       .catch((err) => {

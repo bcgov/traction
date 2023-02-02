@@ -60,6 +60,7 @@
     <Denied v-else-if="status === RESERVATION_STATUSES.DENIED" />
     <Pending v-else-if="status === RESERVATION_STATUSES.REQUESTED" />
     <ShowWallet v-else-if="status === RESERVATION_STATUSES.SHOW_WALLET" />
+    <NotFound v-else-if="status === RESERVATION_STATUSES.NOT_FOUND" />
   </div>
 </template>
 
@@ -81,6 +82,7 @@ import Approved from './status/Approved.vue';
 import CheckedIn from './status/CheckedIn.vue';
 import Denied from './status/Denied.vue';
 import Pending from './status/Pending.vue';
+import NotFound from './status/NotFound.vue';
 import ShowWallet from './status/ShowWallet.vue';
 import { RESERVATION_STATUSES } from '@/helpers/constants';
 

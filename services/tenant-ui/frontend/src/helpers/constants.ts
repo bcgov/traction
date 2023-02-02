@@ -99,6 +99,7 @@ export const RESERVATION_STATUSES = {
   CHECKED_IN: 'checked_in',
   DENIED: 'denied',
   REQUESTED: 'requested',
+  NOT_FOUND: 'not_found',
   // Not an API status, but the state on the FE when just checked-in
   // so they can one-time see the wallet key
   SHOW_WALLET: 'show_wallet',
