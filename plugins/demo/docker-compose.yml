@@ -43,7 +43,7 @@ services:
       - ACAPY_ADMIN_URL=http://traction-agent:3001
       - ACAPY_ADMIN_URL_API_KEY=change-me
     ports:
-      - 8001:8080
+      - 8032:8080
     extra_hosts:
       - host.docker.internal:host-gateway
 

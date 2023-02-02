@@ -3,76 +3,25 @@
 
 Hyperledger Aries Traction - a digital wallet solution for organizations. The focus of Traction is for line of businesses to easily integrate Aries ([aca-py](https://github.com/hyperledger/aries-cloudagent-python)) into their applications; without having to stand up, maintain and manage and instance of aca-py themselves.
 
-Traction provides a service layer to manage Aries agent instances in a multi-tenant aca-py deployment, and provides some value-add services for using aca-py functions such as setting up issuer agents, and issuing and verifying credentials.  Future functionality could include machine-readable governance, etc.
+Traction provides a series of Aca-Py plugins to manage Aries agent instances in a multi-tenant aca-py deployment, and provides some value-add services for the tenants and the administrator of Aca-Py.  Future functionality could include machine-readable governance, etc.
+
+See [traction flow chart](docs/assets/traction-flow-chart-1600x900-12162022.pdf) for a simple architecture overview.
 
 ## Quick start
 
-To run a local instance of traction, open a bash shell and run the following (git, docker and docker-compose are required):
+To run a local instance of traction, see the documentation in [scripts](./scripts/README.md).
 
-```bash
-git clone https://github.com/bcgov/traction.git
-cd traction/scripts
-cp .env-example .env
-docker-compose build
-docker-compose up
-```
-
-By default, this will start an environment with:
-
-* postgres database for aca-py data
-* aca-py agent in multitenancy mode with traction plugins (access through ngrok)
-* tenant proxy
-* tenant ui
-
-This will be using the [BCovrin Test Ledger](http://test.bcovrin.vonx.io).
-
-| Service | Url | Credentials |
-| --- | --- | --- |
-| Tenant Proxy (Swagger) | http://localhost:8032/api/doc | |
-| Tenant UI | http://localhost:5101 | wallet\_id / wallet\_key |
-
-Tenants are provided with a `wallet_id` and `wallet_key` by the Innkeeper. Only the tenant retains the `wallet_key`. 
-
-Open the following in a browser: `http://localhost:5100/innkeeper/docs` - this is the swagger UI for the innkeeper.
-
-TODO: write some quick onboarding instructions - create tenants, login, etc.
-
-See the [use case](./docs/USE-CASE.md) document for more detailed information about traction services.
-
-
-## Running traction
-
-For more information about the Docker Compose files for spinning up local instances of Traction and the Showcase application:
-
-[Scripts](./scripts/README.md)
 
 ## Deploying Traction
 
-Helm charts for deploying Traction and Endorser to Openshift:
+Helm charts for deploying Traction and Endorser to Openshift (BC Gov Traction team specific):
 
 [Charts](./charts/README.md)
 
-## Developing traction
-
-Overview of the traction architecture:
-
-[Architecture](./docs/ARCHITECTURE.md)
-
-Aries Interop Profile status:
-
-[Traction AIP](./docs/AIP.md)
-
-Source code for Traction API:
-
-[Traction](./services/traction/README.md)
-
-
-Source code for Endorser controller application.
-
-[Endorser](./services/endorser/README.md)
 
 ## Repository workflow
 Currently authorized users can create a branch and run a pull request to merge in changes. Unauthorized can always create a fork.
+
 
 ### Rebasing of a branch
 ```bash

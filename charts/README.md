@@ -1,3 +1,7 @@
+## Important
+
+These charts are for the traction development team to build and promote instances within their Openshift namespaces. If you are forking the repo, or following along, you can use these as a guide but these are not expected to work for everyone nor in every Kubernetes infrastructure.
+
 ### Charts
 Developers should lint the charts before committing and running.
 
@@ -14,54 +18,21 @@ To run changes to the charts without a PR, you can login to Openshift, edit valu
 helm upgrade -f ./charts/traction/values.yaml -f ./charts/traction/values-pr.yaml pr-00-traction ./charts/traction --install --wait
 ```
 
-### Openshift Resources
-We have 3 Openshift namespaces (dev, test, prod), each with a limit on resources. We have a 4th namespace (tools) with smaller limits (cpu: 4 cores -> 4000m).
+#### Values.yaml
 
-limits.cpu = 8 cores -> 8000m
-limits.mem = 32Gi -> 32609Mi
+For each set of charts (tenant-ui, traction), there is a base values.yaml file with default production configuration. 
 
-requests.cpu = 4 cores -> 4000m
-requests.cpu = 16Gi -> 16304Mi
+There are instance/deployment overrides for:
+- Pull Requests (-pr). This goes to our dev namespace and is pre-merge to the develop branch.
+- Development (-development). This goes to our dev namespace and is post-merge to the develop branch, pre-promotion to test.
+- Test (-test). This goes to our test namespace and is pre-integration.
+- Integration (-int). This goes to our test namespace and is pre-production.
+- Production (-production). This goes to our production namespace. Production for us is not intended for client use; it is to prove out production scenarios before we deliver code to other interested business units to run their own instances.
 
-Note: tools namespace has reduced limits on cpu:
-
-limits.cpu = 4 cores -> 4000m
-
-requests.cpu = 2 cores -> 2000m
-
-Currently, each instance has 3 containers (traction api & traction acapy & traction db). We are using the dev namespace for a DEV instance plus our Pull Request Instances (4 developers, so hopefully only 4 PRs open at a time). This puts cosiderable limitations on the resources we can request and our limits. We are leaving extra space for standing up tenant-ui on demand.
-
-For test and prod namespaces, we can assume that we will need 2 instances (test + uat), (prod + hotfix).  
-
-For now, just keeping it simple by giving all containers similar requests and limits, this must be adjusted as we determine actual load and run requirements for each container.  
-
-#### PR instances limits and requests
-
-Take the dev namespace limits divide by 6, then use a fudge factor of around 75% of max. The DEV instance (pre-test) will get double the resources than PRs that is why 6 instead of 5 (1 dev + 4 prs).  
-
-limits.cpu = 200m
-limits.mem = 820Mi
-
-requests.cpu = 120m
-requests.cpu = 400Mi
-
-#### DEV instance limits and requests
-
-See above, basically use double what a PR gets  
-
-limits.cpu = 400m
-limits.mem = 1600Mi
-
-requests.cpu = 200m
-requests.cpu = 820Mi
+In each of the above cases, we use the file overrides to make additional configuration required for each namespace and / or instance.
 
 
-#### TEST/PROD instance limits and requests
+##### Tenant-UI
 
-TEST and PROD, expect 2 full instances then use a fudge factor of around 75% of max; give a little breathing room.
+Tenant UI is a separate deliverable and has it's own CI/CD pipeline, however, the instances we stand up will point at matching traction deployments. Some of the configuration will require being in the same namespace to make "private" connections between the Tenant UI and Traction.
 
-limits.cpu = 600m
-limits.mem = 2600Mi
-
-requests.cpu = 300m
-requests.cpu = 1300Mi

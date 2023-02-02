@@ -19,7 +19,6 @@ COPY --chown=indy:indy pyproject.toml README.md ./
 COPY --chown=indy:indy basicmessage_storage ./basicmessage_storage
 COPY --chown=indy:indy multitenant_provider ./multitenant_provider
 COPY --chown=indy:indy traction_innkeeper ./traction_innkeeper
-COPY --chown=indy:indy traction_metadata ./traction_metadata
 
 RUN poetry install --no-dev
 
@@ -35,7 +34,6 @@ COPY --chown=indy:indy docker/default.yml ./
 COPY --chown=indy:indy basicmessage_storage/basicmessage_storage traction_plugins/basicmessage_storage
 COPY --chown=indy:indy multitenant_provider/multitenant_provider traction_plugins/multitenant_provider
 COPY --chown=indy:indy traction_innkeeper/traction_innkeeper traction_plugins/traction_innkeeper
-COPY --chown=indy:indy traction_metadata/traction_metadata traction_plugins/traction_metadata
 
 ENTRYPOINT ["/bin/bash", "-c", "aca-py \"$@\"", "--"]
 CMD ["start", "--arg-file", "default.yml"]
