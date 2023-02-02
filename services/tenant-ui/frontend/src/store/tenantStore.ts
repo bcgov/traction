@@ -1,6 +1,6 @@
 import { API_PATH } from '@/helpers/constants';
 import { defineStore, storeToRefs } from 'pinia';
-import { computed, ref } from 'vue';
+import { computed, ref, Ref } from 'vue';
 import { useAcapyApi } from './acapyApi';
 import { useTokenStore } from './tokenStore';
 
@@ -13,6 +13,7 @@ export const useTenantStore = defineStore('tenant', () => {
   const endorserConnection: any = ref(null);
   const endorserInfo: any = ref(null);
   const publicDid: any = ref(null);
+  const publicDidRegistrationProgress: Ref<String> = ref('');
   const tenantConfig: any = ref(null);
 
   const { token } = storeToRefs(useTokenStore());
@@ -176,9 +177,11 @@ export const useTenantStore = defineStore('tenant', () => {
     console.log('> contactsStore.registerPublicDid');
     error.value = null;
     loadingIssuance.value = true;
+    publicDidRegistrationProgress.value = '';
 
     try {
       // Create a DID
+      publicDidRegistrationProgress.value = 'Creating DID';
       const cRes = await acapyApi.postHttp(API_PATH.WALLET_DID_CREATE, {
         method: 'sov',
         options: { key_type: 'ed25519' },
@@ -192,6 +195,7 @@ export const useTenantStore = defineStore('tenant', () => {
       const did = cRes.data.result.did;
       const verkey = cRes.data.result.verkey;
       // Register the DID
+      publicDidRegistrationProgress.value = 'Registering the DID';
       const rRes = await acapyApi.postHttp(
         `${API_PATH.TENANT_REGISTER_PUBLIC_DID}?did=${did}&verkey=${verkey}`,
         {}
@@ -203,6 +207,7 @@ export const useTenantStore = defineStore('tenant', () => {
       await new Promise((r) => setTimeout(r, 2000));
 
       // Assign the public DID
+      publicDidRegistrationProgress.value = 'Assigning the public DID';
       const aRes = await acapyApi.postHttp(
         `${API_PATH.WALLET_DID_PUBLIC}?did=${did}`,
         {}
@@ -211,11 +216,13 @@ export const useTenantStore = defineStore('tenant', () => {
 
       // Give 2 seconds to wait then fetch it
       await new Promise((r) => setTimeout(r, 2000));
+      publicDidRegistrationProgress.value = 'Fetching created public DID';
       getPublicDid();
     } catch (err) {
       error.value = err;
     } finally {
       loadingIssuance.value = false;
+      publicDidRegistrationProgress.value = '';
     }
     console.log('< contactsStore.registerPublicDid');
 
@@ -236,6 +243,7 @@ export const useTenantStore = defineStore('tenant', () => {
     tenantReady,
     isIssuer,
     tenantConfig,
+    publicDidRegistrationProgress,
     getSelf,
     clearTenant,
     getEndorserConnection,

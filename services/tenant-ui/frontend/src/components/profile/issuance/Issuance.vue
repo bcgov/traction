@@ -1,8 +1,11 @@
 <template>
   <!-- Make Issuer -->
   <h3 class="mt-5 mb-3">Issuer</h3>
-  <div v-if="loadingIssuance" class="flex justify-content-center">
+  <div v-if="loadingIssuance" class="flex flex-column align-items-center">
     <ProgressSpinner />
+    <p v-if="publicDidRegistrationProgress">
+      {{ publicDidRegistrationProgress }}
+    </p>
   </div>
   <div v-else>
     <h5 class="my-0">Endorser</h5>
@@ -33,7 +36,8 @@ import PublicDid from './PublicDid.vue';
 
 // Get the tenant store
 const tenantStore = useTenantStore();
-const { loadingIssuance, endorserInfo } = storeToRefs(tenantStore);
+const { loadingIssuance, endorserInfo, publicDidRegistrationProgress } =
+  storeToRefs(tenantStore);
 
 // Load the issuer details
 const loadIssuer = async () => {
