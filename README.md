@@ -5,6 +5,8 @@ Hyperledger Aries Traction - a digital wallet solution for organizations. The fo
 
 Traction provides a series of Aca-Py plugins to manage Aries agent instances in a multi-tenant aca-py deployment, and provides some value-add services for the tenants and the administrator of Aca-Py.  Future functionality could include machine-readable governance, etc.
 
+See [traction flow chart](docs/assets/traction-flow-chart-1600x900-12162022.pdf) for a simple architecture overview.
+
 ## Quick start
 
 To run a local instance of traction, see the documentation in [scripts](./scripts/README.md).
