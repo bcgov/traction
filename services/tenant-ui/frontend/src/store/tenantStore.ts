@@ -13,7 +13,7 @@ export const useTenantStore = defineStore('tenant', () => {
   const endorserConnection: any = ref(null);
   const endorserInfo: any = ref(null);
   const publicDid: any = ref(null);
-  const publicDidRegistrationProgress: Ref<String> = ref('');
+  const publicDidRegistrationProgress: Ref<string> = ref('');
   const tenantConfig: any = ref(null);
 
   const { token } = storeToRefs(useTokenStore());
