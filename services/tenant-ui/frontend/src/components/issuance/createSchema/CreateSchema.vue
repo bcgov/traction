@@ -10,6 +10,7 @@
       v-model:visible="displayModal"
       header="Create Schema"
       :modal="true"
+      :style="{ minWidth: '500px' }"
       @update:visible="handleClose"
     >
       <CreateSchemaForm @success="$emit('success')" @closed="handleClose" />
@@ -24,24 +25,16 @@ import { ref } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 // State
-import { useTenantStore } from '../../../store';
+import { useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Custom Components
 import CreateSchemaForm from './CreateSchemaForm.vue';
-// Other Imports
-import { useToast } from 'vue-toastification';
-
-// State setup
-
-const toast = useToast();
 
 const { isIssuer } = storeToRefs(useTenantStore());
 
 defineEmits(['success']);
 
-// -----------------------------------------------------------------------
 // Display popup
-// ---------------------------------------------------------------------
 const displayModal = ref(false);
 const openModal = async () => {
   // Kick of the loading asyncs (if needed)
@@ -51,5 +44,4 @@ const handleClose = async () => {
   // some logic... maybe we shouldn't close?
   displayModal.value = false;
 };
-// ---------------------------------------------------------------/display
 </script>

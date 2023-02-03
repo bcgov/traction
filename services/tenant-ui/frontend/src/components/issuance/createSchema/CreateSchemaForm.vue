@@ -13,6 +13,7 @@
           <InputText
             id="schemaName"
             v-model="v$.schemaName.$model"
+            class="w-full"
             :class="{ 'p-invalid': v$.schemaName.$invalid && submitted }"
           />
           <span v-if="v$.schemaName.$error && submitted">
@@ -36,6 +37,7 @@
           <InputText
             id="schemaVersion"
             v-model="v$.schemaVersion.$model"
+            class="w-full"
             :class="{ 'p-invalid': v$.schemaVersion.$invalid && submitted }"
           />
           <span v-if="v$.schemaVersion.$error && submitted">
@@ -57,13 +59,13 @@
         <div
           v-for="(item, index) in attributes"
           :key="index"
-          style="display: flex; flex-direction: row"
+          class="flex w-full"
         >
           <InputText
             v-model="item.name"
             type="text"
             name="{{ `attribute_${index}` }}"
-            class="mb-5"
+            class="mb-5 w-full"
           />
           <div class="flex justify-content-between">
             <button
@@ -95,10 +97,11 @@ import { reactive, ref } from 'vue';
 // PrimeVue / Validation
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-import { required } from '@vuelidate/validators';
+import { required, helpers } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
 // State
 import { useGovernanceStore } from '@/store';
+import { storeToRefs } from 'pinia';
 // Other imports
 import { useToast } from 'vue-toastification';
 
@@ -106,6 +109,7 @@ const toast = useToast();
 
 // Store values
 const governanceStore = useGovernanceStore();
+const { loading } = storeToRefs(useGovernanceStore());
 
 const emit = defineEmits(['closed', 'success']);
 
@@ -131,9 +135,16 @@ const formFields = reactive({
   schemaName: '',
   schemaVersion: '',
 });
+const mustBeDecimal = (value: string) => /^\d+(\.\d+)(\.\d+)?$/.test(value);
 const rules = {
   schemaName: { required },
-  schemaVersion: { required },
+  schemaVersion: {
+    required,
+    mustBeDecimal: helpers.withMessage(
+      'Must be a 2 or 3-part decimal value like x.y or x.y.z',
+      mustBeDecimal
+    ),
+  },
 };
 const v$ = useVuelidate(rules, formFields);
 
@@ -150,19 +161,22 @@ const handleSubmit = async (isFormValid: boolean) => {
       .filter((x) => x.name !== '')
       .map((attribute) => attribute.name);
 
+    if (!justAttributeNames.length) {
+      toast.error('Please provide at least one attribute for the schema');
+      return;
+    }
+
     const payload = {
-      schema_definition: {
-        schema_name: formFields.schemaName,
-        schema_version: formFields.schemaVersion,
-        attributes: justAttributeNames,
-      },
-      name: formFields.schemaName,
-      tags: [],
+      attributes: justAttributeNames,
+      schema_name: formFields.schemaName,
+      schema_version: formFields.schemaVersion,
     };
 
     // call store
-    governanceStore.createSchemaTemplate(payload);
-    toast.info('Schema created');
+    await governanceStore.createSchema(payload);
+    toast.success(
+      'Schema created. If it does not appear yet, refresh the table.'
+    );
     emit('success');
     // close up on success
     emit('closed');

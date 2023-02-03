@@ -35,7 +35,7 @@
   "configuration": {
     "configuration": "Configuration <FR>",
     "schemasCreds": {
-      "schemas": "Schemas <FR>",
+      "schemas": "Stored Schemas <FR>",
       "create": "Create Schema <FR>",
       "copy": "Copy Schema <FR>"
     },
