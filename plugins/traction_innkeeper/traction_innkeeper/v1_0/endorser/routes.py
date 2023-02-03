@@ -17,11 +17,9 @@ from aries_cloudagent.wallet.error import WalletError
 from marshmallow import fields
 
 from .endorser_connection_service import EndorserConnectionService
-from ..routes import SWAGGER_TENANT
+from ..tenant.routes import SWAGGER_CATEGORY
 
 LOGGER = logging.getLogger(__name__)
-
-SWAGGER_CATEGORY = SWAGGER_TENANT
 
 
 def error_handler(func):
