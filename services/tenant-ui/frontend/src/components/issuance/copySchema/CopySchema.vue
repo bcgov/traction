@@ -6,6 +6,7 @@
       header="Copy Schema"
       :modal="true"
       @update:visible="handleClose"
+      :style="{ minWidth: '400px' }"
     >
       <CopySchemaForm @success="$emit('success')" @closed="handleClose" />
     </Dialog>

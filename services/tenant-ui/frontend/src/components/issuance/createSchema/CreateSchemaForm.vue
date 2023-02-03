@@ -12,6 +12,7 @@
           >
           <InputText
             id="schemaName"
+            class="w-full"
             v-model="v$.schemaName.$model"
             :class="{ 'p-invalid': v$.schemaName.$invalid && submitted }"
           />
@@ -35,6 +36,7 @@
           >
           <InputText
             id="schemaVersion"
+            class="w-full"
             v-model="v$.schemaVersion.$model"
             :class="{ 'p-invalid': v$.schemaVersion.$invalid && submitted }"
           />
@@ -57,13 +59,13 @@
         <div
           v-for="(item, index) in attributes"
           :key="index"
-          style="display: flex; flex-direction: row"
+          class="flex w-full"
         >
           <InputText
             v-model="item.name"
             type="text"
             name="{{ `attribute_${index}` }}"
-            class="mb-5"
+            class="mb-5 w-full"
           />
           <div class="flex justify-content-between">
             <button

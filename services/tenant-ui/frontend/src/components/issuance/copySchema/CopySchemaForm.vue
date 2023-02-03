@@ -11,6 +11,7 @@
           >
           <InputText
             id="schemaId"
+            class="w-full"
             v-model="v$.schemaId.$model"
             :class="{ 'p-invalid': v$.schemaId.$invalid && submitted }"
           />

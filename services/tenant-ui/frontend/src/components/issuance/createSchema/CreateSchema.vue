@@ -11,6 +11,7 @@
       header="Create Schema"
       :modal="true"
       @update:visible="handleClose"
+      :style="{ minWidth: '500px' }"
     >
       <CreateSchemaForm @success="$emit('success')" @closed="handleClose" />
     </Dialog>
@@ -39,9 +40,7 @@ const { isIssuer } = storeToRefs(useTenantStore());
 
 defineEmits(['success']);
 
-// -----------------------------------------------------------------------
 // Display popup
-// ---------------------------------------------------------------------
 const displayModal = ref(false);
 const openModal = async () => {
   // Kick of the loading asyncs (if needed)
@@ -51,5 +50,4 @@ const handleClose = async () => {
   // some logic... maybe we shouldn't close?
   displayModal.value = false;
 };
-// ---------------------------------------------------------------/display
 </script>
