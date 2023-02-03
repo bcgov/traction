@@ -10,8 +10,8 @@
       v-model:visible="displayModal"
       header="Create Schema"
       :modal="true"
-      @update:visible="handleClose"
       :style="{ minWidth: '500px' }"
+      @update:visible="handleClose"
     >
       <CreateSchemaForm @success="$emit('success')" @closed="handleClose" />
     </Dialog>
@@ -25,16 +25,10 @@ import { ref } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 // State
-import { useTenantStore } from '../../../store';
+import { useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Custom Components
 import CreateSchemaForm from './CreateSchemaForm.vue';
-// Other Imports
-import { useToast } from 'vue-toastification';
-
-// State setup
-
-const toast = useToast();
 
 const { isIssuer } = storeToRefs(useTenantStore());
 

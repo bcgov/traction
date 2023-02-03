@@ -62,7 +62,8 @@ const items = ref([
     icon: 'pi pi-fw pi-file',
     items: [
       {
-        label: () => t('configuration.schemasCreds.schemas'),
+        // label: () => t('configuration.schemasCreds.schemas'),
+        label: 'Schema Storage',
         icon: 'pi pi-fw pi-book',
         to: { name: 'Schemas' },
       },

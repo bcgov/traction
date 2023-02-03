@@ -1,7 +1,7 @@
 import { API_PATH } from '@/helpers/constants';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
-import { useTenantApi } from './tenantApi';
+import { useAcapyApi } from './acapyApi';
 import {
   fetchItem,
   fetchList,
@@ -66,19 +66,12 @@ export const useGovernanceStore = defineStore('governance', () => {
     );
   });
 
-  // grab the tenant api
-  const tenantApi = useTenantApi();
+  const acapyApi = useAcapyApi();
 
-  async function listSchemaTemplates() {
+  async function listStoredSchemas() {
     selectedSchemaTemplate.value = null;
     schemaTemplates.value = null;
-    return fetchList(
-      API_PATH.GOVERNANCE_SCHEMA_TEMPLATES,
-      schemaTemplates,
-      error,
-      loading,
-      { credential_templates: true }
-    );
+    return fetchList(API_PATH.SCHEMA_STORAGE, schemaTemplates, error, loading);
   }
 
   async function listCredentialTemplates() {
@@ -92,26 +85,22 @@ export const useGovernanceStore = defineStore('governance', () => {
     );
   }
 
-  async function createSchemaTemplate(payload: any = {}) {
-    console.log('> governanceStore.createSchemaTemplate');
+  async function createSchema(payload: any = {}) {
+    console.log('> governanceStore.createSchema');
     error.value = null;
     loading.value = true;
 
     let result = null;
 
-    await tenantApi
-      .postHttp(API_PATH.GOVERNANCE_SCHEMA_TEMPLATES, payload)
+    await acapyApi
+      .postHttp(API_PATH.SCHEMAS, payload)
       .then((res) => {
-        console.log(res);
-        result = res.data.item;
+        result = res.data;
         console.log(result);
       })
       .then(() => {
-        // do we want to automatically reload? or have the caller of this to load?
-        console.log(
-          'schema template created. the store calls load automatically, but do we want this done "manually"?'
-        );
-        listSchemaTemplates();
+        // Refresh the schema list
+        listStoredSchemas();
       })
       .catch((err) => {
         error.value = err;
@@ -120,7 +109,7 @@ export const useGovernanceStore = defineStore('governance', () => {
       .finally(() => {
         loading.value = false;
       });
-    console.log('< governanceStore.createSchemaTemplate');
+    console.log('< governanceStore.createSchema');
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
@@ -137,7 +126,7 @@ export const useGovernanceStore = defineStore('governance', () => {
 
     let result = null;
 
-    await tenantApi
+    await acapyApi
       .postHttp(API_PATH.GOVERNANCE_CREDENTIAL_TEMPLATES, payload)
       .then((res) => {
         console.log(res);
@@ -150,7 +139,7 @@ export const useGovernanceStore = defineStore('governance', () => {
           'credential template created. the store calls load automatically, but do we want this done "manually"?'
         );
         // load schemas for tables...
-        listSchemaTemplates();
+        listStoredSchemas();
       })
       .then(() => {
         // reload this for pick lists...
@@ -180,18 +169,14 @@ export const useGovernanceStore = defineStore('governance', () => {
 
     let result = null;
 
-    await tenantApi
-      .postHttp(API_PATH.GOVERNANCE_SCHEMA_TEMPLATES_IMPORT, payload)
+    await acapyApi
+      .postHttp(API_PATH.SCHEMA_STORAGE, payload)
       .then((res) => {
-        console.log(res);
-        result = res.data.item;
+        result = res.data;
         console.log(result);
       })
       .then(() => {
-        console.log(
-          'schema copied. the store calls load automatically, but do we want this done "manually"?'
-        );
-        listSchemaTemplates();
+        listStoredSchemas();
       })
       .catch((err) => {
         error.value = err;
@@ -210,20 +195,20 @@ export const useGovernanceStore = defineStore('governance', () => {
     return result;
   }
 
-  async function getSchemaTemplate(id: string, params: any = {}) {
-    const getloading: any = ref(false);
-    if (!('credential_templates' in params)) {
-      // if we do not explicitly say not to get cred templates, get 'em.
-      params.credential_templates = true;
-    }
-    return fetchItem(
-      API_PATH.GOVERNANCE_SCHEMA_TEMPLATES,
-      id,
-      error,
-      getloading,
-      params
-    );
-  }
+  // async function getSchemaTemplate(id: string, params: any = {}) {
+  //   const getloading: any = ref(false);
+  //   if (!('credential_templates' in params)) {
+  //     // if we do not explicitly say not to get cred templates, get 'em.
+  //     params.credential_templates = true;
+  //   }
+  //   return fetchItem(
+  //     API_PATH.GOVERNANCE_SCHEMA_TEMPLATES,
+  //     id,
+  //     error,
+  //     getloading,
+  //     params
+  //   );
+  // }
 
   async function getCredentialTemplate(id: string, params: any = {}) {
     const getloading: any = ref(false);
@@ -236,30 +221,21 @@ export const useGovernanceStore = defineStore('governance', () => {
     );
   }
 
-  /**
-   * # delete Schema
-   * Delete a schema template
-   * @param payload Data object of schema row entry
-   */
-  async function deleteSchema(payload: any = {}) {
+  async function deleteSchema(schemaId: string) {
     console.log('> governanceStore.deleteSchema');
-
-    // Need the UUID to delete the schema
-    const schemaId = payload.schema_template_id;
-
     error.value = null;
     loading.value = true;
 
     let result = null;
 
-    await tenantApi
-      .deleteHttp(API_PATH.GOVERNANCE_SCHEMA_TEMPLATE(schemaId), payload)
+    await acapyApi
+      .deleteHttp(API_PATH.SCHEMA_STORAGE_ITEM(schemaId), {})
       .then((res) => {
         result = res.data.item;
       })
       .then(() => {
         console.log('schema deleted.');
-        listSchemaTemplates(); // Refresh table
+        listStoredSchemas(); // Refresh table
       })
       .catch((err) => {
         error.value = err;
@@ -288,11 +264,11 @@ export const useGovernanceStore = defineStore('governance', () => {
     error,
     schemaTemplateDropdown,
     credentialTemplateDropdown,
-    listSchemaTemplates,
-    createSchemaTemplate,
+    listStoredSchemas,
+    createSchema,
     copySchema,
     deleteSchema,
-    getSchemaTemplate,
+    // getSchemaTemplate,
     listCredentialTemplates,
     createCredentialTemplate,
     getCredentialTemplate,

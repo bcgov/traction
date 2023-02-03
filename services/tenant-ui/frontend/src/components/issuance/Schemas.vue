@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-0">Schemas</h3>
+  <h3 class="mt-0">{{ t('configuration.schemasCreds.schemas') }}</h3>
 
   <DataTable
     v-model:selection="selectedSchemaTemplate"
@@ -10,9 +10,11 @@
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
-    :global-filter-fields="['name', 'version']"
+    :global-filter-fields="['schema_id', 'version']"
     selection-mode="single"
-    data-key="schema_template_id"
+    data-key="schema_id"
+    sort-field="created_at"
+    :sort-order="-1"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -24,7 +26,7 @@
           <span class="p-input-icon-left schema-search">
             <i class="pi pi-search" />
             <InputText
-              v-model="filter.name.value"
+              v-model="filter.schema_id.value"
               placeholder="Search Schemas"
             />
           </span>
@@ -50,15 +52,27 @@
         />
       </template>
     </Column>
-    <Column :sortable="true" field="name" header="Schema" filter-field="name" />
-    <Column :sortable="true" field="version" header="Version" />
-    <Column :sortable="true" field="status" header="Status">
+    <Column
+      :sortable="true"
+      field="schema.name"
+      header="Name"
+      filter-field="name"
+    />
+    <Column
+      :sortable="true"
+      field="schema_id"
+      header="Schema ID"
+      filter-field="schema_id"
+    />
+    <Column :sortable="true" field="schema.version" header="Version" />
+    <Column :sortable="true" field="schema.attrNames" header="Attributes" />
+
+    <Column :sortable="true" field="created_at" header="Created at">
       <template #body="{ data }">
-        <StatusChip :status="data.status" />
+        {{ formatDateLong(data.created_at) }}
       </template>
     </Column>
-    <Column :sortable="true" field="attributes" header="Attributes" />
-    <Column
+    <!-- <Column
       :sortable="true"
       field="credential_templates"
       header="Credential Template"
@@ -66,25 +80,28 @@
       <template #body="{ data }">
         <CreateCredentialTemplate :schema-template="data" />
       </template>
-    </Column>
+    </Column> -->
     <template #expansion="{ data }">
-      <RowExpandData
-        :id="data.schema_template_id"
-        :url="API_PATH.GOVERNANCE_SCHEMA_TEMPLATES"
-        :params="{ acapy: true, credential_templates: true }"
-      />
+      <RowExpandData :id="data.schema_id" :url="API_PATH.SCHEMA_STORAGE" />
     </template>
   </DataTable>
 </template>
 
 <script setup lang="ts">
+// Vue
 import { onMounted, ref } from 'vue';
+// PrimeVue etc
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
 import { FilterMatchMode } from 'primevue/api';
-
+import { useConfirm } from 'primevue/useconfirm';
+import { useToast } from 'vue-toastification';
+import { useI18n } from 'vue-i18n';
+// State
+import { useGovernanceStore } from '../../store';
+import { storeToRefs } from 'pinia';
 // Custom components
 import CreateSchema from './createSchema/CreateSchema.vue';
 import CopySchema from './copySchema/CopySchema.vue';
@@ -92,23 +109,20 @@ import CreateCredentialTemplate from './credentialtemplate/CreateCredentialTempl
 import RowExpandData from '../common/RowExpandData.vue';
 import StatusChip from '../common/StatusChip.vue';
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
-
-import { useConfirm } from 'primevue/useconfirm';
-import { useToast } from 'vue-toastification';
-import { useGovernanceStore } from '../../store';
-import { storeToRefs } from 'pinia';
+import { formatDateLong } from '@/helpers';
 
 const confirm = useConfirm();
 const toast = useToast();
+const { t } = useI18n();
 
 const governanceStore = useGovernanceStore();
-// use the loading state from the store to disable the button...
 const { loading, schemaTemplates, selectedSchemaTemplate } = storeToRefs(
   useGovernanceStore()
 );
 
+// Loading the schema list
 const loadTable = async () => {
-  governanceStore.listSchemaTemplates().catch((err) => {
+  governanceStore.listStoredSchemas().catch((err) => {
     console.error(err);
     toast.error(`Failure: ${err}`);
   });
@@ -118,6 +132,7 @@ onMounted(async () => {
   loadTable();
 });
 
+// Deleting a stored schema
 const deleteSchema = (event: any, schema: any) => {
   confirm.require({
     target: event.currentTarget,
@@ -131,7 +146,7 @@ const deleteSchema = (event: any, schema: any) => {
 };
 const doDelete = (schema: any) => {
   governanceStore
-    .deleteSchema(schema)
+    .deleteSchema(schema.schema_id)
     .then(() => {
       toast.success(`Schema successfully deleted`);
     })
@@ -141,14 +156,11 @@ const doDelete = (schema: any) => {
     });
 };
 
-// -----------------------------------------------/Loading schemas
-
 // necessary for expanding rows, we don't do anything with this
 const expandedRows = ref([]);
 
 const filter = ref({
-  version: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  schema_id: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 </script>
 
