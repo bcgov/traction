@@ -3,14 +3,12 @@ import json
 import logging
 import uuid
 
-import requests
 from aiohttp import web
 from aiohttp_apispec import (
     docs,
     request_schema,
     response_schema,
     match_info_schema,
-    querystring_schema,
 )
 from aries_cloudagent.admin.request_context import AdminRequestContext
 from aries_cloudagent.messaging.models.base import BaseModelError
@@ -28,8 +26,7 @@ from aries_cloudagent.multitenant.admin.routes import (
 from aries_cloudagent.multitenant.base import BaseMultitenantManager
 from aries_cloudagent.multitenant.error import WalletKeyMissingError
 from aries_cloudagent.storage.error import StorageError, StorageNotFoundError
-from aries_cloudagent.wallet.base import BaseWallet
-from aries_cloudagent.wallet.error import WalletError
+from aries_cloudagent.wallet.error import WalletSettingsError
 from aries_cloudagent.wallet.models.wallet_record import WalletRecord
 from marshmallow import fields
 
@@ -42,8 +39,7 @@ from .models import (
 )
 
 LOGGER = logging.getLogger(__name__)
-SWAGGER_INNKEEPER = "traction-innkeeper"
-SWAGGER_TENANT = "traction-tenant"
+SWAGGER_CATEGORY = "traction-innkeeper"
 
 
 def innkeeper_only(func):
@@ -81,7 +77,7 @@ def error_handler(func):
             raise web.HTTPNotFound(reason=err.roll_up) from err
         except WalletKeyMissingError as err:
             raise web.HTTPUnauthorized(reason=err.roll_up) from err
-        except (StorageError, BaseModelError) as err:
+        except (WalletSettingsError, StorageError, BaseModelError) as err:
             raise web.HTTPBadRequest(reason=err.roll_up) from err
         except Exception as err:
             # We do not want a hard dependency on multitenant_provider plugin.
@@ -225,24 +221,6 @@ class TenantListSchema(OpenAPISchema):
     )
 
 
-class RegisterPublicDidSchema(OpenAPISchema):
-    """Query string parameters and validators for register ledger nym request."""
-
-    did = fields.Str(
-        description="DID to register",
-        required=True,
-        **INDY_DID,
-    )
-    verkey = fields.Str(
-        description="Verification key", required=True, **INDY_RAW_PUBLIC_KEY
-    )
-    alias = fields.Str(
-        description="Alias",
-        required=False,
-        example="Barry",
-    )
-
-
 @docs(
     tags=["multitenancy"],
 )
@@ -258,22 +236,6 @@ async def tenant_reservation(request: web.BaseRequest):
     # reservations are under base/root profile, use Tenant Manager profile
     mgr = context.inject(TenantManager)
     profile = mgr.profile
-
-    unique_tenant_name = await mgr.get_unique_tenant_name(
-        tenant_name=rec.tenant_name, check_reservations=True
-    )
-    if unique_tenant_name != rec.tenant_name:
-        body = json.dumps(
-            {
-                "tenant_name": rec.tenant_name,
-                "suggested_tenant_name": unique_tenant_name,
-            }
-        ).encode("utf-8")
-        raise web.HTTPConflict(
-            reason=f"There is currently a tenant with the name'{rec.tenant_name}'.",
-            body=body,
-            content_type="application/json",
-        )
 
     async with profile.session() as session:
         await rec.save(session, reason="New tenant reservation")
@@ -403,7 +365,7 @@ async def tenant_create_token(request: web.BaseRequest):
 
 
 @docs(
-    tags=[SWAGGER_INNKEEPER],
+    tags=[SWAGGER_CATEGORY],
 )
 @response_schema(ReservationListSchema(), 200, description="")
 @innkeeper_only
@@ -431,7 +393,7 @@ async def innkeeper_reservations_list(request: web.BaseRequest):
 
 
 @docs(
-    tags=[SWAGGER_INNKEEPER],
+    tags=[SWAGGER_CATEGORY],
 )
 @match_info_schema(ReservationIdMatchInfoSchema())
 @request_schema(ReservationApproveRequestSchema)
@@ -473,7 +435,7 @@ async def innkeeper_reservations_approve(request: web.BaseRequest):
 
 
 @docs(
-    tags=[SWAGGER_INNKEEPER],
+    tags=[SWAGGER_CATEGORY],
 )
 @match_info_schema(ReservationIdMatchInfoSchema())
 @request_schema(ReservationDenyRequestSchema)
@@ -511,7 +473,7 @@ async def innkeeper_reservations_deny(request: web.BaseRequest):
 
 
 @docs(
-    tags=[SWAGGER_INNKEEPER],
+    tags=[SWAGGER_CATEGORY],
 )
 @response_schema(TenantListSchema(), 200, description="")
 @innkeeper_only
@@ -540,7 +502,7 @@ async def innkeeper_tenants_list(request: web.BaseRequest):
 
 
 @docs(
-    tags=[SWAGGER_INNKEEPER],
+    tags=[SWAGGER_CATEGORY],
 )
 @match_info_schema(TenantIdMatchInfoSchema())
 @response_schema(TenantRecordSchema(), 200, description="")
@@ -562,74 +524,6 @@ async def innkeeper_tenant_get(request: web.BaseRequest):
     return web.json_response(rec.serialize())
 
 
-@docs(
-    tags=[SWAGGER_TENANT],
-)
-@response_schema(TenantRecordSchema(), 200, description="")
-@error_handler
-async def tenant_self(request: web.BaseRequest):
-    context: AdminRequestContext = request["context"]
-    # we need the caller's wallet id
-    wallet_id = context.profile.settings.get("wallet.id")
-
-    # records are under base/root profile, use Tenant Manager profile
-    mgr = context.inject(TenantManager)
-    profile = mgr.profile
-
-    async with profile.session() as session:
-        # tenant's must always fetch by their wallet id.
-        rec = await TenantRecord.query_by_wallet_id(session, wallet_id)
-        LOGGER.info(rec)
-
-    return web.json_response(rec.serialize())
-
-
-@docs(tags=[SWAGGER_TENANT], summary="Register a Public DID")
-@querystring_schema(RegisterPublicDidSchema())
-@response_schema(schema=RegisterPublicDidSchema, code=200, description="")
-@error_handler
-async def register_public_did(request: web.BaseRequest):
-    LOGGER.info("> tenant_register_public_did()")
-    context: AdminRequestContext = request["context"]
-
-    # check if there is a public did
-    info = None
-    async with context.session() as session:
-        wallet = session.inject_or(BaseWallet)
-        if not wallet:
-            raise web.HTTPForbidden(reason="No wallet available")
-        try:
-            info = await wallet.get_public_did()
-        except WalletError as err:
-            raise web.HTTPBadRequest(reason=err.roll_up) from err
-    if info:
-        raise web.HTTPConflict(reason=f"Wallet already has a public DID: `{info.did}`")
-
-    did = request.query.get("did")
-    verkey = request.query.get("verkey")
-    if not did or not verkey:
-        raise web.HTTPBadRequest(
-            reason="Request query must include both did and verkey"
-        )
-
-    alias = request.query.get("alias")
-    if not alias:
-        alias = context.profile.settings.get("wallet.id")
-
-    genesis_url = context.profile.settings.get("ledger.genesis_url")
-    did_registration_url = genesis_url.replace("genesis", "register")
-    data = {
-        "did": did,
-        "verkey": verkey,
-        "alias": alias,
-    }
-    requests.post(did_registration_url, json=data)
-    LOGGER.info(f"did_registration_url = {did_registration_url}, data = {data}")
-
-    LOGGER.info("< tenant_register_public_did()")
-    return web.json_response(data)
-
-
 async def register(app: web.Application):
     """Register routes."""
     LOGGER.info("> registering routes")
@@ -646,13 +540,6 @@ async def register(app: web.Application):
                 "/multitenancy/reservations/{reservation_id}/check-in", tenant_checkin
             ),
             web.post("/multitenancy/tenant/{tenant_id}/token", tenant_create_token),
-        ]
-    )
-    # routes that require a tenant token.
-    app.add_routes(
-        [
-            web.get("/tenant", tenant_self, allow_head=False),
-            web.post("/tenant/register-public-did", register_public_did),
         ]
     )
     # routes that require a tenant token for the innkeeper wallet/tenant/agent.
@@ -689,13 +576,7 @@ def post_process_routes(app: web.Application):
         app._state["swagger_dict"]["tags"] = []
     app._state["swagger_dict"]["tags"].append(
         {
-            "name": SWAGGER_INNKEEPER,
+            "name": SWAGGER_CATEGORY,
             "description": "Traction Innkeeper - manage tenants (traction_innkeeper v1_0 plugin)",
-        }
-    )
-    app._state["swagger_dict"]["tags"].append(
-        {
-            "name": SWAGGER_TENANT,
-            "description": "Traction Tenant - tenant self administration (traction_innkeeper v1_0 plugin)",
         }
     )
