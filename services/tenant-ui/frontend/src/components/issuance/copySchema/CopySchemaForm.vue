@@ -12,6 +12,7 @@
           <InputText
             id="schemaId"
             v-model="v$.schemaId.$model"
+            class="w-full"
             :class="{ 'p-invalid': v$.schemaId.$invalid && submitted }"
           />
           <span v-if="v$.schemaId.$error && submitted">
@@ -71,13 +72,11 @@ const handleSubmit = async (isFormValid: boolean) => {
   try {
     const payload = {
       schema_id: formFields.schemaId,
-      name: null,
-      tags: [],
     };
 
     // call store
     await governanceStore.copySchema(payload);
-    toast.info('Schema copied');
+    toast.success(`Schema copied.`);
     emit('success');
     // close up on success
     emit('closed');

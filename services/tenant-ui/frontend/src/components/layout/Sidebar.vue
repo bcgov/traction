@@ -58,25 +58,27 @@ const items = ref([
   // },
 
   {
+    label: () => t('configuration.configuration'),
+    icon: 'pi pi-fw pi-file',
+    items: [
+      {
+        // label: () => t('configuration.schemasCreds.schemas'),
+        label: 'Schema Storage',
+        icon: 'pi pi-fw pi-book',
+        to: { name: 'Schemas' },
+      },
+      // {
+      //   label: () => t('configuration.presentationTemplates.templates'),
+      //   to: { name: 'PresentationTemplates' },
+      // },
+    ],
+  },
+
+  {
     label: () => t('messages.messages'),
     icon: 'pi pi-fw pi-envelope',
     to: { name: 'MyMessages' },
   },
-
-  // {
-  //   label: () => t('configuration.configuration'),
-  //   icon: 'pi pi-fw pi-file',
-  //   items: [
-  //     {
-  //       label: () => t('configuration.schemasCreds.schemas'),
-  //       to: { name: 'Schemas' },
-  //     },
-  //     {
-  //       label: () => t('configuration.presentationTemplates.templates'),
-  //       to: { name: 'PresentationTemplates' },
-  //     },
-  //   ],
-  // },
 
   {
     label: () => t('about.about'),

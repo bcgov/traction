@@ -101,9 +101,20 @@ const handleSubmit = async (isFormValid: boolean) => {
     toast.error(`Failure getting token: ${err}`);
   }
   try {
-    // token is loaded, now go fetch the tenant data...
+    // token is loaded, now go fetch the global data about the tenant
     await tenantStore.getSelf();
     console.log(tenant.value);
+    // TODO: once we get response statuses working correctly again can re-configure this
+    // Don't throw errors since not-found and stuff is fine for non-issuers
+    try {
+      // Find out issuer status when logging in
+      await Promise.all([
+        tenantStore.getEndorserConnection(),
+        tenantStore.getPublicDid(),
+      ]);
+    } catch (err) {
+      console.error(err);
+    }
   } catch (err) {
     console.error(err);
     toast.error(`Failure getting tenant: ${err}`);
