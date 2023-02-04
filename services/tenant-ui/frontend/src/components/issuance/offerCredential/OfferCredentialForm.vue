@@ -145,9 +145,9 @@ const { loading: contactLoading, contactsDropdown } = storeToRefs(
 );
 const {
   loading: credsLoading,
-  credentialTemplateDropdown,
-  credentialTemplates,
-  schemaTemplates,
+  credentialDropdown,
+  credentialDefinitions,
+  storedSchemas,
 } = storeToRefs(useGovernanceStore());
 const { loading: issueLoading } = storeToRefs(useIssuerStore());
 const issuerStore = useIssuerStore();
@@ -191,9 +191,9 @@ const searchContacts = (event: any) => {
 };
 const searchCreds = (event: any) => {
   if (!event.query.trim().length) {
-    filteredCreds.value = [...(credentialTemplateDropdown.value as any)];
+    filteredCreds.value = [...(credentialDropdown.value as any)];
   } else {
-    filteredCreds.value = (credentialTemplateDropdown.value as any).filter(
+    filteredCreds.value = (credentialDropdown.value as any).filter(
       (cred: any) => {
         return cred.label.toLowerCase().includes(event.query.toLowerCase());
       }
@@ -204,10 +204,10 @@ const searchCreds = (event: any) => {
 // Editing the credential
 const editCredentialValues = () => {
   // Get the specific schema to edit values for
-  const schemaId = credentialTemplates.value.find(
+  const schemaId = credentialDefinitions.value.find(
     (ct: any) => ct.credential_template_id === formFields.selectedCred.value
   ).schema_template_id;
-  const schema = schemaTemplates.value.find(
+  const schema = storedSchemas.value.find(
     (st: any) => st.schema_template_id === schemaId
   );
   schemaForSelectedCred.value = schema;

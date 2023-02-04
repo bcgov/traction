@@ -79,19 +79,14 @@ const tenantRoutes = [
 
       // Tenant - Schemas, templates etc
       {
-        path: '/configuration/',
-        children: [
-          {
-            path: 'schemas',
-            name: 'Schemas',
-            component: Schemas,
-          },
-          {
-            path: 'presentationTemplates',
-            name: 'PresentationTemplates',
-            component: PresentationTemplates,
-          },
-        ],
+        path: 'schemas',
+        name: 'Schemas',
+        component: Schemas,
+      },
+      {
+        path: 'presentationTemplates',
+        name: 'PresentationTemplates',
+        component: PresentationTemplates,
       },
 
       // Tenant - Issuer

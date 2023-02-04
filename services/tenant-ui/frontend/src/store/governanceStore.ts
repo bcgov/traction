@@ -12,16 +12,35 @@ import {
 
 export const useGovernanceStore = defineStore('governance', () => {
   // state
-  const schemaTemplates: any = ref(null);
-  const selectedSchemaTemplate: any = ref(null);
-  const schemaTemplateFilters: any = ref(null);
+  const storedSchemas: any = ref([]);
+  const selectedSchema: any = ref(null);
+  // const schemaTemplateFilters: any = ref(null);
 
-  const credentialTemplates: any = ref(null);
-  const selectedCredentialTemplate: any = ref(null);
-  const credentialTemplateFilters: any = ref(null);
+  const credentialDefinitions: any = ref([
+    {
+      schema_id: 'HhVXFoPyMCsW2HiXDPvRZG:2:fvxcvcx:1.2.3',
+      state: 'Pending',
+      name: 'Name',
+      tag: 'Tag',
+    },
+  ]);
+  const selectedCredentialDefinition: any = ref(null);
+  // const credentialTemplateFilters: any = ref(null);
 
   const loading: any = ref(false);
   const error: any = ref(null);
+
+  // getters
+
+  const schemaList = computed(() => {
+    // For the list of schemas in the schema table, add cred defs
+    return storedSchemas.value.map((s: any) => {
+      s.credentialDefinition = credentialDefinitions.value.find(
+        (c: any) => c.schema_id === s.schema_id
+      );
+      return s;
+    });
+  });
 
   const schemaLabelValue = (item: any) => {
     let result = null;
@@ -50,36 +69,38 @@ export const useGovernanceStore = defineStore('governance', () => {
 
   const schemaTemplateDropdown = computed(() => {
     return filterMapSortList(
-      schemaTemplates.value,
+      storedSchemas.value,
       schemaLabelValue,
       sortByLabelAscending,
       filterByStatusActive
     );
   });
 
-  const credentialTemplateDropdown = computed(() => {
+  const credentialDropdown = computed(() => {
     return filterMapSortList(
-      credentialTemplates.value,
+      credentialDefinitions.value,
       credDefLabelValue,
       sortByLabelAscending,
       filterByStatusActive
     );
   });
 
+  // actions
+
   const acapyApi = useAcapyApi();
 
   async function listStoredSchemas() {
-    selectedSchemaTemplate.value = null;
-    schemaTemplates.value = null;
-    return fetchList(API_PATH.SCHEMA_STORAGE, schemaTemplates, error, loading);
+    selectedSchema.value = null;
+    storedSchemas.value = null;
+    return fetchList(API_PATH.SCHEMA_STORAGE, storedSchemas, error, loading);
   }
 
-  async function listCredentialTemplates() {
-    selectedCredentialTemplate.value = null;
-    credentialTemplates.value = null;
+  async function listStoredCredentialDefinitions() {
+    selectedCredentialDefinition.value = null;
+    credentialDefinitions.value = null;
     return fetchList(
-      API_PATH.GOVERNANCE_CREDENTIAL_TEMPLATES,
-      credentialTemplates,
+      API_PATH.CREDENTIAL_DEFINITION_STORAGE,
+      credentialDefinitions,
       error,
       loading
     );
@@ -143,7 +164,7 @@ export const useGovernanceStore = defineStore('governance', () => {
       })
       .then(() => {
         // reload this for pick lists...
-        listCredentialTemplates();
+        listStoredCredentialDefinitions();
       })
       .catch((err) => {
         error.value = err;
@@ -254,22 +275,23 @@ export const useGovernanceStore = defineStore('governance', () => {
   }
 
   return {
-    schemaTemplates,
-    selectedSchemaTemplate,
-    schemaTemplateFilters,
-    credentialTemplates,
-    selectedCredentialTemplate,
-    credentialTemplateFilters,
     loading,
     error,
+    storedSchemas,
+    selectedSchema,
+    schemaList,
+    // schemaTemplateFilters,
+    credentialDefinitions,
+    selectedCredentialDefinition,
+    // credentialTemplateFilters,
     schemaTemplateDropdown,
-    credentialTemplateDropdown,
+    credentialDropdown,
     listStoredSchemas,
     createSchema,
     copySchema,
     deleteSchema,
     // getSchemaTemplate,
-    listCredentialTemplates,
+    listStoredCredentialDefinitions,
     createCredentialTemplate,
     getCredentialTemplate,
   };

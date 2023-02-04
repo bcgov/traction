@@ -21,6 +21,10 @@ export const API_PATH = {
   // CONTACTS_RECEIVE_INVITATION: '/tenant/v1/contacts/receive-invitation',
   CONNECTIONS_INVITATION: (id: string) => `/connections/${id}/invitation`,
 
+  CREDENTIAL_DEFINITION_STORAGE: '/credential-definition-storage',
+  CREDENTIAL_DEFINITION_STORAGE_ITEM: (id: string) =>
+    `/credential-definition-storage/${id}`,
+
   INNKEEPER_TOKEN: '/innkeeper/token',
   INNKEEPER_TENANTS: '/innkeeper/tenants/',
   INNKEEPER_TENANT: (id: string) => `/innkeeper/tenants/${id}`,

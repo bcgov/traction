@@ -1,16 +1,15 @@
 <template>
   <div>
-    <div v-if="credentialTemplate">
-      <div v-if="credentialTemplate.status === 'Active'">
-        {{ `${credentialTemplate.name}:${credentialTemplate.tag}` }}
+    <div v-if="credDef">
+      <div v-if="credDef.state === 'Active'">
+        {{ `${credDef.name}:${credDef.tag}` }}
       </div>
       <div v-else>
-        <StatusChip :status="credentialTemplate.status" />
+        <StatusChip :status="credDef.state" />
       </div>
     </div>
     <div v-else>
       <Button
-        v-if="schemaTemplate.status === 'Active'"
         v-tooltip.top="'Create Credential Template'"
         :disabled="!isIssuer"
         icon="pi pi-id-card"
@@ -20,12 +19,13 @@
     </div>
     <Dialog
       v-model:visible="displayModal"
-      header="Create Credential Template"
+      header="Create Credential Definition"
+      :style="{ minWidth: '400px' }"
       :modal="true"
       @update:visible="handleClose"
     >
       <CreateCredentialTemplateForm
-        :schema-template-id="schemaTemplate.schema_template_id"
+        :schema="schema"
         @success="$emit('success')"
         @closed="handleClose"
       />
@@ -45,7 +45,7 @@ import { useTenantStore } from '../../../store';
 import { storeToRefs } from 'pinia';
 
 const props = defineProps({
-  schemaTemplate: {
+  schema: {
     type: Object,
     required: true,
   },
@@ -53,18 +53,16 @@ const props = defineProps({
 
 const { isIssuer } = storeToRefs(useTenantStore());
 
-const credentialTemplate = computed(() => {
-  if (props.schemaTemplate.credential_templates.length) {
-    return props.schemaTemplate.credential_templates[0];
+const credDef = computed(() => {
+  if (props.schema.credentialDefinition) {
+    return props.schema.credentialDefinition;
   }
   return null;
 });
 
 defineEmits(['success']);
 
-// -----------------------------------------------------------------------
 // Display popup
-// ---------------------------------------------------------------------
 const displayModal = ref(false);
 const openModal = async () => {
   // Kick of the loading asyncs (if needed)

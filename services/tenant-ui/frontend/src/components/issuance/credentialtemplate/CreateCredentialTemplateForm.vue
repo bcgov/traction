@@ -2,8 +2,14 @@
   <form @submit.prevent="handleSubmit(!v$.$invalid)">
     <!-- Schema -->
     <div class="field">
-      <label for="schema">Schema*</label>
-      <InputText id="schema" v-model="selectedSchema.label" :readonly="true" />
+      <label for="schema">Schema</label>
+      <InputText
+        id="schema"
+        :value="schema.schema.name"
+        readonly
+        class="w-full"
+      />
+      <small>ID: {{ schema.schema_id }}</small>
     </div>
     <!-- Name -->
     <div class="field">
@@ -13,6 +19,7 @@
       <InputText
         id="name"
         v-model="v$.name.$model"
+        class="w-full"
         :class="{ 'p-invalid': v$.name.$invalid && submitted }"
       />
       <span v-if="v$.name.$error && submitted">
@@ -34,6 +41,7 @@
       <InputText
         id="creddef_tag"
         v-model="v$.creddef_tag.$model"
+        class="w-full"
         :class="{ 'p-invalid': v$.creddef_tag.$invalid && submitted }"
       />
       <span v-if="v$.creddef_tag.$error && submitted">
@@ -68,6 +76,7 @@
       <InputText
         id="creddef_revocation_registry_size"
         v-model="v$.creddef_revocation_registry_size.$model"
+        class="w-full"
         :class="{
           'p-invalid':
             v$.creddef_revocation_registry_size.$invalid && submitted,
@@ -86,7 +95,7 @@
     <Button
       type="submit"
       label="Create"
-      class="mt-1"
+      class="mt-4 w-full"
       :disabled="loading"
       :loading="loading"
     />
@@ -108,26 +117,27 @@ const governanceStore = useGovernanceStore();
 const toast = useToast();
 
 const props = defineProps({
-  schemaTemplateId: {
-    type: String,
+  schema: {
+    type: Object,
     required: true,
   },
 });
 
 // use the loading state from the store to disable the button...
-const { loading, schemaTemplateDropdown, credentialTemplateDropdown } =
-  storeToRefs(useGovernanceStore());
+const { loading, schemaTemplateDropdown, credentialDropdown } = storeToRefs(
+  useGovernanceStore()
+);
 
 const emit = defineEmits(['closed', 'success']);
 
-const selectedSchema = computed(() => {
-  if (governanceStore.schemaTemplateDropdown != null) {
-    return (governanceStore.schemaTemplateDropdown as any).find(
-      (x: any) => x.value == props.schemaTemplateId
-    );
-  }
-  return null;
-});
+// const selectedSchema = computed(() => {
+//   if (governanceStore.schemaTemplateDropdown != null) {
+//     return (governanceStore.schemaTemplateDropdown as any).find(
+//       (x: any) => x.value == props.schemaTemplateId
+//     );
+//   }
+//   return null;
+// });
 
 // Validation
 const formFields = reactive({
@@ -165,7 +175,7 @@ const handleSubmit = async (isFormValid: boolean) => {
       revocation_enabled: formFields.creddef_revocation_enabled,
       revocation_registry_size: rrs,
     },
-    schema_template_id: props.schemaTemplateId,
+    schema_template_id: props.schema.schema_id,
     name: formFields.name,
     tags: [],
   };

@@ -2,11 +2,11 @@
   <h3 class="mt-0">{{ t('configuration.schemasCreds.schemas') }}</h3>
 
   <DataTable
-    v-model:selection="selectedSchemaTemplate"
+    v-model:selection="selectedSchema"
     v-model:expandedRows="expandedRows"
     v-model:filters="filter"
     :loading="loading"
-    :value="schemaTemplates"
+    :value="schemaList"
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
@@ -72,15 +72,15 @@
         {{ formatDateLong(data.created_at) }}
       </template>
     </Column>
-    <!-- <Column
+    <Column
       :sortable="true"
       field="credential_templates"
-      header="Credential Template"
+      header="Credential Definition"
     >
       <template #body="{ data }">
-        <CreateCredentialTemplate :schema-template="data" />
+        <CreateCredentialTemplate :schema="data" />
       </template>
-    </Column> -->
+    </Column>
     <template #expansion="{ data }">
       <RowExpandData :id="data.schema_id" :url="API_PATH.SCHEMA_STORAGE" />
     </template>
@@ -116,16 +116,20 @@ const toast = useToast();
 const { t } = useI18n();
 
 const governanceStore = useGovernanceStore();
-const { loading, schemaTemplates, selectedSchemaTemplate } = storeToRefs(
+const { loading, schemaList, selectedSchema } = storeToRefs(
   useGovernanceStore()
 );
 
-// Loading the schema list
+// Loading the schema list and the stored cred defs
 const loadTable = async () => {
-  governanceStore.listStoredSchemas().catch((err) => {
+  try {
+    await governanceStore.listStoredSchemas();
+    // Wait til schemas are loaded so the getter can map together the schems to creds
+    // await governanceStore.listStoredCredentialDefinitions();
+  } catch (err) {
     console.error(err);
     toast.error(`Failure: ${err}`);
-  });
+  }
 };
 
 onMounted(async () => {
