@@ -21,6 +21,10 @@ export const API_PATH = {
   // CONTACTS_RECEIVE_INVITATION: '/tenant/v1/contacts/receive-invitation',
   CONNECTIONS_INVITATION: (id: string) => `/connections/${id}/invitation`,
 
+  CREDENTIAL_DEFINITIONS: '/credential-definitions',
+  CREDENTIAL_DEFINITION: (id: string) => `/credential-definitions/${id}`,
+  CREDENTIAL_DEFINITIONS_CREATED: '/credential-definitions/created',
+
   CREDENTIAL_DEFINITION_STORAGE: '/credential-definition-storage',
   CREDENTIAL_DEFINITION_STORAGE_ITEM: (id: string) =>
     `/credential-definition-storage/${id}`,
@@ -85,11 +89,6 @@ export const API_PATH = {
     '/tenant/v1/verifier/presentations/adhoc-request',
   VERIFIER_PRESENTATION_TEMPLATES:
     '/tenant/v1/verifier/presentation_templates/',
-
-  GOVERNANCE_CREDENTIAL_TEMPLATES:
-    '/tenant/v1/governance/credential_templates/',
-  GOVERNANCE_CREDENTIAL_TEMPLATE: (id: string) =>
-    `/tenant/v1/governance/credential_templates/${id}`,
 };
 
 export const CONNECTION_STATUSES = {

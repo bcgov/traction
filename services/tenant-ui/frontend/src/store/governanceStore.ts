@@ -16,14 +16,15 @@ export const useGovernanceStore = defineStore('governance', () => {
   const selectedSchema: any = ref(null);
   // const schemaTemplateFilters: any = ref(null);
 
-  const credentialDefinitions: any = ref([
-    {
-      schema_id: 'HhVXFoPyMCsW2HiXDPvRZG:2:fvxcvcx:1.2.3',
-      state: 'Pending',
-      name: 'Name',
-      tag: 'Tag',
-    },
-  ]);
+  const credentialDefinitions: any = ref([]);
+  // const credentialDefinitions: any = ref([
+  //   {
+  //     schema_id: 'HhVXFoPyMCsW2HiXDPvRZG:2:fvxcvcx:1.2.3',
+  //     state: 'Pending',
+  //     name: 'Name',
+  //     tag: 'Tag',
+  //   },
+  // ]);
   const selectedCredentialDefinition: any = ref(null);
   // const credentialTemplateFilters: any = ref(null);
 
@@ -140,15 +141,15 @@ export const useGovernanceStore = defineStore('governance', () => {
     return result;
   }
 
-  async function createCredentialTemplate(payload: any = {}) {
-    console.log('> governanceStore.createCredentialTemplate');
+  async function createCredentialDefinition(payload: any = {}) {
+    console.log('> governanceStore.createCredentialDefinition');
     error.value = null;
     loading.value = true;
 
     let result = null;
 
     await acapyApi
-      .postHttp(API_PATH.GOVERNANCE_CREDENTIAL_TEMPLATES, payload)
+      .postHttp(API_PATH.CREDENTIAL_DEFINITIONS, payload)
       .then((res) => {
         console.log(res);
         result = res.data.item;
@@ -173,7 +174,7 @@ export const useGovernanceStore = defineStore('governance', () => {
       .finally(() => {
         loading.value = false;
       });
-    console.log('< governanceStore.createCredentialTemplate');
+    console.log('< governanceStore.createCredentialDefinition');
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
@@ -234,7 +235,7 @@ export const useGovernanceStore = defineStore('governance', () => {
   async function getCredentialTemplate(id: string, params: any = {}) {
     const getloading: any = ref(false);
     return fetchItem(
-      API_PATH.GOVERNANCE_CREDENTIAL_TEMPLATES,
+      API_PATH.CREDENTIAL_DEFINITIONS,
       id,
       error,
       getloading,
@@ -292,7 +293,7 @@ export const useGovernanceStore = defineStore('governance', () => {
     deleteSchema,
     // getSchemaTemplate,
     listStoredCredentialDefinitions,
-    createCredentialTemplate,
+    createCredentialDefinition,
     getCredentialTemplate,
   };
 });

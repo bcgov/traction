@@ -65,7 +65,7 @@
         <label for="creddef_revocation_enabled">Revocation Enabled</label>
       </div>
     </div>
-    <div class="field">
+    <div v-if="formFields.creddef_revocation_enabled" class="field">
       <label
         for="creddef_revocation_registry_size"
         :class="{
@@ -163,29 +163,25 @@ const handleSubmit = async (isFormValid: boolean) => {
     return;
   }
 
-  let rrs = 0;
-  try {
-    rrs = parseInt(formFields.creddef_revocation_registry_size) || 0;
-  } catch (err) {
-    rrs = 0;
-  }
-  const payload = {
-    credential_definition: {
-      tag: formFields.creddef_tag,
-      revocation_enabled: formFields.creddef_revocation_enabled,
-      revocation_registry_size: rrs,
-    },
-    schema_template_id: props.schema.schema_id,
-    name: formFields.name,
-    tags: [],
+  const payload: any = {
+    tag: formFields.creddef_tag,
+    support_revocation: formFields.creddef_revocation_enabled,
+    schema_id: props.schema.schema_id,
   };
-
-  console.log(payload);
+  if (formFields.creddef_revocation_enabled) {
+    let rrs = 0;
+    try {
+      rrs = parseInt(formFields.creddef_revocation_registry_size) || 0;
+    } catch (err) {
+      rrs = 0;
+    }
+    payload.revocation_registry_size = rrs;
+  }
 
   try {
     // call store
-    await governanceStore.createCredentialTemplate(payload);
-    toast.info('Credential Template Created');
+    await governanceStore.createCredentialDefinition(payload);
+    toast.success('Credential Definition sent to ledger');
     emit('success');
     // close on success
     emit('closed');

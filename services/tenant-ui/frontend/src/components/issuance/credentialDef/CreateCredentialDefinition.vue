@@ -10,7 +10,7 @@
     </div>
     <div v-else>
       <Button
-        v-tooltip.top="'Create Credential Template'"
+        v-tooltip.top="'Create Credential Definition'"
         :disabled="!isIssuer"
         icon="pi pi-id-card"
         class="p-button-text"
@@ -39,7 +39,7 @@ import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import StatusChip from '../../common/StatusChip.vue';
 
-import CreateCredentialTemplateForm from './CreateCredentialTemplateForm.vue';
+import CreateCredentialTemplateForm from './CreateCredentialDefinitionForm.vue';
 
 import { useTenantStore } from '../../../store';
 import { storeToRefs } from 'pinia';
@@ -65,11 +65,9 @@ defineEmits(['success']);
 // Display popup
 const displayModal = ref(false);
 const openModal = async () => {
-  // Kick of the loading asyncs (if needed)
   displayModal.value = true;
 };
 const handleClose = async () => {
-  // some logic... maybe we shouldn't close?
   displayModal.value = false;
 };
 </script>

@@ -78,7 +78,7 @@
       header="Credential Definition"
     >
       <template #body="{ data }">
-        <CreateCredentialTemplate :schema="data" />
+        <CreateCredentialDefinition :schema="data" />
       </template>
     </Column>
     <template #expansion="{ data }">
@@ -105,9 +105,8 @@ import { storeToRefs } from 'pinia';
 // Custom components
 import CreateSchema from './createSchema/CreateSchema.vue';
 import CopySchema from './copySchema/CopySchema.vue';
-import CreateCredentialTemplate from './credentialtemplate/CreateCredentialTemplate.vue';
+import CreateCredentialDefinition from './credentialDef/CreateCredentialDefinition.vue';
 import RowExpandData from '../common/RowExpandData.vue';
-import StatusChip from '../common/StatusChip.vue';
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 
