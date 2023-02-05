@@ -7,29 +7,10 @@
         id="schema"
         :value="schema.schema.name"
         readonly
+        :disabled="loading"
         class="w-full"
       />
       <small>ID: {{ schema.schema_id }}</small>
-    </div>
-    <!-- Name -->
-    <div class="field">
-      <label for="name" :class="{ 'p-error': v$.name.$invalid && submitted }"
-        >Name*</label
-      >
-      <InputText
-        id="name"
-        v-model="v$.name.$model"
-        class="w-full"
-        :class="{ 'p-invalid': v$.name.$invalid && submitted }"
-      />
-      <span v-if="v$.name.$error && submitted">
-        <span v-for="(error, index) of v$.name.$errors" :key="index">
-          <small class="p-error">{{ error.$message }}</small>
-        </span>
-      </span>
-      <small v-else-if="v$.name.$invalid && submitted" class="p-error">{{
-        v$.name.required.$message
-      }}</small>
     </div>
     <!-- Tag -->
     <div class="field">
@@ -41,6 +22,7 @@
       <InputText
         id="creddef_tag"
         v-model="v$.creddef_tag.$model"
+        :disabled="loading"
         class="w-full"
         :class="{ 'p-invalid': v$.creddef_tag.$invalid && submitted }"
       />
@@ -59,6 +41,7 @@
       <div class="field-checkbox">
         <Checkbox
           v-model="formFields.creddef_revocation_enabled"
+          :disabled="loading"
           input-id="creddef_revocation_enabled"
           :binary="true"
         />
@@ -76,6 +59,7 @@
       <InputText
         id="creddef_revocation_registry_size"
         v-model="v$.creddef_revocation_registry_size.$model"
+        :disabled="loading"
         class="w-full"
         :class="{
           'p-invalid':
@@ -105,7 +89,7 @@
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Checkbox from 'primevue/checkbox';
-import { computed, reactive, ref } from 'vue';
+import { reactive, ref } from 'vue';
 import { useToast } from 'vue-toastification';
 import { storeToRefs } from 'pinia';
 import { useGovernanceStore } from '../../../store';
@@ -141,7 +125,6 @@ const emit = defineEmits(['closed', 'success']);
 
 // Validation
 const formFields = reactive({
-  name: '',
   creddef_tag: '',
   creddef_revocation_enabled: false,
   creddef_revocation_registry_size: '',
@@ -149,7 +132,6 @@ const formFields = reactive({
 
 const rules = {
   creddef_tag: { required },
-  name: { required },
   creddef_revocation_registry_size: { integer },
 };
 const v$ = useVuelidate(rules, formFields);

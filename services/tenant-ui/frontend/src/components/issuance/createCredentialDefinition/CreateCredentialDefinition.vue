@@ -1,11 +1,11 @@
 <template>
   <div>
     <div v-if="credDef">
-      <div v-if="credDef.state === 'Active'">
-        {{ `${credDef.name}:${credDef.tag}` }}
+      <div v-if="credDef.state && credDef.state !== 'Active'">
+        <StatusChip :status="credDef.state" />
       </div>
       <div v-else>
-        <StatusChip :status="credDef.state" />
+        {{ `${credDef.cred_def_id}` }}
       </div>
     </div>
     <div v-else>
@@ -24,7 +24,7 @@
       :modal="true"
       @update:visible="handleClose"
     >
-      <CreateCredentialTemplateForm
+      <CreateCredentialDefinitionForm
         :schema="schema"
         @success="$emit('success')"
         @closed="handleClose"
@@ -39,7 +39,7 @@ import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import StatusChip from '../../common/StatusChip.vue';
 
-import CreateCredentialTemplateForm from './CreateCredentialDefinitionForm.vue';
+import CreateCredentialDefinitionForm from './CreateCredentialDefinitionForm.vue';
 
 import { useTenantStore } from '../../../store';
 import { storeToRefs } from 'pinia';

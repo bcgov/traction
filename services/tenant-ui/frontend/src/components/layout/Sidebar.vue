@@ -74,6 +74,12 @@ const items = ref([
         icon: 'pi pi-fw pi-book',
         to: { name: 'Schemas' },
       },
+      {
+        // label: () => t('configuration.schemasCreds.schemas'),
+        label: 'Cred Def Storage',
+        icon: 'pi pi-fw pi-id-card',
+        to: { name: 'CredentialDefinitions' },
+      },
       // {
       //   label: () => t('configuration.presentationTemplates.templates'),
       //   to: { name: 'PresentationTemplates' },

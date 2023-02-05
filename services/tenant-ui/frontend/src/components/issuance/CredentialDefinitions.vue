@@ -1,33 +1,31 @@
 <template>
-  <h3 class="mt-0">{{ t('configuration.schemasCreds.schemas') }}</h3>
+  <h3 class="mt-0">
+    {{ t('configuration.schemasCreds.credentialDefinitions') }}
+  </h3>
 
   <DataTable
-    v-model:selection="selectedSchema"
     v-model:expandedRows="expandedRows"
     v-model:filters="filter"
     :loading="loading"
-    :value="schemaList"
+    :value="credentialDefinitions"
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
-    :global-filter-fields="['schema_id', 'version']"
+    :global-filter-fields="['cred_def_id', 'schema_id']"
     selection-mode="single"
-    data-key="schema_id"
+    data-key="cred_def_id"
     sort-field="created_at"
     :sort-order="-1"
   >
     <template #header>
       <div class="flex justify-content-between">
-        <div class="flex justify-content-start">
-          <CreateSchema />
-          <CopySchema class="ml-4" />
-        </div>
+        <div class="flex justify-content-start"></div>
         <div class="flex justify-content-end">
           <span class="p-input-icon-left schema-search">
             <i class="pi pi-search" />
             <InputText
               v-model="filter.schema_id.value"
-              placeholder="Search Schemas"
+              placeholder="Search Cred Defs"
             />
           </span>
           <Button
@@ -45,18 +43,18 @@
     <Column :sortable="false" header="Actions">
       <template #body="{ data }">
         <Button
-          title="Delete Schema"
+          title="Delete Credential Definition"
           icon="pi pi-trash"
           class="p-button-rounded p-button-icon-only p-button-text"
-          @click="deleteSchema($event, data)"
+          @click="deleteCredDef($event, data.cred_def_id)"
         />
       </template>
     </Column>
     <Column
       :sortable="true"
-      field="schema.name"
-      header="Name"
-      filter-field="name"
+      field="cred_def_id"
+      header="ID"
+      filter-field="cred_def_id"
     />
     <Column
       :sortable="true"
@@ -64,25 +62,25 @@
       header="Schema ID"
       filter-field="schema_id"
     />
-    <Column :sortable="true" field="schema.version" header="Version" />
-    <Column :sortable="true" field="schema.attrNames" header="Attributes" />
+
+    <Column :sortable="true" field="support_revocation" header="Revokable">
+      <template #body="{ data }">
+        <span v-if="data.support_revocation">
+          <i class="pi pi-check-circle"></i>
+        </span>
+      </template>
+    </Column>
 
     <Column :sortable="true" field="created_at" header="Created at">
       <template #body="{ data }">
         {{ formatDateLong(data.created_at) }}
       </template>
     </Column>
-    <Column
-      :sortable="true"
-      field="credential_templates"
-      header="Credential Definition"
-    >
-      <template #body="{ data }">
-        <CreateCredentialDefinition :schema="data" @success="loadTable" />
-      </template>
-    </Column>
     <template #expansion="{ data }">
-      <RowExpandData :id="data.schema_id" :url="API_PATH.SCHEMA_STORAGE" />
+      <RowExpandData
+        :id="data.cred_def_id"
+        :url="API_PATH.CREDENTIAL_DEFINITION_STORAGE"
+      />
     </template>
   </DataTable>
 </template>
@@ -103,9 +101,6 @@ import { useI18n } from 'vue-i18n';
 import { useGovernanceStore } from '../../store';
 import { storeToRefs } from 'pinia';
 // Custom components
-import CreateSchema from './createSchema/CreateSchema.vue';
-import CopySchema from './copySchema/CopySchema.vue';
-import CreateCredentialDefinition from './createCredentialDefinition/CreateCredentialDefinition.vue';
 import RowExpandData from '../common/RowExpandData.vue';
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
@@ -115,9 +110,7 @@ const toast = useToast();
 const { t } = useI18n();
 
 const governanceStore = useGovernanceStore();
-const { loading, schemaList, selectedSchema } = storeToRefs(
-  useGovernanceStore()
-);
+const { loading, credentialDefinitions } = storeToRefs(useGovernanceStore());
 
 // Loading the schema list and the stored cred defs
 const loadTable = async () => {
@@ -136,22 +129,23 @@ onMounted(async () => {
 });
 
 // Deleting a stored schema
-const deleteSchema = (event: any, schema: any) => {
+const deleteCredDef = (event: any, id: string) => {
   confirm.require({
     target: event.currentTarget,
-    message: 'Are you sure you want to delete this schema?',
+    message:
+      'Are you sure you want to remove this credential definition from storage?',
     header: 'Confirmation',
     icon: 'pi pi-exclamation-triangle',
     accept: () => {
-      doDelete(schema);
+      doDelete(id);
     },
   });
 };
-const doDelete = (schema: any) => {
+const doDelete = (id: string) => {
   governanceStore
-    .deleteSchema(schema.schema_id)
+    .deleteStoredCredentialDefinition(id)
     .then(() => {
-      toast.success(`Schema successfully deleted`);
+      toast.success(`Credential definition removed from storage`);
     })
     .catch((err) => {
       console.error(err);
@@ -163,6 +157,7 @@ const doDelete = (schema: any) => {
 const expandedRows = ref([]);
 
 const filter = ref({
+  cred_def_id: { value: null, matchMode: FilterMatchMode.CONTAINS },
   schema_id: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 </script>

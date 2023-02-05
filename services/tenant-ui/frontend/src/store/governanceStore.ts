@@ -155,18 +155,6 @@ export const useGovernanceStore = defineStore('governance', () => {
         result = res.data.item;
         console.log(result);
       })
-      .then(() => {
-        // do we want to automatically reload? or have the caller of this to load?
-        console.log(
-          'credential template created. the store calls load automatically, but do we want this done "manually"?'
-        );
-        // load schemas for tables...
-        listStoredSchemas();
-      })
-      .then(() => {
-        // reload this for pick lists...
-        listStoredCredentialDefinitions();
-      })
       .catch((err) => {
         error.value = err;
         // console.log(error.value);
@@ -275,6 +263,38 @@ export const useGovernanceStore = defineStore('governance', () => {
     return result;
   }
 
+  async function deleteStoredCredentialDefinition(credDefId: string) {
+    console.log('> governanceStore.deleteStoredCredentialDefinition');
+    error.value = null;
+    loading.value = true;
+
+    let result = null;
+
+    await acapyApi
+      .deleteHttp(API_PATH.CREDENTIAL_DEFINITION_STORAGE_ITEM(credDefId), {})
+      .then((res) => {
+        result = res.data.item;
+      })
+      .then(() => {
+        console.log('stored cred deleted.');
+        listStoredCredentialDefinitions(); // Refresh table
+      })
+      .catch((err) => {
+        error.value = err;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< governanceStore.deleteStoredCredentialDefinition');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return result;
+  }
+
   return {
     loading,
     error,
@@ -295,6 +315,7 @@ export const useGovernanceStore = defineStore('governance', () => {
     listStoredCredentialDefinitions,
     createCredentialDefinition,
     getCredentialTemplate,
+    deleteStoredCredentialDefinition,
   };
 });
 

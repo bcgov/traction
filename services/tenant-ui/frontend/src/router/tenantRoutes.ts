@@ -12,6 +12,7 @@ import MyInvitations from '@/views/connections/MyInvitations.vue';
 // Issuance
 import MyIssuedCredentials from '@/views/issuance/MyIssuedCredentials.vue';
 import Schemas from '@/views/issuance/Schemas.vue';
+import CredentialDefinitions from '@/views/issuance/CredentialDefinitions.vue';
 // // Verifictation
 import MyPresentations from '@/views/verification/MyPresentations.vue';
 import PresentationTemplates from '@/views/verification/PresentationTemplates.vue';
@@ -82,6 +83,11 @@ const tenantRoutes = [
         path: 'schemas',
         name: 'Schemas',
         component: Schemas,
+      },
+      {
+        path: 'credentialDefinitions',
+        name: 'CredentialDefinitions',
+        component: CredentialDefinitions,
       },
       {
         path: 'presentationTemplates',
