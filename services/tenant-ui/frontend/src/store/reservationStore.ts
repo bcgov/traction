@@ -94,7 +94,7 @@ export const useReservationStore = defineStore('reservation', () => {
     await axios(API_PATH.MULTITENANCY_RESERVATION(reservationId), {
       method: 'GET',
       // Allow 404 to still approve the promise
-      validateStatus: (status: number) => status === 404,
+      validateStatus: (stat: number) => stat === 404,
     })
       .then((res) => {
         // If the reservation exists
