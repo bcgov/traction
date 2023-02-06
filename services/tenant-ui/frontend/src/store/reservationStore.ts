@@ -93,8 +93,7 @@ export const useReservationStore = defineStore('reservation', () => {
         if (res.data) {
           // The API doesn't check email address against res ID but we can do it on the front end at least
           if (res.data.contact_email !== email) {
-            error.value =
-              'The email provided does not match with the email from the reservation ID.';
+            status.value = RESERVATION_STATUSES.NOT_FOUND;
           } else {
             reservation.value = res.data;
             status.value = res.data.state;
@@ -102,9 +101,13 @@ export const useReservationStore = defineStore('reservation', () => {
         }
       })
       .catch((err) => {
-        error.value = err;
-        console.log(error.value);
-        // TODO: detect 404 differently to display specifically that it can't be found?
+        if (err.response && err.response.status === 404) {
+          // Handle not founds for this as a status not an exception
+          status.value = RESERVATION_STATUSES.NOT_FOUND;
+        } else {
+          error.value = err;
+          console.log(error.value);
+        }
       })
       .finally(() => {
         loading.value = false;
