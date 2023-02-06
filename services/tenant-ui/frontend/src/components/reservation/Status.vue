@@ -128,8 +128,7 @@ const handleSubmit = async (isFormValid: boolean) => {
       formFields.email
     );
   } catch (err) {
-    if (err === RESERVATION_STATUSES.NOT_FOUND)
-      toast.error(`Failure checking status: ${err}`);
+    toast.error(`Failure checking status: ${err}`);
   } finally {
     submitted.value = false;
   }
