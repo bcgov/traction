@@ -18,6 +18,7 @@
         name="email"
         autofocus
         class="w-full"
+        :class="{ 'p-invalid': status === RESERVATION_STATUSES.NOT_FOUND }"
       />
       <span v-if="$v.email.$error && submitted">
         <span v-for="(error, index) of $v.email.$errors" :key="index">
@@ -41,6 +42,7 @@
         v-model="$v.reservationId.$model"
         name="reservationId"
         class="w-full"
+        :class="{ 'p-invalid': status === RESERVATION_STATUSES.NOT_FOUND }"
       />
       <small v-if="$v.reservationId.$invalid && submitted" class="p-error">{{
         $v.reservationId.required.$message
@@ -124,3 +126,9 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 };
 </script>
+
+<style scoped lang="scss">
+.p-inputtext.p-invalid.p-component {
+  color: #dc3545;
+}
+</style>
