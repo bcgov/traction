@@ -29,11 +29,14 @@ const items = ref([
     icon: 'pi pi-fw pi-users',
     items: [
       {
+        // Icons are manadatory for mobile layout
         label: () => t('connect.connections'),
+        icon: 'pi pi-fw pi-users',
         to: { name: 'MyContacts' },
       },
       {
         label: () => t('connect.invitations.invitations'),
+        icon: 'pi pi-fw pi-send',
         to: { name: 'MyInvitations' },
       },
     ],
