@@ -102,4 +102,6 @@ export const RESERVATION_STATUSES = {
   // Not an API status, but the state on the FE when just checked-in
   // so they can one-time see the wallet key
   SHOW_WALLET: 'show_wallet',
+  // Not API response but show on the FE when it 404s
+  NOT_FOUND: 'not_found',
 };

@@ -18,6 +18,11 @@
         name="email"
         autofocus
         class="w-full"
+        :class="{
+          'p-invalid':
+            ($v.email.$invalid && submitted) ||
+            status === RESERVATION_STATUSES.NOT_FOUND,
+        }"
       />
       <span v-if="$v.email.$error && submitted">
         <span v-for="(error, index) of $v.email.$errors" :key="index">
@@ -41,6 +46,11 @@
         v-model="$v.reservationId.$model"
         name="reservationId"
         class="w-full"
+        :class="{
+          'p-invalid':
+            ($v.reservationId.$invalid && submitted) ||
+            status === RESERVATION_STATUSES.NOT_FOUND,
+        }"
       />
       <small v-if="$v.reservationId.$invalid && submitted" class="p-error">{{
         $v.reservationId.required.$message
@@ -59,6 +69,7 @@
     <CheckedIn v-else-if="status === RESERVATION_STATUSES.CHECKED_IN" />
     <Denied v-else-if="status === RESERVATION_STATUSES.DENIED" />
     <Pending v-else-if="status === RESERVATION_STATUSES.REQUESTED" />
+    <NotFound v-else-if="status === RESERVATION_STATUSES.NOT_FOUND" />
     <ShowWallet v-else-if="status === RESERVATION_STATUSES.SHOW_WALLET" />
   </div>
 </template>
@@ -80,6 +91,7 @@ import { storeToRefs } from 'pinia';
 import Approved from './status/Approved.vue';
 import CheckedIn from './status/CheckedIn.vue';
 import Denied from './status/Denied.vue';
+import NotFound from './status/NotFound.vue';
 import Pending from './status/Pending.vue';
 import ShowWallet from './status/ShowWallet.vue';
 import { RESERVATION_STATUSES } from '@/helpers/constants';
