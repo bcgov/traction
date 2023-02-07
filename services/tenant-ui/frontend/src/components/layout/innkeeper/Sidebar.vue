@@ -19,6 +19,7 @@ const items = ref([
     icon: 'pi pi-fw pi-book',
     items: [
       {
+        // Icons are manadatory for mobile layout
         label: () => t('reservations.current'),
         icon: 'pi pi-fw pi-calendar',
         to: { name: 'InnkeeperReservations' },
