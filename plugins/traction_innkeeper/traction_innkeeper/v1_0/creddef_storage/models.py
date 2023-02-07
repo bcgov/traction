@@ -73,6 +73,7 @@ class CredDefStorageRecordSchema(BaseRecordSchema):
         description="Revocation registry size",
         required=False,
         strict=True,
+        allow_none=True,
         **INDY_REV_REG_SIZE,
     )
     tag = fields.Str(
