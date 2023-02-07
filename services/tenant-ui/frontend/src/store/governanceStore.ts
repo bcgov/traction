@@ -5,7 +5,7 @@ import { useAcapyApi } from './acapyApi';
 import {
   fetchItem,
   fetchList,
-  filterByStatusActive,
+  filterByStateActive,
   filterMapSortList,
   sortByLabelAscending,
 } from './utils';
@@ -17,14 +17,6 @@ export const useGovernanceStore = defineStore('governance', () => {
   // const schemaTemplateFilters: any = ref(null);
 
   const credentialDefinitions: any = ref([]);
-  // const credentialDefinitions: any = ref([
-  //   {
-  //     schema_id: 'HhVXFoPyMCsW2HiXDPvRZG:2:fvxcvcx:1.2.3',
-  //     state: 'Pending',
-  //     name: 'Name',
-  //     tag: 'Tag',
-  //   },
-  // ]);
   const selectedCredentialDefinition: any = ref(null);
   // const credentialTemplateFilters: any = ref(null);
 
@@ -73,7 +65,7 @@ export const useGovernanceStore = defineStore('governance', () => {
       storedSchemas.value,
       schemaLabelValue,
       sortByLabelAscending,
-      filterByStatusActive
+      filterByStateActive
     );
   });
 
@@ -82,7 +74,7 @@ export const useGovernanceStore = defineStore('governance', () => {
       credentialDefinitions.value,
       credDefLabelValue,
       sortByLabelAscending,
-      filterByStatusActive
+      filterByStateActive
     );
   });
 

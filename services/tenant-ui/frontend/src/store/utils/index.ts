@@ -30,7 +30,7 @@ export function filterMapSortList(
   mapFn: MapFunc = (item: any) => item,
   sortFn: SortFunc = (a: any, b: any) => 0,
   filterFn: FilterFunc = (item: any) => true
-): object {
+): any[] {
   let result: any[] = [];
 
   if (list != null) {
@@ -46,11 +46,11 @@ export function filterMapSortList(
 // Types for manipulating the list
 interface MapItem {
   label: string;
-  status: string;
+  state: string;
 }
 
-export function filterByStatusActive(item: MapItem) {
-  return item.status === 'Active';
+export function filterByStateActive(item: MapItem) {
+  return item.state === 'active';
 }
 export function sortByLabelAscending(a: MapItem, b: MapItem) {
   return a.label.localeCompare(b.label);

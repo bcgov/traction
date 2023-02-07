@@ -38,6 +38,9 @@ export const API_PATH = {
   INNKEEPER_RESERVATIONS_DENY: (id: string) =>
     `/innkeeper/reservations/${id}/deny`,
 
+  ISSUE_CREDENTIALS_RECORDS: 'issue-credential/records',
+  ISSUE_CREDENTIALS_SEND_OFFER: 'issue-credential/send-offer',
+
   MULTITENANCY_RESERVATIONS: '/multitenancy/reservations',
   MULTITENANCY_RESERVATION: (resId: string) =>
     `/multitenancy/reservations/${resId}`,
@@ -47,6 +50,8 @@ export const API_PATH = {
     `/multitenancy/tenant/${tenantId}/token`,
   MULTITENANCY_WALLET_TOKEN: (tenantId: string) =>
     `/multitenancy/wallet/${tenantId}/token`,
+
+  REVOCATION_REVOKE: '/revocation/revoke',
 
   SCHEMAS: '/schemas',
   SCHEMA: (id: string) => `/schemas/${id}`,

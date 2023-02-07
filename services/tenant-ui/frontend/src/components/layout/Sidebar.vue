@@ -46,11 +46,11 @@ const items = ref([
     ],
   },
 
-  // {
-  //   label: () => t('issue.issuance'),
-  //   icon: 'pi pi-fw pi-wallet',
-  //   to: { name: 'MyIssuedCredentials' },
-  // },
+  {
+    label: () => t('issue.issuance'),
+    icon: 'pi pi-fw pi-wallet',
+    to: { name: 'MyIssuedCredentials' },
+  },
 
   // {
   //   label: () => t('verify.verification'),

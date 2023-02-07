@@ -1,14 +1,10 @@
-import {
-  API_PATH,
-  CONNECTION_STATUSES,
-  RESERVATION_STATUSES,
-} from '@/helpers/constants';
+import { API_PATH, CONNECTION_STATUSES } from '@/helpers/constants';
 import { defineStore } from 'pinia';
 import { computed, ref, Ref } from 'vue';
 import { useAcapyApi } from './acapyApi';
 import {
   fetchList,
-  filterByStatusActive,
+  filterByStateActive,
   filterMapSortList,
   sortByLabelAscending,
 } from './utils';
@@ -24,11 +20,12 @@ export const useContactsStore = defineStore('contacts', () => {
 
   // getters
   const contactsDropdown = computed(() => {
+    // Get the display list of active connections from the util
     return filterMapSortList(
       contacts.value,
       contactLabelValue,
       sortByLabelAscending,
-      filterByStatusActive
+      filterByStateActive
     );
   });
 
@@ -215,11 +212,17 @@ export const useContactsStore = defineStore('contacts', () => {
   const contactLabelValue = (item: any) => {
     let result = null;
     if (item != null) {
+      // TODO: determine UX for multiuse blank alias ones
+      let alias = 'unknown';
+      if (item.alias) {
+        alias = item.alias;
+      } else if (item.their_label) {
+        alias = `Multi-use (${item.their_label})`;
+      }
       result = {
-        label: `${item.alias}`,
-        value: item.contact_id,
-        conn_id: item.acapy.connection.connection_id,
-        status: item.status,
+        label: alias,
+        value: item.connection_id,
+        status: item.state,
       };
     }
     return result;

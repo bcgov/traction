@@ -37,7 +37,7 @@
     <template #empty> No records found. </template>
     <template #loading> Loading data. Please wait... </template>
     <Column :expander="true" header-style="width: 3rem" />
-    <Column header="Actions">
+    <!-- <Column header="Actions">
       <template #body="{ data }">
         <Button
           title="Delete Credential"
@@ -57,16 +57,16 @@
           @click="revokeCredential($event, data)"
         />
       </template>
-    </Column>
+    </Column> -->
     <Column
       :sortable="true"
-      field="credential_template.name"
-      header="Credential Name"
+      field="cred_def_id"
+      header="ID"
     />
-    <Column :sortable="true" field="contact.alias" header="Contact Name" />
-    <Column :sortable="true" field="status" header="Status">
+    <!-- <Column :sortable="true" field="contact.alias" header="Contact Name" /> -->
+    <Column :sortable="true" field="state" header="Status">
       <template #body="{ data }">
-        <StatusChip :status="data.status" />
+        <StatusChip :status="data.state" />
       </template>
     </Column>
     <Column :sortable="true" field="created_at" header="Created at">
