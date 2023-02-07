@@ -1,6 +1,6 @@
 <template>
   <div>
-    {{  formFields.selectedContact.value }}
+    {{ formFields.selectedContact.value }}
     <form @submit.prevent="handleSubmit(!v$.$invalid)">
       <!-- Main Form -->
       <div v-if="!showEditCredValues">
@@ -141,9 +141,11 @@ import EnterCredentialValues from './EnterCredentialValues.vue';
 const toast = useToast();
 
 // Store values
-const { loading: contactLoading, contactsDropdown, contacts } = storeToRefs(
-  useContactsStore()
-);
+const {
+  loading: contactLoading,
+  contactsDropdown,
+  contacts,
+} = storeToRefs(useContactsStore());
 const {
   loading: credsLoading,
   credentialDropdown,

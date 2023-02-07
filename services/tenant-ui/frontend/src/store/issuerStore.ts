@@ -20,7 +20,12 @@ export const useIssuerStore = defineStore('issuer', () => {
 
   async function listCredentials() {
     selectedCredential.value = null;
-    return fetchList(`${API_PATH.ISSUE_CREDENTIALS_RECORDS}?role=issuer`, credentials, error, loading);
+    return fetchList(
+      `${API_PATH.ISSUE_CREDENTIALS_RECORDS}?role=issuer`,
+      credentials,
+      error,
+      loading
+    );
   }
 
   async function offerCredential(payload: any = {}) {

@@ -58,11 +58,7 @@
         />
       </template>
     </Column> -->
-    <Column
-      :sortable="true"
-      field="cred_def_id"
-      header="ID"
-    />
+    <Column :sortable="true" field="cred_def_id" header="ID" />
     <!-- <Column :sortable="true" field="contact.alias" header="Contact Name" /> -->
     <Column :sortable="true" field="state" header="Status">
       <template #body="{ data }">

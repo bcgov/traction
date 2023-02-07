@@ -27,11 +27,7 @@ import Dialog from 'primevue/dialog';
 import { useToast } from 'vue-toastification';
 import { useI18n } from 'vue-i18n';
 // State
-import {
-  useContactsStore,
-  useGovernanceStore,
-  useTenantStore,
-} from '@/store';
+import { useContactsStore, useGovernanceStore, useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Custom Components
 import OfferCredentialForm from './OfferCredentialForm.vue';
