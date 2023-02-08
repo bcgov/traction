@@ -44,6 +44,7 @@
           :disabled="loading"
           input-id="creddef_revocation_enabled"
           :binary="true"
+          @change="resetRegSize"
         />
         <label for="creddef_revocation_enabled">Revocation Enabled</label>
       </div>
@@ -71,7 +72,7 @@
           v-for="(error, index) of v$.creddef_revocation_registry_size.$errors"
           :key="index"
         >
-          <small class="p-error">{{ error.$message }}</small>
+          <small class="p-error mr-2">{{ error.$message }}</small>
         </span>
       </span>
     </div>
@@ -94,7 +95,7 @@ import { useToast } from 'vue-toastification';
 import { storeToRefs } from 'pinia';
 import { useGovernanceStore } from '../../../store';
 
-import { required, integer } from '@vuelidate/validators';
+import { required, requiredIf, integer, between } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
 
 const governanceStore = useGovernanceStore();
@@ -116,12 +117,16 @@ const emit = defineEmits(['closed', 'success']);
 const formFields = reactive({
   creddef_tag: '',
   creddef_revocation_enabled: false,
-  creddef_revocation_registry_size: '',
+  creddef_revocation_registry_size: '4',
 });
 
 const rules = {
   creddef_tag: { required },
-  creddef_revocation_registry_size: { integer },
+  creddef_revocation_registry_size: {
+    integer,
+    betweenValue: between(4, 32768),
+    requiredEnabled: requiredIf(formFields.creddef_revocation_registry_size),
+  },
 };
 const v$ = useVuelidate(rules, formFields);
 
@@ -152,8 +157,8 @@ const handleSubmit = async (isFormValid: boolean) => {
   try {
     // call store
     await governanceStore.createCredentialDefinition(payload);
-    // Give 2 seconds to wait
-    // TODO: should this be here? Or set it as "pending" or something and come right back...
+    // // Give 2 seconds to wait
+    // // TODO: should this be here? Or set it as "pending" or something and come right back...
     loading.value = true;
     await new Promise((r) => setTimeout(r, 2000));
     toast.success('Credential Definition sent to ledger');
@@ -165,5 +170,10 @@ const handleSubmit = async (isFormValid: boolean) => {
   } finally {
     submitted.value = false;
   }
+};
+
+// Set reg size back to default if you disable revocation, for validation cleanliness
+const resetRegSize = () => {
+  formFields.creddef_revocation_registry_size = '4';
 };
 </script>
