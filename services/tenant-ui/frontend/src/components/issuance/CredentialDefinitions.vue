@@ -11,7 +11,6 @@
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
-    :global-filter-fields="['cred_def_id', 'schema_id']"
     selection-mode="single"
     data-key="cred_def_id"
     sort-field="created_at"
@@ -24,7 +23,7 @@
           <span class="p-input-icon-left schema-search">
             <i class="pi pi-search" />
             <InputText
-              v-model="filter.schema_id.value"
+              v-model="filter.global.value"
               placeholder="Search Cred Defs"
             />
           </span>
@@ -156,9 +155,9 @@ const doDelete = (id: string) => {
 // necessary for expanding rows, we don't do anything with this
 const expandedRows = ref([]);
 
+// Filter for search
 const filter = ref({
-  cred_def_id: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  schema_id: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 </script>
 

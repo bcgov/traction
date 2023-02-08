@@ -3,6 +3,7 @@
 
   <DataTable
     v-model:selection="selectedCredential"
+    v-model:filters="filter"
     v-model:expandedRows="expandedRows"
     :loading="loading"
     :value="credentials"
@@ -21,7 +22,7 @@
           <span class="p-input-icon-left credential-search">
             <i class="pi pi-search" />
             <InputText
-              v-model="filter.alias.value"
+              v-model="filter.global.value"
               placeholder="Search Credentials"
             />
           </span>
@@ -186,8 +187,9 @@ onMounted(async () => {
 // necessary for expanding rows, we don't do anything with this
 const expandedRows = ref([]);
 
+// Filter for search
 const filter = ref({
-  alias: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 
 // Find the connection alias for an ID
