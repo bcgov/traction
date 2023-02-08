@@ -49,7 +49,7 @@ const openModal = async () => {
   // Kick of the loading asyncs in the store to fetch contacts/creds
   Promise.all([
     contactsStore.listContacts(),
-    // governanceStore.listSchemaTemplates(),
+    governanceStore.listStoredSchemas(),
     governanceStore.listStoredCredentialDefinitions(),
   ]).catch((err) => {
     console.error(err);

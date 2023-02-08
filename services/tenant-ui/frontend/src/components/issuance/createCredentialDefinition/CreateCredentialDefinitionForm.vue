@@ -108,20 +108,9 @@ const props = defineProps({
 });
 
 // use the loading state from the store to disable the button...
-const { loading, schemaTemplateDropdown, credentialDropdown } = storeToRefs(
-  useGovernanceStore()
-);
+const { loading } = storeToRefs(useGovernanceStore());
 
 const emit = defineEmits(['closed', 'success']);
-
-// const selectedSchema = computed(() => {
-//   if (governanceStore.schemaTemplateDropdown != null) {
-//     return (governanceStore.schemaTemplateDropdown as any).find(
-//       (x: any) => x.value == props.schemaTemplateId
-//     );
-//   }
-//   return null;
-// });
 
 // Validation
 const formFields = reactive({
@@ -163,6 +152,10 @@ const handleSubmit = async (isFormValid: boolean) => {
   try {
     // call store
     await governanceStore.createCredentialDefinition(payload);
+    // Give 2 seconds to wait
+    // TODO: should this be here? Or set it as "pending" or something and come right back...
+    loading.value = true;
+    await new Promise((r) => setTimeout(r, 2000));
     toast.success('Credential Definition sent to ledger');
     emit('success');
     // close on success

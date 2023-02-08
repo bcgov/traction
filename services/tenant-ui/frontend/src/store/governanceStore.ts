@@ -14,11 +14,9 @@ export const useGovernanceStore = defineStore('governance', () => {
   // state
   const storedSchemas: any = ref([]);
   const selectedSchema: any = ref(null);
-  // const schemaTemplateFilters: any = ref(null);
 
-  const credentialDefinitions: any = ref([]);
+  const storedCredDefs: any = ref([]);
   const selectedCredentialDefinition: any = ref(null);
-  // const credentialTemplateFilters: any = ref(null);
 
   const loading: any = ref(false);
   const error: any = ref(null);
@@ -28,7 +26,7 @@ export const useGovernanceStore = defineStore('governance', () => {
   const schemaList = computed(() => {
     // For the list of schemas in the schema table, add cred defs
     return storedSchemas.value.map((s: any) => {
-      s.credentialDefinition = credentialDefinitions.value.find(
+      s.credentialDefinition = storedCredDefs.value.find(
         (c: any) => c.schema_id === s.schema_id
       );
       return s;
@@ -52,9 +50,9 @@ export const useGovernanceStore = defineStore('governance', () => {
     let result = null;
     if (item != null) {
       result = {
-        label: `${item.name}`,
-        value: item.credential_template_id,
-        status: item.status,
+        label: `${item.cred_def_id}`,
+        value: item.cred_def_id,
+        status: item.state,
       };
     }
     return result;
@@ -71,10 +69,9 @@ export const useGovernanceStore = defineStore('governance', () => {
 
   const credentialDropdown = computed(() => {
     return filterMapSortList(
-      credentialDefinitions.value,
+      storedCredDefs.value,
       credDefLabelValue,
-      sortByLabelAscending,
-      filterByStateActive
+      sortByLabelAscending
     );
   });
 
@@ -90,10 +87,10 @@ export const useGovernanceStore = defineStore('governance', () => {
 
   async function listStoredCredentialDefinitions() {
     selectedCredentialDefinition.value = null;
-    credentialDefinitions.value = null;
+    storedCredDefs.value = null;
     return fetchList(
       API_PATH.CREDENTIAL_DEFINITION_STORAGE,
-      credentialDefinitions,
+      storedCredDefs,
       error,
       loading
     );
@@ -143,7 +140,6 @@ export const useGovernanceStore = defineStore('governance', () => {
     await acapyApi
       .postHttp(API_PATH.CREDENTIAL_DEFINITIONS, payload)
       .then((res) => {
-        console.log(res);
         result = res.data.item;
         console.log(result);
       })
@@ -293,10 +289,8 @@ export const useGovernanceStore = defineStore('governance', () => {
     storedSchemas,
     selectedSchema,
     schemaList,
-    // schemaTemplateFilters,
-    credentialDefinitions,
+    storedCredDefs,
     selectedCredentialDefinition,
-    // credentialTemplateFilters,
     schemaTemplateDropdown,
     credentialDropdown,
     listStoredSchemas,

@@ -18,7 +18,7 @@
   &.active,
   &.accepted,
   &.approved,
-  &.offer-accepted,
+  &.credential-acked,
   &.issued,
   &.verified,
   &.checked-in {
@@ -27,7 +27,8 @@
   }
 
   /* amber */
-  &.pending {
+  &.pending,
+  &.credential-issued {
     background-color: $tenant-ui-status-amber-background;
     color: $tenant-ui-status-amber-color;
   }
@@ -44,6 +45,7 @@
 
   /* blue */
   &.in-progress,
+  &.response,
   &.requested,
   &.request-sent,
   &.offer-sent,

@@ -58,8 +58,12 @@
         />
       </template>
     </Column> -->
-    <Column :sortable="true" field="cred_def_id" header="ID" />
-    <!-- <Column :sortable="true" field="contact.alias" header="Contact Name" /> -->
+    <Column
+      :sortable="true"
+      field="credential_definition_id"
+      header="Credential Definition"
+    />
+    <Column :sortable="true" field="contact.alias" header="Connection" />
     <Column :sortable="true" field="state" header="Status">
       <template #body="{ data }">
         <StatusChip :status="data.state" />
@@ -72,9 +76,8 @@
     </Column>
     <template #expansion="{ data }">
       <RowExpandData
-        :id="data.issuer_credential_id"
-        :url="API_PATH.ISSUER_CREDENTIALS"
-        :params="{ acapy: true }"
+        :id="data.credential_exchange_id"
+        :url="API_PATH.ISSUE_CREDENTIALS_RECORDS"
       />
     </template>
   </DataTable>
@@ -84,28 +87,30 @@
 // Vue
 import { onMounted, ref } from 'vue';
 // State
-import { useIssuerStore } from '../../store';
+import { useIssuerStore, useContactsStore } from '@/store';
 import { storeToRefs } from 'pinia';
-// PrimeVue
+// PrimeVue/etc
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import { useToast } from 'vue-toastification';
-import { useConfirm } from 'primevue/useconfirm';
 import InputText from 'primevue/inputtext';
 import { FilterMatchMode } from 'primevue/api';
+import { useToast } from 'vue-toastification';
+import { useConfirm } from 'primevue/useconfirm';
+import { useI18n } from 'vue-i18n';
 // Other Components
 import OfferCredential from './offerCredential/OfferCredential.vue';
 import RowExpandData from '../common/RowExpandData.vue';
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 import StatusChip from '../common/StatusChip.vue';
-import { useI18n } from 'vue-i18n';
 
 const toast = useToast();
 const confirm = useConfirm();
 const { t } = useI18n();
 
+const contactsStore = useContactsStore();
+const { contacts } = storeToRefs(useContactsStore());
 const issuerStore = useIssuerStore();
 // use the loading state from the store to disable the button...
 const { loading, credentials, selectedCredential } = storeToRefs(
@@ -113,25 +118,25 @@ const { loading, credentials, selectedCredential } = storeToRefs(
 );
 
 // Delete a specific cred
-const deleteCredential = (event: any, data: any) => {
-  confirm.require({
-    target: event.currentTarget,
-    message: 'Are you sure you want to DELETE this credential?',
-    header: 'Confirmation',
-    icon: 'pi pi-exclamation-triangle',
-    accept: () => {
-      issuerStore
-        .deleteCredential(data.issuer_credential_id)
-        .then(() => {
-          toast.success(`Credential deleted`);
-        })
-        .catch((err) => {
-          console.error(err);
-          toast.error(`Failure: ${err}`);
-        });
-    },
-  });
-};
+// const deleteCredential = (event: any, data: any) => {
+//   confirm.require({
+//     target: event.currentTarget,
+//     message: 'Are you sure you want to DELETE this credential?',
+//     header: 'Confirmation',
+//     icon: 'pi pi-exclamation-triangle',
+//     accept: () => {
+//       issuerStore
+//         .deleteCredential(data.issuer_credential_id)
+//         .then(() => {
+//           toast.success(`Credential deleted`);
+//         })
+//         .catch((err) => {
+//           console.error(err);
+//           toast.error(`Failure: ${err}`);
+//         });
+//     },
+//   });
+// };
 
 // Revoke a specific cred
 const revokeCredential = (event: any, data: any) => {
@@ -162,6 +167,14 @@ const loadTable = async () => {
     console.error(err);
     toast.error(`Failure: ${err}`);
   });
+
+  // Load contacts if not already there for display
+  if (!contacts.value || !contacts.value.length) {
+    contactsStore.listContacts().catch((err) => {
+      console.error(err);
+      toast.error(`Failure: ${err}`);
+    });
+  }
 };
 onMounted(async () => {
   await loadTable();

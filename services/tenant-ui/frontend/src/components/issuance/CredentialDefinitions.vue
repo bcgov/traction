@@ -7,7 +7,7 @@
     v-model:expandedRows="expandedRows"
     v-model:filters="filter"
     :loading="loading"
-    :value="credentialDefinitions"
+    :value="storedCredDefs"
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
@@ -110,7 +110,7 @@ const toast = useToast();
 const { t } = useI18n();
 
 const governanceStore = useGovernanceStore();
-const { loading, credentialDefinitions } = storeToRefs(useGovernanceStore());
+const { loading, storedCredDefs } = storeToRefs(useGovernanceStore());
 
 // Loading the schema list and the stored cred defs
 const loadTable = async () => {

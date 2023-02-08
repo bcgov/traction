@@ -82,8 +82,6 @@ export const API_PATH = {
   HOLDER_PRESENTATIONS: '/tenant/v1/holder/presentations/',
   HOLDER_PRESENTATION: (id: string) => `/tenant/v1/holder/presentations/${id}`,
 
-  ISSUER_CREDENTIALS: '/tenant/v1/issuer/credentials/',
-  ISSUER_CREDENTIAL: (id: string) => `/tenant/v1/issuer/credentials/${id}`,
   ISSUER_CREDENTIAL_REVOKE: (id: string) =>
     `/tenant/v1/issuer/credentials/${id}/revoke-credential`,
 
