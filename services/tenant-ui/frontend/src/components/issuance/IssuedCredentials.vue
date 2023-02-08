@@ -63,7 +63,11 @@
       field="credential_definition_id"
       header="Credential Definition"
     />
-    <Column :sortable="true" field="contact.alias" header="Connection" />
+    <Column :sortable="true" field="connection_id" header="Contact">
+      <template #body="{ data }">
+        {{ findConnectionName(data.connection_id) }}
+      </template>
+    </Column>
     <Column :sortable="true" field="state" header="Status">
       <template #body="{ data }">
         <StatusChip :status="data.state" />
@@ -185,6 +189,14 @@ const expandedRows = ref([]);
 const filter = ref({
   alias: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
+
+// Find the connection alias for an ID
+const findConnectionName = (connectionId: string) => {
+  const connection = contacts.value?.find((c: any) => {
+    return c.connection_id === connectionId;
+  });
+  return connection ? connection.alias : '...';
+};
 </script>
 
 <style scoped>
