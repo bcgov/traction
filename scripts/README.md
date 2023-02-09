@@ -133,6 +133,14 @@ cd ../../scripts
 docker compose up
 ```
 
+If there are still errors, try turning buildkit off. In the terminal where you are running your builds:
+
+```sh
+export DOCKER_BUILDKIT=0
+```
+
+Then try building again.
+
 ### stop
 This will leave the volume (data) intact and available on restart.
 
