@@ -95,6 +95,10 @@ body {
     background-color: $tenant-ui-accent-color;
     text-transform: uppercase;
     word-wrap: break-word;
+    .p-progress-spinner {
+      width: 1.2em;
+      height: 1.2em;
+    }
   }
   // Innkeeper specifics
   &.innkeeper-sidebar .sidebar-app-title {

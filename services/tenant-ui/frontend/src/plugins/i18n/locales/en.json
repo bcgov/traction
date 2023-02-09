@@ -46,7 +46,8 @@
     "schemasCreds": {
       "schemas": "Stored Schemas",
       "create": "Create Schema",
-      "copy": "Copy Schema"
+      "copy": "Copy Schema",
+      "credentialDefinitions": "Stored Credential Definitions"
     },
     "presentationTemplates": {
       "templates": "Presentation Templates"

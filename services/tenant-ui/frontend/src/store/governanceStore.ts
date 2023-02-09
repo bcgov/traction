@@ -5,23 +5,33 @@ import { useAcapyApi } from './acapyApi';
 import {
   fetchItem,
   fetchList,
-  filterByStatusActive,
+  filterByStateActive,
   filterMapSortList,
   sortByLabelAscending,
 } from './utils';
 
 export const useGovernanceStore = defineStore('governance', () => {
   // state
-  const schemaTemplates: any = ref(null);
-  const selectedSchemaTemplate: any = ref(null);
-  const schemaTemplateFilters: any = ref(null);
+  const storedSchemas: any = ref([]);
+  const selectedSchema: any = ref(null);
 
-  const credentialTemplates: any = ref(null);
-  const selectedCredentialTemplate: any = ref(null);
-  const credentialTemplateFilters: any = ref(null);
+  const storedCredDefs: any = ref([]);
+  const selectedCredentialDefinition: any = ref(null);
 
   const loading: any = ref(false);
   const error: any = ref(null);
+
+  // getters
+
+  const schemaList = computed(() => {
+    // For the list of schemas in the schema table, add cred defs
+    return storedSchemas.value.map((s: any) => {
+      s.credentialDefinition = storedCredDefs.value.find(
+        (c: any) => c.schema_id === s.schema_id
+      );
+      return s;
+    });
+  });
 
   const schemaLabelValue = (item: any) => {
     let result = null;
@@ -40,9 +50,9 @@ export const useGovernanceStore = defineStore('governance', () => {
     let result = null;
     if (item != null) {
       result = {
-        label: `${item.name}`,
-        value: item.credential_template_id,
-        status: item.status,
+        label: `${item.cred_def_id}`,
+        value: item.cred_def_id,
+        status: item.state,
       };
     }
     return result;
@@ -50,36 +60,37 @@ export const useGovernanceStore = defineStore('governance', () => {
 
   const schemaTemplateDropdown = computed(() => {
     return filterMapSortList(
-      schemaTemplates.value,
+      storedSchemas.value,
       schemaLabelValue,
       sortByLabelAscending,
-      filterByStatusActive
+      filterByStateActive
     );
   });
 
-  const credentialTemplateDropdown = computed(() => {
+  const credentialDropdown = computed(() => {
     return filterMapSortList(
-      credentialTemplates.value,
+      storedCredDefs.value,
       credDefLabelValue,
-      sortByLabelAscending,
-      filterByStatusActive
+      sortByLabelAscending
     );
   });
+
+  // actions
 
   const acapyApi = useAcapyApi();
 
   async function listStoredSchemas() {
-    selectedSchemaTemplate.value = null;
-    schemaTemplates.value = null;
-    return fetchList(API_PATH.SCHEMA_STORAGE, schemaTemplates, error, loading);
+    selectedSchema.value = null;
+    storedSchemas.value = null;
+    return fetchList(API_PATH.SCHEMA_STORAGE, storedSchemas, error, loading);
   }
 
-  async function listCredentialTemplates() {
-    selectedCredentialTemplate.value = null;
-    credentialTemplates.value = null;
+  async function listStoredCredentialDefinitions() {
+    selectedCredentialDefinition.value = null;
+    storedCredDefs.value = null;
     return fetchList(
-      API_PATH.GOVERNANCE_CREDENTIAL_TEMPLATES,
-      credentialTemplates,
+      API_PATH.CREDENTIAL_DEFINITION_STORAGE,
+      storedCredDefs,
       error,
       loading
     );
@@ -119,31 +130,18 @@ export const useGovernanceStore = defineStore('governance', () => {
     return result;
   }
 
-  async function createCredentialTemplate(payload: any = {}) {
-    console.log('> governanceStore.createCredentialTemplate');
+  async function createCredentialDefinition(payload: any = {}) {
+    console.log('> governanceStore.createCredentialDefinition');
     error.value = null;
     loading.value = true;
 
     let result = null;
 
     await acapyApi
-      .postHttp(API_PATH.GOVERNANCE_CREDENTIAL_TEMPLATES, payload)
+      .postHttp(API_PATH.CREDENTIAL_DEFINITIONS, payload)
       .then((res) => {
-        console.log(res);
         result = res.data.item;
         console.log(result);
-      })
-      .then(() => {
-        // do we want to automatically reload? or have the caller of this to load?
-        console.log(
-          'credential template created. the store calls load automatically, but do we want this done "manually"?'
-        );
-        // load schemas for tables...
-        listStoredSchemas();
-      })
-      .then(() => {
-        // reload this for pick lists...
-        listCredentialTemplates();
       })
       .catch((err) => {
         error.value = err;
@@ -152,7 +150,7 @@ export const useGovernanceStore = defineStore('governance', () => {
       .finally(() => {
         loading.value = false;
       });
-    console.log('< governanceStore.createCredentialTemplate');
+    console.log('< governanceStore.createCredentialDefinition');
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
@@ -213,7 +211,7 @@ export const useGovernanceStore = defineStore('governance', () => {
   async function getCredentialTemplate(id: string, params: any = {}) {
     const getloading: any = ref(false);
     return fetchItem(
-      API_PATH.GOVERNANCE_CREDENTIAL_TEMPLATES,
+      API_PATH.CREDENTIAL_DEFINITIONS,
       id,
       error,
       getloading,
@@ -253,25 +251,57 @@ export const useGovernanceStore = defineStore('governance', () => {
     return result;
   }
 
+  async function deleteStoredCredentialDefinition(credDefId: string) {
+    console.log('> governanceStore.deleteStoredCredentialDefinition');
+    error.value = null;
+    loading.value = true;
+
+    let result = null;
+
+    await acapyApi
+      .deleteHttp(API_PATH.CREDENTIAL_DEFINITION_STORAGE_ITEM(credDefId), {})
+      .then((res) => {
+        result = res.data.item;
+      })
+      .then(() => {
+        console.log('stored cred deleted.');
+        listStoredCredentialDefinitions(); // Refresh table
+      })
+      .catch((err) => {
+        error.value = err;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< governanceStore.deleteStoredCredentialDefinition');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return result;
+  }
+
   return {
-    schemaTemplates,
-    selectedSchemaTemplate,
-    schemaTemplateFilters,
-    credentialTemplates,
-    selectedCredentialTemplate,
-    credentialTemplateFilters,
     loading,
     error,
+    storedSchemas,
+    selectedSchema,
+    schemaList,
+    storedCredDefs,
+    selectedCredentialDefinition,
     schemaTemplateDropdown,
-    credentialTemplateDropdown,
+    credentialDropdown,
     listStoredSchemas,
     createSchema,
     copySchema,
     deleteSchema,
     // getSchemaTemplate,
-    listCredentialTemplates,
-    createCredentialTemplate,
+    listStoredCredentialDefinitions,
+    createCredentialDefinition,
     getCredentialTemplate,
+    deleteStoredCredentialDefinition,
   };
 });
 

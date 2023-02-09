@@ -8,7 +8,7 @@
           <label
             for="selectedCred"
             :class="{ 'p-error': v$.selectedCred.$invalid && submitted }"
-            >Credential Name
+            >Credential ID
             <ProgressSpinner v-if="credsLoading" />
           </label>
 
@@ -69,7 +69,7 @@
             >
             <Button
               label="Enter Credential Value"
-              class="p-button-link flex justify-content-end"
+              class="p-button-link flex justify-content-end pt-1"
               :disabled="!v$.selectedCred.$model"
               @click="editCredentialValues"
             />
@@ -129,11 +129,7 @@ import { useVuelidate } from '@vuelidate/core';
 import { useToast } from 'vue-toastification';
 // State
 import { storeToRefs } from 'pinia';
-import {
-  useContactsStore,
-  useGovernanceStore,
-  useIssuerStore,
-} from '../../../store';
+import { useContactsStore, useGovernanceStore, useIssuerStore } from '@/store';
 // Other components
 import EnterCredentialValues from './EnterCredentialValues.vue';
 
@@ -145,9 +141,9 @@ const { loading: contactLoading, contactsDropdown } = storeToRefs(
 );
 const {
   loading: credsLoading,
-  credentialTemplateDropdown,
-  credentialTemplates,
-  schemaTemplates,
+  credentialDropdown,
+  storedCredDefs,
+  storedSchemas,
 } = storeToRefs(useGovernanceStore());
 const { loading: issueLoading } = storeToRefs(useIssuerStore());
 const issuerStore = useIssuerStore();
@@ -191,9 +187,9 @@ const searchContacts = (event: any) => {
 };
 const searchCreds = (event: any) => {
   if (!event.query.trim().length) {
-    filteredCreds.value = [...(credentialTemplateDropdown.value as any)];
+    filteredCreds.value = [...(credentialDropdown.value as any)];
   } else {
-    filteredCreds.value = (credentialTemplateDropdown.value as any).filter(
+    filteredCreds.value = (credentialDropdown.value as any).filter(
       (cred: any) => {
         return cred.label.toLowerCase().includes(event.query.toLowerCase());
       }
@@ -204,12 +200,10 @@ const searchCreds = (event: any) => {
 // Editing the credential
 const editCredentialValues = () => {
   // Get the specific schema to edit values for
-  const schemaId = credentialTemplates.value.find(
-    (ct: any) => ct.credential_template_id === formFields.selectedCred.value
-  ).schema_template_id;
-  const schema = schemaTemplates.value.find(
-    (st: any) => st.schema_template_id === schemaId
-  );
+  const schemaId = storedCredDefs.value.find(
+    (cd: any) => cd.cred_def_id === formFields.selectedCred.value
+  ).schema_id;
+  const schema = storedSchemas.value.find((s: any) => s.schema_id === schemaId);
   schemaForSelectedCred.value = schema;
 
   // Open the editor
@@ -240,10 +234,15 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
   try {
     const payload = {
-      contact_id: formFields.selectedContact.value,
-      credential_template_id: formFields.selectedCred.value,
-      attributes: credentialValuesRaw.value,
-      tags: [],
+      auto_issue: true,
+      auto_remove: false,
+      connection_id: formFields.selectedContact.value,
+      cred_def_id: formFields.selectedCred.value,
+      credential_preview: {
+        '@type': 'issue-credential/1.0/credential-preview',
+        attributes: credentialValuesRaw.value,
+      },
+      trace: false,
     };
 
     // call store

@@ -21,6 +21,14 @@ export const API_PATH = {
   // CONTACTS_RECEIVE_INVITATION: '/tenant/v1/contacts/receive-invitation',
   CONNECTIONS_INVITATION: (id: string) => `/connections/${id}/invitation`,
 
+  CREDENTIAL_DEFINITIONS: '/credential-definitions',
+  CREDENTIAL_DEFINITION: (id: string) => `/credential-definitions/${id}`,
+  CREDENTIAL_DEFINITIONS_CREATED: '/credential-definitions/created',
+
+  CREDENTIAL_DEFINITION_STORAGE: '/credential-definition-storage',
+  CREDENTIAL_DEFINITION_STORAGE_ITEM: (id: string) =>
+    `/credential-definition-storage/${id}`,
+
   INNKEEPER_TOKEN: '/innkeeper/token',
   INNKEEPER_TENANTS: '/innkeeper/tenants/',
   INNKEEPER_TENANT: (id: string) => `/innkeeper/tenants/${id}`,
@@ -29,6 +37,9 @@ export const API_PATH = {
     `/innkeeper/reservations/${id}/approve`,
   INNKEEPER_RESERVATIONS_DENY: (id: string) =>
     `/innkeeper/reservations/${id}/deny`,
+
+  ISSUE_CREDENTIALS_RECORDS: 'issue-credential/records',
+  ISSUE_CREDENTIALS_SEND_OFFER: 'issue-credential/send-offer',
 
   MULTITENANCY_RESERVATIONS: '/multitenancy/reservations',
   MULTITENANCY_RESERVATION: (resId: string) =>
@@ -39,6 +50,8 @@ export const API_PATH = {
     `/multitenancy/tenant/${tenantId}/token`,
   MULTITENANCY_WALLET_TOKEN: (tenantId: string) =>
     `/multitenancy/wallet/${tenantId}/token`,
+
+  REVOCATION_REVOKE: '/revocation/revoke',
 
   SCHEMAS: '/schemas',
   SCHEMA: (id: string) => `/schemas/${id}`,
@@ -69,8 +82,6 @@ export const API_PATH = {
   HOLDER_PRESENTATIONS: '/tenant/v1/holder/presentations/',
   HOLDER_PRESENTATION: (id: string) => `/tenant/v1/holder/presentations/${id}`,
 
-  ISSUER_CREDENTIALS: '/tenant/v1/issuer/credentials/',
-  ISSUER_CREDENTIAL: (id: string) => `/tenant/v1/issuer/credentials/${id}`,
   ISSUER_CREDENTIAL_REVOKE: (id: string) =>
     `/tenant/v1/issuer/credentials/${id}/revoke-credential`,
 
@@ -81,11 +92,6 @@ export const API_PATH = {
     '/tenant/v1/verifier/presentations/adhoc-request',
   VERIFIER_PRESENTATION_TEMPLATES:
     '/tenant/v1/verifier/presentation_templates/',
-
-  GOVERNANCE_CREDENTIAL_TEMPLATES:
-    '/tenant/v1/governance/credential_templates/',
-  GOVERNANCE_CREDENTIAL_TEMPLATE: (id: string) =>
-    `/tenant/v1/governance/credential_templates/${id}`,
 };
 
 export const CONNECTION_STATUSES = {

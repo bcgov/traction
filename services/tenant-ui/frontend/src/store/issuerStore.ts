@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { fetchList } from './utils/fetchList.js';
-import { useTenantApi } from './tenantApi';
+import { useAcapyApi } from './acapyApi';
 import { fetchItem } from './utils/fetchItem';
 import { API_PATH } from '@/helpers/constants';
 
 export const useIssuerStore = defineStore('issuer', () => {
-  const tenantApi = useTenantApi();
+  const acapyApi = useAcapyApi();
 
   // state
   const credentials: any = ref(null);
@@ -20,7 +20,12 @@ export const useIssuerStore = defineStore('issuer', () => {
 
   async function listCredentials() {
     selectedCredential.value = null;
-    return fetchList(API_PATH.ISSUER_CREDENTIALS, credentials, error, loading);
+    return fetchList(
+      `${API_PATH.ISSUE_CREDENTIALS_RECORDS}?role=issuer`,
+      credentials,
+      error,
+      loading
+    );
   }
 
   async function offerCredential(payload: any = {}) {
@@ -30,10 +35,9 @@ export const useIssuerStore = defineStore('issuer', () => {
 
     let result = null;
 
-    await tenantApi
-      .postHttp(API_PATH.ISSUER_CREDENTIALS, payload)
+    await acapyApi
+      .postHttp(API_PATH.ISSUE_CREDENTIALS_SEND_OFFER, payload)
       .then((res) => {
-        console.log(res);
         result = res.data.item;
         console.log(result);
       })
@@ -59,7 +63,7 @@ export const useIssuerStore = defineStore('issuer', () => {
   async function getCredential(id: string, params: any = {}) {
     const getloading: any = ref(false);
     return fetchItem(
-      API_PATH.ISSUER_CREDENTIALS,
+      API_PATH.ISSUE_CREDENTIALS_RECORDS,
       id,
       error,
       getloading,
@@ -74,7 +78,7 @@ export const useIssuerStore = defineStore('issuer', () => {
 
     let result = null;
 
-    await tenantApi
+    await acapyApi
       .postHttp(
         API_PATH.ISSUER_CREDENTIAL_REVOKE(payload.issuer_credential_id),
         payload
@@ -101,37 +105,37 @@ export const useIssuerStore = defineStore('issuer', () => {
     return result;
   }
 
-  async function deleteCredential(issuerCredentialId: string) {
-    console.log('> contactsStore.deleteCredential');
+  // async function deleteCredential(issuerCredentialId: string) {
+  //   console.log('> contactsStore.deleteCredential');
 
-    error.value = null;
-    loading.value = true;
+  //   error.value = null;
+  //   loading.value = true;
 
-    let result = null;
+  //   let result = null;
 
-    await tenantApi
-      .deleteHttp(API_PATH.ISSUER_CREDENTIAL(issuerCredentialId))
-      .then((res) => {
-        result = res.data.item;
-      })
-      .then(() => {
-        listCredentials(); // Refresh table
-      })
-      .catch((err) => {
-        error.value = err;
-      })
-      .finally(() => {
-        loading.value = false;
-      });
-    console.log('< contactsStore.deleteCredential');
+  //   await acapyApi
+  //     .deleteHttp(API_PATH.ISSUER_CREDENTIAL(issuerCredentialId))
+  //     .then((res) => {
+  //       result = res.data.item;
+  //     })
+  //     .then(() => {
+  //       listCredentials(); // Refresh table
+  //     })
+  //     .catch((err) => {
+  //       error.value = err;
+  //     })
+  //     .finally(() => {
+  //       loading.value = false;
+  //     });
+  //   console.log('< contactsStore.deleteCredential');
 
-    if (error.value != null) {
-      // throw error so $onAction.onError listeners can add their own handler
-      throw error.value;
-    }
-    // return data so $onAction.after listeners can add their own handler
-    return result;
-  }
+  //   if (error.value != null) {
+  //     // throw error so $onAction.onError listeners can add their own handler
+  //     throw error.value;
+  //   }
+  //   // return data so $onAction.after listeners can add their own handler
+  //   return result;
+  // }
 
   return {
     credentials,
@@ -142,7 +146,7 @@ export const useIssuerStore = defineStore('issuer', () => {
     offerCredential,
     getCredential,
     revokeCredential,
-    deleteCredential,
+    // deleteCredential,
   };
 });
 

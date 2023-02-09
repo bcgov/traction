@@ -37,11 +37,11 @@
     </template>
     <template #empty> No records found. </template>
     <template #loading> Loading data. Please wait... </template>
-    <!-- <Column :sortable="true" field="connection_id" header="Contact">
+    <Column :sortable="true" field="connection_id" header="Contact">
       <template #body="{ data }">
-        {{ findContactName(data.connection_id) }}
+        {{ findConnectionName(data.connection_id) }}
       </template>
-    </Column> -->
+    </Column>
     <Column :sortable="true" field="state" header="State" />
     <Column :sortable="true" field="content" header="Content" />
     <Column :sortable="true" field="sent_time" header="Sent">
@@ -74,34 +74,17 @@ const toast = useToast();
 const { t } = useI18n();
 
 const messageStore = useMessageStore();
+const contactsStore = useContactsStore();
 
 const { loading, messages, selectedMessage } = storeToRefs(useMessageStore());
 const { contacts } = storeToRefs(useContactsStore());
 
-/**
- * The contact name is required to display in the table.
- * If the user has not yet loaded the contacts,
- * we need to wait for them to load.
- */
-if (!contacts.value) {
-  // const contactsStore = useContactsStore();
-  // contactsStore.listContacts().catch((err) => {
-  //   console.error(err);
-  //   toast.error(`Failure: ${err}`);
-  // });
-}
-
-/**
- * ## findContactName
- * Givin a connection id, find the contact name
- * @param {string} connectionId ID of the connection
- * @returns {string} Contact name
- */
-const findContactName = (connectionId: string) => {
-  const contact = contacts.value?.find((c: any) => {
-    return c.acapy.connection.connection_id === connectionId;
+// Find the connection alias for an ID
+const findConnectionName = (connectionId: string) => {
+  const connection = contacts.value?.find((c: any) => {
+    return c.connection_id === connectionId;
   });
-  return contact ? contact.alias : '...';
+  return connection ? connection.alias : '...';
 };
 
 const loadTable = async () => {
@@ -109,6 +92,13 @@ const loadTable = async () => {
   messageStore.listMessages().catch((err: any) => {
     toast.error(`Failure: ${err}`);
   });
+  // Load contacts if not already there for display
+  if (!contacts.value || !contacts.value.length) {
+    contactsStore.listContacts().catch((err) => {
+      console.error(err);
+      toast.error(`Failure: ${err}`);
+    });
+  }
 };
 const expandedRows = ref([]);
 
@@ -116,7 +106,7 @@ const filter = ref({
   content: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 
-onMounted(async () => {
+onMounted(() => {
   loadTable();
 });
 </script>

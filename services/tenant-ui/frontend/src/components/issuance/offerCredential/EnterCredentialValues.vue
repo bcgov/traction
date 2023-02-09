@@ -1,10 +1,14 @@
 <template>
-  <Button
-    icon="pi pi-arrow-left"
-    class="p-button-rounded p-button-text mr-2 pt-3"
-    @click="$emit('back')"
-  />
-  <strong>{{ props.header }}</strong>
+  <div class="flex align-content-center">
+    <Button
+      icon="pi pi-arrow-left"
+      class="p-button-rounded p-button-text mr-2 flex align-items-center"
+      @click="$emit('back')"
+    />
+    <div class="flex align-items-center">
+      <strong>{{ props.header }}</strong>
+    </div>
+  </div>
 
   <div class="field mt-5">
     <!-- Label/toggle -->
@@ -33,8 +37,8 @@
 
       <div class="flex justify-content-end">
         <small>
-          Schema: {{ schemaForSelectedCred.schema_name }} Version:
-          {{ schemaForSelectedCred.version }}
+          Schema: {{ schemaForSelectedCred.schema.name }} Version:
+          {{ schemaForSelectedCred.schema.version }}
         </small>
       </div>
     </div>
@@ -137,7 +141,7 @@ const saveCredValues = () => {
 onMounted(() => {
   // Popuplate cred editor if it's not already been edited
   if (!props.existingCredentialValues?.length) {
-    const schemaFillIn = props.schemaForSelectedCred.attributes.map(
+    const schemaFillIn = props.schemaForSelectedCred.schema.attrNames.map(
       (a: string) => {
         return {
           name: `${a}`,

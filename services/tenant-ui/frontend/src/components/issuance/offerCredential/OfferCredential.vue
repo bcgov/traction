@@ -21,21 +21,16 @@
 <script setup lang="ts">
 // Vue
 import { ref } from 'vue';
-// PrimeVue
+// PrimeVue/ etc
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
+import { useToast } from 'vue-toastification';
+import { useI18n } from 'vue-i18n';
 // State
-import {
-  useContactsStore,
-  useGovernanceStore,
-  useTenantStore,
-} from '../../../store';
+import { useContactsStore, useGovernanceStore, useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Custom Components
 import OfferCredentialForm from './OfferCredentialForm.vue';
-// Other Imports
-import { useToast } from 'vue-toastification';
-import { useI18n } from 'vue-i18n';
 
 // State setup
 const contactsStore = useContactsStore();
@@ -46,17 +41,16 @@ const { t } = useI18n();
 
 const { isIssuer } = storeToRefs(useTenantStore());
 
-// -----------------------------------------------------------------------
-// Display popup
-// ---------------------------------------------------------------------
 defineEmits(['success']);
+
+// Display popup and load needed lists
 const displayModal = ref(false);
 const openModal = async () => {
   // Kick of the loading asyncs in the store to fetch contacts/creds
   Promise.all([
     contactsStore.listContacts(),
-    // governanceStore.listSchemaTemplates(),
-    governanceStore.listCredentialTemplates(),
+    governanceStore.listStoredSchemas(),
+    governanceStore.listStoredCredentialDefinitions(),
   ]).catch((err) => {
     console.error(err);
     toast.error(
@@ -69,5 +63,4 @@ const handleClose = async () => {
   // some logic... maybe we shouldn't close?
   displayModal.value = false;
 };
-// ---------------------------------------------------------------/display
 </script>

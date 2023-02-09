@@ -1,17 +1,16 @@
 <template>
   <div>
-    <div v-if="credentialTemplate">
-      <div v-if="credentialTemplate.status === 'Active'">
-        {{ `${credentialTemplate.name}:${credentialTemplate.tag}` }}
+    <div v-if="credDef">
+      <div v-if="credDef.state && credDef.state !== 'Active'">
+        <StatusChip :status="credDef.state" />
       </div>
       <div v-else>
-        <StatusChip :status="credentialTemplate.status" />
+        {{ `${credDef.cred_def_id}` }}
       </div>
     </div>
     <div v-else>
       <Button
-        v-if="schemaTemplate.status === 'Active'"
-        v-tooltip.top="'Create Credential Template'"
+        v-tooltip.top="'Create Credential Definition'"
         :disabled="!isIssuer"
         icon="pi pi-id-card"
         class="p-button-text"
@@ -20,12 +19,13 @@
     </div>
     <Dialog
       v-model:visible="displayModal"
-      header="Create Credential Template"
+      header="Create Credential Definition"
+      :style="{ minWidth: '400px' }"
       :modal="true"
       @update:visible="handleClose"
     >
-      <CreateCredentialTemplateForm
-        :schema-template-id="schemaTemplate.schema_template_id"
+      <CreateCredentialDefinitionForm
+        :schema="schema"
         @success="$emit('success')"
         @closed="handleClose"
       />
@@ -39,13 +39,13 @@ import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import StatusChip from '../../common/StatusChip.vue';
 
-import CreateCredentialTemplateForm from './CreateCredentialTemplateForm.vue';
+import CreateCredentialDefinitionForm from './CreateCredentialDefinitionForm.vue';
 
 import { useTenantStore } from '../../../store';
 import { storeToRefs } from 'pinia';
 
 const props = defineProps({
-  schemaTemplate: {
+  schema: {
     type: Object,
     required: true,
   },
@@ -53,25 +53,21 @@ const props = defineProps({
 
 const { isIssuer } = storeToRefs(useTenantStore());
 
-const credentialTemplate = computed(() => {
-  if (props.schemaTemplate.credential_templates.length) {
-    return props.schemaTemplate.credential_templates[0];
+const credDef = computed(() => {
+  if (props.schema.credentialDefinition) {
+    return props.schema.credentialDefinition;
   }
   return null;
 });
 
 defineEmits(['success']);
 
-// -----------------------------------------------------------------------
 // Display popup
-// ---------------------------------------------------------------------
 const displayModal = ref(false);
 const openModal = async () => {
-  // Kick of the loading asyncs (if needed)
   displayModal.value = true;
 };
 const handleClose = async () => {
-  // some logic... maybe we shouldn't close?
   displayModal.value = false;
 };
 </script>

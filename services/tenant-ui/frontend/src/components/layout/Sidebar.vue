@@ -1,6 +1,9 @@
 <template>
   <div class="traction-sidebar">
-    <h1 v-if="tenant" class="sidebar-app-title">{{ tenant.tenant_name }}</h1>
+    <h1 class="sidebar-app-title">
+      <ProgressSpinner v-if="loading" />
+      <span v-if="tenant">{{ tenant.tenant_name }}</span>
+    </h1>
     <h1 class="sidebar-app-title small">T</h1>
     <PanelMenu :model="items" class="mt-5" />
   </div>
@@ -9,6 +12,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import PanelMenu from 'primevue/panelmenu';
+import ProgressSpinner from 'primevue/progressspinner';
 import { storeToRefs } from 'pinia';
 import { useTenantStore } from '../../store';
 import { useI18n } from 'vue-i18n';
@@ -16,7 +20,7 @@ import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 
 // tenant should be loaded by login...
-const { tenant } = storeToRefs(useTenantStore());
+const { tenant, loading } = storeToRefs(useTenantStore());
 
 const items = ref([
   {
@@ -42,11 +46,11 @@ const items = ref([
     ],
   },
 
-  // {
-  //   label: () => t('issue.issuance'),
-  //   icon: 'pi pi-fw pi-wallet',
-  //   to: { name: 'MyIssuedCredentials' },
-  // },
+  {
+    label: () => t('issue.issuance'),
+    icon: 'pi pi-fw pi-wallet',
+    to: { name: 'MyIssuedCredentials' },
+  },
 
   // {
   //   label: () => t('verify.verification'),
@@ -69,6 +73,12 @@ const items = ref([
         label: 'Schema Storage',
         icon: 'pi pi-fw pi-book',
         to: { name: 'Schemas' },
+      },
+      {
+        // label: () => t('configuration.schemasCreds.schemas'),
+        label: 'Cred Def Storage',
+        icon: 'pi pi-fw pi-id-card',
+        to: { name: 'CredentialDefinitions' },
       },
       // {
       //   label: () => t('configuration.presentationTemplates.templates'),
