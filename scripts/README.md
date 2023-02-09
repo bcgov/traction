@@ -27,9 +27,9 @@ For tenants to perform all their Aca-Py calls, access is done through an NGINX p
 Currently this setup has dependencies on BCovrin Test Ledger and a registered endorser DID. These constraints will be removed, they are just short term requirements that the BC Gov developers needed to communicate with phone/wallets and other DIDs on the same ledger for demonstration purposes. This is not a vision for Traction, as it should be up to the administrator/installer/devops team (and their business contraints) for endorsement. Feel free to alter the default configuration for your purposes, but understand their may be some unintended consequences and it may not work correctly.
 
 ### Plugin Image
-Also, there are longer term goals for moving the plugins to separate repositories and allowing teams to pull them in and configure their own Aca-Py images as needed. Currently, we are pulling the plugins in as source and building a custom image. For local development, the build of this image is included in the `docker-compose build` command. Once the Aca-py + plugin image is built (tagged: `traction-local:acapy`), that image is pulled into another that we use to run an [ngrok]() script for external access to our agent (see [services/aca-py](../services/aca-py). This is not what we are doing in production, but we are doing it here (for now).
+Also, there are longer term goals for moving the plugins to separate repositories and allowing teams to pull them in and configure their own Aca-Py images as needed. Currently, we are pulling the plugins in as source and building a custom image. For local development, the build of this image is included in the `docker compose build` command. Once the Aca-py + plugin image is built (tagged: `traction:plugins-acapy`), that image is pulled into another that we use to run an [ngrok](https://ngrok.com) script for external access to our agent (see [services/aca-py](../services/aca-py). This is not what we are doing in production, but we are doing it here (for now).
 
-#### traction-local:acapy image
+#### traction:plugins-acapy
 This image is based on [bcgovimages/aries-cloudagent:py36-1.16-1_1.0.0-rc1](https://hub.docker.com/layers/bcgovimages/aries-cloudagent/py36-1.16-1_1.0.0-rc1/images/sha256-0c2f34a84b672ee68439b5dab7db9298b7945d2f2b54c165ec346a8096b7ff31?context=explore) and this is where we pull in the [traction plugins](../plugins) and build out the image see [Dockerfile](../plugins/docker/Dockerfile)
 
 The plugins are built using the base plugins [pyproject.toml](../plugins/pyproject.toml) which pulls in each plugin as source. Simply adding new plugin directories to the file system and adding to the dockerfile will not be enough, they must be dependencies in the `plugins/pyproject.toml`.
@@ -68,7 +68,32 @@ The default configuration will stand up the following environment:
 
 ## Run Local Traction
 - docker
-- docker-compose
+- docker compose (V1 or V2)
+
+#### check docker compose version
+
+There are two commands that may act differently depending on your configuration: `docker compose` and `docker-compose`. 
+
+In the following example, you can see that the two commands use two different docker compose versions. (This is a Mac with Docker Docker Desktop 4.16.2 with V2 disabled in the settings).
+
+```sh
+CountryMac:scripts jason$ docker compose version
+> Docker Compose version v2.15.1
+
+CountryMac:scripts jason$ docker-compose version
+> docker-compose version 1.29.2, build 5becea4c
+```
+
+Now, the same machine with V2 enabled in the Docker Desktop settings.
+
+```sh
+CountryMac:scripts jason$ docker compose version
+> Docker Compose version v2.15.1
+
+CountryMac:scripts jason$ docker-compose version
+> Docker Compose version v2.15.1
+```
+
 
 ### start
 
@@ -77,15 +102,42 @@ The default configuration will stand up the following environment:
 
 ```sh
 cp .env-example .env
-docker-compose build
-docker-compose up
+docker compose build
+docker compose up
+```
+
+#### build errors
+
+Docker Compose (and docker) configurations vary greatly for every developer, we cannot assure that the docker compose files will work with every nuance and tweak a developer makes to their configuration (using buildkit or not, logged in or not, etc.). These scripts have been tested against Docker / Docker Compose V1 and V2. Using `docker compose` to build series of images seems to vary the most between V1 and V2 and various developer machines. If you have issues building try clearing out your docker and build images directly. See above for checking your versions.
+
+##### clean up docker environment
+
+Try the following to purge your docker containers, images and build cache:
+
+```sh
+docker rm -vf $(docker ps -aq)
+docker rmi -f $(docker images -aq)
+docker system prune -a --volumes
+```
+
+##### build images directly
+
+Assume starting in `/scripts`...
+
+```sh
+cd ../plugins/docker
+docker build -f ./Dockerfile --tag traction:plugins-acapy ..
+cd ../../services/aca-py
+docker build -f ./Dockerfile.acapy --tag traction:traction-agent  .
+cd ../../scripts
+docker compose up
 ```
 
 ### stop
 This will leave the volume (data) intact and available on restart.
 
 ```sh
-docker-compose down
+docker compose down
 ```
 
 *IMPORTANT* when envionments are torn down and then brought up, a new ngrok endpoint is created. This could cause issues reusing tenants/wallets as they will be registered with defunct ngrok endpoints.
@@ -94,7 +146,7 @@ docker-compose down
 This will remove the volume, so next start/up will re-recreate a new environment.
 
 ```sh
-docker-compose down -v --remove-orphans
+docker compose down -v --remove-orphans
 ```
 
 ## Simple Flow

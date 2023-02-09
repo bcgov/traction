@@ -1,4 +1,4 @@
-FROM traction-local:acapy
+FROM traction:plugins-acapy
 
 USER root
 
