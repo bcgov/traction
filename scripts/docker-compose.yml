@@ -9,18 +9,23 @@ services:
     command: ngrok http traction-agent:${ACAPY_HTTP_PORT} --log stdout
 
   traction-acapy-image-builder:
+    pull_policy: build
     build:
       context: ../plugins
       dockerfile: ./docker/Dockerfile
-    image: traction-local:acapy
+    image: traction:plugins-acapy
     entrypoint: "/bin/bash"
     tty: true
 
   traction-agent:
+    pull_policy: build
     build:
       context: ../services/aca-py
       dockerfile: Dockerfile.acapy
+    image: traction:traction-agent
     depends_on:
+      traction-acapy-image-builder:
+        condition: service_started
       traction-db:
         condition: service_healthy
     environment:
@@ -84,10 +89,13 @@ services:
       retries: 5
     extra_hosts:
       - host.docker.internal:host-gateway
+  
   tenant-ui:
+    pull_policy: build
     build:
       context: ../services/tenant-ui
       dockerfile: Dockerfile
+    image: traction:tenant-ui
     depends_on:
       tenant-proxy:
         condition: service_started
@@ -110,10 +118,11 @@ services:
       - host.docker.internal:host-gateway
 
   tenant-proxy:
+    pull_policy: build
     build:
       context: ../plugins
       dockerfile: ./docker/Dockerfile.tenant-proxy
-    image: traction-local:tenant-proxy
+    image: traction:tenant-proxy
     depends_on:
       traction-agent:
         condition: service_started
@@ -127,9 +136,11 @@ services:
       - host.docker.internal:host-gateway
 
   endorser-api:
+    pull_policy: build
     build:
       context: ../services/endorser
       dockerfile: Dockerfile
+    image: traction:endorser-api
     depends_on:
       endorser-agent:
         condition: service_started
@@ -148,8 +159,6 @@ services:
       - ACAPY_WEBHOOK_URL_API_KEY=${ENDORSER_ACAPY_WEBHOOK_URL_API_KEY}
     ports:
       - ${ENDORSER_SERVICE_PORT}:5000
-    extra_hosts:
-      - host.docker.internal:host-gateway
     volumes:
       - ../services/endorser:/app:rw
     extra_hosts:
