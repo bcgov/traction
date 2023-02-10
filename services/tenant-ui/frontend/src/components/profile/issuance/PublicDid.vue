@@ -29,10 +29,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import InputSwitch from 'primevue/inputswitch';
-import InputText from 'primevue/inputtext';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
+import InputSwitch from 'primevue/inputswitch';
+import InputText from 'primevue/inputtext';
 import VueJsonPretty from 'vue-json-pretty';
 import { useToast } from 'vue-toastification';
 // State

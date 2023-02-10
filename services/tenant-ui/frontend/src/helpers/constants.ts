@@ -67,6 +67,7 @@ export const API_PATH = {
   TENANT_ENDORSER_INFO: '/tenant/endorser-info',
   TENANT_REGISTER_PUBLIC_DID: '/tenant/register-public-did',
   TENANT_TOKEN: '/tenant/token',
+  TENANT_WALLET: '/tenant/wallet',
 
   WALLET_DID_PUBLIC: '/wallet/did/public',
   WALLET_DID_CREATE: '/wallet/did/create',

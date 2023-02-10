@@ -2,6 +2,23 @@
   <form @submit.prevent="handleSubmit(!v$.$invalid)">
     <ProgressSpinner v-if="loading" />
     <div v-else class="w-30rem">
+      <!-- Wallet Label -->
+      <div class="field">
+        <label for="webhookKey">Wallet Label</label>
+        <InputText
+          id="webhookKey"
+          v-model="v$.wallet_label.$model"
+          class="w-full"
+          :class="{ 'p-invalid': v$.wallet_label.$invalid && submitted }"
+          readonly
+        />
+        <span v-if="v$.wallet_label.$error && submitted">
+          <span v-for="(error, index) of v$.wallet_label.$errors" :key="index">
+            <small class="p-error">{{ error.$message }}</small>
+          </span>
+        </span>
+      </div>
+
       <!-- WebHook URL -->
       <div class="field">
         <label
@@ -24,43 +41,40 @@
       <!-- WebHook Key -->
       <div class="field">
         <label for="webhookKey">WebHook Key</label>
-        <InputText
-          id="webhookKey"
-          v-model="v$.webhook_key.$model"
-          class="w-full"
-        />
+        <div class="field">
+          <Password
+            v-model="v$.webhook_key.$model"
+            class="w-full"
+            input-class="w-full"
+            toggle-mask
+            :feedback="false"
+          />
+          <small v-if="v$.webhook_key.$invalid && submitted" class="p-error">
+            {{ v$.webhook_key.required.$message }}
+          </small>
+        </div>
       </div>
-      <!-- Auto Respond -->
-      <p class="mb-1">Auto Respond Messages</p>
-      <InputSwitch v-model="v$.auto_respond_messages.$model" />
-      <!-- Message -->
-      <div v-if="v$.auto_respond_messages.$model" class="field mt-2">
-        <label for="autoResMessage">Auto Response Message</label>
-        <Textarea
-          id="autoResMessage"
-          v-model="v$.auto_response_message.$model"
-          rows="3"
-          class="w-full"
-        />
+
+      <!-- Image URL -->
+      <div class="field">
+        <label for="imageUrl">Image URL</label>
+        <InputText id="imageUrl" v-model="v$.image_url.$model" class="w-full" />
       </div>
 
       <div>
-        <i class="pi pi-info-circle ml-0" />
-        <span>Can only set fields below if you have Innkeeper approval</span>
+        <Accordion>
+          <AccordionTab header="Tenant Wallet Details">
+            <vue-json-pretty :data="tenantWallet" />
+          </AccordionTab>
+        </Accordion>
       </div>
-      <!-- Store Messages -->
-      <p class="my-1">Store Messages</p>
-      <InputSwitch v-model="v$.store_messages.$model" />
-      <!-- Store creds -->
-      <p class="mb-1">Store Issuer Credentials</p>
-      <InputSwitch v-model="v$.store_issuer_credentials.$model" />
     </div>
 
     <hr class="my-4" />
 
-    <div v-if="tenantConfig" class="grid mb-6">
+    <div v-if="tenantWallet" class="grid mb-6">
       <div class="col-fixed w-8rem"><strong>Updated at</strong></div>
-      <div class="col">{{ formatDateLong(tenantConfig.updated_at) }}</div>
+      <div class="col">{{ formatDateLong(tenantWallet.updated_at) }}</div>
     </div>
 
     <Button
@@ -76,13 +90,15 @@
 // Vue
 import { onMounted, reactive, ref } from 'vue';
 // PrimeVue/Validation
+import Accordion from 'primevue/accordion';
+import AccordionTab from 'primevue/accordiontab';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-import InputSwitch from 'primevue/inputswitch';
+import Password from 'primevue/password';
 import ProgressSpinner from 'primevue/progressspinner';
-import Textarea from 'primevue/textarea';
+import VueJsonPretty from 'vue-json-pretty';
 import { useToast } from 'vue-toastification';
-import { maxLength, url } from '@vuelidate/validators';
+import { required, url } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
 // State/etc
 import { storeToRefs } from 'pinia';
@@ -93,24 +109,22 @@ const toast = useToast();
 
 // State setup
 const tenantStore = useTenantStore();
-const { tenant, tenantConfig, loading } = storeToRefs(useTenantStore());
+const { tenant, tenantWallet, loading } = storeToRefs(useTenantStore());
 
 // Get Tenant Configuration
 const loadTenantSettings = async () => {
-  // await tenantStore
-  //   .getConfiguration()
-  //   .then(() => {
-  //     // set the local form settings (don't bind controls directly to state for this)
-  //     Object.assign(formFields, tenantConfig.value);
-  //     // Set the 'default' if nothing there to show the user the default auto-response
-  //     if (!formFields.auto_response_message) {
-  //       formFields.auto_response_message = `'${tenant.value.name}' has recieved your message but does not correspond via messages`;
-  //     }
-  //   })
-  //   .catch((err: any) => {
-  //     console.error(err);
-  //     toast.error(`Failure: ${err}`);
-  //   });
+  await tenantStore
+    .getTenantSubWallet()
+    .then(() => {
+      // set the local form settings (don't bind controls directly to state for this)
+      formFields.wallet_label = tenantWallet.value.settings.default_label;
+      formFields.image_url = tenantWallet.value.settings.image_url;
+      // only supporting the 1 webhook for now until some UX decisions
+    })
+    .catch((err: any) => {
+      console.error(err);
+      toast.error(`Failure: ${err}`);
+    });
 };
 onMounted(async () => {
   loadTenantSettings();
@@ -120,18 +134,14 @@ onMounted(async () => {
 const formFields = reactive({
   webhook_url: '',
   webhook_key: '',
-  auto_respond_messages: false,
-  auto_response_message: '',
-  store_messages: false,
-  store_issuer_credentials: false,
+  wallet_label: '',
+  image_url: '',
 });
 const rules = {
   webhook_key: {},
   webhook_url: { url },
-  auto_respond_messages: {},
-  auto_response_message: { maxLengthValue: maxLength(255) },
-  store_messages: {},
-  store_issuer_credentials: {},
+  wallet_label: { required },
+  image_url: {},
 };
 const v$ = useVuelidate(rules, formFields);
 
