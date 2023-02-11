@@ -258,7 +258,7 @@ export const useTenantStore = defineStore('tenant', () => {
     return tenantWallet.value;
   }
 
-  async function updateTenantSubWallet(payload: Object) {
+  async function updateTenantSubWallet(payload: object) {
     console.log('> tenantStore.updateTenantSubWallet');
     error.value = null;
     loading.value = true;
