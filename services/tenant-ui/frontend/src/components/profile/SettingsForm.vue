@@ -4,16 +4,15 @@
     <div v-else class="w-30rem">
       <!-- Wallet Label -->
       <div class="field">
-        <label for="webhookKey">Wallet Label</label>
+        <label for="walletLabel">Wallet Label</label>
         <InputText
-          id="webhookKey"
-          v-model="v$.wallet_label.$model"
+          id="walletLabel"
+          v-model="v$.walletLabel.$model"
           class="w-full"
-          :class="{ 'p-invalid': v$.wallet_label.$invalid && submitted }"
-          readonly
+          :class="{ 'p-invalid': v$.walletLabel.$invalid && submitted }"
         />
-        <span v-if="v$.wallet_label.$error && submitted">
-          <span v-for="(error, index) of v$.wallet_label.$errors" :key="index">
+        <span v-if="v$.walletLabel.$error && submitted">
+          <span v-for="(error, index) of v$.walletLabel.$errors" :key="index">
             <small class="p-error">{{ error.$message }}</small>
           </span>
         </span>
@@ -23,17 +22,17 @@
       <div class="field">
         <label
           for="webhookUrl"
-          :class="{ 'p-error': v$.webhook_url.$invalid && submitted }"
+          :class="{ 'p-error': v$.webhookUrl.$invalid && submitted }"
           >WebHook URL</label
         >
         <InputText
           id="webhookUrl"
-          v-model="v$.webhook_url.$model"
+          v-model="v$.webhookUrl.$model"
           class="w-full"
-          :class="{ 'p-invalid': v$.webhook_url.$invalid && submitted }"
+          :class="{ 'p-invalid': v$.webhookUrl.$invalid && submitted }"
         />
-        <span v-if="v$.webhook_url.$error && submitted">
-          <span v-for="(error, index) of v$.webhook_url.$errors" :key="index">
+        <span v-if="v$.webhookUrl.$error && submitted">
+          <span v-for="(error, index) of v$.webhookUrl.$errors" :key="index">
             <small class="p-error">{{ error.$message }}</small>
           </span>
         </span>
@@ -41,24 +40,19 @@
       <!-- WebHook Key -->
       <div class="field">
         <label for="webhookKey">WebHook Key</label>
-        <div class="field">
-          <Password
-            v-model="v$.webhook_key.$model"
-            class="w-full"
-            input-class="w-full"
-            toggle-mask
-            :feedback="false"
-          />
-          <small v-if="v$.webhook_key.$invalid && submitted" class="p-error">
-            {{ v$.webhook_key.required.$message }}
-          </small>
-        </div>
+        <Password
+          v-model="v$.webhookKey.$model"
+          class="w-full"
+          input-class="w-full"
+          toggle-mask
+          :feedback="false"
+        />
       </div>
 
       <!-- Image URL -->
       <div class="field">
         <label for="imageUrl">Image URL</label>
-        <InputText id="imageUrl" v-model="v$.image_url.$model" class="w-full" />
+        <InputText id="imageUrl" v-model="v$.imageUrl.$model" class="w-full" />
       </div>
 
       <div>
@@ -70,14 +64,8 @@
       </div>
     </div>
 
-    <hr class="my-4" />
-
-    <div v-if="tenantWallet" class="grid mb-6">
-      <div class="col-fixed w-8rem"><strong>Updated at</strong></div>
-      <div class="col">{{ formatDateLong(tenantWallet.updated_at) }}</div>
-    </div>
-
     <Button
+      class="mt-6 mb-3"
       :disabled="loading"
       :loading="loading"
       label="Save Changes"
@@ -103,13 +91,12 @@ import { useVuelidate } from '@vuelidate/core';
 // State/etc
 import { storeToRefs } from 'pinia';
 import { useTenantStore } from '@/store';
-import { formatDateLong } from '@/helpers';
 
 const toast = useToast();
 
 // State setup
 const tenantStore = useTenantStore();
-const { tenant, tenantWallet, loading } = storeToRefs(useTenantStore());
+const { tenantWallet, loading } = storeToRefs(useTenantStore());
 
 // Get Tenant Configuration
 const loadTenantSettings = async () => {
@@ -117,9 +104,29 @@ const loadTenantSettings = async () => {
     .getTenantSubWallet()
     .then(() => {
       // set the local form settings (don't bind controls directly to state for this)
-      formFields.wallet_label = tenantWallet.value.settings.default_label;
-      formFields.image_url = tenantWallet.value.settings.image_url;
-      // only supporting the 1 webhook for now until some UX decisions
+      formFields.walletLabel = tenantWallet.value.settings.default_label;
+      formFields.imageUrl = tenantWallet.value.settings.image_url;
+      // TODO: only supporting the 1 webhook for now until some UX decisions
+      // (if keeping this extract to util fxn)
+      const webHookUrls = tenantWallet.value.settings['wallet.webhook_urls'];
+      if (webHookUrls && webHookUrls.length) {
+        // The Acapy API seems to support this thing as a string or an array
+        // We'll use arrays, but handle a string
+        let whItem = '';
+        if (Array.isArray(webHookUrls) && typeof webHookUrls[0] === 'string') {
+          whItem = webHookUrls[0];
+        } else if (typeof webHookUrls === 'string') {
+          whItem = webHookUrls;
+        }
+
+        const pMark = whItem.indexOf('#');
+        if (pMark > 0) {
+          formFields.webhookUrl = whItem.substring(0, whItem.indexOf('#'));
+          formFields.webhookKey = whItem.substring(whItem.indexOf('#') + 1);
+        } else {
+          formFields.webhookUrl = whItem;
+        }
+      }
     })
     .catch((err: any) => {
       console.error(err);
@@ -132,16 +139,16 @@ onMounted(async () => {
 
 // Form Fields and Validation
 const formFields = reactive({
-  webhook_url: '',
-  webhook_key: '',
-  wallet_label: '',
-  image_url: '',
+  webhookUrl: '',
+  webhookKey: '',
+  walletLabel: '',
+  imageUrl: '',
 });
 const rules = {
-  webhook_key: {},
-  webhook_url: { url },
-  wallet_label: { required },
-  image_url: {},
+  webhookKey: {},
+  webhookUrl: { url },
+  walletLabel: { required },
+  imageUrl: { url },
 };
 const v$ = useVuelidate(rules, formFields);
 
@@ -155,9 +162,22 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 
   try {
-    // await tenantStore.updateConfiguration(formFields);
-    // toast.info('Your Settings have been Updated');
-    toast.error('unimplimented');
+    const webhookUrls = [];
+    if (formFields.webhookUrl) {
+      let url = formFields.webhookUrl;
+      if (formFields.webhookKey) {
+        url += `#${formFields.webhookKey}`;
+      }
+      webhookUrls.push(url);
+    }
+    const payload = {
+      image_url: formFields.imageUrl,
+      label: formFields.walletLabel,
+      wallet_webhook_urls: webhookUrls,
+    };
+    await tenantStore.updateTenantSubWallet(payload);
+    loadTenantSettings();
+    toast.success('Your Settings have been Updated');
   } catch (error) {
     toast.error(`Failure: ${error}`);
   } finally {

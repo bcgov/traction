@@ -258,6 +258,30 @@ export const useTenantStore = defineStore('tenant', () => {
     return tenantWallet.value;
   }
 
+  async function updateTenantSubWallet(payload: Object) {
+    console.log('> tenantStore.updateTenantSubWallet');
+    error.value = null;
+    loading.value = true;
+
+    await acapyApi
+      .putHttp(API_PATH.TENANT_WALLET, payload)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        error.value = err;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< tenantStore.updateTenantSubWallet');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+  }
+
   return {
     loading,
     loadingIssuance,
@@ -278,6 +302,7 @@ export const useTenantStore = defineStore('tenant', () => {
     getPublicDid,
     registerPublicDid,
     getTenantSubWallet,
+    updateTenantSubWallet,
   };
 });
 
