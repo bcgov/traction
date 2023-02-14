@@ -37,11 +37,11 @@ Assumes this is being run in a local environment stood up according to [scripts]
 3. Get faber a Public DID 
     1. Open browser at [http://localhost:9876/tenants/faber/public-did](http://localhost:9876/tenants/faber/public-did)
     2. This will take some time, but faber will be connected to an endorser and create a public did and write that to the ledger
-    3. You will see that faber has a new attirbute: `public_did`.
+    3. You will see that faber has a new attribute: `public_did`.
     4. Open browser at [http://localhost:9876/tenants/faber/webhook-data](http://localhost:9876/tenants/faber/webhook-data) to view faber's webhook data.
     5. Note that there is a new topic: `endorse_transaction`. This is faber asking the endorser to do work (write public did to ledger) on their behalf.
 
-When creating your own tenants in the [tenant-ui](http://localhost:5101), you can update their webhook url to `http://host.docker.internal:9876/webhook` and do not add an api key.
+When creating your own tenants in the [tenant-ui](http://localhost:5101), you can update their webhook url to `http://host.docker.internal:9876/webhook` and do not add an api key. You can see notifications for you webhook in the `tenant-lob` docker console.
 
 
 ### Docker Build image
