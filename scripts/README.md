@@ -20,6 +20,10 @@ New functionality is being added daily, so stay tuned as the Tenant UI grows. Ke
 ### API Proxy
 For tenants to perform all their Aca-Py calls, access is done through an NGINX proxy. This allows tenants to call most all endpoints found in Aca-Py Admin plus enhancements added through the Traction Plugins. This is the API your controllers and line of business apps will call. See [NGINX Template](../plugins/docker/tenant-proxy.conf.template)
 
+### Tenant LOB Demo
+A very simple server/controller to demonstrate integrating your Line of Business application with Traction/Aca-Py via webhooks.
+See [services/tenant-lob](../services/tenant-lob).
+
 
 ## Caveats and Cautions
 
@@ -206,4 +210,5 @@ You can use the wallet id and key to retrieve a token and use the Tenant API.
 10. You are now logged in as your tenant/wallet/agent.
 11. Scroll to [GET /tenant](http://localhost:8032/api/doc#/traction-tenant/get_tenant), expand, Try it out and Execute.
 12. These are your tenant's details. Only you are authorized to fetch your tenant data.
-13. 
+
+For Tenant Line of Business Integration, see more steps in the [tenant-lob demo](../services/tenant-lob/README.md) readme.

@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "tenant-lob"
+version = "0.1.0"
+description = ""
+authors = ["Jason Sherman <tools@usingtechnolo.gy>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+Random-Word = "^1.0.11"
+requests = "^2.28.2"
+aiohttp = "^3.8.3"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
