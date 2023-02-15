@@ -1,3 +1,5 @@
+import { EndorserInfo } from '@/types/acapyApi/acapyApi';
+
 import { API_PATH } from '@/helpers/constants';
 import { defineStore, storeToRefs } from 'pinia';
 import { computed, ref, Ref } from 'vue';
@@ -7,11 +9,11 @@ import { useTokenStore } from './tokenStore';
 export const useTenantStore = defineStore('tenant', () => {
   // state
   const tenant: any = ref(null);
-  const loading: any = ref(false);
-  const loadingIssuance: any = ref(false);
+  const loading: Ref<boolean> = ref(false);
+  const loadingIssuance: Ref<boolean> = ref(false);
   const error: any = ref(null);
   const endorserConnection: any = ref(null);
-  const endorserInfo: any = ref(null);
+  const endorserInfo: Ref<EndorserInfo | null> = ref(null);
   const publicDid: any = ref(null);
   const publicDidRegistrationProgress: Ref<string> = ref('');
   const tenantWallet: any = ref(null);

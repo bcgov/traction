@@ -143,7 +143,7 @@ const doDelete = (id: string) => {
 // Can't delete if it's endorser
 const deleteDisabled = (contactAlias: string) => {
   return (
-    endorserInfo.value && endorserInfo.value.endorser_name === contactAlias
+    endorserInfo.value != null && endorserInfo.value.endorser_name === contactAlias
   );
 };
 
