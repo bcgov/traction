@@ -10,6 +10,9 @@ RUN curl -sSL https://install.python-poetry.org | python -
 ENV PATH="/opt/poetry/bin:$PATH"
 RUN poetry config virtualenvs.in-project true
 
+# git clone issuer registration plugin from github repo
+RUN git clone -b plugin_poetry https://github.com/ianco/aries-vcr.git
+
 # Setup project
 RUN mkdir traction_plugins && touch traction_plugins/__init__.py
 COPY --chown=indy:indy pyproject.toml README.md ./
@@ -20,7 +23,10 @@ COPY --chown=indy:indy basicmessage_storage ./basicmessage_storage
 COPY --chown=indy:indy multitenant_provider ./multitenant_provider
 COPY --chown=indy:indy traction_innkeeper ./traction_innkeeper
 COPY --chown=indy:indy traction_metadata ./traction_metadata
-COPY --chown=indy:indy issuer_registration ./issuer_registration
+
+# git clone issuer registration plugin from github repo
+RUN mkdir ./issuer_registration
+RUN cp -r ./aries-vcr/server/message_families/issuer_registration/* ./issuer_registration
 
 RUN poetry install --no-dev
 
@@ -31,12 +37,19 @@ FROM bcgovimages/aries-cloudagent:py36-1.16-1_1.0.0-rc1
 COPY --from=base --chown=indy:indy /home/indy/.venv /home/indy/.venv
 ENV PATH="/home/indy/.venv/bin:$PATH"
 
+# not sure why we have to install the plugins twice ...
+# git clone issuer registration plugin from github repo
+RUN git clone -b plugin_poetry https://github.com/ianco/aries-vcr.git
+
 COPY --chown=indy:indy docker/default.yml ./
 COPY --chown=indy:indy basicmessage_storage/basicmessage_storage traction_plugins/basicmessage_storage
 COPY --chown=indy:indy multitenant_provider/multitenant_provider traction_plugins/multitenant_provider
 COPY --chown=indy:indy traction_innkeeper/traction_innkeeper traction_plugins/traction_innkeeper
 COPY --chown=indy:indy traction_metadata/traction_metadata traction_plugins/traction_metadata
-COPY --chown=indy:indy issuer_registration/indy_catalyst_issuer_registration issuer_registration/indy_catalyst_issuer_registration
+
+# git clone issuer registration plugin from github repo
+RUN mkdir ./issuer_registration
+RUN cp -r ./aries-vcr/server/message_families/issuer_registration/* ./issuer_registration
 
 ENTRYPOINT ["/bin/bash", "-c", "aca-py \"$@\"", "--"]
 CMD ["start", "--arg-file", "default.yml"]
