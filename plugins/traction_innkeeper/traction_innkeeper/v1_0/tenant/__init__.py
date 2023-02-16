@@ -5,6 +5,8 @@ from aries_cloudagent.core.event_bus import EventBus
 from aries_cloudagent.core.plugin_registry import PluginRegistry
 from aries_cloudagent.core.protocol_registry import ProtocolRegistry
 
+from .holder_revocation_service import subscribe, HolderRevocationService
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -22,5 +24,10 @@ async def setup(context: InjectionContext):
     bus = context.inject(EventBus)
     if not bus:
         raise ValueError("EventBus missing in context")
+
+    srv = HolderRevocationService()
+    context.injector.bind_instance(HolderRevocationService, srv)
+
+    subscribe(bus)
 
     LOGGER.info("< plugin setup.")
