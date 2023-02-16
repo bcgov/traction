@@ -151,7 +151,7 @@ spec:
               path: /status/live
               port: 8031
             initialDelaySeconds: 90
-            periodSeconds: 3
+            periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /status/ready
