@@ -37,4 +37,4 @@ uvicorn==0.17.0
 uvloop==0.16.0
 watchgod==0.7
 websockets==10.1
-Werkzeug==2.0.2
+Werkzeug==2.2.3
