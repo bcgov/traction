@@ -8,7 +8,7 @@
  * There is no data stored, this is pretty much a factory to make traction tenant api requests.
  */
 import { defineStore, storeToRefs } from 'pinia';
-import axios, { AxiosRequestConfig } from 'axios';
+import axios from 'axios';
 import { useConfigStore } from './configStore';
 import { useTenantStore, useTokenStore } from './index';
 
@@ -33,7 +33,7 @@ export const useAcapyApi = defineStore('acapyApi', () => {
 
   // need to add authorization before we make traction tenant requests...
   acapyApi.interceptors.request.use(
-    async (dataConfig: AxiosRequestConfig) => {
+    async (dataConfig: any) => {
       // console.log('acapyApi.request.fulfilled');
       const result = {
         ...dataConfig,
