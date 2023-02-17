@@ -63,7 +63,7 @@ export const useHolderStore = defineStore('holder', () => {
     error.value = null;
     loading.value = true;
 
-    let result = null;
+    const result = null;
 
     // await acapyApi
     //   .postHttp(API_PATH.HOLDER_CREDENTIALS_ACCEPT_OFFER(credId), {
@@ -96,7 +96,7 @@ export const useHolderStore = defineStore('holder', () => {
     error.value = null;
     loading.value = true;
 
-    let result = null;
+    const result = null;
 
     // await acapyApi
     //   .postHttp(API_PATH.HOLDER_CREDENTIALS_REJECT_OFFER(credId), {
@@ -129,7 +129,7 @@ export const useHolderStore = defineStore('holder', () => {
     error.value = null;
     loading.value = true;
 
-    let result = null;
+    const result = null;
 
     // await acapyApi
     //   .deleteHttp(API_PATH.HOLDER_CREDENTIAL(credId))
