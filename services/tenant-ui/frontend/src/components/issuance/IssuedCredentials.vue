@@ -11,7 +11,7 @@
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
     selection-mode="single"
-    data-key="credential_definition_id"
+    data-key="credential_exchange_id"
   >
     <template #header>
       <div class="flex justify-content-between">
