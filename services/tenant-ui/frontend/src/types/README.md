@@ -19,7 +19,7 @@ For this workflow, the swagger file will just be used as a manual generation to 
 1. Be used in any CI/CD or build processes, just as a standalone for development
 1. Be installed as a npm dependency in the app itself
 
-**Do not make any changes to the generated acapyApi.ts generated file.** Treat it as generator code, if changes are needing to be made, then this approach needs to be re-evaluated as it would mean there's enough issues with the swagger spec as to not be reliable.
+**Do not make any changes to the generated acapyInterface.ts generated file.** Treat it as generator code, if changes are needing to be made, then this approach needs to be re-evaluated as it would mean there's enough issues with the swagger spec as to not be reliable.
 
 For frontend (non request/response) specific types, which are needed in places, create a interface extending the generated one, or a new interface entirely. See "Other interfaces/types/enums" below.
 
@@ -30,7 +30,7 @@ The `swagger-typescript-api` package works with the older spec and validation is
 1. Get the swagger JSON locally from any **Traction ACA-Py deployment**. It is important to have all required Traction Plugins be there for this.
 2. On your local machine anywhere, navigate to the location of the downloaded JSON and use `npx` to run the `swagger-typescript-api` library. Version `12.0.3` was used at this time of writing. We don't want to generate a http client class (since we have our own) so use `no-client` just to get types.
 
-   `npx swagger-typescript-api -p swagger.json -n acapyApi.ts --no-client`
+   `npx swagger-typescript-api -p swagger.json -n acapyInterface.ts --no-client`
 3. Add the resultant file to frontend/src/types/acapyApi
 
 ## Other interfaces/types/enums

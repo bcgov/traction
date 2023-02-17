@@ -1,4 +1,4 @@
-import { EndorserInfo } from '@/types/acapyApi/acapyApi';
+import { EndorserInfo } from '@/types/acapyApi/acapyInterface';
 
 import { API_PATH } from '@/helpers/constants';
 import { defineStore, storeToRefs } from 'pinia';
