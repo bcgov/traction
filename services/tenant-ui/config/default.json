@@ -53,7 +53,7 @@
     },
     "innkeeper": {
       "user": "innkeeper",
-      "key": "REDACTED"
+      "key": "change-me"
     },
     "smtp": {
       "server": "apps.smtp.gov.bc.ca",

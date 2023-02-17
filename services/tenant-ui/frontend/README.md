@@ -32,18 +32,6 @@ npm run lint
 npm run lintfix
 ```
 
-## Generating Typescript Schema for the API
+## Generating Typescript Interfaces and Types from the ACA-Py API
 
-### Examples
-
-Generate schema from the **test** API
-
-```bash
-npm run generate-schema --url=https://traction-api-test.apps.silver.devops.gov.bc.ca/tenant/openapi.json
-```
-
-Generate schema from the local API
-
-```bash
-npm run generate-schema --url=https://localhost:5100/tenant/openapi.json
-```
+[See README.md](src/types) in `src/types`

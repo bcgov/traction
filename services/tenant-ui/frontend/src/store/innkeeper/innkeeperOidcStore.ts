@@ -48,7 +48,7 @@ export const useInnkeeperOidcStore = defineStore('innkeeperOidcStore', () => {
         API_PATH.OIDC_INNKEEPER_LOGIN,
         loginCfg
       );
-      token.value = response.data.access_token;
+      token.value = response.data.token;
 
       // strip the oidc return params
       window.history.pushState({}, document.title, '/innkeeper');

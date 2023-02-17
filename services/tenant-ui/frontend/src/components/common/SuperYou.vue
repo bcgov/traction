@@ -25,7 +25,7 @@
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import { ref } from 'vue';
-import { useTenantApi } from '@/store/tenantApi';
+import { useAcapyApi } from '@/store/acapyApi';
 import { JSONEditor } from 'vanilla-jsoneditor';
 import { useToast } from 'vue-toastification';
 
@@ -101,7 +101,7 @@ const emit = defineEmits(['success']);
  */
 const submit = () => {
   const payload = content.json || JSON.parse(content.text);
-  useTenantApi()
+  useAcapyApi()
     .postHttp(props.apiUrl, payload)
     .then((response) => {
       toast.info('Success!');
