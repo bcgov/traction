@@ -10,15 +10,11 @@ const INN_PW = config.get("server.innkeeper.key");
  * @returns {string} The inkeeper token
  */
 export const login = async () => {
-  const loginUrl = `${TRACURL}/innkeeper/token`;
-  const payload = `username=${INN_USER}&password=${INN_PW}`;
+  const loginUrl = `${TRACURL}/multitenancy/tenant/${INN_USER}/token`;
+  const payload = { wallet_key: INN_PW };
   const res = await axios({
     method: "post",
     url: loginUrl,
-    headers: {
-      accept: "application/json",
-      "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-    },
     data: payload,
   });
 
