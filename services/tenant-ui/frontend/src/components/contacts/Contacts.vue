@@ -18,6 +18,7 @@
     <template #header>
       <div class="flex justify-content-between">
         <div class="flex justify-content-start">
+          <AcceptInvitation />
           <!-- <AcceptInvitation class="ml-4" /> -->
         </div>
         <div class="flex justify-content-end">
@@ -85,7 +86,7 @@ import { FilterMatchMode } from 'primevue/api';
 import { useContactsStore, useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other components
-// import AcceptInvitation from './acceptInvitation/AcceptInvitation.vue';
+import AcceptInvitation from './acceptInvitation/AcceptInvitation.vue';
 // import EditContact from './editContact/EditContact.vue';
 import RowExpandData from '../common/RowExpandData.vue';
 import StatusChip from '../common/StatusChip.vue';
