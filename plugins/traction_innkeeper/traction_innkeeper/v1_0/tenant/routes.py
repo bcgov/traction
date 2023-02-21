@@ -28,9 +28,9 @@ from aries_cloudagent.wallet.models.wallet_record import (
 
 from marshmallow import fields
 
-from ..routes import error_handler
-from ..tenant_manager import TenantManager
-from ..models import (
+from ..innkeeper.routes import error_handler
+from ..innkeeper.tenant_manager import TenantManager
+from ..innkeeper.models import (
     TenantRecord,
     TenantRecordSchema,
 )
