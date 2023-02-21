@@ -73,9 +73,16 @@ const { loading } = storeToRefs(useContactsStore());
 
 const emit = defineEmits(['closed', 'success']);
 
+const props = defineProps({
+  invitationString: {
+    type: String,
+    default: '{}',
+  },
+});
+
 // Validation
 const formFields = reactive({
-  invitationJson: '{}',
+  invitationJson: props.invitationString,
   alias: '',
 });
 const rules = {

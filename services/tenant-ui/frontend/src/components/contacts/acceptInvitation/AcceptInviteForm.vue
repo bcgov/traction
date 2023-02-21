@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="handleSubmit(!v$.$invalid)" v-if="urlEntryStep">
+  <form v-if="urlEntryStep" @submit.prevent="handleSubmit(!v$.$invalid)">
     <div class="field">
       <div class="flex justify-content-between">
         <label
@@ -43,14 +43,16 @@
     </div>
   </form>
 
-  <AcceptInviteSubmission v-else />
+  <AcceptInviteSubmission
+    v-else
+    :invitation-string="invitationString"
+    @closed="$emit('closed')"
+  />
 </template>
 
 <script setup lang="ts">
 // Vue
 import { reactive, ref } from 'vue';
-// State
-import { useContactsStore } from '@/store';
 // PrimeVue / Validation
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
@@ -59,13 +61,14 @@ import { useVuelidate } from '@vuelidate/core';
 import { useToast } from 'vue-toastification';
 // Components
 import AcceptInviteSubmission from './AcceptInviteSubmission.vue';
+import { paramFromUrlString } from '@/helpers';
 
 const toast = useToast();
-const contactsStore = useContactsStore();
 
-const emit = defineEmits(['closed', 'success']);
+defineEmits(['closed']);
 
 const urlEntryStep = ref(true);
+const invitationString = ref('{}');
 
 // Skip URL enter
 const skipUrl = () => {
@@ -91,6 +94,14 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 
   try {
+    const inviteParam = paramFromUrlString(
+      formFields.inviteUrl,
+      'c_i'
+    ) as string;
+    if (!inviteParam) {
+      throw Error('Invalid format for invitation URL');
+    }
+    invitationString.value = window.atob(inviteParam);
     urlEntryStep.value = false;
   } catch (error) {
     toast.error(`Failure: ${error}`);

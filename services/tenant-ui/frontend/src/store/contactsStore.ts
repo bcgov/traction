@@ -85,24 +85,13 @@ export const useContactsStore = defineStore('contacts', () => {
     return invitationData;
   }
 
-  async function recieveInvitation(inviteUrl: string, alias: string) {
+  async function recieveInvitation(invite: string, alias: string) {
     console.log('> contactsStore.recieveInvitation');
     error.value = null;
     loading.value = true;
 
     let acceptedData = null;
-    // const payload = {
-    //   invitation_url: inviteUrl,
-    //   invitation: {}
-    // };
-    const payload = {
-      '@type': 'https://didcomm.org/connections/1.0/invitation',
-      '@id': 'af6ee8ea-ccb5-4ded-971b-3c29047c5732',
-      serviceEndpoint:
-        'https://pr-483-traction-acapy-dev.apps.silver.devops.gov.bc.ca',
-      recipientKeys: ['7R8zk2YUQCJo8GJuSxbkEnpZ8wP9srtpbBjCy1kfn2Bm'],
-      label: 'PR438_0217',
-    };
+    const payload = JSON.parse(invite);
 
     await acapyApi
       .postHttp(API_PATH.CONNECTIONS_RECEIVE_INVITATION, payload, {

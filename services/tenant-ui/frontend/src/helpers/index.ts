@@ -40,3 +40,11 @@ export function toKebabCase(str: string | null) {
     );
   return strs ? strs.join('-').toLocaleLowerCase() : '';
 }
+
+export function paramFromUrlString(url: string, paramName: string) {
+  const results = new RegExp('[?&]' + paramName + '=([^&#]*)').exec(url);
+  if (results == null) {
+    return null;
+  }
+  return decodeURI(results[1]) || 0;
+}
