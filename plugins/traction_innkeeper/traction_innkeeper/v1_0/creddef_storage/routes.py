@@ -51,7 +51,7 @@ class CredDefIdMatchInfoSchema(OpenAPISchema):
     )
 
 
-class OperationResponseSchema(OpenAPISchema):
+class CredDefStorageOperationResponseSchema(OpenAPISchema):
     """Response schema for simple operations."""
 
     success = fields.Bool(
@@ -99,7 +99,7 @@ async def creddef_storage_get(request: web.BaseRequest):
     tags=[SWAGGER_CATEGORY],
 )
 @match_info_schema(CredDefIdMatchInfoSchema())
-@response_schema(OperationResponseSchema(), 200, description="")
+@response_schema(CredDefStorageOperationResponseSchema(), 200, description="")
 @error_handler
 async def creddef_storage_remove(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]

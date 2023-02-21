@@ -77,3 +77,7 @@ async def register(app: web.Application):
         ]
     )
     LOGGER.info("< registering routes")
+
+
+def post_process_routes(app: web.Application):
+    pass

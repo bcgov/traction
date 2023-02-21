@@ -11,7 +11,7 @@ from aries_cloudagent.protocols.endorse_transaction.v1_0.manager import (
 )
 
 
-from ..tenant_manager import TenantManager
+from ..innkeeper.tenant_manager import TenantManager
 
 
 CONNECTIONS_EVENT_PATTERN = re.compile(f"acapy::record::{ConnRecord.RECORD_TOPIC}::.*")
