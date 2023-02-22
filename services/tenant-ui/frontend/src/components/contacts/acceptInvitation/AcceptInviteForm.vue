@@ -1,21 +1,29 @@
 <template>
-  <form @submit.prevent="handleSubmit(!v$.$invalid)">
-    <!-- Invitation URL -->
+  <form v-if="urlEntryStep" @submit.prevent="handleSubmit(!v$.$invalid)">
     <div class="field">
-      <label
-        for="inviteUrl"
-        :class="{ 'p-error': v$.inviteUrl.$invalid && submitted }"
-      >
-        Invitation Url
-      </label>
-      <Textarea
-        id="inviteUrl"
-        v-model="v$.inviteUrl.$model"
-        :class="{ 'p-invalid': v$.inviteUrl.$invalid && submitted }"
-        :auto-resize="true"
-        rows="1"
-        cols="75"
-      />
+      <div class="flex justify-content-between">
+        <label
+          for="inviteUrl"
+          :class="{ 'p-error': v$.inviteUrl.$invalid && submitted }"
+        >
+          Invitation Url
+        </label>
+        <Button
+          label="Skip URL and use JSON"
+          class="p-button-link flex justify-content-end pt-1 pr-0"
+          @click="skipUrl"
+        />
+      </div>
+
+      <div class="p-inputgroup">
+        <InputText
+          id="inviteUrl"
+          v-model="v$.inviteUrl.$model"
+          :class="{ 'p-invalid': v$.inviteUrl.$invalid && submitted }"
+        />
+        <Button type="submit" icon="pi pi-arrow-right" />
+      </div>
+
       <span v-if="v$.inviteUrl.$error && submitted">
         <span v-for="(error, index) of v$.inviteUrl.$errors" :key="index">
           <small class="p-error block">{{ error.$message }}</small>
@@ -26,67 +34,57 @@
       }}</small>
     </div>
 
-    <!-- Alias -->
-    <div class="field">
-      <label for="alias" :class="{ 'p-error': v$.alias.$invalid && submitted }">
-        Alias
-      </label>
-      <InputText
-        id="alias"
-        v-model="v$.alias.$model"
-        class="w-full"
-        :class="{ 'p-invalid': v$.alias.$invalid && submitted }"
-      />
-      <span v-if="v$.alias.$error && submitted">
-        <span v-for="(error, index) of v$.alias.$errors" :key="index">
-          <small class="p-error">{{ error.$message }}</small>
-        </span>
-      </span>
+    <div class="mb-4">
+      <i class="pi pi-info-circle"></i>
+      Supported URL format is
+      <strong>
+        <code>http://&lt;acapy_url&gt;?c_i=&lt;base64 encode&gt;</code>
+      </strong>
     </div>
-    <Button
-      type="submit"
-      label="Accept"
-      class="mt-5 w-full"
-      :disabled="loading"
-      :loading="loading"
-    />
   </form>
+
+  <AcceptInviteSubmission
+    v-else
+    :invitation-string="invitationString"
+    @closed="$emit('closed')"
+  />
 </template>
 
 <script setup lang="ts">
 // Vue
 import { reactive, ref } from 'vue';
-// State
-import { useContactsStore } from '@/store';
-import { storeToRefs } from 'pinia';
 // PrimeVue / Validation
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-import Textarea from 'primevue/textarea';
-import { maxLength, required, url } from '@vuelidate/validators';
+import { required, url } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
 import { useToast } from 'vue-toastification';
+// Components
+import AcceptInviteSubmission from './AcceptInviteSubmission.vue';
+import { paramFromUrlString } from '@/helpers';
 
 const toast = useToast();
-const contactsStore = useContactsStore();
 
-// use the loading state from the store to disable the button...
-const { loading } = storeToRefs(useContactsStore());
+defineEmits(['closed']);
 
-const emit = defineEmits(['closed', 'success']);
+const urlEntryStep = ref(true);
+const invitationString = ref('{}');
+
+// Skip URL enter
+const skipUrl = () => {
+  urlEntryStep.value = false;
+};
 
 // Validation
 const formFields = reactive({
   inviteUrl: '',
-  alias: '',
 });
 const rules = {
   inviteUrl: { required, url },
-  alias: { maxLengthValue: maxLength(255) },
 };
 const v$ = useVuelidate(rules, formFields);
 
-// Form submission
+// URL Form submission
 const submitted = ref(false);
 const handleSubmit = async (isFormValid: boolean) => {
   submitted.value = true;
@@ -96,14 +94,15 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 
   try {
-    // await contactsStore.acceptInvitation(
-    //   formFields.inviteUrl,
-    //   formFields.alias
-    // );
-    emit('success');
-    // close up on success
-    emit('closed');
-    toast.info('Invitation Accepted');
+    const inviteParam = paramFromUrlString(
+      formFields.inviteUrl,
+      'c_i'
+    ) as string;
+    if (!inviteParam) {
+      throw Error('Invalid format for invitation URL');
+    }
+    invitationString.value = window.atob(inviteParam);
+    urlEntryStep.value = false;
   } catch (error) {
     toast.error(`Failure: ${error}`);
   } finally {

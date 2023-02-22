@@ -18,7 +18,7 @@ export const API_PATH = {
   CONNECTIONS: '/connections',
   CONNECTION: (id: string) => `/connections/${id}`,
   CONNECTIONS_CREATE_INVITATION: '/connections/create-invitation',
-  // CONTACTS_RECEIVE_INVITATION: '/tenant/v1/contacts/receive-invitation',
+  CONNECTIONS_RECEIVE_INVITATION: '/connections/receive-invitation',
   CONNECTIONS_INVITATION: (id: string) => `/connections/${id}/invitation`,
 
   CREDENTIAL_DEFINITIONS: '/credential-definitions',

@@ -85,46 +85,46 @@ export const useContactsStore = defineStore('contacts', () => {
     return invitationData;
   }
 
-  // async function acceptInvitation(inviteUrl: string, alias: string) {
-  //   console.log('> contactsStore.acceptInvitation');
-  //   error.value = null;
-  //   loading.value = true;
+  async function receiveInvitation(invite: string, alias: string) {
+    console.log('> contactsStore.receiveInvitation');
+    error.value = null;
+    loading.value = true;
 
-  //   let acceptedData = null;
-  //   // need the await here since the returned invitation_data is not one of our stored refs...
-  //   await acapyApi
-  //     .postHttp(API_PATH.CONTACTS_RECEIVE_INVITATION, {
-  //       alias,
-  //       invitation_url: inviteUrl,
-  //     })
-  //     .then((res) => {
-  //       console.log(res);
-  //       // don't grab the item, there are other parts of the response data we need (invitation, invitation url)
-  //       acceptedData = res.data;
-  //     })
-  //     .then(() => {
-  //       // do we want to automatically reload? or have the caller of this to load?
-  //       console.log(
-  //         'invitation accepted. the store calls load automatically, but do we want this done "manually"?'
-  //       );
-  //       listContacts();
-  //     })
-  //     .catch((err) => {
-  //       error.value = err;
-  //       // console.log(error.value);
-  //     })
-  //     .finally(() => {
-  //       loading.value = false;
-  //     });
-  //   console.log('< contactsStore.acceptInvitation');
+    let acceptedData = null;
+    const payload = JSON.parse(invite);
 
-  //   if (error.value != null) {
-  //     // throw error so $onAction.onError listeners can add their own handler
-  //     throw error.value;
-  //   }
-  //   // return data so $onAction.after listeners can add their own handler
-  //   return acceptedData;
-  // }
+    await acapyApi
+      .postHttp(API_PATH.CONNECTIONS_RECEIVE_INVITATION, payload, {
+        params: { alias, auto_accept: true },
+      })
+      .then((res) => {
+        console.log(res);
+        // don't grab the item, there are other parts of the response data we need (invitation, invitation url)
+        acceptedData = res.data;
+      })
+      .then(() => {
+        // do we want to automatically reload? or have the caller of this to load?
+        console.log(
+          'invitation accepted. the store calls load automatically, but do we want this done "manually"?'
+        );
+        listContacts();
+      })
+      .catch((err) => {
+        error.value = err;
+        // console.log(error.value);
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< contactsStore.receiveInvitation');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return acceptedData;
+  }
 
   async function deleteContact(connectionId: string) {
     console.log('> contactsStore.deleteContact');
@@ -239,7 +239,7 @@ export const useContactsStore = defineStore('contacts', () => {
     filteredInvitations,
     listContacts,
     createInvitation,
-    // acceptInvitation,
+    receiveInvitation,
     deleteContact,
     getContact,
     getInvitation,

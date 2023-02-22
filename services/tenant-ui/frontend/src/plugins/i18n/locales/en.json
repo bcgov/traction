@@ -15,6 +15,7 @@
   },
   "connect": {
     "connections": "Connections",
+    "accept": "Accept Invitation",
     "edit": "Edit Connection",
     "delete": "Delete Connection",
     "invitations": {

@@ -1,13 +1,14 @@
 <template>
   <div>
     <Button
-      :label="t('contact.accept')"
+      :label="t('connect.accept')"
       icon="pi pi-check"
       @click="openModal"
     />
     <Dialog
       v-model:visible="displayModal"
-      :header="t('contact.accept')"
+      :style="{ minWidth: '600px' }"
+      :header="t('connect.accept')"
       :modal="true"
       @update:visible="handleClose"
     >
