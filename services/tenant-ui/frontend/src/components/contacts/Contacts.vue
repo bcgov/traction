@@ -20,6 +20,7 @@
         <div class="flex justify-content-start">
           <AcceptInvitation />
           <!-- <AcceptInvitation class="ml-4" /> -->
+          <DidExchange class="ml-4" />
         </div>
         <div class="flex justify-content-end">
           <span class="p-input-icon-left contact-search">
@@ -50,7 +51,7 @@
           :disabled="deleteDisabled(data.alias)"
           @click="deleteContact($event, data.connection_id)"
         />
-        <!-- <EditContact :contact-id="data.contact_id" /> -->
+        <!-- <EditContact :id="data.connection_id" /> -->
       </template>
     </Column>
     <Column :sortable="true" field="alias" header="Alias" />
@@ -87,6 +88,8 @@ import { useContactsStore, useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other components
 import AcceptInvitation from './acceptInvitation/AcceptInvitation.vue';
+// import AcceptInvitation from './acceptInvitation/AcceptInvitation.vue';
+import DidExchange from './didExchange/DidExchange.vue';
 // import EditContact from './editContact/EditContact.vue';
 import RowExpandData from '../common/RowExpandData.vue';
 import StatusChip from '../common/StatusChip.vue';
