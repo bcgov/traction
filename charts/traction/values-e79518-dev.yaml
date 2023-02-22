@@ -1,0 +1,44 @@
+global:
+  fullnameOverride: "traction-dts"
+  ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
+  nsp:
+    enabled: true
+acapy:
+  image:
+    tag: "ghcr.io/bcgov/traction-plugins-acapy:sha-4f98641"
+    version: 'sha-4f98641'
+    buildtime: '2023-02-16T21:45:48.653Z'
+    pullPolicy: Always
+  secret:
+    adminurl:
+      generated: false
+    pluginInnkeeper:
+      generated: false
+  pluginValues:
+    tractionInnkeeper:
+      printKey: true
+      printToken: true
+  resources:
+    limits:
+      cpu: 200m
+      memory: 820Mi
+    requests:
+      cpu: 120m
+      memory: 400Mi
+  tails:
+    enabled: true
+postgresql:
+  fullnameOverride: 'traction-dts'
+  resources:
+    limits:
+      cpu: 200m
+      memory: 820Mi
+    requests:
+      cpu: 120m
+      memory: 400Mi
+tenant_proxy:
+  image:
+    tag: "ghcr.io/bcgov/traction-tenant-proxy:sha-4f98641"
+    version: 'sha-4f98641'
+    buildtime: "2023-02-16T21:45:38.860Z"
+    pullPolicy: Always
