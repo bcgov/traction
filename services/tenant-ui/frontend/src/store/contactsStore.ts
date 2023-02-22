@@ -218,7 +218,7 @@ export const useContactsStore = defineStore('contacts', () => {
         API_PATH.DID_EXCHANGE_CREATE_REQUEST,
         {},
         {
-          params: { their_public_did: did, alias: alias, my_label: myLabel },
+          params: { their_public_did: did, alias, my_label: myLabel },
         }
       )
       .then((res) => {
