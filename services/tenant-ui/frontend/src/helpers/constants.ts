@@ -29,6 +29,13 @@ export const API_PATH = {
   CREDENTIAL_DEFINITION_STORAGE_ITEM: (id: string) =>
     `/credential-definition-storage/${id}`,
 
+  DID_EXCHANGE_CREATE_REQUEST: '/didexchange/create-request',
+  DID_EXCHANGE_RECIEVE_REQUEST: '/didexchange/recieve-request',
+  DID_EXCHANGE_ACCEPT_INVITATION: (id: string) =>
+    `/didexchange/${id}/accept-invitation`,
+  DID_EXCHANGE_ACCEPT_REQUEST: (id: string) =>
+    `/didexchange/${id}/accept-request`,
+
   INNKEEPER_TOKEN: '/innkeeper/token',
   INNKEEPER_TENANTS: '/innkeeper/tenants/',
   INNKEEPER_TENANT: (id: string) => `/innkeeper/tenants/${id}`,

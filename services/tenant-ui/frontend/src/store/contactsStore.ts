@@ -208,6 +208,39 @@ export const useContactsStore = defineStore('contacts', () => {
   //   return contactData;
   // }
 
+  async function didCreateRequest(did: string, alias: string, myLabel: string) {
+    console.log('> contactsStore.didCreateRequest');
+    error.value = null;
+    loading.value = true;
+
+    await acapyApi
+      .postHttp(
+        API_PATH.DID_EXCHANGE_CREATE_REQUEST,
+        {},
+        {
+          params: { their_public_did: did, alias: alias, my_label: myLabel },
+        }
+      )
+      .then((res) => {
+        console.log(res);
+      })
+      .then(() => {
+        listContacts();
+      })
+      .catch((err) => {
+        error.value = err;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< contactsStore.didCreateRequest');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+  }
+
   // private functions
   const contactLabelValue = (item: any) => {
     let result = null;
@@ -244,6 +277,7 @@ export const useContactsStore = defineStore('contacts', () => {
     getContact,
     getInvitation,
     // updateContact,
+    didCreateRequest,
   };
 });
 

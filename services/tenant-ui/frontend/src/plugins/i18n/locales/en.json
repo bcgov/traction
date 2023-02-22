@@ -26,6 +26,9 @@
       "multi": "Multi Use",
       "multiCreate": "Create Multi Use Invitation",
       "regenerate": "Regenerate Invitation"
+    },
+    "didExchange": {
+      "didExchange": "DID Exchange"
     }
   },
   "issue": {
