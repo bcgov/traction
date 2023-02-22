@@ -85,8 +85,8 @@ export const useContactsStore = defineStore('contacts', () => {
     return invitationData;
   }
 
-  async function recieveInvitation(invite: string, alias: string) {
-    console.log('> contactsStore.recieveInvitation');
+  async function receiveInvitation(invite: string, alias: string) {
+    console.log('> contactsStore.receiveInvitation');
     error.value = null;
     loading.value = true;
 
@@ -116,7 +116,7 @@ export const useContactsStore = defineStore('contacts', () => {
       .finally(() => {
         loading.value = false;
       });
-    console.log('< contactsStore.recieveInvitation');
+    console.log('< contactsStore.receiveInvitation');
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
@@ -239,7 +239,7 @@ export const useContactsStore = defineStore('contacts', () => {
     filteredInvitations,
     listContacts,
     createInvitation,
-    recieveInvitation,
+    receiveInvitation,
     deleteContact,
     getContact,
     getInvitation,

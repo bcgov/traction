@@ -16,9 +16,11 @@
         :auto-resize="true"
         rows="6"
       />
-      <small v-if="v$.invitationJson.$invalid && submitted" class="p-error">{{
-        v$.invitationJson.required.$message
-      }}</small>
+      <span v-if="v$.invitationJson.$error && submitted">
+        <span v-for="(error, index) of v$.invitationJson.$errors" :key="index">
+          <small class="p-error block">{{ error.$message }}</small>
+        </span>
+      </span>
     </div>
 
     <!-- Alias -->
@@ -61,9 +63,11 @@ import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
-import { maxLength, required, url } from '@vuelidate/validators';
+import { maxLength, required, helpers } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
 import { useToast } from 'vue-toastification';
+// Other
+import { isJsonString } from '@/helpers';
 
 const toast = useToast();
 const contactsStore = useContactsStore();
@@ -86,7 +90,9 @@ const formFields = reactive({
   alias: '',
 });
 const rules = {
-  invitationJson: { required },
+  invitationJson: {
+    isJsonString: helpers.withMessage('Invalid JSON format', isJsonString),
+  },
   alias: { required, maxLengthValue: maxLength(255) },
 };
 const v$ = useVuelidate(rules, formFields);
@@ -95,13 +101,15 @@ const v$ = useVuelidate(rules, formFields);
 const submitted = ref(false);
 const handleSubmit = async (isFormValid: boolean) => {
   submitted.value = true;
+  // Since the JSON field is set without user entry, to display custom error set the dirty flag
+  v$.value.$touch();
 
   if (!isFormValid) {
     return;
   }
 
   try {
-    await contactsStore.recieveInvitation(
+    await contactsStore.receiveInvitation(
       formFields.invitationJson,
       formFields.alias
     );
