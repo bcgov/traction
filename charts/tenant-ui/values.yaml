@@ -21,6 +21,10 @@ global:
     # -- If true, the Postgres chart is deployed
     deployPostgres: true
 
+  # if true, run the Network Policy charts
+  nsp:
+    enabled: false
+
 tenant_ui:
   image:
     tag: "ghcr.io/bcgov/traction-tenant-ui:sha-5fdc664"
