@@ -35,6 +35,12 @@ export const API_PATH = {
     `/didexchange/${id}/accept-invitation`,
   DID_EXCHANGE_ACCEPT_REQUEST: (id: string) =>
     `/didexchange/${id}/accept-request`,
+  CREDENTIAL_MIME_TYPES: (id: string) => `/credential/mime-types/${id}`,
+  CREDENTIAL_REVOKED: (id: string) => `/credential/revoked/${id}`,
+  CREDENTIAL_W3C: (id: string) => `/credential/w3c/${id}`,
+  CREDENTIAL: (id: string) => `/credential/${id}`,
+  CREDENTIALS: '/credentials',
+  CREDENTIALS_W3C: '/credentials/w3c',
 
   INNKEEPER_TOKEN: '/innkeeper/token',
   INNKEEPER_TENANTS: '/innkeeper/tenants/',
@@ -45,7 +51,9 @@ export const API_PATH = {
   INNKEEPER_RESERVATIONS_DENY: (id: string) =>
     `/innkeeper/reservations/${id}/deny`,
 
-  ISSUE_CREDENTIALS_RECORDS: 'issue-credential/records',
+  ISSUE_CREDENTIAL_RECORDS: 'issue-credential/records',
+  ISSUE_CREDENTIAL_RECORDS_SEND_OFFER: (id: string) =>
+    `issue-credential/records/${id}/send-offer`,
   ISSUE_CREDENTIALS_SEND_OFFER: 'issue-credential/send-offer',
 
   MULTITENANCY_RESERVATIONS: '/multitenancy/reservations',

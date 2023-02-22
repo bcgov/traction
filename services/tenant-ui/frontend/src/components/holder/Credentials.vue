@@ -36,7 +36,7 @@
     <template #expansion="{ data }">
       <RowExpandData
         :id="data.holder_credential_id"
-        :url="API_PATH.HOLDER_CREDENTIALS"
+        :url="API_PATH.CREDENTIALS"
         :params="{ acapy: true }"
       />
     </template>
@@ -89,15 +89,16 @@ import { onMounted, ref } from 'vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import { useToast } from 'vue-toastification';
 import InputText from 'primevue/inputtext';
 import { FilterMatchMode } from 'primevue/api';
-
-import { useHolderStore } from '../../store';
-import { storeToRefs } from 'pinia';
 import { useConfirm } from 'primevue/useconfirm';
-import RowExpandData from '../common/RowExpandData.vue';
-import StatusChip from '../common/StatusChip.vue';
+import { useToast } from 'vue-toastification';
+// State
+import { useHolderStore } from '@/store';
+import { storeToRefs } from 'pinia';
+// Components
+import RowExpandData from '@/common/RowExpandData.vue';
+import StatusChip from '@/common/StatusChip.vue';
 
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';

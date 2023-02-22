@@ -82,7 +82,7 @@
     <template #expansion="{ data }">
       <RowExpandData
         :id="data.credential_exchange_id"
-        :url="API_PATH.ISSUE_CREDENTIALS_RECORDS"
+        :url="API_PATH.ISSUE_CREDENTIAL_RECORDS"
       />
     </template>
   </DataTable>

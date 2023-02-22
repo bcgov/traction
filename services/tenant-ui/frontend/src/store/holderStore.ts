@@ -20,7 +20,7 @@ export const useHolderStore = defineStore('holder', () => {
 
   async function listCredentials() {
     selectedCredential.value = null;
-    return fetchList(API_PATH.HOLDER_CREDENTIALS, credentials, error, loading);
+    return fetchList(API_PATH.CREDENTIALS, credentials, error, loading);
   }
 
   async function listPresentations() {
@@ -36,7 +36,7 @@ export const useHolderStore = defineStore('holder', () => {
   async function getCredential(id: string, params: any = {}) {
     const getloading: any = ref(false);
     return fetchItem(
-      API_PATH.HOLDER_CREDENTIALS,
+      API_PATH.CREDENTIALS,
       id,
       error,
       getloading,

@@ -48,7 +48,7 @@ const items = ref([
 
   {
     label: () => t('issue.issuance'),
-    icon: 'pi pi-fw pi-wallet',
+    icon: 'pi pi-fw pi-credit-card',
     to: { name: 'MyIssuedCredentials' },
   },
 
@@ -58,11 +58,11 @@ const items = ref([
   //   to: { name: 'MyPresentations' },
   // },
 
-  // {
-  //   label: () => t('holder.holder'),
-  //   icon: 'pi pi-fw pi-id-card',
-  //   to: { name: 'MyHeldCredentials' },
-  // },
+  {
+    label: () => t('holder.credentials'),
+    icon: 'pi pi-fw pi-wallet',
+    to: { name: 'MyHeldCredentials' },
+  },
 
   {
     label: () => t('configuration.configuration'),
