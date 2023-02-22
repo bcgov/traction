@@ -22,6 +22,9 @@ global:
   # -- The used ledger. Will be used for default values.
   ledger: bcovrin-test
 
+  nsp:
+    enabled: false
+
 acapy:
   image:
     # building our own acapy with plugins

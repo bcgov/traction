@@ -1,6 +1,8 @@
 global:
   fullnameOverride: "traction-dts"
   ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
+  nsp:
+    enabled: true
 acapy:
   image:
     tag: "ghcr.io/bcgov/traction-plugins-acapy:sha-4f98641"
