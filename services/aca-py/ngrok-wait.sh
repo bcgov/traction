@@ -67,6 +67,7 @@ exec aca-py start \
     --plugin-config-value multitenant_provider.token_expiry.units=${TRACTION_MULTITENANT_TOKENEXPIRY_UNITS} \
     --plugin-config-value multitenant_provider.token_expiry.amount=${TRACTION_MULTITENANT_TOKENEXPIRY_AMOUNT} \
     --plugin traction_plugins.basicmessage_storage.v1_0 \
+    --plugin traction_plugins.connection_update.v1_0 \
     --plugin traction_plugins.traction_innkeeper.v1_0 \
     --plugin-config-value traction_innkeeper.innkeeper_wallet.tenant_id=${TRACTION_INNKEEPER_TENANT_ID} \
     --plugin-config-value traction_innkeeper.innkeeper_wallet.wallet_name=${TRACTION_INNKEEPER_WALLET_NAME} \
