@@ -36,7 +36,7 @@
     <template #expansion="{ data }">
       <RowExpandData
         :id="data.holder_credential_id"
-        :url="API_PATH.CREDENTIALS"
+        :url="API_PATH.CREDENTIAL"
         :params="{ acapy: true }"
       />
     </template>
@@ -65,10 +65,12 @@
             @click="deleteCredential($event, data)"
           />
         </div>
-      </template>
+      </template>cred_def_id
     </Column>
-    <Column :sortable="true" field="alias" header="Name" />
-    <Column :sortable="true" field="status" header="Status">
+    <Column :sortable="true" field="referent" header="Referent" />
+    <Column :sortable="true" field="cred_def_id" header="Credential" />
+    <Column :sortable="true" field="attrs" header="Attributes" />
+    <!-- <Column :sortable="true" field="status" header="Status">
       <template #body="{ data }">
         <StatusChip :status="data.status" />
       </template>
@@ -78,7 +80,7 @@
         {{ formatDateLong(data.created_at) }}
       </template>
     </Column>
-    <Column :sortable="true" field="contact.alias" header="Contact Name" />
+    <Column :sortable="true" field="contact.alias" header="Contact Name" /> -->
   </DataTable>
 </template>
 
@@ -97,8 +99,8 @@ import { useToast } from 'vue-toastification';
 import { useHolderStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Components
-import RowExpandData from '@/common/RowExpandData.vue';
-import StatusChip from '@/common/StatusChip.vue';
+import RowExpandData from '../common/RowExpandData.vue';
+import StatusChip from '../common/StatusChip.vue';
 
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';

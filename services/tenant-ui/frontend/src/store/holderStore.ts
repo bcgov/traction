@@ -35,13 +35,7 @@ export const useHolderStore = defineStore('holder', () => {
 
   async function getCredential(id: string, params: any = {}) {
     const getloading: any = ref(false);
-    return fetchItem(
-      API_PATH.CREDENTIALS,
-      id,
-      error,
-      getloading,
-      params
-    );
+    return fetchItem(API_PATH.CREDENTIALS, id, error, getloading, params);
   }
 
   async function getPresentation(id: string, params: any = {}) {

@@ -21,6 +21,13 @@ export const API_PATH = {
   CONNECTIONS_RECEIVE_INVITATION: '/connections/receive-invitation',
   CONNECTIONS_INVITATION: (id: string) => `/connections/${id}/invitation`,
 
+  CREDENTIAL_MIME_TYPES: (id: string) => `/credential/mime-types/${id}`,
+  CREDENTIAL_REVOKED: (id: string) => `/credential/revoked/${id}`,
+  CREDENTIAL_W3C: (id: string) => `/credential/w3c/${id}`,
+  CREDENTIAL: (id: string) => `/credential/${id}`,
+  CREDENTIALS: '/credentials',
+  CREDENTIALS_W3C: '/credentials/w3c',
+
   CREDENTIAL_DEFINITIONS: '/credential-definitions',
   CREDENTIAL_DEFINITION: (id: string) => `/credential-definitions/${id}`,
   CREDENTIAL_DEFINITIONS_CREATED: '/credential-definitions/created',
@@ -35,12 +42,6 @@ export const API_PATH = {
     `/didexchange/${id}/accept-invitation`,
   DID_EXCHANGE_ACCEPT_REQUEST: (id: string) =>
     `/didexchange/${id}/accept-request`,
-  CREDENTIAL_MIME_TYPES: (id: string) => `/credential/mime-types/${id}`,
-  CREDENTIAL_REVOKED: (id: string) => `/credential/revoked/${id}`,
-  CREDENTIAL_W3C: (id: string) => `/credential/w3c/${id}`,
-  CREDENTIAL: (id: string) => `/credential/${id}`,
-  CREDENTIALS: '/credentials',
-  CREDENTIALS_W3C: '/credentials/w3c',
 
   INNKEEPER_TOKEN: '/innkeeper/token',
   INNKEEPER_TENANTS: '/innkeeper/tenants/',
