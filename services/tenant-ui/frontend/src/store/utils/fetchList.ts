@@ -29,9 +29,12 @@ export async function fetchListFromAPI(
   await api
     .getHttp(url, params)
     .then((res: AxiosRequestConfig): void => {
-      // console.log(res);
-      list.value = res.data.results;
-      // console.log(list.value);
+      if (res.data.results) {
+        list.value = res.data.results;
+      } else if (res.data.result) {
+        // Some lists have it singular
+        list.value = res.data.result;
+      }
     })
     .catch((err: string): void => {
       error.value = err;

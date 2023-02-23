@@ -79,6 +79,8 @@ export const API_PATH = {
   WALLET_DID_PUBLIC: '/wallet/did/public',
   WALLET_DID_CREATE: '/wallet/did/create',
 
+  SERVER_PLUGINS: '/plugins',
+
   // Legacy (to be removed)
 
   HOLDER_CREDENTIALS: '/tenant/v1/holder/credentials/',
