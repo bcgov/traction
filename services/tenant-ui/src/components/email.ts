@@ -1,6 +1,9 @@
 import { Request } from "express";
 import config from "config";
 import nodemailer from "nodemailer";
+import * as fs from "fs";
+import * as eta from "eta"; // HTML templating engine
+
 const SERVER: string = config.get("server.smtp.server");
 const PORT: number = config.get("server.smtp.port");
 const FROM: string = config.get("server.smtp.senderAddress");
@@ -18,6 +21,8 @@ export const sendConfirmationEmail = async (req: Request) => {
       port: PORT,
       secure: false,
     });
+
+    // TODO: Use the eta templating engine to generate the email body
 
     // Send a confirmation email to the person doing the reservation
     await transporter.sendMail({
