@@ -90,6 +90,9 @@ spec:
            {{- if .Values.acapy.plugins.basicmessageStorage }}
            --plugin traction_plugins.basicmessage_storage.v1_0 \
            {{- end }}
+           {{- if .Values.acapy.plugins.connectionUpdate }}
+           --plugin traction_plugins.connection_update.v1_0 \
+           {{- end }}
            {{- if .Values.acapy.plugins.tractionInnkeeper }}
            --plugin traction_plugins.traction_innkeeper.v1_0 \
            --plugin-config-value traction_innkeeper.innkeeper_wallet.tenant_id=\"$(INNKEEPER_WALLET_TENANT_ID)\" \
