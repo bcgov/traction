@@ -1,10 +1,14 @@
+import { AdminModules } from '@/types/acapyApi/acapyInterface';
+
+import { Ref, ref } from 'vue';
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
 import axios from 'axios';
 import { API_PATH } from '@/helpers/constants';
+import { fetchList } from './utils';
 
 export const useConfigStore = defineStore('config', () => {
   // state
+  const acapyPlugins: Ref<AdminModules[]> = ref([]);
   const config: any = ref(null);
   const loading: any = ref(false);
   const error: any = ref(null);
@@ -54,7 +58,19 @@ export const useConfigStore = defineStore('config', () => {
     return config.value;
   }
 
-  return { config, loading, error, load, proxyPath };
+  async function getPluginList() {
+    return fetchList(API_PATH.SERVER_PLUGINS, acapyPlugins, error, loading);
+  }
+
+  return {
+    acapyPlugins,
+    config,
+    loading,
+    error,
+    load,
+    proxyPath,
+    getPluginList,
+  };
 });
 
 export default {
