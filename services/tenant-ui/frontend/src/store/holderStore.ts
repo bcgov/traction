@@ -1,5 +1,7 @@
+import { IndyCredInfo } from '@/types/acapyApi/acapyInterface';
+
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { Ref, ref } from 'vue';
 import { fetchItem } from './utils/fetchItem';
 import { fetchList } from './utils/fetchList.js';
 import { useAcapyApi } from './acapyApi';
@@ -7,7 +9,7 @@ import { API_PATH } from '@/helpers/constants';
 
 export const useHolderStore = defineStore('holder', () => {
   // state
-  const credentials: any = ref(null);
+  const credentials: Ref<IndyCredInfo[]> = ref([]);
   const selectedCredential: any = ref(null);
   const presentations: any = ref(null);
   const selectedPresentation: any = ref(null);
