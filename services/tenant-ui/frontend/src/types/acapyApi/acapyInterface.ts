@@ -605,6 +605,11 @@ export interface CredDefStorageList {
   results?: CredDefStorageRecord[];
 }
 
+export interface CredDefStorageOperationResponse {
+  /** True if operation successful, false if otherwise */
+  success: boolean;
+}
+
 export interface CredDefStorageRecord {
   /**
    * Time of record creation
@@ -2642,16 +2647,6 @@ export interface OobRecord {
   updated_at?: string;
 }
 
-export interface OperationResponse {
-  /** True if operation successful, false if otherwise */
-  success: boolean;
-}
-
-export interface OperationResponse1 {
-  /** True if operation successful, false if otherwise */
-  success: boolean;
-}
-
 export interface PerformRequest {
   /**
    * Menu option name
@@ -3203,6 +3198,11 @@ export interface SchemaStorageList {
   results?: SchemaStorageRecord[];
 }
 
+export interface SchemaStorageOperationResponse {
+  /** True if operation successful, false if otherwise */
+  success: boolean;
+}
+
 export interface SchemaStorageRecord {
   /**
    * Time of record creation
@@ -3503,6 +3503,14 @@ export interface TxnOrSchemaSendResult {
   sent?: SchemaSendResult;
   /** Schema transaction to endorse */
   txn?: TransactionRecord;
+}
+
+export interface UpdateConnectionRequest {
+  /**
+   * Optional alias to apply to connection for later use
+   * @example "Bob, providing quotes"
+   */
+  alias?: string;
 }
 
 export interface UpdateWalletRequest {
