@@ -25,7 +25,7 @@
 
     <div v-if="item" class="flex justify-content-end mb-0 mt-3">
       <small>
-        Contact Last Updated: {{ formatDateLong(item.updated_at) }}
+        Connection Last Updated: {{ formatDateLong(item.updated_at) }}
       </small>
     </div>
   </form>
