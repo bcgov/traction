@@ -6,10 +6,11 @@
     <!-- Alias -->
     <div class="field">
       <label for="alias" :class="{ 'p-error': v$.alias.$invalid && submitted }">
-        Contact Alias
+        Alias
       </label>
       <InputText
         v-model="v$.alias.$model"
+        class="w-full"
         :class="{ 'p-invalid': v$.alias.$invalid && submitted }"
         type="text"
         name="alias"
@@ -48,7 +49,7 @@ import { useToast } from 'vue-toastification';
 
 // Props
 const props = defineProps({
-  contactId: {
+  connectionId: {
     type: String as PropType<string>,
     required: true,
   },
@@ -76,11 +77,11 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 
   try {
-    // await contactsStore.updateContact(props.contactId, formFields.alias);
+    await contactsStore.updateConnection(props.connectionId, formFields.alias);
     emit('success');
     // close up on success
     emit('closed');
-    toast.info('Contact Updated');
+    toast.info('Connection Updated');
   } catch (error) {
     toast.error(`Failure: ${error}`);
   } finally {
@@ -92,7 +93,7 @@ const handleSubmit = async (isFormValid: boolean) => {
 const { loading, item, fetchItem } = useGetItem(API_PATH.CONNECTIONS);
 onMounted(async () => {
   try {
-    await fetchItem(props.contactId);
+    await fetchItem(props.connectionId);
     console.log(item.value.alias);
     formFields.alias = item.value.alias;
   } catch (error: any) {

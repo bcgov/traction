@@ -1,17 +1,21 @@
 <template>
   <Button
-    title="Edit Contact"
+    title="Edit Connection"
     icon="pi pi-pencil"
     class="p-button-rounded p-button-icon-only p-button-text"
     @click="openModal"
   />
   <Dialog
     v-model:visible="displayModal"
-    header="Edit Contact"
+    :style="{ minWidth: '500px' }"
+    header="Edit Connection"
     :modal="true"
     @update:visible="handleClose"
   >
-    <EditContactForm :contact-id="props.contactId" @closed="handleClose" />
+    <EditContactForm
+      :connection-id="props.connectionId"
+      @closed="handleClose"
+    />
   </Dialog>
 </template>
 
@@ -26,7 +30,7 @@ import EditContactForm from './EditContactForm.vue';
 
 // Props
 const props = defineProps({
-  contactId: {
+  connectionId: {
     type: String as PropType<string>,
     required: true,
   },
