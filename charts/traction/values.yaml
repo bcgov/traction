@@ -50,6 +50,7 @@ acapy:
   # list the plugins on our image we want to enable.
   plugins:
     basicmessageStorage: true
+    connectionUpdate: true
     multitenantProvider: true
     tractionInnkeeper: true
 

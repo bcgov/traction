@@ -3,7 +3,7 @@ FROM bcgovimages/von-image:py36-1.16-1 AS base
 
 # Install and Configure Poetry
 USER root
-ENV POETRY_VERSION=1.1.11
+ENV POETRY_VERSION=1.1.15
 ENV POETRY_HOME=/opt/poetry
 RUN curl -sSL https://install.python-poetry.org | python -
 
@@ -17,6 +17,7 @@ COPY --chown=indy:indy pyproject.toml README.md ./
 # copy over our local plugins code so we can build/install them
 # these should come from github or some version, published location
 COPY --chown=indy:indy basicmessage_storage ./basicmessage_storage
+COPY --chown=indy:indy connection_update ./connection_update
 COPY --chown=indy:indy multitenant_provider ./multitenant_provider
 COPY --chown=indy:indy traction_innkeeper ./traction_innkeeper
 
@@ -32,6 +33,7 @@ ENV PATH="/home/indy/.venv/bin:$PATH"
 
 COPY --chown=indy:indy docker/default.yml ./
 COPY --chown=indy:indy basicmessage_storage/basicmessage_storage traction_plugins/basicmessage_storage
+COPY --chown=indy:indy connection_update/connection_update traction_plugins/connection_update
 COPY --chown=indy:indy multitenant_provider/multitenant_provider traction_plugins/multitenant_provider
 COPY --chown=indy:indy traction_innkeeper/traction_innkeeper traction_plugins/traction_innkeeper
 

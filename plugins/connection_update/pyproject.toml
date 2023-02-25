@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "connection_update"
+version = "0.1.0"
+description = ""
+authors = ["Jason Sherman <tools@usingtechnolo.gy>"]
+license = "Apache-2.0"
+readme = "README.md"
+packages = [{include = "connection_update"}]
+
+[tool.poetry.dependencies]
+python = ">=3.6.13,<4.0"
+aries-cloudagent = { version = "1.0.0rc1" }
+
+[tool.poetry.dev-dependencies]
+black = "^22.6.0"
+flake8 = "^5.0.4"
+
+[build-system]
+requires = ["setuptools", "poetry-core>=1.2"]
+build-backend = "poetry.core.masonry.api"
