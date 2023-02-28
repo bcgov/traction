@@ -1,18 +1,17 @@
 <p>
-  Hello <%= req.body.name _%>,<br />Thank you for your request to join Traction
+  Hello <%= it.body.contactName _%>,<br />Thank you for your request to join
+  Traction
 </p>
 <p>
   This email confirms we have recieved your request and a Representative is
   working on your case. Your reservation ID is
-  <b><%= req.body.reservationId _%></b>.
+  <b><%= it.body.reservationId _%></b>.
 </p>
 <p>
   A descision on the request usually takes 2-3 days from the date of this email.
   You can verify the status of your request by entering your email and
   reservation ID here:
-  <a src="<%= req.body.server _%>/check-status"
-    ><%= req.body.server _%>/check-status</a
-  >.
+  <a src="<%= it.body.serverUrl _%>">check-status</a>.
 </p>
 <p>
   Please do not forward this email as it containes private information intended
