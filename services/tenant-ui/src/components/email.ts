@@ -1,6 +1,7 @@
 import { Request } from "express";
 import config from "config";
 import nodemailer from "nodemailer";
+import * as path from "path";
 import * as fs from "fs";
 import * as eta from "eta"; // HTML templating engine
 
@@ -15,6 +16,7 @@ const INNKEEPER: string = config.get("server.smtp.innkeeperInbox");
  * @returns {string} The inkeeper token
  */
 export const sendConfirmationEmail = async (req: Request) => {
+  console.log("sendConfirmationEmail", req.body);
   try {
     const transporter = nodemailer.createTransport({
       host: SERVER,
@@ -22,14 +24,19 @@ export const sendConfirmationEmail = async (req: Request) => {
       secure: false,
     });
 
-    // TODO: Use the eta templating engine to generate the email body
+    const tenantHtmlTemplate = fs.readFileSync(
+      path.join(__dirname, "email_templates/reservation_received.html"),
+      "utf8"
+    );
+
+    const tenantHtml = eta.render(tenantHtmlTemplate, req);
 
     // Send a confirmation email to the person doing the reservation
     await transporter.sendMail({
       from: FROM,
       to: req.body.contactEmail,
       subject: "Your reservation details",
-      html: `<h2>We recieved your reservation</h2> <p>Your reservation ID is: ${req.body.reservationId}</p>`, // html body
+      html: tenantHtml, // html body
     });
 
     // Send a notification email to the Innkeeper team
