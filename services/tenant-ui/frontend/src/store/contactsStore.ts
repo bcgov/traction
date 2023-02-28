@@ -1,4 +1,8 @@
 import { API_PATH, CONNECTION_STATUSES } from '@/helpers/constants';
+import {
+  ConnRecord,
+  UpdateConnectionRequest,
+} from '@/types/acapyApi/acapyInterface';
 import { defineStore } from 'pinia';
 import { computed, ref, Ref } from 'vue';
 import { useAcapyApi } from './acapyApi';
@@ -174,39 +178,39 @@ export const useContactsStore = defineStore('contacts', () => {
     );
   }
 
-  // Only going to do alias right now but expand to other params as needed later
-  // async function updateContact(contactId: string, alias: string) {
-  //   console.log('> contactsStore.updateContact');
-  //   error.value = null;
-  //   loading.value = true;
+  // Only going to do alias right now but expand to other params if needed later
+  async function updateConnection(id: string, alias: string) {
+    console.log('> contactsStore.updateConnection');
+    error.value = null;
+    loading.value = true;
 
-  //   let contactData = null;
-  //   await acapyApi
-  //     .putHttp(`${API_PATH.CONTACTS}${contactId}`, {
-  //       contact_id: contactId,
-  //       alias,
-  //     })
-  //     .then((res) => {
-  //       contactData = res.data;
-  //     })
-  //     .then(() => {
-  //       listContacts();
-  //     })
-  //     .catch((err) => {
-  //       error.value = err;
-  //     })
-  //     .finally(() => {
-  //       loading.value = false;
-  //     });
-  //   console.log('< contactsStore.updateContact');
+    let updatedConnection: ConnRecord | null = null;
+    const payload: UpdateConnectionRequest = {
+      alias,
+    };
+    await acapyApi
+      .putHttp(API_PATH.CONNECTION(id), payload)
+      .then((res) => {
+        updatedConnection = res.data;
+      })
+      .then(() => {
+        listContacts();
+      })
+      .catch((err) => {
+        error.value = err;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< contactsStore.updateConnection');
 
-  //   if (error.value != null) {
-  //     // throw error so $onAction.onError listeners can add their own handler
-  //     throw error.value;
-  //   }
-  //   // return data so $onAction.after listeners can add their own handler
-  //   return contactData;
-  // }
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return updatedConnection;
+  }
 
   async function didCreateRequest(did: string, alias: string, myLabel: string) {
     console.log('> contactsStore.didCreateRequest');
@@ -276,7 +280,7 @@ export const useContactsStore = defineStore('contacts', () => {
     deleteContact,
     getContact,
     getInvitation,
-    // updateContact,
+    updateConnection,
     didCreateRequest,
   };
 });
