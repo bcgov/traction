@@ -24,11 +24,13 @@ export const sendConfirmationEmail = async (req: Request) => {
       secure: false,
     });
 
+    /**
+     * Render the HTML template for the tenant
+     */
     const tenantHtmlTemplate = fs.readFileSync(
-      path.join(__dirname, "email_templates/reservation_received.html"),
+      path.join(__dirname, "email_templates/reservation_received_tenant.html"),
       "utf8"
     );
-
     const tenantHtml = eta.render(tenantHtmlTemplate, req);
 
     // Send a confirmation email to the person doing the reservation
@@ -38,6 +40,18 @@ export const sendConfirmationEmail = async (req: Request) => {
       subject: "Your reservation details",
       html: tenantHtml, // html body
     });
+
+    /**
+     * Render the HTML template for the innkeeper
+     */
+    const innkeeperHtmlTemplate = fs.readFileSync(
+      path.join(
+        __dirname,
+        "email_templates/reservation_received_innkeeper.html"
+      ),
+      "utf8"
+    );
+    const innkeeperHtml = eta.render(innkeeperHtmlTemplate, req);
 
     // Send a notification email to the Innkeeper team
     await transporter.sendMail({
