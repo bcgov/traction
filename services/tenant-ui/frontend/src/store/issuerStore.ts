@@ -21,7 +21,7 @@ export const useIssuerStore = defineStore('issuer', () => {
   async function listCredentials() {
     selectedCredential.value = null;
     return fetchList(
-      `${API_PATH.ISSUE_CREDENTIALS_RECORDS}?role=issuer`,
+      `${API_PATH.ISSUE_CREDENTIAL_RECORDS}?role=issuer`,
       credentials,
       error,
       loading
@@ -63,7 +63,7 @@ export const useIssuerStore = defineStore('issuer', () => {
   async function getCredential(id: string, params: any = {}) {
     const getloading: any = ref(false);
     return fetchItem(
-      API_PATH.ISSUE_CREDENTIALS_RECORDS,
+      API_PATH.ISSUE_CREDENTIAL_RECORDS,
       id,
       error,
       getloading,

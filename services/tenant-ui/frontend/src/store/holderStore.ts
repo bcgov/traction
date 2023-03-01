@@ -1,5 +1,7 @@
+import { IndyCredInfo } from '@/types/acapyApi/acapyInterface';
+
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { Ref, ref } from 'vue';
 import { fetchItem } from './utils/fetchItem';
 import { fetchList } from './utils/fetchList.js';
 import { useAcapyApi } from './acapyApi';
@@ -7,7 +9,7 @@ import { API_PATH } from '@/helpers/constants';
 
 export const useHolderStore = defineStore('holder', () => {
   // state
-  const credentials: any = ref(null);
+  const credentials: Ref<IndyCredInfo[]> = ref([]);
   const selectedCredential: any = ref(null);
   const presentations: any = ref(null);
   const selectedPresentation: any = ref(null);
@@ -20,7 +22,7 @@ export const useHolderStore = defineStore('holder', () => {
 
   async function listCredentials() {
     selectedCredential.value = null;
-    return fetchList(API_PATH.HOLDER_CREDENTIALS, credentials, error, loading);
+    return fetchList(API_PATH.CREDENTIALS, credentials, error, loading);
   }
 
   async function listPresentations() {
@@ -35,13 +37,7 @@ export const useHolderStore = defineStore('holder', () => {
 
   async function getCredential(id: string, params: any = {}) {
     const getloading: any = ref(false);
-    return fetchItem(
-      API_PATH.HOLDER_CREDENTIALS,
-      id,
-      error,
-      getloading,
-      params
-    );
+    return fetchItem(API_PATH.CREDENTIALS, id, error, getloading, params);
   }
 
   async function getPresentation(id: string, params: any = {}) {
