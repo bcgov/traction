@@ -34,14 +34,10 @@
     <template #empty> No records found. </template>
     <template #loading> Loading data. Please wait... </template>
     <template #expansion="{ data }">
-      <RowExpandData
-        :id="data.holder_credential_id"
-        :url="API_PATH.CREDENTIAL"
-        :params="{ acapy: true }"
-      />
+      <CredentialAttributes :attributes="data.attrs" />
     </template>
     <Column :expander="true" header-style="width: 3rem" />
-    <Column header="Actions" class="action-col">
+    <!-- <Column header="Actions" class="action-col">
       <template #body="{ data }">
         <div v-if="data.state == 'offer_received'">
           <Button
@@ -65,22 +61,9 @@
             @click="deleteCredential($event, data)"
           />
         </div>
-      </template>cred_def_id
-    </Column>
-    <Column :sortable="true" field="referent" header="Referent" />
+      </template>
+    </Column> -->
     <Column :sortable="true" field="cred_def_id" header="Credential" />
-    <Column :sortable="true" field="attrs" header="Attributes" />
-    <!-- <Column :sortable="true" field="status" header="Status">
-      <template #body="{ data }">
-        <StatusChip :status="data.status" />
-      </template>
-    </Column>
-    <Column :sortable="true" field="created_at" header="Created at">
-      <template #body="{ data }">
-        {{ formatDateLong(data.created_at) }}
-      </template>
-    </Column>
-    <Column :sortable="true" field="contact.alias" header="Contact Name" /> -->
   </DataTable>
 </template>
 
@@ -98,12 +81,9 @@ import { useToast } from 'vue-toastification';
 // State
 import { useHolderStore } from '@/store';
 import { storeToRefs } from 'pinia';
-// Components
-import RowExpandData from '../common/RowExpandData.vue';
-import StatusChip from '../common/StatusChip.vue';
-
-import { TABLE_OPT, API_PATH } from '@/helpers/constants';
-import { formatDateLong } from '@/helpers';
+// Other components
+import CredentialAttributes from './CredentialAttributes.vue';
+import { TABLE_OPT } from '@/helpers/constants';
 
 const toast = useToast();
 const confirm = useConfirm();
@@ -114,30 +94,30 @@ const { loading, credentials, selectedCredential } = storeToRefs(
   useHolderStore()
 );
 
-const acceptOffer = (event: any, data: any) => {
-  holderStore.acceptCredentialOffer(data.holder_credential_id).then(() => {
-    toast.success(`Credential successfully added to your wallet`);
-  });
-};
-const rejectOffer = (event: any, data: any) => {
-  holderStore.rejectCredentialOffer(data.holder_credential_id).then(() => {
-    toast.success(`Credential offer rejected`);
-  });
-};
+// const acceptOffer = (event: any, data: any) => {
+//   holderStore.acceptCredentialOffer(data.holder_credential_id).then(() => {
+//     toast.success(`Credential successfully added to your wallet`);
+//   });
+// };
+// const rejectOffer = (event: any, data: any) => {
+//   holderStore.rejectCredentialOffer(data.holder_credential_id).then(() => {
+//     toast.success(`Credential offer rejected`);
+//   });
+// };
 
-const deleteCredential = (event: any, data: any) => {
-  confirm.require({
-    target: event.currentTarget,
-    message: 'Are you sure you want to delete this credential?',
-    header: 'Confirmation',
-    icon: 'pi pi-exclamation-triangle',
-    accept: () => {
-      holderStore.deleteHolderCredential(data.holder_credential_id).then(() => {
-        loadTable();
-      });
-    },
-  });
-};
+// const deleteCredential = (event: any, data: any) => {
+//   confirm.require({
+//     target: event.currentTarget,
+//     message: 'Are you sure you want to delete this credential?',
+//     header: 'Confirmation',
+//     icon: 'pi pi-exclamation-triangle',
+//     accept: () => {
+//       holderStore.deleteHolderCredential(data.holder_credential_id).then(() => {
+//         loadTable();
+//       });
+//     },
+//   });
+// };
 
 const loadTable = async () => {
   holderStore.listCredentials().catch((err) => {
@@ -149,6 +129,7 @@ const loadTable = async () => {
 onMounted(async () => {
   loadTable();
 });
+
 // necessary for expanding rows, we don't do anything with this
 const expandedRows = ref([]);
 
