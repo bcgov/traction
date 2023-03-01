@@ -1,10 +1,6 @@
 <template>
   <div>
-    <DataTable
-      :value="attributeRows"
-      responsiveLayout="scroll"
-      class="attributeTable"
-    >
+    <DataTable :value="attributeRows" class="attributeTable">
       <Column field="key" header="Code"></Column>
       <Column field="value" header="Name"></Column>
     </DataTable>
