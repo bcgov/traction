@@ -1,6 +1,6 @@
 <template>
   <div>
-    <DataTable :value="attributeRows" class="attributeTable">
+    <DataTable :value="attributeRows" class="attributeTable" striped-rows>
       <Column field="key" header="Code"></Column>
       <Column field="value" header="Name"></Column>
     </DataTable>

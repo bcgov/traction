@@ -3,13 +3,15 @@
   <DataTable
     v-model:selection="selectedCredential"
     v-model:expandedRows="expandedRows"
+    v-model:filters="filter"
     :loading="loading"
-    :value="credentials"
+    :value="localTableCredentials"
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
+    :global-filter-fields="['cred_def_id']"
     selection-mode="single"
-    data-key="holder_credential_id"
+    data-key="randomId"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -18,7 +20,7 @@
           <span class="p-input-icon-left credential-search">
             <i class="pi pi-search" />
             <InputText
-              v-model="filter.alias.value"
+              v-model="filter.cred_def_id.value"
               placeholder="Search Credentials"
             />
           </span>
@@ -69,7 +71,7 @@
 
 <script setup lang="ts">
 // Vue
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 // PrimeVue
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -119,6 +121,7 @@ const { loading, credentials, selectedCredential } = storeToRefs(
 //   });
 // };
 
+// Get the credential list when loading the component
 const loadTable = async () => {
   holderStore.listCredentials().catch((err) => {
     console.error(err);
@@ -130,11 +133,20 @@ onMounted(async () => {
   loadTable();
 });
 
+// Add a random UD for the table data key
+// since credentils aca-py response has no identifier per item
+const localTableCredentials = computed(() => {
+  return credentials.value.map((c) => ({
+    ...c,
+    randomId: (Math.random() + 1).toString(36).substring(3),
+  }));
+});
+
 // necessary for expanding rows, we don't do anything with this
 const expandedRows = ref([]);
 
 const filter = ref({
-  alias: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  cred_def_id: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 </script>
 <style scoped>
