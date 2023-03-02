@@ -80,6 +80,7 @@ export const sendStatusEmail = async (req: Request) => {
     });
 
     // Send a status update email to the applicant
+    // TODO: Change to the email template
     await transporter.sendMail({
       from: FROM,
       to: req.body.contactEmail,

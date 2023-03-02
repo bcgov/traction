@@ -130,11 +130,14 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
       throw error.value;
     }
 
+    // TODO: Add server and applicant name
     _sendStatusEmail({
       state: 'Tenant Reservation Denied',
       contactEmail: email,
       reservationId: id,
       stateNotes: payload.state_notes,
+      serverUrl: window.location.href,
+      contactName: payload.contact_name,
     });
   }
 
