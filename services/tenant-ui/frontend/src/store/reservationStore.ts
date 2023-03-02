@@ -62,7 +62,6 @@ export const useReservationStore = defineStore('reservation', () => {
 
     // Separately dispatch a non-blocking call to send the contact emails
     // If these fail we won't raise any error to the UI
-    console.log('payload', payload);
     const emailPayload = {
       contactEmail: payload.contact_email,
       contactName: payload.contact_name,
