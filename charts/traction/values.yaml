@@ -40,9 +40,6 @@ acapy:
   # The agent seed, 32 characters. Will be generated if not defined here
   agentSeed: ""
 
-  # if true use --admin-insecure-mode, else we set --admin-api-key
-  adminInsecureMode: false
-
   labelOverride: ""
 
   readOnlyMode: false
@@ -54,6 +51,7 @@ acapy:
     multitenantProvider: true
     tractionInnkeeper: true
 
+  # plugin-config.yaml configmap
   pluginValues:
     multitenantProvider:
       manager:        
@@ -69,6 +67,7 @@ acapy:
       printKey: false
       printToken: false
       reservationExpiryMinutes: 10080
+
 
   imagePullSecrets: []
   nameOverride: ""
@@ -95,7 +94,8 @@ acapy:
     walletScheme: DatabasePerWallet
     endorserAlias: endorser
     endorserPublicDID: UjmxKBZe1qv1NBE7GaohdP
-    
+    endorserRole: author
+
   openshift:
     route:
       enabled: true
@@ -120,7 +120,7 @@ acapy:
 
   tails:
     # -- Set to true to enable revocation (external tails server required)
-    enabled: false
+    enabled: true
 
     # -- Override the otherwise ledger-specifically generated base URL of the external tails server
     baseUrlOverride: ""
@@ -174,7 +174,12 @@ acapy:
     preserveExchangeRecords: true
     emitNewDidcommPrefix: true
     emitNewDidcommMimeType: true
-
+    walletStorageType: postgres_storage
+    readOnlyLedger: false
+    autoRequestEndorsement: true
+    autoWriteTransactions: true
+    autoPromoteAuthorDid: true
+    createRevocationTransactions: true
 
   secret:
     adminurl:
