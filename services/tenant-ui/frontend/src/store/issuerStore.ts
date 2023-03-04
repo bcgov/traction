@@ -1,3 +1,8 @@
+import {
+  RevocationModuleResponse,
+  RevokeRequest,
+} from '@/types/acapyApi/acapyInterface';
+
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { fetchList } from './utils/fetchList.js';
@@ -71,18 +76,15 @@ export const useIssuerStore = defineStore('issuer', () => {
     );
   }
 
-  async function revokeCredential(payload: any = {}) {
+  async function revokeCredential(payload: RevokeRequest) {
     console.log('> issuerStore.revokeCredential');
     error.value = null;
     loading.value = true;
 
-    let result = null;
+    let result: RevocationModuleResponse | null = null;
 
     await acapyApi
-      .postHttp(
-        API_PATH.ISSUER_CREDENTIAL_REVOKE(payload.issuer_credential_id),
-        payload
-      )
+      .postHttp(API_PATH.REVOCATION_REVOKE, payload)
       .then((res) => {
         result = res.data.item;
       })
@@ -105,37 +107,37 @@ export const useIssuerStore = defineStore('issuer', () => {
     return result;
   }
 
-  // async function deleteCredential(issuerCredentialId: string) {
-  //   console.log('> contactsStore.deleteCredential');
+  async function deleteCredentialExchange(credExchangeId: string) {
+    console.log('> contactsStore.deleteCredential');
 
-  //   error.value = null;
-  //   loading.value = true;
+    error.value = null;
+    loading.value = true;
 
-  //   let result = null;
+    let result = null;
 
-  //   await acapyApi
-  //     .deleteHttp(API_PATH.ISSUER_CREDENTIAL(issuerCredentialId))
-  //     .then((res) => {
-  //       result = res.data.item;
-  //     })
-  //     .then(() => {
-  //       listCredentials(); // Refresh table
-  //     })
-  //     .catch((err) => {
-  //       error.value = err;
-  //     })
-  //     .finally(() => {
-  //       loading.value = false;
-  //     });
-  //   console.log('< contactsStore.deleteCredential');
+    await acapyApi
+      .deleteHttp(API_PATH.ISSUE_CREDENTIAL_RECORD(credExchangeId))
+      .then((res) => {
+        result = res.data.item;
+      })
+      .then(() => {
+        listCredentials(); // Refresh table
+      })
+      .catch((err) => {
+        error.value = err;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< contactsStore.deleteCredential');
 
-  //   if (error.value != null) {
-  //     // throw error so $onAction.onError listeners can add their own handler
-  //     throw error.value;
-  //   }
-  //   // return data so $onAction.after listeners can add their own handler
-  //   return result;
-  // }
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return result;
+  }
 
   return {
     credentials,
@@ -146,7 +148,7 @@ export const useIssuerStore = defineStore('issuer', () => {
     offerCredential,
     getCredential,
     revokeCredential,
-    // deleteCredential,
+    deleteCredentialExchange,
   };
 });
 

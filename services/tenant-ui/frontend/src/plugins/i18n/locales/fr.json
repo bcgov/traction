@@ -21,7 +21,19 @@
   "issue": {
     "issuance": "Issuance <FR>",
     "credentials": "Issued/Offered Credentials <FR>",
-    "offer": "Offer Credential <FR>"
+    "offer": "Offer Credential <FR>",
+    "delete": {
+      "removeExchange": "Remove Credential Exchange Record <FR>",
+      "confirm": "Are you sure you want to DELETE this credential exchange record? <FR>",
+      "success": "Credential exchange record deleted <FR>"
+    },
+    "revoke": {
+      "revokeCred": "Revoke Credential <FR>",
+      "comment": "Optional Comment <FR>",
+      "action": "Revoke <FR>",
+      "confirm": "Are you sure you want to REVOKE this credential? <FR>",
+      "success": "Credential revoked <FR>"
+    }
   },
   "verify": {
     "verification": "Verification <FR>",
