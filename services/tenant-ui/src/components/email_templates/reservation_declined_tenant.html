@@ -7,8 +7,12 @@
   your request has been declined.
 </p>
 <p>
-  If you think there has been an error, you can submit a new request here:
-  <a href="<%= it.body.serverUrl _%>"><%= it.body.serverUrl _%></a>.
+  Reason for rejection: <br />
+  &nbsp; <%= it.body.stateNotes _%>
+</p>
+<p>
+  If you think there has been an error, you can submit a new request here: <%=
+  it.body.serverUrl _%>"
 </p>
 <p>
   Please do not forward this email as it containes private information intended
