@@ -98,7 +98,7 @@ spec:
             - name: ACAPY_WALLET_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "acapy.fullname" . }}
+                  name: {{ template "acapy.walletkey.secret.name" . }}
                   key: walletKey
             - name: ACAPY_MULTITENANT_JWT_SECRET
               valueFrom:

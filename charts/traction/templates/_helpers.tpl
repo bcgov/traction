@@ -103,6 +103,14 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- end -}}
 
 {{/*
+Create a default fully qualified acapy name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "acapy.walletkey.secret.name" -}}
+{{ template "acapy.fullname" . }}-walletkey
+{{- end -}}
+
+{{/*
 Create a default fully qualified acapy innkeeper plugin name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
