@@ -71,6 +71,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     payload: any = {}
   ) {
     console.log('> reservationStore.approveReservation');
+    console.log('payload', payload);
     error.value = null;
     loading.value = true;
 
@@ -95,12 +96,17 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
       throw error.value;
     }
 
+    const trimUrl = window.location.href.replace(/\/innkeeper.*/, '');
+
     _sendStatusEmail({
       state: 'Tenant Reservation Approved',
       contactEmail: email,
       reservationId: id,
       reservationPassword: approveResponse.reservation_pwd,
+      serverUrl: trimUrl,
+      contactName: payload.contact_name,
     });
+    console.log('_sendStatusEmail', _sendStatusEmail);
 
     // return the reservation password
     return approveResponse;
@@ -130,13 +136,14 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
       throw error.value;
     }
 
-    // TODO: Add server and applicant name
+    const trimUrl = window.location.href.replace(/\/innkeeper.*/, '');
+
     _sendStatusEmail({
       state: 'Tenant Reservation Denied',
       contactEmail: email,
       reservationId: id,
       stateNotes: payload.state_notes,
-      serverUrl: window.location.href,
+      serverUrl: trimUrl,
       contactName: payload.contact_name,
     });
   }

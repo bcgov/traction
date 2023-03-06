@@ -56,9 +56,10 @@ export const sendConfirmationEmail = async (req: Request) => {
     // Send a notification email to the Innkeeper team
     await transporter.sendMail({
       from: FROM,
-      to: INNKEEPER,
+      // to: INNKEEPER,
+      to: "popkinj@gmail.com",
       subject: "New tenant reservation",
-      html: `<h2>There is a new tenant reservation request</h2> <p>${req.body.contactEmail} has requested a tenant</p>`, // html body
+      html: innkeeperHtml, // html body
     });
   } catch (error) {
     console.error(`Error sending email: ${error}`);
@@ -79,13 +80,26 @@ export const sendStatusEmail = async (req: Request) => {
       secure: false,
     });
 
+    console.log("sendStatusEmail", req.body);
+    const templateUrl = req.body.state.match(/approved/i)
+      ? "reservation_approved_tenant.html"
+      : "reservation_declined_tenant.html";
+
+    /**
+     * Render the HTML template for the tenant
+     */
+    const tenantHtmlTemplate = fs.readFileSync(
+      path.join(__dirname, `email_templates/${templateUrl}`),
+      "utf8"
+    );
+    const tenantHtml = eta.render(tenantHtmlTemplate, req);
+
     // Send a status update email to the applicant
-    // TODO: Change to the email template
     await transporter.sendMail({
       from: FROM,
       to: req.body.contactEmail,
       subject: "Your reservation details",
-      html: `<h2>Update about your reservaton</h2> <p>Your reservation status has been updated to: ${req.body.state} <br> ID: ${req.body.reservationId} <br> Password: ${req.body.reservationPassword}</p> <p>Notes: ${req.body.stateNotes}`, // html body
+      html: tenantHtml, // html body
     });
   } catch (error) {
     console.error(`Error sending email: ${error}`);
