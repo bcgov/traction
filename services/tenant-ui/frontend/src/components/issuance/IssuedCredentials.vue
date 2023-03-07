@@ -12,6 +12,8 @@
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
     selection-mode="single"
     data-key="credential_exchange_id"
+    sort-field="created_at"
+    :sort-order="-1"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -38,27 +40,18 @@
     <template #empty> No records found. </template>
     <template #loading> Loading data. Please wait... </template>
     <Column :expander="true" header-style="width: 3rem" />
-    <!-- <Column header="Actions">
+    <Column header="Actions">
       <template #body="{ data }">
-        <Button
-          title="Delete Credential"
-          icon="pi pi-trash"
-          class="p-button-rounded p-button-icon-only p-button-text mr-2"
-          @click="deleteCredential($event, data)"
+        <DeleteCredentialExchangeButton
+          :cred-exch-id="data.credential_exchange_id"
         />
-        <Button
-          v-if="
-            data.credential_template &&
-            data.credential_template.revocation_enabled &&
-            !data.revoked
-          "
-          title="Revoke Credential"
-          icon="pi pi-times-circle"
-          class="p-button-rounded p-button-icon-only p-button-text"
-          @click="revokeCredential($event, data)"
+
+        <RevokeCredentialButton
+          :cred-exch-record="data"
+          :connection-display="findConnectionName(data.connection_id)"
         />
       </template>
-    </Column> -->
+    </Column>
     <Column
       :sortable="true"
       field="credential_definition_id"
@@ -104,14 +97,15 @@ import { useToast } from 'vue-toastification';
 import { useConfirm } from 'primevue/useconfirm';
 import { useI18n } from 'vue-i18n';
 // Other Components
-import OfferCredential from './offerCredential/OfferCredential.vue';
-import RowExpandData from '../common/RowExpandData.vue';
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
+import DeleteCredentialExchangeButton from './deleteCredential/DeleteCredentialExchangeButton.vue';
+import OfferCredential from './offerCredential/OfferCredential.vue';
+import RevokeCredentialButton from './deleteCredential/RevokeCredentialButton.vue';
+import RowExpandData from '../common/RowExpandData.vue';
 import StatusChip from '../common/StatusChip.vue';
 
 const toast = useToast();
-const confirm = useConfirm();
 const { t } = useI18n();
 
 const contactsStore = useContactsStore();
@@ -121,50 +115,6 @@ const issuerStore = useIssuerStore();
 const { loading, credentials, selectedCredential } = storeToRefs(
   useIssuerStore()
 );
-
-// Delete a specific cred
-// const deleteCredential = (event: any, data: any) => {
-//   confirm.require({
-//     target: event.currentTarget,
-//     message: 'Are you sure you want to DELETE this credential?',
-//     header: 'Confirmation',
-//     icon: 'pi pi-exclamation-triangle',
-//     accept: () => {
-//       issuerStore
-//         .deleteCredential(data.issuer_credential_id)
-//         .then(() => {
-//           toast.success(`Credential deleted`);
-//         })
-//         .catch((err) => {
-//           console.error(err);
-//           toast.error(`Failure: ${err}`);
-//         });
-//     },
-//   });
-// };
-
-// Revoke a specific cred
-const revokeCredential = (event: any, data: any) => {
-  confirm.require({
-    target: event.currentTarget,
-    message: 'Are you sure you want to REVOKE this credential?',
-    header: 'Confirmation',
-    icon: 'pi pi-exclamation-triangle',
-    accept: () => {
-      issuerStore
-        .revokeCredential({
-          issuer_credential_id: data.issuer_credential_id,
-        })
-        .then(() => {
-          toast.success(`Credential revoked`);
-        })
-        .catch((err) => {
-          console.error(err);
-          toast.error(`Failure: ${err}`);
-        });
-    },
-  });
-};
 
 // Get the credentials
 const loadTable = async () => {

@@ -53,6 +53,7 @@ export const API_PATH = {
     `/innkeeper/reservations/${id}/deny`,
 
   ISSUE_CREDENTIAL_RECORDS: 'issue-credential/records',
+  ISSUE_CREDENTIAL_RECORD: (id: string) => `issue-credential/records/${id}`,
   ISSUE_CREDENTIAL_RECORDS_SEND_OFFER: (id: string) =>
     `issue-credential/records/${id}/send-offer`,
   ISSUE_CREDENTIALS_SEND_OFFER: 'issue-credential/send-offer',
