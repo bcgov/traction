@@ -8,7 +8,7 @@ import * as eta from "eta"; // HTML templating engine
 const SERVER: string = config.get("server.smtp.server");
 const PORT: number = config.get("server.smtp.port");
 const FROM: string = config.get("server.smtp.senderAddress");
-// const INNKEEPER: string = config.get("server.smtp.innkeeperInbox");
+const INNKEEPER: string = config.get("server.smtp.innkeeperInbox");
 
 /**
  * @function sendConfirmationEmail
@@ -16,7 +16,6 @@ const FROM: string = config.get("server.smtp.senderAddress");
  * @returns {string} The inkeeper token
  */
 export const sendConfirmationEmail = async (req: Request) => {
-  console.log("sendConfirmationEmail", req.body);
   try {
     const transporter = nodemailer.createTransport({
       host: SERVER,
@@ -56,8 +55,7 @@ export const sendConfirmationEmail = async (req: Request) => {
     // Send a notification email to the Innkeeper team
     await transporter.sendMail({
       from: FROM,
-      // to: INNKEEPER,
-      to: "popkinj@gmail.com",
+      to: INNKEEPER,
       subject: "New tenant reservation",
       html: innkeeperHtml, // html body
     });
@@ -80,7 +78,6 @@ export const sendStatusEmail = async (req: Request) => {
       secure: false,
     });
 
-    console.log("sendStatusEmail", req.body);
     const templateUrl = req.body.state.match(/approved/i)
       ? "reservation_approved_tenant.html"
       : "reservation_declined_tenant.html";
