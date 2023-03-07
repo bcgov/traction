@@ -8,7 +8,7 @@ import * as eta from "eta"; // HTML templating engine
 const SERVER: string = config.get("server.smtp.server");
 const PORT: number = config.get("server.smtp.port");
 const FROM: string = config.get("server.smtp.senderAddress");
-const INNKEEPER: string = config.get("server.smtp.innkeeperInbox");
+// const INNKEEPER: string = config.get("server.smtp.innkeeperInbox");
 
 /**
  * @function sendConfirmationEmail
