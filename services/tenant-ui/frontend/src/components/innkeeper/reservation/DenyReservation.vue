@@ -54,6 +54,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  name: {
+    type: String,
+    required: true,
+  },
 });
 
 // Deny reservation
@@ -65,9 +69,14 @@ const confirmDeny = () => {
 
 const deny = async () => {
   try {
-    await innkeeperTenantsStore.denyReservation(props.id, props.email, {
-      state_notes: reason.value,
-    });
+    await innkeeperTenantsStore.denyReservation(
+      props.id,
+      props.email,
+      props.name,
+      {
+        state_notes: reason.value,
+      }
+    );
     toast.success(`Reservation for ${props.email} Denied`);
     displayModal.value = false;
   } catch (error) {
