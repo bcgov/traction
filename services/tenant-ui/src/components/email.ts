@@ -30,6 +30,7 @@ export const sendConfirmationEmail = async (req: Request) => {
       path.join(__dirname, "email_templates/reservation_received_tenant.html"),
       "utf8"
     );
+    // const tenantHtml = eta.render(tenantHtmlTemplate, req);
     const tenantHtml = eta.render(tenantHtmlTemplate, req);
 
     // Send a confirmation email to the person doing the reservation
