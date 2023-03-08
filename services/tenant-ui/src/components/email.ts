@@ -68,8 +68,7 @@ export const sendStatusEmail = async (req: Request) => {
       secure: false,
     });
 
-    let template = undefined;
-    let subject = undefined;
+    let template, subject;
     if (req.body.state === RESERVATION_STATUSES.APPROVED) {
       template = RESERVATION_APPROVED_TENANT_TEMPLATE;
       subject = "[TRACTION] Reservation Approved!";
@@ -85,7 +84,7 @@ export const sendStatusEmail = async (req: Request) => {
     await transporter.sendMail({
       from: FROM,
       to: req.body.contactEmail,
-      subject: subject,
+      subject,
       html: tenantHtml, // html body
     });
   } catch (error) {
