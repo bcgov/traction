@@ -96,7 +96,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
       throw error.value;
     }
 
-    const trimUrl = window.location.href.replace(/\/innkeeper.*/, '');
+    const trimUrl = window.location.origin;
 
     _sendStatusEmail({
       state: 'Tenant Reservation Approved',
@@ -140,7 +140,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
       throw error.value;
     }
 
-    const trimUrl = window.location.href.replace(/\/innkeeper.*/, '');
+    const trimUrl = window.location.origin;
 
     _sendStatusEmail({
       state: 'Tenant Reservation Denied',
