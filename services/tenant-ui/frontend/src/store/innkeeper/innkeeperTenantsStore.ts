@@ -99,7 +99,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     const trimUrl = window.location.origin;
 
     _sendStatusEmail({
-      state: 'Tenant Reservation Approved',
+      state: RESERVATION_STATUSES.APPROVED,
       contactEmail: email,
       reservationId: id,
       reservationPassword: approveResponse.reservation_pwd,
@@ -143,7 +143,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     const trimUrl = window.location.origin;
 
     _sendStatusEmail({
-      state: 'Tenant Reservation Denied',
+      state: RESERVATION_STATUSES.DENIED,
       contactEmail: email,
       reservationId: id,
       stateNotes: payload.state_notes,
