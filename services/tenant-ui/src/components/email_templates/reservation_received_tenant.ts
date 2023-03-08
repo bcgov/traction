@@ -1,3 +1,5 @@
+export const RESERVATION_RECIEVED_TENANT_TEMPLATE = 
+`
 <p>
   Hello <%= it.body.contactName _%>,<br />Thank you for your request to join
   Traction
@@ -21,3 +23,4 @@
   Best regards <br />
   Traction Team
 </p>
+`

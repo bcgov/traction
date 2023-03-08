@@ -1,3 +1,5 @@
+export const RESERVATION_APPROVED_TENANT_TEMPLATE = 
+`
 <p>
   Hello <%= it.body.contactName _%>,<br />
   Your reservation ID <b><%= it.body.reservationId _%></b> has been updated.
@@ -26,4 +28,4 @@
   Best regards <br />
   Traction Team
 </p>
-'
+`

@@ -1,3 +1,5 @@
+export const RESERVATION_RECIEVED_INNKEEPER_TEMPLATE = 
+`
 <p>
   Hello Innkeeper,<br />
   This email is to notify you that we have received a request from <%=
@@ -17,3 +19,4 @@
   Best regards <br />
   Traction Team
 </p>
+`

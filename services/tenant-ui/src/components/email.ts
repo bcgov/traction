@@ -5,6 +5,11 @@ import * as path from "path";
 import * as fs from "fs";
 import * as eta from "eta"; // HTML templating engine
 
+import { RESERVATION_APPROVED_TENANT_TEMPLATE } from "./email_templates/reservation_approved_tenant";
+import { RESERVATION_DECLINED_TENANT_TEMPLATE } from "./email_templates/reservation_declined_tenant";
+import { RESERVATION_RECIEVED_INNKEEPER_TEMPLATE } from "./email_templates/reservation_received_innkeeper";
+import { RESERVATION_RECIEVED_TENANT_TEMPLATE } from "./email_templates/reservation_received_tenant";
+
 const SERVER: string = config.get("server.smtp.server");
 const PORT: number = config.get("server.smtp.port");
 const FROM: string = config.get("server.smtp.senderAddress");
@@ -23,15 +28,7 @@ export const sendConfirmationEmail = async (req: Request) => {
       secure: false,
     });
 
-    /**
-     * Render the HTML template for the tenant
-     */
-    const tenantHtmlTemplate = fs.readFileSync(
-      path.join(__dirname, "email_templates/reservation_received_tenant.html"),
-      "utf8"
-    );
-    // const tenantHtml = eta.render(tenantHtmlTemplate, req);
-    const tenantHtml = eta.render(tenantHtmlTemplate, req);
+    const tenantHtml = eta.render(RESERVATION_RECIEVED_TENANT_TEMPLATE, req);
 
     // Send a confirmation email to the person doing the reservation
     await transporter.sendMail({
@@ -41,17 +38,10 @@ export const sendConfirmationEmail = async (req: Request) => {
       html: tenantHtml, // html body
     });
 
-    /**
-     * Render the HTML template for the innkeeper
-     */
-    const innkeeperHtmlTemplate = fs.readFileSync(
-      path.join(
-        __dirname,
-        "email_templates/reservation_received_innkeeper.html"
-      ),
-      "utf8"
+    const innkeeperHtml = eta.render(
+      RESERVATION_RECIEVED_INNKEEPER_TEMPLATE,
+      req
     );
-    const innkeeperHtml = eta.render(innkeeperHtmlTemplate, req);
 
     // Send a notification email to the Innkeeper team
     await transporter.sendMail({
@@ -79,18 +69,11 @@ export const sendStatusEmail = async (req: Request) => {
       secure: false,
     });
 
-    const templateUrl = req.body.state.match(/approved/i)
-      ? "reservation_approved_tenant.html"
-      : "reservation_declined_tenant.html";
+    const template = req.body.state.match(/approved/i)
+      ? RESERVATION_APPROVED_TENANT_TEMPLATE
+      : RESERVATION_DECLINED_TENANT_TEMPLATE;
 
-    /**
-     * Render the HTML template for the tenant
-     */
-    const tenantHtmlTemplate = fs.readFileSync(
-      path.join(__dirname, `email_templates/${templateUrl}`),
-      "utf8"
-    );
-    const tenantHtml = eta.render(tenantHtmlTemplate, req);
+    const tenantHtml = eta.render(template, req);
 
     // Send a status update email to the applicant
     await transporter.sendMail({
