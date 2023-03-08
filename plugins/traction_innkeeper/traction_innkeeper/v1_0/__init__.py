@@ -4,9 +4,11 @@ import logging
 from aries_cloudagent.config.injection_context import InjectionContext
 
 
-from aries_cloudagent.core.event_bus import EventBus
+from aries_cloudagent.core.event_bus import EventBus, Event
 from aries_cloudagent.core.plugin_registry import PluginRegistry
+from aries_cloudagent.core.profile import Profile
 from aries_cloudagent.core.protocol_registry import ProtocolRegistry
+from aries_cloudagent.admin.server import EVENT_PATTERN_RECORD
 
 from . import schema_storage, creddef_storage, endorser, connections, tenant, innkeeper
 
@@ -36,6 +38,8 @@ async def setup(context: InjectionContext):
     bus = context.inject(EventBus)
     if not bus:
         raise ValueError("EventBus missing in context")
+    # probably only want this for debugging...
+    bus.subscribe(EVENT_PATTERN_RECORD, on_event)
 
     # perform a pseudo load of the other "plugins"
     #
@@ -54,3 +58,10 @@ async def setup(context: InjectionContext):
         LOGGER.info("< < setup plugins.")
 
     LOGGER.info("< plugin setup.")
+
+
+async def on_event(profile: Profile, event: Event):
+    LOGGER.info("> on_event")
+    LOGGER.info(f"profile = {profile}")
+    LOGGER.info(f"event = {event}")
+    LOGGER.info("< on_event")
