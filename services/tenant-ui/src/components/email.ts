@@ -1,6 +1,14 @@
 import { Request } from "express";
 import config from "config";
 import nodemailer from "nodemailer";
+import * as eta from "eta"; // HTML templating engine
+
+import { RESERVATION_APPROVED_TENANT_TEMPLATE } from "./email_templates/reservation_approved_tenant";
+import { RESERVATION_DECLINED_TENANT_TEMPLATE } from "./email_templates/reservation_declined_tenant";
+import { RESERVATION_RECIEVED_INNKEEPER_TEMPLATE } from "./email_templates/reservation_received_innkeeper";
+import { RESERVATION_RECIEVED_TENANT_TEMPLATE } from "./email_templates/reservation_received_tenant";
+import { RESERVATION_STATUSES } from "../helpers/constants";
+
 const SERVER: string = config.get("server.smtp.server");
 const PORT: number = config.get("server.smtp.port");
 const FROM: string = config.get("server.smtp.senderAddress");
@@ -19,20 +27,27 @@ export const sendConfirmationEmail = async (req: Request) => {
       secure: false,
     });
 
+    const tenantHtml = eta.render(RESERVATION_RECIEVED_TENANT_TEMPLATE, req);
+
     // Send a confirmation email to the person doing the reservation
     await transporter.sendMail({
       from: FROM,
       to: req.body.contactEmail,
-      subject: "Your reservation details",
-      html: `<h2>We recieved your reservation</h2> <p>Your reservation ID is: ${req.body.reservationId}</p>`, // html body
+      subject: "[TRACTION] Reservation Received",
+      html: tenantHtml, // html body
     });
+
+    const innkeeperHtml = eta.render(
+      RESERVATION_RECIEVED_INNKEEPER_TEMPLATE,
+      req
+    );
 
     // Send a notification email to the Innkeeper team
     await transporter.sendMail({
       from: FROM,
       to: INNKEEPER,
-      subject: "New tenant reservation",
-      html: `<h2>There is a new tenant reservation request</h2> <p>${req.body.contactEmail} has requested a tenant</p>`, // html body
+      subject: `[TRACTION] Reservation Request - ${req.body.contactName}`,
+      html: innkeeperHtml, // html body
     });
   } catch (error) {
     console.error(`Error sending email: ${error}`);
@@ -53,12 +68,25 @@ export const sendStatusEmail = async (req: Request) => {
       secure: false,
     });
 
+    let template
+    let subject;
+    if (req.body.state === RESERVATION_STATUSES.APPROVED) {
+      template = RESERVATION_APPROVED_TENANT_TEMPLATE;
+      subject = "[TRACTION] Reservation Approved!";
+    } else if (req.body.state === RESERVATION_STATUSES.DENIED) {
+      template = RESERVATION_DECLINED_TENANT_TEMPLATE;
+      subject = "[TRACTION] Reservation Declined!";
+    } else {
+      throw Error(`Unsupported reservation state: ${req.body.state}`);
+    }
+    const tenantHtml = eta.render(template, req);
+
     // Send a status update email to the applicant
     await transporter.sendMail({
       from: FROM,
       to: req.body.contactEmail,
-      subject: "Your reservation details",
-      html: `<h2>Update about your reservaton</h2> <p>Your reservation status has been updated to: ${req.body.state} <br> ID: ${req.body.reservationId} <br> Password: ${req.body.reservationPassword}</p> <p>Notes: ${req.body.stateNotes}`, // html body
+      subject,
+      html: tenantHtml, // html body
     });
   } catch (error) {
     console.error(`Error sending email: ${error}`);

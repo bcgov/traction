@@ -37,11 +37,13 @@
         <ApproveReservation
           :id="data.reservation_id"
           :email="data.contact_email"
+          :name="data.contact_name"
           @success="showApproveModal"
         />
         <DenyReservation
           :id="data.reservation_id"
           :email="data.contact_email"
+          :name="data.contact_name"
         />
       </template>
     </Column>

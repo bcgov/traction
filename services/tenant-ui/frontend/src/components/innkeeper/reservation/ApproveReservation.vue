@@ -33,6 +33,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  name: {
+    type: String,
+    required: true,
+  },
 });
 
 const emit = defineEmits(['success']);
@@ -55,7 +59,8 @@ const approve = async () => {
   try {
     const res = await innkeeperTenantsStore.approveReservation(
       props.id,
-      props.email
+      props.email,
+      props.name
     );
     if (config.value.frontend.showInnkeeperReservationPassword) {
       // Have to handle the dialog up a level or it deletes when the rows re-draw after reload
