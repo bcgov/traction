@@ -1,5 +1,4 @@
-export const RESERVATION_DECLINED_TENANT_TEMPLATE = 
-`
+export const RESERVATION_DECLINED_TENANT_TEMPLATE = `
 <p>
   Hello <%= it.body.contactName _%>,<br />
   Your reservation ID <b><%= it.body.reservationId _%></b> has been updated.
@@ -24,4 +23,4 @@ export const RESERVATION_DECLINED_TENANT_TEMPLATE =
   Best regards <br />
   Traction Team
 </p>
-`
+`;
