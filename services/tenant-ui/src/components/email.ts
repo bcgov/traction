@@ -68,7 +68,8 @@ export const sendStatusEmail = async (req: Request) => {
       secure: false,
     });
 
-    let template, subject;
+    let template
+    let subject;
     if (req.body.state === RESERVATION_STATUSES.APPROVED) {
       template = RESERVATION_APPROVED_TENANT_TEMPLATE;
       subject = "[TRACTION] Reservation Approved!";
