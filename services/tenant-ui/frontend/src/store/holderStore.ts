@@ -1,7 +1,10 @@
-import { IndyCredInfo } from '@/types/acapyApi/acapyInterface';
+import {
+  IndyCredInfo,
+  V10CredentialExchange,
+} from '@/types/acapyApi/acapyInterface';
 
 import { defineStore } from 'pinia';
-import { Ref, ref } from 'vue';
+import { computed, Ref, ref } from 'vue';
 import { fetchItem } from './utils/fetchItem';
 import { fetchList } from './utils/fetchList.js';
 import { useAcapyApi } from './acapyApi';
@@ -10,6 +13,7 @@ import { API_PATH } from '@/helpers/constants';
 export const useHolderStore = defineStore('holder', () => {
   // state
   const credentials: Ref<IndyCredInfo[]> = ref([]);
+  const credentialExchanges: Ref<V10CredentialExchange[]> = ref([]);
   const selectedCredential: any = ref(null);
   const presentations: any = ref(null);
   const selectedPresentation: any = ref(null);
@@ -17,12 +21,31 @@ export const useHolderStore = defineStore('holder', () => {
   const error: any = ref(null);
 
   // getters
+  // const combinedCredentials = computed(() => {
+  //   return credentialExchanges.value.map((ex) => {
+  //     return {
+  //       credentialExchange: ex,
+  //       credential: credentials.value.find(c => c.),
+  //     };
+  //   });
+  // });
 
   // actions
 
   async function listCredentials() {
     selectedCredential.value = null;
     return fetchList(API_PATH.CREDENTIALS, credentials, error, loading);
+  }
+
+  async function listHolderCredentialExchanges() {
+    selectedCredential.value = null;
+    return fetchList(
+      API_PATH.ISSUE_CREDENTIAL_RECORDS,
+      credentialExchanges,
+      error,
+      loading,
+      { role: 'holder' }
+    );
   }
 
   async function listPresentations() {
@@ -152,12 +175,14 @@ export const useHolderStore = defineStore('holder', () => {
 
   return {
     credentials,
+    credentialExchanges,
     presentations,
     selectedCredential,
     selectedPresentation,
     loading,
     error,
     listCredentials,
+    listHolderCredentialExchanges,
     listPresentations,
     getCredential,
     getPresentation,

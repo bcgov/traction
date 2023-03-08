@@ -1,34 +1,27 @@
 <template>
   <div>
-    <DataTable :value="attributeRows" class="attributeTable" striped-rows>
-      <Column field="key" header="Code"></Column>
+    <DataTable :value="props.attributes" class="attributeTable" striped-rows>
+      <Column field="name" header="Code"></Column>
       <Column field="value" header="Name"></Column>
     </DataTable>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+// Types
+import { CredAttrSpec } from '@/types/acapyApi/acapyInterface';
+
+// Primevue
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 
 const props = defineProps<{
-  attributes: Record<string, string>;
+  attributes: CredAttrSpec[];
 }>();
-
-const attributeRows = computed(() => {
-  return props.attributes
-    ? Object.keys(props.attributes).map((k) => ({
-        key: k,
-        value: props.attributes[k],
-      }))
-    : [];
-});
 </script>
 
 <style lang="scss" scoped>
 // Custom 'table' for attribute list, see global scss for primevue table overrides
-
 .attributeTable:deep(table) {
   .p-datatable-thead {
     display: none;
