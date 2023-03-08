@@ -5,8 +5,8 @@ export const RESERVATION_RECIEVED_TENANT_TEMPLATE = `
 </p>
 <p>
   This email confirms we have recieved your request and a Representative is
-  working on your case. Your reservation ID is
-  <b><%= it.body.reservationId _%></b>.
+  working on your case. <br />
+  Your reservation ID is <b><%= it.body.reservationId _%></b>.
 </p>
 <p>
   A descision on the request usually takes 2-3 days from the date of this email.
@@ -17,7 +17,7 @@ export const RESERVATION_RECIEVED_TENANT_TEMPLATE = `
   Please do not forward this email as it contains private information intended
   only for you. Please do not reply to this email.
 </p>
-<p>Thank you for choosing Traction.</p>
+<p>Thank you for choosing Traction!</p>
 <p>
   Best regards <br />
   Traction Team

@@ -1,7 +1,7 @@
 export const RESERVATION_DECLINED_TENANT_TEMPLATE = `
 <p>
   Hello <%= it.body.contactName _%>,<br />
-  Your reservation ID <b><%= it.body.reservationId _%></b> has been updated.
+  Your reservation ID (<%= it.body.reservationId _%>) has been updated.
 </p>
 <p>
   Thank you for your interest in joining Traction. We regret to inform you that
@@ -13,7 +13,7 @@ export const RESERVATION_DECLINED_TENANT_TEMPLATE = `
 </p>
 <p>
   If you think there has been an error, you can submit a new request here: <%=
-  it.body.serverUrl _%>"
+  it.body.serverUrl _%>
 </p>
 <p>
   Please do not forward this email as it containes private information intended
