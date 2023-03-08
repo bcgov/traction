@@ -76,35 +76,33 @@ export const useHolderStore = defineStore('holder', () => {
 
   const acapyApi = useAcapyApi();
 
-  async function acceptCredentialOffer(credId: string) {
+  async function acceptCredentialOffer(credExId: string) {
     console.log('> holderStore.acceptCredentialOffer');
 
     error.value = null;
     loading.value = true;
 
-    const result = null;
+    let result = null;
 
-    // await acapyApi
-    //   .postHttp(API_PATH.HOLDER_CREDENTIALS_ACCEPT_OFFER(credId), {
-    //     holder_credential_id: credId,
-    //   })
-    //   .then((res) => {
-    //     result = res.data.item;
-    //   })
-    //   .then(() => {
-    //     console.log('credential offer accepted.');
-    //     listCredentials(); // Refresh table
-    //   })
-    //   .catch((err) => {
-    //     error.value = err;
-    //   })
-    //   .finally(() => {
-    //     loading.value = false;
-    //   });
-    // if (error.value != null) {
-    //   // throw error so $onAction.onError listeners can add their own handler
-    //   throw error.value;
-    // }
+    await acapyApi
+      .postHttp(API_PATH.ISSUE_CREDENTIAL_RECORDS_SEND_REQUEST(credExId))
+      .then((res) => {
+        result = res.data.item;
+      })
+      .then(() => {
+        console.log('credential offer accepted.');
+        listHolderCredentialExchanges(); // Refresh table
+      })
+      .catch((err) => {
+        error.value = err;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
     // return data so $onAction.after listeners can add their own handler
     return result;
   }
@@ -142,33 +140,33 @@ export const useHolderStore = defineStore('holder', () => {
     return result;
   }
 
-  async function deleteHolderCredential(credId: string) {
-    console.log('> holderStore.deleteHolderCredential');
+  async function deleteCredentialExchange(credExId: string) {
+    console.log('> holderStore.deleteCredentialExchange');
 
     error.value = null;
     loading.value = true;
 
-    const result = null;
+    let result = null;
 
-    // await acapyApi
-    //   .deleteHttp(API_PATH.HOLDER_CREDENTIAL(credId))
-    //   .then((res) => {
-    //     result = res.data.item;
-    //   })
-    //   .then(() => {
-    //     console.log('credential deleted.');
-    //     listCredentials(); // Refresh table
-    //   })
-    //   .catch((err) => {
-    //     error.value = err;
-    //   })
-    //   .finally(() => {
-    //     loading.value = false;
-    //   });
-    // if (error.value != null) {
-    //   // throw error so $onAction.onError listeners can add their own handler
-    //   throw error.value;
-    // }
+    await acapyApi
+      .deleteHttp(API_PATH.ISSUE_CREDENTIAL_RECORD(credExId))
+      .then((res) => {
+        result = res.data.item;
+      })
+      .then(() => {
+        console.log('credential exchange deleted.');
+        listHolderCredentialExchanges(); // Refresh table
+      })
+      .catch((err) => {
+        error.value = err;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
     // return data so $onAction.after listeners can add their own handler
     return result;
   }
@@ -188,7 +186,7 @@ export const useHolderStore = defineStore('holder', () => {
     getPresentation,
     acceptCredentialOffer,
     rejectCredentialOffer,
-    deleteHolderCredential,
+    deleteCredentialExchange,
   };
 });
 

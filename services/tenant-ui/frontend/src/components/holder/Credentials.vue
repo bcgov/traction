@@ -12,6 +12,8 @@
     :global-filter-fields="['cred_def_id']"
     selection-mode="single"
     data-key="credential_exchange_id"
+    sort-field="updated_at"
+    :sort-order="-1"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -50,18 +52,21 @@
           title="Accept Credential into Wallet"
           icon="pi pi-check"
           class="p-button-rounded p-button-icon-only p-button-text"
+          :disabled="data.state !== 'offer_received'"
           @click="acceptOffer($event, data)"
         />
         <Button
           title="Reject Credential Offer"
           icon="pi pi-times"
           class="p-button-rounded p-button-icon-only p-button-text"
+          :disabled="data.state !== 'offer_received'"
           @click="rejectOffer($event, data)"
         />
         <Button
-          title="Delete Credential"
+          title="Delete Credential Exchange Record"
           icon="pi pi-trash"
           class="p-button-rounded p-button-icon-only p-button-text"
+          :disabled="data.state === 'offer_received'"
           @click="deleteCredential($event, data)"
         />
       </template>
@@ -81,7 +86,7 @@
         <StatusChip :status="data.state" />
       </template>
     </Column>
-    <Column :sortable="true" field="updatedAt" header="Last update">
+    <Column :sortable="true" field="updated_at" header="Last update">
       <template #body="{ data }">
         {{ formatDateLong(data.created_at) }}
       </template>
@@ -97,7 +102,7 @@ import {
 } from '@/types/acapyApi/acapyInterface';
 
 // Vue
-import { computed, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 // PrimeVue
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -128,45 +133,51 @@ const { loading, credentialExchanges, selectedCredential } = storeToRefs(
 );
 
 const getAttributes = (data: V10CredentialExchange): CredAttrSpec[] => {
-  let attrs = [] as CredAttrSpec[];
-  if ((data.state = 'offer_received')) {
-    attrs = data.credential_offer_dict?.credential_preview?.attributes ?? [];
-  }
-  return attrs;
+  return data.credential_offer_dict?.credential_preview?.attributes ?? [];
 };
 
 // Actions for a cred row
-const acceptOffer = (event: any, data: any) => {
-  holderStore.acceptCredentialOffer(data.holder_credential_id).then(() => {
-    toast.success(`Credential successfully added to your wallet`);
-  });
+const acceptOffer = (event: any, data: V10CredentialExchange) => {
+  if (data.credential_exchange_id) {
+    holderStore.acceptCredentialOffer(data.credential_exchange_id).then(() => {
+      toast.success(`Credential successfully added to your wallet`);
+    });
+  }
 };
-const rejectOffer = (event: any, data: any) => {
+const rejectOffer = (event: any, data: V10CredentialExchange) => {
   confirm.require({
     target: event.currentTarget,
     message: 'Are you sure you want to reject this credential offer?',
     header: 'Confirmation',
     icon: 'pi pi-exclamation-triangle',
     accept: () => {
-      holderStore.rejectCredentialOffer(data.holder_credential_id).then(() => {
-        loadTable();
-        toast.success(`Credential offer rejected`);
-      });
+      if (data.credential_exchange_id) {
+        holderStore
+          .deleteCredentialExchange(data.credential_exchange_id)
+          .then(() => {
+            loadTable();
+            toast.success(`Credential offer rejected`);
+          });
+      }
     },
   });
 };
 
-const deleteCredential = (event: any, data: any) => {
+const deleteCredential = (event: any, data: V10CredentialExchange) => {
   confirm.require({
     target: event.currentTarget,
-    message: 'Are you sure you want to delete this credential?',
+    message: 'Are you sure you want to delete this credential exchange record?',
     header: 'Confirmation',
     icon: 'pi pi-exclamation-triangle',
     accept: () => {
-      holderStore.deleteHolderCredential(data.holder_credential_id).then(() => {
-        loadTable();
-        toast.info(`Credential offer rejected`);
-      });
+      if (data.credential_exchange_id) {
+        holderStore
+          .deleteCredentialExchange(data.credential_exchange_id)
+          .then(() => {
+            loadTable();
+            toast.info(`Credential exchange deleted`);
+          });
+      }
     },
   });
 };
