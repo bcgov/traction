@@ -1,8 +1,6 @@
 import { Request } from "express";
 import config from "config";
 import nodemailer from "nodemailer";
-import * as path from "path";
-import * as fs from "fs";
 import * as eta from "eta"; // HTML templating engine
 
 import { RESERVATION_APPROVED_TENANT_TEMPLATE } from "./email_templates/reservation_approved_tenant";
