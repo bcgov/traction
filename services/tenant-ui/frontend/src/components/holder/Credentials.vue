@@ -52,6 +52,7 @@
           title="Accept Credential into Wallet"
           icon="pi pi-check"
           class="p-button-rounded p-button-icon-only p-button-text"
+          :class="{ accepted: data.state === 'credential_acked' }"
           :disabled="data.state !== 'offer_received'"
           @click="acceptOffer($event, data)"
         />
@@ -230,5 +231,8 @@ const filter = ref({
 .p-datatable-header input {
   padding-left: 3rem;
   margin-right: 1rem;
+}
+button.accepted {
+  color: green !important;
 }
 </style>
