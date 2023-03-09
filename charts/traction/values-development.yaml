@@ -15,7 +15,7 @@ acapy:
     tractionInnkeeper:
       printKey: true
       printToken: true
-      reservationExpiryMinutes: 120
+      reservationExpiryMinutes: 2880
   resources:
     limits:
       cpu: 400m

@@ -66,7 +66,7 @@ acapy:
       walletName: traction_innkeeper
       printKey: false
       printToken: false
-      reservationExpiryMinutes: 10080
+      reservationExpiryMinutes: 2880
 
 
   imagePullSecrets: []
