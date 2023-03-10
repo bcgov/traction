@@ -57,6 +57,8 @@ export const API_PATH = {
   ISSUE_CREDENTIAL_RECORDS_SEND_OFFER: (id: string) =>
     `issue-credential/records/${id}/send-offer`,
   ISSUE_CREDENTIALS_SEND_OFFER: 'issue-credential/send-offer',
+  ISSUE_CREDENTIAL_RECORDS_SEND_REQUEST: (id: string) =>
+    `issue-credential/records/${id}/send-request`,
 
   MULTITENANCY_RESERVATIONS: '/multitenancy/reservations',
   MULTITENANCY_RESERVATION: (resId: string) =>
