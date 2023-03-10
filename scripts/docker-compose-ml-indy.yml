@@ -41,9 +41,9 @@ services:
       - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
       - TRACTION_MULTITENANCY_CONFIGURATION_WALLET_TYPE=${TRACTION_MULTITENANCY_CONFIGURATION_WALLET_TYPE}
       - TRACTION_MULTITENANCY_CONFIGURATION_WALLET_NAME=${TRACTION_MULTITENANCY_CONFIGURATION_WALLET_NAME}  
-      - ACAPY_LOG_LEVEL=${ACAPY_LOG_LEVEL}    
+      - ACAPY_LOG_LEVEL=info    
       - ACAPY_AUTO_PROVISION=${ACAPY_AUTO_PROVISION}
-      - ACAPY_WALLET_TYPE=${ACAPY_WALLET_TYPE}
+      - ACAPY_WALLET_TYPE=indy
       - ACAPY_WALLET_STORAGE_TYPE=${ACAPY_WALLET_STORAGE_TYPE}
       - ACAPY_GENESIS_TRANSACTIONS_LIST=${ACAPY_GENESIS_TRANSACTIONS_LIST}
       - ACAPY_READ_ONLY_LEDGER=${ACAPY_READ_ONLY_LEDGER}
@@ -88,7 +88,7 @@ services:
     entrypoint: /bin/bash
     command: ["-c", "sleep 5; ./ngrok-wait.sh"]
     volumes:
-      - "./plugin-config.yml:/home/indy/plugin-config.yml"
+      - "./plugin-config-indy.yml:/home/indy/plugin-config.yml"
       - "./ledgers.yml:/home/indy/ledgers.yml"
     extra_hosts:
       - host.docker.internal:host-gateway
@@ -213,6 +213,8 @@ services:
     ports:
       - ${ACAPY_ENDORSER_ADMIN_PORT}:${ACAPY_ENDORSER_ADMIN_PORT}
       - ${ACAPY_ENDORSER_HTTP_PORT}:${ACAPY_ENDORSER_HTTP_PORT}
+    environment:
+      - RUST_LOG=${RUST_LOG}
     entrypoint: /bin/bash
     command: [
         "-c",
@@ -226,7 +228,7 @@ services:
         --endpoint ${ACAPY_ENDORSER_ENDPOINT} \
         --wallet-name '${ENDORSER_ACAPY_WALLET_DATABASE}' \
         --wallet-key '${ENDORSER_ACAPY_WALLET_ENCRYPTION_KEY}' \
-        --wallet-type '${ENDORSER_ACAPY_WALLET_TYPE}' \
+        --wallet-type 'indy' \
         --wallet-storage-type '${ENDORSER_ACAPY_WALLET_STORAGE_TYPE}' \
         --wallet-storage-config '{\"url\":\"${ENDORSER_POSTGRESQL_HOST}:5432\",\"max_connections\":5}' \
         --wallet-storage-creds '{\"account\":\"${POSTGRESQL_USER}\",\"password\":\"${POSTGRESQL_PASSWORD}\",\"admin_account\":\"${POSTGRESQL_USER}\",\"admin_password\":\"${POSTGRESQL_PASSWORD}\"}' \

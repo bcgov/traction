@@ -1,0 +1,18 @@
+multitenant_provider:
+  manager:
+    class_name: "traction_plugins.multitenant_provider.v1_0.manager.BasicMultitokenMultitenantManager"
+    always_check_provided_wallet_key: true
+  errors:
+    on_unneeded_wallet_key: false
+  token_expiry:
+    units: days
+    amount: 1
+
+traction_innkeeper:
+  innkeeper_wallet:
+    tenant_id: innkeeper
+    wallet_name: traction_innkeeper
+    wallet_key: change-me
+    print_key: true
+    print_token: true
+  reservation.expiry_minutes: 120
