@@ -90,7 +90,7 @@ import { onMounted, ref } from 'vue';
 // PrimeVue etc
 import Button from 'primevue/button';
 import Column from 'primevue/column';
-import DataTable from 'primevue/datatable';
+import DataTable, { DataTableFilterMetaData } from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
 import { FilterMatchMode } from 'primevue/api';
 import { useConfirm } from 'primevue/useconfirm';
@@ -157,7 +157,10 @@ const expandedRows = ref([]);
 
 // Filter for search
 const filter = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  global: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
 });
 </script>
 

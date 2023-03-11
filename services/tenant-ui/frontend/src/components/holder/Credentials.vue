@@ -107,7 +107,7 @@ import { onMounted, ref } from 'vue';
 // PrimeVue
 import Button from 'primevue/button';
 import Column from 'primevue/column';
-import DataTable from 'primevue/datatable';
+import DataTable, { DataTableFilterMetaData } from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
 import { FilterMatchMode } from 'primevue/api';
 import { useConfirm } from 'primevue/useconfirm';
@@ -224,7 +224,10 @@ const findConnectionName = (connectionId: string) => {
 const expandedRows = ref([]);
 
 const filter = ref({
-  cred_def_id: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  cred_def_id: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
 });
 </script>
 <style scoped>

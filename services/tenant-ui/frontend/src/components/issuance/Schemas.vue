@@ -93,7 +93,7 @@ import { onMounted, ref } from 'vue';
 // PrimeVue etc
 import Button from 'primevue/button';
 import Column from 'primevue/column';
-import DataTable from 'primevue/datatable';
+import DataTable, { DataTableFilterMetaData } from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
 import { FilterMatchMode } from 'primevue/api';
 import { useConfirm } from 'primevue/useconfirm';
@@ -163,7 +163,10 @@ const doDelete = (schema: any) => {
 const expandedRows = ref([]);
 
 const filter = ref({
-  schema_id: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  schema_id: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
 });
 </script>
 
