@@ -56,7 +56,7 @@ import { onMounted, ref } from 'vue';
 // PrimeVue
 import Button from 'primevue/button';
 import Column from 'primevue/column';
-import DataTable from 'primevue/datatable';
+import DataTable, { DataTableFilterMetaData } from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
 import { FilterMatchMode } from 'primevue/api';
 import { useToast } from 'vue-toastification';
@@ -89,7 +89,10 @@ onMounted(async () => {
 
 // Filter for search
 const filter = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  global: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
 });
 
 // necessary for expanding rows, we don't do anything with this

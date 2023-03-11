@@ -82,7 +82,7 @@ import { onMounted, ref } from 'vue';
 // PrimeVue
 import Button from 'primevue/button';
 import Column from 'primevue/column';
-import DataTable from 'primevue/datatable';
+import DataTable, { DataTableFilterMetaData } from 'primevue/datatable';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import { FilterMatchMode } from 'primevue/api';
@@ -128,6 +128,9 @@ const showApproveModal = (password: string, email: string) => {
 
 // Filter for search
 const filter = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  global: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
 });
 </script>

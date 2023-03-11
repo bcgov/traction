@@ -79,7 +79,7 @@ import { onMounted, ref } from 'vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
-import DataTable from 'primevue/datatable';
+import DataTable, { DataTableFilterMetaData } from 'primevue/datatable';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';
 import { FilterMatchMode } from 'primevue/api';
@@ -156,7 +156,7 @@ const deleteDisabled = (contactAlias: string) => {
 const expandedRows = ref([]);
 
 const filter = ref({
-  alias: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  alias: { value: null, matchMode: 'contains' } as DataTableFilterMetaData,
 });
 </script>
 

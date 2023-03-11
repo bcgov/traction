@@ -57,7 +57,7 @@ import { onMounted, ref } from 'vue';
 // PrimeVue
 import Button from 'primevue/button';
 import Column from 'primevue/column';
-import DataTable from 'primevue/datatable';
+import DataTable, { DataTableFilterMetaData } from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
 import { useToast } from 'vue-toastification';
 import { FilterMatchMode } from 'primevue/api';
@@ -103,7 +103,10 @@ const loadTable = async () => {
 const expandedRows = ref([]);
 
 const filter = ref({
-  content: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  content: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
 });
 
 onMounted(() => {
