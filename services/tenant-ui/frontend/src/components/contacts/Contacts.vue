@@ -44,6 +44,10 @@
     <Column :expander="true" header-style="width: 3rem" />
     <Column :sortable="false" header="Actions">
       <template #body="{ data }">
+        <MessageContact
+          :connection-id="data.connection_id"
+          :connection-name="data.alias"
+        />
         <Button
           title="Delete Contact"
           icon="pi pi-trash"
@@ -91,6 +95,7 @@ import AcceptInvitation from './acceptInvitation/AcceptInvitation.vue';
 // import AcceptInvitation from './acceptInvitation/AcceptInvitation.vue';
 import DidExchange from './didExchange/DidExchange.vue';
 import EditContact from './editContact/EditContact.vue';
+import MessageContact from './messageContact/MessageContact.vue';
 import RowExpandData from '../common/RowExpandData.vue';
 import StatusChip from '../common/StatusChip.vue';
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
