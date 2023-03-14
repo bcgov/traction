@@ -13,14 +13,23 @@ export const useMessageStore = defineStore('messages', () => {
   // grab the tenant api
   const acapyApi = useAcapyApi();
 
-  async function listMessages() {
+  async function listMessages(connId?: string) {
+    /**
+     * Default to empty object, but if a connection ID
+     * is passed in, add it to the params.
+     */
+    let params = {};
+    if (connId) params = { connection_id: connId };
+
+    console.log('acapyApi', acapyApi);
+    console.log('API_PATH.BASICMESSAGES', API_PATH.BASICMESSAGES);
     return fetchListFromAPI(
       acapyApi,
       API_PATH.BASICMESSAGES,
       messages,
       error,
       loading,
-      {}
+      params
     );
   }
 

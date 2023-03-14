@@ -15,6 +15,7 @@
         type="text"
         v-model="message"
         placeholder="Send Message"
+        @keydown="onKeydown"
         autofocus
       />
       <Button icon="pi pi-send" @click="sendMessage" />
@@ -35,11 +36,11 @@ import MessageContactList from './MessageContactList.vue';
 
 // State
 import { useMessageStore } from '@/store';
-import { storeToRefs } from 'pinia';
+// import { storeToRefs } from 'pinia';
 
 const messageStore = useMessageStore();
-const { loading, messages, selectedMessage } = storeToRefs(useMessageStore());
-messageStore.sendMessage('test', { content: 'test' });
+// const { loading, messages, selectedMessage } = storeToRefs(useMessageStore());
+// messageStore.sendMessage('test', { content: 'test' });
 
 // Props
 const props = defineProps({
@@ -55,25 +56,38 @@ const props = defineProps({
 
 const displaySidebar = ref(false);
 
-const message = ref('');
+const message = ref(''); // Store new message
 
 const openSidebar = () => {
   displaySidebar.value = true;
 };
 
+/**
+ * Send the message.
+ */
 const sendMessage = () => {
-  console.log(`Send Message ${message.value} to ${props.connectionId}`);
   messageStore.sendMessage(props.connectionId, { content: message.value });
+  message.value = ''; // Blank the form
+};
+
+/**
+ * When the user hits enter, send the message.
+ * @param event KeyboardEvent
+ */
+const onKeydown = (event: KeyboardEvent) => {
+  if (event.key === 'Enter') {
+    sendMessage();
+  }
 };
 </script>
 
-<style>
+<style lang="scss">
 .send-message {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  width: 90%;
+  width: 90% !important;
   margin: 1rem 1rem 2rem 1.6rem;
 }
 </style>
