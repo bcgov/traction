@@ -1,6 +1,19 @@
 <template>
   <h2>Chat with {{ props.connectionName }}</h2>
-  <!-- TODO cycle through the massageList array and add all the messages-->
+  <div class="container">
+    <div
+      class="message"
+      v-for="item in messageList"
+      :class="item.state === 'received' ? 'theirs' : 'mine'"
+    >
+      <div class="bubble">
+        {{ item.content }}
+      </div>
+      <div class="time">
+        {{ item.sent_time }}
+      </div>
+    </div>
+  </div>
 </template>
 <script setup lang="ts">
 // Vue
@@ -42,11 +55,77 @@ const props = defineProps({
 });
 
 /**
+ * Remove unwanted messages. In this case
+ * it is the message that is sent to the
+ * connection to let us know that the
+ * message was received.
+ * TBD: This should be done in the backend.
+ * @param message of type Message
+ * @return boolean
+ */
+const filterMessages = (message: Message) => {
+  if (
+    message.content.match(/received your message/) &&
+    message.content.match(props.connectionName)
+  ) {
+    return false;
+  } else {
+    return true;
+  }
+};
+
+/**
+ * Sort the messages by date. Oldest to newest.
+ * @param messageA Message currently looking at
+ * @param messageB Message next in line
+ * @return number
+ */
+const sortMessages = (messageA: Message, messageB: Message) => {
+  const dateA = new Date(messageA.sent_time);
+  const dateB = new Date(messageB.sent_time);
+  return dateA.valueOf() - dateB.valueOf();
+};
+
+/**
  * Get the previous messages for the connection.
  */
 messageStore.listMessages(props.connectionId).then((messages) => {
-  console.log(messages);
-  // TODO: may want to filter out the '_ received your message' entries
-  messageList.value = messages;
+  messageList.value = messages.filter(filterMessages).sort(sortMessages);
 });
 </script>
+
+<style scoped lang="scss">
+h2 {
+  color: #5d5d5d;
+}
+.container {
+  display: flex;
+  flex-direction: column;
+}
+.bubble {
+  border-radius: 1rem;
+  padding: 0.75rem 1.5rem 0.75rem 1.5rem;
+  margin: 0.5rem;
+}
+.message {
+  max-width: 60%;
+  min-width: 20%;
+}
+.mine {
+  align-self: flex-end;
+}
+.mine .bubble {
+  background-color: #d8e6f1;
+  color: #8297a6;
+}
+.theirs {
+  align-self: flex-start;
+}
+.theirs .bubble {
+  background-color: #88a6be;
+  color: #fff;
+}
+.time {
+  display: none;
+}
+</style>
