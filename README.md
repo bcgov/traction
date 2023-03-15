@@ -13,7 +13,7 @@
 - [What is Traction comprised of?](#what-is-traction-comprised-of)
 - [Start contributing to Traction](#start-contributing-to-traction)
 - [Who is maintaining Tracion?](#who-is-maintaining-traction)
-- [How is Traction licenced?](#how-is-traction-licenced)
+- [How is Traction licenced?](#how-is-traction-licensed)
 - [Engage with the community](#engage-with-the-community)
 
 
@@ -28,9 +28,9 @@ Its open-source foundation makes it easy to integrate digital trust technology i
 
 ## Start using Traction 
 
-Running Traction: to run a local instance of traction, see the documentation in [scripts](./scripts/README.md). 
+**Running Traction**: to run a local instance of traction, see the documentation in [scripts](./scripts/README.md). 
 
-Deploying Traction: Helm charts for deploying Traction and Endorser to Openshift (BC Gov Traction team specific): [charts](./charts/README.md). 
+**Deploying Traction**: Helm charts for deploying Traction and Endorser to Openshift (BC Gov Traction team specific): [charts](./charts/README.md). 
 
 
 ## What are the benefits of using Traction? 
@@ -45,9 +45,9 @@ Traction makes it easier to integrate digital trust technology into existing lin
 
 ## What is Traction comprised of? 
 
-- ACA-Py + plugins 
-- Tenant UI 
-- Endorser Services 
+- [ACA-Py + plugins](./plugins/README.md) 
+- [Tenant UI](./services/tenant-ui/README.md) 
+- [Endorser Services](./services/endorser/README.md) 
 
 
 ## Start contributing to Traction 
