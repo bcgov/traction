@@ -90,27 +90,28 @@ const sortMessages = (messageA: Message, messageB: Message) => {
 /**
  * Get the previous messages for the connection.
  */
-
-/**
- * Listen for new messages on the messageStore
- */
 messageStore.listMessages(props.connectionId).then((messages) => {
   messageList.value = messages.filter(filterMessages).sort(sortMessages);
 });
 
 const { newMessage } = storeToRefs(useMessageStore());
 
+/**
+ * Listen for new messages on the messageStore
+ */
 watch(newMessage, (newMessage) => {
-  console.log('new message', newMessage);
-  if (newMessage.connection_id === props.connectionId) {
-    // messageList.value.push(newMessage);
-  }
+  const now = new Date();
+  const tempMessage: Message = {
+    connection_id: '',
+    content: newMessage,
+    created_at: now.toISOString(),
+    message_id: '',
+    sent_time: now.toISOString(),
+    state: 'sent',
+    updated_at: now.toISOString(),
+  };
+  messageList.value.push(tempMessage);
 });
-// messageStore.$subscribe((mutation, state) => {
-//   console.log('new message', messageStore.newMessage);
-//   console.log('mutation', mutation);
-//   console.log('state', state);
-// });
 </script>
 
 <style scoped lang="scss">
