@@ -17,7 +17,8 @@
 </template>
 <script setup lang="ts">
 // Vue
-import { ref, PropType } from 'vue';
+import { ref, PropType, watch } from 'vue';
+import { storeToRefs } from 'pinia';
 
 // State
 import { useMessageStore } from '@/store';
@@ -89,9 +90,27 @@ const sortMessages = (messageA: Message, messageB: Message) => {
 /**
  * Get the previous messages for the connection.
  */
+
+/**
+ * Listen for new messages on the messageStore
+ */
 messageStore.listMessages(props.connectionId).then((messages) => {
   messageList.value = messages.filter(filterMessages).sort(sortMessages);
 });
+
+const { newMessage } = storeToRefs(useMessageStore());
+
+watch(newMessage, (newMessage) => {
+  console.log('new message', newMessage);
+  if (newMessage.connection_id === props.connectionId) {
+    // messageList.value.push(newMessage);
+  }
+});
+// messageStore.$subscribe((mutation, state) => {
+//   console.log('new message', messageStore.newMessage);
+//   console.log('mutation', mutation);
+//   console.log('state', state);
+// });
 </script>
 
 <style scoped lang="scss">

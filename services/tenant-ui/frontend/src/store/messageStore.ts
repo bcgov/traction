@@ -9,6 +9,7 @@ export const useMessageStore = defineStore('messages', () => {
   const selectedMessage: any = ref(null);
   const loading: any = ref(false);
   const error: any = ref(null);
+  const newMessage: any = ref('');
 
   // grab the tenant api
   const acapyApi = useAcapyApi();
@@ -21,8 +22,6 @@ export const useMessageStore = defineStore('messages', () => {
     let params = {};
     if (connId) params = { connection_id: connId };
 
-    console.log('acapyApi', acapyApi);
-    console.log('API_PATH.BASICMESSAGES', API_PATH.BASICMESSAGES);
     return fetchListFromAPI(
       acapyApi,
       API_PATH.BASICMESSAGES,
@@ -41,15 +40,14 @@ export const useMessageStore = defineStore('messages', () => {
     console.log('> messageStore.sendMessage');
     error.value = null;
     loading.value = true;
+    newMessage.value = payload.content;
 
     let result = null;
 
     await acapyApi
       .postHttp(API_PATH.BASICMESSAGES_SEND(connId), payload)
       .then((res) => {
-        console.log(res);
         result = res.data.item;
-        console.log(result);
       })
       .catch((err) => {
         error.value = err;
@@ -72,6 +70,7 @@ export const useMessageStore = defineStore('messages', () => {
     selectedMessage,
     loading,
     error,
+    newMessage,
     listMessages,
     sendMessage,
   };

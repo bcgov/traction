@@ -25,7 +25,7 @@
 
 <script setup lang="ts">
 // Vue
-import { ref, PropType } from 'vue';
+import { ref, PropType, defineEmits } from 'vue';
 // PrimeVue
 import Button from 'primevue/button';
 import Sidebar from 'primevue/sidebar';
@@ -36,11 +36,8 @@ import MessageContactList from './MessageContactList.vue';
 
 // State
 import { useMessageStore } from '@/store';
-// import { storeToRefs } from 'pinia';
 
 const messageStore = useMessageStore();
-// const { loading, messages, selectedMessage } = storeToRefs(useMessageStore());
-// messageStore.sendMessage('test', { content: 'test' });
 
 // Props
 const props = defineProps({
@@ -68,6 +65,9 @@ const openSidebar = () => {
 const sendMessage = () => {
   messageStore.sendMessage(props.connectionId, { content: message.value });
   message.value = ''; // Blank the form
+
+  // Notify the list component that there is a new message
+  // messageStore.newMessage = message.value;
 };
 
 /**
