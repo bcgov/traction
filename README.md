@@ -1,29 +1,70 @@
-# traction [![Lifecycle:Maturing](https://img.shields.io/badge/Lifecycle-Maturing-007EC6)](<Redirect-URL>)
-[![Maintainability](https://api.codeclimate.com/v1/badges/e6df50041dd4373c7e15/maintainability)](https://codeclimate.com/github/bcgov/traction/maintainability)
+# Traction 
 
-Hyperledger Aries Traction - a digital wallet solution for organizations. The focus of Traction is for line of businesses to easily integrate Aries ([aca-py](https://github.com/hyperledger/aries-cloudagent-python)) into their applications; without having to stand up, maintain and manage and instance of aca-py themselves.
+![Traction Logo](./docs/assets/readme-logo.png)
 
-Traction provides a series of Aca-Py plugins to manage Aries agent instances in a multi-tenant aca-py deployment, and provides some value-add services for the tenants and the administrator of Aca-Py.  Future functionality could include machine-readable governance, etc.
-
-See [traction flow chart](docs/assets/traction-flow-chart-1600x900-12162022.pdf) for a simple architecture overview.
-
-## Quick start
-
-To run a local instance of traction, see the documentation in [scripts](./scripts/README.md).
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE) [![Lifecycle:Maturing](https://img.shields.io/badge/Lifecycle-Maturing-007EC6)](<Redirect-URL>) [![Maintainability](https://api.codeclimate.com/v1/badges/e6df50041dd4373c7e15/maintainability)](https://codeclimate.com/github/bcgov/traction/maintainability) 
 
 
-## Deploying Traction
+## Table of Contents 
 
-Helm charts for deploying Traction and Endorser to Openshift (BC Gov Traction team specific):
+- [What is Traction?](#what-is-traction)
+- [Start using Traction](#start-using-traction)
+- [What are the benefits of using Traction?](#what-are-the-benefits-of-using-traction)
+- [What is Traction comprised of?](#what-is-traction-comprised-of)
+- [Start contributing to Traction](#start-contributing-to-traction)
+- [Who is maintaining Tracion?](#who-is-maintaining-traction)
+- [How is Traction licenced?](#how-is-traction-licensed)
+- [Engage with the community](#engage-with-the-community)
 
-[Charts](./charts/README.md)
 
 
-## Repository workflow
+## What is Traction? 
+
+Traction is a digital wallet solution comprised of plugins layered on top of Hyperledger Aries Cloud Agent Python (ACA-Py) and streamlines the process of sending and receiving digital credentials for governments and organizations.  
+
+Its open-source foundation makes it easy to integrate digital trust technology into existing lines of business applications, without having to stand up, maintain and manage an instance of ACA-Py themselves. Future functionality could include machine-readable governance and more. 
+
+![Arch Diagram](./docs/assets/traction-flow-chart-1600x900-12162022-01.jpg)
+
+## Start using Traction 
+
+**Running Traction**: to run a local instance of traction, see the documentation in [scripts](./scripts/README.md). 
+
+**Deploying Traction**: Helm charts for deploying Traction and Endorser to Openshift (BC Gov Traction team specific): [charts](./charts/README.md). 
+
+
+## What are the benefits of using Traction? 
+
+Traction makes it easier to integrate digital trust technology into existing line of business applications. 
+
+- **API-first Architecture**: Traction is designed with an API-first architecture, this RESTful API allows for integration into existing line-of-business applications already being used by organizations, the Tenant user interface is built on this API to enable adoption prior to integration and for low-use functions. 
+- **Enhanced Interoperability**: Hyperledger Aries makes Traction more broadly compatible with existing technologies used by governments and organizations around the world. 
+- **Multi-tenancy**: Rather than having multiple digital tools to integrate with organizations, one scalable instance of Traction can be used to participate in the digital trust ecosystem, control all connections, and more easily share data. 
+- **Higher Scalability**: Traction is open-source technology, encouraging collaborative refinement, faster release, and higher scalability. 
+
+
+## What is Traction comprised of? 
+
+- [ACA-Py + plugins](./plugins/README.md) 
+- [Tenant UI](./services/tenant-ui/README.md) 
+- [Endorser Services](./services/endorser/README.md) 
+
+
+## Start contributing to Traction 
+
+Traction is an open-source technology project that welcomes collaboration.  
+
+If you would like to contribute to Traction, please review the following: 
+
+- [Contributing](./CONTRIBUTING.md)  
+- [Code of Conduct](./CODE_OF_CONDUCT.md) 
+- [Compliance](./COMPLIANCE.yaml) 
+
+### Repository workflow
 Currently authorized users can create a branch and run a pull request to merge in changes. Unauthorized can always create a fork.
 
 
-### Rebasing of a branch
+#### Rebasing of a branch
 ```bash
 git fetch --all
 git pull
@@ -32,11 +73,22 @@ git rebase origin/develop
 git push --force
 ```
 
-## Archive of Showcase
-Earlier iterations of Traction had a Showcase application (use Traction API to facilitate Alice/Faber/Acme demo).
+## Who is maintaining Traction? 
+[The Province of British Columbia](https://github.com/bcgov/) is maintaining Traction as an open-source project.
 
-This has been removed as the API advances and other applications fill that role. A full working instance of Traction API and Showcase are in [tag v0.1.0](https://github.com/bcgov/traction/releases/tag/v0.1.0)
+Maintainer(s): 
+- Jason Sherman
+- Jason Syrotuck
+- Lucas O'Neil
+- Jamie Popkin
 
-The v0.1.0 release has instructions and docker compose files for running Showcase.
-Review [Scripts](https://github.com/bcgov/traction/blob/66565a3f6c01ddec241dc3b8db2bd99879bd7cf2/scripts/README.md). 
+## How is Traction licensed? 
 
+Traction is licensed under Apache License 2.0 which can be reviewed [here](./LICENSE). 
+
+
+## Engage with the community 
+
+Connect with others
+- on Discord: [EMDT Public Discord Channel](https://discord.com/channels/766403442599657522/854432442382680104) 
+- for Aries discussion see the Hyperlerger Aries Github [participation section](https://github.com/hyperledger/aries#project-participation)
