@@ -1,5 +1,7 @@
 <template>
-  <h2>Chat with {{ props.connectionName }}</h2>
+  <div class="title">
+    <h2>Chat with {{ props.connectionName }}</h2>
+  </div>
   <div class="container">
     <div
       class="message"
@@ -118,7 +120,13 @@ watch(newMessage, (newMessage) => {
 h2 {
   color: #5d5d5d;
 }
+.title {
+  position: absolute;
+  background-color: #fff;
+  width: 100%;
+}
 .container {
+  margin: 5rem 0 5rem 0;
   display: flex;
   flex-direction: column;
 }
