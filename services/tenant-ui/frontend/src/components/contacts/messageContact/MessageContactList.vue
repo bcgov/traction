@@ -19,7 +19,7 @@
 </template>
 <script setup lang="ts">
 // Vue
-import { ref, PropType, watch, onUpdated } from 'vue';
+import { ref, PropType, watch, onUpdated, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 
 // State
@@ -115,15 +115,26 @@ watch(newMessage, (newMessage) => {
   messageList.value.push(tempMessage);
 });
 
+let mounted: boolean = false;
+
+onMounted(() => {
+  mounted = true;
+});
+
 /**
  * Scroll to the bottom of the chat window whenever
  * a new message is added.
- * TODO: For long chats this will be annoying on initial load.
- *   When first opening it should just be there instantly
  */
 onUpdated(() => {
   const chat = document.querySelector('.p-sidebar-content');
-  if (chat) {
+
+  if (!chat) return; // Guard clause
+  if (mounted) {
+    // If first render no animation
+    chat.scrollTop = chat.scrollHeight;
+    mounted = false;
+  } else {
+    // Fancy animation
     chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
   }
 });
