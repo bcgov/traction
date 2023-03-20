@@ -12,7 +12,7 @@
         {{ item.content }}
       </div>
       <div class="time">
-        {{ item.sent_time }}
+        {{ formatTime(item.sent_time) }}
       </div>
     </div>
   </div>
@@ -24,6 +24,27 @@ import { storeToRefs } from 'pinia';
 
 // State
 import { useMessageStore } from '@/store';
+
+/**
+ * formatTime
+ * Format the time to be displayed in the chat window.
+ * @param time string
+ */
+const formatTime = (time: string) => {
+  const date: any = new Date(time);
+  const now: any = new Date();
+  if (now - date > 86400000) {
+    const options = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    };
+    return date.toLocaleDateString('en-CA', options);
+  } else {
+    return date.toLocaleTimeString();
+  }
+};
 
 /**
  * This is the interface for the message list.
@@ -67,10 +88,7 @@ const props = defineProps({
  * @return boolean
  */
 const filterMessages = (message: Message) => {
-  if (
-    message.content.match(/received your message/) &&
-    message.content.match(props.connectionName)
-  ) {
+  if (message.content.match(/received your message/)) {
     return false;
   } else {
     return true;
@@ -178,6 +196,12 @@ h2 {
   color: #fff;
 }
 .time {
-  display: none;
+  font-size: 0.75rem;
+  color: #818181;
+  margin-top: -0.5rem;
+}
+.mine .time {
+  // display: none;
+  text-align: right;
 }
 </style>
