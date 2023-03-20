@@ -11,7 +11,7 @@
       <div class="bubble">
         {{ item.content }}
       </div>
-      <div class="time">
+      <div class="time" :class="{ display: item.displayTime }">
         {{ formatTime(item.sent_time) }}
       </div>
     </div>
@@ -24,6 +24,24 @@ import { storeToRefs } from 'pinia';
 
 // State
 import { useMessageStore } from '@/store';
+
+/**
+ * Display the time or not.
+ * If the time is more than 24 hours ago then only
+ * display the date of the last message.
+ * @param time string
+ * @param who string
+ * @return boolean
+ */
+// const displayTime = (time: string, who: string) => {
+//   const date: any = new Date(time);
+//   const now: any = new Date();
+//   if (now - date > 86400000) {
+//     return true;
+//   } else {
+//     return false;
+//   }
+// }
 
 /**
  * formatTime
@@ -57,6 +75,7 @@ interface Message {
   sent_time: string;
   state: string;
   updated_at: string;
+  displayTime: boolean;
 }
 
 // Array to contain the messages
@@ -108,10 +127,64 @@ const sortMessages = (messageA: Message, messageB: Message) => {
 };
 
 /**
+ * Run through all the messages and flag as to whether
+ * the time should be displayed or not.
+ * @param message Message
+ * @param index number
+ * @param wholeArray Array<Message>
+ * @return Message
+ */
+const displayTime = (
+  message: Message,
+  index: number,
+  wholeArray: Array<Message>
+) => {
+  // If the last item in the array just return the message
+  if (index === wholeArray.length - 1) {
+    message.displayTime = true;
+    return message;
+  }
+
+  // These are the dates we care about
+  const dateA = new Date(message.sent_time); // Current message
+  const dateB = new Date(wholeArray[index + 1].sent_time); // Next message
+  const now = new Date(); // Now
+
+  // If older then a day then set the flag
+  let old = false;
+  if (now.valueOf() - dateA.valueOf() > 86400000) {
+    old = true;
+  } else {
+    old = false;
+  }
+
+  /**
+   * If this message is older then a day and the next
+   * message is yet another day ahead then display the time.
+   */
+  if (old && dateB.valueOf() - dateA.valueOf() > 86400000) {
+    message.displayTime = true;
+  }
+
+  /**
+   * If the message is not older then a day yet the next
+   * message is more then 10 minutes ahead then display the time.
+   */
+  if (!old && dateB.valueOf() - dateA.valueOf() > 600000) {
+    message.displayTime = true;
+  }
+
+  return message;
+};
+
+/**
  * Get the previous messages for the connection.
  */
 messageStore.listMessages(props.connectionId).then((messages) => {
-  messageList.value = messages.filter(filterMessages).sort(sortMessages);
+  messageList.value = messages
+    .filter(filterMessages)
+    .sort(sortMessages)
+    .map(displayTime);
 });
 
 const { newMessage } = storeToRefs(useMessageStore());
@@ -119,16 +192,17 @@ const { newMessage } = storeToRefs(useMessageStore());
 /**
  * Listen for new messages on the messageStore
  */
-watch(newMessage, (newMessage) => {
+watch(newMessage, (newContent) => {
   const now = new Date();
   const tempMessage: Message = {
     connection_id: '',
-    content: newMessage,
+    content: newContent,
     created_at: now.toISOString(),
     message_id: '',
     sent_time: now.toISOString(),
     state: 'sent',
     updated_at: now.toISOString(),
+    displayTime: false,
   };
   messageList.value.push(tempMessage);
 });
@@ -199,9 +273,13 @@ h2 {
   font-size: 0.75rem;
   color: #818181;
   margin-top: -0.5rem;
+  display: none;
 }
 .mine .time {
-  // display: none;
   text-align: right;
+}
+
+.time.display {
+  display: block;
 }
 </style>
