@@ -8,9 +8,10 @@ from aries_cloudagent.core.event_bus import EventBus
 from aries_cloudagent.core.plugin_registry import PluginRegistry
 from aries_cloudagent.core.protocol_registry import ProtocolRegistry
 
-from . import schema_storage, creddef_storage, endorser, connections, tenant, innkeeper
+from . import schema_storage, creddef_storage, endorser, connections, tenant, innkeeper, oca
 
 MODULES = [
+    oca,
     innkeeper,
     tenant,
     connections,
