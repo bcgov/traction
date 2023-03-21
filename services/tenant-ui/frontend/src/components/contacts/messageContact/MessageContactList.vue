@@ -27,24 +27,6 @@ import { storeToRefs } from 'pinia';
 import { useMessageStore } from '@/store';
 
 /**
- * Display the time or not.
- * If the time is more than 24 hours ago then only
- * display the date of the last message.
- * @param time string
- * @param who string
- * @return boolean
- */
-// const displayTime = (time: string, who: string) => {
-//   const date: any = new Date(time);
-//   const now: any = new Date();
-//   if (now - date > 86400000) {
-//     return true;
-//   } else {
-//     return false;
-//   }
-// }
-
-/**
  * formatTime
  * Format the time to be displayed in the chat window.
  * @param time string
