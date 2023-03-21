@@ -14,7 +14,7 @@ from aries_cloudagent.messaging.models.base import BaseModelError
 from aries_cloudagent.messaging.models.openapi import OpenAPISchema
 from aries_cloudagent.messaging.valid import INDY_SCHEMA_ID, INDY_CRED_DEF_ID, UUIDFour
 from aries_cloudagent.storage.error import StorageNotFoundError, StorageError
-from marshmallow import fields
+from marshmallow import fields, ValidationError
 
 from . import OcaService
 from .models import OcaRecordSchema
@@ -31,6 +31,8 @@ def error_handler(func):
         try:
             ret = await func(request)
             return ret
+        except ValidationError as err:
+            raise web.HTTPUnprocessableEntity(reason=err.roll_up) from err
         except PublicDIDRequiredError as err:
             raise web.HTTPBadRequest(reason=err.roll_up) from err
         except PublicDIDMismatchError as err:
