@@ -46,20 +46,20 @@ spec:
            --wallet-storage-config '{\"url\":\"{{ include "global.postgresql.fullname" . }}:{{ .Values.postgresql.service.port }}\",\"max_connections\":5, \"wallet_scheme\":\"{{ .Values.acapy.service.walletScheme }}\"}' \
            --wallet-storage-creds '{\"account\":\"{{ .Values.postgresql.postgresqlUsername }}\",\"password\":\"$(POSTGRES_PASSWORD)\",\"admin_account\":\"{{ .Values.postgresql.postgresqlUsername }}\",\"admin_password\":\"$(POSTGRES_PASSWORD)\"}' \
            --plugin 'aries_cloudagent.messaging.jsonld' \ 
-           {{- if .Values.acapy.plugins.multitenantProvider }}
-           --plugin traction_plugins.multitenant_provider.v1_0 \
-           {{- end }}           
+           {{- if .Values.acapy.plugins.tractionInnkeeper }}
+           --plugin traction_plugins.traction_innkeeper.v1_0 \
+           --plugin-config-value traction_innkeeper.innkeeper_wallet.tenant_id=\"$(INNKEEPER_WALLET_TENANT_ID)\" \
+           --plugin-config-value traction_innkeeper.innkeeper_wallet.wallet_key=\"$(INNKEEPER_WALLET_WALLET_KEY)\" \
+           {{- end }}
            {{- if .Values.acapy.plugins.basicmessageStorage }}
            --plugin traction_plugins.basicmessage_storage.v1_0 \
            {{- end }}
            {{- if .Values.acapy.plugins.connectionUpdate }}
            --plugin traction_plugins.connection_update.v1_0 \
            {{- end }}
-           {{- if .Values.acapy.plugins.tractionInnkeeper }}
-           --plugin traction_plugins.traction_innkeeper.v1_0 \
-           --plugin-config-value traction_innkeeper.innkeeper_wallet.tenant_id=\"$(INNKEEPER_WALLET_TENANT_ID)\" \
-           --plugin-config-value traction_innkeeper.innkeeper_wallet.wallet_key=\"$(INNKEEPER_WALLET_WALLET_KEY)\" \
-           {{- end }}
+           {{- if .Values.acapy.plugins.multitenantProvider }}
+           --plugin traction_plugins.multitenant_provider.v1_0 \
+           {{- end }}           
            "
           ]
           ports:

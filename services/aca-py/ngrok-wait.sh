@@ -37,7 +37,7 @@ exec aca-py start \
     --wallet-storage-config "{\"url\":\"${POSTGRESQL_HOST}:5432\",\"max_connections\":5, \"wallet_scheme\":\"${TRACTION_ACAPY_WALLET_SCHEME}\"}" \
     --wallet-storage-creds "{\"account\":\"${POSTGRESQL_USER}\",\"password\":\"${POSTGRESQL_PASSWORD}\",\"admin_account\":\"${POSTGRESQL_USER}\",\"admin_password\":\"${POSTGRESQL_PASSWORD}\"}" \
     --admin "0.0.0.0" ${TRACTION_ACAPY_ADMIN_PORT} \
-    --plugin traction_plugins.multitenant_provider.v1_0 \
+    --plugin traction_plugins.traction_innkeeper.v1_0 \
     --plugin traction_plugins.basicmessage_storage.v1_0 \
     --plugin traction_plugins.connection_update.v1_0 \
-    --plugin traction_plugins.traction_innkeeper.v1_0 \
+    --plugin traction_plugins.multitenant_provider.v1_0 \
