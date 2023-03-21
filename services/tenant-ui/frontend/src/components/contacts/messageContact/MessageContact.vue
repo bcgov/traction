@@ -12,11 +12,11 @@
     />
     <div class="p-inputgroup flex-1 send-message">
       <InputText
-        type="text"
         v-model="message"
+        type="text"
         placeholder="Send Message"
-        @keydown="onKeydown"
         autofocus
+        @keydown="onKeydown"
       />
       <Button icon="pi pi-send" @click="sendMessage" />
     </div>

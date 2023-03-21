@@ -4,9 +4,10 @@
   </div>
   <div class="container">
     <div
-      class="message"
       v-for="item in messageList"
+      :key="item.message_id"
       :class="item.state === 'received' ? 'theirs' : 'mine'"
+      class="message"
     >
       <div class="bubble">
         {{ item.content }}
@@ -207,7 +208,7 @@ watch(newMessage, (newContent) => {
   messageList.value.push(tempMessage);
 });
 
-let mounted: boolean = false;
+let mounted = false;
 
 onMounted(() => {
   mounted = true;
