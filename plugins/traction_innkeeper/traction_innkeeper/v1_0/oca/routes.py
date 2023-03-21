@@ -32,7 +32,7 @@ def error_handler(func):
             ret = await func(request)
             return ret
         except ValidationError as err:
-            raise web.HTTPUnprocessableEntity(reason=err.roll_up) from err
+            raise web.HTTPUnprocessableEntity(reason=err.messages) from err
         except PublicDIDRequiredError as err:
             raise web.HTTPBadRequest(reason=err.roll_up) from err
         except PublicDIDMismatchError as err:
