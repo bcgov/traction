@@ -26,6 +26,9 @@ import { storeToRefs } from 'pinia';
 // State
 import { useMessageStore } from '@/store';
 
+// Other components
+import { MESSAGES } from '@/helpers/constants';
+
 /**
  * formatTime
  * Format the time to be displayed in the chat window.
@@ -34,7 +37,7 @@ import { useMessageStore } from '@/store';
 const formatTime = (time: string) => {
   const date: any = new Date(time);
   const now: any = new Date();
-  if (now - date > 86400000) {
+  if (now - date > MESSAGES.TIME_LONG) {
     const options = {
       weekday: 'long',
       year: 'numeric',
@@ -135,7 +138,7 @@ const displayTime = (
 
   // If older then a day then set the flag
   let old = false;
-  if (now.valueOf() - dateA.valueOf() > 86400000) {
+  if (now.valueOf() - dateA.valueOf() > MESSAGES.TIME_LONG) {
     old = true;
   } else {
     old = false;
@@ -145,7 +148,7 @@ const displayTime = (
    * If this message is older then a day and the next
    * message is yet another day ahead then display the time.
    */
-  if (old && dateB.valueOf() - dateA.valueOf() > 86400000) {
+  if (old && dateB.valueOf() - dateA.valueOf() > MESSAGES.TIME_LONG) {
     message.displayTime = true;
   }
 
@@ -153,7 +156,7 @@ const displayTime = (
    * If the message is not older then a day yet the next
    * message is more then 10 minutes ahead then display the time.
    */
-  if (!old && dateB.valueOf() - dateA.valueOf() > 600000) {
+  if (!old && dateB.valueOf() - dateA.valueOf() > MESSAGES.TIME_SHORT) {
     message.displayTime = true;
   }
 

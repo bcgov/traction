@@ -3,6 +3,11 @@ export const TABLE_OPT = {
   ROWS_OPTIONS: [10, 25, 50],
 };
 
+export const MESSAGES = {
+  TIME_LONG: 86400000,
+  TIME_SHORT: 600000,
+};
+
 export const API_PATH = {
   // The tenant UI backend
   CONFIG: '/config',
