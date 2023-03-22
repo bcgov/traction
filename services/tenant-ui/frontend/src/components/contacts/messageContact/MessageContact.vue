@@ -63,11 +63,11 @@ const openSidebar = () => {
  * Send the message.
  */
 const sendMessage = () => {
+  // No empty messages
+  if (message.value.length === 0) return;
+
   messageStore.sendMessage(props.connectionId, { content: message.value });
   message.value = ''; // Blank the form
-
-  // Notify the list component that there is a new message
-  // messageStore.newMessage = message.value;
 };
 
 /**
