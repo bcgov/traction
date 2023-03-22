@@ -4,8 +4,8 @@ export const TABLE_OPT = {
 };
 
 export const MESSAGES = {
-  TIME_LONG: 86400000,
-  TIME_SHORT: 600000,
+  TIME_LONG: 86400000, // One day
+  TIME_SHORT: 600000, // Ten minutes
 };
 
 export const API_PATH = {
