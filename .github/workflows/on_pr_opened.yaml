@@ -25,8 +25,8 @@ jobs:
     steps:
       - id: ready_for_review
         run: |
-          echo "::set-output name=true_false::${{ toJSON(github.event.pull_request.draft != true && github.repository_owner == 'bcgov') }}"
-          echo "::set-output name=bcgov_true_false::${{ toJSON(github.repository_owner == 'bcgov') }}"
+          echo "true_false=${{ toJSON(github.event.pull_request.draft != true && github.repository_owner == 'bcgov') }}" >> $GITHUB_OUTPUT
+          echo "bcgov_true_false=${{ toJSON(github.repository_owner == 'bcgov') }}" >> $GITHUB_OUTPUT
         
   build_ui:
     name: 'Build Tenant UI'
