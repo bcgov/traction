@@ -243,13 +243,13 @@ h2 {
 }
 .mine .bubble {
   background-color: #d8e6f1;
-  color: #8297a6;
+  color: #617786;
 }
 .theirs {
   align-self: flex-start;
 }
 .theirs .bubble {
-  background-color: #88a6be;
+  background-color: #6e889e;
   color: #fff;
 }
 .time {

@@ -25,7 +25,7 @@
 
 <script setup lang="ts">
 // Vue
-import { ref, PropType, defineEmits } from 'vue';
+import { ref, PropType } from 'vue';
 // PrimeVue
 import Button from 'primevue/button';
 import Sidebar from 'primevue/sidebar';
