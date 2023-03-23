@@ -196,10 +196,11 @@ export const useTenantStore = defineStore('tenant', () => {
       // Use the did and verkey
       const did = cRes.data.result.did;
       const verkey = cRes.data.result.verkey;
+      const alias = tenant.value.tenant_name || tenant.value.wallet_id;
       // Register the DID
       publicDidRegistrationProgress.value = 'Registering the DID';
       const rRes = await acapyApi.postHttp(
-        `${API_PATH.TENANT_REGISTER_PUBLIC_DID}?did=${did}&verkey=${verkey}`,
+        `${API_PATH.TENANT_REGISTER_PUBLIC_DID}?did=${did}&verkey=${verkey}&alias=${alias}`,
         {}
       );
       console.log(rRes);
