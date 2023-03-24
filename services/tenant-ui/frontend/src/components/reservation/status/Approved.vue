@@ -28,6 +28,9 @@
             {{ v$.password.required.$message }}
           </small>
           <Button type="submit" label="Validate" class="w-full mt-3" />
+          <Message v-if="showError" severity="error" :closable="false">
+            Incorrect password. Please try again.
+          </Message>
         </div>
       </form>
       <p>
@@ -50,6 +53,7 @@ import { reactive, ref } from 'vue';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Password from 'primevue/password';
+import Message from 'primevue/message';
 import { required } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
 import { useToast } from 'vue-toastification';
@@ -63,6 +67,8 @@ const toast = useToast();
 
 const reservationStore = useReservationStore();
 const { reservation } = storeToRefs(useReservationStore());
+
+const showError = ref(false);
 
 // Validation
 const formFields = reactive({
@@ -88,7 +94,9 @@ const handleSubmit = async (isFormValid: boolean) => {
       formFields.password
     );
   } catch (error) {
-    toast.error(`Failure: ${error}`);
+    // TODO: Handle expired passwords as well
+    console.error(error);
+    showError.value = true;
   } finally {
     submitted.value = false;
   }
