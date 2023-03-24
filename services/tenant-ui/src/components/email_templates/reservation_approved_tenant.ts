@@ -6,8 +6,7 @@ export const RESERVATION_APPROVED_TENANT_TEMPLATE = `
 <p>
   We are pleased to inform you that your reservation request is approved. Here
   is the reservation password that is required to validate your account:
-  <b><%= it.body.reservationPassword _%></b>
-</p>
+  <b><%= it.body.reservationPassword _%></b></p>
 <p>
  Please use this link to validate your account:
  <a href="<%= it.body.serverUrlStatusRouteAutofill _%>"><%= it.body.serverUrlStatusRoute _%></a>
