@@ -257,7 +257,7 @@ async def tenant_reservation_get(request: web.BaseRequest):
     reservation_id = request.match_info["reservation_id"]
 
     async with profile.session() as session:
-        rec = await ReservationRecord.retrieve_by_id(session, reservation_id)
+        rec = await ReservationRecord.retrieve_by_reservation_id(session, reservation_id)
         LOGGER.info(rec)
 
     return web.json_response(rec.serialize())
@@ -282,7 +282,7 @@ async def tenant_checkin(request: web.BaseRequest):
     reservation_id = request.match_info["reservation_id"]
 
     async with profile.session() as session:
-        res_rec = await ReservationRecord.retrieve_by_id(session, reservation_id)
+        res_rec = await ReservationRecord.retrieve_by_reservation_id(session, reservation_id)
         reservation_pwd = body.get("reservation_pwd")
 
         if res_rec.expired:
@@ -411,7 +411,7 @@ async def innkeeper_reservations_approve(request: web.BaseRequest):
 
     async with profile.session() as session:
         # innkeeper can access all reservation records.
-        rec = await ReservationRecord.retrieve_by_id(
+        rec = await ReservationRecord.retrieve_by_reservation_id(
             session, reservation_id, for_update=True
         )
         if rec.state == ReservationRecord.STATE_REQUESTED:
@@ -453,7 +453,7 @@ async def innkeeper_reservations_deny(request: web.BaseRequest):
 
     async with profile.session() as session:
         # innkeeper can access all reservation records.
-        rec = await ReservationRecord.retrieve_by_id(
+        rec = await ReservationRecord.retrieve_by_reservation_id(
             session, reservation_id, for_update=True
         )
         if rec.state == ReservationRecord.STATE_REQUESTED:
