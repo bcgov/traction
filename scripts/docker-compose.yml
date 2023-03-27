@@ -9,7 +9,7 @@ services:
     command: ngrok http traction-agent:${TRACTION_ACAPY_HTTP_PORT} --log stdout
 
   traction-acapy-image-builder:
-    pull_policy: build
+    pull_policy: missing
     build:
       context: ../plugins
       dockerfile: ./docker/Dockerfile
@@ -18,7 +18,7 @@ services:
     tty: true
 
   traction-agent:
-    pull_policy: build
+    pull_policy: missing
     build:
       context: ../services/aca-py
       dockerfile: Dockerfile.acapy
@@ -111,7 +111,7 @@ services:
       - host.docker.internal:host-gateway
   
   tenant-ui:
-    pull_policy: build
+    pull_policy: missing
     build:
       context: ../services/tenant-ui
       dockerfile: Dockerfile
@@ -138,7 +138,7 @@ services:
       - host.docker.internal:host-gateway
 
   tenant-proxy:
-    pull_policy: build
+    pull_policy: missing
     build:
       context: ../plugins
       dockerfile: ./docker/Dockerfile.tenant-proxy
@@ -176,7 +176,7 @@ services:
       - host.docker.internal:host-gateway
 
   endorser-api:
-    pull_policy: build
+    pull_policy: missing
     build:
       context: ../services/endorser
       dockerfile: Dockerfile
