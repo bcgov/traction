@@ -61,10 +61,10 @@
   </form>
 
   <!-- Statuses to check -->
-  <div v-if="loading" class="flex justify-content-center">
+  <div v-if="loading" class="flex justify-content-center status-spinner">
     <ProgressSpinner />
   </div>
-  <div v-else>
+  <div>
     <Approved v-if="status === RESERVATION_STATUSES.APPROVED" />
     <CheckedIn v-else-if="status === RESERVATION_STATUSES.CHECKED_IN" />
     <Denied v-else-if="status === RESERVATION_STATUSES.DENIED" />
@@ -137,3 +137,8 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 };
 </script>
+<style>
+.status-spinner {
+  transform: scale(0.5);
+}
+</style>
