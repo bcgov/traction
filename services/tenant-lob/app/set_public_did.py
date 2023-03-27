@@ -43,7 +43,7 @@ async def set_public_did(tenant):
     # register did
     data = None
     res = requests.post(
-        f"{PROXY_URL}/tenant/register-public-did?did={wallet_create_did}&verkey={wallet_create_verkey}",
+        f"{PROXY_URL}/ledger/register-nym?did={wallet_create_did}&verkey={wallet_create_verkey}&alias={tenant_name}",
         headers=tenant_headers,
         json=data,
     )
