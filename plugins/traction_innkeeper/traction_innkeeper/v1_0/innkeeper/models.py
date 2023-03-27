@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime, timezone
 from typing import Optional, Union
 
@@ -67,7 +68,32 @@ class ReservationRecord(BaseRecord):
     @property
     def reservation_id(self) -> Optional[str]:
         """Return record id."""
-        return self._id
+        return uuid.UUID(self._id).hex
+
+    @classmethod
+    def transform_reservation_id(cls, value: str):
+        # since reservation id is created/stored with dashes and returned without
+        # we need a transform function so we can query the records...
+        if "-" not in value:
+            return str(uuid.UUID(hex=value))
+        return value
+
+    @classmethod
+    async def retrieve_by_reservation_id(
+        cls,
+        session: ProfileSession,
+        record_id: str,
+        *,
+        for_update=False,
+    ) -> "ReservationRecord":
+        """Retrieve TenantRecord by wallet_id.
+        Args:
+            session: the profile session to use
+            record_id: the reservation_id (may or may not have dashes) by which to filter
+        """
+        reservation_id = cls.transform_reservation_id(record_id)
+        record = await cls.retrieve_by_id(session, reservation_id, for_update=for_update)
+        return record
 
     @property
     def reservation_token_expiry(self) -> str:

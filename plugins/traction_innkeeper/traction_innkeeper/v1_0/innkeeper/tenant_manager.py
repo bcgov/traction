@@ -162,7 +162,7 @@ class TenantManager:
             print(f"Bearer {token}\n")
 
     def generate_reservation_token_data(self):
-        _pwd = str(uuid.uuid4())
+        _pwd = str(uuid.uuid4().hex)
         self._logger.info(f"_pwd = {_pwd}")
 
         _salt = bcrypt.gensalt()
