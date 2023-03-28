@@ -9,7 +9,8 @@ export const RESERVATION_APPROVED_TENANT_TEMPLATE = `
   <b><%= it.body.reservationPassword _%></b>
 </p>
 <p>
- Please use this link to validate your account: <%= it.body.serverUrlStatusRoute _%>
+ Please use this link to validate your account:
+ <a href="<%= it.body.serverUrlStatusRouteAutofill _%>"><%= it.body.serverUrlStatusRoute _%></a>
 </p>
 <p>
   After successful validation of your account, a new Wallet ID and Wallet Key
