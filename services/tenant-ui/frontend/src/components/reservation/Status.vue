@@ -61,8 +61,8 @@
       type="submit"
       class="w-full my-2 check-status-button"
       label="Check Status"
-      :icon="spinnerComputed()"
-      :disabled="loading"
+      icon="pi pi-check"
+      :loading="loading"
     />
   </form>
 
@@ -105,16 +105,6 @@ const toast = useToast();
 // State setup
 const reservationStore = useReservationStore();
 const { loading, status } = storeToRefs(useReservationStore());
-
-const spinnerComputed = () => {
-  let icon = '';
-  if (loading.value) {
-    icon = 'pi pi-spin pi-spinner';
-  } else {
-    icon = 'pi pi-check';
-  }
-  return icon;
-};
 
 // Login Form and validation
 const formFields = reactive({

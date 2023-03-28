@@ -31,8 +31,8 @@
             type="submit"
             label="Validate"
             class="w-full mt-3 validate-button"
-            :icon="spinnerComputed()"
-            :disabled="loading"
+            icon="pi pi-check"
+            :loading="loading"
           />
           <Message v-if="showError" severity="error" :closable="false">
             Incorrect password. Please try again.
@@ -84,26 +84,16 @@ const rules = {
   password: { required },
 };
 
-const spinnerComputed = () => {
-  let icon = '';
-  if (loading.value) {
-    icon = 'pi pi-spin pi-spinner';
-  } else {
-    icon = 'pi pi-check';
-  }
-  return icon;
-};
 const v$ = useVuelidate(rules, formFields, { $scope: false });
 
 // Password form submission
 const submitted = ref(false);
-const loading = ref(false);
+const loading = ref(false); // Need a separate loading state for the button
 const handleSubmit = async (isFormValid: boolean) => {
   submitted.value = true;
   loading.value = true;
 
   if (!isFormValid) {
-    console.log('Form is invalid');
     loading.value = false;
     return;
   }
