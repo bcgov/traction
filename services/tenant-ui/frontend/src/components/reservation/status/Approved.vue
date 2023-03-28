@@ -35,7 +35,7 @@
             :loading="loading"
           />
           <Message v-if="showError" severity="error" :closable="false">
-            Incorrect password. Please try again.
+            {{ errorMessage }}
           </Message>
         </div>
       </form>
@@ -76,6 +76,8 @@ const { reservation } = storeToRefs(useReservationStore());
 
 const showError = ref(false);
 
+const errorMessage = ref('An error occurred'); // Default error message
+
 // Validation
 const formFields = reactive({
   password: '',
@@ -103,10 +105,25 @@ const handleSubmit = async (isFormValid: boolean) => {
       reservation.value.reservation_id,
       formFields.password
     );
-  } catch (error) {
-    // TODO: Handle expired passwords as well
-    console.error(error);
-    showError.value = true;
+  } catch (error: any) {
+    /**
+     * If error is 401, check if the reservation is expired.
+     * If not expired, show the incorrect password error.
+     * Otherwise send the error to Toast
+     */
+    const resp = error.response;
+    const exp = resp.data.match(/expired/i);
+    if (resp.status === 401 && exp) {
+      errorMessage.value = 'Reservation has expired.';
+      showError.value = true;
+    } else if (resp.status === 401) {
+      errorMessage.value = 'Incorrect password. Please try again.';
+      showError.value = true;
+    } else {
+      toast.error(resp.data);
+    }
+    console.error('message', resp.data);
+    console.error('status', resp.status);
   } finally {
     submitted.value = false;
     loading.value = false;
