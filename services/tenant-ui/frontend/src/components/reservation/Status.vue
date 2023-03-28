@@ -57,13 +57,15 @@
       }}</small>
     </div>
 
-    <Button type="submit" class="w-full my-2" label="Check Status" />
+    <Button
+      type="submit"
+      class="w-full my-2 check-status-button"
+      label="Check Status"
+      :icon="spinnerComputed()"
+      :disabled="loading"
+    />
   </form>
 
-  <!-- Statuses to check -->
-  <div v-if="loading" class="flex justify-content-center status-spinner">
-    <ProgressSpinner />
-  </div>
   <div>
     <Approved v-if="status === RESERVATION_STATUSES.APPROVED" />
     <CheckedIn v-else-if="status === RESERVATION_STATUSES.CHECKED_IN" />
@@ -81,7 +83,6 @@ import { useRoute } from 'vue-router';
 // PrimeVue/Validation/etc
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-import ProgressSpinner from 'primevue/progressspinner';
 import { useToast } from 'vue-toastification';
 import { email, required } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
@@ -104,6 +105,17 @@ const toast = useToast();
 // State setup
 const reservationStore = useReservationStore();
 const { loading, status } = storeToRefs(useReservationStore());
+
+const spinnerComputed = () => {
+  let icon = '';
+  if (loading.value) {
+    icon = 'pi pi-spin pi-spinner';
+  } else {
+    icon = 'pi pi-check';
+  }
+  console.log('icon', icon);
+  return icon;
+};
 
 // Login Form and validation
 const formFields = reactive({
@@ -137,8 +149,9 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 };
 </script>
-<style>
-.status-spinner {
-  transform: scale(0.5);
+<style scoped lang="scss">
+:deep(.check-status-button .p-button-icon) {
+  position: absolute;
+  margin-left: 3rem;
 }
 </style>
