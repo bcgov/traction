@@ -27,7 +27,13 @@
           <small v-if="v$.password.$invalid && submitted" class="p-error">
             {{ v$.password.required.$message }}
           </small>
-          <Button type="submit" label="Validate" class="w-full mt-3" />
+          <Button
+            type="submit"
+            label="Validate"
+            class="w-full mt-3 validate-button"
+            :icon="spinnerComputed()"
+            :disabled="loading"
+          />
           <Message v-if="showError" severity="error" :closable="false">
             Incorrect password. Please try again.
           </Message>
@@ -77,14 +83,28 @@ const formFields = reactive({
 const rules = {
   password: { required },
 };
+
+const spinnerComputed = () => {
+  let icon = '';
+  if (loading.value) {
+    icon = 'pi pi-spin pi-spinner';
+  } else {
+    icon = 'pi pi-check';
+  }
+  return icon;
+};
 const v$ = useVuelidate(rules, formFields, { $scope: false });
 
 // Password form submission
 const submitted = ref(false);
+const loading = ref(false);
 const handleSubmit = async (isFormValid: boolean) => {
   submitted.value = true;
+  loading.value = true;
 
   if (!isFormValid) {
+    console.log('Form is invalid');
+    loading.value = false;
     return;
   }
 
@@ -99,6 +119,13 @@ const handleSubmit = async (isFormValid: boolean) => {
     showError.value = true;
   } finally {
     submitted.value = false;
+    loading.value = false;
   }
 };
 </script>
+<style scoped lang="scss">
+:deep(.validate-button .p-button-icon) {
+  position: absolute;
+  margin-left: 3rem;
+}
+</style>

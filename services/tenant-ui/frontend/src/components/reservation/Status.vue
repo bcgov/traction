@@ -113,7 +113,6 @@ const spinnerComputed = () => {
   } else {
     icon = 'pi pi-check';
   }
-  console.log('icon', icon);
   return icon;
 };
 
