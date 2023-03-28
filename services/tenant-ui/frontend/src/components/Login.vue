@@ -110,7 +110,7 @@ const goBack = (event: any) => {
     confirm.require({
       target: event.currentTarget,
       message:
-        'Are you sure you want to leave this page? You will not be able to retrive these details again.',
+        'Are you sure you want to leave this page? You will not be able to retrieve these details again.',
       header: 'Have you saved your Wallet ID and Key Somewhere?',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {

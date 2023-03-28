@@ -4,12 +4,12 @@ export const RESERVATION_RECIEVED_TENANT_TEMPLATE = `
   Traction
 </p>
 <p>
-  This email confirms we have recieved your request and a Representative is
+  This email confirms we have received your request and a Representative is
   working on your case. <br />
   Your reservation ID is <b><%= it.body.reservationId _%></b>.
 </p>
 <p>
-  A descision on the request usually takes 2-3 days from the date of this email.
+  A decision on the request usually takes 2-3 days from the date of this email.
   You can verify the status of your request by entering your email and
   reservation ID here: <a href="<%= it.body.serverUrlStatusRouteAutofill _%>"><%= it.body.serverUrlStatusRoute _%></a>
 </p>
