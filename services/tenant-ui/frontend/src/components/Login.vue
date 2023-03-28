@@ -72,6 +72,7 @@
 <script setup lang="ts">
 // Vue
 import { ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 // PrimeVue
 import Button from 'primevue/button';
 import { useConfirm } from 'primevue/useconfirm';
@@ -88,6 +89,9 @@ const { config } = storeToRefs(useConfigStore());
 const reservationStore = useReservationStore();
 const { status } = storeToRefs(useReservationStore());
 
+const route = useRoute();
+const router = useRouter();
+
 const confirm = useConfirm();
 
 // Other login form swtiching
@@ -97,6 +101,9 @@ enum LOGIN_MODE {
   STATUS,
 }
 const loginMode = ref(LOGIN_MODE.SIGNIN);
+if (route.name === 'TenantUiReservationStatus') {
+  loginMode.value = LOGIN_MODE.STATUS;
+}
 
 const goBack = (event: any) => {
   if (status.value === RESERVATION_STATUSES.SHOW_WALLET) {
@@ -117,6 +124,7 @@ const goBack = (event: any) => {
 const doGoBack = () => {
   loginMode.value = LOGIN_MODE.SIGNIN;
   reservationStore.resetState();
+  router.push('/');
 };
 </script>
 

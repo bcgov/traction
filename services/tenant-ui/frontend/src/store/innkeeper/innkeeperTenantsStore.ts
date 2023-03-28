@@ -3,8 +3,10 @@ import { computed, ref, Ref } from 'vue';
 import axios from 'axios';
 import { useAcapyApi } from '../acapyApi';
 import { fetchListFromAPI } from '../utils';
+import { RESERVATION_STATUS_ROUTE } from '@/helpers/constants';
 import { API_PATH, RESERVATION_STATUSES } from '@/helpers/constants';
 import { useConfigStore } from '../configStore';
+
 export interface TenantResponseData {
   tenant_id?: string;
   name?: string;
@@ -104,6 +106,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
       reservationId: id,
       reservationPassword: approveResponse.reservation_pwd,
       serverUrl: trimUrl,
+      serverUrlStatusRoute: `${trimUrl}/${RESERVATION_STATUS_ROUTE}`,
       contactName: name,
     });
 
