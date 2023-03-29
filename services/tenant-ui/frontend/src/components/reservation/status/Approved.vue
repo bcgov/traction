@@ -31,7 +31,6 @@
             type="submit"
             label="Validate"
             class="w-full mt-3 validate-button"
-            icon="pi pi-check"
             :loading="loading"
           />
           <Message v-if="showError" severity="error" :closable="false">
@@ -130,9 +129,3 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 };
 </script>
-<style scoped lang="scss">
-:deep(.validate-button .p-button-icon) {
-  position: absolute;
-  margin-left: 3rem;
-}
-</style>

@@ -61,7 +61,6 @@
       type="submit"
       class="w-full my-2 check-status-button"
       label="Check Status"
-      icon="pi pi-check"
       :loading="loading"
     />
   </form>
@@ -138,9 +137,3 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 };
 </script>
-<style scoped lang="scss">
-:deep(.check-status-button .p-button-icon) {
-  position: absolute;
-  margin-left: 3rem;
-}
-</style>
