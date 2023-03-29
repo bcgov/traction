@@ -30,7 +30,7 @@
           <Button
             type="submit"
             label="Validate"
-            class="w-full mt-3 validate-button"
+            class="w-full mt-3"
             :loading="loading"
           />
           <Message v-if="showError" severity="error" :closable="false">

@@ -59,7 +59,7 @@
 
     <Button
       type="submit"
-      class="w-full my-2 check-status-button"
+      class="w-full my-2"
       label="Check Status"
       :loading="loading"
     />
