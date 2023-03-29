@@ -8,7 +8,7 @@ export const RESERVATION_RECIEVED_INNKEEPER_TEMPLATE = `
 </p>
 <p>
   Please login to review and take action on the request: <%= it.body.serverUrl
-  _%>innkeeper
+  _%>/innkeeper
 </p>
 <p>
   Please do not forward this email as it contains private information intended

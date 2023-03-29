@@ -138,3 +138,5 @@ export const RESERVATION_STATUSES = {
   // Not API response but show on the FE when it 404s
   NOT_FOUND: 'not_found',
 };
+
+export const RESERVATION_STATUS_ROUTE = 'check-status';

@@ -1,9 +1,12 @@
-import { API_PATH } from '@/helpers/constants';
+import {
+  API_PATH,
+  RESERVATION_STATUSES,
+  RESERVATION_STATUS_ROUTE,
+} from '@/helpers/constants';
 import axios from 'axios';
 import { defineStore, storeToRefs } from 'pinia';
 import { ref, Ref } from 'vue';
 import { useConfigStore } from './configStore';
-import { RESERVATION_STATUSES } from '@/helpers/constants';
 
 export const useReservationStore = defineStore('reservation', () => {
   const { config } = storeToRefs(useConfigStore());
@@ -60,13 +63,16 @@ export const useReservationStore = defineStore('reservation', () => {
       throw error.value;
     }
 
+    const trimUrl = window.location.origin;
+
     // Separately dispatch a non-blocking call to send the contact emails
     // If these fail we won't raise any error to the UI
     const emailPayload = {
       contactEmail: payload.contact_email,
       contactName: payload.contact_name,
       reservationId: reservation.value.reservation_id,
-      serverUrl: window.location.href,
+      serverUrl: trimUrl,
+      serverUrlStatusRoute: `${trimUrl}/${RESERVATION_STATUS_ROUTE}`,
     };
     backendApi
       .post(API_PATH.EMAIL_CONFIRMATION, emailPayload)

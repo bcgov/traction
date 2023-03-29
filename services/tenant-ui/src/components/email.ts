@@ -2,6 +2,7 @@ import { Request } from "express";
 import config from "config";
 import nodemailer from "nodemailer";
 import * as eta from "eta"; // HTML templating engine
+import { buildStatusAutofill } from "../helpers";
 
 import { RESERVATION_APPROVED_TENANT_TEMPLATE } from "./email_templates/reservation_approved_tenant";
 import { RESERVATION_DECLINED_TENANT_TEMPLATE } from "./email_templates/reservation_declined_tenant";
@@ -27,6 +28,7 @@ export const sendConfirmationEmail = async (req: Request) => {
       secure: false,
     });
 
+    req.body.serverUrlStatusRouteAutofill = buildStatusAutofill(req.body);
     const tenantHtml = eta.render(RESERVATION_RECIEVED_TENANT_TEMPLATE, req);
 
     // Send a confirmation email to the person doing the reservation
@@ -68,11 +70,12 @@ export const sendStatusEmail = async (req: Request) => {
       secure: false,
     });
 
-    let template
+    let template;
     let subject;
     if (req.body.state === RESERVATION_STATUSES.APPROVED) {
       template = RESERVATION_APPROVED_TENANT_TEMPLATE;
       subject = "[TRACTION] Reservation Approved!";
+      req.body.serverUrlStatusRouteAutofill = buildStatusAutofill(req.body);
     } else if (req.body.state === RESERVATION_STATUSES.DENIED) {
       template = RESERVATION_DECLINED_TENANT_TEMPLATE;
       subject = "[TRACTION] Reservation Declined!";
