@@ -57,8 +57,8 @@ import { reactive, ref } from 'vue';
 // PrimeVue/Validation/etc
 import Button from 'primevue/button';
 import Card from 'primevue/card';
-import Password from 'primevue/password';
 import Message from 'primevue/message';
+import Password from 'primevue/password';
 import { required } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
 import { useToast } from 'vue-toastification';
@@ -121,8 +121,6 @@ const handleSubmit = async (isFormValid: boolean) => {
     } else {
       toast.error(resp.data);
     }
-    console.error('message', resp.data);
-    console.error('status', resp.status);
   } finally {
     submitted.value = false;
     loading.value = false;
