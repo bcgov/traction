@@ -57,14 +57,15 @@
       }}</small>
     </div>
 
-    <Button type="submit" class="w-full my-2" label="Check Status" />
+    <Button
+      type="submit"
+      class="w-full my-2"
+      label="Check Status"
+      :loading="loading"
+    />
   </form>
 
-  <!-- Statuses to check -->
-  <div v-if="loading" class="flex justify-content-center">
-    <ProgressSpinner />
-  </div>
-  <div v-else>
+  <div>
     <Approved v-if="status === RESERVATION_STATUSES.APPROVED" />
     <CheckedIn v-else-if="status === RESERVATION_STATUSES.CHECKED_IN" />
     <Denied v-else-if="status === RESERVATION_STATUSES.DENIED" />
@@ -81,7 +82,6 @@ import { useRoute } from 'vue-router';
 // PrimeVue/Validation/etc
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-import ProgressSpinner from 'primevue/progressspinner';
 import { useToast } from 'vue-toastification';
 import { email, required } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';

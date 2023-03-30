@@ -8,7 +8,7 @@
     </template>
     <template #content>
       <p>
-        Your request has been recieved on
+        Your request has been received on
         {{ formatDateLong(reservation.created_at) }}. <br />
         It ususally takes 3-4 business days to process a request. Thanks for
         your patience.
