@@ -123,23 +123,24 @@ const loadTenantSettings = async () => {
       // TODO: only supporting the 1 webhook for now until some UX decisions
       // (if keeping this extract to util fxn)
       const webHookUrls = tenantWallet.value.settings['wallet.webhook_urls'];
+      console.log('webHookUrls', webHookUrls);
       if (webHookUrls && webHookUrls.length) {
-        // The Acapy API seems to support this thing as a string or an array
-        // We'll use arrays, but handle a string
-        let whItem = '';
-        if (Array.isArray(webHookUrls) && typeof webHookUrls[0] === 'string') {
-          whItem = webHookUrls[0];
-        } else if (typeof webHookUrls === 'string') {
-          whItem = webHookUrls;
-        }
-
-        const pMark = whItem.indexOf('#');
-        if (pMark > 0) {
-          formFields.webhookUrl = whItem.substring(0, whItem.indexOf('#'));
-          formFields.webhookKey = whItem.substring(whItem.indexOf('#') + 1);
-        } else {
-          formFields.webhookUrl = whItem;
-        }
+        // TODO: populate the formFields.webhooks array
+        // TODO: loop through url array and split out the key
+        // let whItem = '';
+        // if (Array.isArray(webHookUrls) && typeof webHookUrls[0] === 'string') {
+        //   whItem = webHookUrls[0];
+        // } else if (typeof webHookUrls === 'string') {
+        //   whItem = webHookUrls;
+        // }
+        // Split the webhook url and key
+        // const pMark = whItem.indexOf('#');
+        // if (pMark > 0) {
+        //   formFields.webhookUrl = whItem.substring(0, whItem.indexOf('#'));
+        //   formFields.webhookKey = whItem.substring(whItem.indexOf('#') + 1);
+        // } else {
+        //   formFields.webhookUrl = whItem;
+        // }
       }
     })
     .catch((err: any) => {
@@ -155,6 +156,7 @@ onMounted(async () => {
 const formFields = reactive({
   webhookUrl: '',
   webhookKey: '',
+  webhookds: [],
   walletLabel: '',
   imageUrl: '',
 });
