@@ -1,4 +1,7 @@
-import { AddOcaRecordRequest, OcaRecord } from '@/types/acapyApi/acapyInterface';
+import {
+  AddOcaRecordRequest,
+  OcaRecord,
+} from '@/types/acapyApi/acapyInterface';
 
 import { API_PATH } from '@/helpers/constants';
 import { defineStore } from 'pinia';

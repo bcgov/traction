@@ -47,9 +47,7 @@ const openModal = async () => {
     governanceStore.listStoredCredentialDefinitions(),
   ]).catch((err) => {
     console.error(err);
-    toast.error(
-      `An error occurred loading schemas or credentials: ${err}`
-    );
+    toast.error(`An error occurred loading schemas or credentials: ${err}`);
   });
   displayModal.value = true;
 };
