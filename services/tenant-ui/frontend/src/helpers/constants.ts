@@ -75,6 +75,9 @@ export const API_PATH = {
   MULTITENANCY_WALLET_TOKEN: (tenantId: string) =>
     `/multitenancy/wallet/${tenantId}/token`,
 
+  OCAS: '/oca',
+  OCA: (id: string) => `/oca/${id}`,
+
   REVOCATION_REVOKE: '/revocation/revoke',
 
   SCHEMAS: '/schemas',

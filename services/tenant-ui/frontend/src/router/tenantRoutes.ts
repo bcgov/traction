@@ -20,6 +20,8 @@ import PresentationTemplates from '@/views/verification/PresentationTemplates.vu
 import MyHeldCredentials from '@/views/holder/MyHeldCredentials.vue';
 // Messages
 import MyMessages from '@/views/messages/MyMessages.vue';
+// OCA
+import Oca from '@/views/oca/Oca.vue';
 // Const
 import { RESERVATION_STATUS_ROUTE } from '@/helpers/constants';
 
@@ -89,6 +91,11 @@ const tenantRoutes = [
         path: 'credentialDefinitions',
         name: 'CredentialDefinitions',
         component: CredentialDefinitions,
+      },
+      {
+        path: 'oca',
+        name: 'OCA',
+        component: Oca,
       },
       {
         path: 'presentationTemplates',
