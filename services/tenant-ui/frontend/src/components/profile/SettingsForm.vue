@@ -19,33 +19,43 @@
       </div>
 
       <!-- WebHook URL -->
-      <div class="field">
-        <label
-          for="webhookUrl"
-          :class="{ 'p-error': v$.webhookUrl.$invalid && submitted }"
-          >WebHook URL</label
-        >
-        <InputText
-          id="webhookUrl"
-          v-model="v$.webhookUrl.$model"
-          class="w-full"
-          :class="{ 'p-invalid': v$.webhookUrl.$invalid && submitted }"
-        />
-        <span v-if="v$.webhookUrl.$error && submitted">
-          <span v-for="(error, index) of v$.webhookUrl.$errors" :key="index">
-            <small class="p-error">{{ error.$message }}</small>
+      <div class="webhook">
+        <div class="field">
+          <label
+            for="webhookUrl"
+            :class="{ 'p-error': v$.webhookUrl.$invalid && submitted }"
+            >WebHook URL</label
+          >
+          <InputText
+            id="webhookUrl"
+            v-model="v$.webhookUrl.$model"
+            class="w-full"
+            :class="{ 'p-invalid': v$.webhookUrl.$invalid && submitted }"
+          />
+          <span v-if="v$.webhookUrl.$error && submitted">
+            <span v-for="(error, index) of v$.webhookUrl.$errors" :key="index">
+              <small class="p-error">{{ error.$message }}</small>
+            </span>
           </span>
-        </span>
-      </div>
-      <!-- WebHook Key -->
-      <div class="field">
-        <label for="webhookKey">WebHook Key</label>
-        <Password
-          v-model="v$.webhookKey.$model"
-          class="w-full"
-          input-class="w-full"
-          toggle-mask
-          :feedback="false"
+        </div>
+
+        <!-- WebHook Key -->
+        <div class="field">
+          <label for="webhookKey">WebHook Key</label>
+          <Password
+            v-model="v$.webhookKey.$model"
+            class="w-full"
+            input-class="w-full"
+            toggle-mask
+            :feedback="false"
+          />
+        </div>
+        <Button
+          title="Add another webhook"
+          icon="pi pi-plus-circle"
+          text
+          rounded
+          @click="addWebhook"
         />
       </div>
 
@@ -97,6 +107,10 @@ const toast = useToast();
 // State setup
 const tenantStore = useTenantStore();
 const { tenantWallet, loading } = storeToRefs(useTenantStore());
+
+const addWebhook = () => {
+  console.log('addWebhook');
+};
 
 // Get Tenant Configuration
 const loadTenantSettings = async () => {
@@ -191,5 +205,19 @@ hr {
   height: 1px;
   background-color: rgb(186, 186, 186);
   border: 0;
+}
+.webhook {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  .field {
+    width: 42%;
+  }
+  :deep(button) {
+    margin-top: 20px;
+  }
+  :deep(button .p-button-icon) {
+    font-size: 30px !important;
+  }
 }
 </style>
