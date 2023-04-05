@@ -20,6 +20,9 @@
 
       <!-- Webhooks -->
 
+      <Divider class="websockets-top" align="left" type="solid">
+        <b>Webhooks</b>
+      </Divider>
       <div class="webhooks">
         <div
           class="webhook"
@@ -98,6 +101,7 @@
           />
         </div> -->
       </div>
+      <Divider class="websockets-bottom" />
 
       <!-- Image URL -->
       <div class="field">
@@ -131,6 +135,7 @@ import { onMounted, reactive, ref } from 'vue';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import Button from 'primevue/button';
+import Divider from 'primevue/divider';
 import InputText from 'primevue/inputtext';
 import Password from 'primevue/password';
 import ProgressSpinner from 'primevue/progressspinner';
@@ -200,17 +205,20 @@ const rules = {
 const v$ = useVuelidate(rules, formFields);
 
 /**
- * Add another webhook
+ * Add a blank webhook entry
  */
 const addWebhook = () => {
   formFields.webhooks.push({ webhookUrl: '', webhookKey: '' });
 };
 
 /**
- * Remove a webhook
+ * Remove a webhook but don't allow the last one to be removed.
+ * Just blank it out.
  */
 const removeWebhook = (index: number) => {
   formFields.webhooks.splice(index, 1);
+  // TODO: If this is the last entry in the array, add a new blank one.
+  //   ie.. addWebhook();
 };
 
 // Submitting form
@@ -233,19 +241,13 @@ const handleSubmit = async (isFormValid: boolean) => {
         webhooks.push(url);
       });
     }
-    // const webhookUrls = [];
-    // if (formFields.webhookUrl) {
-    //   let url = formFields.webhookUrl;
-    //   if (formFields.webhookKey) {
-    //     url += `#${formFields.webhookKey}`;
-    //   }
-    //   webhookUrls.push(url);
-    // }
     const payload = {
       image_url: formFields.imageUrl,
       label: formFields.walletLabel,
       wallet_webhook_urls: webhooks,
     };
+    // TODO: Test if the multiple webhooks are working and
+    // being saved correctly.
     await tenantStore.updateTenantSubWallet(payload);
     loadTenantSettings();
     toast.success('Your Settings have been Updated');
@@ -283,9 +285,16 @@ hr {
     visibility: hidden;
   }
 }
+/* Show the add button on the last webhook */
 .webhooks div:last-of-type {
   button.add {
     visibility: visible;
   }
+}
+.websockets-bottom {
+  margin-top: 0px !important;
+}
+.websockets-top {
+  margin-bottom: 5px !important;
 }
 </style>
