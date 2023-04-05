@@ -19,8 +19,40 @@
       </div>
 
       <!-- WebHook URL -->
-      <div class="webhook">
+
+      <div
+        class="webhook"
+        v-for="(webhook, index) of formFields.webhooks"
+        :key="index"
+      >
         <div class="field">
+          <label for="webhookUrl">WebHook URL</label>
+          <InputText
+            id="webhookUrl"
+            v-model="webhook.webhookUrl"
+            class="w-full"
+          />
+        </div>
+
+        <div class="field">
+          <label for="webhookKey">WebHook Key</label>
+          <InputText
+            id="webhookKey"
+            v-model="webhook.webhookKey"
+            class="w-full"
+          />
+        </div>
+
+        <Button
+          title="Add another webhook"
+          icon="pi pi-plus-circle"
+          text
+          rounded
+          @click="addWebhook"
+        />
+      </div>
+
+      <!-- <div class="field">
           <label
             for="webhookUrl"
             :class="{ 'p-error': v$.webhookUrl.$invalid && submitted }"
@@ -37,10 +69,10 @@
               <small class="p-error">{{ error.$message }}</small>
             </span>
           </span>
-        </div>
+        </div> -->
 
-        <!-- WebHook Key -->
-        <div class="field">
+      <!-- WebHook Key -->
+      <!-- <div class="field">
           <label for="webhookKey">WebHook Key</label>
           <Password
             v-model="v$.webhookKey.$model"
@@ -49,15 +81,7 @@
             toggle-mask
             :feedback="false"
           />
-        </div>
-        <Button
-          title="Add another webhook"
-          icon="pi pi-plus-circle"
-          text
-          rounded
-          @click="addWebhook"
-        />
-      </div>
+        </div> -->
 
       <!-- Image URL -->
       <div class="field">
@@ -127,6 +151,17 @@ const loadTenantSettings = async () => {
       if (webHookUrls && webHookUrls.length) {
         // TODO: populate the formFields.webhooks array
         // TODO: loop through url array and split out the key
+        webHookUrls.forEach((whItem: string) => {
+          const pMark = whItem.indexOf('#');
+          if (pMark > 0) {
+            const webhookUrl = whItem.substring(0, whItem.indexOf('#'));
+            const webhookKey = whItem.substring(whItem.indexOf('#') + 1);
+            formFields.webhooks.push({
+              webhookUrl,
+              webhookKey,
+            });
+          }
+        });
         // let whItem = '';
         // if (Array.isArray(webHookUrls) && typeof webHookUrls[0] === 'string') {
         //   whItem = webHookUrls[0];
@@ -154,15 +189,17 @@ onMounted(async () => {
 
 // Form Fields and Validation
 const formFields = reactive({
-  webhookUrl: '',
-  webhookKey: '',
-  webhookds: [],
+  webhooks: [{ webhookUrl: '', webhookKey: '' }],
   walletLabel: '',
   imageUrl: '',
 });
 const rules = {
-  webhookKey: {},
-  webhookUrl: { url },
+  webhooks: {
+    $each: {
+      webhookKey: {},
+      webhookUrl: { url },
+    },
+  },
   walletLabel: { required },
   imageUrl: { url },
 };
@@ -178,18 +215,28 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 
   try {
-    const webhookUrls = [];
-    if (formFields.webhookUrl) {
-      let url = formFields.webhookUrl;
-      if (formFields.webhookKey) {
-        url += `#${formFields.webhookKey}`;
-      }
-      webhookUrls.push(url);
+    const webhooks: Array<string> = [];
+    if (formFields.webhooks && formFields.webhooks.length) {
+      formFields.webhooks.forEach((whItem: any) => {
+        let url = whItem.webhookUrl;
+        if (whItem.webhookKey) {
+          url += `#${whItem.webhookKey}`;
+        }
+        webhooks.push(url);
+      });
     }
+    // const webhookUrls = [];
+    // if (formFields.webhookUrl) {
+    //   let url = formFields.webhookUrl;
+    //   if (formFields.webhookKey) {
+    //     url += `#${formFields.webhookKey}`;
+    //   }
+    //   webhookUrls.push(url);
+    // }
     const payload = {
       image_url: formFields.imageUrl,
       label: formFields.walletLabel,
-      wallet_webhook_urls: webhookUrls,
+      wallet_webhook_urls: webhooks,
     };
     await tenantStore.updateTenantSubWallet(payload);
     loadTenantSettings();
