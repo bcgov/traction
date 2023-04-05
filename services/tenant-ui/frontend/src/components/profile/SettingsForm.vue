@@ -20,52 +20,54 @@
 
       <!-- Webhooks -->
 
-      <div
-        class="webhook"
-        v-for="(webhook, index) of formFields.webhooks"
-        :key="index"
-      >
-        <div class="field" v-if="index > 0">
-          <label for="webhookUrl">WebHook URL</label>
-          <InputText
-            id="webhookUrl"
-            v-model="webhook.webhookUrl"
-            class="w-full"
+      <div class="webhooks">
+        <div
+          class="webhook"
+          v-for="(webhook, index) of formFields.webhooks"
+          :key="index"
+        >
+          <div class="field" v-if="index > 0">
+            <label for="webhookUrl">WebHook URL</label>
+            <InputText
+              id="webhookUrl"
+              v-model="webhook.webhookUrl"
+              class="w-full"
+            />
+          </div>
+
+          <div class="field" v-if="index > 0">
+            <label for="webhookKey">WebHook Key</label>
+            <Password
+              id="webhookKey"
+              v-model="webhook.webhookKey"
+              class="w-full"
+              toggle-mask
+              :feedback="false"
+            />
+          </div>
+
+          <Button
+            v-if="index > 0"
+            title="Delete this webhook"
+            icon="pi pi-trash"
+            text
+            rounded
+            @click="() => removeWebhook(index)"
+          />
+
+          <Button
+            v-if="index > 0"
+            title="Add another webhook"
+            class="add"
+            icon="pi pi-plus-circle"
+            text
+            rounded
+            @click="addWebhook"
           />
         </div>
 
-        <div class="field" v-if="index > 0">
-          <label for="webhookKey">WebHook Key</label>
-          <Password
-            id="webhookKey"
-            v-model="webhook.webhookKey"
-            class="w-full"
-            toggle-mask
-            :feedback="false"
-          />
-        </div>
-
-        <Button
-          v-if="index > 0"
-          title="Add another webhook"
-          icon="pi pi-trash"
-          text
-          rounded
-          @click="() => removeWebhook(index)"
-        />
-
-        <Button
-          v-if="index > 0"
-          title="Add another webhook"
-          icon="pi pi-plus-circle"
-          text
-          rounded
-          @click="addWebhook"
-        />
-      </div>
-
-      <!-- This work for single entry in array -->
-      <!-- <div class="field">
+        <!-- This work for single entry in array -->
+        <!-- <div class="field">
           <label
             for="webhookUrl"
             :class="{ 'p-error': v$.webhookUrl.$invalid && submitted }"
@@ -84,8 +86,8 @@
           </span>
         </div> -->
 
-      <!-- WebHook Key -->
-      <!-- <div class="field">
+        <!-- WebHook Key -->
+        <!-- <div class="field">
           <label for="webhookKey">WebHook Key</label>
           <Password
             v-model="v$.webhookKey.$model"
@@ -95,6 +97,7 @@
             :feedback="false"
           />
         </div> -->
+      </div>
 
       <!-- Image URL -->
       <div class="field">
@@ -275,6 +278,14 @@ hr {
   }
   :deep(button .p-button-icon) {
     font-size: 30px !important;
+  }
+  button.add {
+    visibility: hidden;
+  }
+}
+.webhooks div:last-of-type {
+  button.add {
+    visibility: visible;
   }
 }
 </style>
