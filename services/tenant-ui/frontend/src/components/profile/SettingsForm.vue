@@ -48,6 +48,15 @@
         <Button
           v-if="index > 0"
           title="Add another webhook"
+          icon="pi pi-trash"
+          text
+          rounded
+          @click="() => removeWebhook(index)"
+        />
+
+        <Button
+          v-if="index > 0"
+          title="Add another webhook"
           icon="pi pi-plus-circle"
           text
           rounded
@@ -192,6 +201,13 @@ const v$ = useVuelidate(rules, formFields);
  */
 const addWebhook = () => {
   formFields.webhooks.push({ webhookUrl: '', webhookKey: '' });
+};
+
+/**
+ * Remove a webhook
+ */
+const removeWebhook = (index: number) => {
+  formFields.webhooks.splice(index, 1);
 };
 
 // Submitting form
