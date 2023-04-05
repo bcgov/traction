@@ -1,7 +1,7 @@
 <template>
   <form @submit.prevent="handleSubmit(!v$.$invalid)">
     <ProgressSpinner v-if="loading" />
-    <div v-else class="w-30rem">
+    <div v-else class="settings-form">
       <!-- Wallet Label -->
       <div class="field">
         <label for="walletLabel">Wallet Label</label>
@@ -18,14 +18,14 @@
         </span>
       </div>
 
-      <!-- WebHook URL -->
+      <!-- Webhooks -->
 
       <div
         class="webhook"
         v-for="(webhook, index) of formFields.webhooks"
         :key="index"
       >
-        <div class="field">
+        <div class="field" v-if="index > 0">
           <label for="webhookUrl">WebHook URL</label>
           <InputText
             id="webhookUrl"
@@ -34,16 +34,19 @@
           />
         </div>
 
-        <div class="field">
+        <div class="field" v-if="index > 0">
           <label for="webhookKey">WebHook Key</label>
-          <InputText
+          <Password
             id="webhookKey"
             v-model="webhook.webhookKey"
             class="w-full"
+            toggle-mask
+            :feedback="false"
           />
         </div>
 
         <Button
+          v-if="index > 0"
           title="Add another webhook"
           icon="pi pi-plus-circle"
           text
@@ -52,6 +55,7 @@
         />
       </div>
 
+      <!-- This work for single entry in array -->
       <!-- <div class="field">
           <label
             for="webhookUrl"
@@ -132,10 +136,6 @@ const toast = useToast();
 const tenantStore = useTenantStore();
 const { tenantWallet, loading } = storeToRefs(useTenantStore());
 
-const addWebhook = () => {
-  console.log('addWebhook');
-};
-
 // Get Tenant Configuration
 const loadTenantSettings = async () => {
   await tenantStore
@@ -144,13 +144,9 @@ const loadTenantSettings = async () => {
       // set the local form settings (don't bind controls directly to state for this)
       formFields.walletLabel = tenantWallet.value.settings.default_label;
       formFields.imageUrl = tenantWallet.value.settings.image_url;
-      // TODO: only supporting the 1 webhook for now until some UX decisions
-      // (if keeping this extract to util fxn)
+
       const webHookUrls = tenantWallet.value.settings['wallet.webhook_urls'];
-      console.log('webHookUrls', webHookUrls);
       if (webHookUrls && webHookUrls.length) {
-        // TODO: populate the formFields.webhooks array
-        // TODO: loop through url array and split out the key
         webHookUrls.forEach((whItem: string) => {
           const pMark = whItem.indexOf('#');
           if (pMark > 0) {
@@ -162,20 +158,6 @@ const loadTenantSettings = async () => {
             });
           }
         });
-        // let whItem = '';
-        // if (Array.isArray(webHookUrls) && typeof webHookUrls[0] === 'string') {
-        //   whItem = webHookUrls[0];
-        // } else if (typeof webHookUrls === 'string') {
-        //   whItem = webHookUrls;
-        // }
-        // Split the webhook url and key
-        // const pMark = whItem.indexOf('#');
-        // if (pMark > 0) {
-        //   formFields.webhookUrl = whItem.substring(0, whItem.indexOf('#'));
-        //   formFields.webhookKey = whItem.substring(whItem.indexOf('#') + 1);
-        // } else {
-        //   formFields.webhookUrl = whItem;
-        // }
       }
     })
     .catch((err: any) => {
@@ -204,6 +186,13 @@ const rules = {
   imageUrl: { url },
 };
 const v$ = useVuelidate(rules, formFields);
+
+/**
+ * Add another webhook
+ */
+const addWebhook = () => {
+  formFields.webhooks.push({ webhookUrl: '', webhookKey: '' });
+};
 
 // Submitting form
 const submitted = ref(false);
@@ -255,12 +244,15 @@ hr {
   background-color: rgb(186, 186, 186);
   border: 0;
 }
+.settings-form {
+  width: 40rem !important;
+}
 .webhook {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   .field {
-    width: 42%;
+    width: 41%;
   }
   :deep(button) {
     margin-top: 20px;
