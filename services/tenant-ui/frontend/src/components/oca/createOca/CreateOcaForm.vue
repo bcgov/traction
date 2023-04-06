@@ -1,6 +1,5 @@
 <template>
   <div>
-    {{ formFields.selectedCred }}
     <form @submit.prevent="handleSubmit(!v$.$invalid)">
       <div>
         <!-- Credential -->
@@ -134,7 +133,7 @@ const handleSubmit = async (isFormValid: boolean) => {
 
     // call store
     await governanceStore.createOca(payload);
-    toast.info('Credential Offer Sent');
+    toast.success('OCA Bundle associated with Credential Definition');
     emit('success');
     // close up on success
     emit('closed');

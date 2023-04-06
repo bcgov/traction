@@ -312,6 +312,7 @@ export const useGovernanceStore = defineStore('governance', () => {
       .then((res) => {
         result = res.data.item;
         console.log(result);
+        listOcas(); // Refresh table
       })
       .catch((err) => {
         error.value = err;

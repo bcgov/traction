@@ -2,13 +2,13 @@
   <div>
     <Button
       :disabled="!isIssuer"
-      label="Add OCA Association"
+      label="Add/Update OCA Association"
       icon="pi pi-plus"
       @click="openModal"
     />
     <Dialog
       v-model:visible="displayModal"
-      header="Add OCA Association"
+      header="Add/Update OCA Association"
       :modal="true"
       :style="{ minWidth: '500px' }"
       @update:visible="handleClose"

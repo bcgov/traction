@@ -47,14 +47,14 @@
           title="Delete Credential Definition"
           icon="pi pi-trash"
           class="p-button-rounded p-button-icon-only p-button-text"
-          @click="deleteOca($event, data.cred_def_id)"
+          @click="deleteOca($event, data.oca_id)"
         />
       </template>
     </Column>
     <Column
       :sortable="true"
       field="cred_def_id"
-      header="ID"
+      header="Cred Def ID"
       filter-field="cred_def_id"
     />
 
@@ -66,7 +66,7 @@
       </template>
     </Column>
     <template #expansion="{ data }">
-      <RowExpandData :id="data.oca_id" :url="API_PATH.OCA" />
+      <RowExpandData :id="data.oca_id" :url="API_PATH.OCAS" />
     </template>
   </DataTable>
 </template>
