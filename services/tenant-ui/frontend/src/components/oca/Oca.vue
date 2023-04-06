@@ -58,7 +58,22 @@
       filter-field="cred_def_id"
     />
 
-    <Column :sortable="true" field="url" header="OCA URL" filter-field="url" />
+    <Column :sortable="true" header="OCA Bundle">
+      <template #body="{ data }">
+        <span v-if="data.bundle">
+          <i
+            v-tooltip="'Bundle JSON stored in Traction, expand row to view'"
+            class="pi pi-database"
+          >
+          </i>
+          JSON
+        </span>
+        <span v-else-if="data.url">
+          <i v-tooltip="'Bundle URL'" class="pi pi-link"> </i>
+          {{ data.url }}
+        </span>
+      </template>
+    </Column>
 
     <Column :sortable="true" field="created_at" header="Created at">
       <template #body="{ data }">

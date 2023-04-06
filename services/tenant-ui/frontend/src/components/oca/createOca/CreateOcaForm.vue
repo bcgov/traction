@@ -27,8 +27,31 @@
           }}</small>
         </div>
 
+        <!-- URL or bundle json -->
+        <div>OCA Bundle association type</div>
+        <div class="mt-2">
+          <RadioButton
+            v-model="bundleType"
+            input-id="radioUrl"
+            name="radioUrl"
+            value="url"
+            @change="resetBundle"
+          />
+          <label for="radioUrl" class="ml-2">URL</label>
+        </div>
+        <div class="mt-2">
+          <RadioButton
+            v-model="bundleType"
+            input-id="radioJson"
+            name="radioJson"
+            value="json"
+            @change="resetBundle"
+          />
+          <label for="radioJson" class="ml-2">Stored Bundle JSON</label>
+        </div>
+
         <!-- Bundle URL -->
-        <div class="field mt-5">
+        <div v-if="bundleType === 'url'" class="field mt-5">
           <label
             for="bundleUrl"
             :class="{ 'p-error': v$.bundleUrl.$invalid && submitted }"
@@ -52,13 +75,31 @@
           >
         </div>
 
-        <Button type="submit" label="Add OCA" class="mt-5 w-full" />
+        <!-- Bundle JSON -->
+        <div v-else class="mt-3">
+          <span>OCA Bundle JSON</span>
+          <JsonEditorVue
+            ref="jsonEditorVueRef"
+            v-model="bundleJson"
+            v-bind="jsonEditorSettings"
+          />
+        </div>
+
+        <Button
+          type="submit"
+          :loading="loading"
+          label="Add OCA"
+          class="mt-5 w-full"
+        />
       </div>
     </form>
   </div>
 </template>
 
 <script setup lang="ts">
+// Types
+import { AddOcaRecordRequest } from '@/types/acapyApi/acapyInterface';
+
 // Vue
 import { reactive, ref } from 'vue';
 // PrimeVue / Validation
@@ -66,15 +107,28 @@ import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import ProgressSpinner from 'primevue/progressspinner';
-import { required, url } from '@vuelidate/validators';
+import RadioButton from 'primevue/radiobutton';
+import { required, requiredIf, url } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
+import { useToast } from 'vue-toastification';
 // State
 import { useGovernanceStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other imports
-import { useToast } from 'vue-toastification';
+import JsonEditorVue from 'json-editor-vue';
+import { isJsonString } from '@/helpers';
 
 const toast = useToast();
+
+// json editor config
+const jsonEditorSettings = {
+  mainMenuBar: false,
+  mode: 'text' as any,
+  statusBar: false,
+  navigationBar: false,
+  indentation: 2,
+  tabSize: 2,
+};
 
 // Store values
 const governanceStore = useGovernanceStore();
@@ -84,6 +138,8 @@ const { credentialDropdown, loading, storedCredDefs, storedSchemas } =
 const emit = defineEmits(['closed', 'success']);
 
 // Form / Validation setup
+const bundleJson = ref({});
+const bundleType = ref('url');
 const filteredCreds = ref();
 const formFields = reactive({
   selectedCred: undefined as any,
@@ -91,7 +147,7 @@ const formFields = reactive({
 });
 const rules = {
   selectedCred: { required },
-  bundleUrl: { url },
+  bundleUrl: { url, required: requiredIf(() => bundleType.value === 'url') },
 };
 const v$ = useVuelidate(rules, formFields);
 
@@ -116,6 +172,7 @@ const handleSubmit = async (isFormValid: boolean) => {
   if (!isFormValid) {
     return;
   }
+
   try {
     // Get the specific schema to edit values for
     const schemaId = storedCredDefs.value.find(
@@ -125,11 +182,15 @@ const handleSubmit = async (isFormValid: boolean) => {
       (s: any) => s.schema_id === schemaId
     );
 
-    const payload = {
+    const payload: AddOcaRecordRequest = {
       cred_def_id: formFields.selectedCred.value,
       schema_id: schema.schema_id,
-      url: formFields.bundleUrl,
     };
+    if (bundleType.value === 'url') {
+      payload.url = formFields.bundleUrl;
+    } else if (bundleType.value === 'json') {
+      payload.bundle = JSON.parse(bundleJson.value as string);
+    }
 
     // call store
     await governanceStore.createOca(payload);
@@ -142,5 +203,10 @@ const handleSubmit = async (isFormValid: boolean) => {
   } finally {
     submitted.value = false;
   }
+};
+
+const resetBundle = () => {
+  bundleJson.value = {};
+  formFields.bundleUrl = '';
 };
 </script>

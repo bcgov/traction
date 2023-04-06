@@ -10,7 +10,7 @@
       v-model:visible="displayModal"
       header="Add/Update OCA Association"
       :modal="true"
-      :style="{ minWidth: '500px' }"
+      :style="{ minWidth: '750px', maxWidth: '750px' }"
       @update:visible="handleClose"
     >
       <CreateOcaForm @success="$emit('success')" @closed="handleClose" />
