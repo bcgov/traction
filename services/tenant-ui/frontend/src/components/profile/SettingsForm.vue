@@ -23,84 +23,54 @@
       <Divider class="websockets-top" align="left" type="solid">
         <b>Webhooks</b>
       </Divider>
-      <div class="webhooks">
-        <div
-          class="webhook"
-          v-for="(webhook, index) of formFields.webhooks"
-          :key="index"
-        >
-          <div class="field" v-if="index > 0">
-            <label for="webhookUrl">WebHook URL</label>
-            <InputText
-              id="webhookUrl"
-              v-model="webhook.webhookUrl"
-              class="w-full"
-            />
-          </div>
 
-          <div class="field" v-if="index > 0">
-            <label for="webhookKey">WebHook Key</label>
-            <Password
-              id="webhookKey"
-              v-model="webhook.webhookKey"
-              class="w-full"
-              toggle-mask
-              :feedback="false"
-            />
-          </div>
+        <div class="webhooks">
+          <TransitionGroup appear name="wh">
+            <div
+              class="webhook"
+              v-for="(webhook, index) of formFields.webhooks"
+              :key="index"
+            >
+              <div class="field">
+                <label for="webhookUrl">WebHook URL</label>
+                <InputText
+                  id="webhookUrl"
+                  v-model="webhook.webhookUrl"
+                  class="w-full"
+                />
+              </div>
 
-          <Button
-            v-if="index > 0"
-            title="Delete this webhook"
-            icon="pi pi-trash"
-            text
-            rounded
-            @click="() => removeWebhook(index)"
-          />
+              <div class="field">
+                <label for="webhookKey">WebHook Key</label>
+                <Password
+                  id="webhookKey"
+                  v-model="webhook.webhookKey"
+                  class="w-full"
+                  toggle-mask
+                  :feedback="false"
+                />
+              </div>
 
-          <Button
-            v-if="index > 0"
-            title="Add another webhook"
-            class="add"
-            icon="pi pi-plus-circle"
-            text
-            rounded
-            @click="addWebhook"
-          />
+              <Button
+                title="Delete this webhook"
+                icon="pi pi-trash"
+                text
+                rounded
+                @click="() => removeWebhook(index)"
+              />
+
+              <Button
+                title="Add another webhook"
+                class="add"
+                icon="pi pi-plus-circle"
+                text
+                rounded
+                @click="addWebhook"
+              />
+            </div>
+          </TransitionGroup>
         </div>
 
-        <!-- This work for single entry in array -->
-        <!-- <div class="field">
-          <label
-            for="webhookUrl"
-            :class="{ 'p-error': v$.webhookUrl.$invalid && submitted }"
-            >WebHook URL</label
-          >
-          <InputText
-            id="webhookUrl"
-            v-model="v$.webhookUrl.$model"
-            class="w-full"
-            :class="{ 'p-invalid': v$.webhookUrl.$invalid && submitted }"
-          />
-          <span v-if="v$.webhookUrl.$error && submitted">
-            <span v-for="(error, index) of v$.webhookUrl.$errors" :key="index">
-              <small class="p-error">{{ error.$message }}</small>
-            </span>
-          </span>
-        </div> -->
-
-        <!-- WebHook Key -->
-        <!-- <div class="field">
-          <label for="webhookKey">WebHook Key</label>
-          <Password
-            v-model="v$.webhookKey.$model"
-            class="w-full"
-            input-class="w-full"
-            toggle-mask
-            :feedback="false"
-          />
-        </div> -->
-      </div>
       <Divider class="websockets-bottom" />
 
       <!-- Image URL -->
@@ -130,7 +100,7 @@
 
 <script setup lang="ts">
 // Vue
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, Transition,  TransitionGroup } from 'vue';
 // PrimeVue/Validation
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
@@ -163,6 +133,13 @@ const loadTenantSettings = async () => {
       formFields.imageUrl = tenantWallet.value.settings.image_url;
 
       const webHookUrls = tenantWallet.value.settings['wallet.webhook_urls'];
+      
+      // Clear the webhook array if necessary
+      if (formFields.webhooks.length > 0) {
+        formFields.webhooks = [];
+      }
+
+
       if (webHookUrls && webHookUrls.length) {
         webHookUrls.forEach((whItem: string) => {
           const pMark = whItem.indexOf('#');
@@ -296,5 +273,14 @@ hr {
 }
 .websockets-top {
   margin-bottom: 5px !important;
+}
+
+.wh-enter-active,
+.wh-leave-active {
+  transition: opacity 0.5s ease;
+}
+.wh-enter-from,
+.wh-leave-to {
+  opacity: 0;
 }
 </style>
