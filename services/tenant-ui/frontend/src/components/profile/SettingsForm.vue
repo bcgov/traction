@@ -27,9 +27,9 @@
       <div class="webhooks">
         <TransitionGroup appear name="wh">
           <div
-            class="webhook"
             v-for="(webhook, index) of formFields.webhooks"
             :key="index"
+            class="webhook"
           >
             <div class="field">
               <label for="webhookUrl">WebHook URL</label>
@@ -192,6 +192,7 @@ const addWebhook = () => {
  * Just blank it out.
  */
 const removeWebhook = (index: number) => {
+  console.log('delete webhook', formFields.webhooks[index]);
   formFields.webhooks.splice(index, 1);
 
   // If this is the last entry in the array, add a new blank one.
