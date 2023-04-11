@@ -24,52 +24,52 @@
         <b>Webhooks</b>
       </Divider>
 
-        <div class="webhooks">
-          <TransitionGroup appear name="wh">
-            <div
-              class="webhook"
-              v-for="(webhook, index) of formFields.webhooks"
-              :key="index"
-            >
-              <div class="field">
-                <label for="webhookUrl">WebHook URL</label>
-                <InputText
-                  id="webhookUrl"
-                  v-model="webhook.webhookUrl"
-                  class="w-full"
-                />
-              </div>
-
-              <div class="field">
-                <label for="webhookKey">WebHook Key</label>
-                <Password
-                  id="webhookKey"
-                  v-model="webhook.webhookKey"
-                  class="w-full"
-                  toggle-mask
-                  :feedback="false"
-                />
-              </div>
-
-              <Button
-                title="Delete this webhook"
-                icon="pi pi-trash"
-                text
-                rounded
-                @click="() => removeWebhook(index)"
-              />
-
-              <Button
-                title="Add another webhook"
-                class="add"
-                icon="pi pi-plus-circle"
-                text
-                rounded
-                @click="addWebhook"
+      <div class="webhooks">
+        <TransitionGroup appear name="wh">
+          <div
+            class="webhook"
+            v-for="(webhook, index) of formFields.webhooks"
+            :key="index"
+          >
+            <div class="field">
+              <label for="webhookUrl">WebHook URL</label>
+              <InputText
+                id="webhookUrl"
+                v-model="webhook.webhookUrl"
+                class="w-full"
               />
             </div>
-          </TransitionGroup>
-        </div>
+
+            <div class="field">
+              <label for="webhookKey">WebHook Key</label>
+              <Password
+                id="webhookKey"
+                v-model="webhook.webhookKey"
+                class="w-full"
+                toggle-mask
+                :feedback="false"
+              />
+            </div>
+
+            <Button
+              title="Delete this webhook"
+              icon="pi pi-trash"
+              text
+              rounded
+              @click="() => removeWebhook(index)"
+            />
+
+            <Button
+              title="Add another webhook"
+              class="add"
+              icon="pi pi-plus-circle"
+              text
+              rounded
+              @click="addWebhook"
+            />
+          </div>
+        </TransitionGroup>
+      </div>
 
       <Divider class="websockets-bottom" />
 
@@ -100,7 +100,7 @@
 
 <script setup lang="ts">
 // Vue
-import { onMounted, reactive, ref, Transition,  TransitionGroup } from 'vue';
+import { onMounted, reactive, ref, Transition, TransitionGroup } from 'vue';
 // PrimeVue/Validation
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
@@ -133,12 +133,11 @@ const loadTenantSettings = async () => {
       formFields.imageUrl = tenantWallet.value.settings.image_url;
 
       const webHookUrls = tenantWallet.value.settings['wallet.webhook_urls'];
-      
+
       // Clear the webhook array if necessary
       if (formFields.webhooks.length > 0) {
         formFields.webhooks = [];
       }
-
 
       if (webHookUrls && webHookUrls.length) {
         webHookUrls.forEach((whItem: string) => {
@@ -194,8 +193,9 @@ const addWebhook = () => {
  */
 const removeWebhook = (index: number) => {
   formFields.webhooks.splice(index, 1);
-  // TODO: If this is the last entry in the array, add a new blank one.
-  //   ie.. addWebhook();
+
+  // If this is the last entry in the array, add a new blank one.
+  if (formFields.webhooks.length === 0) addWebhook();
 };
 
 // Submitting form
@@ -223,8 +223,6 @@ const handleSubmit = async (isFormValid: boolean) => {
       label: formFields.walletLabel,
       wallet_webhook_urls: webhooks,
     };
-    // TODO: Test if the multiple webhooks are working and
-    // being saved correctly.
     await tenantStore.updateTenantSubWallet(payload);
     loadTenantSettings();
     toast.success('Your Settings have been Updated');
