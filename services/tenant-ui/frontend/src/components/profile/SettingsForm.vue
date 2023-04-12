@@ -152,6 +152,11 @@ const loadTenantSettings = async () => {
           }
         });
       }
+
+      // If there are no webhooks, add a blank one
+      if (formFields.webhooks.length === 0) {
+        formFields.webhooks.push({ webhookUrl: '', webhookKey: '' });
+      }
     })
     .catch((err: any) => {
       console.error(err);
