@@ -65,6 +65,9 @@
       "copy": "Copy Schema",
       "credentialDefinitions": "Stored Credential Definitions"
     },
+    "oca": {
+      "oca": "OCA"
+    },
     "presentationTemplates": {
       "templates": "Presentation Templates"
     }
