@@ -80,6 +80,12 @@ const items = ref([
         icon: 'pi pi-fw pi-id-card',
         to: { name: 'CredentialDefinitions' },
       },
+      {
+        // label: () => t('configuration.oca.oca'),
+        label: 'OCA',
+        icon: 'pi pi-fw pi-compass',
+        to: { name: 'OCA' },
+      },
       // {
       //   label: () => t('configuration.presentationTemplates.templates'),
       //   to: { name: 'PresentationTemplates' },
