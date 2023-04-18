@@ -106,7 +106,7 @@ import StatusChip from '../common/StatusChip.vue';
 const toast = useToast();
 
 const contactsStore = useContactsStore();
-const { contacts } = storeToRefs(useContactsStore());
+const { contacts, findConnectionName } = storeToRefs(useContactsStore());
 const issuerStore = useIssuerStore();
 // use the loading state from the store to disable the button...
 const { loading, credentials, selectedCredential } = storeToRefs(
@@ -131,6 +131,7 @@ const loadTable = async () => {
 onMounted(async () => {
   await loadTable();
 });
+
 // necessary for expanding rows, we don't do anything with this
 const expandedRows = ref([]);
 
@@ -141,14 +142,6 @@ const filter = ref({
     matchMode: FilterMatchMode.CONTAINS,
   } as DataTableFilterMetaData,
 });
-
-// Find the connection alias for an ID
-const findConnectionName = (connectionId: string) => {
-  const connection = contacts.value?.find((c: any) => {
-    return c.connection_id === connectionId;
-  });
-  return connection ? connection.alias : '...';
-};
 </script>
 
 <style scoped>
