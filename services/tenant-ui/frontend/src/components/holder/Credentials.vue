@@ -24,7 +24,7 @@ import { useToast } from 'vue-toastification';
 import { useContactsStore, useHolderStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other components
-import CredentialsTableFormat from './CredentialsTableFormat.vue';
+import CredentialsTableFormat from './CredentialsTable.vue';
 
 const toast = useToast();
 const confirm = useConfirm();
