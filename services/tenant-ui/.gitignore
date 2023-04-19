@@ -23,6 +23,7 @@ dist
 
 # Test data
 frontend/public/test_schemas.json
+coverage/*
 
 # helper scripts
 .utils
