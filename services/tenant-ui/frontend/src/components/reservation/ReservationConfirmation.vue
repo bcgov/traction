@@ -20,7 +20,15 @@
 
   <div class="field w-full">
     <label for="">Reservation ID</label>
-    <InputText :value="id" type="text" readonly class="w-full" />
+    <div class="p-inputgroup">
+      <InputText :value="id" type="text" readonly class="w-full" />
+      <Button
+        icon="pi pi-copy"
+        title="Copy to clipboard"
+        class="p-button-secondary"
+        @click="copyResId"
+      />
+    </div>
   </div>
 </template>
 
@@ -28,9 +36,17 @@
 // PrimeVue/Validation/etc
 import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';
+import Button from 'primevue/button';
+import { useToast } from 'vue-toastification';
+const toast = useToast();
 
-defineProps<{
+const props = defineProps<{
   email: string;
   id: string;
 }>();
+
+const copyResId = () => {
+  navigator.clipboard.writeText(props.id);
+  toast.info('Copied reservation ID to clipboard!');
+};
 </script>
