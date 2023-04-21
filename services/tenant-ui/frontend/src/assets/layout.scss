@@ -125,13 +125,10 @@ body {
           width: 100%;
         }
         display: flex;
-        span {
-          &.pi-chevron-right,
-          &.pi-chevron-down {
-            display: flex;
-            order: 2;
-            margin-left: auto;
-          }
+        svg.p-submenu-icon {
+          display: flex;
+          order: 2;
+          margin-left: auto;
         }
         .p-panelmenu-header-action {
           padding-top: 0.75em;
@@ -178,6 +175,10 @@ body {
   .p-menuitem-icon {
     font-size: 2rem !important;
     margin-left: 0.5rem;
+  }
+  .p-submenu-icon {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
   }
   .sidebar-app-title {
     display: none;
