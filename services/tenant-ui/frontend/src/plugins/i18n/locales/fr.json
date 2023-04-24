@@ -93,6 +93,7 @@
       "tractionVersion": "Traction version {version} <FR>",
       "uiVersion": "Tenant UI version {version} <FR>",
       "url": "Traction URL <FR>",
+      "swagger": "Swagger UI <FR>",
       "imageTag": "Image tag <FR>",
       "imageVersion": "Image version <FR>",
       "imageCreated": "Image created at <FR>",
