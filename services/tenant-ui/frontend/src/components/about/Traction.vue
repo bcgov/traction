@@ -24,6 +24,15 @@
     </div>
 
     <div class="col-2">
+      {{ t('about.traction.swagger') }}
+    </div>
+    <div class="col-10">
+      <a :href="swaggerUrl" target="_blank">
+        {{ swaggerUrl }}
+      </a>
+    </div>
+
+    <div class="col-2">
       {{ t('about.traction.imageTag') }}
     </div>
     <div class="col-10">
@@ -48,7 +57,7 @@
       {{ t('about.traction.repository') }}
     </div>
     <div class="col-10">
-      <a href="https://github.com/bcgov/traction">
+      <a href="https://github.com/bcgov/traction" target="_blank">
         https://github.com/bcgov/traction
       </a>
     </div>
@@ -56,12 +65,17 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useConfigStore } from '@/store/configStore';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 const { config } = storeToRefs(useConfigStore());
+
+const swaggerUrl = computed(
+  () => `${config.value.frontend.tenantProxyPath}/api/doc`
+);
 </script>
 
 <style scoped>
