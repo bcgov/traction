@@ -169,6 +169,7 @@ acapy:
     multitenant: true
     multitenantAdmin: true
     walletType: askar
+    walletName: default
     notifyRevocation: true
     monitorRevocationNotification: true
     preserveExchangeRecords: true
