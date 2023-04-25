@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-0">{{ t('tenants.tenants') }}</h3>
+  <h3 class="mt-0">{{ $t('tenants.tenants') }}</h3>
 
   <DataTable
     v-model:expandedRows="expandedRows"
@@ -35,8 +35,8 @@
         </div>
       </div>
     </template>
-    <template #empty> No records found. </template>
-    <template #loading> Loading data. Please wait... </template>
+    <template #empty>{{ $t('common.noRecordsFound') }}</template>
+    <template #loading>{{ $t('common.loading') }}</template>
     <Column :expander="true" header-style="width: 3rem" />
     <Column :sortable="true" field="tenant_name" header="Name" />
     <Column :sortable="true" field="created_at" header="Created at">
@@ -67,10 +67,8 @@ import { storeToRefs } from 'pinia';
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 import RowExpandData from '@/components/common/RowExpandData.vue';
-import { useI18n } from 'vue-i18n';
 
 const toast = useToast();
-const { t } = useI18n();
 
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
 

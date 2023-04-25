@@ -1,6 +1,6 @@
 <template>
   <!-- Make Issuer -->
-  <h3 class="mt-5 mb-3">Issuer</h3>
+  <h3 class="mt-5 mb-3">{{ $t('profile.issuer') }}</h3>
   <div v-if="loadingIssuance" class="flex flex-column align-items-center">
     <ProgressSpinner />
     <p v-if="publicDidRegistrationProgress">
@@ -8,16 +8,16 @@
     </p>
   </div>
   <div v-else>
-    <h5 class="my-0">Endorser</h5>
+    <h5 class="my-0">{{ $t('profile.endorser') }}</h5>
     <div v-if="endorserInfo">
       <Endorser />
 
-      <h5 class="mb-0 mt-3">Public DID</h5>
+      <h5 class="mb-0 mt-3">{{ $t('profile.publicDid') }}</h5>
       <PublicDid />
     </div>
     <div v-else class="no-endorser">
       <i class="pi pi-exclamation-circle"></i>
-      No Endorser info found, issuance disabled
+      {{ $t('profile.noEndorserInfoFound') }}
     </div>
   </div>
 </template>

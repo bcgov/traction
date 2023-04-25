@@ -31,11 +31,8 @@ import { computed, ref } from 'vue';
 // PrimeVue/etc
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
-import { useI18n } from 'vue-i18n';
 // Components
 import RevokeCredentialForm from './RevokeCredentialForm.vue';
-
-const { t } = useI18n();
 
 defineEmits(['success']);
 

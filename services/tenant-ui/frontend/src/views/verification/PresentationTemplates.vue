@@ -1,6 +1,6 @@
 <template>
-  <h3>Presentation Templates</h3>
-  Coming Soon
+  <h3>{{ $t('verifier.presentationTemplates') }}</h3>
+  {{ $t('verifier.comingSoon') }}
   <div class="api-custom-btn">
     <SuperYou :api-url="apiUrl" :template-json="templateJson" />
   </div>

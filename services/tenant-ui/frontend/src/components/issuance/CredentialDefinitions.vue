@@ -1,6 +1,6 @@
 <template>
   <h3 class="mt-0">
-    {{ t('configuration.schemasCreds.credentialDefinitions') }}
+    {{ $t('configuration.schemasCreds.credentialDefinitions') }}
   </h3>
 
   <DataTable
@@ -36,8 +36,8 @@
         </div>
       </div>
     </template>
-    <template #empty> No records found. </template>
-    <template #loading> Loading data. Please wait... </template>
+    <template #empty>{{ $t('common.noRecordsFound') }}</template>
+    <template #loading>{{ $t('common.loading') }}</template>
     <Column :expander="true" header-style="width: 3rem" />
     <Column :sortable="false" header="Actions">
       <template #body="{ data }">
@@ -95,7 +95,6 @@ import InputText from 'primevue/inputtext';
 import { FilterMatchMode } from 'primevue/api';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';
-import { useI18n } from 'vue-i18n';
 // State
 import { useGovernanceStore } from '../../store';
 import { storeToRefs } from 'pinia';
@@ -106,7 +105,6 @@ import { formatDateLong } from '@/helpers';
 
 const confirm = useConfirm();
 const toast = useToast();
-const { t } = useI18n();
 
 const governanceStore = useGovernanceStore();
 const { loading, storedCredDefs } = storeToRefs(useGovernanceStore());

@@ -15,7 +15,8 @@
         <label
           for="email"
           :class="{ 'p-error': v$.contact_email.$invalid && submitted }"
-          >Email Address
+        >
+          {{ $t('reserve.email') }}
         </label>
         <InputText
           id="email"
@@ -45,12 +46,15 @@
         <label
           for="full-name"
           :class="{ 'p-error': v$.contact_name.$invalid && submitted }"
-          >Full Name
+        >
+          {{ $t('reserve.fullName') }}
         </label>
         <InputText
           id="full-name"
           v-model="v$.contact_name.$model"
-          autocomplete="name"
+          type="text"
+          option-label="label"
+          autocomplete="full-name"
           name="fullName"
           class="w-full"
         />
@@ -64,11 +68,14 @@
         <label
           for="phone"
           :class="{ 'p-error': v$.contact_phone.$invalid && submitted }"
-          >Phone / Mobile
+        >
+          {{ $t('reserve.phone') }}
         </label>
         <InputText
           id="phone"
           v-model="v$.contact_phone.$model"
+          type="text"
+          option-label="label"
           autocomplete="phone"
           name="phone"
           class="w-full"
@@ -83,12 +90,15 @@
         <label
           for="tenant-name"
           :class="{ 'p-error': v$.tenant_name.$invalid && submitted }"
-          >Tenant Name
+        >
+          {{ $t('reserve.tenantName') }}
         </label>
         <InputText
           id="tenant-name"
           v-model="v$.tenant_name.$model"
-          name="tenant-name"
+          type="text"
+          option-label="label"
+          name="tenantName"
           class="w-full"
         />
         <small v-if="v$.tenant_name.$invalid && submitted" class="p-error">{{
@@ -101,12 +111,14 @@
         <label
           for="tenant-reason"
           :class="{ 'p-error': v$.tenant_reason.$invalid && submitted }"
-          >Tenant Reason
+        >
+          {{ $t('reserve.tenantReason') }}
         </label>
         <Textarea
           id="tenant-reason"
           v-model="v$.tenant_reason.$model"
-          name="tenant-reason"
+          option-label="label"
+          name="tenantReason"
           class="w-full"
           :auto-resize="true"
           rows="2"
@@ -119,7 +131,7 @@
       <Button
         type="submit"
         class="w-full mt-5"
-        label="Request"
+        :label="$t('reserve.submit')"
         :disabled="!!loading"
         :loading="!!loading"
       />

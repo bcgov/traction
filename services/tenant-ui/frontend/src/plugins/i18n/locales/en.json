@@ -8,27 +8,76 @@
       "submit": "Sign-In"
     }
   },
-  "user": {
-    "profile": "Profile",
-    "settings": "Settings",
-    "logout": "Logout"
+  "login": {
+    "walletSecret": "Wallet Secret",
+    "submit": "Sign-In",
+    "noAccount": "Don't have an account?",
+    "createRequest": "Create Request!",
+    "submittedRequest": "Already Submitted Request?",
+    "checkStatus": "Check Status!",
+    "backToSignIn": "Go Back to Sign-in"
+  },
+  "reserve": {
+    "fullName": "Full Name",
+    "phone": "Phone / Mobile"
+  },
+  "status": {
+    "email": "Enter your Email Address of request",
+    "reservationId": "Enter your Reservation ID",
+    "submit": "Check Status"
+  },
+  "dashboard": {
+    "dashboard": "Dashboard",
+    "greeting": "Powered by Traction",
+    "backToDashboard": "Back to Dashboard"
   },
   "connect": {
-    "connections": "Connections",
-    "accept": "Accept Invitation",
-    "edit": "Edit Connection",
-    "delete": "Delete Connection",
+    "connections": {
+      "connections": "Connections",
+      "edit": "Edit Connection",
+      "delete": "Delete Connection",
+      "search": "Search Connections"
+    },
+    "acceptInvitation": {
+      "accept": "Accept Invitation",
+      "supportedUrl": "Supported URL format is",
+      "skipUrl": "Skip URL and use JSON",
+      "invitation": "Invitation",
+      "submit": "Accept"
+    },
+    "didExchange": {
+      "didExchange": "DID Exchange",
+      "did": "DID"
+    },
     "invitations": {
       "invitations": "Invitations",
       "create": "Create Invitation",
-      "single": "Single Use",
-      "singleCreate": "Create Single Use Invitation",
-      "multi": "Multi Use",
-      "multiCreate": "Create Multi Use Invitation",
-      "regenerate": "Regenerate Invitation"
+      "regenerate": "Regenerate Invitation",
+      "search": "Search Invitations"
     },
-    "didExchange": {
-      "didExchange": "DID Exchange"
+    "invitation": {
+      "alias": "Contact Alias",
+      "submit": "Submit",
+      "close": "Close"
+    },
+    "singleUseInvitation": {
+      "single": "Single Use Invitation",
+      "singleCreate": "Create Single Use Invitation"
+    },
+    "multiUseInvitation": {
+      "multi": "Multi Use Invitation",
+      "multiCreate": "Create Multi Use Invitation"
+    },
+    "table": {
+      "theirLabel": "Their Label",
+      "createdAt": "Created At",
+      "invitationMode": "Invitation Mode"
+    },
+    "edit": {
+      "lastUpdated": "Connection Last Updated: {0}"
+    },
+    "message": {
+      "messageContact": "Chat with {0}"
     }
   },
   "issue": {
@@ -46,7 +95,22 @@
       "action": "Revoke",
       "confirm": "Are you sure you want to REVOKE this credential?",
       "success": "Credential revoked"
-    }
+    },
+    "schemaId": "Schema Id*",
+    "schema": "Schema",
+    "id": "ID: ",
+    "credentialDefinitionTag": "Credential Definition Tag*",
+    "revocationEnabled": "Revocation Enabled",
+    "revocationRegistrySize": "Revocation Registry Size",
+    "schemaName": "Schema Name*",
+    "schemaVersion": "Schema Version*",
+    "attributes": "Attributes*",
+    "connection": "Connection: ",
+    "revocationId": "Revocation ID: ",
+    "revocationRegistry": "Revocation Registry: ",
+    "credentialFieldValues": "Credential Field Values",
+    "version": "Version:",
+    "credentialValue": "Credential Value"
   },
   "verify": {
     "verification": "Verification",
@@ -54,19 +118,29 @@
     "createRequest": "Create Presentation Requests"
   },
   "holder": {
-    "holder": "Holder",
-    "credentials": "Credentials"
+    "holder": "Holder"
   },
   "configuration": {
     "configuration": "Configuration",
     "schemasCreds": {
       "schemas": "Stored Schemas",
-      "create": "Create Schema",
-      "copy": "Copy Schema",
       "credentialDefinitions": "Stored Credential Definitions"
     },
+    "schemas": {
+      "storage": "Schema Storage",
+      "create": "Create Schema",
+      "copy": "Copy Schema"
+    },
+    "credentialDefinitions": {
+      "storage": "Credential Definition Storage"
+    },
     "oca": {
-      "oca": "OCA"
+      "oca": "OCA",
+      "bundleAssociationType": "OCA Bundle association type",
+      "url": "URL",
+      "storedBundleJson": "Stored Bundle JSON",
+      "bundleUrl": "OCA Bundle URL*",
+      "bundleJson": "OCA Bundle JSON"
     },
     "presentationTemplates": {
       "templates": "Presentation Templates"
@@ -75,7 +149,8 @@
   "messages": {
     "messages": "Messages",
     "createMessage": "Create a Message",
-    "messageContent": "Message Content"
+    "messageContent": "Message Content",
+    "connectonId": "Connection ID"
   },
   "tenants": {
     "tenants": "Tenants",
@@ -88,10 +163,7 @@
     "history": "History",
     "requests": "Requests",
     "contactEmail": "Contact Email",
-    "contactName": "Contact Name",
     "contactPhone": "Contact Phone",
-    "tenantName": "Tenant Name",
-    "tenantReason": "Tenant Reason",
     "approveRequest": "Approve Request",
     "denyRequest": "Deny Request",
     "approved": {
@@ -102,7 +174,34 @@
     "denied": {
       "toast": "Reservation Denied for {email}",
       "reasonText": "Reason for Denial (Optional)"
-    }
+    },
+    "otp": "The password is shown below one-time if you need to communicate it via other means",
+    "thankYou!": "Thank You!",
+    "submitted": "Your request has been submitted successfully. ",
+    "emailSentTo": "An email has also been sent to {0} with the reservation number below.",
+    "reservationId": "Reservation ID",
+    "approved!": "APPROVED!",
+    "sentPasswordOn": "We have sent a reservation password to your email address on {0}",
+    "enterPassword": "Please enter the reservation password below to validate your account.",
+    "passwordValid48Hours": "The reservation password is only valid for 48 hours from the time it was sent to your email address.",
+    "checkJunkFolder": "(Please check your junk/spam folder before contacting us, as it is very common to have the email delivery problems because of automated filters.)",
+    "alreadyComplete": "Already Complete",
+    "reservationPreviouslyCompleted": "This reservation has already previously been completed and the wallet details given out.",
+    "dateOccurred": "The date this occurred was {0}",
+    "walletKeyCannotBeRetrievedAgain": "The wallet key cannot be retrieved again once supplied. If you require a new wallet you can go back and start a new reservation.",
+    "declined!": "DECLINED!",
+    "requestDeclined": "We regret to inform you that your request has been declined.",
+    "resonForRejection": "Reason for rejection",
+    "submitNewRequest": "If you think there has been an error you can submit a new request again.",
+    "incorrectEmailOrReservationId": "Incorrect Email or Reservation ID. Please try again.",
+    "pending!": "PENDING!",
+    "requestReservedOn": "Your request has been received on {0}",
+    "requestProcessingTime": "It ususally takes 3-4 business days to process a request. Thanks for your patience.",
+    "validated!": "VALIDATED!",
+    "reservationValidated": "Your reservation is validated successfully.",
+    "walletIdAndWalletKey": "Here is your new Wallet ID and Wallet Key associated with the email address mentioned while registering.",
+    "walletKey": "Wallet Key",
+    "saveWalletIdAndWalletKey": "Please save your newly generated wallet id and wallet key in a secure location. You will loose the data once this window is closed or you go back to sign-in. We will never share these information over the email nor do we re-issue upon request."
   },
   "about": {
     "about": "About",
@@ -125,7 +224,101 @@
       "ledger": "Ledger",
       "ledgerBrowser": "Ledger Browser",
       "tailsServer": "Tails Server",
-      "endorser": "Endorser"
+      "plugins": "List of Installed Plugins"
     }
+  },
+  "layout": {
+    "header": {
+      "toggleSideMenu": "Toggle the side menu"
+    }
+  },
+  "httpStatus": {
+    "404": {
+      "code": "404",
+      "status": "Page Not Found"
+    }
+  },
+  "credentials": {
+    "search": "Search Credentials",
+    "table": {
+      "connection": "Connection",
+      "credential": "Credential",
+      "lastUpdate": "Last Update"
+    }
+  },
+  "tenant": {
+    "settings": {
+      "tenantWalletSettings": "Tenant Wallet Settings"
+    },
+    "pofile": {
+      "tenantProfile": "Tenant Profile"
+    }
+  },
+  "common": {
+    "tenantName": "Tenant Name",
+    "tenantReason": "Tenant Reason",
+    "request": "Request",
+    "profile": "Profile",
+    "settings": "`Settings`",
+    "developer": "Developer",
+    "logout": "Logout",
+    "alias": "Alias",
+    "actions": "Actions",
+    "status": "Status",
+    "refreshTable": "Refresh Table",
+    "noRecordsFound": "No Records Found",
+    "credentials": "Credentials",
+    "loading": "Loading data. Please wait...",
+    "walletId": "Wallet ID",
+    "invitationUrl": "Invitation URL",
+    "json": "JSON",
+    "credentialId": "Credential ID",
+    "contactName": "Contact Name",
+    "endorser": "Endorser",
+    "emailAddress": "Email Address"
+  },
+  "qrCode": {
+    "noContentFound": "No content found"
+  },
+  "admin": {
+    "adminName": "Admin Name",
+    "adminKey": "Admin Key",
+    "orSignInWith": "Or Sign In With",
+    "error": "ERROR"
+  },
+  "profile": {
+    "config:": "Config:",
+    "createdAt": "Created at",
+    "updatedAt": "Updated at",
+    "tenantId": "Tenant ID",
+    "walletLabel": "Wallet Label",
+    "name": "Name",
+    "webhooks": "Webhooks",
+    "webHookUrl": "WebHook URL",
+    "webHookKey": "WebHook Key",
+    "imageUrl": "Image URL",
+    "connectTenantToEndorser": "Connect Tenant To Endorser",
+    "connectionNotActiveYet": "Connection not Active yet, refresh or come back later.",
+    "state": "State: {0}",
+    "endorserInfo": "Endorser Info",
+    "endorserConnection": "Endorser Connection",
+    "tenantNotConnectedToEndorserYet": "Tenant not connected to Endorser yet",
+    "issuer": "Issuer",
+    "noEndorserInfoFound": "No Endorser info found, issuance disabled",
+    "registerPublicDid": "Register a public DID",
+    "publicDid": "Public DID"
+  },
+  "verifier": {
+    "status: ": "Status",
+    "updatedAt": "Updated at",
+    "contactAlias: ": "Contact Alias: ",
+    "credentialHeldBy": "Credential is held by",
+    "credentialValid": "Credential is valid",
+    "credentialTamperFree ": "Credential is tamper-free ",
+    "attributeRestrictionsSatisfied": "All attribute restrictions were satisfied",
+    "verifications": "Verifications",
+    "presentationShouldHaveStatus": "This is not the component you are looking for, presentation should have status='verified'",
+    "presentationTemplates": "Presentation Templates",
+    "comingSoon": "Coming Soon"
   }
 }
