@@ -25,7 +25,6 @@ import { ref } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import { useToast } from 'vue-toastification';
-import { useI18n } from 'vue-i18n';
 // State
 import { useContactsStore, useGovernanceStore, useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
@@ -37,7 +36,6 @@ const contactsStore = useContactsStore();
 const governanceStore = useGovernanceStore();
 
 const toast = useToast();
-const { t } = useI18n();
 
 const { isIssuer } = storeToRefs(useTenantStore());
 

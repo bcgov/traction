@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-0">{{ t('connect.invitations.invitations') }}</h3>
+  <h3 class="mt-0">{{ $t('connect.invitations.invitations') }}</h3>
 
   <DataTable
     v-model:expandedRows="expandedRows"
@@ -26,30 +26,42 @@
             <i class="pi pi-search ml-0" />
             <InputText
               v-model="filter.alias.value"
-              placeholder="Search Invitations"
+              :placeholder="$t('connect.invitations.search')"
             />
           </span>
           <Button
             icon="pi pi-refresh"
             class="p-button-rounded p-button-outlined"
-            title="Refresh Table"
+            :title="$t('connect.table.refresh')"
             @click="loadTable"
           />
         </div>
       </div>
     </template>
-    <template #empty> No records found. </template>
-    <template #loading> Loading data. Please wait... </template>
+    <template #empty>{{ $t('connect.table.noRecords') }}</template>
+    <template #loading>{{ $t('connect.table.loading') }}</template>
     <Column :expander="true" header-style="width: 3rem" />
-    <Column :sortable="false" header="Actions">
+    <Column :sortable="false" :header="$t('connect.table.actions')">
       <template #body="{ data }">
         <DeleteContact :connection-id="data.connection_id" />
         <RegenerateInvitation :connection-id="data.connection_id" />
       </template>
     </Column>
-    <Column :sortable="true" field="alias" header="Alias" />
-    <Column :sortable="true" field="invitation_mode" header="Invitation Mode" />
-    <Column :sortable="true" field="created_at" header="Created at">
+    <Column
+      :sortable="true"
+      field="alias"
+      :header="$t('connect.table.alias')"
+    />
+    <Column
+      :sortable="true"
+      field="invitation_mode"
+      :header="$t('connect.table.invitationMode')"
+    />
+    <Column
+      :sortable="true"
+      field="created_at"
+      :header="$t('connect.table.createdAt')"
+    >
       <template #body="{ data }">
         {{ formatDateLong(data.created_at) }}
       </template>
@@ -80,10 +92,8 @@ import RegenerateInvitation from '@/components/contacts/createContact/Regenerate
 import RowExpandData from '@/components/common/RowExpandData.vue';
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
-import { useI18n } from 'vue-i18n';
 
 const toast = useToast();
-const { t } = useI18n();
 
 const contactsStore = useContactsStore();
 

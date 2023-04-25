@@ -6,7 +6,7 @@
     <!-- Alias -->
     <div class="field">
       <label for="alias" :class="{ 'p-error': v$.alias.$invalid && submitted }">
-        Alias
+        {{ $t('common.alias') }}
       </label>
       <InputText
         v-model="v$.alias.$model"
@@ -25,7 +25,9 @@
 
     <div v-if="item" class="flex justify-content-end mb-0 mt-3">
       <small>
-        Connection Last Updated: {{ formatDateLong(item.updated_at) }}
+        {{
+          $t('connections.edit.lastUpdated', [formatDateLong(item.updated_at)])
+        }}
       </small>
     </div>
   </form>

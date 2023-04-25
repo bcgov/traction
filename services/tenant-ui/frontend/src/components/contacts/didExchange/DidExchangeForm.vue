@@ -3,7 +3,7 @@
     <!-- DID -->
     <div class="field">
       <label for="did" :class="{ 'p-error': v$.did.$invalid && submitted }">
-        DID
+        {{ t('connect.didExchange.did') }}
       </label>
       <InputText
         id="did"
@@ -19,7 +19,7 @@
     <!-- Alias -->
     <div class="field">
       <label for="alias" :class="{ 'p-error': v$.alias.$invalid && submitted }">
-        Alias
+        {{ t('connect.didExchange.alias') }}
       </label>
       <InputText
         id="alias"
@@ -38,7 +38,7 @@
     </div>
     <Button
       type="submit"
-      label="Request"
+      :label="t('connect.didExchange.submit')"
       class="mt-5 w-full"
       :disabled="loading"
       :loading="loading"

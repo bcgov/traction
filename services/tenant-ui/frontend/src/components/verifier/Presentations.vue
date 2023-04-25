@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-0">Verifications</h3>
+  <h3 class="mt-0">{{ $t('verifiers.verifications') }}</h3>
 
   <DataTable
     v-model:selection="selectedPresentation"
@@ -40,8 +40,8 @@
         </div>
       </div>
     </template>
-    <template #empty> No records found. </template>
-    <template #loading> Loading data. Please wait... </template>
+    <template #empty>{{ $t('common.noRecordsFound') }}</template>
+    <template #loading>{{ $t('common.loading') }}</template>
     <Column :expander="true" header-style="width: 3rem" />
     <Column :sortable="true" field="name" header="Name" />
     <Column :sortable="true" field="contact.alias" header="Contact Name" />

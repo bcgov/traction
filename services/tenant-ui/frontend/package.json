@@ -42,6 +42,8 @@
     "eslint": "^8.36.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-vue": "^9.10.0",
+    "flat": "^5.0.2",
+    "glob": "^10.2.2",
     "prettier": "^2.8.7",
     "sass": "^1.60.0",
     "typescript": "^5.0.2",

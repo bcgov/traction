@@ -1,5 +1,5 @@
 <template>
-  <p class="my-1">Register a public DID</p>
+  <p class="my-1">{{ $t('profile.registerPublicDid') }}</p>
   <InputSwitch
     :model-value="hasPublicDid"
     :disabled="endorserNotActive || hasPublicDid"
@@ -8,7 +8,7 @@
 
   <!-- DID -->
   <div v-if="hasPublicDid" class="field">
-    <label for="didField">Public DID</label>
+    <label for="didField">{{ $t('profile.publicDid') }}</label>
     <InputText
       id="didField"
       class="w-full"
@@ -20,7 +20,7 @@
   <div>
     <Accordion>
       <AccordionTab header="Public DID Details">
-        <h5 class="my-0">Public DID</h5>
+        <h5 class="my-0">{{ $t('profile.publicDid') }}</h5>
         <vue-json-pretty :data="publicDid" />
       </AccordionTab>
     </Accordion>

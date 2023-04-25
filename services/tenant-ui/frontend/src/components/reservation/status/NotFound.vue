@@ -1,6 +1,6 @@
 <template>
   <Message severity="error" :closable="false">
-    Incorrect Email or Reservation ID. Please try again.
+    {{ $t('reservations.incorrectEmailOrReservationId') }}
   </Message>
 </template>
 <script setup lang="ts">

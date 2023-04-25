@@ -16,22 +16,22 @@
           <LoginForm />
           <div class="mt-6">
             <p>
-              Don't have an account?
+              {{ $t('login.noAccount') }}
               <a
                 href="#"
                 class="p-button-link login-mode"
                 @click.prevent="loginMode = LOGIN_MODE.RESERVE"
-                >Create Request!</a
+                >{{ $t('login.createRequest') }}</a
               >
             </p>
 
             <p>
-              Already Submitted Request?
+              {{ $t('login.submittedRequest') }}
               <a
                 href="#"
                 class="p-button-link login-mode"
                 @click.prevent="loginMode = LOGIN_MODE.STATUS"
-                >Check Status!</a
+                >{{ $t('login.checkStatus') }}</a
               >
             </p>
           </div>
@@ -40,7 +40,7 @@
         <!-- Making Reservation -->
         <div v-else-if="loginMode === LOGIN_MODE.RESERVE" class="py-6">
           <Button
-            label="Go Back to Sign-in"
+            :label="$t('login.backToSignIn')"
             icon="pi pi-arrow-left"
             class="p-button-text"
             @click="goBack($event)"
@@ -51,7 +51,7 @@
         <!-- Checking Status -->
         <div v-else-if="loginMode === LOGIN_MODE.STATUS" class="py-6">
           <Button
-            label="Go Back to Sign-in"
+            :label="$t('login.backToSignIn')"
             icon="pi pi-arrow-left"
             class="p-button-text"
             @click="goBack($event)"
@@ -85,6 +85,7 @@ import { storeToRefs } from 'pinia';
 import { useConfigStore } from '@/store';
 import { useReservationStore } from '@/store';
 import { RESERVATION_STATUSES } from '@/helpers/constants';
+
 const { config } = storeToRefs(useConfigStore());
 const reservationStore = useReservationStore();
 const { status } = storeToRefs(useReservationStore());

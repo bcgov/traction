@@ -2,7 +2,7 @@
   <form @submit.prevent="handleSubmit(!v$.$invalid)">
     <!-- Schema -->
     <div class="field">
-      <label for="schema">Schema</label>
+      <label for="schema">{{ $t('issue.schema') }}</label>
       <InputText
         id="schema"
         :value="schema.schema.name"
@@ -10,14 +10,15 @@
         :disabled="loading"
         class="w-full"
       />
-      <small>ID: {{ schema.schema_id }}</small>
+      <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
+      <small>{{ $t('id') }}: {{ schema.schema_id }}</small>
     </div>
     <!-- Tag -->
     <div class="field">
       <label
         for="creddef_tag"
         :class="{ 'p-error': v$.creddef_tag.$invalid && submitted }"
-        >Credential Definition Tag*</label
+        >{{ $t('issue.credentialDefinitionTag') }}</label
       >
       <InputText
         id="creddef_tag"
@@ -46,7 +47,9 @@
           :binary="true"
           @change="resetRegSize"
         />
-        <label for="creddef_revocation_enabled">Revocation Enabled</label>
+        <label for="creddef_revocation_enabled">{{
+          $t('issue.revocationEnabled')
+        }}</label>
       </div>
     </div>
     <div v-if="formFields.creddef_revocation_enabled" class="field">
@@ -55,7 +58,7 @@
         :class="{
           'p-error': v$.creddef_revocation_registry_size.$invalid && submitted,
         }"
-        >Revocation Registry Size</label
+        >{{ $t('issue.revocationRegistrySize') }}</label
       >
       <InputText
         id="creddef_revocation_registry_size"

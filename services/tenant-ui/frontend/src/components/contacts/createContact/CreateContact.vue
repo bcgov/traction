@@ -3,8 +3,8 @@
     <Button
       :label="
         props.multi
-          ? t('connect.invitations.multi')
-          : t('connect.invitations.single')
+          ? t('connect.multiUseInvitation.multi')
+          : t('connect.singleUseInvitation.single')
       "
       icon="pi pi-user-edit"
       @click="openModal"
@@ -13,8 +13,8 @@
       v-model:visible="displayModal"
       :header="
         props.multi
-          ? t('connect.invitations.multiCreate')
-          : t('connect.invitations.singleCreate')
+          ? t('connect.multiUseInvitation.multiCreate')
+          : t('connect.singleUseInvitation.singleCreate')
       "
       :modal="true"
       :style="{ minWidth: '400px' }"
@@ -35,11 +35,8 @@ import { ref, PropType } from 'vue';
 // PrimeVue etc
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
-import { useI18n } from 'vue-i18n';
 // Custom Components
 import CreateContactForm from './CreateContactForm.vue';
-
-const { t } = useI18n();
 
 defineEmits(['success']);
 

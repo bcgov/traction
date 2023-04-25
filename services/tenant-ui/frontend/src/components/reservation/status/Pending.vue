@@ -3,21 +3,23 @@
     <template #title>
       <span class="info-card-warning">
         <i class="pi pi-exclamation-triangle info-card-icon"></i> <br />
-        PENDING!
+        {{ $t('reservations.pending!') }}
       </span>
     </template>
     <template #content>
       <p>
-        Your request has been received on
-        {{ formatDateLong(reservation.created_at) }}. <br />
-        It ususally takes 3-4 business days to process a request. Thanks for
-        your patience.
+        {{
+          $t('reservations.requestReservedOn', [
+            formatDateLong(reservation.created_at),
+          ])
+        }}
+        <br />
+        {{ $t('reservations.requestProcessingTime') }}
       </p>
     </template>
     <template #footer>
       <hr />
-      (Please check your junk/spam folder before contacting us, as it is very
-      common to have the email delivery problems because of automated filters.)
+      {{ $t('reservations.checkJunkFolder') }}
     </template>
   </Card>
 </template>

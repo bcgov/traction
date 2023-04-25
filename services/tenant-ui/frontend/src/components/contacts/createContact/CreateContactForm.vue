@@ -3,7 +3,7 @@
     <!-- Alias -->
     <div class="field w-full">
       <label for="alias" :class="{ 'p-error': v$.alias.$invalid && submitted }">
-        Contact Alias
+        {{ t('connect.invitation.alias') }}
       </label>
       <InputText
         v-model="v$.alias.$model"
@@ -23,9 +23,18 @@
       <!-- QR Code Display -->
       <QRCode :qr-content="invitation_url" />
 
-      <Button label="Close" class="mt-5 w-full" @click="$emit('closed')" />
+      <Button
+        :label="t('connect.invitation.close')"
+        class="mt-5 w-full"
+        @click="$emit('closed')"
+      />
     </div>
-    <Button v-else type="submit" label="Submit" class="mt-5 w-full" />
+    <Button
+      v-else
+      type="submit"
+      :label="t('connect.invitation.submit')"
+      class="mt-5 w-full"
+    />
   </form>
 </template>
 
