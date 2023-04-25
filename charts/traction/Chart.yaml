@@ -16,6 +16,6 @@ maintainers:
     url: https://github.com/Jsyro
 dependencies:
   - name: postgresql
-    version: 10.16.2
+    version: 11.9.13
     repository: https://charts.bitnami.com/bitnami/
     condition: persistence.deployPostgres

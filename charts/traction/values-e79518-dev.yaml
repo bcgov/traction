@@ -27,18 +27,28 @@ acapy:
       memory: 400Mi
   tails:
     enabled: true
+  staticArgs:
+    walletName: mywallet
+
 postgresql:
   fullnameOverride: 'traction-dts'
-  resources:
-    limits:
-      cpu: 200m
-      memory: 820Mi
-    requests:
-      cpu: 120m
-      memory: 400Mi
+  auth:
+    postgresqlUsername: postgres
+  primary:
+    podLabels:
+      backup: 'true'
+      env: dev
+    resources:
+      limits:
+        cpu: 200m
+        memory: 820Mi
+      requests:
+        cpu: 120m
+        memory: 400Mi
+
 tenant_proxy:
   image:
-    tag: "ghcr.io/bcgov/traction-tenant-proxy:sha-4f98641"
-    version: 'sha-4f98641'
+    tag: "ghcr.io/bcgov/traction-tenant-proxy:sha-f678ca9"
+    version: 'sha-f678ca9'
     buildtime: "2023-02-16T21:45:38.860Z"
     pullPolicy: Always

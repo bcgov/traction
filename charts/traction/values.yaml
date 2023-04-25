@@ -195,38 +195,43 @@ postgresql:
   # when overriding global.fullnameOverride, you must override this to match.
   fullnameOverride: "traction"
 
-  image:
-    tag: 12
+  auth:
+    existingSecret: '{{ template "postgresql.secret.name" . }}'
+    secretKeys:
+      adminPasswordKey: postgresql-password
+      userPasswordKey: postgresql-password
+    # -- PostgreSQL Database to create.
+    database: traction
 
   # --  PostgreSQL service configuration
   service:
-    port: 5432
+    ports:
+      postgresql: 5432
 
-  existingSecret: '{{ template "postgresql.secret.name" . }}'
+  primary:
+    # --  Persistent Volume Storage configuration. ref: https://kubernetes.io/docs/user-guide/persistent-volumes
+    persistence:
+      enabled: true
+      size: 1Gi
+      storageClass: netapp-file-standard
 
-  # -- PostgreSQL Database to create.
-  postgresqlDatabase: traction
+    # -- add securityContext (fsGroup, runAsUser). These need to be false for Openshift 4
+    securityContext:
+      enabled: false
 
-  # --  Persistent Volume Storage configuration. ref: https://kubernetes.io/docs/user-guide/persistent-volumes
-  persistence:
-    enabled: true
-    size: 1Gi
-    storageClass: netapp-file-standard
+    containerSecurityContext:
+      enabled: false
 
-  # -- add securityContext (fsGroup, runAsUser). These need to be false for Openshift 4
-  securityContext:
-    enabled: false
+    podSecurityContext:
+      enabled: false
 
-  containerSecurityContext:
-    enabled: false
-
-  resources:
-    limits:
-      cpu: 600m
-      memory: 2600Mi
-    requests:
-      cpu: 300m
-      memory: 1300Mi
+    resources:
+      limits:
+        cpu: 600m
+        memory: 2600Mi
+      requests:
+        cpu: 300m
+        memory: 1300Mi
 
 traction:
   config:
