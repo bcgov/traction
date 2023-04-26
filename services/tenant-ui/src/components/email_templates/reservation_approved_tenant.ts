@@ -1,11 +1,11 @@
 export const RESERVATION_APPROVED_TENANT_TEMPLATE = `
 <p>
   Hello <%= it.body.contactName _%>,<br />
-  Your reservation ID (<%= it.body.reservationId _%>) has been updated.
+  Your Reservation Number (<%= it.body.reservationId _%>) has been updated.
 </p>
 <p>
   We are pleased to inform you that your reservation request is approved. Here
-  is the reservation password that is required to validate your account:
+  is the Reservation Password that is required to validate your account:
   <b><%= it.body.reservationPassword _%></b></p>
 <p>
  Please use this link to validate your account:
@@ -13,7 +13,7 @@ export const RESERVATION_APPROVED_TENANT_TEMPLATE = `
 </p>
 <p>
   After successful validation of your account, a new Wallet ID and Wallet Key
-  will be generated. Please save the newly generated wallet id and wallet key in
+  will be generated. Please save the newly generated Wallet ID and Wallet Key in
   a secure location as we never share this information over email nor do we
   re-issue upon request.
 </p>

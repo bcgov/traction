@@ -55,7 +55,7 @@
     </template>
     <template #footer>
       <hr />
-      Please save your newly generated wallet id and wallet key in a secure
+      Please save your newly generated Wallet ID and Wallet Key in a secure
       location. You will loose the data once this window is closed or you go
       back to sign-in. We will never share these information over the email nor
       do we re-issue upon request.
@@ -91,6 +91,6 @@ const copyWalletId = () => {
  */
 const copyWalletKey = () => {
   navigator.clipboard.writeText(walletKey.value);
-  toast.info('Copied wallet key to clipboard!');
+  toast.info('Copied Wallet Key to clipboard!');
 };
 </script>

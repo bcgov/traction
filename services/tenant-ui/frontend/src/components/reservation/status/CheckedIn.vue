@@ -11,7 +11,7 @@
         The date this occurred was
         <strong> {{ formatDateLong(reservation.updated_at) }}</strong>
         <br />
-        The wallet key cannot be retrieved again once supplied. If you require a
+        The Wallet Key cannot be retrieved again once supplied. If you require a
         new wallet you can go back and start a new reservation.
       </p>
     </template>

@@ -34,12 +34,12 @@
       }}</small>
     </div>
 
-    <!-- Reservation Id -->
+    <!-- Reservation Number -->
     <div class="field mt-5 w-full">
       <label
         for="reservation-id"
         :class="{ 'p-error': $v.reservationId.$invalid && submitted }"
-        >Enter your Reservation ID
+        >Enter your Reservation Number
       </label>
       <InputText
         id="reservation-id"

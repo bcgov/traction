@@ -19,7 +19,7 @@
   </div>
 
   <div class="field w-full">
-    <label for="">Reservation ID</label>
+    <label for="">Reservation Number</label>
     <div class="p-inputgroup">
       <InputText :value="id" type="text" readonly class="w-full" />
       <Button
@@ -47,6 +47,6 @@ const props = defineProps<{
 
 const copyResId = () => {
   navigator.clipboard.writeText(props.id);
-  toast.info('Copied reservation ID to clipboard!');
+  toast.info('Copied Reservation Number to clipboard!');
 };
 </script>
