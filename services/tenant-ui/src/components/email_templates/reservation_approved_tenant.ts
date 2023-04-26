@@ -13,7 +13,7 @@ export const RESERVATION_APPROVED_TENANT_TEMPLATE = `
 </p>
 <p>
   After successful validation of your account, a new Wallet ID and Wallet Key
-  will be generated. Please save the newly generated wallet id and wallet key in
+  will be generated. Please save the newly generated Wallet ID and Wallet Key in
   a secure location as we never share this information over email nor do we
   re-issue upon request.
 </p>
