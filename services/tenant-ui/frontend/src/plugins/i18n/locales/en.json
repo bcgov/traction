@@ -4,7 +4,7 @@
     "dashboard": "Dashboard",
     "login": {
       "id": "Wallet ID",
-      "secret": "Wallet Secret",
+      "secret": "Wallet Key",
       "submit": "Sign-In"
     }
   },
