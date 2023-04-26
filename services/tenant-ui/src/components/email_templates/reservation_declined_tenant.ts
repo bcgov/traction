@@ -1,7 +1,7 @@
 export const RESERVATION_DECLINED_TENANT_TEMPLATE = `
 <p>
   Hello <%= it.body.contactName _%>,<br />
-  Your reservation ID (<%= it.body.reservationId _%>) has been updated.
+  Your Reservation Number (<%= it.body.reservationId _%>) has been updated.
 </p>
 <p>
   Thank you for your interest in joining Traction. We regret to inform you that

@@ -7,11 +7,11 @@
     </template>
     <template #content>
       <p>
-        We have sent a reservation password to your email address on
+        We have sent a Reservation Password to your email address on
         {{ formatDateLong(reservation.updated_at) }}.
       </p>
       <p>
-        Please enter the reservation password below to validate your account.
+        Please enter the Reservation Password below to validate your account.
       </p>
 
       <form @submit.prevent="handleSubmit(!v$.$invalid)">
@@ -39,7 +39,7 @@
         </div>
       </form>
       <p>
-        The reservation password is only valid for 48 hours from the time it was
+        The Reservation Password is only valid for 48 hours from the time it was
         sent to your email address.
       </p>
     </template>
