@@ -8,7 +8,9 @@
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "lint": "eslint --ext .ts,vue --max-warnings=0 .",
-    "lintfix": "eslint --fix --ext .ts,vue ."
+    "lintfix": "eslint --fix --ext .ts,vue .",
+    "i18n:fill-keys": "node ./scripts/i18n/fillKeys.js",
+    "i18n:common-keys": "node ./scripts/i18n/commonKeys.js"
   },
   "dependencies": {
     "@vuelidate/core": "^2.0.1",
@@ -31,6 +33,7 @@
     "vue-toastification": "^2.0.0-rc.5"
   },
   "devDependencies": {
+    "@intlify/eslint-plugin-vue-i18n": "^2.0.0",
     "@typescript-eslint/eslint-plugin": "^5.57.0",
     "@typescript-eslint/parser": "^5.57.0",
     "@vitejs/plugin-vue": "^4.1.0",
