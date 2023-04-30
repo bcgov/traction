@@ -10,7 +10,8 @@
     "eslint:recommended",
     "@vue/typescript/recommended",
     "@vue/prettier",
-    "@vue/eslint-config-prettier"
+    "@vue/eslint-config-prettier",
+    "plugin:@intlify/vue-i18n/recommended"
   ],
   "parserOptions": {
     "ecmaVersion": 2021
@@ -21,6 +22,23 @@
     "@typescript-eslint/ban-types": "off",
     "@typescript-eslint/no-unused-vars": "off",
     "@typescript-eslint/no-empty-function": "off",
-    "vue/multi-word-component-names": "off"
+    "vue/multi-word-component-names": "off",
+    "@intlify/vue-i18n/no-missing-keys": "error",
+    "@intlify/vue-i18n/no-unused-keys": "warn",
+    "@intlify/vue-i18n/no-raw-text": [
+      "error",
+      {
+        "extension": [
+          ".ts",
+          ".vue"
+        ]
+      }
+    ]
+  },
+  "settings": {
+    "vue-i18n": {
+      "localeDir": "./src/locales/*.json",
+      "messageSyntaxVersion": "^9.2.2"
+    }
   }
 }
