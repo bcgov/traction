@@ -1,13 +1,13 @@
 <template>
   <Button
-    :title="t('connect.invitations.regenerate')"
+    :title="$t('connect.invitations.regenerate')"
     icon="pi pi-link"
     class="p-button-rounded p-button-icon-only p-button-text"
     @click="openModal"
   />
   <Dialog
     v-model:visible="displayModal"
-    :header="t('connect.invitations.regenerate')"
+    :header="$t('connect.invitations.regenerate')"
     :modal="true"
     :style="{ minWidth: '400px' }"
     @update:visible="handleClose"
@@ -18,7 +18,7 @@
     <div v-else-if="invitation">
       <!-- Alias -->
       <div class="field w-full">
-        <label for="alias">{{ t('connect.invitations.alias') }}</label>
+        <label for="alias">{{ $t('connect.invitations.alias') }}</label>
         <InputText
           :value="invitation.alias"
           class="w-full"

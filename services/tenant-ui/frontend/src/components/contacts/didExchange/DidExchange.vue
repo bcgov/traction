@@ -1,14 +1,14 @@
 <template>
   <div>
     <Button
-      :label="t('connect.didExchange.didExchange')"
+      :label="$t('connect.didExchange.didExchange')"
       icon="pi pi-arrows-h"
       @click="openModal"
     />
     <Dialog
       v-model:visible="displayModal"
       :style="{ minWidth: '400px' }"
-      :header="t('connect.didExchange.didExchange')"
+      :header="$t('connect.didExchange.didExchange')"
       :modal="true"
       @update:visible="handleClose"
     >

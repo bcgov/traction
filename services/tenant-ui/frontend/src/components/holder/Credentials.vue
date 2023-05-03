@@ -47,7 +47,7 @@
       />
     </template>
     <Column :expander="true" header-style="width: 3rem" />
-    <Column :header="t('credentials.table.actions')" class="action-col">
+    <Column :header="$t('credentials.table.actions')" class="action-col">
       <template #body="{ data }">
         <Button
           title="Accept Credential into Wallet"

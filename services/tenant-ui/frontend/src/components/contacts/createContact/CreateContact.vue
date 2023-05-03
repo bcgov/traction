@@ -3,8 +3,8 @@
     <Button
       :label="
         props.multi
-          ? t('connect.multiUseInvitation.multi')
-          : t('connect.singleUseInvitation.single')
+          ? $t('connect.multiUseInvitation.multi')
+          : $t('connect.singleUseInvitation.single')
       "
       icon="pi pi-user-edit"
       @click="openModal"
@@ -13,8 +13,8 @@
       v-model:visible="displayModal"
       :header="
         props.multi
-          ? t('connect.multiUseInvitation.multiCreate')
-          : t('connect.singleUseInvitation.singleCreate')
+          ? $t('connect.multiUseInvitation.multiCreate')
+          : $t('connect.singleUseInvitation.singleCreate')
       "
       :modal="true"
       :style="{ minWidth: '400px' }"

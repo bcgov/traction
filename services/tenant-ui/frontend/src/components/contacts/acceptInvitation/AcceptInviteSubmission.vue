@@ -6,7 +6,7 @@
         for="invitationJson"
         :class="{ 'p-error': v$.invitationJson.$invalid && submitted }"
       >
-        {{ t('connect.acceptInvitation.invitation') }}
+        {{ $t('connect.acceptInvitation.invitation') }}
       </label>
       <Textarea
         id="invitationJson"
@@ -26,7 +26,7 @@
     <!-- Alias -->
     <div class="field">
       <label for="alias" :class="{ 'p-error': v$.alias.$invalid && submitted }">
-        {{ t('connect.acceptInvitation.alias') }}
+        {{ $t('connect.acceptInvitation.alias') }}
       </label>
       <InputText
         id="alias"
@@ -45,7 +45,7 @@
     </div>
     <Button
       type="submit"
-      :label="t('connect.acceptInvitation.submit')"
+      :label="$t('connect.acceptInvitation.submit')"
       class="mt-5 w-full"
       :disabled="loading"
       :loading="loading"
