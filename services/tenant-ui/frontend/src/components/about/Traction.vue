@@ -24,7 +24,7 @@
     </div>
 
     <div class="col-2">
-      {{ t('about.traction.swagger') }}
+      {{ $t('about.traction.swagger') }}
     </div>
     <div class="col-10">
       <a :href="swaggerUrl" target="_blank">
@@ -33,7 +33,7 @@
     </div>
 
     <div class="col-2">
-      {{ t('about.traction.imageTag') }}
+      {{ $t('about.traction.imageTag') }}
     </div>
     <div class="col-10">
       {{ config.image.tag }}

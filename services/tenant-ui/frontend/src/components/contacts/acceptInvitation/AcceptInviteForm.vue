@@ -6,10 +6,10 @@
           for="inviteUrl"
           :class="{ 'p-error': v$.inviteUrl.$invalid && submitted }"
         >
-          {{ t('connect.acceptInvitation.url') }}
+          {{ $t('connect.acceptInvitation.url') }}
         </label>
         <Button
-          :label="t('connect.acceptInvitation.skipUrl')"
+          :label="$t('connect.acceptInvitation.skipUrl')"
           class="p-button-link flex justify-content-end pt-1 pr-0"
           @click="skipUrl"
         />
@@ -36,7 +36,7 @@
 
     <div class="mb-4">
       <i class="pi pi-info-circle"></i>
-      {{ t('connect.acceptInvitation.supportedUrl') }}
+      {{ $t('connect.acceptInvitation.supportedUrl') }}
       <strong>
         <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
         <code>http://&lt;acapy_url&gt;?c_i=&lt;base64 encode&gt;</code>

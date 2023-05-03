@@ -1,7 +1,7 @@
 <template>
   <Button
     v-if="canRevoke"
-    :title="t('issue.revoke.revokeCred')"
+    :title="$t('issue.revoke.revokeCred')"
     icon="pi pi-times-circle"
     class="p-button-rounded p-button-icon-only p-button-text"
     @click="openModal"
@@ -9,7 +9,7 @@
   <Dialog
     v-model:visible="displayModal"
     :style="{ width: '500px' }"
-    :header="t('issue.revoke.revokeCred')"
+    :header="$t('issue.revoke.revokeCred')"
     :modal="true"
     @update:visible="handleClose"
   >

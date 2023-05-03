@@ -2,13 +2,13 @@
   <div>
     <Button
       :disabled="!isIssuer"
-      :label="t('issue.offer')"
+      :label="$t('issue.offer')"
       icon="pi pi-arrow-up-right"
       @click="openModal"
     />
     <Dialog
       v-model:visible="displayModal"
-      :header="t('issue.offer')"
+      :header="$t('issue.offer')"
       :modal="true"
       :style="{ width: '500px' }"
       @update:visible="handleClose"
