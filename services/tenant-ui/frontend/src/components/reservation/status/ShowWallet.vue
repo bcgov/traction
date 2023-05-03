@@ -87,6 +87,6 @@ const copyWalletId = () => {
  */
 const copyWalletKey = () => {
   navigator.clipboard.writeText(walletKey.value);
-  toast.info('Copied wallet key to clipboard!');
+  toast.info('Copied Wallet Key to clipboard!');
 };
 </script>

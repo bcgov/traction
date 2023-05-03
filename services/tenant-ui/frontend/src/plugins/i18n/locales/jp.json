@@ -4,10 +4,10 @@
     "acaPy": {
       "acaPy": "ACA-Py <JP>",
       "acapyVersion": "ACA-Py version {version} <JP>",
+      "endorser": "Endorser <JP>",
       "info": "Licence information for ACA-Py <JP>",
       "ledger": "Ledger <JP>",
       "ledgerBrowser": "Ledger Browser <JP>",
-      "plugins": "List of Installed Plugins <JP>",
       "tailsServer": "Tails Server <JP>"
     },
     "traction": {
@@ -16,6 +16,7 @@
       "imageVersion": "Image version <JP>",
       "info": "Licence information for TRACTION <JP>",
       "repository": "GitHub repo for Traction <JP>",
+      "swagger": "Swagger UI <JP>",
       "traction": "Traction <JP>",
       "tractionVersion": "Traction version {version} <JP>",
       "uiVersion": "Tenant UI version {version} <JP>",
@@ -142,6 +143,15 @@
   "holder": {
     "holder": "Holder <JP>"
   },
+  "home": {
+    "dashboard": "Dashboard <JP>",
+    "greeting": "Powered by Traction <JP>",
+    "login": {
+      "id": "Wallet ID <JP>",
+      "secret": "Wallet Key <JP>",
+      "submit": "Sign-In <JP>"
+    }
+  },
   "httpStatus": {
     "404": {
       "code": "404 <JP>",
@@ -245,7 +255,6 @@
       "toast": "Reservation Denied for {email} <JP>"
     },
     "denyRequest": "Deny Request <JP>",
-    "emailAddress": "Email Address <JP>",
     "emailSentTo": "An email has also been sent to {0} with the reservation number below. <JP>",
     "enterPassword": "Please enter the reservation password below to validate your account. <JP>",
     "history": "History <JP>",
@@ -259,6 +268,7 @@
     "requests": "Requests <JP>",
     "reservationHistory": "Reservation History <JP>",
     "reservationId": "Reservation ID <JP>",
+    "reservationNumber": "Reservation Number <JP>",
     "reservationPreviouslyCompleted": "This reservation has already previously been completed and the wallet details given out. <JP>",
     "reservations": "Reservations <JP>",
     "reservationValidated": "Your reservation is validated successfully. <JP>",
@@ -267,23 +277,20 @@
     "sentPasswordOn": "We have sent a reservation password to your email address on {0} <JP>",
     "submitNewRequest": "If you think there has been an error you can submit a new request again. <JP>",
     "submitted": "Your request has been submitted successfully.  <JP>",
-    "thankYou": "Thank You! <JP>",
     "thankYou!": "Thank You! <JP>",
     "validated!": "VALIDATED! <JP>",
-    "walletId": "Wallet ID <JP>",
     "walletIdAndWalletKey": "Here is your new Wallet ID and Wallet Key associated with the email address mentioned while registering. <JP>",
     "walletKey": "Wallet Key <JP>",
-    "walletKeyCannotBeRetrieved": "The wallet key cannot be retrieved again once supplied. If you require a new wallet you can go back and start a new reservation. <JP>",
     "walletKeyCannotBeRetrievedAgain": "The wallet key cannot be retrieved again once supplied. If you require a new wallet you can go back and start a new reservation. <JP>"
   },
   "reserve": {
-    "email": "Email Address <JP>",
     "fullName": "Full Name <JP>",
     "phone": "Phone / Mobile <JP>"
   },
   "status": {
     "email": "Enter your Email Address of request <JP>",
     "reservationId": "Enter your Reservation ID <JP>",
+    "reservationNumber": "Enter your Reservation Number <JP>",
     "submit": "Check Status <JP>"
   },
   "tenant": {

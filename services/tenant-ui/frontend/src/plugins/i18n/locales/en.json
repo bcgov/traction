@@ -4,10 +4,10 @@
     "acaPy": {
       "acaPy": "ACA-Py",
       "acapyVersion": "ACA-Py version {version}",
+      "endorser": "Endorser",
       "info": "Licence information for ACA-Py",
       "ledger": "Ledger",
       "ledgerBrowser": "Ledger Browser",
-      "plugins": "List of Installed Plugins",
       "tailsServer": "Tails Server"
     },
     "traction": {
@@ -16,6 +16,7 @@
       "imageVersion": "Image version",
       "info": "Licence information for TRACTION",
       "repository": "GitHub repo for Traction",
+      "swagger": "Swagger UI",
       "traction": "Traction",
       "tractionVersion": "Traction version {version}",
       "uiVersion": "Tenant UI version {version}",
@@ -142,6 +143,15 @@
   "holder": {
     "holder": "Holder"
   },
+  "home": {
+    "dashboard": "Dashboard",
+    "greeting": "Powered by Traction",
+    "login": {
+      "id": "Wallet ID",
+      "secret": "Wallet Key",
+      "submit": "Sign-In"
+    }
+  },
   "httpStatus": {
     "404": {
       "code": "404",
@@ -258,6 +268,7 @@
     "requests": "Requests",
     "reservationHistory": "Reservation History",
     "reservationId": "Reservation ID",
+    "reservationNumber": "Reservation Number",
     "reservationPreviouslyCompleted": "This reservation has already previously been completed and the wallet details given out.",
     "reservations": "Reservations",
     "reservationValidated": "Your reservation is validated successfully.",
@@ -279,6 +290,7 @@
   "status": {
     "email": "Enter your Email Address of request",
     "reservationId": "Enter your Reservation ID",
+    "reservationNumber": "Enter your Reservation Number",
     "submit": "Check Status"
   },
   "tenant": {

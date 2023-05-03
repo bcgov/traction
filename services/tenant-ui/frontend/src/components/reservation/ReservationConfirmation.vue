@@ -18,7 +18,7 @@
   </div>
 
   <div class="field w-full">
-    <label for="">{{ $t('reservation.reservationId') }}</label>
+    <label for="">{{ $t('reservation.reservationNumber') }}</label>
     <div class="p-inputgroup">
       <InputText :value="id" type="text" readonly class="w-full" />
       <Button
@@ -46,6 +46,6 @@ const props = defineProps<{
 
 const copyResId = () => {
   navigator.clipboard.writeText(props.id);
-  toast.info('Copied reservation ID to clipboard!');
+  toast.info('Copied Reservation Number to clipboard!');
 };
 </script>
