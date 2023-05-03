@@ -6,15 +6,10 @@
       </div>
     </div>
     <div class="mt-3 mb-3 font-bold text-2xl">
-      <span class="text-900">{{ t('home.greeting') }}</span>
+      <span class="text-900">{{ $t('dashboard.greeting') }}</span>
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { useI18n } from 'vue-i18n';
-const { t } = useI18n();
-</script>
 
 <style>
 .center-boxed {

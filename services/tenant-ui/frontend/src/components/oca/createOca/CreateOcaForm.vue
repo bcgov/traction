@@ -7,7 +7,8 @@
           <label
             for="selectedCred"
             :class="{ 'p-error': v$.selectedCred.$invalid && submitted }"
-            >Credential ID
+          >
+            {{ $t('oca.credentialId') }}
             <ProgressSpinner v-if="loading" />
           </label>
 
@@ -28,7 +29,7 @@
         </div>
 
         <!-- URL or bundle json -->
-        <div>OCA Bundle association type</div>
+        <div>{{ $t('oca.bundleAssociationType') }}</div>
         <div class="mt-2">
           <RadioButton
             v-model="bundleType"
@@ -37,7 +38,7 @@
             value="url"
             @change="resetBundle"
           />
-          <label for="radioUrl" class="ml-2">URL</label>
+          <label for="radioUrl" class="ml-2">{{ $t('oca.url') }}</label>
         </div>
         <div class="mt-2">
           <RadioButton
@@ -47,7 +48,9 @@
             value="json"
             @change="resetBundle"
           />
-          <label for="radioJson" class="ml-2">Stored Bundle JSON</label>
+          <label for="radioJson" class="ml-2">{{
+            $t('oca.storedBundleJson')
+          }}</label>
         </div>
 
         <!-- Bundle URL -->
@@ -55,7 +58,7 @@
           <label
             for="bundleUrl"
             :class="{ 'p-error': v$.bundleUrl.$invalid && submitted }"
-            >OCA Bundle URL*</label
+            >{{ $t('oca.bundleUrl') }}</label
           >
           <InputText
             id="bundleUrl"
@@ -77,7 +80,7 @@
 
         <!-- Bundle JSON -->
         <div v-else class="mt-3">
-          <span>OCA Bundle JSON</span>
+          <span>{{ $t('oca.bundleJson') }}</span>
           <JsonEditorVue
             ref="jsonEditorVueRef"
             v-model="bundleJson"
@@ -116,7 +119,6 @@ import { useGovernanceStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other imports
 import JsonEditorVue from 'json-editor-vue';
-import { isJsonString } from '@/helpers';
 
 const toast = useToast();
 

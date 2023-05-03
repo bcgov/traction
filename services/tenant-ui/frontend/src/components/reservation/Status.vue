@@ -6,8 +6,8 @@
   >
     <!-- Email -->
     <div class="field mt-5 w-full">
-      <label for="email" :class="{ 'p-error': $v.email.$invalid && submitted }"
-        >Enter your Email Address of request
+      <label for="email" :class="{ 'p-error': $v.email.$invalid && submitted }">
+        {{ $t('status.email') }}
       </label>
       <InputText
         id="email"
@@ -39,11 +39,15 @@
       <label
         for="reservation-id"
         :class="{ 'p-error': $v.reservationId.$invalid && submitted }"
-        >Enter your Reservation Number
+      >
+        {{ $t('status.reservationNumber') }}
       </label>
       <InputText
         id="reservation-id"
         v-model="$v.reservationId.$model"
+        type="text"
+        option-label="label"
+        autocomplete="reservation-id"
         name="reservationId"
         class="w-full"
         :class="{
@@ -60,7 +64,7 @@
     <Button
       type="submit"
       class="w-full my-2"
-      label="Check Status"
+      :label="$t('status.submit')"
       :loading="loading"
     />
   </form>

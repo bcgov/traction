@@ -1,112 +1,326 @@
 {
-  "home": {
-    "greeting": "トラクションを搭載",
+  "about": {
+    "about": "About <JP>",
+    "acaPy": {
+      "acaPy": "ACA-Py <JP>",
+      "acapyVersion": "ACA-Py version {version} <JP>",
+      "endorser": "Endorser <JP>",
+      "info": "Licence information for ACA-Py <JP>",
+      "ledger": "Ledger <JP>",
+      "ledgerBrowser": "Ledger Browser <JP>",
+      "tailsServer": "Tails Server <JP>"
+    },
+    "traction": {
+      "imageCreated": "Image created at <JP>",
+      "imageTag": "Image tag <JP>",
+      "imageVersion": "Image version <JP>",
+      "info": "Licence information for TRACTION <JP>",
+      "repository": "GitHub repo for Traction <JP>",
+      "swagger": "Swagger UI <JP>",
+      "traction": "Traction <JP>",
+      "tractionVersion": "Traction version {version} <JP>",
+      "uiVersion": "Tenant UI version {version} <JP>",
+      "url": "Traction URL <JP>"
+    }
+  },
+  "admin": {
+    "adminKey": "Admin Key <JP>",
+    "adminName": "Admin Name <JP>",
+    "error": "ERROR <JP>",
+    "orSignInWith": "Or Sign In With <JP>"
+  },
+  "common": {
+    "actions": "Actions <JP>",
+    "alias": "Alias <JP>",
+    "contactName": "Contact Name <JP>",
+    "credentialId": "Credential ID <JP>",
+    "credentials": "Credentials <JP>",
+    "developer": "Developer <JP>",
+    "emailAddress": "Email Address <JP>",
+    "endorser": "Endorser <JP>",
+    "invitationUrl": "Invitation URL <JP>",
+    "json": "JSON <JP>",
+    "loading": "Loading data. Please wait... <JP>",
+    "logout": "Logout <JP>",
+    "noRecordsFound": "No Records Found <JP>",
+    "profile": "Profile <JP>",
+    "refreshTable": "Refresh Table <JP>",
+    "request": "Request <JP>",
+    "settings": "`Settings` <JP>",
+    "status": "Status <JP>",
+    "tenantName": "Tenant Name <JP>",
+    "tenantReason": "Tenant Reason <JP>",
+    "walletId": "Wallet ID <JP>"
+  },
+  "configuration": {
+    "configuration": "Configuration <JP>",
+    "credentialDefinitions": {
+      "storage": "Credential Definition Storage <JP>"
+    },
+    "oca": {
+      "bundleAssociationType": "OCA Bundle association type <JP>",
+      "bundleJson": "OCA Bundle JSON <JP>",
+      "bundleUrl": "OCA Bundle URL* <JP>",
+      "oca": "OCA <JP>",
+      "storedBundleJson": "Stored Bundle JSON <JP>",
+      "url": "URL <JP>"
+    },
+    "presentationTemplates": {
+      "templates": "Presentation Templates <JP>"
+    },
+    "schemas": {
+      "copy": "Copy Schema <JP>",
+      "create": "Create Schema <JP>",
+      "storage": "Schema Storage <JP>"
+    },
+    "schemasCreds": {
+      "credentialDefinitions": "Stored Credential Definitions <JP>",
+      "schemas": "Stored Schemas <JP>"
+    }
+  },
+  "connect": {
+    "acceptInvitation": {
+      "accept": "Accept Invitation <JP>",
+      "invitation": "Invitation <JP>",
+      "skipUrl": "Skip URL and use JSON <JP>",
+      "submit": "Accept <JP>",
+      "supportedUrl": "Supported URL format is <JP>"
+    },
+    "connections": {
+      "connections": "Connections <JP>",
+      "delete": "Delete Connection <JP>",
+      "edit": "Edit Connection <JP>",
+      "search": "Search Connections <JP>"
+    },
+    "didExchange": {
+      "did": "DID <JP>",
+      "didExchange": "DID Exchange <JP>"
+    },
+    "edit": {
+      "lastUpdated": "Connection Last Updated: {0} <JP>"
+    },
+    "invitation": {
+      "alias": "Contact Alias <JP>",
+      "close": "Close <JP>",
+      "submit": "Submit <JP>"
+    },
+    "invitations": {
+      "create": "Create Invitation <JP>",
+      "invitations": "Invitations <JP>",
+      "regenerate": "Regenerate Invitation <JP>",
+      "search": "Search Invitations <JP>"
+    },
+    "message": {
+      "messageContact": "Chat with {0} <JP>"
+    },
+    "multiUseInvitation": {
+      "multi": "Multi Use Invitation <JP>",
+      "multiCreate": "Create Multi Use Invitation <JP>"
+    },
+    "singleUseInvitation": {
+      "single": "Single Use Invitation <JP>",
+      "singleCreate": "Create Single Use Invitation <JP>"
+    },
+    "table": {
+      "createdAt": "Created At <JP>",
+      "invitationMode": "Invitation Mode <JP>",
+      "theirLabel": "Their Label <JP>"
+    }
+  },
+  "credentials": {
+    "search": "Search Credentials <JP>",
+    "table": {
+      "connection": "Connection <JP>",
+      "credential": "Credential <JP>",
+      "lastUpdate": "Last Update <JP>"
+    }
+  },
+  "dashboard": {
+    "backToDashboard": "Back to Dashboard <JP>",
     "dashboard": "Dashboard <JP>",
+    "greeting": "Powered by Traction <JP>"
+  },
+  "holder": {
+    "holder": "Holder <JP>"
+  },
+  "home": {
+    "dashboard": "Dashboard <JP>",
+    "greeting": "Powered by Traction <JP>",
     "login": {
       "id": "Wallet ID <JP>",
       "secret": "Wallet Key <JP>",
       "submit": "Sign-In <JP>"
     }
   },
-  "user": {
-    "profile": "Profile <JP>",
-    "settings": "Settings <JP>",
-    "logout": "Logout <JP>"
-  },
-  "contact": {
-    "contacts": "Contacts <JP>",
-    "create": "Create Contact <JP>",
-    "accept": "Accept Invitation <JP>"
+  "httpStatus": {
+    "404": {
+      "code": "404 <JP>",
+      "status": "Page Not Found <JP>"
+    }
   },
   "issue": {
-    "issuance": "Issuance <JP>",
+    "attributes": "Attributes* <JP>",
+    "connection": "Connection:  <JP>",
+    "credentialDefinitionTag": "Credential Definition Tag* <JP>",
+    "credentialFieldValues": "Credential Field Values <JP>",
     "credentials": "Issued/Offered Credentials <JP>",
-    "offer": "Offer Credential <JP>",
+    "credentialValue": "Credential Value <JP>",
     "delete": {
-      "removeExchange": "Remove Credential Exchange Record <JP>",
       "confirm": "Are you sure you want to DELETE this credential exchange record? <JP>",
+      "removeExchange": "Remove Credential Exchange Record <JP>",
       "success": "Credential exchange record deleted <JP>"
     },
+    "id": "ID:  <JP>",
+    "issuance": "Issuance <JP>",
+    "offer": "Offer Credential <JP>",
+    "revocationEnabled": "Revocation Enabled <JP>",
+    "revocationId": "Revocation ID:  <JP>",
+    "revocationRegistry": "Revocation Registry:  <JP>",
+    "revocationRegistrySize": "Revocation Registry Size <JP>",
     "revoke": {
-      "revokeCred": "Revoke Credential <JP>",
-      "comment": "Optional Comment <JP>",
       "action": "Revoke <JP>",
+      "comment": "Optional Comment <JP>",
       "confirm": "Are you sure you want to REVOKE this credential? <JP>",
+      "revokeCred": "Revoke Credential <JP>",
       "success": "Credential revoked <JP>"
-    }
-  },
-  "verify": {
-    "verification": "Verification <JP>",
-    "verifications": "Verifications <JP>",
-    "createRequest": "Create Presentation Requests <JP>"
-  },
-  "holder": {
-    "holder": "Holder <JP>",
-    "credentials": "Credentials <JP>"
-  },
-  "configuration": {
-    "configuration": "Configuration <JP>",
-    "schemasCreds": {
-      "schemas": "Stored Schemas <JP>",
-      "create": "Create Schema <JP>",
-      "copy": "Copy Schema <JP>"
     },
-    "presentationTemplates": {
-      "templates": "Presentation Templates <JP>"
+    "schema": "Schema <JP>",
+    "schemaId": "Schema Id* <JP>",
+    "schemaName": "Schema Name* <JP>",
+    "schemaVersion": "Schema Version* <JP>",
+    "version": "Version: <JP>"
+  },
+  "layout": {
+    "header": {
+      "toggleSideMenu": "Toggle the side menu <JP>"
     }
+  },
+  "login": {
+    "backToSignIn": "Go Back to Sign-in <JP>",
+    "checkStatus": "Check Status! <JP>",
+    "createRequest": "Create Request! <JP>",
+    "noAccount": "Don't have an account? <JP>",
+    "submit": "Sign-In <JP>",
+    "submittedRequest": "Already Submitted Request? <JP>",
+    "walletSecret": "Wallet Secret <JP>"
   },
   "messages": {
+    "connectonId": "Connection ID <JP>",
+    "createMessage": "Create a Message <JP>",
+    "messageContent": "Message Content <JP>",
     "messages": "Messages <JP>"
   },
-  "tenants": {
-    "tenants": "Tenants <JP>",
-    "checkIn": "Check-In Tenant <JP>"
+  "profile": {
+    "config:": "Config: <JP>",
+    "connectionNotActiveYet": "Connection not Active yet, refresh or come back later. <JP>",
+    "connectTenantToEndorser": "Connect Tenant To Endorser <JP>",
+    "createdAt": "Created at <JP>",
+    "endorserConnection": "Endorser Connection <JP>",
+    "endorserInfo": "Endorser Info <JP>",
+    "imageUrl": "Image URL <JP>",
+    "issuer": "Issuer <JP>",
+    "name": "Name <JP>",
+    "noEndorserInfoFound": "No Endorser info found, issuance disabled <JP>",
+    "publicDid": "Public DID <JP>",
+    "registerPublicDid": "Register a public DID <JP>",
+    "state": "State: {0} <JP>",
+    "tenantId": "Tenant ID <JP>",
+    "tenantNotConnectedToEndorserYet": "Tenant not connected to Endorser yet <JP>",
+    "updatedAt": "Updated at <JP>",
+    "walletLabel": "Wallet Label <JP>",
+    "webHookKey": "WebHook Key <JP>",
+    "webhooks": "Webhooks <JP>",
+    "webHookUrl": "WebHook URL <JP>"
+  },
+  "qrCode": {
+    "noContentFound": "No content found <JP>"
   },
   "reservations": {
-    "reservations": "Reservations <JP>",
-    "reservationHistory": "Reservation History <JP>",
-    "current": "Current <JP>",
-    "history": "History <JP>",
-    "requests": "Requests <JP>",
-    "contactEmail": "Contact Email <JP>",
-    "contactName": "Contact Name <JP>",
-    "contactPhone": "Contact Phone <JP>",
-    "tenantName": "Tenant Name <JP>",
-    "tenantReason": "Tenant Reason <JP>",
-    "approveRequest": "Approve Request <JP>",
-    "denyRequest": "Deny Request <JP>",
+    "alreadyComplete": "Already Complete <JP>",
+    "approved!": "APPROVED! <JP>",
     "approved": {
+      "text": "The Check-In password has been generated. An email has been sent to {email} <JP>",
       "title": "Reservation Approved <JP>",
-      "toast": "Reservation Approved for {email} <JP>",
-      "text": "The Check-In password has been generated. An email has been sent to {email} <JP>"
+      "toast": "Reservation Approved for {email} <JP>"
     },
+    "approveRequest": "Approve Request <JP>",
+    "checkJunkFolder": "(Please check your junk/spam folder before contacting us, as it is very common to have the email delivery problems because of automated filters.) <JP>",
+    "contactEmail": "Contact Email <JP>",
+    "contactPhone": "Contact Phone <JP>",
+    "current": "Current <JP>",
+    "dateOccurred": "The date this occurred was {0} <JP>",
+    "declined!": "DECLINED! <JP>",
     "denied": {
-      "toast": "Reservation Denied for {email}",
-      "reasonText": "Reason for Denial (Optional) <JP>"
+      "reasonText": "Reason for Denial (Optional) <JP>",
+      "toast": "Reservation Denied for {email} <JP>"
+    },
+    "denyRequest": "Deny Request <JP>",
+    "emailSentTo": "An email has also been sent to {0} with the reservation number below. <JP>",
+    "enterPassword": "Please enter the reservation password below to validate your account. <JP>",
+    "history": "History <JP>",
+    "incorrectEmailOrReservationId": "Incorrect Email or Reservation ID. Please try again. <JP>",
+    "otp": "The password is shown below one-time if you need to communicate it via other means <JP>",
+    "passwordValid48Hours": "The reservation password is only valid for 48 hours from the time it was sent to your email address. <JP>",
+    "pending!": "PENDING! <JP>",
+    "requestDeclined": "We regret to inform you that your request has been declined. <JP>",
+    "requestProcessingTime": "It ususally takes 3-4 business days to process a request. Thanks for your patience. <JP>",
+    "requestReservedOn": "Your request has been received on {0} <JP>",
+    "requests": "Requests <JP>",
+    "reservationHistory": "Reservation History <JP>",
+    "reservationId": "Reservation ID <JP>",
+    "reservationNumber": "Reservation Number <JP>",
+    "reservationPreviouslyCompleted": "This reservation has already previously been completed and the wallet details given out. <JP>",
+    "reservations": "Reservations <JP>",
+    "reservationValidated": "Your reservation is validated successfully. <JP>",
+    "resonForRejection": "Reason for rejection <JP>",
+    "saveWalletIdAndWalletKey": "Please save your newly generated wallet id and wallet key in a secure location. You will loose the data once this window is closed or you go back to sign-in. We will never share these information over the email nor do we re-issue upon request. <JP>",
+    "sentPasswordOn": "We have sent a reservation password to your email address on {0} <JP>",
+    "submitNewRequest": "If you think there has been an error you can submit a new request again. <JP>",
+    "submitted": "Your request has been submitted successfully.  <JP>",
+    "thankYou!": "Thank You! <JP>",
+    "validated!": "VALIDATED! <JP>",
+    "walletIdAndWalletKey": "Here is your new Wallet ID and Wallet Key associated with the email address mentioned while registering. <JP>",
+    "walletKey": "Wallet Key <JP>",
+    "walletKeyCannotBeRetrievedAgain": "The wallet key cannot be retrieved again once supplied. If you require a new wallet you can go back and start a new reservation. <JP>"
+  },
+  "reserve": {
+    "fullName": "Full Name <JP>",
+    "phone": "Phone / Mobile <JP>"
+  },
+  "status": {
+    "email": "Enter your Email Address of request <JP>",
+    "reservationId": "Enter your Reservation ID <JP>",
+    "reservationNumber": "Enter your Reservation Number <JP>",
+    "submit": "Check Status <JP>"
+  },
+  "tenant": {
+    "pofile": {
+      "tenantProfile": "Tenant Profile <JP>"
+    },
+    "settings": {
+      "tenantWalletSettings": "Tenant Wallet Settings <JP>"
     }
   },
-  "about": {
-    "about": "About <JP>",
-    "traction": {
-      "traction": "Traction <JP>",
-      "info": "Licence information for TRACTION <JP>",
-      "tractionVersion": "Traction version {version} <JP>",
-      "uiVersion": "Tenant UI version {version} <JP>",
-      "url": "Traction URL <JP>",
-      "swagger": "Swagger UI <JP>",
-      "imageTag": "Image tag <JP>",
-      "imageVersion": "Image version <JP>",
-      "imageCreated": "Image created at <JP>",
-      "repository": "GitHub repo for Traction <JP>"
-    },
-    "acaPy": {
-      "acaPy": "ACA-Py <JP>",
-      "info": "Licence information for ACA-Py <JP>",
-      "acapyVersion": "ACA-Py version {version} <JP>",
-      "ledger": "Ledger <JP>",
-      "ledgerBrowser": "Ledger Browser <JP>",
-      "tailsServer": "Tails Server <JP>",
-      "endorser": "Endorser <JP>"
-    }
+  "tenants": {
+    "checkIn": "Check-In Tenant <JP>",
+    "tenants": "Tenants <JP>"
+  },
+  "verifier": {
+    "attributeRestrictionsSatisfied": "All attribute restrictions were satisfied <JP>",
+    "comingSoon": "Coming Soon <JP>",
+    "contactAlias: ": "Contact Alias:  <JP>",
+    "credentialHeldBy": "Credential is held by <JP>",
+    "credentialTamperFree ": "Credential is tamper-free  <JP>",
+    "credentialValid": "Credential is valid <JP>",
+    "presentationShouldHaveStatus": "This is not the component you are looking for, presentation should have status='verified' <JP>",
+    "presentationTemplates": "Presentation Templates <JP>",
+    "status: ": "Status <JP>",
+    "updatedAt": "Updated at <JP>",
+    "verifications": "Verifications <JP>"
+  },
+  "verify": {
+    "createRequest": "Create Presentation Requests <JP>",
+    "verification": "Verification <JP>",
+    "verifications": "Verifications <JP>"
   }
 }

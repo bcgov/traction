@@ -4,6 +4,7 @@
       <ProgressSpinner v-if="loading" />
       <span v-if="tenant">{{ tenant.tenant_name }}</span>
     </h1>
+    <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
     <h1 class="sidebar-app-title small">T</h1>
     <PanelMenu :model="items" class="mt-5" />
   </div>
@@ -24,17 +25,17 @@ const { tenant, loading } = storeToRefs(useTenantStore());
 
 const items = ref([
   {
-    label: () => t('home.dashboard'),
+    label: () => t('dashboard.dashboard'),
     icon: 'pi pi-fw pi-chart-bar',
     to: { name: 'Dashboard' },
   },
   {
-    label: () => t('connect.connections'),
+    label: () => t('connect.connections.connections'),
     icon: 'pi pi-fw pi-users',
     items: [
       {
         // Icons are manadatory for mobile layout
-        label: () => t('connect.connections'),
+        label: () => t('connect.connections.connections'),
         icon: 'pi pi-fw pi-users',
         to: { name: 'MyContacts' },
       },
@@ -69,20 +70,17 @@ const items = ref([
     icon: 'pi pi-fw pi-file',
     items: [
       {
-        // label: () => t('configuration.schemasCreds.schemas'),
-        label: 'Schema Storage',
+        label: () => t('configuration.schemas.storage'),
         icon: 'pi pi-fw pi-book',
         to: { name: 'Schemas' },
       },
       {
-        // label: () => t('configuration.schemasCreds.schemas'),
-        label: 'Cred Def Storage',
+        label: () => t('configuration.credentialDefinitions.storage'),
         icon: 'pi pi-fw pi-id-card',
         to: { name: 'CredentialDefinitions' },
       },
       {
-        // label: () => t('configuration.oca.oca'),
-        label: 'OCA',
+        label: () => t('configuration.oca.oca'),
         icon: 'pi pi-fw pi-compass',
         to: { name: 'OCA' },
       },

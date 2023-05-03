@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-0">{{ t('reservations.reservations') }}</h3>
+  <h3 class="mt-0">{{ $t('reservations.reservations') }}</h3>
 
   <DataTable
     v-model:filters="filter"
@@ -30,8 +30,8 @@
         />
       </div>
     </template>
-    <template #empty> No records found. </template>
-    <template #loading> Loading data. Please wait... </template>
+    <template #empty>{{ $t('common.noRecordsFound') }}</template>
+    <template #loading>{{ $t('common.loading') }}</template>
     <Column :sortable="false" header="Actions">
       <template #body="{ data }">
         <ApproveReservation
@@ -62,15 +62,14 @@
   <!-- Post-approve dialog -->
   <Dialog
     v-model:visible="displayModal"
-    :header="t('reservations.approved.title')"
+    :header="$t('reservations.approved.title')"
     :modal="true"
   >
     <p>
-      {{ t('reservations.approved.text', { email: approvedEmail }) }}
+      {{ $t('reservations.approved.text', { email: approvedEmail }) }}
     </p>
     <p>
-      The password is shown below one-time if you need to communicate it via
-      other means <br />
+      {{ $t('reservations.otp') }} <br />
       <strong>{{ approvedPassword }}</strong>
     </p>
   </Dialog>
@@ -87,7 +86,6 @@ import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import { FilterMatchMode } from 'primevue/api';
 import { useToast } from 'vue-toastification';
-import { useI18n } from 'vue-i18n';
 // State
 import { useInnkeeperTenantsStore } from '@/store';
 import { storeToRefs } from 'pinia';
@@ -98,8 +96,6 @@ import { TABLE_OPT } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 
 const toast = useToast();
-const { t } = useI18n();
-
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
 const { loading, currentReservations } = storeToRefs(
   useInnkeeperTenantsStore()

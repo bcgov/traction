@@ -1,112 +1,326 @@
 {
-  "home": {
-    "greeting": "Propulsé par Traction",
+  "about": {
+    "about": "About <FR>",
+    "acaPy": {
+      "acaPy": "ACA-Py <FR>",
+      "acapyVersion": "ACA-Py version {version} <FR>",
+      "endorser": "Endorser <FR>",
+      "info": "Licence information for ACA-Py <FR>",
+      "ledger": "Ledger <FR>",
+      "ledgerBrowser": "Ledger Browser <FR>",
+      "tailsServer": "Tails Server <FR>"
+    },
+    "traction": {
+      "imageCreated": "Image created at <FR>",
+      "imageTag": "Image tag <FR>",
+      "imageVersion": "Image version <FR>",
+      "info": "Licence information for TRACTION <FR>",
+      "repository": "GitHub repo for Traction <FR>",
+      "swagger": "Swagger UI <FR>",
+      "traction": "Traction <FR>",
+      "tractionVersion": "Traction version {version} <FR>",
+      "uiVersion": "Tenant UI version {version} <FR>",
+      "url": "Traction URL <FR>"
+    }
+  },
+  "admin": {
+    "adminKey": "Admin Key <FR>",
+    "adminName": "Admin Name <FR>",
+    "error": "ERROR <FR>",
+    "orSignInWith": "Or Sign In With <FR>"
+  },
+  "common": {
+    "actions": "Actions <FR>",
+    "alias": "Alias <FR>",
+    "contactName": "Contact Name <FR>",
+    "credentialId": "Credential ID <FR>",
+    "credentials": "Credentials <FR>",
+    "developer": "Developer <FR>",
+    "emailAddress": "Email Address <FR>",
+    "endorser": "Endorser <FR>",
+    "invitationUrl": "Invitation URL <FR>",
+    "json": "JSON <FR>",
+    "loading": "Loading data. Please wait... <FR>",
+    "logout": "Logout <FR>",
+    "noRecordsFound": "No Records Found <FR>",
+    "profile": "Profile <FR>",
+    "refreshTable": "Refresh Table <FR>",
+    "request": "Request <FR>",
+    "settings": "`Settings` <FR>",
+    "status": "Status <FR>",
+    "tenantName": "Tenant Name <FR>",
+    "tenantReason": "Tenant Reason <FR>",
+    "walletId": "Wallet ID <FR>"
+  },
+  "configuration": {
+    "configuration": "Configuration <FR>",
+    "credentialDefinitions": {
+      "storage": "Credential Definition Storage <FR>"
+    },
+    "oca": {
+      "bundleAssociationType": "OCA Bundle association type <FR>",
+      "bundleJson": "OCA Bundle JSON <FR>",
+      "bundleUrl": "OCA Bundle URL* <FR>",
+      "oca": "OCA <FR>",
+      "storedBundleJson": "Stored Bundle JSON <FR>",
+      "url": "URL <FR>"
+    },
+    "presentationTemplates": {
+      "templates": "Presentation Templates <FR>"
+    },
+    "schemas": {
+      "copy": "Copy Schema <FR>",
+      "create": "Create Schema <FR>",
+      "storage": "Schema Storage <FR>"
+    },
+    "schemasCreds": {
+      "credentialDefinitions": "Stored Credential Definitions <FR>",
+      "schemas": "Stored Schemas <FR>"
+    }
+  },
+  "connect": {
+    "acceptInvitation": {
+      "accept": "Accept Invitation <FR>",
+      "invitation": "Invitation <FR>",
+      "skipUrl": "Skip URL and use JSON <FR>",
+      "submit": "Accept <FR>",
+      "supportedUrl": "Supported URL format is <FR>"
+    },
+    "connections": {
+      "connections": "Connections <FR>",
+      "delete": "Delete Connection <FR>",
+      "edit": "Edit Connection <FR>",
+      "search": "Search Connections <FR>"
+    },
+    "didExchange": {
+      "did": "DID <FR>",
+      "didExchange": "DID Exchange <FR>"
+    },
+    "edit": {
+      "lastUpdated": "Connection Last Updated: {0} <FR>"
+    },
+    "invitation": {
+      "alias": "Contact Alias <FR>",
+      "close": "Close <FR>",
+      "submit": "Submit <FR>"
+    },
+    "invitations": {
+      "create": "Create Invitation <FR>",
+      "invitations": "Invitations <FR>",
+      "regenerate": "Regenerate Invitation <FR>",
+      "search": "Search Invitations <FR>"
+    },
+    "message": {
+      "messageContact": "Chat with {0} <FR>"
+    },
+    "multiUseInvitation": {
+      "multi": "Multi Use Invitation <FR>",
+      "multiCreate": "Create Multi Use Invitation <FR>"
+    },
+    "singleUseInvitation": {
+      "single": "Single Use Invitation <FR>",
+      "singleCreate": "Create Single Use Invitation <FR>"
+    },
+    "table": {
+      "createdAt": "Created At <FR>",
+      "invitationMode": "Invitation Mode <FR>",
+      "theirLabel": "Their Label <FR>"
+    }
+  },
+  "credentials": {
+    "search": "Search Credentials <FR>",
+    "table": {
+      "connection": "Connection <FR>",
+      "credential": "Credential <FR>",
+      "lastUpdate": "Last Update <FR>"
+    }
+  },
+  "dashboard": {
+    "backToDashboard": "Back to Dashboard <FR>",
     "dashboard": "Dashboard <FR>",
+    "greeting": "Powered by Traction <FR>"
+  },
+  "holder": {
+    "holder": "Holder <FR>"
+  },
+  "home": {
+    "dashboard": "Dashboard <FR>",
+    "greeting": "Powered by Traction <FR>",
     "login": {
       "id": "Wallet ID <FR>",
       "secret": "Wallet Key <FR>",
       "submit": "Sign-In <FR>"
     }
   },
-  "user": {
-    "profile": "Profile <FR>",
-    "settings": "Settings <FR>",
-    "logout": "Logout <FR>"
-  },
-  "contact": {
-    "contacts": "Contacts <FR>",
-    "create": "Create Contact <FR>",
-    "accept": "Accept Invitation <FR>"
+  "httpStatus": {
+    "404": {
+      "code": "404 <FR>",
+      "status": "Page Not Found <FR>"
+    }
   },
   "issue": {
-    "issuance": "Issuance <FR>",
+    "attributes": "Attributes* <FR>",
+    "connection": "Connection:  <FR>",
+    "credentialDefinitionTag": "Credential Definition Tag* <FR>",
+    "credentialFieldValues": "Credential Field Values <FR>",
     "credentials": "Issued/Offered Credentials <FR>",
-    "offer": "Offer Credential <FR>",
+    "credentialValue": "Credential Value <FR>",
     "delete": {
-      "removeExchange": "Remove Credential Exchange Record <FR>",
       "confirm": "Are you sure you want to DELETE this credential exchange record? <FR>",
+      "removeExchange": "Remove Credential Exchange Record <FR>",
       "success": "Credential exchange record deleted <FR>"
     },
+    "id": "ID:  <FR>",
+    "issuance": "Issuance <FR>",
+    "offer": "Offer Credential <FR>",
+    "revocationEnabled": "Revocation Enabled <FR>",
+    "revocationId": "Revocation ID:  <FR>",
+    "revocationRegistry": "Revocation Registry:  <FR>",
+    "revocationRegistrySize": "Revocation Registry Size <FR>",
     "revoke": {
-      "revokeCred": "Revoke Credential <FR>",
-      "comment": "Optional Comment <FR>",
       "action": "Revoke <FR>",
+      "comment": "Optional Comment <FR>",
       "confirm": "Are you sure you want to REVOKE this credential? <FR>",
+      "revokeCred": "Revoke Credential <FR>",
       "success": "Credential revoked <FR>"
-    }
-  },
-  "verify": {
-    "verification": "Verification <FR>",
-    "verifications": "Verifications <FR>",
-    "createRequest": "Create Presentation Requests <FR>"
-  },
-  "holder": {
-    "holder": "Holder <FR>",
-    "credentials": "Credentials <FR>"
-  },
-  "configuration": {
-    "configuration": "Configuration <FR>",
-    "schemasCreds": {
-      "schemas": "Stored Schemas <FR>",
-      "create": "Create Schema <FR>",
-      "copy": "Copy Schema <FR>"
     },
-    "presentationTemplates": {
-      "templates": "Presentation Templates <FR>"
+    "schema": "Schema <FR>",
+    "schemaId": "Schema Id* <FR>",
+    "schemaName": "Schema Name* <FR>",
+    "schemaVersion": "Schema Version* <FR>",
+    "version": "Version: <FR>"
+  },
+  "layout": {
+    "header": {
+      "toggleSideMenu": "Toggle the side menu <FR>"
     }
+  },
+  "login": {
+    "backToSignIn": "Go Back to Sign-in <FR>",
+    "checkStatus": "Check Status! <FR>",
+    "createRequest": "Create Request! <FR>",
+    "noAccount": "Don't have an account? <FR>",
+    "submit": "Sign-In <FR>",
+    "submittedRequest": "Already Submitted Request? <FR>",
+    "walletSecret": "Wallet Secret <FR>"
   },
   "messages": {
+    "connectonId": "Connection ID <FR>",
+    "createMessage": "Create a Message <FR>",
+    "messageContent": "Message Content <FR>",
     "messages": "Messages <FR>"
   },
-  "tenants": {
-    "tenants": "Tenants <FR>",
-    "checkIn": "Check-In Tenant <FR>"
+  "profile": {
+    "config:": "Config: <FR>",
+    "connectionNotActiveYet": "Connection not Active yet, refresh or come back later. <FR>",
+    "connectTenantToEndorser": "Connect Tenant To Endorser <FR>",
+    "createdAt": "Created at <FR>",
+    "endorserConnection": "Endorser Connection <FR>",
+    "endorserInfo": "Endorser Info <FR>",
+    "imageUrl": "Image URL <FR>",
+    "issuer": "Issuer <FR>",
+    "name": "Name <FR>",
+    "noEndorserInfoFound": "No Endorser info found, issuance disabled <FR>",
+    "publicDid": "Public DID <FR>",
+    "registerPublicDid": "Register a public DID <FR>",
+    "state": "State: {0} <FR>",
+    "tenantId": "Tenant ID <FR>",
+    "tenantNotConnectedToEndorserYet": "Tenant not connected to Endorser yet <FR>",
+    "updatedAt": "Updated at <FR>",
+    "walletLabel": "Wallet Label <FR>",
+    "webHookKey": "WebHook Key <FR>",
+    "webhooks": "Webhooks <FR>",
+    "webHookUrl": "WebHook URL <FR>"
+  },
+  "qrCode": {
+    "noContentFound": "No content found <FR>"
   },
   "reservations": {
-    "reservations": "Reservations <FR>",
-    "reservationHistory": "Reservation History <FR>",
-    "current": "Current <FR>",
-    "history": "History <FR>",
-    "requests": "Requests <FR>",
-    "contactEmail": "Contact Email <FR>",
-    "contactName": "Contact Name <FR>",
-    "contactPhone": "Contact Phone <FR>",
-    "tenantName": "Tenant Name <FR>",
-    "tenantReason": "Tenant Reason <FR>",
-    "approveRequest": "Approve Request <FR>",
-    "denyRequest": "Deny Request <FR>",
+    "alreadyComplete": "Already Complete <FR>",
+    "approved!": "APPROVED! <FR>",
     "approved": {
+      "text": "The Check-In password has been generated. An email has been sent to {email} <FR>",
       "title": "Reservation Approved <FR>",
-      "toast": "Reservation Approved for {email} <FR>",
-      "text": "The Check-In password has been generated. An email has been sent to {email} <FR>"
+      "toast": "Reservation Approved for {email} <FR>"
     },
+    "approveRequest": "Approve Request <FR>",
+    "checkJunkFolder": "(Please check your junk/spam folder before contacting us, as it is very common to have the email delivery problems because of automated filters.) <FR>",
+    "contactEmail": "Contact Email <FR>",
+    "contactPhone": "Contact Phone <FR>",
+    "current": "Current <FR>",
+    "dateOccurred": "The date this occurred was {0} <FR>",
+    "declined!": "DECLINED! <FR>",
     "denied": {
-      "toast": "Reservation Denied for {email} <FR> <FR>",
-      "reasonText": "Reason for Denial (Optional)"
+      "reasonText": "Reason for Denial (Optional) <FR>",
+      "toast": "Reservation Denied for {email} <FR>"
+    },
+    "denyRequest": "Deny Request <FR>",
+    "emailSentTo": "An email has also been sent to {0} with the reservation number below. <FR>",
+    "enterPassword": "Please enter the reservation password below to validate your account. <FR>",
+    "history": "History <FR>",
+    "incorrectEmailOrReservationId": "Incorrect Email or Reservation ID. Please try again. <FR>",
+    "otp": "The password is shown below one-time if you need to communicate it via other means <FR>",
+    "passwordValid48Hours": "The reservation password is only valid for 48 hours from the time it was sent to your email address. <FR>",
+    "pending!": "PENDING! <FR>",
+    "requestDeclined": "We regret to inform you that your request has been declined. <FR>",
+    "requestProcessingTime": "It ususally takes 3-4 business days to process a request. Thanks for your patience. <FR>",
+    "requestReservedOn": "Your request has been received on {0} <FR>",
+    "requests": "Requests <FR>",
+    "reservationHistory": "Reservation History <FR>",
+    "reservationId": "Reservation ID <FR>",
+    "reservationNumber": "Reservation Number <FR>",
+    "reservationPreviouslyCompleted": "This reservation has already previously been completed and the wallet details given out. <FR>",
+    "reservations": "Reservations <FR>",
+    "reservationValidated": "Your reservation is validated successfully. <FR>",
+    "resonForRejection": "Reason for rejection <FR>",
+    "saveWalletIdAndWalletKey": "Please save your newly generated wallet id and wallet key in a secure location. You will loose the data once this window is closed or you go back to sign-in. We will never share these information over the email nor do we re-issue upon request. <FR>",
+    "sentPasswordOn": "We have sent a reservation password to your email address on {0} <FR>",
+    "submitNewRequest": "If you think there has been an error you can submit a new request again. <FR>",
+    "submitted": "Your request has been submitted successfully.  <FR>",
+    "thankYou!": "Thank You! <FR>",
+    "validated!": "VALIDATED! <FR>",
+    "walletIdAndWalletKey": "Here is your new Wallet ID and Wallet Key associated with the email address mentioned while registering. <FR>",
+    "walletKey": "Wallet Key <FR>",
+    "walletKeyCannotBeRetrievedAgain": "The wallet key cannot be retrieved again once supplied. If you require a new wallet you can go back and start a new reservation. <FR>"
+  },
+  "reserve": {
+    "fullName": "Full Name <FR>",
+    "phone": "Phone / Mobile <FR>"
+  },
+  "status": {
+    "email": "Enter your Email Address of request <FR>",
+    "reservationId": "Enter your Reservation ID <FR>",
+    "reservationNumber": "Enter your Reservation Number <FR>",
+    "submit": "Check Status <FR>"
+  },
+  "tenant": {
+    "pofile": {
+      "tenantProfile": "Tenant Profile <FR>"
+    },
+    "settings": {
+      "tenantWalletSettings": "Tenant Wallet Settings <FR>"
     }
   },
-  "about": {
-    "about": "About <FR>",
-    "traction": {
-      "traction": "Traction <FR>",
-      "info": "Licence information for TRACTION <FR>",
-      "tractionVersion": "Traction version {version} <FR>",
-      "uiVersion": "Tenant UI version {version} <FR>",
-      "url": "Traction URL <FR>",
-      "swagger": "Swagger UI <FR>",
-      "imageTag": "Image tag <FR>",
-      "imageVersion": "Image version <FR>",
-      "imageCreated": "Image created at <FR>",
-      "repository": "GitHub repo for Traction <FR>"
-    },
-    "acaPy": {
-      "acaPy": "ACA-Py <FR>",
-      "info": "Licence information for ACA-Py <FR>",
-      "acapyVersion": "ACA-Py version {version} <FR>",
-      "ledger": "Ledger <FR>",
-      "ledgerBrowser": "Ledger Browser <FR>",
-      "tailsServer": "Tails Server <FR>",
-      "endorser": "Endorser <FR>"
-    }
+  "tenants": {
+    "checkIn": "Check-In Tenant <FR>",
+    "tenants": "Tenants <FR>"
+  },
+  "verifier": {
+    "attributeRestrictionsSatisfied": "All attribute restrictions were satisfied <FR>",
+    "comingSoon": "Coming Soon <FR>",
+    "contactAlias: ": "Contact Alias:  <FR>",
+    "credentialHeldBy": "Credential is held by <FR>",
+    "credentialTamperFree ": "Credential is tamper-free  <FR>",
+    "credentialValid": "Credential is valid <FR>",
+    "presentationShouldHaveStatus": "This is not the component you are looking for, presentation should have status='verified' <FR>",
+    "presentationTemplates": "Presentation Templates <FR>",
+    "status: ": "Status <FR>",
+    "updatedAt": "Updated at <FR>",
+    "verifications": "Verifications <FR>"
+  },
+  "verify": {
+    "createRequest": "Create Presentation Requests <FR>",
+    "verification": "Verification <FR>",
+    "verifications": "Verifications <FR>"
   }
 }
