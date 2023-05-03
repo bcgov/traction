@@ -25,48 +25,27 @@ const locales = modulePaths.reduce(
 // Flatten all locales.
 const flattened = flattenLocales(locales);
 
-// List keys in the default 'en' locale and their values
-// missing from each flattened locale.
-const missingKeys = Object.entries(flattened).reduce(
+// Sort flattened keys alphabetically for each locale.
+const sorted = Object.entries(flattened).reduce(
   (acc, [locale, data]) => ({
     ...acc,
-    [locale]: Object.keys(flattened.en).reduce((acc, key) => {
-      if (!Object.keys(data).includes(key)) {
-        return {
-          ...acc,
-          [key]: `${flattened.en[key]} <${locale.toLocaleUpperCase()}>`,
-        };
-      }
-      return acc;
-    }, {}),
+    [locale]: Object.fromEntries(
+      Object.entries(data).sort(([a], [b]) => a.localeCompare(b))
+    ),
   }),
   {}
 );
 
-console.log('Missing i18n keys:', missingKeys);
+// Unflatten sorted locales.
+const unflattened = unflattenLocales(sorted);
 
-// Add missing keys and their values into flattened locales.
-const fixed = Object.entries(flattened).reduce(
-  (acc, [locale, data]) => ({
-    ...acc,
-    [locale]: {
-      ...data,
-      ...missingKeys[locale],
-    },
-  }),
-  {}
-);
-
-// Unflatten fixed locales.
-const unflattened = unflattenLocales(fixed);
-
-// Write fixed locales to disk.
-Object.entries(unflattened).forEach(([locale, data]) =>
+// Write sorted locales to disk.
+Object.entries(unflattened).forEach(([locale, data]) => {
   writeFileSync(
     resolve(
       dirname(fileURLToPath(import.meta.url)),
       `../../src/plugins/i18n/locales/${locale}.json`
     ),
     JSON.stringify(data, null, 2)
-  )
-);
+  );
+});

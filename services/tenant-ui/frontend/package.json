@@ -10,7 +10,8 @@
     "lint": "eslint --ext .ts,vue --max-warnings=0 .",
     "lintfix": "eslint --fix --ext .ts,vue .",
     "i18n:fill-keys": "node ./scripts/i18n/fillKeys.js",
-    "i18n:common-keys": "node ./scripts/i18n/commonKeys.js"
+    "i18n:common-keys": "node ./scripts/i18n/commonKeys.js",
+    "i18n:sort-keys": "node ./scripts/i18n/sortKeys.js"
   },
   "dependencies": {
     "@vuelidate/core": "^2.0.1",
