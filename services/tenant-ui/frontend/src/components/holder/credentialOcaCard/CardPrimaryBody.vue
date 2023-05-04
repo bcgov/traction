@@ -1,12 +1,24 @@
 <template>
   <div class="primary-body-container">
-    <IssuerName :overlay="props.overlay" />
-    <!-- <CredentialName
-      overlay="{overlay}"
-      language="{language}"
-      styles="{styles}"
-    />
-    {displayAttributes.map((attribute, index) => (
+    <div v-if="overlay">
+      <IssuerName :overlay="props.overlay" />
+      <CredentialName :overlay="props.overlay" />
+      <div v-if="attributes" class="flex flex-column">
+        <Attribute
+          v-for="attr in displayAttributes"
+          :attribute="attr"
+          :credential="credential"
+          :overlay="props.overlay"
+          class="mt-3"
+        />
+      </div>
+    </div>
+    <div v-else>
+      <i class="pi pi-exclamation-triangle"></i> There is no OCA associated with <br>
+      this credential definition. <br>
+      Cannot display at this time, sorry.
+    </div>
+    <!-- {displayAttributes.map((attribute, index) => (
     <Attribute
       key="{`${attribute}_${index}}`}"
       overlay="{overlay}"
@@ -21,13 +33,36 @@
 <script setup lang="ts">
 // Types
 import OverlayBundle from '@/overlayLibrary/types/overlay/OverlayBundle';
+import {
+  CredAttrSpec,
+  V10CredentialExchange,
+} from '@/types/acapyApi/acapyInterface';
 
+import Attribute from './Attribute.vue';
+import CredentialName from './CredentialName.vue';
 import IssuerName from './IssuerName.vue';
 import { DIMENSIONS as D } from './OcaStyleConstants';
+import { computed } from 'vue';
 
 const props = defineProps<{
   overlay?: OverlayBundle;
+  credential?: V10CredentialExchange;
 }>();
+
+const attributes = computed(
+  (): CredAttrSpec[] =>
+    props.credential?.credential_offer_dict?.credential_preview?.attributes ||
+    []
+);
+
+const displayAttributes: string[] = [];
+const { primaryAttribute, secondaryAttribute } = props.overlay?.branding ?? {};
+if (primaryAttribute) {
+  displayAttributes.push(primaryAttribute);
+}
+if (secondaryAttribute) {
+  displayAttributes.push(secondaryAttribute);
+}
 </script>
 
 <style scoped>

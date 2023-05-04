@@ -3,7 +3,7 @@
     <div class="card-container">
       <CardSecondaryBody :branding="props.overlay?.branding" />
       <CardLogo :branding="props.overlay?.branding" />
-      <CardPrimaryBody :overlay="overlay" />
+      <CardPrimaryBody :overlay="overlay" :credential="props.credential" />
       <!-- <CardStatus overlay="{overlay}" styles="{styles}" />  -->
     </div>
   </div>
@@ -12,6 +12,7 @@
 <script setup lang="ts">
 // Types
 import OverlayBundle from '@/overlayLibrary/types/overlay/OverlayBundle';
+import { V10CredentialExchange } from '@/types/acapyApi/acapyInterface';
 
 import { computed } from 'vue';
 import { DIMENSIONS as D } from './OcaStyleConstants';
@@ -21,8 +22,8 @@ import CardLogo from './CardLogo.vue';
 
 const props = defineProps<{
   overlay?: OverlayBundle;
+  credential: V10CredentialExchange;
 }>();
-
 const branding = computed(() => props.overlay?.branding);
 </script>
 

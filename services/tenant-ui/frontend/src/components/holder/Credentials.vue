@@ -1,7 +1,7 @@
 <template>
   <div class="flex justify-content-between mb-3">
     <div class="flex justify-content-start">
-      <h3 class="mt-0">Credentials (Credential Exchanges)</h3>
+      <h3 class="mt-0">Credentials</h3>
     </div>
     <div class="flex justify-content-end">
       <Button

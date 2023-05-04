@@ -3,7 +3,7 @@
     <SkeletonCard />
   </div>
   <div v-else>
-    <CredentialCard10 :overlay="overlay" />
+    <CredentialCard10 :overlay="overlay" :credential="props.credential" />
     <!-- <Card>
       <template #title> Simple Card </template>
       <template #content>
@@ -30,7 +30,7 @@ import {
 import OverlayBundle from '@/overlayLibrary/types/overlay/OverlayBundle';
 
 // Vue
-import { onMounted, PropType, ref, Ref } from 'vue';
+import { onMounted, ref, Ref } from 'vue';
 // PrimeVue
 import Card from 'primevue/card';
 import { useConfirm } from 'primevue/useconfirm';
@@ -44,12 +44,9 @@ import OverlayBundleFactory from '@/overlayLibrary/services/OverlayBundleFactory
 // Other
 import SkeletonCard from '@/components/common/SkeletonCard.vue';
 
-const props = defineProps({
-  credential: {
-    type: Object as PropType<V10CredentialExchange>,
-    required: true,
-  },
-});
+const props = defineProps<{
+  credential: V10CredentialExchange;
+}>();
 
 const toast = useToast();
 const confirm = useConfirm();

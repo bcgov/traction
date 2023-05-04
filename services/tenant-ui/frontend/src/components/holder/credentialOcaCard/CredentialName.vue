@@ -1,6 +1,6 @@
 <template>
   <div class="text-container">
-    {{ overlay?.metadata?.issuer['en-CA'] }}
+    {{ overlay?.metadata?.name['en-CA'] }}
   </div>
 </template>
 
@@ -17,15 +17,14 @@ const props = defineProps<{
 
 <style scoped>
 .text-container {
-  display: flex;
   flex-shrink: 1;
+  flex: 1;
   flex-wrap: wrap;
   color: v-bind(
     'textColorForBackground(overlay?.branding?.primaryBackgroundColor || "#000000")'
   );
-  line-height: 19px;
-  opacity: 0.8;
-  font-weight: bold;
-  font-size: 14px;
+  line-height: 24px;
+  font-weight: bolder;
+  font-size: 18px;
 }
 </style>
