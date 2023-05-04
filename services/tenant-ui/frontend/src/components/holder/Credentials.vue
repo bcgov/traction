@@ -1,7 +1,47 @@
 <template>
-  <h3 class="mt-0">Credentials (Credential Exchanges)</h3>
+  <div class="flex justify-content-between mb-3">
+    <div class="flex justify-content-start">
+      <h3 class="mt-0">Credentials (Credential Exchanges)</h3>
+    </div>
+    <div class="flex justify-content-end">
+      <Button
+        v-if="cardView"
+        icon="pi pi-table"
+        title="View in Table format"
+        text
+        rounded
+        aria-label="Filter"
+        @click="cardView = false"
+      />
+      <Button
+        v-else
+        icon="pi pi-th-large"
+        title="View in Card format"
+        text
+        rounded
+        aria-label="Filter"
+        @click="cardView = true"
+      />
 
-  <CredentialsTableFormat
+      <Button
+        icon="pi pi-refresh"
+        title="Refresh Credentials list"
+        text
+        rounded
+        aria-label="Filter"
+        @click="loadCredentials"
+      />
+    </div>
+  </div>
+
+  <CredentialsTable
+    v-if="cardView"
+    @accept="acceptOffer"
+    @delete="deleteCredential"
+    @reject="rejectOffer"
+  />
+  <CredentialsCards
+    v-else
     @accept="acceptOffer"
     @delete="deleteCredential"
     @reject="rejectOffer"
@@ -18,13 +58,15 @@ import {
 // Vue
 import { onMounted, ref } from 'vue';
 // PrimeVue etc
+import Button from 'primevue/button';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';
 // State
 import { useContactsStore, useHolderStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other components
-import CredentialsTableFormat from './CredentialsTable.vue';
+import CredentialsCards from './CredentialsCards.vue';
+import CredentialsTable from './CredentialsTable.vue';
 
 const toast = useToast();
 const confirm = useConfirm();
@@ -33,6 +75,9 @@ const confirm = useConfirm();
 const contactsStore = useContactsStore();
 const { contacts } = storeToRefs(useContactsStore());
 const holderStore = useHolderStore();
+
+// Table/card view toggle
+const cardView = ref(false);
 
 // Actions for a cred row/card
 const acceptOffer = (event: any, data: V10CredentialExchange) => {
@@ -97,5 +142,10 @@ const loadCredentials = async () => {
 
 onMounted(async () => {
   loadCredentials();
+  // Get the oca list avaliable, each card will fetch it's OCA though
+  holderStore.listOcas().catch((err) => {
+    console.error(err);
+    toast.error(`Failed to load OCA definitions: ${err}`);
+  });
 });
 </script>

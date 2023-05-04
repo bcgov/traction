@@ -1,5 +1,6 @@
 import {
   IndyCredInfo,
+  OcaRecord,
   V10CredentialExchange,
 } from '@/types/acapyApi/acapyInterface';
 
@@ -11,12 +12,19 @@ import { useAcapyApi } from './acapyApi';
 import { API_PATH } from '@/helpers/constants';
 
 export const useHolderStore = defineStore('holder', () => {
+  const acapyApi = useAcapyApi();
+
   // state
   const credentials: Ref<IndyCredInfo[]> = ref([]);
   const credentialExchanges: Ref<V10CredentialExchange[]> = ref([]);
   const selectedCredential: any = ref(null);
+
+  const ocas: Ref<OcaRecord[]> = ref([]);
+  const loadingOca: any = ref(false);
+
   const presentations: any = ref(null);
   const selectedPresentation: any = ref(null);
+
   const loading: any = ref(false);
   const error: any = ref(null);
 
@@ -35,6 +43,10 @@ export const useHolderStore = defineStore('holder', () => {
   async function listCredentials() {
     selectedCredential.value = null;
     return fetchList(API_PATH.CREDENTIALS, credentials, error, loading);
+  }
+
+  async function listOcas() {
+    return fetchList(API_PATH.OCAS, ocas, error, loadingOca);
   }
 
   async function listHolderCredentialExchanges() {
@@ -63,6 +75,11 @@ export const useHolderStore = defineStore('holder', () => {
     return fetchItem(API_PATH.CREDENTIALS, id, error, getloading, params);
   }
 
+  async function getCredentialOca(credDefId: string, params: any = {}) {
+    loadingOca.value = true;
+    return fetchItem(API_PATH.OCAS, credDefId, error, loadingOca, params);
+  }
+
   async function getPresentation(id: string, params: any = {}) {
     const getloading: any = ref(false);
     return fetchItem(
@@ -73,8 +90,6 @@ export const useHolderStore = defineStore('holder', () => {
       params
     );
   }
-
-  const acapyApi = useAcapyApi();
 
   async function acceptCredentialOffer(credExId: string) {
     console.log('> holderStore.acceptCredentialOffer');
@@ -175,14 +190,18 @@ export const useHolderStore = defineStore('holder', () => {
     credentials,
     credentialExchanges,
     presentations,
+    ocas,
     selectedCredential,
     selectedPresentation,
+    loadingOca,
     loading,
     error,
     listCredentials,
+    listOcas,
     listHolderCredentialExchanges,
     listPresentations,
     getCredential,
+    getCredentialOca,
     getPresentation,
     acceptCredentialOffer,
     rejectCredentialOffer,
