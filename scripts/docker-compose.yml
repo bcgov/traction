@@ -93,7 +93,7 @@ services:
       - host.docker.internal:host-gateway
 
   traction-db:
-    image: "postgres:12"
+    image: "postgres:14.5"
     environment:
       - POSTGRES_USER=${POSTGRESQL_USER}
       - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
@@ -247,7 +247,7 @@ services:
       - host.docker.internal:host-gateway
 
   endorser-db:
-    image: "postgres:12"
+    image: "postgres:14.5"
     environment:
       - POSTGRES_USER=${POSTGRESQL_USER}
       - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}

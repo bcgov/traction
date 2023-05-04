@@ -1,0 +1,67 @@
+name: Update Assets
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to use for the release'
+        required: true
+        default: 'v1.0.0'
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  packages: write
+  contents: write
+
+jobs:
+  build_acapy:
+    name: 'Build Traction Aca-Py'
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'bcgov'
+    steps:
+      - uses: actions/checkout@v3    
+      - name: Build Aca-Py Image
+        uses: ./.github/actions/build_acapy
+        id: builder
+        with:
+          context: './plugins'
+          dockerfile: './plugins/docker/Dockerfile'
+          image_name: ${{ github.repository_owner}}/traction-plugins-acapy
+          registry: ghcr.io
+          registry_username: ${{ github.repository_owner}}
+          registry_password: ${{ secrets.GITHUB_TOKEN }}
+
+  build_ui:
+    name: 'Build Tenant UI'
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'bcgov'
+    steps:      
+      - uses: actions/checkout@v3
+      - name: Build UI
+        uses: ./.github/actions/build_ui
+        id: builder
+        with:
+          context: './services/tenant-ui'
+          image_name: ${{ github.repository_owner}}/traction-tenant-ui
+          registry: ghcr.io
+          registry_username: ${{ github.repository_owner}}
+          registry_password: ${{ secrets.GITHUB_TOKEN }}
+  
+  build_proxy:
+    name: 'Build Tenant Proxy Image'
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'bcgov'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Tenant Proxy Image
+        uses: ./.github/actions/build_acapy
+        id: builder
+        with:
+          context: './plugins'
+          dockerfile: './plugins/docker/Dockerfile.tenant-proxy'
+          image_name: ${{ github.repository_owner}}/traction-tenant-proxy
+          registry: ghcr.io
+          registry_username: ${{ github.repository_owner}}
+          registry_password: ${{ secrets.GITHUB_TOKEN }}

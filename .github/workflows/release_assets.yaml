@@ -1,0 +1,35 @@
+name: Upload Release Assets
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  packages: write
+  contents: read
+
+jobs:
+  upload-assets:
+    name: Upload Release Assets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Upload Traction Helm chart
+        id: upload-traction-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./charts/traction-${{ github.event.release.tag_name }}.tgz
+          asset_name: traction-${{ github.event.release.tag_name }}.tgz
+          asset_content_type: application/octet-stream
+      - name: Upload Tenant-UI Helm chart
+        id: upload-tenant-ui-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./charts/tenant-ui-${{ github.event.release.tag_name }}.tgz
+          asset_name: tenant-ui-${{ github.event.release.tag_name }}.tgz
+          asset_content_type: application/octet-stream
