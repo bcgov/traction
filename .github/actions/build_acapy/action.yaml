@@ -60,7 +60,11 @@ runs:
       uses: docker/metadata-action@v4
       with:
         images: ${{ inputs.registry }}/${{ inputs.image_name }}
-        tags: type=sha
+        tags: |
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=ref,event=pr
+          type=sha
 
     - name: Build and push image
       id: builder
