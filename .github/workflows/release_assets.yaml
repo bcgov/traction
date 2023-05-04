@@ -1,4 +1,4 @@
-name: Publish Release Assets
+name: Upload Release Assets
 
 on:
   release:
@@ -6,168 +6,13 @@ on:
 
 permissions:
   packages: write
-  contents: write
+  contents: read
 
 jobs:
-  build_acapy:
-    name: 'Build Traction Aca-Py'
-    runs-on: ubuntu-latest
-    if: github.repository_owner == 'bcgov'
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner}}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Prepare docker tags for image
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ github.repository_owner}}/traction-plugins-acapy
-          tags: |
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=sha
-      - name: Build and push image
-        id: builder
-        uses: docker/build-push-action@v3
-        with:
-          context: './plugins'
-          file: './plugins/docker/Dockerfile'
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-
-  build_ui:
-    name: 'Build Tenant UI'
-    runs-on: ubuntu-latest
-    if: github.repository_owner == 'bcgov'
-    steps:      
-      - uses: actions/checkout@v3
-      - name: Set up Node
-        uses: actions/setup-node@master
-        with:
-          node-version: 16
-      - name: Install dependencies
-        shell: bash      
-        run: |
-          cd ./services/tenant-ui
-          npm ci && npm cache clean --force && npm install -g typescript && cd frontend && npm ci
-      - name: Lint frontend
-        shell: bash      
-        run: |
-          cd ./services/tenant-ui/frontend
-          npm run lint
-      - name: Lint backend
-        shell: bash      
-        run: |
-          cd ./services/tenant-ui
-          npm run lint
-      - name: Build
-        shell: bash      
-        run: |
-          cd ./services/tenant-ui
-          npm run build
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner}}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Prepare docker tags for image
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ github.repository_owner}}/traction-tenant-ui
-          tags: |
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=sha
-      - name: Build and push image
-        id: builder
-        uses: docker/build-push-action@v3
-        with:
-          context: './services/tenant-ui'
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-  
-  build_proxy:
-    name: 'Build Tenant Proxy Image'
-    runs-on: ubuntu-latest
-    if: github.repository_owner == 'bcgov'
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner}}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Prepare docker tags for image
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ github.repository_owner}}/traction-tenant-proxy
-          tags: |
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=sha
-      - name: Build and push image
-        id: builder
-        uses: docker/build-push-action@v3
-        with:
-          context: './plugins'
-          file: './plugins/docker/Dockerfile.tenant-proxy'
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-
-  release:
-    name: Release chart
+  upload-assets:
+    name: Upload Release Assets
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Parse semver string
-        id: semver_parser 
-        uses: booxmedialtd/ws-action-parse-semver@v1
-        with:
-          input_string: ${{ github.event.release.tag_name }}
-          version_extractor_regex: '\/v(.*)$'
-      - name: Update Traction Helm
-        run: |
-          yq eval '.appVersion = "${{ steps.semver_parser.outputs.fullversion }}"' -i ./charts/traction/values-pr.yaml
-          yq eval '.acapy.image.tag = "ghcr.io/${{ github.repository_owner}}/traction-plugins-acapy:${{ steps.semver_parser.outputs.fullversion }}"' -i ./charts/traction/values-pr.yaml
-          yq eval '.acapy.image.version = "${{ steps.semver_parser.outputs.fullversion }}"' -i ./charts/traction/values-pr.yaml
-          yq eval '.tenant_proxy.image.tag = "ghcr.io/${{ github.repository_owner}}/traction-tenant-proxy:${{ steps.semver_parser.outputs.fullversion }}"' -i ./charts/traction/values-pr.yaml
-          cat ./charts/traction/values-pr.yaml
-      - name: Update Tenant-UI Helm
-        run: |
-          yq eval '.appVersion = "${{ steps.semver_parser.outputs.fullversion }}"' -i ./charts/tenant-ui/values-pr.yaml
-          yq eval '.tenant_ui.image.tag = "ghcr.io/${{ github.repository_owner}}/traction-tenant-ui:${{ steps.semver_parser.outputs.fullversion }}"' -i ./charts/tenant-ui/values-pr.yaml
-          yq eval '.tenant_ui.image.version = "${{ steps.semver_parser.outputs.fullversion }}"' -i ./charts/tenant-ui/values-pr.yaml
-          cat ./charts/tenant-ui/values-pr.yaml
-      - name: Package Traction Helm chart
-        run: helm package traction
-        working-directory: ./charts
-      - name: Package Tenant-UI Helm chart
-        run: helm package tenant-ui
-        working-directory: ./charts
-      - name: Update chart index
-        run: helm repo index .
-        working-directory: ./charts
-      - name: Push changes to the branch
-        uses: mikeal/publish-to-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload Traction Helm chart
         id: upload-traction-release-asset
         uses: actions/upload-release-asset@v1
