@@ -122,10 +122,10 @@ jobs:
         run: |
           yq eval '.global.fullnameOverride = "pr-${{ github.event.number }}-traction"' -i ./charts/traction/values-pr.yaml
           yq eval '.postgresql.fullnameOverride = "pr-${{ github.event.number }}-traction"' -i ./charts/traction/values-pr.yaml
-          yq eval '.acapy.image.tag = "${{ needs.build_acapy.outputs.image_tag }}"' -i ./charts/traction/values-pr.yaml
+          yq eval '.acapy.image.tag = "ghcr.io/${{ github.repository_owner}}/traction-plugins-acapy:pr-${{ github.event.number }}"' -i ./charts/traction/values-pr.yaml
           yq eval '.acapy.image.version = "${{ needs.build_acapy.outputs.image_version }}"' -i ./charts/traction/values-pr.yaml
           yq eval '.acapy.image.buildtime = "${{ needs.build_acapy.outputs.buildtime }}"' -i ./charts/traction/values-pr.yaml
-          yq eval '.tenant_proxy.image.tag = "${{ needs.build_proxy.outputs.image_tag }}"' -i ./charts/traction/values-pr.yaml
+          yq eval '.tenant_proxy.image.tag = "ghcr.io/${{ github.repository_owner}}/traction-tenant-proxy:pr-${{ github.event.number }}"' -i ./charts/traction/values-pr.yaml
           yq eval '.tenant_proxy.image.version = "${{ needs.build_proxy.outputs.image_version }}"' -i ./charts/traction/values-pr.yaml
           yq eval '.tenant_proxy.image.buildtime = "${{ needs.build_proxy.outputs.buildtime }}"' -i ./charts/traction/values-pr.yaml
           helm upgrade -f ./charts/traction/values.yaml -f ./charts/traction/values-pr.yaml pr-${{ github.event.number }}-traction ./charts/traction --install --wait
@@ -136,7 +136,7 @@ jobs:
           yq eval '.global.tractionNameOverride = "pr-${{ github.event.number }}-traction"' -i ./charts/tenant-ui/values-pr.yaml
           yq eval '.tenant_ui.traction_api.endpoint = "https://pr-${{ github.event.number }}-traction-tenant-proxy-dev.apps.silver.devops.gov.bc.ca"' -i ./charts/tenant-ui/values-pr.yaml
           yq eval '.tenant_ui.tenant_proxy.endpoint = "https://pr-${{ github.event.number }}-traction-tenant-proxy-dev.apps.silver.devops.gov.bc.ca"' -i ./charts/tenant-ui/values-pr.yaml
-          yq eval '.tenant_ui.image.tag = "${{ needs.build_ui.outputs.image_tag }}"' -i ./charts/tenant-ui/values-pr.yaml
+          yq eval '.tenant_ui.image.tag = "ghcr.io/${{ github.repository_owner}}/traction-tenant-ui:pr-${{ github.event.number }}"' -i ./charts/tenant-ui/values-pr.yaml
           yq eval '.tenant_ui.image.version = "${{ needs.build_ui.outputs.image_version }}"' -i ./charts/tenant-ui/values-pr.yaml
           yq eval '.tenant_ui.image.buildtime = "${{ needs.build_ui.outputs.buildtime }}"' -i ./charts/tenant-ui/values-pr.yaml
           helm upgrade -f ./charts/tenant-ui/values.yaml -f ./charts/tenant-ui/values-pr.yaml pr-${{ github.event.number }}-tenant-ui ./charts/tenant-ui --install --wait
