@@ -34,13 +34,13 @@
     </div>
   </div>
 
-  <CredentialsTable
+  <CredentialsCards
     v-if="cardView"
     @accept="acceptOffer"
     @delete="deleteCredential"
     @reject="rejectOffer"
   />
-  <CredentialsCards
+  <CredentialsTable
     v-else
     @accept="acceptOffer"
     @delete="deleteCredential"
