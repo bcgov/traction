@@ -41,7 +41,6 @@ export const useHolderStore = defineStore('holder', () => {
   // actions
 
   async function listCredentials() {
-    selectedCredential.value = null;
     return fetchList(API_PATH.CREDENTIALS, credentials, error, loading);
   }
 
@@ -50,7 +49,6 @@ export const useHolderStore = defineStore('holder', () => {
   }
 
   async function listHolderCredentialExchanges() {
-    selectedCredential.value = null;
     return fetchList(
       API_PATH.ISSUE_CREDENTIAL_RECORDS,
       credentialExchanges,

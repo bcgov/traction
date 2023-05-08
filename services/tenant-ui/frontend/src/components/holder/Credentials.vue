@@ -1,7 +1,10 @@
 <template>
   <div class="flex justify-content-between mb-3">
     <div class="flex justify-content-start">
-      <h3 class="mt-0">Credentials</h3>
+      <h3 class="mt-0">
+        <span v-if="cardView">Credentials</span>
+        <span v-else>Credential Exchanges</span>
+      </h3>
     </div>
     <div class="flex justify-content-end">
       <Button
@@ -56,7 +59,7 @@ import {
 } from '@/types/acapyApi/acapyInterface';
 
 // Vue
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 // PrimeVue etc
 import Button from 'primevue/button';
 import { useConfirm } from 'primevue/useconfirm';
@@ -124,28 +127,11 @@ const deleteCredential = (event: any, data: V10CredentialExchange) => {
   });
 };
 
-// Get the credential exchange list when loading the component
+// Get the credential exchange list
 const loadCredentials = async () => {
   holderStore.listHolderCredentialExchanges().catch((err) => {
     console.error(err);
     toast.error(`Failure: ${err}`);
   });
-
-  // Load contacts if not already there for display
-  if (!contacts.value || !contacts.value.length) {
-    contactsStore.listContacts().catch((err) => {
-      console.error(err);
-      toast.error(`Failure: ${err}`);
-    });
-  }
 };
-
-onMounted(async () => {
-  loadCredentials();
-  // Get the oca list avaliable, each card will fetch it's OCA though
-  holderStore.listOcas().catch((err) => {
-    console.error(err);
-    toast.error(`Failed to load OCA definitions: ${err}`);
-  });
-});
 </script>

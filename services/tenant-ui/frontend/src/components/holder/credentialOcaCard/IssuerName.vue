@@ -1,6 +1,6 @@
 <template>
   <div class="text-container">
-    {{ overlay?.metadata?.issuer['en-CA'] }}
+    {{ issuerName }}
   </div>
 </template>
 
@@ -8,11 +8,16 @@
 // Types
 import OverlayBundle from '@/overlayLibrary/types/overlay/OverlayBundle';
 
+import { computed } from 'vue';
 import { textColorForBackground } from '@/overlayLibrary/utils/color';
 
 const props = defineProps<{
   overlay?: OverlayBundle;
 }>();
+
+const issuerName = computed(
+  () => props.overlay?.metadata?.issuer?.['en-CA'] ?? ''
+);
 </script>
 
 <style scoped>

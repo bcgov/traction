@@ -12,7 +12,7 @@
 <script setup lang="ts">
 // Types
 import OverlayBundle from '@/overlayLibrary/types/overlay/OverlayBundle';
-import { V10CredentialExchange } from '@/types/acapyApi/acapyInterface';
+import { IndyCredInfo } from '@/types/acapyApi/acapyInterface';
 
 import { computed } from 'vue';
 import { DIMENSIONS as D } from './OcaStyleConstants';
@@ -22,7 +22,7 @@ import CardLogo from './CardLogo.vue';
 
 const props = defineProps<{
   overlay?: OverlayBundle;
-  credential: V10CredentialExchange;
+  credential: IndyCredInfo;
 }>();
 const branding = computed(() => props.overlay?.branding);
 </script>

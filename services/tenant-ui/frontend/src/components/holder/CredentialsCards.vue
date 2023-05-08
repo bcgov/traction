@@ -5,17 +5,17 @@
     </div>
   </div>
 
-  <div v-else class="grid">
+  <div v-else-if="credentials && credentials.length" class="grid">
     <div
-      v-for="cred in credentialExchanges"
-      v-if="credentialExchanges && credentialExchanges.length"
+      v-for="(cred, index) in credentials"
+      :key="index"
       class="col-12 md:col-6 xl:col-3"
     >
       <OcaCard :credential="cred" />
     </div>
-
-    <span v-else> There are no credentials in your Wallet </span>
   </div>
+
+  <span v-else> There are no credentials in your Wallet </span>
 </template>
 
 <script setup lang="ts">
@@ -26,43 +26,31 @@ import {
 } from '@/types/acapyApi/acapyInterface';
 
 // Vue
-import { ref } from 'vue';
-// PrimeVue
-import Button from 'primevue/button';
-import Card from 'primevue/card';
-import Column from 'primevue/column';
-import DataTable, { DataTableFilterMetaData } from 'primevue/datatable';
-import InputText from 'primevue/inputtext';
-import { FilterMatchMode } from 'primevue/api';
+import { onMounted } from 'vue';
+// PrimeVue etc
+import { useToast } from 'vue-toastification';
 // State
-import { useContactsStore, useHolderStore } from '@/store';
+import { useHolderStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other components
-import CredentialAttributes from './CredentialAttributes.vue';
 import OcaCard from './credentialOcaCard/OcaCard.vue';
-import RowExpandData from '@/components/common/RowExpandData.vue';
-import StatusChip from '../common/StatusChip.vue';
 import SkeletonCard from '@/components/common/SkeletonCard.vue';
-import { API_PATH, TABLE_OPT } from '@/helpers/constants';
-import { formatDateLong } from '@/helpers';
 
 // The emits it can do (common things between table and card view handled in parent)
-defineEmits(['accept', 'delete', 'reject']);
+// defineEmits(['accept', 'delete', 'reject']);
+
+const toast = useToast();
 
 // State
-const { findConnectionName } = storeToRefs(useContactsStore());
-const { loading, loadingOca, credentialExchanges } = storeToRefs(
-  useHolderStore()
-);
+const { loading, loadingOca, credentials } = storeToRefs(useHolderStore());
+const holderStore = useHolderStore();
 
-// Cred attributes
-const getAttributes = (data: V10CredentialExchange): CredAttrSpec[] => {
-  return data.credential_offer_dict?.credential_preview?.attributes ?? [];
-};
+onMounted(async () => {
+  holderStore.listCredentials();
+  // Get the oca list avaliable, each card will fetch it's OCA though
+  holderStore.listOcas().catch((err) => {
+    console.error(err);
+    toast.error(`Failed to load Credentials from your wallet: ${err}`);
+  });
+});
 </script>
-
-<style scoped>
-button.accepted {
-  color: green !important;
-}
-</style>

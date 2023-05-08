@@ -23,10 +23,7 @@
 
 <script setup lang="ts">
 // Types
-import {
-  OcaRecord,
-  V10CredentialExchange,
-} from '@/types/acapyApi/acapyInterface';
+import { OcaRecord, IndyCredInfo } from '@/types/acapyApi/acapyInterface';
 import OverlayBundle from '@/overlayLibrary/types/overlay/OverlayBundle';
 
 // Vue
@@ -45,7 +42,7 @@ import OverlayBundleFactory from '@/overlayLibrary/services/OverlayBundleFactory
 import SkeletonCard from '@/components/common/SkeletonCard.vue';
 
 const props = defineProps<{
-  credential: V10CredentialExchange;
+  credential: IndyCredInfo;
 }>();
 
 const toast = useToast();
@@ -56,7 +53,7 @@ const holderStore = useHolderStore();
 const { ocas } = storeToRefs(useHolderStore());
 
 // OCA Fetching
-const overlay: Ref<OverlayBundle | null> = ref(null);
+const overlay: Ref<OverlayBundle | undefined> = ref(undefined);
 
 const loadingCardOca = ref(false);
 const loadOcaForCred = async () => {
@@ -65,7 +62,7 @@ const loadOcaForCred = async () => {
 
     // From the oca list, get the oca (if there is one) for this cred
     const ocaRecord = ocas.value.find(
-      (o) => o.cred_def_id === props.credential.credential_definition_id
+      (o) => o.cred_def_id === props.credential.cred_def_id
     );
 
     if (!ocaRecord) {
@@ -78,7 +75,7 @@ const loadOcaForCred = async () => {
     // If the OCA has a URL, use the factory to get and parse the bundle
     if (ocaRecord.url) {
       overlay.value = await OverlayBundleFactory.fetchOverlayBundle(
-        props.credential.credential_definition_id || '',
+        props.credential.cred_def_id || '',
         ocaRecord.url || ''
       );
       console.log(overlay);
@@ -86,7 +83,7 @@ const loadOcaForCred = async () => {
   } catch (err) {
     console.error(err);
     toast.error(
-      `OCA loading failed for ${props.credential.credential_definition_id}`
+      `OCA loading failed for ${props.credential.cred_def_id}`
     );
   } finally {
     loadingCardOca.value = false;

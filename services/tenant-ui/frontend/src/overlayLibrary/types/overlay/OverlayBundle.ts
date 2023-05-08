@@ -1,3 +1,4 @@
+/* eslint-disable  @typescript-eslint/ban-ts-comment */
 import { BrandingOverlay } from './BrandingOverlay';
 import { IBrandingOverlayData } from '../../interfaces/overlay/BrandingOverlayData.interface';
 import { CaptureBase, Overlay } from './Overlay';

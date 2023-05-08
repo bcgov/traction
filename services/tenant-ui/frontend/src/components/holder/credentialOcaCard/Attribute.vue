@@ -1,10 +1,10 @@
 <template>
   <div class="text-container attribute-list">
     <span class="attribute-label">
-      {{ displayAttributeLabel(props.attribute).label['en-CA'] }}
+      {{ displayAttributeLabel(props.attribute) }}
     </span>
     <span class="attribute-value">
-      {{ displayAttributeValue(props.attribute)?.value }}
+      {{ displayAttributeValue(props.attribute) }}
     </span>
   </div>
 </template>
@@ -13,34 +13,28 @@
 // Types
 import OverlayBundle from '@/overlayLibrary/types/overlay/OverlayBundle';
 import { OverlayAttribute } from '@/overlayLibrary/types/overlay/OverlayBundle';
-import {
-  CredAttrSpec,
-  V10CredentialExchange,
-} from '@/types/acapyApi/acapyInterface';
+import { IndyCredInfo } from '@/types/acapyApi/acapyInterface';
 
+import { computed } from 'vue';
 import { textColorForBackground } from '@/overlayLibrary/utils/color';
 
 const props = defineProps<{
   attribute: string;
-  credential?: V10CredentialExchange;
+  credential?: IndyCredInfo;
   overlay?: OverlayBundle;
 }>();
 
 const displayAttributeLabel = (
   attributeName: string
-): OverlayAttribute | undefined => {
-  return props.overlay?.attributes.find(
+): string => {
+  const attrLabel = props.overlay?.attributes.find(
     (attribute) => attribute.name === attributeName
   );
+  return attrLabel?.label?.['en-CA'] ?? '';
 };
 
-const displayAttributeValue = (
-  attributeName: string
-): CredAttrSpec | undefined => {
-  return props.credential?.credential_offer_dict?.credential_preview?.attributes.find(
-    (attribute) => attribute.name === attributeName
-  );
-};
+const displayAttributeValue = (attributeName: string): any =>
+  props.credential?.attrs?.[attributeName] ?? '';
 </script>
 
 <style scoped>

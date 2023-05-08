@@ -5,7 +5,8 @@
       <CredentialName :overlay="props.overlay" />
       <div v-if="attributes" class="flex flex-column">
         <Attribute
-          v-for="attr in displayAttributes"
+          v-for="(attr, index) in displayAttributes"
+          :key="index"
           :attribute="attr"
           :credential="credential"
           :overlay="props.overlay"
@@ -14,8 +15,9 @@
       </div>
     </div>
     <div v-else>
-      <i class="pi pi-exclamation-triangle"></i> There is no OCA associated with <br>
-      this credential definition. <br>
+      <i class="pi pi-exclamation-triangle"></i> There is no OCA associated with
+      <br />
+      this credential definition. <br />
       Cannot display at this time, sorry.
     </div>
     <!-- {displayAttributes.map((attribute, index) => (
@@ -33,10 +35,7 @@
 <script setup lang="ts">
 // Types
 import OverlayBundle from '@/overlayLibrary/types/overlay/OverlayBundle';
-import {
-  CredAttrSpec,
-  V10CredentialExchange,
-} from '@/types/acapyApi/acapyInterface';
+import { IndyCredInfo } from '@/types/acapyApi/acapyInterface';
 
 import Attribute from './Attribute.vue';
 import CredentialName from './CredentialName.vue';
@@ -46,13 +45,11 @@ import { computed } from 'vue';
 
 const props = defineProps<{
   overlay?: OverlayBundle;
-  credential?: V10CredentialExchange;
+  credential?: IndyCredInfo;
 }>();
 
 const attributes = computed(
-  (): CredAttrSpec[] =>
-    props.credential?.credential_offer_dict?.credential_preview?.attributes ||
-    []
+  (): Record<string, string> | never[] => props.credential?.attrs || []
 );
 
 const displayAttributes: string[] = [];

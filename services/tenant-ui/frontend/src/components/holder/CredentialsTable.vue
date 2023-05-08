@@ -95,12 +95,13 @@ import {
 } from '@/types/acapyApi/acapyInterface';
 
 // Vue
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 // PrimeVue
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable, { DataTableFilterMetaData } from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
+import { useToast } from 'vue-toastification';
 import { FilterMatchMode } from 'primevue/api';
 // State
 import { useContactsStore, useHolderStore } from '@/store';
@@ -115,9 +116,13 @@ import { formatDateLong } from '@/helpers';
 // The emits it can do (common things between table and card view handled in parent)
 defineEmits(['accept', 'delete', 'reject']);
 
+const toast = useToast();
+
 // State
-const { findConnectionName } = storeToRefs(useContactsStore());
+const contactsStore = useContactsStore();
+const { contacts, findConnectionName } = storeToRefs(useContactsStore());
 const { loading, credentialExchanges } = storeToRefs(useHolderStore());
+const holderStore = useHolderStore();
 
 // Cred attributes
 const getAttributes = (data: V10CredentialExchange): CredAttrSpec[] => {
@@ -131,6 +136,26 @@ const filter = ref({
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   } as DataTableFilterMetaData,
+});
+
+// Get the credential exchange list when loading the component
+const loadCredentials = async () => {
+  holderStore.listHolderCredentialExchanges().catch((err) => {
+    console.error(err);
+    toast.error(`Failure: ${err}`);
+  });
+
+  // Load contacts if not already there for display
+  if (!contacts.value || !contacts.value.length) {
+    contactsStore.listContacts().catch((err) => {
+      console.error(err);
+      toast.error(`Failure: ${err}`);
+    });
+  }
+};
+
+onMounted(async () => {
+  loadCredentials();
 });
 </script>
 
