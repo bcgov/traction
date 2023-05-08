@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-0">{{ t('messages.messages') }}</h3>
+  <h3 class="mt-0">{{ $t('messages.messages') }}</h3>
   <DataTable
     v-model:expandedRows="expandedRows"
     v-model:selection="selectedMessage"
@@ -35,8 +35,8 @@
         </div>
       </div>
     </template>
-    <template #empty> No records found. </template>
-    <template #loading> Loading data. Please wait... </template>
+    <template #empty>{{ $t('common.noRecordsFound') }}</template>
+    <template #loading>{{ $t('common.loading') }}</template>
     <Column :sortable="true" field="connection_id" header="Contact">
       <template #body="{ data }">
         {{ findConnectionName(data.connection_id) }}
@@ -68,10 +68,8 @@ import { storeToRefs } from 'pinia';
 import { TABLE_OPT } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 import CreateMessage from './createMessage/CreateMessage.vue';
-import { useI18n } from 'vue-i18n';
 
 const toast = useToast();
-const { t } = useI18n();
 
 const messageStore = useMessageStore();
 const contactsStore = useContactsStore();

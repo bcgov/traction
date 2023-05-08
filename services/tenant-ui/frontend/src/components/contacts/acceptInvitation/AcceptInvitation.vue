@@ -1,14 +1,14 @@
 <template>
   <div>
     <Button
-      :label="t('connect.accept')"
+      :label="$t('connect.acceptInvitation.accept')"
       icon="pi pi-check"
       @click="openModal"
     />
     <Dialog
       v-model:visible="displayModal"
       :style="{ minWidth: '600px' }"
-      :header="t('connect.accept')"
+      :header="$t('connect.acceptInvitation.accept')"
       :modal="true"
       @update:visible="handleClose"
     >
@@ -25,10 +25,6 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 // Custom Components
 import AcceptInviteForm from './AcceptInviteForm.vue';
-// Other Imports
-import { useI18n } from 'vue-i18n';
-
-const { t } = useI18n();
 
 defineEmits(['success']);
 

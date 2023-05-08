@@ -1,6 +1,6 @@
 <template>
   <h3 class="mt-0">
-    {{ t('configuration.oca.oca') }}
+    {{ $t('configuration.oca.oca') }}
   </h3>
 
   <DataTable
@@ -38,8 +38,8 @@
         </div>
       </div>
     </template>
-    <template #empty> No records found. </template>
-    <template #loading> Loading data. Please wait... </template>
+    <template #empty>{{ $t('common.noRecordsFound') }}</template>
+    <template #loading>{{ $t('common.loading') }}</template>
     <Column :expander="true" header-style="width: 3rem" />
     <Column :sortable="false" header="Actions">
       <template #body="{ data }">
@@ -66,7 +66,7 @@
             class="pi pi-database"
           >
           </i>
-          JSON
+          {{ $t('oca.json') }}
         </span>
         <span v-else-if="data.url">
           <i v-tooltip="'Bundle URL'" class="pi pi-link"> </i>
@@ -97,7 +97,6 @@ import InputText from 'primevue/inputtext';
 import { FilterMatchMode } from 'primevue/api';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';
-import { useI18n } from 'vue-i18n';
 // State
 import { useGovernanceStore } from '../../store';
 import { storeToRefs } from 'pinia';
@@ -109,7 +108,6 @@ import { formatDateLong } from '@/helpers';
 
 const confirm = useConfirm();
 const toast = useToast();
-const { t } = useI18n();
 
 const governanceStore = useGovernanceStore();
 const { loading, ocas } = storeToRefs(useGovernanceStore());

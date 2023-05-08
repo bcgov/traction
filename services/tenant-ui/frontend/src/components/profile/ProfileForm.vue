@@ -2,7 +2,7 @@
   <div v-if="tenant">
     <!-- Tenant ID -->
     <div class="field">
-      <label for="tenantId">Tenant ID</label>
+      <label for="tenantId">{{ $t('profile.tenantId') }}</label>
       <InputText
         id="tenantId"
         class="w-full"
@@ -12,7 +12,7 @@
     </div>
     <!-- Wallet ID -->
     <div class="field">
-      <label for="walletId">Wallet ID</label>
+      <label for="walletId">{{ $t('profile.walletId') }}</label>
       <InputText
         id="walletId"
         class="w-full"
@@ -22,7 +22,7 @@
     </div>
     <!-- Name -->
     <div class="field">
-      <label for="nameField">Name</label>
+      <label for="nameField">{{ $t('profile.name') }}</label>
       <InputText
         id="nameField"
         class="w-full"

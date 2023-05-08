@@ -1,5 +1,5 @@
 <template>
-  <p class="my-1">Connect Tenant To Endorser</p>
+  <p class="my-1">{{ $t('profile.connectTenantToEndorser') }}</p>
   <InputSwitch
     :model-value="hasEndorserConn"
     :disabled="hasEndorserConn"
@@ -8,18 +8,20 @@
 
   <div v-if="showNotActiveWarn" class="inactive-endorser">
     <i class="pi pi-exclamation-triangle"></i>
-    Connection not Active yet, refresh or come back later.
-    <p class="mt-0 pl-4">State: {{ endorserConnection.state }}</p>
+    {{ $t('profile.connectionNotActiveYet') }}
+    <p class="mt-0 pl-4">
+      {{ $t('profile.state', [endorserConnection.state]) }}
+    </p>
   </div>
 
   <div>
     <Accordion>
       <AccordionTab header="Endorser Details">
-        <h5 class="my-0">Endorser Info</h5>
+        <h5 class="my-0">{{ $t('profile.endorserInfo') }}</h5>
         <vue-json-pretty :data="endorserInfo" />
-        <h5 class="my-0">Endorser Connection</h5>
+        <h5 class="my-0">{{ $t('profile.endorserConnection') }}</h5>
         <vue-json-pretty v-if="endorserConnection" :data="endorserConnection" />
-        <div v-else>Tenant not connected to Endorser yet</div>
+        <div v-else>{{ $t('profile.tenantNotConnectedToEndorserYet') }}</div>
       </AccordionTab>
     </Accordion>
   </div>

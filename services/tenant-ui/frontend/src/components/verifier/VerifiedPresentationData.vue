@@ -31,6 +31,7 @@
       >
         <ul>
           <li v-for="(val, attr_name, i) in item" :key="i">
+            <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
             <strong>{{ attr_name }}</strong> : {{ val }}
           </li>
         </ul>
@@ -38,8 +39,7 @@
     </Accordion>
   </div>
   <div v-else>
-    This is not the component you are looking for, presentation should have
-    status='verified'
+    {{ $t('verifier.presentationShouldHaveStatus') }}
   </div>
 </template>
 

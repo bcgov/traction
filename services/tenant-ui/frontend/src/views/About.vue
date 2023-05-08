@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-0">{{ t('about.about') }}</h3>
+  <h3 class="mt-0">{{ $t('about.about') }}</h3>
 
   <Accordion :multiple="true">
     <AccordionTab
@@ -24,7 +24,6 @@
 // PrimeVue etc
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
-import { useI18n } from 'vue-i18n';
 // State
 import { storeToRefs } from 'pinia';
 import { useConfigStore } from '@/store/configStore';
@@ -33,6 +32,5 @@ import Acapy from '@/components/about/Acapy.vue';
 import Business from '@/components/about/Business.vue';
 import Traction from '@/components/about/Traction.vue';
 
-const { t } = useI18n();
 const { config } = storeToRefs(useConfigStore());
 </script>

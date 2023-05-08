@@ -8,9 +8,18 @@
       <div>
         <ul>
           <div v-if="props.header">
-            <li>Status: {{ presentation.status }}</li>
-            <li>Updated at: {{ formatDateLong(presentation.updated_at) }}</li>
-            <li>Contact Alias: {{ presentation.contact.alias }}</li>
+            <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
+            <li>{{ $t('verifier.status') }}: {{ presentation.status }}</li>
+            <li>
+              <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
+              {{ $t('verifier.updatedAt') }}:
+              {{ formatDateLong(presentation.updated_at) }}
+            </li>
+            <li>
+              <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
+              {{ $t('verifier.contactAlias') }}:
+              {{ presentation.contact.alias }}
+            </li>
             <hr />
           </div>
           <!-- What does verified mean -->
@@ -19,16 +28,19 @@
             class="information"
           >
             <span class="pi pi-check"></span
-            ><span
-              >Credential is held by
+            ><span>
+              {{ $t('verifier.credentialHeldBy') }}
               <strong>{{ presentation.contact.alias }}</strong></span
             ><br />
-            <span class="pi pi-check"></span><span>Credential is valid</span
+            <span class="pi pi-check"></span
+            ><span>{{ $t('verifier.credentialValid') }}</span
             ><br />
             <span class="pi pi-check"></span
-            ><span>Credential is tamper-free </span><br />
+            ><span>{{ $t('verifier.credentialTamperFree') }}</span
+            ><br />
             <span class="pi pi-check"></span
-            ><span>All attribute restrictions were satisfied</span><br />
+            ><span>{{ $t('verifier.attributeRestrictionsSatisfied') }}</span
+            ><br />
             <hr />
           </div>
           <VerifiedPresentationData

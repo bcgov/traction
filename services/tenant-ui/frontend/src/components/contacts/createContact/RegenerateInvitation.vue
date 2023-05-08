@@ -1,13 +1,13 @@
 <template>
   <Button
-    :title="t('connect.invitations.regenerate')"
+    :title="$t('connect.invitations.regenerate')"
     icon="pi pi-link"
     class="p-button-rounded p-button-icon-only p-button-text"
     @click="openModal"
   />
   <Dialog
     v-model:visible="displayModal"
-    :header="t('connect.invitations.regenerate')"
+    :header="$t('connect.invitations.regenerate')"
     :modal="true"
     :style="{ minWidth: '400px' }"
     @update:visible="handleClose"
@@ -18,7 +18,7 @@
     <div v-else-if="invitation">
       <!-- Alias -->
       <div class="field w-full">
-        <label for="alias">Alias</label>
+        <label for="alias">{{ $t('connect.invitations.alias') }}</label>
         <InputText
           :value="invitation.alias"
           class="w-full"
@@ -40,7 +40,6 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import ProgressSpinner from 'primevue/progressspinner';
-import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
 // State
 import { storeToRefs } from 'pinia';
@@ -48,7 +47,6 @@ import { useContactsStore } from '@/store';
 // Other Components
 import QRCode from '../../common/QRCode.vue';
 
-const { t } = useI18n();
 const toast = useToast();
 
 const contactsStore = useContactsStore();

@@ -3,7 +3,7 @@
     <template #start>
       <div
         class="hamburger"
-        title="Toggle the side menu"
+        :title="$t('layout.header.toggleSideMenu')"
         @click="toggleSidebar"
       >
         <i class="pi pi-bars p-toolbar-separator mr-2" />

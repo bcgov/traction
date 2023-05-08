@@ -19,7 +19,7 @@
               class="oidc-choice"
             >
               <hr />
-              <span class="mb-0">Or Sign-In with</span>
+              <span class="mb-0">{{ $t('admin.orSignInWith') }}</span>
             </div>
             <InnkeeperLoginOidc class="mt-0" />
           </div>
@@ -28,7 +28,8 @@
     </div>
 
     <div class="cover-image hidden md:block col-0 md:col-6 xl:col-8 p-0">
-      <span class="copyright"> Photo by Julia Volk on StockSnap </span>
+      <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
+      <span class="copyright">Photo by Julia Volk on StockSnap</span>
     </div>
   </div>
 </template>

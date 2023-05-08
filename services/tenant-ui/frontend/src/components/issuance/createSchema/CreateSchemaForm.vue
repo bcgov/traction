@@ -8,7 +8,7 @@
           <label
             for="schemaName"
             :class="{ 'p-error': v$.schemaName.$invalid && submitted }"
-            >Schema Name*</label
+            >{{ $t('issue.schemaName') }}</label
           >
           <InputText
             id="schemaName"
@@ -32,7 +32,7 @@
           <label
             for="schemaVersion"
             :class="{ 'p-error': v$.schemaVersion.$invalid && submitted }"
-            >Schema Version*</label
+            >{{ $t('issue.schemaVersion') }}</label
           >
           <InputText
             id="schemaVersion"
@@ -55,7 +55,9 @@
           >
         </div>
         <!-- attributes -->
-        <h4 style="margin-bottom: 0.5rem; font-weight: normal">Attributes*</h4>
+        <h4 style="margin-bottom: 0.5rem; font-weight: normal">
+          {{ $t('issue.attributes') }}
+        </h4>
         <div
           v-for="(item, index) in attributes"
           :key="index"

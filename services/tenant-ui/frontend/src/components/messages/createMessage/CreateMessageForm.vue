@@ -7,7 +7,7 @@
           for="connectionId"
           :class="{ 'p-error': v$.connectionId.$invalid && submitted }"
         >
-          Connection ID
+          {{ $t('messages.connectionId') }}
         </label>
         <InputText
           id="connectionId"
@@ -57,7 +57,7 @@
           for="msgContent"
           :class="{ 'p-error': v$.msgContent.$invalid && submitted }"
         >
-          {{ t('messages.messageContent') }}
+          {{ $t('messages.messageContent') }}
         </label>
         <Textarea
           id="inviteUrl"
@@ -99,13 +99,11 @@ import Textarea from 'primevue/textarea';
 import { required } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
 import { useToast } from 'vue-toastification';
-import { useI18n } from 'vue-i18n';
 // State
 import { storeToRefs } from 'pinia';
 import { useContactsStore, useMessageStore } from '@/store';
 
 const toast = useToast();
-const { t } = useI18n();
 
 // Store valuesloading
 const { loading } = storeToRefs(useMessageStore());

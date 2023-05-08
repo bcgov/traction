@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-0">{{ t('issue.credentials') }}</h3>
+  <h3 class="mt-0">{{ $t('issue.credentials') }}</h3>
 
   <DataTable
     v-model:selection="selectedCredential"
@@ -37,8 +37,8 @@
         </div>
       </div>
     </template>
-    <template #empty> No records found. </template>
-    <template #loading> Loading data. Please wait... </template>
+    <template #empty>{{ $t('common.noRecordsFound') }}</template>
+    <template #loading>{{ $t('common.loading') }}</template>
     <Column :expander="true" header-style="width: 3rem" />
     <Column header="Actions">
       <template #body="{ data }">
@@ -94,8 +94,6 @@ import DataTable, { DataTableFilterMetaData } from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
 import { FilterMatchMode } from 'primevue/api';
 import { useToast } from 'vue-toastification';
-import { useConfirm } from 'primevue/useconfirm';
-import { useI18n } from 'vue-i18n';
 // Other Components
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
@@ -106,7 +104,6 @@ import RowExpandData from '../common/RowExpandData.vue';
 import StatusChip from '../common/StatusChip.vue';
 
 const toast = useToast();
-const { t } = useI18n();
 
 const contactsStore = useContactsStore();
 const { contacts } = storeToRefs(useContactsStore());

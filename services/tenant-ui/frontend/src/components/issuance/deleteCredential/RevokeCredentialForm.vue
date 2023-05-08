@@ -28,14 +28,23 @@
 
     <div class="rev-details">
       <p>
-        <small>Connection: {{ props.connectionDisplay }}</small>
-      </p>
-      <p>
-        <small>Revocation ID: {{ props.credExchRecord.revocation_id }}</small>
+        <small>
+          <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
+          {{ t('issue.connection') }}: {{ props.connectionDisplay }}
+        </small>
       </p>
       <p>
         <small>
-          Revocation Registry: {{ props.credExchRecord.revoc_reg_id }}
+          <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
+          {{ t('issue.revocationId') }}:
+          {{ props.credExchRecord.revocation_id }}
+        </small>
+      </p>
+      <p>
+        <small>
+          <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
+          {{ t('issue.revocationRegistry') }}:
+          {{ props.credExchRecord.revoc_reg_id }}
         </small>
       </p>
     </div>
@@ -67,11 +76,11 @@ import { useVuelidate } from '@vuelidate/core';
 import { useToast } from 'vue-toastification';
 import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const issuerStore = useIssuerStore();
 const { loading } = storeToRefs(useIssuerStore());
 
 const toast = useToast();
-const { t } = useI18n();
 
 const emit = defineEmits(['closed', 'success']);
 

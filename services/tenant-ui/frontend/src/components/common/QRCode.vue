@@ -11,7 +11,7 @@
 
     <!-- Plain text of link -->
     <div class="field mt-5 w-full">
-      <label for="inviteUrl">Invitation URL</label>
+      <label for="inviteUrl">{{ $t('qrCode.invitationUrl') }}</label>
       <div class="p-inputgroup">
         <InputText
           id="inviteUrl"
@@ -29,7 +29,7 @@
       </div>
     </div>
   </div>
-  <span v-else>No Content Found</span>
+  <span v-else>{{ $t('qrCode.noContentFound') }}</span>
 </template>
 
 <script setup lang="ts">

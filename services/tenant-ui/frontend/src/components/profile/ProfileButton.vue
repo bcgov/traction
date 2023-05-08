@@ -18,6 +18,9 @@ import Menu from 'primevue/menu';
 import { useConfigStore } from '@/store';
 import { useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 const { config } = storeToRefs(useConfigStore());
 const { isIssuer } = storeToRefs(useTenantStore());
 
@@ -28,15 +31,15 @@ const toggleProfile = (event: any) => {
 
 const items = [
   {
-    label: 'Profile',
+    label: t('profile.profile'),
     to: { name: 'Profile' },
   },
   {
-    label: 'Settings',
+    label: t('profile.settings'),
     to: { name: 'Settings' },
   },
   {
-    label: 'Developer',
+    label: t('profile.developer'),
     visible: config.value.frontend.showDeveloper,
     to: { name: 'Developer' },
   },
@@ -44,7 +47,7 @@ const items = [
     separator: true,
   },
   {
-    label: 'Logout',
+    label: t('profile.logout'),
     class: 'logout-menu-item',
     url: '/', // TODO: this should be a logout route
   },

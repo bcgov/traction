@@ -3,15 +3,18 @@
   <Card class="info-card mt-4 mb-6">
     <template #title>
       <i class="pi pi-thumbs-up info-card-icon"></i> <br />
-      APPROVED!
+      {{ $t('reservations.approved!') }}
     </template>
     <template #content>
       <p>
-        We have sent a Reservation Password to your email address on
-        {{ formatDateLong(reservation.updated_at) }}.
+        {{
+          $t('reservations.sentPasswordOn', [
+            formatDateLong(reservation.updated_at),
+          ])
+        }}
       </p>
       <p>
-        Please enter the Reservation Password below to validate your account.
+        {{ $t('reservations.enterPassword') }}
       </p>
 
       <form @submit.prevent="handleSubmit(!v$.$invalid)">
@@ -39,14 +42,12 @@
         </div>
       </form>
       <p>
-        The Reservation Password is only valid for 48 hours from the time it was
-        sent to your email address.
+        {{ $t('reservations.passwordValid48Hours') }}
       </p>
     </template>
     <template #footer>
       <hr />
-      (Please check your junk/spam folder before contacting us, as it is very
-      common to have the email delivery problems because of automated filters.)
+      {{ $t('reservations.checkJunkFolder') }}
     </template>
   </Card>
 </template>
