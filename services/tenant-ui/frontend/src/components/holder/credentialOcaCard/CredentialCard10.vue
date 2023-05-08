@@ -29,6 +29,7 @@ const branding = computed(() => props.overlay?.branding);
 
 <style scoped>
 .container {
+  width: 360px;
   background-color: v-bind(
     'branding?.primaryBackgroundColor || "rgba(0, 0, 0, 0.24)"'
   );

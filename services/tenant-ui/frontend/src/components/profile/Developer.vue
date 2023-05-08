@@ -1,6 +1,6 @@
 <template>
   <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
-  <h2>{{ $t('profile.config') }}:</h2>
+  <h2>{{ $t('profile.config') }}</h2>
   <vue-json-pretty :data="config" />
 </template>
 

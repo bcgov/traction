@@ -2,8 +2,8 @@
   <div class="flex justify-content-between mb-3">
     <div class="flex justify-content-start">
       <h3 class="mt-0">
-        <span v-if="cardView">Credentials</span>
-        <span v-else>Credential Exchanges</span>
+        <span v-if="cardView">{{ $t('common.credentials') }}</span>
+        <span v-else>{{ $t('credentials.exchanges.exchanges') }}</span>
       </h3>
     </div>
     <div class="flex justify-content-end">

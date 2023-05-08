@@ -20,6 +20,7 @@ const props = defineProps<{
 
 <style scoped>
 .secondary-body-container {
+  flex-shrink: 0;
   width: v-bind('D.logoHeight + "px"');
   border-top-left-radius: v-bind('D.borderRadius + "px"');
   border-bottom-left-radius: v-bind('D.borderRadius + "px"');

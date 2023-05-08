@@ -15,20 +15,10 @@
       </div>
     </div>
     <div v-else>
-      <i class="pi pi-exclamation-triangle"></i> There is no OCA associated with
-      <br />
-      this credential definition. <br />
-      Cannot display at this time, sorry.
+      <i class="pi pi-exclamation-triangle"></i>
+      {{ $t('credentials.wallet.noOca') }} <br />
+      {{ $t('credentials.wallet.noOcaNotImpl') }}
     </div>
-    <!-- {displayAttributes.map((attribute, index) => (
-    <Attribute
-      key="{`${attribute}_${index}}`}"
-      overlay="{overlay}"
-      language="{language}"
-      attribute="{attribute}"
-      styles="{styles}"
-    />
-    ))} -->
   </div>
 </template>
 

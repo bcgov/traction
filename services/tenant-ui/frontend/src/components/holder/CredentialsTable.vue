@@ -27,11 +27,11 @@
         </div>
       </div>
     </template>
-    <template #empty> No records found. </template>
-    <template #loading> Loading data. Please wait... </template>
+    <template #empty>{{ $t('common.noRecordsFound') }}</template>
+    <template #loading>{{ $t('common.loading') }}</template>
     <template #expansion="{ data }">
       <CredentialAttributes :attributes="getAttributes(data)" />
-      --
+      <hr class="expand-divider" />
       <RowExpandData
         :id="data.credential_exchange_id"
         :url="API_PATH.ISSUE_CREDENTIAL_RECORDS"
@@ -162,5 +162,11 @@ onMounted(async () => {
 <style scoped>
 button.accepted {
   color: green !important;
+}
+
+.expand-divider {
+  border: 1px dashed grey;
+  width: 40px;
+  margin-inline-start: 0;
 }
 </style>

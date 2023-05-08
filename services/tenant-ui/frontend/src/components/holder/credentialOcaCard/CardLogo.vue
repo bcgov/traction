@@ -17,17 +17,9 @@ const props = defineProps<{
 </script>
 
 <style scoped>
-.secondary-body-container {
-  width: v-bind('D.logoHeight + "px"');
-  border-top-left-radius: v-bind('D.borderRadius + "px"');
-  border-bottom-left-radius: v-bind('D.borderRadius + "px"');
-  background-color: v-bind(
-    '(branding?.backgroundImageSlice ? "rgba(0, 0, 0, 0)" : branding?.secondaryBackgroundColor) || "rgba(0, 0, 0, 0.24)"'
-  );
-}
-
 .logo-container {
   display: flex;
+  flex-shrink: 0;
   position: relative;
   top: v-bind('D.padding + "px"');
   left: v-bind('(-1 * D.logoHeight + D.padding) + "px"');

@@ -9,22 +9,16 @@
     <div
       v-for="(cred, index) in credentials"
       :key="index"
-      class="col-12 md:col-6 xl:col-3"
+      class="col-12 md:col-6 xl:col-4"
     >
       <OcaCard :credential="cred" />
     </div>
   </div>
 
-  <span v-else> There are no credentials in your Wallet </span>
+  <span v-else> {{ $t('credentials.wallet.notFound') }} </span>
 </template>
 
 <script setup lang="ts">
-// Types
-import {
-  CredAttrSpec,
-  V10CredentialExchange,
-} from '@/types/acapyApi/acapyInterface';
-
 // Vue
 import { onMounted } from 'vue';
 // PrimeVue etc

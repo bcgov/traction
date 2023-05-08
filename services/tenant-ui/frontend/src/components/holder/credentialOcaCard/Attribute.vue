@@ -24,9 +24,7 @@ const props = defineProps<{
   overlay?: OverlayBundle;
 }>();
 
-const displayAttributeLabel = (
-  attributeName: string
-): string => {
+const displayAttributeLabel = (attributeName: string): string => {
   const attrLabel = props.overlay?.attributes.find(
     (attribute) => attribute.name === attributeName
   );

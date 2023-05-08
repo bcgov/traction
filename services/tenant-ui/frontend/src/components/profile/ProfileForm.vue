@@ -12,7 +12,7 @@
     </div>
     <!-- Wallet ID -->
     <div class="field">
-      <label for="walletId">{{ $t('profile.walletId') }}</label>
+      <label for="walletId">{{ $t('common.walletId') }}</label>
       <InputText
         id="walletId"
         class="w-full"

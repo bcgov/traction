@@ -82,9 +82,7 @@ const loadOcaForCred = async () => {
     }
   } catch (err) {
     console.error(err);
-    toast.error(
-      `OCA loading failed for ${props.credential.cred_def_id}`
-    );
+    toast.error(`OCA loading failed for ${props.credential.cred_def_id}`);
   } finally {
     loadingCardOca.value = false;
   }
