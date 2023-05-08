@@ -1,8 +1,9 @@
 <template>
   <div class="text-center">
-    <h1>404: Not Found</h1>
+    <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
+    <h1>{{ $t('httpStatus.404.code') }}: {{ $t('httpStatus.404.status') }}</h1>
     <router-link :to="{ name: 'Dashboard' }">
-      <Button label="Back to Dashboard" class="p-button-link" />
+      <Button :label="$t('dashboard.backToDashboard')" class="p-button-link" />
     </router-link>
   </div>
 </template>

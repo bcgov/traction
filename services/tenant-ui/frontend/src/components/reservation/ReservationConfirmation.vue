@@ -2,24 +2,23 @@
   <Card class="info-card mt-4 mb-6">
     <template #title>
       <i class="pi pi-check-circle info-card-icon"></i> <br />
-      Thank You!
+      {{ $t('reservation.thankYou') }}
     </template>
     <template #content>
       <p class="text-center">
-        Your request has been submitted successfully. <br />
-        An email has also been sent to {{ email }} with the reservation number
-        below.
+        {{ $t('reservation.submitted') }} <br />
+        {{ $t('reservation.emailSentTo', [email]) }}
       </p>
     </template>
   </Card>
 
   <div class="field w-full">
-    <label for="">Email Address</label>
+    <label for="">{{ $t('reservation.emailAddress') }}</label>
     <InputText :value="email" type="text" readonly class="w-full" />
   </div>
 
   <div class="field w-full">
-    <label for="">Reservation Number</label>
+    <label for="">{{ $t('reservation.reservationId') }}</label>
     <div class="p-inputgroup">
       <InputText :value="id" type="text" readonly class="w-full" />
       <Button

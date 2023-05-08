@@ -1,6 +1,6 @@
 <template>
   <div class="title">
-    <h2>Chat with {{ props.connectionName }}</h2>
+    <h2>{{ $t('connect.message.contact', [props.connectionName]) }}</h2>
   </div>
   <div class="container">
     <div

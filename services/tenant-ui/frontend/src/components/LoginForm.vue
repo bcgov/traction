@@ -5,15 +5,16 @@
       <label
         for="wallet-id"
         :class="{ 'p-error': v$.walletId.$invalid && submitted }"
-        >Wallet ID
+      >
+        {{ $t('login.walletId') }}
       </label>
       <InputText
         id="wallet-id"
         v-model="v$.walletId.$model"
         type="text"
         option-label="label"
-        autocomplete="username"
-        name="username"
+        autocomplete="wallet-id"
+        name="walledId"
         autofocus
         class="w-full"
       />
@@ -25,16 +26,18 @@
     <div class="field mt-5 w-full">
       <!-- Secret -->
       <label
-        for="wallet-id"
+        for="wallet-secret"
         :class="{ 'p-error': v$.walletSecret.$invalid && submitted }"
-        >Wallet Secret
+      >
+        {{ $t('login.walletSecret') }}
       </label>
       <InputText
         id="wallet-secret"
         v-model="v$.walletSecret.$model"
         type="password"
-        autocomplete="current-password"
-        name="walletsecret"
+        option-label="label"
+        autocomplete="wallet-secret"
+        name="walletSecret"
         class="w-full"
       />
       <small v-if="v$.walletSecret.$invalid && submitted" class="p-error">{{
@@ -44,7 +47,7 @@
       <Button
         type="submit"
         class="w-full mt-5"
-        label="Sign-In"
+        :label="$t('login.submit')"
         :disabled="!!loading"
         :loading="!!loading"
       />

@@ -2,17 +2,18 @@
   <Card class="info-card mt-4 mb-6">
     <template #title>
       <i class="pi pi-check-circle info-card-icon"></i> <br />
-      Already Complete
+      {{ $t('reservations.alreadyComplete') }}
     </template>
     <template #content>
       <p>
-        This reservation has already previously been completed and the wallet
-        details given out. <br />
-        The date this occurred was
-        <strong> {{ formatDateLong(reservation.updated_at) }}</strong>
+        {{ $t('reservations.reservationPreviouslyCompleted') }} <br />
+        {{
+          $t('reservations.dateOccurred', [
+            formatDateLong(reservation.updated_at),
+          ])
+        }}
         <br />
-        The Wallet Key cannot be retrieved again once supplied. If you require a
-        new wallet you can go back and start a new reservation.
+        {{ $t('reservations.walletKeyCannotBeRetrievedAgain') }}
       </p>
     </template>
   </Card>

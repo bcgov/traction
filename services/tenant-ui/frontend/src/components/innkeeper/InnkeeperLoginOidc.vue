@@ -5,7 +5,8 @@
     :loading="loading"
     @click="oidcLogin"
   />
-  <div v-if="error">ERROR: {{ error }}</div>
+  <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
+  <div v-if="error">{{ $t('admin.error') }}: {{ error }}</div>
 </template>
 
 <script setup lang="ts">

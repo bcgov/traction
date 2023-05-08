@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-0">Tenant Profile</h3>
+  <h3 class="mt-0">{{ $t('tenant.profile.tenantProfile') }}</h3>
 
   <div v-if="loading" class="flex justify-content-center">
     <ProgressSpinner />

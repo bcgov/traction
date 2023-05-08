@@ -16,9 +16,9 @@ import { useToast } from 'vue-toastification';
 import { useConfirm } from 'primevue/useconfirm';
 import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const toast = useToast();
 const confirm = useConfirm();
-const { t } = useI18n();
 
 const issuerStore = useIssuerStore();
 

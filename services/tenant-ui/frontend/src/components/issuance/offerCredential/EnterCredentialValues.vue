@@ -15,11 +15,11 @@
     <div class="flex justify-content-between">
       <div class="flex justify-content-start">
         <label for="credentialValuesEdit">
-          <strong>Credential Field Values</strong>
+          <strong>{{ $t('issuse.credentialFieldValues') }}</strong>
         </label>
       </div>
       <div class="flex justify-content-end">
-        JSON
+        {{ $t('issue.Json') }}
         <InputSwitch v-model="showRawJson" class="ml-1" @input="toggleJson" />
       </div>
     </div>
@@ -37,7 +37,10 @@
 
       <div class="flex justify-content-end">
         <small>
-          Schema: {{ schemaForSelectedCred.schema.name }} Version:
+          <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
+          {{ $t('issue.schema') }}: {{ schemaForSelectedCred.schema.name }}
+          <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
+          {{ $t('issue.version') }}:
           {{ schemaForSelectedCred.schema.version }}
         </small>
       </div>

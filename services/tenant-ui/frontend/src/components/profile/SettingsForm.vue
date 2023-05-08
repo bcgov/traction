@@ -4,7 +4,7 @@
     <div v-else class="settings-form">
       <!-- Wallet Label -->
       <div class="field">
-        <label for="walletLabel">Wallet Label</label>
+        <label for="walletLabel">{{ $t('profile.walletLabel') }}</label>
         <InputText
           id="walletLabel"
           v-model="v$.walletLabel.$model"
@@ -21,7 +21,7 @@
       <!-- Webhooks -->
 
       <Divider class="websockets-top" align="left" type="solid">
-        <b>Webhooks</b>
+        <b>{{ $t('profile.webhooks') }}</b>
       </Divider>
 
       <div class="webhooks">
@@ -32,7 +32,7 @@
             class="webhook"
           >
             <div class="field">
-              <label for="webhookUrl">WebHook URL</label>
+              <label for="webhookUrl">{{ $t('profile.webhookUrl') }}</label>
               <InputText
                 id="webhookUrl"
                 v-model="webhook.webhookUrl"
@@ -41,7 +41,7 @@
             </div>
 
             <div class="field">
-              <label for="webhookKey">WebHook Key</label>
+              <label for="webhookKey">{{ $t('profile.webhookKey') }}</label>
               <Password
                 id="webhookKey"
                 v-model="webhook.webhookKey"
@@ -75,7 +75,7 @@
 
       <!-- Image URL -->
       <div class="field">
-        <label for="imageUrl">Image URL</label>
+        <label for="imageUrl">{{ $t('profile.imageUrl') }}</label>
         <InputText id="imageUrl" v-model="v$.imageUrl.$model" class="w-full" />
       </div>
 

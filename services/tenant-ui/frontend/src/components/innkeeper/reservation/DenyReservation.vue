@@ -1,24 +1,24 @@
 <template>
   <Button
-    :label="t('reservations.denyRequest')"
+    :label="$t('reservations.denyRequest')"
     icon="pi pi-trash"
     class="p-button-rounded p-button-icon-only p-button-text"
     @click="confirmDeny"
   />
   <Dialog
     v-model:visible="displayModal"
-    :header="t('reservations.denyRequest')"
+    :header="$t('reservations.denyRequest')"
     :modal="true"
   >
     <form @submit.prevent="deny()">
       <!-- Reason -->
       <div class="field">
-        <label for="reason"> {{ t('reservations.denied.reasonText') }} </label>
+        <label for="reason"> {{ $t('reservations.denied.reasonText') }} </label>
         <InputText id="reason" v-model="reason" class="w-full" />
       </div>
       <Button
         type="submit"
-        :label="t('reservations.denyRequest')"
+        :label="$t('reservations.denyRequest')"
         class="mt-5 w-full"
         :disabled="loading"
         :loading="loading"
@@ -34,7 +34,6 @@ import { ref } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import { useToast } from 'vue-toastification';
-import { useI18n } from 'vue-i18n';
 // State
 import { useInnkeeperTenantsStore } from '@/store';
 import { storeToRefs } from 'pinia';
@@ -42,7 +41,6 @@ import InputText from 'primevue/inputtext';
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
 const { loading } = storeToRefs(useInnkeeperTenantsStore());
 
-const { t } = useI18n();
 const toast = useToast();
 
 const props = defineProps({

@@ -8,7 +8,7 @@
           <label
             for="selectedCred"
             :class="{ 'p-error': v$.selectedCred.$invalid && submitted }"
-            >Credential ID
+            >{{ $t('issue.credentialId') }}
             <ProgressSpinner v-if="credsLoading" />
           </label>
 
@@ -34,7 +34,7 @@
           <label
             for="selectedContact"
             :class="{ 'p-error': v$.selectedContact.$invalid && submitted }"
-            >Contact Name
+            >{{ $t('issue.contactName') }}
             <ProgressSpinner v-if="contactLoading" />
           </label>
 
@@ -65,7 +65,7 @@
               :class="{
                 'p-error': v$.credentialValuesPretty.$invalid && submitted,
               }"
-              >Credential Value</label
+              >{{ $t('issue.credentialValues') }}</label
             >
             <Button
               label="Enter Credential Value"

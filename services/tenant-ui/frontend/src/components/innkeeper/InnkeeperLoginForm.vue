@@ -5,7 +5,8 @@
       <label
         for="admin-name"
         :class="{ 'p-error': v$.adminName.$invalid && submitted }"
-        >Admin Name
+      >
+        {{ $t('admin.adminName') }}
       </label>
       <InputText
         id="admin-name"
@@ -26,7 +27,8 @@
       <label
         for="admin-key"
         :class="{ 'p-error': v$.adminKey.$invalid && submitted }"
-        >Admin Key
+      >
+        {{ $t('admin.adminKey') }}
       </label>
       <InputText
         id="admin-key"
