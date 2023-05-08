@@ -1,13 +1,13 @@
 <template>
   <div>
     <Button
-      :label="t('messages.createMessage')"
+      :label="$t('messages.createMessage')"
       icon="pi pi-envelope"
       @click="openModal"
     />
     <Dialog
       v-model:visible="displayModal"
-      :header="t('messages.createMessage')"
+      :header="$t('messages.createMessage')"
       :modal="true"
       :style="{ width: '500px' }"
       @update:visible="handleClose"
@@ -25,9 +25,6 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 // Custom Components
 import CreateMessageForm from './CreateMessageForm.vue';
-import { useI18n } from 'vue-i18n';
-
-const { t } = useI18n();
 
 defineEmits(['success']);
 

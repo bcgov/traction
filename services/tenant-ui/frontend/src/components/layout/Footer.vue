@@ -1,6 +1,6 @@
 <template>
   <div class="traction-footer flex justify-content-between flex-wrap">
-    <div>{{ t('home.greeting') }}</div>
+    <div>{{ $t('dashboard.greeting') }}</div>
     <div>{{ config.frontend.ux.copyright }} {{ config.frontend.ux.owner }}</div>
   </div>
 </template>
@@ -8,9 +8,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { useConfigStore } from '../../store';
-import { useI18n } from 'vue-i18n';
-
-const { t } = useI18n();
 
 const { config } = storeToRefs(useConfigStore());
 </script>

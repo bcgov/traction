@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-0">Credentials</h3>
+  <h3 class="mt-0">{{ $t('credentials.credentials') }}</h3>
   <DataTable
     v-model:selection="selectedCredential"
     v-model:expandedRows="expandedRows"
@@ -23,21 +23,22 @@
             <i class="pi pi-search" />
             <InputText
               v-model="filter.cred_def_id.value"
-              placeholder="Search Credentials"
+              :placeholder="$t('credentials.search')"
             />
           </span>
           <Button
             icon="pi pi-refresh"
             class="p-button-rounded p-button-outlined"
-            title="Refresh Table"
+            :title="$t('credentials.table.refresh')"
             @click="loadTable"
           />
         </div>
       </div>
     </template>
-    <template #empty> No records found. </template>
-    <template #loading> Loading data. Please wait... </template>
+    <template #empty>{{ $t('credentials.table.noRecords') }}</template>
+    <template #loading>{{ $t('credentials.table.loading') }}</template>
     <template #expansion="{ data }">
+      <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
       <CredentialAttributes :attributes="getAttributes(data)" />
       --
       <RowExpandData
@@ -46,7 +47,7 @@
       />
     </template>
     <Column :expander="true" header-style="width: 3rem" />
-    <Column header="Actions" class="action-col">
+    <Column :header="$t('credentials.table.actions')" class="action-col">
       <template #body="{ data }">
         <Button
           title="Accept Credential into Wallet"
@@ -72,7 +73,11 @@
         />
       </template>
     </Column>
-    <Column :sortable="true" field="connection_id" header="Connection">
+    <Column
+      :sortable="true"
+      field="connection_id"
+      :header="$t('credentials.table.connection')"
+    >
       <template #body="{ data }">
         {{ findConnectionName(data.connection_id) }}
       </template>
@@ -80,14 +85,18 @@
     <Column
       :sortable="true"
       field="credential_definition_id"
-      header="Credential"
+      :header="$t('credentials.table.credential')"
     />
     <Column :sortable="true" field="state" header="Status">
       <template #body="{ data }">
         <StatusChip :status="data.state" />
       </template>
     </Column>
-    <Column :sortable="true" field="updated_at" header="Last update">
+    <Column
+      :sortable="true"
+      field="updated_at"
+      :header="$t('credentials.table.lastUpdate')"
+    >
       <template #body="{ data }">
         {{ formatDateLong(data.created_at) }}
       </template>

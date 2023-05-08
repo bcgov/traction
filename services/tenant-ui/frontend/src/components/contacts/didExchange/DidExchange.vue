@@ -1,14 +1,14 @@
 <template>
   <div>
     <Button
-      :label="t('connect.didExchange.didExchange')"
+      :label="$t('connect.didExchange.didExchange')"
       icon="pi pi-arrows-h"
       @click="openModal"
     />
     <Dialog
       v-model:visible="displayModal"
       :style="{ minWidth: '400px' }"
-      :header="t('connect.didExchange.didExchange')"
+      :header="$t('connect.didExchange.didExchange')"
       :modal="true"
       @update:visible="handleClose"
     >
@@ -26,9 +26,6 @@ import Dialog from 'primevue/dialog';
 // Custom Components
 import DidExchangeForm from './DidExchangeForm.vue';
 // Other Imports
-import { useI18n } from 'vue-i18n';
-
-const { t } = useI18n();
 
 defineEmits(['success']);
 

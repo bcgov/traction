@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-0">{{ t('connect.connections') }}</h3>
+  <h3 class="mt-0">{{ $t('connect.connections.connections') }}</h3>
 
   <DataTable
     v-model:expandedRows="expandedRows"
@@ -19,7 +19,6 @@
       <div class="flex justify-content-between">
         <div class="flex justify-content-start">
           <AcceptInvitation />
-          <!-- <AcceptInvitation class="ml-4" /> -->
           <DidExchange class="ml-4" />
         </div>
         <div class="flex justify-content-end">
@@ -27,22 +26,22 @@
             <i class="pi pi-search" />
             <InputText
               v-model="filter.alias.value"
-              placeholder="Search Connections"
+              :placeholder="$t('connect.connections.search')"
             />
           </span>
           <Button
             icon="pi pi-refresh"
             class="p-button-rounded p-button-outlined"
-            title="Refresh Table"
+            :title="$t('connect.table.refresh')"
             @click="loadTable"
           />
         </div>
       </div>
     </template>
-    <template #empty> No records found. </template>
-    <template #loading> Loading data. Please wait... </template>
+    <template #empty>{{ $t('connect.table.noRecords') }}</template>
+    <template #loading>{{ $t('connect.table.loading') }}</template>
     <Column :expander="true" header-style="width: 3rem" />
-    <Column :sortable="false" header="Actions">
+    <Column :sortable="false" :header="$t('connect.table.actions')">
       <template #body="{ data }">
         <MessageContact
           :connection-id="data.connection_id"
@@ -58,14 +57,30 @@
         <EditContact :connection-id="data.connection_id" />
       </template>
     </Column>
-    <Column :sortable="true" field="alias" header="Alias" />
-    <Column :sortable="true" field="their_label" header="Their Label" />
-    <Column :sortable="true" field="status" header="Status">
+    <Column
+      :sortable="true"
+      field="alias"
+      :header="$t('connect.table.alias')"
+    />
+    <Column
+      :sortable="true"
+      field="their_label"
+      :header="$t('connect.table.theirLabel')"
+    />
+    <Column
+      :sortable="true"
+      field="status"
+      :header="$t('connect.table.status')"
+    >
       <template #body="{ data }">
         <StatusChip :status="data.state" />
       </template>
     </Column>
-    <Column :sortable="true" field="created_at" header="Created at">
+    <Column
+      :sortable="true"
+      field="created_at"
+      :header="$t('connect.table.createdAt')"
+    >
       <template #body="{ data }">
         {{ formatDateLong(data.created_at) }}
       </template>
@@ -86,7 +101,6 @@ import InputText from 'primevue/inputtext';
 import DataTable, { DataTableFilterMetaData } from 'primevue/datatable';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';
-import { FilterMatchMode } from 'primevue/api';
 // State
 import { useContactsStore, useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
@@ -100,11 +114,9 @@ import RowExpandData from '../common/RowExpandData.vue';
 import StatusChip from '../common/StatusChip.vue';
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
-import { useI18n } from 'vue-i18n';
 
 const confirm = useConfirm();
 const toast = useToast();
-const { t } = useI18n();
 
 const contactsStore = useContactsStore();
 const tenantStore = useTenantStore();

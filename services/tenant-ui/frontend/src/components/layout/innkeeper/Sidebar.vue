@@ -1,6 +1,8 @@
 <template>
   <div class="traction-sidebar innkeeper-sidebar">
+    <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
     <h1 class="sidebar-app-title">Innkeeper</h1>
+    <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
     <h1 class="sidebar-app-title small">I</h1>
     <PanelMenu :model="items" class="mt-5" />
   </div>
