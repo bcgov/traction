@@ -7,7 +7,7 @@
           <label
             for="schemaId"
             :class="{ 'p-error': v$.schemaId.$invalid && submitted }"
-            >{{ $t('issue.schemaID') }}</label
+            >{{ $t('issue.schemaId') }}</label
           >
           <InputText
             id="schemaId"

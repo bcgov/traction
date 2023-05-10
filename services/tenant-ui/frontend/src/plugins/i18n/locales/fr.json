@@ -45,8 +45,9 @@
     "profile": "Profile <FR>",
     "refreshTable": "Refresh Table <FR>",
     "request": "Request <FR>",
-    "settings": "`Settings` <FR>",
+    "settings": "Settings <FR>",
     "status": "Status <FR>",
+    "submit": "Submit <FR>",
     "tenantName": "Tenant Name <FR>",
     "tenantReason": "Tenant Reason <FR>",
     "walletId": "Wallet ID <FR>"
@@ -83,7 +84,8 @@
       "invitation": "Invitation <FR>",
       "skipUrl": "Skip URL and use JSON <FR>",
       "submit": "Accept <FR>",
-      "supportedUrl": "Supported URL format is <FR>"
+      "supportedUrl": "Supported URL format is <FR>",
+      "url": "Invitation URL <FR>"
     },
     "connections": {
       "connections": "Connections <FR>",
@@ -212,7 +214,7 @@
     "walletSecret": "Wallet Secret <FR>"
   },
   "messages": {
-    "connectonId": "Connection ID <FR>",
+    "connectionId": "Connection ID <FR>",
     "createMessage": "Create a Message <FR>",
     "messageContent": "Message Content <FR>",
     "messages": "Messages <FR>"
@@ -304,7 +306,7 @@
     "submit": "Check Status <FR>"
   },
   "tenant": {
-    "pofile": {
+    "profile": {
       "tenantProfile": "Tenant Profile <FR>"
     },
     "settings": {

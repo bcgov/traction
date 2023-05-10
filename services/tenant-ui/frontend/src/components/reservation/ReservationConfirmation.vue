@@ -2,23 +2,23 @@
   <Card class="info-card mt-4 mb-6">
     <template #title>
       <i class="pi pi-check-circle info-card-icon"></i> <br />
-      {{ $t('reservation.thankYou') }}
+      {{ $t('reservations.thankYou!') }}
     </template>
     <template #content>
       <p class="text-center">
-        {{ $t('reservation.submitted') }} <br />
-        {{ $t('reservation.emailSentTo', [email]) }}
+        {{ $t('reservations.submitted') }} <br />
+        {{ $t('reservations.emailSentTo', [email]) }}
       </p>
     </template>
   </Card>
 
   <div class="field w-full">
-    <label for="">{{ $t('reservation.emailAddress') }}</label>
+    <label for="">{{ $t('common.emailAddress') }}</label>
     <InputText :value="email" type="text" readonly class="w-full" />
   </div>
 
   <div class="field w-full">
-    <label for="">{{ $t('reservation.reservationId') }}</label>
+    <label for="">{{ $t('reservations.reservationId') }}</label>
     <div class="p-inputgroup">
       <InputText :value="id" type="text" readonly class="w-full" />
       <Button
