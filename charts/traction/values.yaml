@@ -3,12 +3,7 @@
 # Declare variables to be passed into your templates.
 
 global:
-  nameOverride: ""
-  # global.fullnameOverride and postgresql.fullnameOverride must be changed (and match!!!) if deploying multiple instances to the same namespace
-  # the postgresql chart creates secrets and pvcs related to the fullname and will be identical without the override.
-  # use the global.fullnameOverride to install a different named helm instance and will affect naming of all objects and routes for that chart.
-  # for pull requests, can set to something like pr-NN-traction.
-  fullnameOverride: "traction"
+  # fullnameOverride: ""
 
   # -- Domain suffix to be used for default hostpaths in ingress
   # override in different environments, or for each app
@@ -194,15 +189,16 @@ acapy:
 
 postgresql:
   # when overriding global.fullnameOverride, you must override this to match.
-  fullnameOverride: "traction"
+  fullnameOverride: ""
 
   auth:
-    existingSecret: '{{ template "postgresql.secret.name" . }}'
+    existingSecret: '{{ include "global.fullname" . }}'
     secretKeys:
-      adminPasswordKey: postgresql-password
-      userPasswordKey: postgresql-password
+      adminPasswordKey: postgres-password
+      userPasswordKey: database-password
     # -- PostgreSQL Database to create.
     database: traction
+    username: acapy
 
   # --  PostgreSQL service configuration
   service:

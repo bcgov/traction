@@ -41,7 +41,13 @@ acapy:
 postgresql:
   fullnameOverride: 'traction-dts'
   auth:
-    postgresqlUsername: postgres
+    existingSecret: traction-dts-db
+    secretKeys:
+      adminPasswordKey: postgresql-password
+      userPasswordKey: postgresql-password
+    # -- PostgreSQL Database to create.
+    database: traction
+    username: postgres
   primary:
     podLabels:
       backup: 'true'

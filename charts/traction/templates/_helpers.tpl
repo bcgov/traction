@@ -82,8 +82,8 @@ it randomly.
 Create a default fully qualified postgresql name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
-{{- define "postgresql.secret.name" -}}
-{{ template "global.fullname" . }}-db
+{{- define "acapy.database.secret.name" -}}
+{{ template "global.fullname" . }}-postgresql
 {{- end -}}
 
 {{/*
