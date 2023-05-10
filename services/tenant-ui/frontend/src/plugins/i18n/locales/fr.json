@@ -127,11 +127,19 @@
     }
   },
   "credentials": {
-    "search": "Search Credentials <FR>",
-    "table": {
-      "connection": "Connection <FR>",
-      "credential": "Credential <FR>",
-      "lastUpdate": "Last Update <FR>"
+    "exchanges": {
+      "exchanges": "Credential Exchanges <FR>",
+      "search": "Search Credential Exchanges <FR>",
+      "table": {
+        "connection": "Connection <FR>",
+        "credential": "Credential <FR>",
+        "lastUpdate": "Last Update <FR>"
+      }
+    },
+    "wallet": {
+      "notFound": "There are no credentials in your Wallet <FR>",
+      "noOca": "There is no OCA associated with this credential definition <FR>",
+      "noOcaNotImpl": "Cannot display card view for Credentials without OCA at this time. <FR>"
     }
   },
   "dashboard": {
@@ -210,7 +218,7 @@
     "messages": "Messages <FR>"
   },
   "profile": {
-    "config:": "Config: <FR>",
+    "config": "Config: <FR>",
     "connectionNotActiveYet": "Connection not Active yet, refresh or come back later. <FR>",
     "connectTenantToEndorser": "Connect Tenant To Endorser <FR>",
     "createdAt": "Created at <FR>",

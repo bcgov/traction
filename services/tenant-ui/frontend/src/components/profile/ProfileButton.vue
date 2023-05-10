@@ -31,15 +31,15 @@ const toggleProfile = (event: any) => {
 
 const items = [
   {
-    label: t('profile.profile'),
+    label: t('common.profile'),
     to: { name: 'Profile' },
   },
   {
-    label: t('profile.settings'),
+    label: t('common.settings'),
     to: { name: 'Settings' },
   },
   {
-    label: t('profile.developer'),
+    label: t('common.developer'),
     visible: config.value.frontend.showDeveloper,
     to: { name: 'Developer' },
   },
@@ -47,7 +47,7 @@ const items = [
     separator: true,
   },
   {
-    label: t('profile.logout'),
+    label: t('common.logout'),
     class: 'logout-menu-item',
     url: '/', // TODO: this should be a logout route
   },

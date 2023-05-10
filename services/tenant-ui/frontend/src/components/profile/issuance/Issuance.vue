@@ -8,7 +8,7 @@
     </p>
   </div>
   <div v-else>
-    <h5 class="my-0">{{ $t('profile.endorser') }}</h5>
+    <h5 class="my-0">{{ $t('common.endorser') }}</h5>
     <div v-if="endorserInfo">
       <Endorser />
 

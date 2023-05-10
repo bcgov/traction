@@ -1,5 +1,5 @@
 <template>
-  <h3 class="mt-0">{{ $t('tenant.developer.tenantDeveloper') }}</h3>
+  <h3 class="mt-0">{{ $t('common.developer') }}</h3>
 
   <Developer />
 </template>
