@@ -1,5 +1,4 @@
 global:
-  fullnameOverride: "pr-00-traction"
   ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
 acapy:
   image:
@@ -35,9 +34,6 @@ acapy:
     walletName: default
 
 postgresql:
-  fullnameOverride: 'pr-00-traction'
-  auth:
-    postgresqlUsername: postgres
   primary:
     resources:
       limits:
