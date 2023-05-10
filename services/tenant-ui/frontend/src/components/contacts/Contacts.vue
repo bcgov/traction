@@ -32,16 +32,16 @@
           <Button
             icon="pi pi-refresh"
             class="p-button-rounded p-button-outlined"
-            :title="$t('connect.table.refresh')"
+            :title="$t('common.refreshTable')"
             @click="loadTable"
           />
         </div>
       </div>
     </template>
-    <template #empty>{{ $t('connect.table.noRecords') }}</template>
-    <template #loading>{{ $t('connect.table.loading') }}</template>
+    <template #empty>{{ $t('common.noRecordsFound') }}</template>
+    <template #loading>{{ $t('common.loading') }}</template>
     <Column :expander="true" header-style="width: 3rem" />
-    <Column :sortable="false" :header="$t('connect.table.actions')">
+    <Column :sortable="false" :header="$t('common.actions')">
       <template #body="{ data }">
         <MessageContact
           :connection-id="data.connection_id"
@@ -60,7 +60,7 @@
     <Column
       :sortable="true"
       field="alias"
-      :header="$t('connect.table.alias')"
+      :header="$t('common.alias')"
     />
     <Column
       :sortable="true"
@@ -70,7 +70,7 @@
     <Column
       :sortable="true"
       field="status"
-      :header="$t('connect.table.status')"
+      :header="$t('common.status')"
     >
       <template #body="{ data }">
         <StatusChip :status="data.state" />

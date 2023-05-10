@@ -16,7 +16,7 @@
           for="email"
           :class="{ 'p-error': v$.contact_email.$invalid && submitted }"
         >
-          {{ $t('reserve.email') }}
+          {{ $t('common.emailAddress') }}
         </label>
         <InputText
           id="email"
@@ -91,7 +91,7 @@
           for="tenant-name"
           :class="{ 'p-error': v$.tenant_name.$invalid && submitted }"
         >
-          {{ $t('reserve.tenantName') }}
+          {{ $t('common.tenantName') }}
         </label>
         <InputText
           id="tenant-name"
@@ -112,7 +112,7 @@
           for="tenant-reason"
           :class="{ 'p-error': v$.tenant_reason.$invalid && submitted }"
         >
-          {{ $t('reserve.tenantReason') }}
+          {{ $t('common.tenantReason') }}
         </label>
         <Textarea
           id="tenant-reason"
@@ -131,7 +131,7 @@
       <Button
         type="submit"
         class="w-full mt-5"
-        :label="$t('reserve.submit')"
+        :label="$t('common.submit')"
         :disabled="!!loading"
         :loading="!!loading"
       />

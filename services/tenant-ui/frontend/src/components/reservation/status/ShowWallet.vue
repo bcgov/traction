@@ -12,7 +12,7 @@
       </p>
 
       <div class="field mt-5 w-full">
-        <label for="wallet-id">{{ $t('reservations.walletId') }}</label>
+        <label for="wallet-id">{{ $t('common.walletId') }}</label>
         <div class="p-inputgroup">
           <InputText
             id="wallet-id"
