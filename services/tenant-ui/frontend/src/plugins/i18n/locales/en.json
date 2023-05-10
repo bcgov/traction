@@ -1,4 +1,28 @@
 {
+  "about": {
+    "about": "About",
+    "acaPy": {
+      "acaPy": "ACA-Py",
+      "acapyVersion": "ACA-Py version {version}",
+      "info": "Licence information for ACA-Py",
+      "ledger": "Ledger",
+      "ledgerBrowser": "Ledger Browser",
+      "plugins": "List of Installed Plugins",
+      "tailsServer": "Tails Server"
+    },
+    "traction": {
+      "imageCreated": "Image created at",
+      "imageTag": "Image tag",
+      "imageVersion": "Image version",
+      "info": "Licence information for TRACTION",
+      "repository": "GitHub repo for Traction",
+      "swagger": "Swagger URL",
+      "traction": "Traction",
+      "tractionVersion": "Traction version {version}",
+      "uiVersion": "Tenant UI version {version}",
+      "url": "Traction URL"
+    }
+  },
   "admin": {
     "adminKey": "Admin Key",
     "adminName": "Admin Name",
@@ -22,8 +46,9 @@
     "profile": "Profile",
     "refreshTable": "Refresh Table",
     "request": "Request",
-    "settings": "`Settings`",
+    "settings": "Settings",
     "status": "Status",
+    "submit": "Submit",
     "tenantName": "Tenant Name",
     "tenantReason": "Tenant Reason",
     "walletId": "Wallet ID"
@@ -60,7 +85,8 @@
       "invitation": "Invitation",
       "skipUrl": "Skip URL and use JSON",
       "submit": "Accept",
-      "supportedUrl": "Supported URL format is"
+      "supportedUrl": "Supported URL format is",
+      "url": "Invitation URL"
     },
     "connections": {
       "connections": "Connections",
@@ -104,11 +130,19 @@
     }
   },
   "credentials": {
-    "search": "Search Credentials",
-    "table": {
-      "connection": "Connection",
-      "credential": "Credential",
-      "lastUpdate": "Last Update"
+    "exchanges": {
+      "exchanges": "Credential Exchanges",
+      "search": "Search Credential Exchanges",
+      "table": {
+        "connection": "Connection",
+        "credential": "Credential",
+        "lastUpdate": "Last Update"
+      }
+    },
+    "wallet": {
+      "notFound": "There are no credentials in your Wallet",
+      "noOca": "There is no OCA associated with this credential definition",
+      "noOcaNotImpl": "Cannot display card view for Credentials without OCA at this time."
     }
   },
   "dashboard": {
@@ -181,13 +215,13 @@
     "walletSecret": "Wallet Secret"
   },
   "messages": {
-    "connectonId": "Connection ID",
+    "connectionId": "Connection ID",
     "createMessage": "Create a Message",
     "messageContent": "Message Content",
     "messages": "Messages"
   },
   "profile": {
-    "config:": "Config:",
+    "config": "Config:",
     "connectionNotActiveYet": "Connection not Active yet, refresh or come back later.",
     "connectTenantToEndorser": "Connect Tenant To Endorser",
     "createdAt": "Created at",
@@ -268,7 +302,7 @@
     "submit": "Check Status"
   },
   "tenant": {
-    "pofile": {
+    "profile": {
       "tenantProfile": "Tenant Profile"
     },
     "settings": {

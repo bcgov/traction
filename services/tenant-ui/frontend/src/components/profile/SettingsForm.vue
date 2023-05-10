@@ -32,7 +32,7 @@
             class="webhook"
           >
             <div class="field">
-              <label for="webhookUrl">{{ $t('profile.webhookUrl') }}</label>
+              <label for="webhookUrl">{{ $t('profile.webHookUrl') }}</label>
               <InputText
                 id="webhookUrl"
                 v-model="webhook.webhookUrl"
@@ -41,7 +41,7 @@
             </div>
 
             <div class="field">
-              <label for="webhookKey">{{ $t('profile.webhookKey') }}</label>
+              <label for="webhookKey">{{ $t('profile.webHookKey') }}</label>
               <Password
                 id="webhookKey"
                 v-model="webhook.webhookKey"

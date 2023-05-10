@@ -6,7 +6,7 @@
         for="wallet-id"
         :class="{ 'p-error': v$.walletId.$invalid && submitted }"
       >
-        {{ $t('login.walletId') }}
+        {{ $t('common.walletId') }}
       </label>
       <InputText
         id="wallet-id"

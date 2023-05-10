@@ -16,7 +16,7 @@ import { fetchItem } from './utils/fetchItem';
 
 export const useContactsStore = defineStore('contacts', () => {
   // state
-  const contacts: Ref<any[]> = ref([]);
+  const contacts: Ref<ConnRecord[]> = ref([]);
   const selectedContact: any = ref(null);
   const loading: Ref<boolean> = ref(false);
   const loadingItem: Ref<boolean> = ref(false);
@@ -39,6 +39,16 @@ export const useContactsStore = defineStore('contacts', () => {
   const filteredInvitations = computed(() =>
     contacts.value.filter((c) => c.state === CONNECTION_STATUSES.INVITATION)
   );
+
+  const findConnectionName = computed(() => {
+    return (connectionId: string) => {
+      // Find the connection alias for an ID
+      const connection = contacts.value?.find((c: any) => {
+        return c.connection_id === connectionId;
+      });
+      return connection && connection.alias ? connection.alias : '...';
+    };
+  });
 
   // actions
 
@@ -274,6 +284,7 @@ export const useContactsStore = defineStore('contacts', () => {
     error,
     filteredConnections,
     filteredInvitations,
+    findConnectionName,
     listContacts,
     createInvitation,
     receiveInvitation,

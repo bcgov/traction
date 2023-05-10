@@ -19,7 +19,7 @@
     <!-- Alias -->
     <div class="field">
       <label for="alias" :class="{ 'p-error': v$.alias.$invalid && submitted }">
-        {{ $t('connect.didExchange.alias') }}
+        {{ $t('common.alias') }}
       </label>
       <InputText
         id="alias"
@@ -38,7 +38,7 @@
     </div>
     <Button
       type="submit"
-      :label="$t('connect.didExchange.submit')"
+      :label="$t('common.submit')"
       class="mt-5 w-full"
       :disabled="loading"
       :loading="loading"

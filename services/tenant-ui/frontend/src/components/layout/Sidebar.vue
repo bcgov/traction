@@ -60,7 +60,7 @@ const items = ref([
   // },
 
   {
-    label: () => t('holder.credentials'),
+    label: () => t('common.credentials'),
     icon: 'pi pi-fw pi-wallet',
     to: { name: 'MyHeldCredentials' },
   },
