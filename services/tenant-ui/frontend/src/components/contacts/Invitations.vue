@@ -47,11 +47,7 @@
         <RegenerateInvitation :connection-id="data.connection_id" />
       </template>
     </Column>
-    <Column
-      :sortable="true"
-      field="alias"
-      :header="$t('common.alias')"
-    />
+    <Column :sortable="true" field="alias" :header="$t('common.alias')" />
     <Column
       :sortable="true"
       field="invitation_mode"

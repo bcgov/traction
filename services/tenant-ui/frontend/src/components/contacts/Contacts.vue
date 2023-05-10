@@ -57,21 +57,13 @@
         <EditContact :connection-id="data.connection_id" />
       </template>
     </Column>
-    <Column
-      :sortable="true"
-      field="alias"
-      :header="$t('common.alias')"
-    />
+    <Column :sortable="true" field="alias" :header="$t('common.alias')" />
     <Column
       :sortable="true"
       field="their_label"
       :header="$t('connect.table.theirLabel')"
     />
-    <Column
-      :sortable="true"
-      field="status"
-      :header="$t('common.status')"
-    >
+    <Column :sortable="true" field="status" :header="$t('common.status')">
       <template #body="{ data }">
         <StatusChip :status="data.state" />
       </template>
