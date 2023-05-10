@@ -100,7 +100,7 @@
 
 <script setup lang="ts">
 // Vue
-import { onMounted, reactive, ref, Transition, TransitionGroup } from 'vue';
+import { onMounted, reactive, ref, TransitionGroup } from 'vue';
 // PrimeVue/Validation
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
@@ -141,8 +141,14 @@ const loadTenantSettings = async () => {
 
       if (webHookUrls && webHookUrls.length) {
         webHookUrls.forEach((whItem: string) => {
-          const pMark = whItem.indexOf('#');
-          if (pMark > 0) {
+          if (!whItem.match(/#/g)) {
+            // If there is no token just add the url
+            formFields.webhooks.push({
+              webhookUrl: whItem,
+              webhookKey: '',
+            });
+          } else {
+            // Otherwise split the url and token
             const webhookUrl = whItem.substring(0, whItem.indexOf('#'));
             const webhookKey = whItem.substring(whItem.indexOf('#') + 1);
             formFields.webhooks.push({
