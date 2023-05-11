@@ -241,7 +241,6 @@ const handleSubmit = async (isFormValid: boolean) => {
       label: formFields.walletLabel,
       wallet_webhook_urls: webhooks,
     };
-    console.log('payload', payload);
     await tenantStore.updateTenantSubWallet(payload);
     loadTenantSettings();
     toast.success('Your Settings have been Updated');
