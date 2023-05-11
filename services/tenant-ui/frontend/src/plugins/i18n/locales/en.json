@@ -212,7 +212,7 @@
     "noAccount": "Don't have an account?",
     "submit": "Sign-In",
     "submittedRequest": "Already Submitted Request?",
-    "walletSecret": "Wallet Secret"
+    "walletSecret": "Wallet Key"
   },
   "messages": {
     "connectionId": "Connection ID",

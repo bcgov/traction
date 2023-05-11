@@ -211,7 +211,7 @@
     "noAccount": "Don't have an account? <FR>",
     "submit": "Sign-In <FR>",
     "submittedRequest": "Already Submitted Request? <FR>",
-    "walletSecret": "Wallet Secret <FR>"
+    "walletSecret": "Wallet Key <FR>"
   },
   "messages": {
     "connectionId": "Connection ID <FR>",
