@@ -224,10 +224,16 @@ const handleSubmit = async (isFormValid: boolean) => {
     if (formFields.webhooks && formFields.webhooks.length) {
       formFields.webhooks.forEach((whItem: any) => {
         let url = whItem.webhookUrl;
+
+        // If there is a token, add it to the url
         if (whItem.webhookKey) {
           url += `#${whItem.webhookKey}`;
         }
-        webhooks.push(url);
+
+        // Don't add blank webhooks
+        if (url.length > 0) {
+          webhooks.push(url);
+        }
       });
     }
     const payload = {
@@ -235,6 +241,7 @@ const handleSubmit = async (isFormValid: boolean) => {
       label: formFields.walletLabel,
       wallet_webhook_urls: webhooks,
     };
+    console.log('payload', payload);
     await tenantStore.updateTenantSubWallet(payload);
     loadTenantSettings();
     toast.success('Your Settings have been Updated');
