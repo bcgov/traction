@@ -43,8 +43,8 @@ postgresql:
   auth:
     existingSecret: traction-dts-db
     secretKeys:
-      adminPasswordKey: postgresql-password
-      userPasswordKey: postgresql-password
+      adminPasswordKey: postgres-password
+      userPasswordKey: postgres-password
     # -- PostgreSQL Database to create.
     database: traction
     username: postgres
