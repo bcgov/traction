@@ -89,7 +89,6 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{ template "traction.fullname" . }}-api
 {{- end -}}
 
-
 {{/*
 Create a default fully qualified acapy name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
@@ -105,6 +104,15 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- define "acapy.api.secret.name" -}}
 {{ template "acapy.fullname" . }}-api
 {{- end -}}
+
+{{/*
+Create a default fully qualified acapy innkeeper plugin name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "acapy.plugin.innkeeper.name" -}}
+{{ template "acapy.fullname" . }}-plugin-innkeeper
+{{- end -}}
+
 
 {{/*
 Create a default fully qualified traction tenant ui name.

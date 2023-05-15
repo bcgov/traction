@@ -52,8 +52,16 @@ spec:
               value: {{ .Values.tenant_ui.traction_api.endpoint }}
             - name: FRONTEND_TENANT_PROXY_URL
               value: {{ .Values.tenant_ui.tenant_proxy.endpoint }}
+            - name: SERVER_INNKEEPER_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "acapy.plugin.innkeeper.name" . }}
+                  key: tenantid
             - name: SERVER_INNKEEPER_KEY
-              value: change-me
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "acapy.plugin.innkeeper.name" . }}
+                  key: walletkey
             {{- include "tenant_ui.configmap.env.vars" . | nindent 10}}
           resources:
             {{- toYaml .Values.tenant_ui.resources | nindent 12 }}
