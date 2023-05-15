@@ -5,8 +5,8 @@ global:
     enabled: true
 acapy:
   image:
-    tag: "ghcr.io/bcgov/traction-plugins-acapy:sha-f678ca9"
-    version: 'sha-f678ca9'
+    tag: "ghcr.io/bcgov/traction-plugins-acapy:sha-c9369f9"
+    version: 'sha-c9369f9'
     buildtime: '2023-02-16T21:45:48.653Z'
     pullPolicy: Always
   secret:
@@ -62,7 +62,7 @@ postgresql:
 
 tenant_proxy:
   image:
-    tag: "ghcr.io/bcgov/traction-tenant-proxy:sha-f678ca9"
-    version: 'sha-f678ca9'
+    tag: "ghcr.io/bcgov/traction-tenant-proxy:sha-c9369f9"
+    version: 'sha-c9369f9'
     buildtime: "2023-02-16T21:45:38.860Z"
     pullPolicy: Always
