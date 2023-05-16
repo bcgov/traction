@@ -341,7 +341,7 @@
       "acapyHelpPublicInvites": "ACAPY_PUBLIC_INVITES - Send invitations out using the public DID for the agent, and receive connection requests solicited by invitations which use the public DID. Default",
 
       "auto": "Auto Flags",
-      "extraSettings": "Extra Settings (wording TBD)",
+      "extraSettings": "Extra ACA-Py Settings",
       "tenantWalletSettings": "Tenant Wallet Settings"
     }
   },
