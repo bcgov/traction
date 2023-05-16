@@ -211,7 +211,7 @@
     "noAccount": "Don't have an account? <JP>",
     "submit": "Sign-In <JP>",
     "submittedRequest": "Already Submitted Request? <JP>",
-    "walletSecret": "Wallet Secret <JP>"
+    "walletSecret": "Wallet Key <JP>"
   },
   "messages": {
     "connectionId": "Connection ID <JP>",
@@ -310,6 +310,42 @@
       "tenantProfile": "Tenant Profile <JP>"
     },
     "settings": {
+      "acapyAutoAcceptInvites": "Auto accept Invitations <JP>",
+      "acapyAutoAcceptRequests": "Auto accept Requests <JP>",
+      "acapyAutoPingConnection": "Automatically ping Connection <JP>",
+      "acapyAutoRequestEndorsement": "Automatically request Endorsement <JP>",
+      "acapyAutoRespondCredentialOffer": "Automatically respond to Credential Offers <JP>",
+      "acapyAutoRespondCredentialRequest": "Automatically respond to Credential Requests <JP>",
+      "acapyAutoRespondMessages": "Automatically respond to Messages <JP>",
+      "acapyAutoWriteTransactions": "Automatically write Endorsed Transactions <JP>",
+      "acapyAutoVerifyPresentation": "Automatically verify Presentations <JP>",
+      "acapyCreateRevocationTransactions": "Create Revocation Transactions <JP>",
+      "acapyEndorserRole": "Endorser Role <JP>",
+      "acapyInvitePublic": "Generated invite should be public <JP>",
+      "acapyLogLevel": "Log Level <JP>",
+      "acapyMonitorPing": "Monitor Ping <JP>",
+      "acapyNotifyRevocation": "Notify of Revocation <JP>",
+      "acapyPublicInvites": "Send Invitations using public DID <JP>",
+
+      "acapyHelpAutoAcceptInvites": "ACAPY_AUTO_ACCEPT_INVITES - Automatically accept invites without firing a webhook event or waiting for an admin request. <JP>",
+      "acapyHelpAutoAcceptRequests": "ACAPY_AUTO_ACCEPT_REQUESTS - Automatically accept connection requests without firing a webhook event or waiting for an admin request. <JP>",
+      "acapyHelpAutoPingConnection": "ACAPY_AUTO_PING_CONNECTION - Automatically send a trust ping immediately after a connection response is accepted. Some agents require this before marking a connection as 'active' <JP>",
+      "acapyHelpAutoRequestEndorsement": "ACAPY_AUTO_REQUEST_ENDORSEMENT - For Authors, specify whether to automatically request endorsement for all transactions. (If not specified, the controller must invoke the request endorse operation for each transaction.) <JP>",
+      "acapyHelpAutoRespondCredentialOffer": "ACAPY_AUTO_RESPOND_CREDENTIAL_OFFER - Automatically respond to Indy credential offers with a credential request <JP>",
+      "acapyHelpAutoRespondCredentialRequest": "ACAPY_AUTO_RESPOND_CREDENTIAL_REQUEST - Auto-respond to credential requests with corresponding credentials <JP>",
+      "acapyHelpAutoRespondMessages": "ACAPY_AUTO_RESPOND_MESSAGES - Automatically respond to basic messages indicating the message was receieved <JP>",
+      "acapyHelpAutoWriteTransactions": "ACAPY_AUTO_WRITE_TRANSACTIONS - For Authors, specify whether to automatically write any endorsed transactions. (If not specified, the controller must invoke the write transaction operation for each transaction.) <JP>",
+      "acapyHelpAutoVerifyPresentation": "ACAPY_AUTO_VERIFY_PRESENTATION - Automatically verify a presentation when it is received.  <JP>",
+      "acapyHelpCreateRevocationTransactions": "ACAPY_CREATE_REVOCATION_TRANSACTIONS - For Authors, specify whether to automatically create transactions for a cred def's revocation registry. (If not specified, the controller must invoke the endpoints required to create the revocation registry and assign to the cred def.) <JP>",
+      "acapyHelpEndorserRole": "ACAPY_ENDORSER_ROLE - Specify the role ('author' or 'endorser') which this agent will participate. Authors will request transaction endorement from an Endorser. Endorsers will endorse transactions from Authors, and may write their own  transactions to the ledger. If no role (or 'none') is specified then the endorsement protocol will not  be used and this agent will write transactions to the ledger directly. <JP>",
+      "acapyHelpInvitePublic": "ACAPY_INVITE_PUBLIC - Flag specifying the generated invite should be public. <JP>",
+      "acapyHelpLogLevel": "ACAPY_LOG_LEVEL - Specifies a custom logging level. <JP>",
+      "acapyHelpMonitorPing": "ACAPY_MONITOR_PING - Send a webhook when a ping is sent or received. <JP>",
+      "acapyHelpNotifyRevocation": "ACAPY_NOTIFY_REVOCATION - Specifies that aca-py will notify credential recipients when revoking a credential it issued. <JP>",
+      "acapyHelpPublicInvites": "ACAPY_PUBLIC_INVITES - Send invitations out using the public DID for the agent, and receive connection requests solicited by invitations which use the public DID. Default <JP>",
+
+      "auto": "Auto Flags <JP>",
+      "extraSettings": "Extra Settings (wording TBD) <JP>",
       "tenantWalletSettings": "Tenant Wallet Settings <JP>"
     }
   },
