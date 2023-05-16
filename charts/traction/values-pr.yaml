@@ -1,10 +1,9 @@
 global:
-  fullnameOverride: "pr-00-traction"
   ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
 acapy:
   image:
-    tag: "ghcr.io/bcgov/traction-plugins-acapy:sha-f594a33"
-    version: 'sha-f594a33'
+    tag: "ghcr.io/bcgov/traction-plugins-acapy:sha-f678ca9"
+    version: 'sha-f678ca9'
     buildtime: '2023-03-01T03:07:45.860Z'
     pullPolicy: Always
   secret:
@@ -12,6 +11,11 @@ acapy:
       generated: false
     pluginInnkeeper:
       generated: false
+  plugins:
+    basicmessageStorage: true
+    connectionUpdate: true
+    multitenantProvider: true
+    tractionInnkeeper: true
   pluginValues:
     tractionInnkeeper:
       printKey: true
@@ -26,18 +30,22 @@ acapy:
       memory: 400Mi
   tails:
     enabled: true
+  staticArgs:
+    walletName: default
+
 postgresql:
-  fullnameOverride: 'pr-00-traction'
-  resources:
-    limits:
-      cpu: 200m
-      memory: 820Mi
-    requests:
-      cpu: 120m
-      memory: 400Mi
+  primary:
+    resources:
+      limits:
+        cpu: 200m
+        memory: 820Mi
+      requests:
+        cpu: 120m
+        memory: 400Mi
+
 tenant_proxy:
   image:
-    tag: "ghcr.io/bcgov/traction-tenant-proxy:sha-f594a33"
-    version: 'sha-f594a33'
+    tag: "ghcr.io/bcgov/traction-tenant-proxy:sha-f678ca9"
+    version: 'sha-f678ca9'
     buildtime: "2023-03-01T03:07:43.994Z"
     pullPolicy: Always

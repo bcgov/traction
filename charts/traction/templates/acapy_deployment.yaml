@@ -43,8 +43,8 @@ spec:
            --outbound-transport http \
            --admin '0.0.0.0' {{ .Values.acapy.service.adminPort }} \
            --endpoint https://{{ include "acapy.host" . }} \
-           --wallet-storage-config '{\"url\":\"{{ include "global.postgresql.fullname" . }}:{{ .Values.postgresql.service.port }}\",\"max_connections\":5, \"wallet_scheme\":\"{{ .Values.acapy.service.walletScheme }}\"}' \
-           --wallet-storage-creds '{\"account\":\"{{ .Values.postgresql.postgresqlUsername }}\",\"password\":\"$(POSTGRES_PASSWORD)\",\"admin_account\":\"{{ .Values.postgresql.postgresqlUsername }}\",\"admin_password\":\"$(POSTGRES_PASSWORD)\"}' \
+           --wallet-storage-config '{\"url\":\"{{ include "global.postgresql.fullname" . }}:{{ .Values.postgresql.service.ports.postgresql }}\",\"max_connections\":5, \"wallet_scheme\":\"{{ .Values.acapy.service.walletScheme }}\"}' \
+           --wallet-storage-creds '{\"account\":\"{{ .Values.postgresql.auth.username }}\",\"password\":\"$(POSTGRES_PASSWORD)\",\"admin_account\":\"postgres\",\"admin_password\":\"$(POSTGRES_POSTGRES_PASSWORD)\"}' \
            --plugin 'aries_cloudagent.messaging.jsonld' \ 
            {{- if .Values.acapy.plugins.tractionInnkeeper }}
            --plugin traction_plugins.traction_innkeeper.v1_0 \
@@ -73,8 +73,13 @@ spec:
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "postgresql.secret.name" . }}
-                  key: postgresql-password
+                  name: {{ template "acapy.database.secret.name" . }}
+                  key: {{ .Values.postgresql.auth.secretKeys.userPasswordKey }}
+            - name: POSTGRES_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "acapy.database.secret.name" . }}
+                  key: {{ .Values.postgresql.auth.secretKeys.adminPasswordKey }}
             - name: WEBHOOK_API_KEY
               valueFrom:
                 secretKeyRef:
@@ -100,6 +105,8 @@ spec:
                 secretKeyRef:
                   name: {{ template "acapy.walletkey.secret.name" . }}
                   key: walletKey
+            - name: ACAPY_WALLET_NAME
+              value: {{ .Values.acapy.staticArgs.walletName }}
             - name: ACAPY_MULTITENANT_JWT_SECRET
               valueFrom:
                 secretKeyRef:

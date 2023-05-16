@@ -3,12 +3,7 @@
 # Declare variables to be passed into your templates.
 
 global:
-  nameOverride: ""
-  # global.fullnameOverride and postgresql.fullnameOverride must be changed (and match!!!) if deploying multiple instances to the same namespace
-  # the postgresql chart creates secrets and pvcs related to the fullname and will be identical without the override.
-  # use the global.fullnameOverride to install a different named helm instance and will affect naming of all objects and routes for that chart.
-  # for pull requests, can set to something like pr-NN-traction.
-  fullnameOverride: "traction"
+  # fullnameOverride: ""
 
   # -- Domain suffix to be used for default hostpaths in ingress
   # override in different environments, or for each app
@@ -169,6 +164,7 @@ acapy:
     multitenant: true
     multitenantAdmin: true
     walletType: askar
+    walletName: default
     notifyRevocation: true
     monitorRevocationNotification: true
     preserveExchangeRecords: true
@@ -193,40 +189,46 @@ acapy:
 
 postgresql:
   # when overriding global.fullnameOverride, you must override this to match.
-  fullnameOverride: "traction"
+  fullnameOverride: ""
 
-  image:
-    tag: 12
+  auth:
+    existingSecret: '{{ include "global.fullname" . }}'
+    secretKeys:
+      adminPasswordKey: postgres-password
+      userPasswordKey: database-password
+    # -- PostgreSQL Database to create.
+    database: traction
+    username: acapy
 
   # --  PostgreSQL service configuration
   service:
-    port: 5432
+    ports:
+      postgresql: 5432
 
-  existingSecret: '{{ template "postgresql.secret.name" . }}'
+  primary:
+    # --  Persistent Volume Storage configuration. ref: https://kubernetes.io/docs/user-guide/persistent-volumes
+    persistence:
+      enabled: true
+      size: 1Gi
+      storageClass: netapp-file-standard
 
-  # -- PostgreSQL Database to create.
-  postgresqlDatabase: traction
+    # -- add securityContext (fsGroup, runAsUser). These need to be false for Openshift 4
+    securityContext:
+      enabled: false
 
-  # --  Persistent Volume Storage configuration. ref: https://kubernetes.io/docs/user-guide/persistent-volumes
-  persistence:
-    enabled: true
-    size: 1Gi
-    storageClass: netapp-file-standard
+    containerSecurityContext:
+      enabled: false
 
-  # -- add securityContext (fsGroup, runAsUser). These need to be false for Openshift 4
-  securityContext:
-    enabled: false
+    podSecurityContext:
+      enabled: false
 
-  containerSecurityContext:
-    enabled: false
-
-  resources:
-    limits:
-      cpu: 600m
-      memory: 2600Mi
-    requests:
-      cpu: 300m
-      memory: 1300Mi
+    resources:
+      limits:
+        cpu: 600m
+        memory: 2600Mi
+      requests:
+        cpu: 300m
+        memory: 1300Mi
 
 traction:
   config:
