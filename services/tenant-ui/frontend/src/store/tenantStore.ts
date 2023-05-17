@@ -344,7 +344,7 @@ export const useTenantStore = defineStore('tenant', () => {
     getTenantSubWallet,
     updateTenantSubWallet,
     getTaa,
-    acceptTaa
+    acceptTaa,
   };
 });
 

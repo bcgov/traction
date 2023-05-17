@@ -19,7 +19,7 @@
       <p>
         <Checkbox
           v-model="accepted"
-          inputId="accepted"
+          input-id="accepted"
           :binary="true"
           :disabled="submitting"
         />
@@ -29,11 +29,11 @@
       </p>
 
       <Button
-        @click="submit"
         class="w-full"
         :disabled="!accepted"
         :loading="submitting"
         label="Submit"
+        @click="submit"
       />
     </Dialog>
   </div>
@@ -93,6 +93,9 @@ const submit = async () => {
 const displayModal = ref(false);
 const openModal = async () => {
   displayModal.value = true;
+};
+const handleClose = async () => {
+  displayModal.value = false;
 };
 </script>
 
