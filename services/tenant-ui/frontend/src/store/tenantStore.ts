@@ -1,10 +1,11 @@
-import { EndorserInfo } from '@/types/acapyApi/acapyInterface';
+import { EndorserInfo, TAAInfo } from '@/types/acapyApi/acapyInterface';
 
 import { API_PATH } from '@/helpers/constants';
 import { defineStore, storeToRefs } from 'pinia';
 import { computed, ref, Ref } from 'vue';
 import { useAcapyApi } from './acapyApi';
 import { useTokenStore } from './tokenStore';
+import { fetchItem } from './utils/fetchItem';
 
 export const useTenantStore = defineStore('tenant', () => {
   // state
@@ -16,6 +17,7 @@ export const useTenantStore = defineStore('tenant', () => {
   const endorserInfo: Ref<EndorserInfo | null> = ref(null);
   const publicDid: any = ref(null);
   const publicDidRegistrationProgress: Ref<string> = ref('');
+  const taa: Ref<any> = ref(null);
   const tenantWallet: any = ref(null);
 
   const { token } = storeToRefs(useTokenStore());
@@ -285,6 +287,16 @@ export const useTenantStore = defineStore('tenant', () => {
     }
   }
 
+  async function getTaa() {
+    taa.value = await fetchItem(
+      API_PATH.LEDGER_TAA,
+      '',
+      error,
+      loadingIssuance,
+      {}
+    );
+  }
+
   return {
     loading,
     loadingIssuance,
@@ -293,6 +305,7 @@ export const useTenantStore = defineStore('tenant', () => {
     endorserConnection,
     endorserInfo,
     publicDid,
+    taa,
     tenantReady,
     isIssuer,
     publicDidRegistrationProgress,
@@ -306,6 +319,7 @@ export const useTenantStore = defineStore('tenant', () => {
     registerPublicDid,
     getTenantSubWallet,
     updateTenantSubWallet,
+    getTaa,
   };
 });
 
