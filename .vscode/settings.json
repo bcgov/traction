@@ -17,4 +17,5 @@
       "database": "traction"
     }
   ],
+  "python.analysis.extraPaths": ["./plugins", "./services"]
 }
