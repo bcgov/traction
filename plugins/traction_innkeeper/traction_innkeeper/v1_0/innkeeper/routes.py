@@ -2,20 +2,12 @@ import functools
 import logging
 import uuid
 
-from aiohttp import web
-from aiohttp_apispec import (
-    docs,
-    request_schema,
-    response_schema,
-    match_info_schema,
-)
+from aiohttp import ClientSession, web
+from aiohttp_apispec import docs, match_info_schema, request_schema, response_schema
 from aries_cloudagent.admin.request_context import AdminRequestContext
 from aries_cloudagent.messaging.models.base import BaseModelError
 from aries_cloudagent.messaging.models.openapi import OpenAPISchema
-from aries_cloudagent.messaging.valid import (
-    UUIDFour,
-    JSONWebToken,
-)
+from aries_cloudagent.messaging.valid import JSONWebToken, UUIDFour
 from aries_cloudagent.multitenant.admin.routes import (
     CreateWalletTokenRequestSchema,
     CreateWalletTokenResponseSchema,
@@ -28,9 +20,10 @@ from aries_cloudagent.wallet.models.wallet_record import WalletRecord
 from marshmallow import fields
 
 from . import TenantManager
+from .utils import approve_reservation, generate_reservation_token_data, ReservationException
 from .models import (
-    ReservationRecordSchema,
     ReservationRecord,
+    ReservationRecordSchema,
     TenantRecord,
     TenantRecordSchema,
 )
@@ -238,6 +231,16 @@ async def tenant_reservation(request: web.BaseRequest):
         await rec.save(session, reason="New tenant reservation")
         LOGGER.info(rec)
 
+    if mgr._config.reservation.auto_approve:
+        LOGGER.info("Tenant auto-approve is on, approving newly created tenant")
+        try:
+            _pwd = await approve_reservation(rec.reservation_id, rec.state_notes, mgr)
+            return web.json_response({"reservation_id": rec.reservation_id, "reservation_pwd": _pwd})
+        except ReservationException as err:
+            raise web.HTTPConflict(
+                    reason=str(err)
+                )
+
     return web.json_response({"reservation_id": rec.reservation_id})
 
 
@@ -257,7 +260,9 @@ async def tenant_reservation_get(request: web.BaseRequest):
     reservation_id = request.match_info["reservation_id"]
 
     async with profile.session() as session:
-        rec = await ReservationRecord.retrieve_by_reservation_id(session, reservation_id)
+        rec = await ReservationRecord.retrieve_by_reservation_id(
+            session, reservation_id
+        )
         LOGGER.info(rec)
 
     return web.json_response(rec.serialize())
@@ -282,7 +287,9 @@ async def tenant_checkin(request: web.BaseRequest):
     reservation_id = request.match_info["reservation_id"]
 
     async with profile.session() as session:
-        res_rec = await ReservationRecord.retrieve_by_reservation_id(session, reservation_id)
+        res_rec = await ReservationRecord.retrieve_by_reservation_id(
+            session, reservation_id
+        )
         reservation_pwd = body.get("reservation_pwd")
 
         if res_rec.expired:
@@ -407,27 +414,14 @@ async def innkeeper_reservations_approve(request: web.BaseRequest):
 
     # records are under base/root profile, use Tenant Manager profile
     mgr = context.inject(TenantManager)
-    profile = mgr.profile
 
-    async with profile.session() as session:
-        # innkeeper can access all reservation records.
-        rec = await ReservationRecord.retrieve_by_reservation_id(
-            session, reservation_id, for_update=True
-        )
-        if rec.state == ReservationRecord.STATE_REQUESTED:
-            _pwd, _salt, _hash, _expiry = mgr.generate_reservation_token_data()
-            rec.reservation_token_salt = _salt.decode("utf-8")
-            rec.reservation_token_hash = _hash.decode("utf-8")
-            rec.reservation_token_expiry = _expiry
-            rec.state_notes = state_notes
-            rec.state = ReservationRecord.STATE_APPROVED
-            await rec.save(session)
-            LOGGER.info(rec)
-        else:
-            raise web.HTTPConflict(
-                reason=f"Reservation state is currently '{rec.state}' and cannot be set to '{ReservationRecord.STATE_APPROVED}'."
+    try:
+        _pwd = await approve_reservation(reservation_id, state_notes, mgr)
+    except ReservationException as err:
+        raise web.HTTPConflict(
+                reason=str(err)
             )
-
+    
     return web.json_response({"reservation_pwd": _pwd})
 
 

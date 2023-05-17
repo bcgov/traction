@@ -161,22 +161,6 @@ class TenantManager:
         if config.print_token:
             print(f"Bearer {token}\n")
 
-    def generate_reservation_token_data(self):
-        _pwd = str(uuid.uuid4().hex)
-        self._logger.info(f"_pwd = {_pwd}")
-
-        _salt = bcrypt.gensalt()
-        self._logger.info(f"_salt = {_salt}")
-
-        _hash = bcrypt.hashpw(_pwd.encode("utf-8"), _salt)
-        self._logger.info(f"_hash = {_hash}")
-
-        minutes = self._config.reservation.expiry_minutes
-        _expiry = datetime.utcnow() + timedelta(minutes=minutes)
-        self._logger.info(f"_expiry = {_expiry}")
-
-        return _pwd, _salt, _hash, _expiry
-
     def check_reservation_password(
         self, reservation_pwd: str, reservation: ReservationRecord
     ):

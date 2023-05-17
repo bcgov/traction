@@ -15,4 +15,6 @@ traction_innkeeper:
     wallet_key: change-me
     print_key: true
     print_token: true
-  reservation.expiry_minutes: 2880
+  reservation:
+    auto_approve: true
+    expiry_minutes: 2880
