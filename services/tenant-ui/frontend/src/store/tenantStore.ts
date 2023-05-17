@@ -297,6 +297,30 @@ export const useTenantStore = defineStore('tenant', () => {
     );
   }
 
+  async function acceptTaa(payload: object) {
+    console.log('> tenantStore.acceptTaa');
+    error.value = null;
+    loadingIssuance.value = true;
+
+    await acapyApi
+      .postHttp(API_PATH.LEDGER_TAA_ACCEPT, payload)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        error.value = err;
+      })
+      .finally(() => {
+        loadingIssuance.value = false;
+      });
+    console.log('< tenantStore.acceptTaa');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+  }
+
   return {
     loading,
     loadingIssuance,
@@ -320,6 +344,7 @@ export const useTenantStore = defineStore('tenant', () => {
     getTenantSubWallet,
     updateTenantSubWallet,
     getTaa,
+    acceptTaa
   };
 });
 

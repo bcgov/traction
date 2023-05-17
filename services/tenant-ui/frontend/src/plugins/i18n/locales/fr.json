@@ -233,6 +233,15 @@
     "publicDid": "Public DID <FR>",
     "registerPublicDid": "Register a public DID <FR>",
     "state": "State: {0} <FR>",
+    "taa": {
+      "accepted": "Accepted on",
+      "agreeAccept": "I agree to the terms of the Transaction Author Agreement <FR>",
+      "requiredNo": "No Transaction Author Agreement is required for this ledger. <FR>",
+      "requiredYes": "A Transaction Author Agreement is required for this ledger. <FR>",
+      "reviewButton": "Review/Accept TAA <FR>",
+      "taaAcceptance": "TAA Acceptance <FR>",
+      "taaDetails": "TAA Details <FR>"
+    },
     "tenantId": "Tenant ID <FR>",
     "tenantNotConnectedToEndorserYet": "Tenant not connected to Endorser yet <FR>",
     "updatedAt": "Updated at <FR>",

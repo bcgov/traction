@@ -235,6 +235,7 @@
     "registerPublicDid": "Register a public DID",
     "state": "State: {0}",
     "taa": {
+      "accepted": "Accepted on",
       "agreeAccept": "I agree to the terms of the Transaction Author Agreement",
       "requiredNo": "No Transaction Author Agreement is required for this ledger.",
       "requiredYes": "A Transaction Author Agreement is required for this ledger.",
