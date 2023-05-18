@@ -7,10 +7,13 @@ from aries_cloudagent.core.error import BaseError
 from aries_cloudagent.core.profile import Profile
 from aries_cloudagent.messaging.models.base import BaseModelError
 from aries_cloudagent.multitenant.base import BaseMultitenantManager
+from aries_cloudagent.ledger.multiple_ledger.base_manager import (
+    BaseMultipleLedgerManager,
+)
 from aries_cloudagent.storage.error import StorageError, StorageNotFoundError
 from aries_cloudagent.wallet.models.wallet_record import WalletRecord
 
-from .config import TractionInnkeeperConfig
+from .config import TractionInnkeeperConfig, InnkeeperWalletConfig
 from .models import TenantRecord, ReservationRecord
 
 
@@ -124,10 +127,19 @@ class TenantManager:
         return tenant
 
     async def create_innkeeper(self):
-        config = self._config.innkeeper_wallet
+        config: InnkeeperWalletConfig = self._config.innkeeper_wallet
         tenant_id = config.tenant_id
         wallet_name = config.wallet_name
         wallet_key = config.wallet_key
+        # multi_ledger_manager = self._profile.inject(BaseMultipleLedgerManager)
+        self._profile.settings.set_value(
+            "tenant.endorser_config",
+            config.connect_to_endorser,
+        )
+        self._profile.settings.set_value(
+            "tenant.public_did_config",
+            config.create_public_did,
+        )
 
         # does innkeeper already exist?
         tenant_record = None

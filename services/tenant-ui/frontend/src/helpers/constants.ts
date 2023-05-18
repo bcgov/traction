@@ -50,6 +50,7 @@ export const API_PATH = {
 
   INNKEEPER_TOKEN: '/innkeeper/token',
   INNKEEPER_TENANTS: '/innkeeper/tenants/',
+  INNKEEPER_CONFIG: (id: string) => `/innkeeper/wallet-config/${id}`,
   INNKEEPER_TENANT: (id: string) => `/innkeeper/tenants/${id}`,
   INNKEEPER_RESERVATIONS: '/innkeeper/reservations/',
   INNKEEPER_RESERVATIONS_APPROVE: (id: string) =>

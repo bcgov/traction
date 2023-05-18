@@ -196,6 +196,13 @@ export const useTenantStore = defineStore('tenant', () => {
     publicDidRegistrationProgress.value = '';
 
     try {
+      // Get connect_to_endorser and create_public_did
+      // from InnkeeperWalletConfig.
+      const cConfig = await acapyApi.getHttp(
+        API_PATH.INNKEEPER_CONFIG,
+        tenant.value.tenant_id,
+      );
+      console.log(cConfig);
       // Create a DID
       publicDidRegistrationProgress.value = 'Creating DID';
       const cRes = await acapyApi.postHttp(API_PATH.WALLET_DID_CREATE, {
