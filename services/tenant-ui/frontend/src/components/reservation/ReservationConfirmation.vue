@@ -9,6 +9,9 @@
         {{ $t('reservations.submitted') }} <br />
         {{ $t('reservations.emailSentTo', [email]) }}
       </p>
+      <p class="text-center" v-if="pwd">
+        {{ $t('reservations.passwordAvailable') }}
+      </p>
     </template>
   </Card>
 
@@ -29,6 +32,19 @@
       />
     </div>
   </div>
+
+  <div class="field w-full" v-if="pwd">
+    <label for="">{{ $t('reservations.reservationPassword') }}</label>
+    <div class="p-inputgroup">
+      <InputText :value="pwd" type="text" readonly class="w-full" />
+      <Button
+        icon="pi pi-copy"
+        title="Copy to clipboard"
+        class="p-button-secondary"
+        @click="copyResPwd"
+      />
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -42,10 +58,16 @@ const toast = useToast();
 const props = defineProps<{
   email: string;
   id: string;
+  pwd: string;
 }>();
 
 const copyResId = () => {
   navigator.clipboard.writeText(props.id);
   toast.info('Copied Reservation Number to clipboard!');
+};
+
+const copyResPwd = () => {
+  navigator.clipboard.writeText(props.pwd);
+  toast.info('Copied Reservation Password to clipboard!');
 };
 </script>

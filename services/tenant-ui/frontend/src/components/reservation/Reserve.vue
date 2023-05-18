@@ -4,6 +4,7 @@
     <ReservationConfirmation
       :id="reservationIdResult"
       :email="formFields.contact_email"
+      :pwd="reservationPwdResult"
     />
   </div>
 
@@ -179,6 +180,7 @@ const { loading } = storeToRefs(useReservationStore());
 
 // The reservation return object
 const reservationIdResult: any = ref('');
+const reservationPwdResult: any = ref('');
 
 // Form submission
 const submitted = ref(false);
@@ -191,6 +193,7 @@ const handleSubmit = async (isFormValid: boolean) => {
   try {
     const res = await reservationStore.makeReservation(formFields);
     reservationIdResult.value = res.reservation_id;
+    reservationPwdResult.value = res.reservation_pwd ? res.reservation_pwd : undefined;
   } catch (err) {
     console.error(err);
     toast.error(`Failure making request: ${err}`);
