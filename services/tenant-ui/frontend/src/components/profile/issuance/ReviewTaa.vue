@@ -12,6 +12,16 @@
       :style="{ minWidth: '600px', maxWidth: '900px' }"
       @update:visible="handleClose"
     >
+      <p class="my-0">
+        {{ $t('profile.taa.version') }}
+        <strong>{{ taa?.taa_record?.version }}</strong>
+      </p>
+      <p class="mt-0">
+        {{ $t('profile.taa.ratification') }}
+        <strong>
+          {{ formatUnixDate(taa?.taa_record?.ratification_ts) }}
+        </strong>
+      </p>
       <!-- Only disable this lint if html is trusted or purified -->
       <!-- eslint-disable-next-line vue/no-v-html -->
       <div class="taa-html mb-4" v-html="taaText" />
@@ -27,6 +37,16 @@
           {{ $t('profile.taa.agreeAccept') }}
         </label>
       </p>
+
+      <div class="field">
+        <label for="selectedMechanism">{{ $t('profile.taa.mechanism') }}</label>
+        <Dropdown
+          id="selectedMechanism"
+          v-model="selectedMechanism"
+          :options="mechanisms"
+          :disabled="submitting || !accepted"
+        />
+      </div>
 
       <Button
         class="w-full"
@@ -46,6 +66,7 @@ import { computed, ref } from 'vue';
 import Button from 'primevue/button';
 import Checkbox from 'primevue/checkbox';
 import Dialog from 'primevue/dialog';
+import Dropdown from 'primevue/dropdown';
 import { useToast } from 'vue-toastification';
 // State
 import { useTenantStore } from '@/store';
@@ -53,6 +74,7 @@ import { storeToRefs } from 'pinia';
 // Other libs
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
+import { formatUnixDate } from '@/helpers';
 
 const toast = useToast();
 
@@ -67,6 +89,10 @@ const taaText = computed(() => {
     ? DOMPurify.sanitize(marked(taa.value?.taa_record?.text))
     : '';
 });
+
+// Mechanism dropdown
+const selectedMechanism = ref('click_agreement');
+const mechanisms = computed(() => Object.keys(taa.value?.aml_record?.aml));
 
 // Accepting
 const accepted = ref(false);

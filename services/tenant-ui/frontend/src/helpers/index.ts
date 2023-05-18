@@ -1,4 +1,4 @@
-import { format, parseJSON } from 'date-fns';
+import { format, fromUnixTime, parseJSON } from 'date-fns';
 
 function _dateFnsFormat(value: string, formatter: string) {
   const formatted = '';
@@ -14,7 +14,7 @@ function _dateFnsFormat(value: string, formatter: string) {
 
 /**
  * @function formatDate
- * Converts a date to an 'MMMM D YYYY' formatted string
+ * Converts an acapy-returned string date to an 'MMMM D YYYY' formatted string
  * @param {String} value A string representation of a date
  * @returns {String} A string representation of `value`
  */
@@ -24,12 +24,22 @@ export function formatDate(value: string) {
 
 /**
  * @function formatDateLong
- * Converts a date to an 'MMMM D yyyy, h:mm:ss a' formatted string
+ * Converts an acapy-returned string date to an 'MMMM D yyyy, h:mm:ss a' formatted string
  * @param {String} value A string representation of a date
  * @returns {String} A string representation of `value`
  */
 export function formatDateLong(value: string) {
   return _dateFnsFormat(value, 'MMMM d yyyy, h:mm:ss a');
+}
+
+/**
+ * @function formatUnixDate
+ * Converts a unix time number to an 'MMMM D yyyy' formatted string
+ * @param {String} value A unix timestamp number
+ * @returns {String} A string representation of `value`
+ */
+export function formatUnixDate(value: number) {
+  return format(fromUnixTime(value), 'MMMM d yyyy');
 }
 
 export function toKebabCase(str: string | null) {

@@ -306,6 +306,8 @@ export const useTenantStore = defineStore('tenant', () => {
       .postHttp(API_PATH.LEDGER_TAA_ACCEPT, payload)
       .then((res) => {
         console.log(res);
+        // Refresh the TAA status
+        getTaa();
       })
       .catch((err) => {
         error.value = err;

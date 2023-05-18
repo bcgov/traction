@@ -5,7 +5,7 @@
         <i class="pi pi-check-circle accept-icon"></i>
         {{ $t('profile.taa.accepted') }}
         <strong>
-          {{ formatDateLong(taa.taa_accepted.time) }}
+          {{ formatUnixDate(taa.taa_accepted.time) }}
         </strong>
       </p>
     </div>
@@ -41,7 +41,7 @@ import { useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Components
 import ReviewTaa from './ReviewTaa.vue';
-import { formatDateLong } from '@/helpers';
+import { formatUnixDate } from '@/helpers';
 
 const tenantStore = useTenantStore();
 const { taa } = storeToRefs(tenantStore);

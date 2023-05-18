@@ -236,11 +236,14 @@
     "taa": {
       "accepted": "Accepted on",
       "agreeAccept": "I agree to the terms of the Transaction Author Agreement <JP>",
+      "mechanism": "Mechanism <JP>",
+      "ratification": "Ratification <JP>",
       "requiredNo": "No Transaction Author Agreement is required for this ledger. <JP>",
       "requiredYes": "A Transaction Author Agreement is required for this ledger. <JP>",
       "reviewButton": "Review/Accept TAA <JP>",
       "taaAcceptance": "TAA Acceptance <JP>",
-      "taaDetails": "TAA Details <JP>"
+      "taaDetails": "TAA Details <JP>",
+      "version": "TAA Version <JP>"
     },
     "tenantId": "Tenant ID <JP>",
     "tenantNotConnectedToEndorserYet": "Tenant not connected to Endorser yet <JP>",
