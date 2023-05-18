@@ -1,12 +1,12 @@
 version: "3.9"
 services:
   ngrok-traction-agent:
-    image: wernight/ngrok
+    image: ngrok/ngrok
     environment:
       - TRACTION_ACAPY_HTTP_PORT=${TRACTION_ACAPY_HTTP_PORT}
     ports:
       - 4052:4040
-    command: ngrok http traction-agent:${TRACTION_ACAPY_HTTP_PORT} --log stdout
+    command: http traction-agent:${TRACTION_ACAPY_HTTP_PORT} --log stdout
 
   traction-acapy-image-builder:
     pull_policy: missing
