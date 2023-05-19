@@ -20,4 +20,6 @@ data:
         wallet_name: {{ .Values.acapy.pluginValues.tractionInnkeeper.walletName }}
         print_key: {{ .Values.acapy.pluginValues.tractionInnkeeper.printKey }}
         print_token: {{ .Values.acapy.pluginValues.tractionInnkeeper.printToken }}
-      reservation.expiry_minutes: {{ .Values.acapy.pluginValues.tractionInnkeeper.reservationExpiryMinutes }}
+      reservation:
+        expiry_minutes: {{ .Values.acapy.pluginValues.tractionInnkeeper.reservationExpiryMinutes }}
+        auto_approve:  {{ .Values.acapy.pluginValues.tractionInnkeeper.reservationAutoApprove }}
