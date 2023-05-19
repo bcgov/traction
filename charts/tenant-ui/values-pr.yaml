@@ -1,5 +1,5 @@
 global:
-  fullnameOverride: 'pr-00-tenant-ui'
+  fullnameOverride: "pr-00-traction"
   tractionNameOverride: "pr-00-traction"
   ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
 tenant_ui:
