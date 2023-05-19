@@ -9,7 +9,7 @@
         {{ $t('reservations.submitted') }} <br />
         {{ $t('reservations.emailSentTo', [email]) }}
       </p>
-      <p class="text-center" v-if="pwd">
+      <p v-if="pwd" class="text-center">
         {{ $t('reservations.passwordAvailable') }}
       </p>
     </template>
@@ -33,7 +33,7 @@
     </div>
   </div>
 
-  <div class="field w-full" v-if="pwd">
+  <div v-if="pwd" class="field w-full">
     <label for="">{{ $t('reservations.reservationPassword') }}</label>
     <div class="p-inputgroup">
       <InputText :value="pwd" type="text" readonly class="w-full" />
