@@ -83,8 +83,7 @@ export const useTenantStore = defineStore('tenant', () => {
     loadingIssuance.value = false;
     if (result) {
       const errors = result.filter(
-        (result): result is PromiseRejectedResult =>
-          result.status === 'rejected'
+        (res): res is PromiseRejectedResult => res.status === 'rejected'
       );
       if (errors?.length) {
         console.log(errors);
