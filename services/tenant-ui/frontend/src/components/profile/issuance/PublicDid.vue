@@ -9,12 +9,7 @@
   <!-- DID -->
   <div v-if="hasPublicDid" class="field">
     <label for="didField">{{ $t('profile.publicDid') }}</label>
-    <InputText
-      id="didField"
-      class="w-full"
-      readonly
-      :value="publicDid.result.did"
-    />
+    <InputText id="didField" class="w-full" readonly :value="publicDid.did" />
   </div>
 
   <div>
@@ -58,9 +53,7 @@ const registerPublicDid = async () => {
 };
 
 // Public DID status
-const hasPublicDid = computed(
-  () => !!publicDid.value && !!publicDid.value.result
-);
+const hasPublicDid = computed(() => !!publicDid.value && !!publicDid.value.did);
 
 // Details about endorser connection
 const endorserNotActive = computed(

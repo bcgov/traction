@@ -11,14 +11,14 @@
     </div>
     <div v-else>
       <p>
-        <i class="pi pi-exclamation-circle"></i>
+        <i class="pi pi-info-circle"></i>
         {{ $t('profile.taa.requiredYes') }}
       </p>
       <ReviewTaa class="my-2" />
     </div>
   </div>
   <p v-else class="my-1">
-    <i class="pi pi-exclamation-circle"></i> {{ $t('profile.taa.requiredNo') }}
+    <i class="pi pi-info-circle"></i> {{ $t('profile.taa.requiredNo') }}
   </p>
 
   <div>

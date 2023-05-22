@@ -38,6 +38,7 @@
     "developer": "Developer",
     "emailAddress": "Email Address",
     "endorser": "Endorser",
+    "genericError": "An error occurred",
     "invitationUrl": "Invitation URL",
     "json": "JSON",
     "loading": "Loading data. Please wait...",

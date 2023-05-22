@@ -81,8 +81,6 @@ const toast = useToast();
 const tenantStore = useTenantStore();
 const { taa } = storeToRefs(useTenantStore());
 
-defineEmits(['success']);
-
 // Render the markdown/html for the TAA text
 const taaText = computed(() => {
   return taa.value?.taa_record?.text
@@ -106,12 +104,12 @@ const submit = async () => {
       version: taa.value?.taa_record?.version,
     });
     toast.success('TAA Accepted');
+    displayModal.value = false;
   } catch (err) {
     console.error(err);
     toast.error(`Failure accepting TAA: ${err}`);
   } finally {
     submitting.value = false;
-    displayModal.value = false;
   }
 };
 

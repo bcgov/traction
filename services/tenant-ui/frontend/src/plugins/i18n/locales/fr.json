@@ -37,6 +37,7 @@
     "developer": "Developer <FR>",
     "emailAddress": "Email Address <FR>",
     "endorser": "Endorser <FR>",
+    "genericError": "An error occurred <FR>",
     "invitationUrl": "Invitation URL <FR>",
     "json": "JSON <FR>",
     "loading": "Loading data. Please wait... <FR>",

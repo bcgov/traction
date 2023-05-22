@@ -32,8 +32,7 @@ export const useTenantStore = defineStore('tenant', () => {
       endorserConnection.value &&
       endorserConnection.value.state === 'active' &&
       publicDid.value &&
-      publicDid.value.result &&
-      publicDid.value.result.did
+      publicDid.value.did
     );
   });
 
@@ -71,10 +70,36 @@ export const useTenantStore = defineStore('tenant', () => {
     return tenant.value;
   }
 
+  async function getIssuanceStatus() {
+    console.log('> tenantStore.getIssuanceStatus');
+    loadingIssuance.value = true;
+    // Find out issuer status when logging in
+    const result = await Promise.allSettled([
+      getTaa(),
+      getEndorserInfo(),
+      getEndorserConnection(),
+      getPublicDid(),
+    ]);
+    loadingIssuance.value = false;
+    if (result) {
+      const errors = result.filter(
+        (result): result is PromiseRejectedResult =>
+          result.status === 'rejected'
+      );
+      if (errors?.length) {
+        console.log(errors);
+        throw Error(errors[0]?.reason);
+      }
+    }
+    console.log('< tenantStore.getIssuanceStatus');
+  }
+
   async function getEndorserConnection() {
     console.log('> tenantStore.getEndorserConnection');
+    // Don't override the loader if it's already going from something else
+    const loadingTrack = !loadingIssuance.value ? loadingIssuance : ref(false);
     error.value = null;
-    loadingIssuance.value = true;
+    loadingTrack.value = true;
 
     await acapyApi
       .getHttp(API_PATH.TENANT_ENDORSER_CONNECTION)
@@ -82,11 +107,15 @@ export const useTenantStore = defineStore('tenant', () => {
         endorserConnection.value = res.data;
       })
       .catch((err) => {
-        error.value = err;
         endorserConnection.value = null;
+        if (err.response && err.response.status === 404) {
+          // 404s are not errors here
+        } else {
+          error.value = err;
+        }
       })
       .finally(() => {
-        loadingIssuance.value = false;
+        loadingTrack.value = false;
       });
     console.log('< tenantStore.getEndorserConnection');
 
@@ -100,8 +129,10 @@ export const useTenantStore = defineStore('tenant', () => {
 
   async function getEndorserInfo() {
     console.log('> tenantStore.getEndorserInfo');
+    // Don't override the loader if it's already going from something else
+    const loadingTrack = !loadingIssuance.value ? loadingIssuance : ref(false);
     error.value = null;
-    loadingIssuance.value = true;
+    loadingTrack.value = true;
 
     await acapyApi
       .getHttp(API_PATH.TENANT_ENDORSER_INFO)
@@ -113,7 +144,7 @@ export const useTenantStore = defineStore('tenant', () => {
         endorserInfo.value = null;
       })
       .finally(() => {
-        loadingIssuance.value = false;
+        loadingTrack.value = false;
       });
     console.log('< tenantStore.getEndorserInfo');
 
@@ -151,30 +182,12 @@ export const useTenantStore = defineStore('tenant', () => {
   }
 
   async function getPublicDid() {
-    console.log('> tenantStore.getPublicDid');
-    error.value = null;
-    loadingIssuance.value = true;
-
-    await acapyApi
-      .getHttp(API_PATH.WALLET_DID_PUBLIC)
-      .then((res: any) => {
-        publicDid.value = res.data;
-      })
-      .catch((err) => {
-        error.value = err;
-        publicDid.value = null;
-      })
-      .finally(() => {
-        loadingIssuance.value = false;
-      });
-    console.log('< tenantStore.getPublicDid');
-
-    if (error.value != null) {
-      // throw error so $onAction.onError listeners can add their own handler
-      throw error.value;
-    }
-    // return data so $onAction.after listeners can add their own handler
-    return publicDid.value;
+    publicDid.value = await fetchItem(
+      API_PATH.WALLET_DID_PUBLIC,
+      '',
+      error,
+      !loadingIssuance.value ? loadingIssuance : ref(false)
+    );
   }
 
   async function registerPublicDid() {
@@ -292,8 +305,7 @@ export const useTenantStore = defineStore('tenant', () => {
       API_PATH.LEDGER_TAA,
       '',
       error,
-      loadingIssuance,
-      {}
+      !loadingIssuance.value ? loadingIssuance : ref(false)
     );
   }
 
@@ -302,21 +314,15 @@ export const useTenantStore = defineStore('tenant', () => {
     error.value = null;
     loadingIssuance.value = true;
 
-    await acapyApi
-      .postHttp(API_PATH.LEDGER_TAA_ACCEPT, payload)
-      .then((res) => {
-        console.log(res);
-        // Refresh the TAA status
-        getTaa();
-      })
-      .catch((err) => {
-        error.value = err;
-      })
-      .finally(() => {
-        loadingIssuance.value = false;
-      });
+    try {
+      await acapyApi.postHttp(API_PATH.LEDGER_TAA_ACCEPT, payload);
+      await getTaa();
+    } catch (err) {
+      error.value = err;
+    } finally {
+      loadingIssuance.value = false;
+    }
     console.log('< tenantStore.acceptTaa');
-
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
       throw error.value;
@@ -337,6 +343,7 @@ export const useTenantStore = defineStore('tenant', () => {
     publicDidRegistrationProgress,
     tenantWallet,
     getSelf,
+    getIssuanceStatus,
     clearTenant,
     getEndorserConnection,
     getEndorserInfo,
