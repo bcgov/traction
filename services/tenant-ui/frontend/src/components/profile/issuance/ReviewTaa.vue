@@ -38,18 +38,24 @@
         </label>
       </p>
 
-      <div class="field">
-        <label for="selectedMechanism">{{ $t('profile.taa.mechanism') }}</label>
-        <Dropdown
-          id="selectedMechanism"
+      <h3>{{ $t('profile.taa.mechanism') }}</h3>
+      <div
+        v-for="(value, key) in taa.aml_record?.aml"
+        :key="key"
+        class="flex mb-2"
+      >
+        <RadioButton
           v-model="selectedMechanism"
-          :options="mechanisms"
+          :input-id="`${key}`"
+          name="pizza"
+          :value="key"
           :disabled="submitting || !accepted"
         />
+        <label :for="`${key}`" class="ml-2">{{ value }}</label>
       </div>
 
       <Button
-        class="w-full"
+        class="w-full mt-4"
         :disabled="!accepted"
         :loading="submitting"
         label="Submit"
@@ -67,6 +73,7 @@ import Button from 'primevue/button';
 import Checkbox from 'primevue/checkbox';
 import Dialog from 'primevue/dialog';
 import Dropdown from 'primevue/dropdown';
+import RadioButton from 'primevue/radiobutton';
 import { useToast } from 'vue-toastification';
 // State
 import { useTenantStore } from '@/store';
@@ -89,8 +96,8 @@ const taaText = computed(() => {
 });
 
 // Mechanism dropdown
-const selectedMechanism = ref('click_agreement');
-const mechanisms = computed(() => Object.keys(taa.value?.aml_record?.aml));
+const defaultMechanism = 'click_agreement';
+const selectedMechanism = ref(defaultMechanism);
 
 // Accepting
 const accepted = ref(false);
@@ -99,7 +106,7 @@ const submit = async () => {
   submitting.value = true;
   try {
     await tenantStore.acceptTaa({
-      mechanism: 'tenant-ui',
+      mechanism: selectedMechanism.value,
       text: taa.value?.taa_record?.text,
       version: taa.value?.taa_record?.version,
     });
@@ -116,6 +123,8 @@ const submit = async () => {
 // Open close dialog
 const displayModal = ref(false);
 const openModal = async () => {
+  selectedMechanism.value = defaultMechanism;
+  accepted.value = false;
   displayModal.value = true;
 };
 const handleClose = async () => {
