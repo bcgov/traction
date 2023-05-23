@@ -51,7 +51,6 @@ const connectToEndorser = async () => {
       await tenantStore.connectToEndorser();
       // Give a couple seconds to wait for active. If not done by then a message
       // appears to the user saying to refresh themselves
-      loadingIssuance.value = true;
       await new Promise((r) => setTimeout(r, 2000));
       await tenantStore.getEndorserConnection();
       toast.success('Endorser connection request sent');

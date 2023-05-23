@@ -22,7 +22,12 @@ export async function fetchItem(
   await acapyApi
     .getHttp(dataUrl, params)
     .then((res: AxiosRequestConfig): void => {
-      result = res.data;
+      if (res?.data?.result) {
+        // Some acapy resource item calls put things under "result"
+        result = res.data.result;
+      } else {
+        result = res.data;
+      }
       console.log(result);
     })
     .catch((err: string): void => {
