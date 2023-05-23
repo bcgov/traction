@@ -200,7 +200,7 @@ export const useTenantStore = defineStore('tenant', () => {
       // from InnkeeperWalletConfig.
       const cConfig = await acapyApi.getHttp(
         API_PATH.INNKEEPER_CONFIG,
-        tenant.value.tenant_id
+        tenant.value.tenant_id,
       );
       console.log(cConfig);
       // Create a DID
