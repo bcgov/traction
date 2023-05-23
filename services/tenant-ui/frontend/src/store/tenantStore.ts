@@ -199,8 +199,7 @@ export const useTenantStore = defineStore('tenant', () => {
       // Get connect_to_endorser and create_public_did
       // from InnkeeperWalletConfig.
       const cConfig = await acapyApi.getHttp(
-        API_PATH.INNKEEPER_CONFIG,
-        tenant.value.tenant_id
+        API_PATH.INNKEEPER_CONFIG(tenant.value.tenant_id)
       );
       console.log(cConfig);
       // Create a DID
