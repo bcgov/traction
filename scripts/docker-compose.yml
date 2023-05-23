@@ -1,12 +1,12 @@
 version: "3.9"
 services:
   ngrok-traction-agent:
-    image: wernight/ngrok
+    image: ngrok/ngrok
     environment:
       - TRACTION_ACAPY_HTTP_PORT=${TRACTION_ACAPY_HTTP_PORT}
     ports:
       - 4052:4040
-    command: ngrok http traction-agent:${TRACTION_ACAPY_HTTP_PORT} --log stdout
+    command: http traction-agent:${TRACTION_ACAPY_HTTP_PORT} --log stdout
 
   traction-acapy-image-builder:
     pull_policy: missing
@@ -132,6 +132,8 @@ services:
       - UX_OWNER=${UX_OWNER}
       - FRONTEND_ARIES_LEDGER_DESCRIPTION=${FRONTEND_ARIES_LEDGER_DESCRIPTION}
       - FRONTEND_ACAPY_VERSION_DISPLAY=${FRONTEND_ACAPY_VERSION_DISPLAY}
+      - SERVER_SMTP_SERVER=maildev
+      - SERVER_SMTP_PORT=1025
     ports:
       - ${TENANT_UI_PORT}:8080
     extra_hosts:
@@ -263,6 +265,12 @@ services:
       retries: 5
     extra_hosts:
       - host.docker.internal:host-gateway
+  
+  maildev:
+    image: maildev/maildev
+    ports:
+      - "1080:1080"
+      - "1025:1025"
 
 volumes:
   traction-wallet:

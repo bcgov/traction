@@ -62,6 +62,7 @@ acapy:
       printKey: false
       printToken: false
       reservationExpiryMinutes: 2880
+      reservationAutoApprove: false
 
 
   imagePullSecrets: []
