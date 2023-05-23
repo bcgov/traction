@@ -27,7 +27,7 @@ RUN poetry install --no-dev
 RUN ln -s $(poetry env info -p)/lib/python3.6/site-packages site-packages
 
 
-FROM bcgovimages/aries-cloudagent:py36-1.16-1_1.0.0-rc1
+FROM bcgovimages/aries-cloudagent:py36-1.16-1_0.8.1
 COPY --from=base --chown=indy:indy /home/indy/.venv /home/indy/.venv
 ENV PATH="/home/indy/.venv/bin:$PATH"
 
