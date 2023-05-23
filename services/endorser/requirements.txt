@@ -24,7 +24,7 @@ python-dotenv==0.19.2
 python-jose[cryptography]==3.3.0
 python-multipart==0.0.5
 PyYAML==6.0
-requests==2.27.1
+requests==2.31.0
 sniffio==1.2.0
 SQLAlchemy==1.4.27
 sqlalchemy2-stubs==0.0.2a19
