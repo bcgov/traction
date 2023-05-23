@@ -20,7 +20,11 @@ from aries_cloudagent.wallet.models.wallet_record import WalletRecord
 from marshmallow import fields
 
 from . import TenantManager
-from .utils import approve_reservation, generate_reservation_token_data, ReservationException
+from .utils import (
+    approve_reservation,
+    generate_reservation_token_data,
+    ReservationException,
+)
 from .models import (
     ReservationRecord,
     ReservationRecordSchema,
@@ -211,35 +215,6 @@ class TenantListSchema(OpenAPISchema):
     )
 
 
-class EndorserLedgerConfigSchema(OpenAPISchema):
-    """Schema for EndorserLedgerConfig."""
-
-    endorser_alias = fields.Str(
-        description="Endorser alias/identifier",
-        required=True,
-    )
-    ledger_id = fields.Str(
-        description="Ledger identifier",
-        required=True,
-    )
-
-
-class InkeeperWalletConfigSchema(OpenAPISchema):
-    """Response schema for Inkeeper wallet config."""
-
-    connect_to_endorser = fields.List(
-        fields.Nested(EndorserLedgerConfigSchema()),
-        description="Endorser config",
-    )
-    create_public_did = fields.List(
-        fields.Str(
-            description="Ledger identifier",
-            required=False,
-        ),
-        description="Public DID config",
-    )
-
-
 @docs(
     tags=["multitenancy"],
 )
@@ -264,11 +239,11 @@ async def tenant_reservation(request: web.BaseRequest):
         LOGGER.info("Tenant auto-approve is on, approving newly created tenant")
         try:
             _pwd = await approve_reservation(rec.reservation_id, rec.state_notes, mgr)
-            return web.json_response({"reservation_id": rec.reservation_id, "reservation_pwd": _pwd})
+            return web.json_response(
+                {"reservation_id": rec.reservation_id, "reservation_pwd": _pwd}
+            )
         except ReservationException as err:
-            raise web.HTTPConflict(
-                    reason=str(err)
-                )
+            raise web.HTTPConflict(reason=str(err))
 
     return web.json_response({"reservation_id": rec.reservation_id})
 
@@ -447,10 +422,8 @@ async def innkeeper_reservations_approve(request: web.BaseRequest):
     try:
         _pwd = await approve_reservation(reservation_id, state_notes, mgr)
     except ReservationException as err:
-        raise web.HTTPConflict(
-                reason=str(err)
-            )
-    
+        raise web.HTTPConflict(reason=str(err))
+
     return web.json_response({"reservation_pwd": _pwd})
 
 
@@ -525,27 +498,6 @@ async def innkeeper_tenants_list(request: web.BaseRequest):
     tags=[SWAGGER_CATEGORY],
 )
 @match_info_schema(TenantIdMatchInfoSchema())
-@response_schema(InkeeperWalletConfigSchema(), 200, description="")
-@innkeeper_only
-@error_handler
-async def innkeeper_wallet_config_get(request: web.BaseRequest):
-    context: AdminRequestContext = request["context"]
-    tenant_id = request.match_info["tenant_id"]
-    profile = context.profile
-    endorser_config = profile.settings.get("tenant.endorser_config")
-    public_did_config = profile.settings.get("tenant.public_did_config")
-    return web.json_response(
-        {
-            "connect_to_endorser": endorser_config,
-            "create_public_did": public_did_config,
-        }
-    )
-
-
-@docs(
-    tags=[SWAGGER_CATEGORY],
-)
-@match_info_schema(TenantIdMatchInfoSchema())
 @response_schema(TenantRecordSchema(), 200, description="")
 @innkeeper_only
 @error_handler
@@ -601,11 +553,6 @@ async def register(app: web.Application):
                 innkeeper_reservations_deny,
             ),
             web.get("/innkeeper/tenants/", innkeeper_tenants_list, allow_head=False),
-            web.get(
-                "/innkeeper/wallet-config/{tenant_id}",
-                innkeeper_wallet_config_get,
-                allow_head=False,
-            ),
             web.get(
                 "/innkeeper/tenants/{tenant_id}", innkeeper_tenant_get, allow_head=False
             ),

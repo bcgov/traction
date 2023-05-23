@@ -50,7 +50,6 @@ export const API_PATH = {
 
   INNKEEPER_TOKEN: '/innkeeper/token',
   INNKEEPER_TENANTS: '/innkeeper/tenants/',
-  INNKEEPER_CONFIG: (id: string) => `/innkeeper/wallet-config/${id}`,
   INNKEEPER_TENANT: (id: string) => `/innkeeper/tenants/${id}`,
   INNKEEPER_RESERVATIONS: '/innkeeper/reservations/',
   INNKEEPER_RESERVATIONS_APPROVE: (id: string) =>
@@ -99,6 +98,7 @@ export const API_PATH = {
   TENANT_REGISTER_PUBLIC_DID: '/ledger/register-nym',
   TENANT_TOKEN: '/tenant/token',
   TENANT_WALLET: '/tenant/wallet',
+  TENANT_CONFIG: '/tenant/config',
 
   WALLET_DID_PUBLIC: '/wallet/did/public',
   WALLET_DID_CREATE: '/wallet/did/create',
