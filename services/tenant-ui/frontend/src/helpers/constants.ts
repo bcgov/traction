@@ -65,6 +65,9 @@ export const API_PATH = {
   ISSUE_CREDENTIAL_RECORDS_SEND_REQUEST: (id: string) =>
     `issue-credential/records/${id}/send-request`,
 
+  LEDGER_TAA: '/ledger/taa',
+  LEDGER_TAA_ACCEPT: '/ledger/taa/accept',
+
   MULTITENANCY_RESERVATIONS: '/multitenancy/reservations',
   MULTITENANCY_RESERVATION: (resId: string) =>
     `/multitenancy/reservations/${resId}`,

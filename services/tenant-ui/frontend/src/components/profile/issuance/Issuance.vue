@@ -1,6 +1,14 @@
 <template>
   <!-- Make Issuer -->
-  <h3 class="mt-5 mb-3">{{ $t('profile.issuer') }}</h3>
+  <h3 class="mt-5 mb-3">
+    {{ $t('profile.issuer') }}
+
+    <span v-if="errLoading" class="no-endorser">
+      <i class="pi pi-exclamation-circle"></i>
+      {{ $t('common.genericError') }}
+    </span>
+  </h3>
+
   <div v-if="loadingIssuance" class="flex flex-column align-items-center">
     <ProgressSpinner />
     <p v-if="publicDidRegistrationProgress">
@@ -8,7 +16,10 @@
     </p>
   </div>
   <div v-else>
-    <h5 class="my-0">{{ $t('common.endorser') }}</h5>
+    <h5 class="my-0">{{ $t('profile.taa.taaAcceptance') }}</h5>
+    <TaaAcceptance />
+
+    <h5 class="mb-0 mt-3">{{ $t('common.endorser') }}</h5>
     <div v-if="endorserInfo">
       <Endorser />
 
@@ -24,7 +35,7 @@
 
 <script setup lang="ts">
 // Vue
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 // PrimeVue
 import ProgressSpinner from 'primevue/progressspinner';
 // State
@@ -33,20 +44,24 @@ import { storeToRefs } from 'pinia';
 // Other Components
 import Endorser from './Endorser.vue';
 import PublicDid from './PublicDid.vue';
+import TaaAcceptance from './TaaAcceptance.vue';
+import { useToast } from 'vue-toastification';
+
+const toast = useToast();
 
 // Get the tenant store
 const tenantStore = useTenantStore();
 const { loadingIssuance, endorserInfo, publicDidRegistrationProgress } =
   storeToRefs(tenantStore);
 
-// Load the issuer details
+// Load all the issuer details
+const errLoading = ref(false);
 const loadIssuer = async () => {
-  await tenantStore.getEndorserInfo();
-  if (endorserInfo) {
-    await Promise.all([
-      tenantStore.getEndorserConnection(),
-      tenantStore.getPublicDid(),
-    ]);
+  try {
+    await tenantStore.getIssuanceStatus();
+  } catch (error) {
+    errLoading.value = true;
+    toast.error(`Failure getting Issuer info: ${error}`);
   }
 };
 onMounted(async () => {
