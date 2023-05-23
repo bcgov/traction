@@ -8,7 +8,7 @@
             for="selectedCred"
             :class="{ 'p-error': v$.selectedCred.$invalid && submitted }"
           >
-            {{ $t('oca.credentialId') }}
+            {{ $t('common.credentialId') }}
             <ProgressSpinner v-if="loading" />
           </label>
 
