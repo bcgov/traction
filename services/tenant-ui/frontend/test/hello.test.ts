@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest';
 
-function sum(...nums) {
+function sum(...nums: number[]) {
   return nums.reduce((a, b) => a + b, 0);
 }
 

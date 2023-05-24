@@ -21,8 +21,9 @@
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.tsx",
-    "src/**/*.vue"
-, "src/components/holder/credentialOcaCard/OcaStyleConstants.ts"  ],
+    "src/**/*.vue",
+    "src/components/holder/credentialOcaCard/OcaStyleConstants.ts"
+  ],
   "references": [
     {
       "path": "./tsconfig.node.json"

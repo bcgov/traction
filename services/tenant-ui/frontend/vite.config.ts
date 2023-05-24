@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import vue from '@vitejs/plugin-vue';
 import path from 'path';
 
@@ -11,7 +11,7 @@ const proxyObject = {
   changeOrigin: true,
 };
 
-// https://vitejs.dev/config/
+// https://vitetest.dev/config/
 export default defineConfig({
   plugins: [vue()],
   resolve: {
@@ -31,5 +31,8 @@ export default defineConfig({
         additionalData: `@import "@/assets/variables.scss";`,
       },
     },
+  },
+  test: {
+    environment: 'jsdom',
   },
 });
