@@ -196,6 +196,16 @@ export const useTenantStore = defineStore('tenant', () => {
     publicDidRegistrationProgress.value = '';
 
     try {
+      console.log('> tenantStore.config');
+      await acapyApi
+        .getHttp(API_PATH.TENANT_CONFIG)
+        .then((res: any) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      console.log('< tenantStore.config');
       // Create a DID
       publicDidRegistrationProgress.value = 'Creating DID';
       const cRes = await acapyApi.postHttp(API_PATH.WALLET_DID_CREATE, {
