@@ -114,7 +114,6 @@ export const API_PATH = {
   TENANT_REGISTER_PUBLIC_DID: '/ledger/register-nym',
   TENANT_TOKEN: '/tenant/token',
   TENANT_WALLET: '/tenant/wallet',
-  TENANT_CONFIG: '/tenant/config',
 
   WALLET_DID_PUBLIC: '/wallet/did/public',
   WALLET_DID_CREATE: '/wallet/did/create',

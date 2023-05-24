@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Mapping, Optional, List
+from typing import Any, Mapping, Optional
 
 from mergedeep import merge
 from pydantic import BaseModel
@@ -11,23 +11,12 @@ def _alias_generator(key: str) -> str:
     return key.replace("_", "-")
 
 
-class EndorserLedgerConfig(BaseModel):
-    endorser_alias: str
-    ledger_id: str
-
-    class Config:
-        alias_generator = _alias_generator
-        allow_population_by_field_name = True
-
-
 class InnkeeperWalletConfig(BaseModel):
     tenant_id: Optional[str]  # real world, this is a UUID
     wallet_name: Optional[str]
     wallet_key: Optional[str]
     print_key: bool = False
     print_token: bool = False
-    connect_to_endorser: List[EndorserLedgerConfig] = []
-    create_public_did: List[str] = []
 
     class Config:
         alias_generator = _alias_generator
@@ -42,8 +31,6 @@ class InnkeeperWalletConfig(BaseModel):
             wallet_name="traction_innkeeper_v1_0",
             print_key=False,
             print_token=False,
-            connect_to_endorser=[],
-            create_public_did=[],
         )
 
 
