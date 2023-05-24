@@ -62,10 +62,14 @@
       </template>
     </Column>
     <template #expansion="{ data }">
-      <PresentationRowExpandData
+      <!-- <PresentationRowExpandData
         :row="data"
         :header="false"
         :show-information="true"
+      /> -->
+      <RowExpandData
+        :id="data.presentation_exchange_id"
+        :url="API_PATH.PRESENT_PROOF_RECORDS"
       />
     </template>
   </DataTable>
@@ -82,13 +86,14 @@ import InputText from 'primevue/inputtext';
 import { FilterMatchMode } from 'primevue/api';
 import { useToast } from 'vue-toastification';
 // Stae
-import { useContactsStore, useVerifierStore } from '../../store';
+import { useContactsStore, useVerifierStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Components
 import CreateRequest from './createPresentationRequest/CreateRequest.vue';
-import StatusChip from '../common/StatusChip.vue';
-import PresentationRowExpandData from './PresentationRowExpandData.vue';
-import { TABLE_OPT } from '@/helpers/constants';
+// import PresentationRowExpandData from './PresentationRowExpandData.vue';
+import RowExpandData from '@/components/common/RowExpandData.vue';
+import StatusChip from '@/components/common/StatusChip.vue';
+import { API_PATH, TABLE_OPT } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 
 const toast = useToast();
