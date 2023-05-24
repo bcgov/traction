@@ -1,12 +1,26 @@
 <template>
-  <h3 class="mt-0">{{ $t('verifiers.verifications') }}</h3>
+  <div class="flex justify-content-between mb-3">
+    <div class="flex justify-content-start">
+      <h3 class="mt-0">{{ $t('verifier.verifications') }}</h3>
+    </div>
+    <div class="flex justify-content-end">
+      <Button
+        icon="pi pi-refresh"
+        title="Refresh table"
+        text
+        rounded
+        aria-label="Filter"
+        @click="loadTable"
+      />
+    </div>
+  </div>
 
   <DataTable
     v-model:selection="selectedPresentation"
     v-model:expandedRows="expandedRows"
     :loading="loading"
     :value="presentations"
-    data-key="verifier_presentation_id"
+    data-key="presentation_exchange_id"
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
@@ -14,40 +28,32 @@
   >
     <template #header>
       <div class="flex justify-content-between">
-        <div class="flex justify-content-start">
-          <SuperYou
-            :api-url="apiUrl"
-            :template-json="templateJson"
-            text="Create Presentation Request"
-            icon="pi-key"
-            @success="loadTable"
-          />
-        </div>
+        <CreateRequest />
+
         <div class="flex justify-content-end">
-          <span class="p-input-icon-left varification-search">
+          <span class="p-input-icon-left">
             <i class="pi pi-search" />
             <InputText
               v-model="filter.name.value"
               placeholder="Search Verifications"
             />
           </span>
-          <Button
-            icon="pi pi-refresh"
-            class="p-button-rounded p-button-outlined"
-            title="Refresh Table"
-            @click="loadTable"
-          />
         </div>
       </div>
     </template>
     <template #empty>{{ $t('common.noRecordsFound') }}</template>
     <template #loading>{{ $t('common.loading') }}</template>
     <Column :expander="true" header-style="width: 3rem" />
-    <Column :sortable="true" field="name" header="Name" />
-    <Column :sortable="true" field="contact.alias" header="Contact Name" />
+    <Column :sortable="true" field="presentation_request.name" header="Name" />
+    <Column :sortable="true" field="role" header="Role" />
+    <Column :sortable="true" field="connection_id" header="Connection">
+      <template #body="{ data }">
+        {{ findConnectionName(data.connection_id) }}
+      </template>
+    </Column>
     <Column :sortable="true" field="status" header="Status">
       <template #body="{ data }">
-        <StatusChip :status="data.status" />
+        <StatusChip :status="data.state" />
       </template>
     </Column>
     <Column :sortable="true" field="created_at" header="Created at">
@@ -56,70 +62,46 @@
       </template>
     </Column>
     <template #expansion="{ data }">
-      <PresentationRowExpandData
+      <!-- <PresentationRowExpandData
         :row="data"
         :header="false"
         :show-information="true"
+      /> -->
+      <RowExpandData
+        :id="data.presentation_exchange_id"
+        :url="API_PATH.PRESENT_PROOF_RECORDS"
       />
     </template>
   </DataTable>
 </template>
 
 <script setup lang="ts">
+// Vue
 import { onMounted, ref } from 'vue';
+// PrimeVue
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import Button from 'primevue/button';
-import { useToast } from 'vue-toastification';
 import InputText from 'primevue/inputtext';
 import { FilterMatchMode } from 'primevue/api';
-
-import { useVerifierStore } from '../../store';
+import { useToast } from 'vue-toastification';
+// Stae
+import { useContactsStore, useVerifierStore } from '@/store';
 import { storeToRefs } from 'pinia';
-
-import PresentationRowExpandData from './PresentationRowExpandData.vue';
+// Components
+import CreateRequest from './createPresentationRequest/CreateRequest.vue';
+// import PresentationRowExpandData from './PresentationRowExpandData.vue';
+import RowExpandData from '@/components/common/RowExpandData.vue';
+import StatusChip from '@/components/common/StatusChip.vue';
 import { API_PATH, TABLE_OPT } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
-import StatusChip from '../common/StatusChip.vue';
-import SuperYou from '@/components/common/SuperYou.vue';
+
 const toast = useToast();
 
-const apiUrl = API_PATH.VERIFIER_PRESENTATION_ADHOC_REQUEST;
-
-const templateJson = {
-  contact_id: '67f68781-4dd9-49ad-9a5e-1e9a06e901f4',
-  connection_id: '6530a727-8c05-4818-a1bb-687117afbd44',
-  proof_request: {
-    requested_attributes: [
-      {
-        name: 'string',
-        names: ['string'],
-        non_revoked: {},
-        restrictions: [{}],
-      },
-    ],
-    requested_predicates: [
-      {
-        name: 'string',
-        p_type: '<',
-        p_value: 0,
-        non_revoked: {},
-        restrictions: [{}],
-      },
-    ],
-    non_revoked: {},
-  },
-  name: 'string',
-  version: '1.0.0',
-  external_reference_id: 'string',
-  comment: 'string',
-  tags: [],
-};
-// used by datatable expander behind the scenes
-const expandedRows = ref([]);
-
+// State
+const contactsStore = useContactsStore();
 const verifierStore = useVerifierStore();
-// use the loading state from the store to disable the button...
+const { contacts, findConnectionName } = storeToRefs(useContactsStore());
 const { loading, presentations, selectedPresentation } = storeToRefs(
   useVerifierStore()
 );
@@ -128,26 +110,24 @@ const loadTable = async () => {
   verifierStore.listPresentations().catch((err) => {
     toast.error(`Failure: ${err}`);
   });
+
+  // Load contacts if not already there for display
+  if (!contacts.value || !contacts.value.length) {
+    contactsStore.listContacts().catch((err) => {
+      console.error(err);
+      toast.error(`Failure: ${err}`);
+    });
+  }
 };
 
 onMounted(async () => {
   loadTable();
 });
 
+// used by datatable expander behind the scenes
+const expandedRows = ref([]);
+
 const filter = ref({
   name: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 </script>
-
-<style scoped>
-.p-datatable-header input {
-  padding-left: 3rem;
-  margin-right: 1.5rem;
-}
-.varification-search {
-  margin-left: 1.5rem;
-}
-.varification-search input {
-  padding-left: 3rem !important;
-}
-</style>
