@@ -4,8 +4,8 @@ global:
   ingressSuffix: -test.apps.silver.devops.gov.bc.ca
 tenant_ui:
   image:
-    tag: "ghcr.io/bcgov/traction-tenant-ui:0.2.10"
-    version: '0.2.10'
+    tag: "ghcr.io/bcgov/traction-tenant-ui:0.2.11"
+    version: '0.2.11'
     buildtime: '2022-08-04T22:16:25.869Z'
     pullPolicy: Always
   traction_api:
