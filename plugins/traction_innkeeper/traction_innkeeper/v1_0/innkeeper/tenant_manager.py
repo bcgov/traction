@@ -1,9 +1,8 @@
-import logging
-import uuid
+import bcrypt
 from datetime import datetime, timedelta
+import logging
 from typing import List
 
-import bcrypt
 from aries_cloudagent.core.error import BaseError
 from aries_cloudagent.core.profile import Profile
 from aries_cloudagent.messaging.models.base import BaseModelError

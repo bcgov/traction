@@ -5,13 +5,12 @@ from datetime import datetime, timedelta
 
 from aries_cloudagent.core.profile import Profile
 
-from .models import (
-    ReservationRecord
-)
+from .models import ReservationRecord
 
 from . import TenantManager
 
 LOGGER = logging.getLogger(__name__)
+
 
 def generate_reservation_token_data(expiry_minutes: int):
     _pwd = str(uuid.uuid4().hex)
@@ -29,14 +28,19 @@ def generate_reservation_token_data(expiry_minutes: int):
 
     return _pwd, _salt, _hash, _expiry
 
-async def approve_reservation(reservation_id: str, state_notes: str, manager: TenantManager):
+
+async def approve_reservation(
+    reservation_id: str, state_notes: str, manager: TenantManager
+):
     async with manager.profile.session() as session:
         # find reservation records.
         rec = await ReservationRecord.retrieve_by_reservation_id(
             session, reservation_id, for_update=True
         )
         if rec.state == ReservationRecord.STATE_REQUESTED:
-            _pwd, _salt, _hash, _expiry = generate_reservation_token_data(manager._config.reservation.expiry_minutes)
+            _pwd, _salt, _hash, _expiry = generate_reservation_token_data(
+                manager._config.reservation.expiry_minutes
+            )
             rec.reservation_token_salt = _salt.decode("utf-8")
             rec.reservation_token_hash = _hash.decode("utf-8")
             rec.reservation_token_expiry = _expiry
@@ -48,10 +52,9 @@ async def approve_reservation(reservation_id: str, state_notes: str, manager: Te
             raise ReservationException(
                 f"Reservation state is currently '{rec.state}' and cannot be set to '{ReservationRecord.STATE_APPROVED}'."
             )
-        
+
     return _pwd
-        
+
+
 class ReservationException(Exception):
     pass
-
-

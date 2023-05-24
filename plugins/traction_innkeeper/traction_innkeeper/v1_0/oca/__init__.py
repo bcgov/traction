@@ -51,7 +51,9 @@ async def on_startup(profile: Profile, event: Event):
     if OCA_PATH not in base_wallet_routes:
         base_wallet_routes.append(OCA_PATH)
     # now add set the "configuration"
-    profile.context.settings.set_value("multitenant.base_wallet_routes", base_wallet_routes)
+    profile.context.settings.set_value(
+        "multitenant.base_wallet_routes", base_wallet_routes
+    )
     # and we need to tell the server to load the additional routes
     # first call to this property "builds" the underlying property...
     srv.additional_routes_pattern
