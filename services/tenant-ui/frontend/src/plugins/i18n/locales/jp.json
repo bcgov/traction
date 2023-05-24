@@ -382,8 +382,12 @@
     "verifications": "Verifications <JP>"
   },
   "verify": {
-    "createRequest": "Create Presentation Requests <JP>",
+    "autoVerify": "Auto Verify <JP>",
+    "autoVerifyHelp": "Verifier choice to auto-verify proof presentation <JP>",
+    "comment": "Optional Comment <JP>",
+    "connection": "Connection <JP>",
+    "createRequest": "Create Presentation Request <JP>",
+    "presentationRequestBody": "Proof Request <JP>",
     "verification": "Verification <JP>",
     "verifications": "Verifications <JP>"
   }
-}
