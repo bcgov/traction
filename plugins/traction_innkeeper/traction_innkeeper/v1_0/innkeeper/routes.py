@@ -20,11 +20,7 @@ from aries_cloudagent.wallet.models.wallet_record import WalletRecord
 from marshmallow import fields
 
 from . import TenantManager
-from .utils import (
-    approve_reservation,
-    generate_reservation_token_data,
-    ReservationException,
-)
+from .utils import approve_reservation, generate_reservation_token_data, ReservationException
 from .models import (
     ReservationRecord,
     ReservationRecordSchema,
@@ -239,11 +235,11 @@ async def tenant_reservation(request: web.BaseRequest):
         LOGGER.info("Tenant auto-approve is on, approving newly created tenant")
         try:
             _pwd = await approve_reservation(rec.reservation_id, rec.state_notes, mgr)
-            return web.json_response(
-                {"reservation_id": rec.reservation_id, "reservation_pwd": _pwd}
-            )
+            return web.json_response({"reservation_id": rec.reservation_id, "reservation_pwd": _pwd})
         except ReservationException as err:
-            raise web.HTTPConflict(reason=str(err))
+            raise web.HTTPConflict(
+                    reason=str(err)
+                )
 
     return web.json_response({"reservation_id": rec.reservation_id})
 
@@ -422,8 +418,10 @@ async def innkeeper_reservations_approve(request: web.BaseRequest):
     try:
         _pwd = await approve_reservation(reservation_id, state_notes, mgr)
     except ReservationException as err:
-        raise web.HTTPConflict(reason=str(err))
-
+        raise web.HTTPConflict(
+                reason=str(err)
+            )
+    
     return web.json_response({"reservation_pwd": _pwd})
 
 
