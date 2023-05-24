@@ -7,6 +7,7 @@ from aiohttp_apispec import (
     request_schema,
 )
 from aries_cloudagent.admin.request_context import AdminRequestContext
+from aries_cloudagent.messaging.models.openapi import OpenAPISchema
 from aries_cloudagent.multitenant.admin.routes import (
     format_wallet_record,
     UpdateWalletRequestSchema,
@@ -16,6 +17,7 @@ from aries_cloudagent.wallet.models.wallet_record import (
     WalletRecordSchema,
     WalletRecord,
 )
+from marshmallow import fields
 
 from ..innkeeper.routes import error_handler
 from ..innkeeper.tenant_manager import TenantManager
@@ -27,6 +29,35 @@ from ..innkeeper.models import (
 LOGGER = logging.getLogger(__name__)
 
 SWAGGER_CATEGORY = "traction-tenant"
+
+
+class EndorserLedgerConfigSchema(OpenAPISchema):
+    """Schema for EndorserLedgerConfig."""
+
+    endorser_alias = fields.Str(
+        description="Endorser alias/identifier",
+        required=True,
+    )
+    ledger_id = fields.Str(
+        description="Ledger identifier",
+        required=True,
+    )
+
+
+class TenantConfigSchema(OpenAPISchema):
+    """Response schema for Tenant config."""
+
+    connect_to_endorser = fields.List(
+        fields.Nested(EndorserLedgerConfigSchema()),
+        description="Endorser config",
+    )
+    create_public_did = fields.List(
+        fields.Str(
+            description="Ledger identifier",
+            required=False,
+        ),
+        description="Public DID config",
+    )
 
 
 @docs(
@@ -70,6 +101,26 @@ async def tenant_wallet_get(request: web.BaseRequest):
     result = format_wallet_record(wallet_record)
 
     return web.json_response(result)
+
+
+@docs(tags=[SWAGGER_CATEGORY], summary="Get tenant setting")
+@response_schema(TenantConfigSchema(), 200, description="")
+@error_handler
+async def tenant_config_get(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    wallet_id = context.profile.settings.get("wallet.id")
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+    async with profile.session() as session:
+        tenant_record = await TenantRecord.query_by_wallet_id(session, wallet_id)
+    endorser_config = tenant_record.connected_to_endorsers
+    public_did_config = tenant_record.created_public_did
+    return web.json_response(
+        {
+            "connect_to_endorser": endorser_config,
+            "create_public_did": public_did_config,
+        }
+    )
 
 
 @docs(tags=[SWAGGER_CATEGORY], summary="Update tenant wallet")
@@ -127,6 +178,7 @@ async def register(app: web.Application):
             web.get("/tenant", tenant_self, allow_head=False),
             web.get("/tenant/wallet", tenant_wallet_get, allow_head=False),
             web.put("/tenant/wallet", tenant_wallet_update),
+            web.get("/tenant/config", tenant_config_get, allow_head=False),
         ]
     )
     LOGGER.info("< registering routes")
