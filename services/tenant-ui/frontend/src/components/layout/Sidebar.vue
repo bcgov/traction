@@ -53,11 +53,11 @@ const items = ref([
     to: { name: 'MyIssuedCredentials' },
   },
 
-  // {
-  //   label: () => t('verify.verification'),
-  //   icon: 'pi pi-fw pi-check-square',
-  //   to: { name: 'MyPresentations' },
-  // },
+  {
+    label: () => t('verify.verification'),
+    icon: 'pi pi-fw pi-check-square',
+    to: { name: 'MyPresentations' },
+  },
 
   {
     label: () => t('common.credentials'),

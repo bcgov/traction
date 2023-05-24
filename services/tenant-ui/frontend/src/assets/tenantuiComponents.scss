@@ -49,6 +49,7 @@
   &.response,
   &.requested,
   &.request-sent,
+  &.request-received,
   &.offer-sent,
   &.offer-received {
     background-color: $tenant-ui-status-blue-background;
