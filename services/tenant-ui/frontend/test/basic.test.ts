@@ -3,7 +3,7 @@ import { test, expect, vi } from 'vitest';
 
 import Traction from '../src/components/about/Traction.vue';
 
-test('mount App', () => {
+test('mount Traction', () => {
   const $t = vi.fn((key: string) => key);
   vi.mock('pinia', () => ({
     defineStore: vi.fn(),
@@ -44,4 +44,5 @@ test('mount App', () => {
   expect(wrapper.html()).toContain('/api/doc');
   expect(wrapper.html()).toContain('1.0');
   expect(wrapper.html()).toContain('2021-01-01');
+  expect(wrapper.html()).toMatchSnapshot();
 });

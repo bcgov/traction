@@ -1,0 +1,7 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`mount App 1`] = `
+"<router-view data-v-7a7a37b1=\\"\\"></router-view>
+<!-- Shared confirm popup  -->
+<!---->"
+`;
