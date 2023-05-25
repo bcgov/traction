@@ -4,8 +4,8 @@ global:
 tenant_ui:
   image:
     tag: "ghcr.io/bcgov/traction-tenant-ui:0.2.13"
-    version: '0.2.13'
-    buildtime: '2022-08-04T22:16:25.869Z'
+    version: "0.2.13"
+    buildtime: "2022-08-04T22:16:25.869Z"
     pullPolicy: Always
   traction_api:
     endpoint: https://traction-tenant-proxy-test.apps.silver.devops.gov.bc.ca
@@ -17,7 +17,7 @@ tenant_ui:
     authority: https://test.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm
     jwksUri: https://test.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm/protocol/openid-connect/certs
   ariesDetails:
-    ledgerDescription: 'bcovrin-test'
+    ledgerDescription: "bcovrin-test"
   smtp:
     server: apps.smtp.gov.bc.ca
     port: 25

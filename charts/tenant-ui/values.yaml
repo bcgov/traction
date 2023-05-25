@@ -28,35 +28,35 @@ global:
 tenant_ui:
   image:
     tag: "ghcr.io/bcgov/traction-tenant-ui:0.2.13"
-    version: '0.2.13'
-    buildtime: '2022-08-04T22:16:25.869Z'
+    version: "0.2.13"
+    buildtime: "2022-08-04T22:16:25.869Z"
     pullPolicy: IfNotPresent
   ux:
-    appTitle: 'Traction Tenant Console'
-    appInnkeeperTitle: 'Traction Innkeeper Console'
-    sidebarTitle: 'Traction'
-    copyright: ''
-    owner: ''
-    coverImageCopyright: 'Photo by Kristoffer Fredriksson on StockSnap'
+    appTitle: "Traction Tenant Console"
+    appInnkeeperTitle: "Traction Innkeeper Console"
+    sidebarTitle: "Traction"
+    copyright: ""
+    owner: ""
+    coverImageCopyright: "Photo by Kristoffer Fredriksson on StockSnap"
 
   oidc:
     showInnkeeperAdminLogin: true
     active: true
-    authority: ''
-    client:  'innkeeper-frontend'
-    label: 'IDIR'
-    jwksUri: ''
-    realm: 'Traction'
-    roleName: 'innkeeper'
+    authority: ""
+    client: "innkeeper-frontend"
+    label: "IDIR"
+    jwksUri: ""
+    realm: "Traction"
+    roleName: "innkeeper"
 
   ariesDetails:
-    ledgerDescription: 'bcovrin-test'
+    ledgerDescription: "bcovrin-test"
 
   smtp:
     server: apps.smtp.gov.bc.ca
     port: 25
-    senderAddress: ''
-    innkeeperInbox: ''
+    senderAddress: ""
+    innkeeperInbox: ""
 
   traction_api:
     # this is the private endpoint
@@ -78,10 +78,12 @@ tenant_ui:
 
   podAnnotations: {}
 
-  podSecurityContext: {}
+  podSecurityContext:
+    {}
     # fsGroup: 2000
 
-  securityContext: {}
+  securityContext:
+    {}
     # capabilities:
     #   drop:
     #   - ALL
@@ -122,4 +124,3 @@ tenant_ui:
   tolerations: []
 
   affinity: {}
-
