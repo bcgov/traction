@@ -6,8 +6,8 @@ global:
     enabled: true
 tenant_ui:
   image:
-    tag: 'ghcr.io/bcgov/traction-tenant-ui:sha-c5caaa0'
-    version: 'sha-c5caaa0'
+    tag: 'ghcr.io/bcgov/traction-tenant-ui:0.2.12'
+    version: '0.2.12'
     buildtime: '2023-02-22T06:39:56.325Z'
     pullPolicy: Always
   traction_api:
