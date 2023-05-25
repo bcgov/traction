@@ -291,6 +291,12 @@ class TenantRecord(BaseRecord):
         }
 
     @classmethod
+    def transform_tenant_id(cls, value: str):
+        if "-" not in value:
+            return str(uuid.UUID(hex=value))
+        return value
+
+    @classmethod
     async def query_by_wallet_id(
         cls,
         session: ProfileSession,
@@ -313,6 +319,23 @@ class TenantRecord(BaseRecord):
         if not result:
             raise StorageNotFoundError("No TenantRecord found for the given wallet_id")
         return result[0]
+
+    @classmethod
+    async def retrieve_by_tenant_id(
+        cls,
+        session: ProfileSession,
+        record_id: str,
+        *,
+        for_update=False,
+    ) -> "TenantRecord":
+        """Retrieve TenantRecord by tenant_id.
+        Args:
+            session: the profile session to use
+            record_id: the tenant_id by which to filter
+        """
+        tenant_id = cls.transform_tenant_id(record_id)
+        record = await cls.retrieve_by_id(session, tenant_id, for_update=for_update)
+        return record
 
 
 class TenantRecordSchema(BaseRecordSchema):

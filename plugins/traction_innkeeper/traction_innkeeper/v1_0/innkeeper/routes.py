@@ -250,28 +250,6 @@ async def tenant_reservation(request: web.BaseRequest):
     return web.json_response({"reservation_id": rec.reservation_id})
 
 
-@docs(tags=[SWAGGER_CATEGORY], summary="Update tenant setting")
-@request_schema(TenantConfigSchema)
-@response_schema(TenantRecordSchema(), 200, description="")
-@error_handler
-async def tenant_config_update(request: web.BaseRequest):
-    context: AdminRequestContext = request["context"]
-    wallet_id = context.profile.settings.get("wallet.id")
-    body = await request.json()
-    connect_to_endorser = body.get("connect_to_endorser")
-    create_public_did = body.get("create_public_did")
-    mgr = context.inject(TenantManager)
-    profile = mgr.profile
-    async with profile.session() as session:
-        tenant_record = await TenantRecord.query_by_wallet_id(session, wallet_id)
-        if connect_to_endorser:
-            tenant_record.connected_to_endorsers = connect_to_endorser
-        if create_public_did:
-            tenant_record.created_public_did = create_public_did
-        await tenant_record.save(session)
-    return web.json_response(tenant_record.serialize())
-
-
 @docs(
     tags=["multitenancy"],
 )
@@ -362,6 +340,57 @@ async def tenant_checkin(request: web.BaseRequest):
             "token": token,
         }
     )
+
+
+@docs(tags=[SWAGGER_CATEGORY], summary="Update tenant setting")
+@match_info_schema(TenantIdMatchInfoSchema())
+@request_schema(TenantConfigSchema)
+@response_schema(TenantRecordSchema(), 200, description="")
+@innkeeper_only
+@error_handler
+async def tenant_config_update(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    body = await request.json()
+    connect_to_endorser = body.get("connect_to_endorser")
+    create_public_did = body.get("create_public_did")
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+    tenant_id = request.match_info["tenant_id"]
+    async with profile.session() as session:
+        tenant_record = await TenantRecord.retrieve_by_tenant_id(session, tenant_id)
+        if connect_to_endorser:
+            tenant_record.connected_to_endorsers = connect_to_endorser
+        if create_public_did:
+            tenant_record.created_public_did = create_public_did
+        await tenant_record.save(session)
+    return web.json_response(tenant_record.serialize())
+
+
+@docs(tags=[SWAGGER_CATEGORY], summary="Update reservation record")
+@match_info_schema(ReservationIdMatchInfoSchema())
+@request_schema(TenantConfigSchema())
+@response_schema(ReservationRecordSchema(), 200, description="")
+@innkeeper_only
+@error_handler
+async def innkeeper_tenant_res_update(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+
+    body = await request.json()
+    connect_to_endorser = body.get("connect_to_endorser")
+    create_public_did = body.get("create_public_did")
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+    reservation_id = request.match_info["reservation_id"]
+    async with profile.session() as session:
+        res_rec = await ReservationRecord.retrieve_by_reservation_id(
+            session, reservation_id
+        )
+        if connect_to_endorser:
+            res_rec.connect_to_endorsers = connect_to_endorser
+        if create_public_did:
+            res_rec.create_public_did = create_public_did
+        await res_rec.save(session)
+    return web.json_response(res_rec.serialize())
 
 
 @docs(tags=["multitenancy"], summary="Get auth token for a tenant")
@@ -580,6 +609,10 @@ async def register(app: web.Application):
                 innkeeper_reservations_approve,
             ),
             web.put(
+                "/innkeeper/reservations/{reservation_id}/config",
+                innkeeper_tenant_res_update,
+            ),
+            web.put(
                 "/innkeeper/reservations/{reservation_id}/deny",
                 innkeeper_reservations_deny,
             ),
@@ -587,7 +620,7 @@ async def register(app: web.Application):
             web.get(
                 "/innkeeper/tenants/{tenant_id}", innkeeper_tenant_get, allow_head=False
             ),
-            web.put("/innkeeper/tenant-config", tenant_config_update),
+            web.put("/innkeeper/tenants/{tenant_id}/config", tenant_config_update),
         ]
     )
     LOGGER.info("< registering routes")
