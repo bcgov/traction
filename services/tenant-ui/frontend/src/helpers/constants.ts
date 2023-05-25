@@ -56,8 +56,7 @@ export const API_PATH = {
     `/innkeeper/reservations/${id}/approve`,
   INNKEEPER_RESERVATIONS_DENY: (id: string) =>
     `/innkeeper/reservations/${id}/deny`,
-  INNKEEPER_TENANT_CONFIG: (id: string) =>
-    `/innkeeper/tenants/${id}/config`,
+  INNKEEPER_TENANT_CONFIG: (id: string) => `/innkeeper/tenants/${id}/config`,
   INNKEEPER_RESERVATION_CONFIG: (id: string) =>
     `/innkeeper/tenants/${id}/config`,
 
