@@ -3,10 +3,9 @@ name: traction
 description: The Traction service allows organizations to verify, hold, and issue verifiable credentials.
 type: application
 version: 0.0.5
-appVersion: 0.2.11
+appVersion: 0.2.12
 home: "https://github.com/bcgov/traction"
 sources: ["https://github.com/bcgov/traction"]
-engine: gotpl
 maintainers:
   - email: tools@usingtechnolo.gy
     name: usingtechnology
