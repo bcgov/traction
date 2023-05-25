@@ -1,34 +1,43 @@
 <template>
-  <p class="my-1">{{ $t('profile.connectTenantToEndorser') }}</p>
-  <InputSwitch
-    :model-value="hasEndorserConn"
-    :disabled="hasEndorserConn"
-    @change="connectToEndorser"
-  />
+  <div v-if="canConnectEndorser" class="my-1">
+    <p class="my-1">{{ $t('profile.connectTenantToEndorser') }}</p>
+    <InputSwitch
+      :model-value="hasEndorserConn"
+      :disabled="hasEndorserConn"
+      @change="connectToEndorser"
+    />
 
-  <div v-if="showNotActiveWarn" class="inactive-endorser">
-    <i class="pi pi-exclamation-triangle"></i>
-    {{ $t('profile.connectionNotActiveYet') }}
-    <p class="mt-0 pl-4">
-      {{ $t('profile.state', [endorserConnection.state]) }}
-    </p>
-  </div>
+    <div v-if="showNotActiveWarn" class="inactive-endorser">
+      <i class="pi pi-exclamation-triangle"></i>
+      {{ $t('profile.connectionNotActiveYet') }}
+      <p class="mt-0 pl-4">
+        {{ $t('profile.state', [endorserConnection.state]) }}
+      </p>
+    </div>
 
-  <div>
-    <Accordion>
-      <AccordionTab header="Endorser Details">
-        <h5 class="my-0">{{ $t('profile.endorserInfo') }}</h5>
-        <vue-json-pretty :data="endorserInfo" />
-        <h5 class="my-0">{{ $t('profile.endorserConnection') }}</h5>
-        <vue-json-pretty v-if="endorserConnection" :data="endorserConnection" />
-        <div v-else>{{ $t('profile.tenantNotConnectedToEndorserYet') }}</div>
-      </AccordionTab>
-    </Accordion>
+    <div>
+      <Accordion>
+        <AccordionTab header="Endorser Details">
+          <h5 class="my-0">{{ $t('profile.endorserInfo') }}</h5>
+          <vue-json-pretty :data="endorserInfo" />
+          <h5 class="my-0">{{ $t('profile.endorserConnection') }}</h5>
+          <vue-json-pretty
+            v-if="endorserConnection"
+            :data="endorserConnection"
+          />
+          <div v-else>{{ $t('profile.tenantNotConnectedToEndorserYet') }}</div>
+        </AccordionTab>
+      </Accordion>
+    </div>
   </div>
+  <p v-else class="my-1">
+    <i class="pi pi-info-circle"></i>
+    {{ $t('profile.connectTenantToEndorserNotAllowed') }}
+  </p>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import InputSwitch from 'primevue/inputswitch';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
@@ -45,6 +54,7 @@ const { endorserConnection, endorserInfo, loadingIssuance } =
   storeToRefs(tenantStore);
 
 // Connect to endorser
+const canConnectEndorser = ref(true); // to be determined
 const connectToEndorser = async () => {
   try {
     if (!hasEndorserConn.value) {

@@ -1,29 +1,35 @@
 <template>
-  <p class="my-1">{{ $t('profile.registerPublicDid') }}</p>
-  <InputSwitch
-    :model-value="hasPublicDid"
-    :disabled="endorserNotActive || hasPublicDid"
-    @change="registerPublicDid"
-  />
+  <div v-if="canRegisterDid" class="true-1">
+    <p class="my-1">{{ $t('profile.registerPublicDid') }}</p>
+    <InputSwitch
+      :model-value="hasPublicDid"
+      :disabled="endorserNotActive || hasPublicDid"
+      @change="registerPublicDid"
+    />
 
-  <!-- DID -->
-  <div v-if="hasPublicDid" class="field">
-    <label for="didField">{{ $t('profile.publicDid') }}</label>
-    <InputText id="didField" class="w-full" readonly :value="publicDid.did" />
-  </div>
+    <!-- DID -->
+    <div v-if="hasPublicDid" class="field">
+      <label for="didField">{{ $t('profile.publicDid') }}</label>
+      <InputText id="didField" class="w-full" readonly :value="publicDid.did" />
+    </div>
 
-  <div>
-    <Accordion>
-      <AccordionTab header="Public DID Details">
-        <h5 class="my-0">{{ $t('profile.publicDid') }}</h5>
-        <vue-json-pretty :data="publicDid" />
-      </AccordionTab>
-    </Accordion>
+    <div>
+      <Accordion>
+        <AccordionTab header="Public DID Details">
+          <h5 class="my-0">{{ $t('profile.publicDid') }}</h5>
+          <vue-json-pretty :data="publicDid" />
+        </AccordionTab>
+      </Accordion>
+    </div>
   </div>
+  <p v-else class="my-1">
+    <i class="pi pi-info-circle"></i>
+    {{ $t('profile.registerPublicDidNotAllowed') }}
+  </p>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import InputSwitch from 'primevue/inputswitch';
@@ -40,7 +46,8 @@ const toast = useToast();
 const tenantStore = useTenantStore();
 const { endorserConnection, publicDid } = storeToRefs(tenantStore);
 
-// Connect to endorser
+// Register DID
+const canRegisterDid = ref(true); // to be determined
 const registerPublicDid = async () => {
   try {
     if (!hasPublicDid.value) {

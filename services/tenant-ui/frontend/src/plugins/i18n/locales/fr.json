@@ -225,6 +225,7 @@
     "config": "Config: <FR>",
     "connectionNotActiveYet": "Connection not Active yet, refresh or come back later. <FR>",
     "connectTenantToEndorser": "Connect Tenant To Endorser <FR>",
+    "connectTenantToEndorserNotAllowed": "Innkeeper has not approved endorser connections for your tenant <FR>",
     "createdAt": "Created at <FR>",
     "endorserConnection": "Endorser Connection <FR>",
     "endorserInfo": "Endorser Info <FR>",
@@ -234,6 +235,7 @@
     "noEndorserInfoFound": "No Endorser info found, issuance disabled <FR>",
     "publicDid": "Public DID <FR>",
     "registerPublicDid": "Register a public DID <FR>",
+    "registerPublicDidNotAllowed": "Innkeeper has not approved public DID registration for your tenant <FR>",
     "state": "State: {0} <FR>",
     "taa": {
       "accepted": "Accepted on",
