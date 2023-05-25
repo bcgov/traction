@@ -38,6 +38,15 @@
     <template #empty>{{ $t('common.noRecordsFound') }}</template>
     <template #loading>{{ $t('common.loading') }}</template>
     <Column :expander="true" header-style="width: 3rem" />
+    <Column :sortable="false" :header="$t('common.actions')">
+      <template #body="{ data }">
+        <EditSettings
+          :connection-id="data.connection_id"
+          :connection-name="data.alias"
+        />
+        <EditContact :connection-id="data.connection_id" />
+      </template>
+    </Column>
     <Column :sortable="true" field="tenant_name" header="Name" />
     <Column :sortable="true" field="created_at" header="Created at">
       <template #body="{ data }">
@@ -67,6 +76,7 @@ import { storeToRefs } from 'pinia';
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 import RowExpandData from '@/components/common/RowExpandData.vue';
+import EditSettings from './editSettings/editSettings.vue';
 
 const toast = useToast();
 
