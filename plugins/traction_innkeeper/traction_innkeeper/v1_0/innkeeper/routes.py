@@ -19,6 +19,8 @@ from aries_cloudagent.wallet.error import WalletSettingsError
 from aries_cloudagent.wallet.models.wallet_record import WalletRecord
 from marshmallow import fields
 
+from ..tenant.routes import EndorserLedgerConfigSchema, TenantConfigSchema
+
 from . import TenantManager
 from .utils import (
     approve_reservation,
@@ -114,6 +116,19 @@ class ReservationRequestSchema(OpenAPISchema):
     contact_phone = fields.Str(
         required=True,
         description="Contact phone number for this tenant request",
+    )
+
+    connect_to_endorser = fields.List(
+        fields.Nested(EndorserLedgerConfigSchema()),
+        description="Endorser config",
+    )
+
+    create_public_did = fields.List(
+        fields.Str(
+            description="Ledger identifier",
+            required=False,
+        ),
+        description="Public DID config",
     )
 
 
@@ -248,6 +263,28 @@ async def tenant_reservation(request: web.BaseRequest):
     return web.json_response({"reservation_id": rec.reservation_id})
 
 
+@docs(tags=[SWAGGER_CATEGORY], summary="Get innkeeper setting")
+@response_schema(TenantConfigSchema(), 200, description="")
+@error_handler
+async def innkeeper_config_get(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+    wallet_id = context.profile.settings.get("wallet.id")
+    async with profile.session() as session:
+        innkeeper_tenant_record = await TenantRecord.query_by_wallet_id(
+            session, wallet_id
+        )
+    endorser_config = innkeeper_tenant_record.connected_to_endorsers
+    public_did_config = innkeeper_tenant_record.created_public_did
+    return web.json_response(
+        {
+            "connect_to_endorser": endorser_config,
+            "create_public_did": public_did_config,
+        }
+    )
+
+
 @docs(
     tags=["multitenancy"],
 )
@@ -306,8 +343,15 @@ async def tenant_checkin(request: web.BaseRequest):
 
             # ok, let's update this, create a tenant, create a wallet
             wallet_key = str(uuid.uuid4())
+            settings_dict = {}
+            if res_rec.connect_to_endorsers and len(res_rec.connect_to_endorsers) > 0:
+                settings_dict["tenant.endorser_config"] = res_rec.connect_to_endorsers
+            if res_rec.create_public_did and len(res_rec.create_public_did) > 0:
+                settings_dict["tenant.public_did_config"] = res_rec.create_public_did
             tenant, wallet_record, token = await mgr.create_wallet(
-                res_rec.tenant_name, wallet_key
+                wallet_name=res_rec.tenant_name,
+                wallet_key=wallet_key,
+                extra_settings=settings_dict,
             )
 
             # update this reservation
@@ -556,6 +600,7 @@ async def register(app: web.Application):
             web.get(
                 "/innkeeper/tenants/{tenant_id}", innkeeper_tenant_get, allow_head=False
             ),
+            web.get("/innkeeper/config", innkeeper_config_get, allow_head=False),
         ]
     )
     LOGGER.info("< registering routes")

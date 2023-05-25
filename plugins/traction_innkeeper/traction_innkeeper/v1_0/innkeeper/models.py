@@ -52,6 +52,8 @@ class ReservationRecord(BaseRecord):
         reservation_token_hash: str = None,
         reservation_token_expiry: Union[str, datetime] = None,
         state_notes: str = None,
+        connect_to_endorsers: List = [],
+        create_public_did: List = [],
         **kwargs,
     ):
         """Construct record."""
@@ -70,6 +72,8 @@ class ReservationRecord(BaseRecord):
         self.reservation_token_hash = reservation_token_hash
         self._reservation_token_expiry: str = datetime_to_str(reservation_token_expiry)
         self.state_notes = state_notes
+        self.connect_to_endorsers = connect_to_endorsers
+        self.create_public_did = create_public_did
 
     @property
     def reservation_id(self) -> Optional[str]:
@@ -137,6 +141,8 @@ class ReservationRecord(BaseRecord):
                 "reservation_token_hash",
                 "reservation_token_expiry",
                 "state_notes",
+                "connect_to_endorsers",
+                "create_public_did",
             )
         }
 
@@ -213,6 +219,17 @@ class ReservationRecordSchema(BaseRecordSchema):
         example=UUIDFour.EXAMPLE,
     )
 
+    connect_to_endorsers = fields.List(
+        fields.Dict(description="Endorser and ledger config", required=False),
+        example=json.dumps(ENDORSER_LEDGER_CONFIG_EXAMPLE),
+        required=False,
+    )
+
+    create_public_did = fields.List(
+        fields.Str(description="Ledger id"),
+        required=False,
+    )
+
 
 class TenantRecord(BaseRecord):
     """Innkeeper Tenant Record."""
@@ -228,8 +245,6 @@ class TenantRecord(BaseRecord):
         "state",
         "wallet_id",
         "tenant_name",
-        "connected_to_endorsers",
-        "created_public_did",
     }
 
     STATE_ACTIVE = "active"
@@ -270,6 +285,8 @@ class TenantRecord(BaseRecord):
             for prop in (
                 "tenant_name",
                 "wallet_id",
+                "connected_to_endorsers",
+                "created_public_did",
             )
         }
 
