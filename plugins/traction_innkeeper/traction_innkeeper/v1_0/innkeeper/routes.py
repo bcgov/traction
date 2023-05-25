@@ -19,7 +19,7 @@ from aries_cloudagent.wallet.error import WalletSettingsError
 from aries_cloudagent.wallet.models.wallet_record import WalletRecord
 from marshmallow import fields
 
-from ..tenant.routes import EndorserLedgerConfigSchema, TenantConfigSchema
+from ..tenant.routes import TenantConfigSchema
 
 from . import TenantManager
 from .utils import (
@@ -116,19 +116,6 @@ class ReservationRequestSchema(OpenAPISchema):
     contact_phone = fields.Str(
         required=True,
         description="Contact phone number for this tenant request",
-    )
-
-    connect_to_endorser = fields.List(
-        fields.Nested(EndorserLedgerConfigSchema()),
-        description="Endorser config",
-    )
-
-    create_public_did = fields.List(
-        fields.Str(
-            description="Ledger identifier",
-            required=False,
-        ),
-        description="Public DID config",
     )
 
 
@@ -263,26 +250,26 @@ async def tenant_reservation(request: web.BaseRequest):
     return web.json_response({"reservation_id": rec.reservation_id})
 
 
-@docs(tags=[SWAGGER_CATEGORY], summary="Get innkeeper setting")
-@response_schema(TenantConfigSchema(), 200, description="")
+@docs(tags=[SWAGGER_CATEGORY], summary="Update tenant setting")
+@request_schema(TenantConfigSchema)
+@response_schema(TenantRecordSchema(), 200, description="")
 @error_handler
-async def innkeeper_config_get(request: web.BaseRequest):
+async def tenant_config_update(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
+    wallet_id = context.profile.settings.get("wallet.id")
+    body = await request.json()
+    connect_to_endorser = body.get("connect_to_endorser")
+    create_public_did = body.get("create_public_did")
     mgr = context.inject(TenantManager)
     profile = mgr.profile
-    wallet_id = context.profile.settings.get("wallet.id")
     async with profile.session() as session:
-        innkeeper_tenant_record = await TenantRecord.query_by_wallet_id(
-            session, wallet_id
-        )
-    endorser_config = innkeeper_tenant_record.connected_to_endorsers
-    public_did_config = innkeeper_tenant_record.created_public_did
-    return web.json_response(
-        {
-            "connect_to_endorser": endorser_config,
-            "create_public_did": public_did_config,
-        }
-    )
+        tenant_record = await TenantRecord.query_by_wallet_id(session, wallet_id)
+        if connect_to_endorser:
+            tenant_record.connected_to_endorsers = connect_to_endorser
+        if create_public_did:
+            tenant_record.created_public_did = create_public_did
+        await tenant_record.save(session)
+    return web.json_response(tenant_record.serialize())
 
 
 @docs(
@@ -600,7 +587,7 @@ async def register(app: web.Application):
             web.get(
                 "/innkeeper/tenants/{tenant_id}", innkeeper_tenant_get, allow_head=False
             ),
-            web.get("/innkeeper/config", innkeeper_config_get, allow_head=False),
+            web.put("/innkeeper/tenant-config", tenant_config_update),
         ]
     )
     LOGGER.info("< registering routes")

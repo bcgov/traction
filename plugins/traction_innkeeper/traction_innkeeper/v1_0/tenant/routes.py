@@ -123,28 +123,6 @@ async def tenant_config_get(request: web.BaseRequest):
     )
 
 
-@docs(tags=[SWAGGER_CATEGORY], summary="Update tenant setting")
-@request_schema(TenantConfigSchema)
-@response_schema(TenantRecordSchema(), 200, description="")
-@error_handler
-async def tenant_config_update(request: web.BaseRequest):
-    context: AdminRequestContext = request["context"]
-    wallet_id = context.profile.settings.get("wallet.id")
-    body = await request.json()
-    connect_to_endorser = body.get("connect_to_endorser")
-    create_public_did = body.get("create_public_did")
-    mgr = context.inject(TenantManager)
-    profile = mgr.profile
-    async with profile.session() as session:
-        tenant_record = await TenantRecord.query_by_wallet_id(session, wallet_id)
-        if connect_to_endorser:
-            tenant_record.connected_to_endorsers = connect_to_endorser
-        if create_public_did:
-            tenant_record.created_public_did = create_public_did
-        await tenant_record.save(session)
-    return web.json_response(tenant_record.serialize())
-
-
 @docs(tags=[SWAGGER_CATEGORY], summary="Update tenant wallet")
 @request_schema(UpdateWalletRequestSchema)
 @response_schema(WalletRecordSchema(), 200, description="")
@@ -201,7 +179,6 @@ async def register(app: web.Application):
             web.get("/tenant/wallet", tenant_wallet_get, allow_head=False),
             web.put("/tenant/wallet", tenant_wallet_update),
             web.get("/tenant/config", tenant_config_get, allow_head=False),
-            web.put("/tenant/config", tenant_config_update),
         ]
     )
     LOGGER.info("< registering routes")
