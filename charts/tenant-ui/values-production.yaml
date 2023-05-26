@@ -1,7 +1,7 @@
 tenant_ui:
   image:
-    tag: "ghcr.io/bcgov/traction-tenant-ui:0.2.12"
-    version: '0.2.12'
+    tag: "ghcr.io/bcgov/traction-tenant-ui:0.2.13"
+    version: '0.2.13'
     buildtime: '2022-08-04T22:16:25.869Z'
   traction_api:
     endpoint: https://traction-tenant-proxy-prod.apps.silver.devops.gov.bc.ca

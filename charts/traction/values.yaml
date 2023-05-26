@@ -23,8 +23,8 @@ global:
 acapy:
   image:
     # building our own acapy with plugins
-    tag: "ghcr.io/bcgov/traction-plugins-acapy:0.2.12"
-    version: '0.2.12'
+    tag: "ghcr.io/bcgov/traction-plugins-acapy:0.2.13"
+    version: '0.2.13'
     buildtime: '2022-10-28T01:30:31.105Z'
     pullPolicy: Always
     # repository: bcgovimages/aries-cloudagent
