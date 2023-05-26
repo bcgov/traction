@@ -55,7 +55,10 @@ export const useReservationStore = defineStore('reservation', () => {
         console.log(error.value);
       })
       .finally(() => {
-        loading.value = false;
+        if (!reservation.value?.reservation_pwd) {
+          // Keep on loading if we auto accept to the next step
+          loading.value = false;
+        }
       });
 
     if (error.value != null) {
@@ -63,25 +66,36 @@ export const useReservationStore = defineStore('reservation', () => {
       throw error.value;
     }
 
-    const trimUrl = window.location.origin;
+    if (reservation.value?.reservation_pwd) {
+      // Auto-approve is on, just check-in for them
+      checkIn(
+        reservation.value.reservation_id,
+        reservation.value.reservation_pwd
+      );
+    } else {
+      // Send the user the reservation ID and details about waiting for the innkeeper to approve
+      const trimUrl = window.location.origin;
 
-    // Separately dispatch a non-blocking call to send the contact emails
-    // If these fail we won't raise any error to the UI
-    const emailPayload = {
-      contactEmail: payload.contact_email,
-      contactName: payload.contact_name,
-      reservationId: reservation.value.reservation_id,
-      serverUrl: trimUrl,
-      serverUrlStatusRoute: `${trimUrl}/${RESERVATION_STATUS_ROUTE}`,
-    };
-    backendApi
-      .post(API_PATH.EMAIL_CONFIRMATION, emailPayload)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.error(`Error while trying to send confirmation email: ${err}`);
-      });
+      // Separately dispatch a non-blocking call to send the contact emails
+      // If these fail we won't raise any error to the UI
+      const emailPayload = {
+        contactEmail: payload.contact_email,
+        contactName: payload.contact_name,
+        reservationId: reservation.value.reservation_id,
+        serverUrl: trimUrl,
+        serverUrlStatusRoute: `${trimUrl}/${RESERVATION_STATUS_ROUTE}`,
+      };
+      backendApi
+        .post(API_PATH.EMAIL_CONFIRMATION, emailPayload)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.error(
+            `Error while trying to send confirmation email: ${err}`
+          );
+        });
+    }
 
     console.log('< reservationStore.makeReservation');
 
