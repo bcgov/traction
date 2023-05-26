@@ -1,9 +1,12 @@
 <template>
   <!-- Request successful -->
   <div v-if="reservationIdResult">
-    <ProgressSpinner v-if="loading" class="flex justify-content-center" />
+    <div v-if="loading" class="flex flex-column align-items-center">
+      <ProgressSpinner />
+      <p>{{ $t('reservations.loadingCheckIn') }}</p>
+    </div>
     <div v-else>
-      <!-- If auto-approve on the confirmation will come right up -->
+      <!-- If auto-approve on, the confirmation will come right up -->
       <ShowWallet v-if="status === RESERVATION_STATUSES.SHOW_WALLET" />
       <ReservationConfirmation
         v-else
