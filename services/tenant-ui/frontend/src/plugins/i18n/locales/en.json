@@ -282,6 +282,7 @@
     "enterPassword": "Please enter the reservation password below to validate your account.",
     "history": "History",
     "incorrectEmailOrReservationId": "Incorrect Email or Reservation ID. Please try again.",
+    "loadingCheckIn": "Checking in Reservation",
     "otp": "The password is shown below one-time if you need to communicate it via other means",
     "passwordAvailable": "The reservation password is visible below, please use it to complete your check-in.",
     "passwordValid48Hours": "The reservation password is only valid for 48 hours from the time it was sent to your email address.",
