@@ -17,14 +17,21 @@
 
   <DataTable
     v-model:selection="selectedPresentation"
+    v-model:filters="filter"
     v-model:expandedRows="expandedRows"
     :loading="loading"
     :value="presentations"
     data-key="presentation_exchange_id"
     :paginator="true"
+    :global-filter-fields="[
+      'presentation_request.name',
+      'presentation_request_dict.comment',
+    ]"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
     selection-mode="single"
+    sort-field="created_at"
+    :sort-order="-1"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -34,7 +41,7 @@
           <span class="p-input-icon-left">
             <i class="pi pi-search" />
             <InputText
-              v-model="filter.name.value"
+              v-model="filter['global'].value"
               placeholder="Search Verifications"
             />
           </span>
@@ -56,6 +63,11 @@
         <StatusChip :status="data.state" />
       </template>
     </Column>
+    <Column
+      :sortable="true"
+      field="presentation_request_dict.comment"
+      header="Comment"
+    />
     <Column :sortable="true" field="created_at" header="Created at">
       <template #body="{ data }">
         {{ formatDateLong(data.created_at) }}
@@ -128,6 +140,6 @@ onMounted(async () => {
 const expandedRows = ref([]);
 
 const filter = ref({
-  name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 </script>

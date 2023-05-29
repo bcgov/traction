@@ -86,6 +86,7 @@ import { reactive, ref } from 'vue';
 import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
 import InputSwitch from 'primevue/inputswitch';
+import ProgressSpinner from 'primevue/progressspinner';
 import Textarea from 'primevue/textarea';
 // import ProgressSpinner from 'primevue/progressspinner';
 import { required } from '@vuelidate/validators';
@@ -186,7 +187,7 @@ const handleSubmit = async (isFormValid: boolean) => {
     const payload: V10PresentationSendRequestRequest = {
       connection_id: formFields.selectedContact.value,
       auto_verify: false,
-      comment: '',
+      comment: formFields.comment,
       trace: false,
       proof_request: proofRequest,
     };
