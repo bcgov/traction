@@ -2,13 +2,13 @@ name: Build Tenant UI Image
 description: Build Tenant UI Image
 inputs:
   ref:
-    description: 'The branch, tag or SHA to checkout'
+    description: "The branch, tag or SHA to checkout"
     required: false
-    default: ''  
+    default: ""
   context:
     required: true
     type: string
-    default: './services/tenant-ui'
+    default: "./services/tenant-ui"
   image_name:
     required: true
     type: string
@@ -36,37 +36,43 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/checkout@v3   
+    - uses: actions/checkout@v3
       with:
         ref: ${{ inputs.ref != '' && inputs.ref ||  env.GITHUB_REF }}${{ inputs.ref }}
 
     - name: Set up Node
       uses: actions/setup-node@master
       with:
-          node-version: 16
+        node-version: 16
 
     - name: Install dependencies
-      shell: bash      
+      shell: bash
       run: |
         cd ${{ inputs.context }}
         npm ci && npm cache clean --force && npm install -g typescript && cd frontend && npm ci
 
     - name: Lint frontend
-      shell: bash      
+      shell: bash
       run: |
         cd ${{ inputs.context }}/frontend
         npm run lint
 
     - name: Lint backend
-      shell: bash      
+      shell: bash
       run: |
         cd ${{ inputs.context }}
         npm run lint
 
-    - name: Build
-      shell: bash      
+    - name: Build backend
+      shell: bash
       run: |
         cd ${{ inputs.context }}
+        npm run build
+
+    - name: Build frontend
+      shell: bash
+      run: |
+        cd ${{ inputs.context }}/frontend
         npm run build
 
     - name: Set up Docker Buildx
@@ -99,7 +105,7 @@ runs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
 
-    - id: values  
+    - id: values
       shell: bash
       run: |
         echo "image_tag=${{ fromJSON(steps.meta.outputs.json).tags[0] }}" >> $GITHUB_OUTPUT
