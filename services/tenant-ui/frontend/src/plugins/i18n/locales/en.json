@@ -32,6 +32,7 @@
   "common": {
     "actions": "Actions",
     "alias": "Alias",
+    "confirmation": "Confirmation",
     "contactName": "Contact Name",
     "credentialId": "Credential ID",
     "credentials": "Credentials",
@@ -385,6 +386,9 @@
     "connection": "Connection",
     "copyRequest": "Copy Existing Presentation Request",
     "createRequest": "Create Presentation Request",
+    "delete": "Delete Presentation Exchange Record",
+    "deleteConfirmation": "Are you sure you want to delete this Presentation Exchange Record?",
+    "deleteSuccess": "Presentation Exchange Record successfully deleted",
     "presentationRequestBody": "Proof Request",
     "verification": "Verification",
     "verifications": "Verifications"

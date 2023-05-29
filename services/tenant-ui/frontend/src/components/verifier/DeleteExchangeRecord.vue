@@ -1,6 +1,6 @@
 <template>
   <Button
-    title="Delete Presentation Exchange Record"
+    :title="$t('verify.delete')"
     icon="pi pi-trash"
     class="p-button-rounded p-button-icon-only p-button-text"
     @click="deleteRecord($event)"
@@ -16,6 +16,9 @@ import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';
 // State
 import { useVerifierStore } from '@/store';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const confirm = useConfirm();
 const toast = useToast();
@@ -34,9 +37,8 @@ const props = defineProps({
 const deleteRecord = (event: any) => {
   confirm.require({
     target: event.currentTarget,
-    message:
-      'Are you sure you want to delete this Presentation Exchange Record?',
-    header: 'Confirmation',
+    message: t('verify.deleteConfirmation'),
+    header: t('common.confirmation'),
     icon: 'pi pi-exclamation-triangle',
     accept: () => {
       doDelete();
@@ -47,7 +49,7 @@ const doDelete = () => {
   verifierStore
     .deleteRecord(props.recordId)
     .then(() => {
-      toast.success(`Presentation Exchange Record successfully deleted`);
+      toast.success(t('verify.deleteSuccess'));
     })
     .catch((err) => {
       console.error(err);
