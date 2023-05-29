@@ -45,22 +45,28 @@ runs:
       with:
         node-version: 16
 
-    - name: Install dependencies
+    - name: Install backend dependencies
       shell: bash
       run: |
         cd ${{ inputs.context }}
-        npm ci && npm cache clean --force && npm install -g typescript && cd frontend && npm ci
+        npm cache clean --force && npm ci
 
-    - name: Lint frontend
+    - name: Install frontend dependencies
       shell: bash
       run: |
         cd ${{ inputs.context }}/frontend
-        npm run lint
+        npm cache clean --force && npm ci
 
     - name: Lint backend
       shell: bash
       run: |
         cd ${{ inputs.context }}
+        npm run lint
+
+    - name: Lint frontend
+      shell: bash
+      run: |
+        cd ${{ inputs.context }}/frontend
         npm run lint
 
     - name: Build backend
