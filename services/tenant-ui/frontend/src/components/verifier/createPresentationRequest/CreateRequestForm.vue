@@ -112,34 +112,29 @@ const emit = defineEmits(['closed', 'success']);
 // The default placeholder JSON to start with for this form
 const proofRequestJson = ref({
   name: 'proof-request',
-  version: '1.0',
   nonce: '1234567890',
+  version: '1.0',
   requested_attributes: {
-    legalname: {
-      name: 'legalName',
+    studentInfo: {
+      names: ['given_names', 'family_name'],
       restrictions: [
         {
-          issuer_did: 'aaaDIDbbb',
+          schema_name: 'student id',
         },
       ],
-    },
-    regdate: {
-      name: 'regDate',
-      restrictions: [
-        {
-          issuer_did: 'aaaDIDbbb',
-        },
-      ],
-      non_revoked: {
-        from: 1600001000,
-        to: 1600001000,
-      },
     },
   },
-  requested_predicates: {},
-  non_revoked: {
-    from: 1600000000,
-    to: 1600000000,
+  requested_predicates: {
+    not_expired: {
+      name: 'expiry_dateint',
+      p_type: '>=',
+      p_value: 20230527,
+      restrictions: [
+        {
+          schema_name: 'student id',
+        },
+      ],
+    },
   },
 } as IndyProofRequest);
 
