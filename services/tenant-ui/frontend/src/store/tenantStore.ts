@@ -46,9 +46,14 @@ export const useTenantStore = defineStore('tenant', () => {
 
   async function getSelf() {
     tenant.value = await fetchItem(API_PATH.TENANT_SELF, '', error, loading);
-  }  
+  }
   async function getTenantConfig() {
-    tenantConfig.value = await fetchItem(API_PATH.TENANT_CONFIG, '', error, loading);
+    tenantConfig.value = await fetchItem(
+      API_PATH.TENANT_CONFIG,
+      '',
+      error,
+      loading
+    );
   }
 
   async function getIssuanceStatus() {
