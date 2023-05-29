@@ -17,14 +17,21 @@
 
   <DataTable
     v-model:selection="selectedPresentation"
+    v-model:filters="filter"
     v-model:expandedRows="expandedRows"
     :loading="loading"
     :value="presentations"
     data-key="presentation_exchange_id"
     :paginator="true"
+    :global-filter-fields="[
+      'presentation_request.name',
+      'presentation_request_dict.comment',
+    ]"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
     selection-mode="single"
+    sort-field="created_at"
+    :sort-order="-1"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -34,7 +41,7 @@
           <span class="p-input-icon-left">
             <i class="pi pi-search" />
             <InputText
-              v-model="filter.name.value"
+              v-model="filter['global'].value"
               placeholder="Search Verifications"
             />
           </span>
@@ -44,6 +51,18 @@
     <template #empty>{{ $t('common.noRecordsFound') }}</template>
     <template #loading>{{ $t('common.loading') }}</template>
     <Column :expander="true" header-style="width: 3rem" />
+    <Column :sortable="false" :header="$t('common.actions')">
+      <template #body="{ data }">
+        <div class="flex">
+          <DeleteExchangeRecord :record-id="data.presentation_exchange_id" />
+          <CreateRequest
+            v-if="data.role === 'verifier'"
+            :existing-pres-req="data.presentation_request"
+            icon-display
+          />
+        </div>
+      </template>
+    </Column>
     <Column :sortable="true" field="presentation_request.name" header="Name" />
     <Column :sortable="true" field="role" header="Role" />
     <Column :sortable="true" field="connection_id" header="Connection">
@@ -56,6 +75,11 @@
         <StatusChip :status="data.state" />
       </template>
     </Column>
+    <Column
+      :sortable="true"
+      field="presentation_request_dict.comment"
+      header="Comment"
+    />
     <Column :sortable="true" field="created_at" header="Created at">
       <template #body="{ data }">
         {{ formatDateLong(data.created_at) }}
@@ -90,6 +114,7 @@ import { useContactsStore, useVerifierStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Components
 import CreateRequest from './createPresentationRequest/CreateRequest.vue';
+import DeleteExchangeRecord from './DeleteExchangeRecord.vue';
 // import PresentationRowExpandData from './PresentationRowExpandData.vue';
 import RowExpandData from '@/components/common/RowExpandData.vue';
 import StatusChip from '@/components/common/StatusChip.vue';
@@ -128,6 +153,6 @@ onMounted(async () => {
 const expandedRows = ref([]);
 
 const filter = ref({
-  name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 </script>

@@ -86,6 +86,7 @@ import { reactive, ref } from 'vue';
 import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
 import InputSwitch from 'primevue/inputswitch';
+import ProgressSpinner from 'primevue/progressspinner';
 import Textarea from 'primevue/textarea';
 // import ProgressSpinner from 'primevue/progressspinner';
 import { required } from '@vuelidate/validators';
@@ -107,41 +108,46 @@ const { loading: contactLoading, contactsDropdown } = storeToRefs(
 );
 const verifierStore = useVerifierStore();
 
+// Props
+const props = defineProps<{
+  existingPresReq?: IndyProofRequest;
+}>();
+
 const emit = defineEmits(['closed', 'success']);
 
 // The default placeholder JSON to start with for this form
-const proofRequestJson = ref({
-  name: 'proof-request',
-  version: '1.0',
-  nonce: '1234567890',
-  requested_attributes: {
-    legalname: {
-      name: 'legalName',
-      restrictions: [
-        {
-          issuer_did: 'aaaDIDbbb',
+// (or supplied by parent component)
+const proofRequestJson = ref(
+  props.existingPresReq
+    ? props.existingPresReq
+    : ({
+        name: 'proof-request',
+        nonce: '1234567890',
+        version: '1.0',
+        requested_attributes: {
+          studentInfo: {
+            names: ['given_names', 'family_name'],
+            restrictions: [
+              {
+                schema_name: 'student id',
+              },
+            ],
+          },
         },
-      ],
-    },
-    regdate: {
-      name: 'regDate',
-      restrictions: [
-        {
-          issuer_did: 'aaaDIDbbb',
+        requested_predicates: {
+          not_expired: {
+            name: 'expiry_dateint',
+            p_type: '>=',
+            p_value: 20230527,
+            restrictions: [
+              {
+                schema_name: 'student id',
+              },
+            ],
+          },
         },
-      ],
-      non_revoked: {
-        from: 1600001000,
-        to: 1600001000,
-      },
-    },
-  },
-  requested_predicates: {},
-  non_revoked: {
-    from: 1600000000,
-    to: 1600000000,
-  },
-} as IndyProofRequest);
+      } as IndyProofRequest)
+);
 
 // Autocomplete setup
 // These can maybe be generalized into a util function (for all dropdown searches)
@@ -191,7 +197,7 @@ const handleSubmit = async (isFormValid: boolean) => {
     const payload: V10PresentationSendRequestRequest = {
       connection_id: formFields.selectedContact.value,
       auto_verify: false,
-      comment: '',
+      comment: formFields.comment,
       trace: false,
       proof_request: proofRequest,
     };

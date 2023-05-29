@@ -42,6 +42,22 @@ export const useVerifierStore = defineStore('verifier', () => {
     );
   }
 
+  async function deleteRecord(id: string) {
+    loading.value = true;
+    try {
+      await acapyApi.deleteHttp(API_PATH.PRESENT_PROOF_RECORD(id));
+      listPresentations();
+    } catch (err) {
+      error.value = err;
+    } finally {
+      loading.value = false;
+    }
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+  }
+
   async function sendPresentationRequest(
     payload: V10PresentationSendRequestRequest
   ) {
@@ -75,6 +91,7 @@ export const useVerifierStore = defineStore('verifier', () => {
     error,
     listPresentations,
     getPresentation,
+    deleteRecord,
     sendPresentationRequest,
   };
 });
