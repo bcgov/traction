@@ -53,12 +53,14 @@
     <Column :expander="true" header-style="width: 3rem" />
     <Column :sortable="false" :header="$t('common.actions')">
       <template #body="{ data }">
-        <CreateRequest
-          v-if="data.role === 'verifier'"
-          :existing-pres-req="data.presentation_request"
-          icon-display
-        />
-        <EditContact :connection-id="data.connection_id" />
+        <div class="flex">
+          <DeleteExchangeRecord :record-id="data.presentation_exchange_id" />
+          <CreateRequest
+            v-if="data.role === 'verifier'"
+            :existing-pres-req="data.presentation_request"
+            icon-display
+          />
+        </div>
       </template>
     </Column>
     <Column :sortable="true" field="presentation_request.name" header="Name" />
@@ -112,6 +114,7 @@ import { useContactsStore, useVerifierStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Components
 import CreateRequest from './createPresentationRequest/CreateRequest.vue';
+import DeleteExchangeRecord from './DeleteExchangeRecord.vue';
 // import PresentationRowExpandData from './PresentationRowExpandData.vue';
 import RowExpandData from '@/components/common/RowExpandData.vue';
 import StatusChip from '@/components/common/StatusChip.vue';
