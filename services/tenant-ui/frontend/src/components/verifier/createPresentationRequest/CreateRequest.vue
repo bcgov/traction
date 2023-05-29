@@ -1,8 +1,14 @@
 <template>
   <div>
     <Button
+      :title="
+        iconDisplay ? $t('verify.copyRequest') : $t('verify.createRequest')
+      "
       :label="$t('verify.createRequest')"
-      icon="pi pi-key"
+      :icon="iconDisplay ? 'pi pi-reply' : 'pi pi-key'"
+      :class="
+        iconDisplay ? 'p-button-rounded p-button-icon-only p-button-text' : ''
+      "
       @click="openModal"
     />
     <Dialog
@@ -12,12 +18,19 @@
       :style="{ width: '600px' }"
       @update:visible="handleClose"
     >
-      <CreateRequestForm @success="$emit('success')" @closed="handleClose" />
+      <CreateRequestForm
+        :existing-pres-req="props.existingPresReq"
+        @success="$emit('success')"
+        @closed="handleClose"
+      />
     </Dialog>
   </div>
 </template>
 
 <script setup lang="ts">
+// Types
+import { IndyProofRequest } from '@/types/acapyApi/acapyInterface';
+
 // Vue
 import { ref } from 'vue';
 // PrimeVue
@@ -27,6 +40,12 @@ import Dialog from 'primevue/dialog';
 import CreateRequestForm from './CreateRequestForm.vue';
 
 defineEmits(['success']);
+
+// Props
+const props = defineProps<{
+  existingPresReq?: IndyProofRequest;
+  iconDisplay?: boolean;
+}>();
 
 const displayModal = ref(false);
 const openModal = async () => {
