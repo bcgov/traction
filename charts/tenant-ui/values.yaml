@@ -27,8 +27,8 @@ global:
 
 tenant_ui:
   image:
-    tag: "ghcr.io/bcgov/traction-tenant-ui:0.2.13"
-    version: "0.2.13"
+    tag: "ghcr.io/bcgov/traction-tenant-ui:0.2.14"
+    version: "0.2.14"
     buildtime: "2022-08-04T22:16:25.869Z"
     pullPolicy: IfNotPresent
   ux:
