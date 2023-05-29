@@ -108,36 +108,46 @@ const { loading: contactLoading, contactsDropdown } = storeToRefs(
 );
 const verifierStore = useVerifierStore();
 
+// Props
+const props = defineProps<{
+  existingPresReq?: IndyProofRequest;
+}>();
+
 const emit = defineEmits(['closed', 'success']);
 
 // The default placeholder JSON to start with for this form
-const proofRequestJson = ref({
-  name: 'proof-request',
-  nonce: '1234567890',
-  version: '1.0',
-  requested_attributes: {
-    studentInfo: {
-      names: ['given_names', 'family_name'],
-      restrictions: [
-        {
-          schema_name: 'student id',
+// (or supplied by parent component)
+const proofRequestJson = ref(
+  props.existingPresReq
+    ? props.existingPresReq
+    : ({
+        name: 'proof-request',
+        nonce: '1234567890',
+        version: '1.0',
+        requested_attributes: {
+          studentInfo: {
+            names: ['given_names', 'family_name'],
+            restrictions: [
+              {
+                schema_name: 'student id',
+              },
+            ],
+          },
         },
-      ],
-    },
-  },
-  requested_predicates: {
-    not_expired: {
-      name: 'expiry_dateint',
-      p_type: '>=',
-      p_value: 20230527,
-      restrictions: [
-        {
-          schema_name: 'student id',
+        requested_predicates: {
+          not_expired: {
+            name: 'expiry_dateint',
+            p_type: '>=',
+            p_value: 20230527,
+            restrictions: [
+              {
+                schema_name: 'student id',
+              },
+            ],
+          },
         },
-      ],
-    },
-  },
-} as IndyProofRequest);
+      } as IndyProofRequest)
+);
 
 // Autocomplete setup
 // These can maybe be generalized into a util function (for all dropdown searches)

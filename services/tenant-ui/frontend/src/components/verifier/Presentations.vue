@@ -51,6 +51,16 @@
     <template #empty>{{ $t('common.noRecordsFound') }}</template>
     <template #loading>{{ $t('common.loading') }}</template>
     <Column :expander="true" header-style="width: 3rem" />
+    <Column :sortable="false" :header="$t('common.actions')">
+      <template #body="{ data }">
+        <CreateRequest
+          v-if="data.role === 'verifier'"
+          :existing-pres-req="data.presentation_request"
+          icon-display
+        />
+        <EditContact :connection-id="data.connection_id" />
+      </template>
+    </Column>
     <Column :sortable="true" field="presentation_request.name" header="Name" />
     <Column :sortable="true" field="role" header="Role" />
     <Column :sortable="true" field="connection_id" header="Connection">

@@ -387,6 +387,7 @@
     "autoVerifyHelp": "Verifier choice to auto-verify proof presentation <JP>",
     "comment": "Optional Comment <JP>",
     "connection": "Connection <JP>",
+    "copyRequest": "Copy Existing Presentation Request <JP>",
     "createRequest": "Create Presentation Request <JP>",
     "presentationRequestBody": "Proof Request <JP>",
     "verification": "Verification <JP>",

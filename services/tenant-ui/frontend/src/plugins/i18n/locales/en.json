@@ -383,6 +383,7 @@
     "autoVerifyHelp": "Verifier choice to auto-verify proof presentation",
     "comment": "Optional Comment",
     "connection": "Connection",
+    "copyRequest": "Copy Existing Presentation Request",
     "createRequest": "Create Presentation Request",
     "presentationRequestBody": "Proof Request",
     "verification": "Verification",
