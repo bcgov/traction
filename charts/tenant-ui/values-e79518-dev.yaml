@@ -1,14 +1,14 @@
 global:
-  fullnameOverride: 'tenant-ui-dts'
+  fullnameOverride: "tenant-ui-dts"
   tractionNameOverride: "traction-dts"
   ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
   nsp:
     enabled: true
 tenant_ui:
   image:
-    tag: 'ghcr.io/bcgov/traction-tenant-ui:0.2.13'
-    version: '0.2.13'
-    buildtime: '2023-02-22T06:39:56.325Z'
+    tag: "ghcr.io/bcgov/traction-tenant-ui:0.2.13"
+    version: "0.2.13"
+    buildtime: "2023-02-22T06:39:56.325Z"
     pullPolicy: Always
   traction_api:
     endpoint: https://traction-dts-tenant-proxy-dev.apps.silver.devops.gov.bc.ca
@@ -20,7 +20,7 @@ tenant_ui:
     authority: https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm
     jwksUri: https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm/protocol/openid-connect/certs
   ariesDetails:
-    ledgerDescription: 'bcovrin-test'
+    ledgerDescription: "bcovrin-test"
   smtp:
     server: apps.smtp.gov.bc.ca
     port: 25
