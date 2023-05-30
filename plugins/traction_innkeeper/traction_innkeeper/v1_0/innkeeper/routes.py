@@ -30,7 +30,7 @@ from .models import (
     ReservationRecordSchema,
     TenantRecord,
     TenantRecordSchema,
-    TenantConfigSchema
+    TenantConfigSchema,
 )
 
 LOGGER = logging.getLogger(__name__)

@@ -29,6 +29,7 @@ LOGGER = logging.getLogger(__name__)
 
 SWAGGER_CATEGORY = "traction-tenant"
 
+
 @docs(
     tags=[SWAGGER_CATEGORY],
 )
