@@ -21,16 +21,16 @@ class BasicMessageRecord(BaseRecord):
         schema_class = "BasicMessageRecordSchema"
 
     def __init__(
-            self,
-            *,
-            record_id: str = None,
-            connection_id: str = None,
-            message_id: str = None,
-            locale: str = None,
-            content: str = None,
-            sent_time: str = None,
-            state: str = None,
-            **kwargs,
+        self,
+        *,
+        record_id: str = None,
+        connection_id: str = None,
+        message_id: str = None,
+        locale: str = None,
+        content: str = None,
+        sent_time: str = None,
+        state: str = None,
+        **kwargs,
     ):
         """Initialize a new SchemaRecord."""
         super().__init__(record_id, state or self.STATE_SENT, **kwargs)
@@ -60,7 +60,7 @@ class BasicMessageRecord(BaseRecord):
 
     @classmethod
     async def retrieve_by_message_id(
-            cls, session: ProfileSession, message_id: str
+        cls, session: ProfileSession, message_id: str
     ) -> "BasicMessageRecord":
         """Retrieve a basic message record by message id."""
         return await cls.retrieve_by_tag_filter(session, {"message_id": message_id})

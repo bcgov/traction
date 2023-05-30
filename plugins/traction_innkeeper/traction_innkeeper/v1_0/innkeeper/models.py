@@ -1,6 +1,7 @@
+import json
 import uuid
 from datetime import datetime, timezone
-from typing import Optional, Union
+from typing import Optional, Union, List
 
 from aries_cloudagent.core.profile import ProfileSession
 from aries_cloudagent.messaging.models.base_record import BaseRecord, BaseRecordSchema
@@ -8,6 +9,11 @@ from aries_cloudagent.messaging.util import datetime_to_str, str_to_datetime
 from aries_cloudagent.messaging.valid import UUIDFour
 from aries_cloudagent.storage.error import StorageDuplicateError, StorageNotFoundError
 from marshmallow import fields, EXCLUDE, validate
+
+ENDORSER_LEDGER_CONFIG_EXAMPLE = {
+    "endorser_alias": " ... ",
+    "ledger_id": " ... ",
+}
 
 
 class ReservationRecord(BaseRecord):
@@ -46,6 +52,8 @@ class ReservationRecord(BaseRecord):
         reservation_token_hash: str = None,
         reservation_token_expiry: Union[str, datetime] = None,
         state_notes: str = None,
+        connect_to_endorsers: List = [],
+        create_public_did: List = [],
         **kwargs,
     ):
         """Construct record."""
@@ -64,6 +72,8 @@ class ReservationRecord(BaseRecord):
         self.reservation_token_hash = reservation_token_hash
         self._reservation_token_expiry: str = datetime_to_str(reservation_token_expiry)
         self.state_notes = state_notes
+        self.connect_to_endorsers = connect_to_endorsers
+        self.create_public_did = create_public_did
 
     @property
     def reservation_id(self) -> Optional[str]:
@@ -92,7 +102,9 @@ class ReservationRecord(BaseRecord):
             record_id: the reservation_id (may or may not have dashes) by which to filter
         """
         reservation_id = cls.transform_reservation_id(record_id)
-        record = await cls.retrieve_by_id(session, reservation_id, for_update=for_update)
+        record = await cls.retrieve_by_id(
+            session, reservation_id, for_update=for_update
+        )
         return record
 
     @property
@@ -129,6 +141,8 @@ class ReservationRecord(BaseRecord):
                 "reservation_token_hash",
                 "reservation_token_expiry",
                 "state_notes",
+                "connect_to_endorsers",
+                "create_public_did",
             )
         }
 
@@ -205,6 +219,17 @@ class ReservationRecordSchema(BaseRecordSchema):
         example=UUIDFour.EXAMPLE,
     )
 
+    connect_to_endorsers = fields.List(
+        fields.Dict(description="Endorser and ledger config", required=False),
+        example=json.dumps(ENDORSER_LEDGER_CONFIG_EXAMPLE),
+        required=False,
+    )
+
+    create_public_did = fields.List(
+        fields.Str(description="Ledger id"),
+        required=False,
+    )
+
 
 class TenantRecord(BaseRecord):
     """Innkeeper Tenant Record."""
@@ -232,6 +257,8 @@ class TenantRecord(BaseRecord):
         state: str = None,
         tenant_name: str = None,
         wallet_id: str = None,
+        connected_to_endorsers: List = [],
+        created_public_did: List = [],
         **kwargs,
     ):
         """Construct record."""
@@ -242,6 +269,8 @@ class TenantRecord(BaseRecord):
         )
         self.tenant_name = tenant_name
         self.wallet_id = wallet_id
+        self.connected_to_endorsers = connected_to_endorsers
+        self.created_public_did = created_public_did
 
     @property
     def tenant_id(self) -> Optional[str]:
@@ -256,8 +285,16 @@ class TenantRecord(BaseRecord):
             for prop in (
                 "tenant_name",
                 "wallet_id",
+                "connected_to_endorsers",
+                "created_public_did",
             )
         }
+
+    @classmethod
+    def transform_tenant_id(cls, value: str):
+        if "-" not in value:
+            return str(uuid.UUID(hex=value))
+        return value
 
     @classmethod
     async def query_by_wallet_id(
@@ -321,4 +358,15 @@ class TenantRecordSchema(BaseRecordSchema):
         required=False,
         description="Tenant Wallet Record identifier",
         example=UUIDFour.EXAMPLE,
+    )
+
+    connected_to_endorsers = fields.List(
+        fields.Dict(description="Endorser and ledger config", required=False),
+        example=json.dumps(ENDORSER_LEDGER_CONFIG_EXAMPLE),
+        required=False,
+    )
+
+    created_public_did = fields.List(
+        fields.Str(description="Ledger id"),
+        required=False,
     )

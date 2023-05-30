@@ -93,6 +93,7 @@ class OcaRecordOperationResponseSchema(OpenAPISchema):
         description="True if operation successful, false if otherwise",
     )
 
+
 @docs(tags=[SWAGGER_CATEGORY], summary="Add OCA Record")
 @request_schema(AddOcaRecordRequestSchema())
 @response_schema(OcaRecordSchema(), 200, description="")
