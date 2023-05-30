@@ -368,8 +368,8 @@
     "checkIn": "Check-In Tenant",
     "settings": {
       "canConnectEndorser": "Tenant allowed to connect to Endorser",
-      "canRegisterDid": "Tenant allowed to register publid DID",
-      "editSettings": "Edit Tenant Settings"
+      "canRegisterDid": "Tenant allowed to register public DID",
+      "editSettings": "Edit Tenant Config"
     },
     "tenants": "Tenants"
   },
