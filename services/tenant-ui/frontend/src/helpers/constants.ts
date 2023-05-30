@@ -59,9 +59,6 @@ export const API_PATH = {
     `/innkeeper/reservations/${id}/config`,
   INNKEEPER_RESERVATIONS_DENY: (id: string) =>
     `/innkeeper/reservations/${id}/deny`,
-  INNKEEPER_TENANT_CONFIG: (id: string) => `/innkeeper/tenants/${id}/config`,
-  INNKEEPER_RESERVATION_CONFIG: (id: string) =>
-    `/innkeeper/tenants/${id}/config`,
 
   ISSUE_CREDENTIAL_RECORDS: 'issue-credential/records',
   ISSUE_CREDENTIAL_RECORD: (id: string) => `issue-credential/records/${id}`,
