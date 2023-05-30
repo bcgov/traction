@@ -24,13 +24,13 @@ from .utils import (
     approve_reservation,
     generate_reservation_token_data,
     ReservationException,
+    TenantConfigSchema,
 )
 from .models import (
     ReservationRecord,
     ReservationRecordSchema,
     TenantRecord,
     TenantRecordSchema,
-    TenantConfigSchema,
 )
 
 LOGGER = logging.getLogger(__name__)
