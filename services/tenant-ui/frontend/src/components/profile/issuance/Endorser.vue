@@ -44,17 +44,35 @@ import AccordionTab from 'primevue/accordiontab';
 import VueJsonPretty from 'vue-json-pretty';
 import { useToast } from 'vue-toastification';
 // State
-import { useTenantStore } from '@/store';
+import { useConfigStore, useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
 
 const toast = useToast();
 
+const { config } = storeToRefs(useConfigStore());
 const tenantStore = useTenantStore();
-const { endorserConnection, endorserInfo, loadingIssuance } =
+const { endorserConnection, endorserInfo, tenantConfig } =
   storeToRefs(tenantStore);
 
+// Allowed to connect to endorser?
+const canConnectEndorser = computed(() => {
+  if (tenantConfig.value?.connect_to_endorser?.length) {
+    // At this point there's 1 ledger/endorser, check the first and deal with that
+    // Will enhance once mult-ledger supported
+    const allowedConnection = tenantConfig.value.connect_to_endorser[0];
+    if (allowedConnection) {
+      // If the tenant is allowed to connect to the configured endorser on the configured ledger
+      return (
+        allowedConnection.endorser_alias ===
+          endorserInfo.value?.endorser_name &&
+        allowedConnection.ledger_id === config.value.ariesDetails.ledgerName
+      );
+    }
+  }
+  return false;
+});
+
 // Connect to endorser
-const canConnectEndorser = ref(true); // to be determined
 const connectToEndorser = async () => {
   try {
     if (!hasEndorserConn.value) {

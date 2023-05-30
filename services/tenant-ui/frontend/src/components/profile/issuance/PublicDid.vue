@@ -37,17 +37,30 @@ import InputText from 'primevue/inputtext';
 import VueJsonPretty from 'vue-json-pretty';
 import { useToast } from 'vue-toastification';
 // State
-import { useTenantStore } from '@/store';
+import { useConfigStore, useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
 
 const toast = useToast();
 
-// Tenant store
+// Stores
+const { config } = storeToRefs(useConfigStore());
 const tenantStore = useTenantStore();
-const { endorserConnection, publicDid } = storeToRefs(tenantStore);
+const { endorserConnection, publicDid, tenantConfig } =
+  storeToRefs(tenantStore);
+
+// Allowed to register a DID?
+const canRegisterDid = computed(() => {
+  if (tenantConfig.value?.create_public_did?.length) {
+    // At this point there's 1 ledger, check the first and deal with that
+    // Will enhance once mult-ledger supported
+    const allowedLedger = tenantConfig.value.create_public_did[0];
+    // If the tenant is allowed to register on the configured ledger
+    return allowedLedger === config.value.ariesDetails.ledgerName;
+  }
+  return false;
+});
 
 // Register DID
-const canRegisterDid = ref(true); // to be determined
 const registerPublicDid = async () => {
   try {
     if (!hasPublicDid.value) {
