@@ -1,5 +1,5 @@
 <template>
-  <div v-if="canRegisterDid" class="true-1">
+  <div v-if="canRegisterDid || hasPublicDid" class="true-1">
     <p class="my-1">{{ $t('profile.registerPublicDid') }}</p>
     <InputSwitch
       :model-value="hasPublicDid"
@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import InputSwitch from 'primevue/inputswitch';
@@ -55,7 +55,7 @@ const canRegisterDid = computed(() => {
     // Will enhance once mult-ledger supported
     const allowedLedger = tenantConfig.value.create_public_did[0];
     // If the tenant is allowed to register on the configured ledger
-    return allowedLedger === config.value.ariesDetails.ledgerName;
+    return allowedLedger === config.value.frontend?.ariesDetails?.ledgerName;
   }
   return false;
 });

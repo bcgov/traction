@@ -13,7 +13,11 @@
       :modal="true"
       @update:visible="handleClose"
     >
-      <EditSettingsForm @success="$emit('success')" @closed="handleClose" />
+      <EditConfigForm
+        :id="props.id"
+        @success="$emit('success')"
+        @closed="handleClose"
+      />
     </Dialog>
   </div>
 </template>
@@ -25,9 +29,14 @@ import { ref } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 // Custom Components
-import EditSettingsForm from './editSettingsForm.vue';
+import EditConfigForm from './editConfigForm.vue';
 
 defineEmits(['success']);
+
+// Props
+const props = defineProps<{
+  id: string;
+}>();
 
 const displayModal = ref(false);
 const openModal = async () => {

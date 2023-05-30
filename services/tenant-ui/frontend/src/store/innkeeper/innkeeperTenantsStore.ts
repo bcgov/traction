@@ -1,3 +1,6 @@
+// Types
+import { TenantConfig } from '@/types/acapyApi/acapyInterface';
+
 import { defineStore, storeToRefs } from 'pinia';
 import { computed, ref, Ref } from 'vue';
 import axios from 'axios';
@@ -18,10 +21,10 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
   const { config } = storeToRefs(useConfigStore());
 
   // state
-  const tenants: Ref<any> = ref(null);
-  const reservations: Ref<any[]> = ref([]);
-  const loading: Ref<boolean> = ref(false);
   const error: Ref<string | null> = ref(null);
+  const loading: Ref<boolean> = ref(false);
+  const reservations: Ref<any[]> = ref([]);
+  const tenants: Ref<any> = ref(null);
 
   // getters
   const currentReservations = computed(() =>
@@ -155,6 +158,30 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     });
   }
 
+  // Update the config for a Tenant
+  async function updateTenantConfig(id: string, payload: TenantConfig) {
+    error.value = null;
+    loading.value = true;
+
+    try {
+      await acapyApi.putHttp(API_PATH.INNKEEPER_TENANT_CONFIG(id), payload);
+      // Reload the tenants list after updating
+      await listTenants();
+    } catch (err: any) {
+      error.value = err;
+    } finally {
+      loading.value = false;
+    }
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+  }
+
+  // private methods
+
+  // Helper method to send email
   function _sendStatusEmail(payload: any) {
     // Separately dispatch a non-blocking call to send the status update email
     // If this fails we won't raise any error to the UI
@@ -179,6 +206,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     denyReservation,
     listTenants,
     listReservations,
+    updateTenantConfig,
   };
 });
 

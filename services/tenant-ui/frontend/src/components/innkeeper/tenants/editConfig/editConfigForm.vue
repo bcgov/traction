@@ -29,6 +29,9 @@
 </template>
 
 <script setup lang="ts">
+// Types
+import { TenantConfig } from '@/types/acapyApi/acapyInterface';
+
 // Vue
 import { reactive, ref } from 'vue';
 // PrimeVue / Validation
@@ -45,6 +48,12 @@ const toast = useToast();
 const emit = defineEmits(['closed', 'success']);
 
 const { loading } = storeToRefs(useInnkeeperTenantsStore());
+const innkeeperTenantsStore = useInnkeeperTenantsStore();
+
+// Props
+const props = defineProps<{
+  id: string;
+}>();
 
 // Validation
 const formFields = reactive({
@@ -67,7 +76,15 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 
   try {
-    alert('API Call TBD');
+    await innkeeperTenantsStore.updateTenantConfig(props.id, {
+      connect_to_endorser: [
+        {
+          endorser_alias: 'endorser',
+          ledger_id: 'bcovrin-test',
+        },
+      ],
+      create_public_did: ['bcovrin-test'],
+    });
     toast.success('Tenant Settings Updated');
     emit('success');
     // close up on success

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="canConnectEndorser" class="my-1">
+  <div v-if="canConnectEndorser || hasEndorserConn" class="my-1">
     <p class="my-1">{{ $t('profile.connectTenantToEndorser') }}</p>
     <InputSwitch
       :model-value="hasEndorserConn"
@@ -65,7 +65,8 @@ const canConnectEndorser = computed(() => {
       return (
         allowedConnection.endorser_alias ===
           endorserInfo.value?.endorser_name &&
-        allowedConnection.ledger_id === config.value.ariesDetails.ledgerName
+        allowedConnection.ledger_id ===
+          config.value.frontend?.ariesDetails?.ledgerName
       );
     }
   }
