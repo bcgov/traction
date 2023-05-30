@@ -7,7 +7,6 @@ from aiohttp_apispec import (
     request_schema,
 )
 from aries_cloudagent.admin.request_context import AdminRequestContext
-from aries_cloudagent.messaging.models.openapi import OpenAPISchema
 from aries_cloudagent.multitenant.admin.routes import (
     format_wallet_record,
     UpdateWalletRequestSchema,
@@ -17,7 +16,6 @@ from aries_cloudagent.wallet.models.wallet_record import (
     WalletRecordSchema,
     WalletRecord,
 )
-from marshmallow import fields
 
 from ..innkeeper.routes import error_handler
 from ..innkeeper.tenant_manager import TenantManager
@@ -25,40 +23,11 @@ from ..innkeeper.models import (
     TenantRecord,
     TenantRecordSchema,
 )
+from ..innkeeper.utils import TenantConfigSchema
 
 LOGGER = logging.getLogger(__name__)
 
 SWAGGER_CATEGORY = "traction-tenant"
-
-
-class EndorserLedgerConfigSchema(OpenAPISchema):
-    """Schema for EndorserLedgerConfig."""
-
-    endorser_alias = fields.Str(
-        description="Endorser alias/identifier",
-        required=True,
-    )
-    ledger_id = fields.Str(
-        description="Ledger identifier",
-        required=True,
-    )
-
-
-class TenantConfigSchema(OpenAPISchema):
-    """Response schema for Tenant config."""
-
-    connect_to_endorser = fields.List(
-        fields.Nested(EndorserLedgerConfigSchema()),
-        description="Endorser config",
-    )
-    create_public_did = fields.List(
-        fields.Str(
-            description="Ledger identifier",
-            required=False,
-        ),
-        description="Public DID config",
-    )
-
 
 @docs(
     tags=[SWAGGER_CATEGORY],

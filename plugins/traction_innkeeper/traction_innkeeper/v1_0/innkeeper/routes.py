@@ -19,8 +19,6 @@ from aries_cloudagent.wallet.error import WalletSettingsError
 from aries_cloudagent.wallet.models.wallet_record import WalletRecord
 from marshmallow import fields
 
-from ..tenant.routes import TenantConfigSchema
-
 from . import TenantManager
 from .utils import (
     approve_reservation,
@@ -32,6 +30,7 @@ from .models import (
     ReservationRecordSchema,
     TenantRecord,
     TenantRecordSchema,
+    TenantConfigSchema
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -385,7 +384,7 @@ async def tenant_create_token(request: web.BaseRequest):
     tags=[SWAGGER_CATEGORY],
 )
 @match_info_schema(TenantIdMatchInfoSchema())
-@request_schema(TenantConfigSchema)
+@request_schema(TenantConfigSchema())
 @response_schema(TenantRecordSchema(), 200, description="")
 @innkeeper_only
 @error_handler
@@ -398,7 +397,7 @@ async def tenant_config_update(request: web.BaseRequest):
     profile = mgr.profile
     tenant_id = request.match_info["tenant_id"]
     async with profile.session() as session:
-        tenant_record = await TenantRecord.retrieve_by_tenant_id(session, tenant_id)
+        tenant_record = await TenantRecord.retrieve_by_id(session, tenant_id)
         if connect_to_endorser:
             tenant_record.connected_to_endorsers = connect_to_endorser
         if create_public_did:

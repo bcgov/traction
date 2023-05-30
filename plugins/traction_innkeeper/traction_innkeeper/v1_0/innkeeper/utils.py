@@ -4,12 +4,43 @@ import uuid
 from datetime import datetime, timedelta
 
 from aries_cloudagent.core.profile import Profile
+from aries_cloudagent.messaging.models.openapi import OpenAPISchema
+from marshmallow import fields
 
 from .models import ReservationRecord
 
 from . import TenantManager
 
 LOGGER = logging.getLogger(__name__)
+
+
+class EndorserLedgerConfigSchema(OpenAPISchema):
+    """Schema for EndorserLedgerConfig."""
+
+    endorser_alias = fields.Str(
+        description="Endorser alias/identifier",
+        required=True,
+    )
+    ledger_id = fields.Str(
+        description="Ledger identifier",
+        required=True,
+    )
+
+
+class TenantConfigSchema(OpenAPISchema):
+    """Response schema for Tenant config."""
+
+    connect_to_endorser = fields.List(
+        fields.Nested(EndorserLedgerConfigSchema()),
+        description="Endorser config",
+    )
+    create_public_did = fields.List(
+        fields.Str(
+            description="Ledger identifier",
+            required=False,
+        ),
+        description="Public DID config",
+    )
 
 
 def generate_reservation_token_data(expiry_minutes: int):
