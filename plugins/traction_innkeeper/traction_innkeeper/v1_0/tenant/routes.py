@@ -23,6 +23,7 @@ from ..innkeeper.models import (
     TenantRecord,
     TenantRecordSchema,
 )
+from ..innkeeper.utils import TenantConfigSchema
 
 LOGGER = logging.getLogger(__name__)
 
@@ -70,6 +71,26 @@ async def tenant_wallet_get(request: web.BaseRequest):
     result = format_wallet_record(wallet_record)
 
     return web.json_response(result)
+
+
+@docs(tags=[SWAGGER_CATEGORY], summary="Get tenant setting")
+@response_schema(TenantConfigSchema(), 200, description="")
+@error_handler
+async def tenant_config_get(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    wallet_id = context.profile.settings.get("wallet.id")
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+    async with profile.session() as session:
+        tenant_record = await TenantRecord.query_by_wallet_id(session, wallet_id)
+    endorser_config = tenant_record.connected_to_endorsers
+    public_did_config = tenant_record.created_public_did
+    return web.json_response(
+        {
+            "connect_to_endorser": endorser_config,
+            "create_public_did": public_did_config,
+        }
+    )
 
 
 @docs(tags=[SWAGGER_CATEGORY], summary="Update tenant wallet")
@@ -127,6 +148,7 @@ async def register(app: web.Application):
             web.get("/tenant", tenant_self, allow_head=False),
             web.get("/tenant/wallet", tenant_wallet_get, allow_head=False),
             web.put("/tenant/wallet", tenant_wallet_update),
+            web.get("/tenant/config", tenant_config_get, allow_head=False),
         ]
     )
     LOGGER.info("< registering routes")
