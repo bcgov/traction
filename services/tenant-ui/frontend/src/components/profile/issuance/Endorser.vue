@@ -31,13 +31,13 @@
     </div>
   </div>
   <p v-else class="my-1">
-    <i class="pi pi-info-circle"></i>
+    <i class="pi pi-times-circle"></i>
     {{ $t('profile.connectTenantToEndorserNotAllowed') }}
   </p>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import InputSwitch from 'primevue/inputswitch';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';

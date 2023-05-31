@@ -40,8 +40,7 @@
     <Column :expander="true" header-style="width: 3rem" />
     <Column :sortable="false" :header="$t('common.actions')">
       <template #body="{ data }">
-        <EditConfig :id="data.tenant_id" />
-        <EditContact :connection-id="data.connection_id" />
+        <EditConfig :tenant="data" />
       </template>
     </Column>
     <Column :sortable="true" field="tenant_name" header="Name" />

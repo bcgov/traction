@@ -110,15 +110,12 @@ const handleSubmit = async (isFormValid: boolean) => {
         tenantStore.getTenantConfig(),
         tenantStore.getIssuanceStatus(),
       ]);
-      const rejected = results.filter(
-        (result): result is PromiseRejectedResult =>
-          result.status === 'rejected'
-      );
-
-      if (rejected.length > 0) {
-        console.error(rejected);
-        throw new Error(rejected[0].reason);
-      }
+      // if any the Tenant details fetch fails, throw the first error
+      results.forEach((result) => {
+        if (result.status === 'rejected') {
+          throw result.reason;
+        }
+      });
     } catch (err) {
       console.error(err);
       toast.error(`Failure getting tenant info: ${err}`);

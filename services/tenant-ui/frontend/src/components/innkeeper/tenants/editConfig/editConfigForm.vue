@@ -1,5 +1,13 @@
 <template>
   <form @submit.prevent="handleSubmit(!v$.$invalid)">
+    <p class="my-0">
+      <strong>{{ $t('tenants.settings.ledgerName') }} </strong>
+      {{ config.frontend?.ariesDetails?.ledgerName }}
+    </p>
+    <p class="mt-0">
+      <strong> {{ $t('tenants.settings.endorserAlias') }} </strong>
+      {{ endorserInfo?.endorser_name }}
+    </p>
     <!-- Can Connect to endorser -->
     <div class="field">
       <label for="canConnectEndorser">
@@ -23,36 +31,46 @@
       type="submit"
       :label="$t('common.submit')"
       class="w-full"
-      :disabled="loading"
+      :disabled="loading || loadingEndorser"
     />
   </form>
 </template>
 
 <script setup lang="ts">
 // Types
-import { TenantConfig } from '@/types/acapyApi/acapyInterface';
+import { TenantRecord } from '@/types/acapyApi/acapyInterface';
 
 // Vue
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 // PrimeVue / Validation
 import Button from 'primevue/button';
 import InputSwitch from 'primevue/inputswitch';
 import { useVuelidate } from '@vuelidate/core';
 import { useToast } from 'vue-toastification';
 // State
-import { useInnkeeperTenantsStore } from '@/store';
+import {
+  useConfigStore,
+  useInnkeeperTenantsStore,
+  useTenantStore,
+} from '@/store';
 import { storeToRefs } from 'pinia';
 
 const toast = useToast();
 
 const emit = defineEmits(['closed', 'success']);
 
+const { config } = storeToRefs(useConfigStore());
 const { loading } = storeToRefs(useInnkeeperTenantsStore());
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
+// For the innkeeper tenant, reuse here for getting configured endorser
+const tenantStore = useTenantStore();
+const { endorserInfo, loading: loadingEndorser } = storeToRefs(
+  useTenantStore()
+);
 
 // Props
 const props = defineProps<{
-  id: string;
+  tenant: TenantRecord;
 }>();
 
 // Validation
@@ -76,14 +94,18 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 
   try {
-    await innkeeperTenantsStore.updateTenantConfig(props.id, {
-      connect_to_endorser: [
-        {
-          endorser_alias: 'endorser',
-          ledger_id: 'bcovrin-test',
-        },
-      ],
-      create_public_did: ['bcovrin-test'],
+    await innkeeperTenantsStore.updateTenantConfig(props.tenant.tenant_id, {
+      connect_to_endorser: formFields.canConnectEndorser
+        ? [
+            {
+              endorser_alias: endorserInfo.value?.endorser_name || '',
+              ledger_id: config.value.frontend?.ariesDetails?.ledgerName,
+            },
+          ]
+        : [],
+      create_public_did: formFields.canRegisterDid
+        ? [config.value.frontend?.ariesDetails?.ledgerName]
+        : [],
     });
     toast.success('Tenant Settings Updated');
     emit('success');
@@ -95,4 +117,15 @@ const handleSubmit = async (isFormValid: boolean) => {
     submitted.value = false;
   }
 };
+
+onMounted(() => {
+  // Determine if the Tenant already has the config permission
+  // This will change in the future for multi-ledger support but
+  // for now determine by the fields being set.
+  formFields.canConnectEndorser = !!props.tenant.connected_to_endorsers?.length;
+  formFields.canRegisterDid = !!props.tenant.created_public_did?.length;
+
+  // Fetch the configured instance endorser details
+  tenantStore.getEndorserInfo();
+});
 </script>

@@ -14,7 +14,7 @@
       @update:visible="handleClose"
     >
       <EditConfigForm
-        :id="props.id"
+        :tenant="props.tenant"
         @success="$emit('success')"
         @closed="handleClose"
       />
@@ -23,6 +23,9 @@
 </template>
 
 <script setup lang="ts">
+// Types
+import { TenantRecord } from '@/types/acapyApi/acapyInterface';
+
 // Vue
 import { ref } from 'vue';
 // PrimeVue
@@ -35,7 +38,7 @@ defineEmits(['success']);
 
 // Props
 const props = defineProps<{
-  id: string;
+  tenant: TenantRecord;
 }>();
 
 const displayModal = ref(false);

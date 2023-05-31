@@ -23,7 +23,7 @@
     </div>
   </div>
   <p v-else class="my-1">
-    <i class="pi pi-info-circle"></i>
+    <i class="pi pi-times-circle"></i>
     {{ $t('profile.registerPublicDidNotAllowed') }}
   </p>
 </template>

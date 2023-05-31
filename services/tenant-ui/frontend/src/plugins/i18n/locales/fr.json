@@ -373,7 +373,10 @@
     "settings": {
       "canConnectEndorser": "Tenant allowed to connect to Endorser <FR>",
       "canRegisterDid": "Tenant allowed to register public DID <FR>",
-      "editSettings": "Edit Tenant Config <FR>"
+      "editSettings": "Edit Tenant Config <FR>",
+      "endorserAlias": "Endorser Alias <FR>",
+      "ledgerName": "Ledger Name <FR>",
+      "success": "Tenant Config Updated <FR>"
     },
     "tenants": "Tenants <FR>"
   },
