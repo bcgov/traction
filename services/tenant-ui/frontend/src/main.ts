@@ -1,6 +1,5 @@
 import router from './router';
 import { createApp } from 'vue';
-import createI18n from './plugins/i18n/i18n';
 import App from './App.vue';
 
 import { createPinia } from 'pinia';
@@ -22,6 +21,7 @@ import 'primeflex/primeflex.css';
 // https://github.com/Maronato/vue-toastification
 import Toast from 'vue-toastification';
 import toastOptions from '@/plugins/toasts/vueToastification';
+import i18n from '@/plugins/i18n/i18n';
 
 async function loadApp() {
   // 1. create app
@@ -52,7 +52,7 @@ async function loadApp() {
   unsubscribe();
 
   // 4. load/initialize other components
-  app.use(createI18n);
+  app.use(i18n);
   app.use(PrimeVue);
   app.use(router);
   app.use(ConfirmationService);
