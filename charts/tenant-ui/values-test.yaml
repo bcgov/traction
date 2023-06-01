@@ -22,4 +22,4 @@ tenant_ui:
     server: apps.smtp.gov.bc.ca
     port: 25
     senderAddress: DoNotReplyTractionTEST@gov.bc.ca
-    innkeeperInbox: lucasoneil@gmail.com
+    innkeeperInbox: lucas.o'neil@gov.bc.ca

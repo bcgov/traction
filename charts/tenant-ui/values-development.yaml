@@ -21,7 +21,7 @@ tenant_ui:
     server: apps.smtp.gov.bc.ca
     port: 25
     senderAddress: DoNotReplyTractionDEV@gov.bc.ca
-    innkeeperInbox: jason.sherman@gmail.com
+    innkeeperInbox: "lucas.o'neil@gov.bc.ca,emiliano.sune@quartech.com"
   resources:
     limits:
       cpu: 400m
