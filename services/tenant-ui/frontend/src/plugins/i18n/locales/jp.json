@@ -225,6 +225,7 @@
     "config": "Config: <JP>",
     "connectionNotActiveYet": "Connection not Active yet, refresh or come back later. <JP>",
     "connectTenantToEndorser": "Connect Tenant To Endorser <JP>",
+    "connectTenantToEndorserNotAllowed": "Innkeeper has not approved endorser connections for your tenant <JP>",
     "createdAt": "Created at <JP>",
     "endorserConnection": "Endorser Connection <JP>",
     "endorserInfo": "Endorser Info <JP>",
@@ -234,6 +235,7 @@
     "noEndorserInfoFound": "No Endorser info found, issuance disabled <JP>",
     "publicDid": "Public DID <JP>",
     "registerPublicDid": "Register a public DID <JP>",
+    "registerPublicDidNotAllowed": "Innkeeper has not approved public DID registration for your tenant <JP>",
     "state": "State: {0} <JP>",
     "taa": {
       "accepted": "Accepted on",
@@ -368,6 +370,14 @@
   },
   "tenants": {
     "checkIn": "Check-In Tenant <JP>",
+    "settings": {
+      "canConnectEndorser": "Tenant allowed to connect to Endorser <JP>",
+      "canRegisterDid": "Tenant allowed to register public DID <JP>",
+      "editSettings": "Edit Tenant Config <JP>",
+      "endorserAlias": "Endorser Alias <JP>",
+      "ledgerName": "Ledger Name <JP>",
+      "success": "Tenant Config Updated <FR>"
+    },
     "tenants": "Tenants <JP>"
   },
   "verifier": {

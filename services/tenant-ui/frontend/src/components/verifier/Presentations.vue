@@ -109,7 +109,7 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import { FilterMatchMode } from 'primevue/api';
 import { useToast } from 'vue-toastification';
-// Stae
+// State
 import { useContactsStore, useVerifierStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Components

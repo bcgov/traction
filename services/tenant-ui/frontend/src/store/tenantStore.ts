@@ -18,6 +18,7 @@ export const useTenantStore = defineStore('tenant', () => {
   const publicDid: any = ref(null);
   const publicDidRegistrationProgress: Ref<string> = ref('');
   const taa: Ref<any> = ref(null);
+  const tenantConfig: any = ref(null);
   const tenantWallet: any = ref(null);
 
   const { token } = storeToRefs(useTokenStore());
@@ -44,30 +45,15 @@ export const useTenantStore = defineStore('tenant', () => {
   }
 
   async function getSelf() {
-    console.log('> tenantStore.getSelf');
-    error.value = null;
-    loading.value = true;
-
-    await acapyApi
-      .getHttp(API_PATH.TENANT_SELF)
-      .then((res: any) => {
-        tenant.value = res.data;
-      })
-      .catch((err) => {
-        error.value = err;
-        tenant.value = null;
-      })
-      .finally(() => {
-        loading.value = false;
-      });
-    console.log('< tenantStore.getSelf');
-
-    if (error.value != null) {
-      // throw error so $onAction.onError listeners can add their own handler
-      throw error.value;
-    }
-    // return data so $onAction.after listeners can add their own handler
-    return tenant.value;
+    tenant.value = await fetchItem(API_PATH.TENANT_SELF, '', error, loading);
+  }
+  async function getTenantConfig() {
+    tenantConfig.value = await fetchItem(
+      API_PATH.TENANT_CONFIG,
+      '',
+      error,
+      loading
+    );
   }
 
   async function getIssuanceStatus() {
@@ -340,8 +326,10 @@ export const useTenantStore = defineStore('tenant', () => {
     tenantReady,
     isIssuer,
     publicDidRegistrationProgress,
+    tenantConfig,
     tenantWallet,
     getSelf,
+    getTenantConfig,
     getIssuanceStatus,
     clearTenant,
     getEndorserConnection,
