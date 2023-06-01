@@ -6,7 +6,7 @@
     v-model:filters="filter"
     v-model:expandedRows="expandedRows"
     :loading="loading"
-    :value="credentials"
+    :value="formattedCredentials"
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
@@ -14,6 +14,7 @@
     data-key="credential_exchange_id"
     sort-field="created_at"
     :sort-order="-1"
+    filterDisplay="menu"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -56,20 +57,54 @@
       :sortable="true"
       field="credential_definition_id"
       header="Credential Definition"
-    />
-    <Column :sortable="true" field="connection_id" header="Contact">
-      <template #body="{ data }">
-        {{ findConnectionName(data.connection_id) }}
+      filterField="credential_definition_id"
+      >
+      <template #filter="{ filterModel, filterCallback }">
+	<InputText
+	  v-model="filterModel.value"
+	  type="text"
+	  @input="filterCallback()"
+	  class="p-column-filter"
+	  placeholder="Search By Invitation Mode"
+	  />
       </template>
     </Column>
-    <Column :sortable="true" field="state" header="Status">
+    <Column
+      :sortable="true"
+      field="contact"
+      header="Contact"
+      filter-field="contact"
+    >
+      <template #body="{ data }">
+        {{ data.contact }}
+      </template>
+      <template #filter="{ filterModel, filterCallback }">
+	<InputText
+	  v-model="filterModel.value"
+	  type="text"
+	  @input="filterCallback()"
+	  class="p-column-filter"
+	  placeholder="Search By Invitation Mode"
+	  />
+      </template>
+    </Column>
+    <Column :sortable="true" field="state" header="Status" filter-field="state">
       <template #body="{ data }">
         <StatusChip :status="data.state" />
+      </template>
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+	  v-model="filterModel.value"
+	  type="text"
+	  @input="filterCallback()"
+	  class="p-column-filter"
+	  placeholder="Search By Invitation Mode"
+        />
       </template>
     </Column>
     <Column :sortable="true" field="created_at" header="Created at">
       <template #body="{ data }">
-        {{ formatDateLong(data.created_at) }}
+        {{ data.created_at }}
       </template>
     </Column>
     <template #expansion="{ data }">
@@ -83,7 +118,7 @@
 
 <script setup lang="ts">
 // Vue
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, Ref, computed } from 'vue';
 // State
 import { useIssuerStore, useContactsStore } from '@/store';
 import { storeToRefs } from 'pinia';
@@ -106,15 +141,29 @@ import StatusChip from '../common/StatusChip.vue';
 const toast = useToast();
 
 const contactsStore = useContactsStore();
-const { contacts, findConnectionName } = storeToRefs(useContactsStore());
+const { contacts } = storeToRefs(useContactsStore());
 const issuerStore = useIssuerStore();
 // use the loading state from the store to disable the button...
 const { loading, credentials, selectedCredential } = storeToRefs(
   useIssuerStore()
-);
+ );
+const findConnectionName = (connectionId: string): string => {
+  const connection = contacts.value?.find((c: any) => {
+    return c.connection_id === connectionId;
+  });
+  return (connection ? connection.alias : '...')as string;
+}
 
-// Get the credentials
-const loadTable = async () => {
+ const formattedCredentials: Ref<any[]> = computed(() => credentials.value.map((cred: any) => ({
+   connection_id: cred.connection_id,
+   contact: findConnectionName(cred.connection_id),
+   credential_definition_id: cred.credential_definition_id,
+   sent_time: cred.sent_time,
+   created_at: formatDateLong(cred.created_at),
+ })))
+
+ // Get the credentials
+ const loadTable = async () => {
   await issuerStore.listCredentials().catch((err) => {
     console.error(err);
     toast.error(`Failure: ${err}`);
@@ -138,6 +187,14 @@ const expandedRows = ref([]);
 // Filter for search
 const filter = ref({
   global: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  contact: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  credential_definition_id: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   } as DataTableFilterMetaData,

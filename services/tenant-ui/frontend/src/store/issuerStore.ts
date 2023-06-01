@@ -4,7 +4,7 @@ import {
 } from '@/types/acapyApi/acapyInterface';
 
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { Ref, ref } from 'vue';
 import { fetchList } from './utils/fetchList.js';
 import { useAcapyApi } from './acapyApi';
 import { fetchItem } from './utils/fetchItem';
@@ -14,7 +14,7 @@ export const useIssuerStore = defineStore('issuer', () => {
   const acapyApi = useAcapyApi();
 
   // state
-  const credentials: any = ref(null);
+  const credentials: Ref<any[]> = ref([]);
   const selectedCredential: any = ref(null);
   const loading: any = ref(false);
   const error: any = ref(null);

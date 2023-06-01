@@ -14,6 +14,7 @@
     data-key="connection_id"
     sort-field="created_at"
     :sort-order="-1"
+    filterDisplay="menu"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -57,12 +58,33 @@
         <EditContact :connection-id="data.connection_id" />
       </template>
     </Column>
-    <Column :sortable="true" field="alias" :header="$t('common.alias')" />
+    <Column :sortable="true" field="alias" :header="$t('common.alias')" filterField="alias">
+      <template #filter="{ filterModel, filterCallback }">
+	<InputText
+	  v-model="filterModel.value"
+	  type="text"
+	  @input="filterCallback()"
+	  class="p-column-filter"
+	  placeholder="Search By Alias"
+	  />
+      </template>
+    </Column>
     <Column
       :sortable="true"
       field="their_label"
+      filterField="their_label"
       :header="$t('connect.table.theirLabel')"
-    />
+      >
+      <template #filter="{ filterModel, filterCallback }">
+	<InputText
+	  v-model="filterModel.value"
+	  type="text"
+	  @input="filterCallback()"
+	  class="p-column-filter"
+	  placeholder="Search By Label"
+	  />
+      </template>
+    </Column>
     <Column :sortable="true" field="status" :header="$t('common.status')">
       <template #body="{ data }">
         <StatusChip :status="data.state" />
@@ -166,6 +188,7 @@ const expandedRows = ref([]);
 
 const filter = ref({
   alias: { value: null, matchMode: 'contains' } as DataTableFilterMetaData,
+  their_label: { value: null, matchMode: 'contains' } as DataTableFilterMetaData,
 });
 </script>
 

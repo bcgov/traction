@@ -1,11 +1,11 @@
-import { ref } from 'vue';
+import { ref, Ref } from 'vue';
 import { defineStore } from 'pinia';
 import { useAcapyApi } from './acapyApi';
 import { fetchListFromAPI } from './utils';
 import { API_PATH } from '@/helpers/constants';
 
 export const useMessageStore = defineStore('messages', () => {
-  const messages: any = ref(null);
+  const messages: Ref<any[]> = ref([]);
   const selectedMessage: any = ref(null);
   const loading: any = ref(false);
   const error: any = ref(null);

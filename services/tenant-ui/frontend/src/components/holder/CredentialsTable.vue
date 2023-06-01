@@ -12,6 +12,7 @@
     data-key="credential_exchange_id"
     sort-field="updated_at"
     :sort-order="-1"
+    filterDisplay="menu"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -64,19 +65,58 @@
         />
       </template>
     </Column>
-    <Column :sortable="true" field="connection_id" header="Connection">
+    <Column
+      :sortable="true"
+      field="connection_id"
+      header="Connection"
+      filterField="credential_id"
+      >
       <template #body="{ data }">
         {{ findConnectionName(data.connection_id) }}
+      </template>
+      <template #filter="{ filterModel, filterCallback }">
+	<InputText
+	  v-model="filterModel.value"
+	  type="text"
+	  @input="filterCallback()"
+	  class="p-column-filter"
+	  placeholder="Search By Invitation Mode"
+	  />
       </template>
     </Column>
     <Column
       :sortable="true"
       field="credential_definition_id"
       header="Credential"
-    />
-    <Column :sortable="true" field="state" header="Status">
+      filterField="credential_definition_id"
+      >
+      <template #filter="{ filterModel, filterCallback }">
+	<InputText
+	  v-model="filterModel.value"
+	  type="text"
+	  @input="filterCallback()"
+	  class="p-column-filter"
+	  placeholder="Search By Invitation Mode"
+	  />
+      </template>
+    </Column>
+    <Column
+      :sortable="true"
+      field="state"
+      header="Status"
+      filterField="state"
+    >
       <template #body="{ data }">
         <StatusChip :status="data.state" />
+      </template>
+      <template #filter="{ filterModel, filterCallback }">
+	<InputText
+	  v-model="filterModel.value"
+	  type="text"
+	  @input="filterCallback()"
+	  class="p-column-filter"
+	  placeholder="Search By Invitation Mode"
+	/>
       </template>
     </Column>
     <Column :sortable="true" field="updated_at" header="Last update">
@@ -136,10 +176,22 @@ const filter = ref({
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   } as DataTableFilterMetaData,
-});
+  credential_id: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  credential_definition_id: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  state: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+ });
 
-// Get the credential exchange list when loading the component
-const loadCredentials = async () => {
+ // Get the credential exchange list when loading the component
+ const loadCredentials = async () => {
   holderStore.listHolderCredentialExchanges().catch((err) => {
     console.error(err);
     toast.error(`Failure: ${err}`);

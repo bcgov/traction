@@ -2,9 +2,9 @@ import { useAcapyApi } from '../acapyApi';
 import { AxiosRequestConfig } from 'axios';
 import { Ref } from 'vue';
 
-export async function fetchList(
+export async function fetchList<T>(
   url: string,
-  list: Ref<any>,
+  list: Ref<T[]>,
   error: Ref<any>,
   loading: Ref<boolean>,
   params: object = {}
@@ -13,14 +13,14 @@ export async function fetchList(
   return fetchListFromAPI(acapyApi, url, list, error, loading, params);
 }
 
-export async function fetchListFromAPI(
+export async function fetchListFromAPI<T>(
   api: any,
   url: string,
-  list: Ref<any[]>,
+  list: Ref<T[]>,
   error: Ref<any>,
   loading: Ref<boolean>,
   params: object = {}
-) {
+): Promise<T[]> {
   console.log(`> fetchList(${url})`);
   list.value = [];
   error.value = null;

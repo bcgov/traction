@@ -14,6 +14,7 @@
     data-key="connection_id"
     sort-field="created_at"
     :sort-order="-1"
+    filterDisplay="menu"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -47,16 +48,38 @@
         <RegenerateInvitation :connection-id="data.connection_id" />
       </template>
     </Column>
-    <Column :sortable="true" field="alias" :header="$t('common.alias')" />
+    <Column :sortable="true" field="alias" :header="$t('common.alias')" filterField="alias">
+      <template #filter="{ filterModel, filterCallback }">
+	<InputText
+	  v-model="filterModel.value"
+	  type="text"
+	  @input="filterCallback()"
+	  class="p-column-filter"
+	  placeholder="Search By Alias"
+	  />
+      </template>
+    </Column>
     <Column
       :sortable="true"
       field="invitation_mode"
       :header="$t('connect.table.invitationMode')"
-    />
+      filterField="invitation_mode"
+      >
+      <template #filter="{ filterModel, filterCallback }">
+	<InputText
+	  v-model="filterModel.value"
+	  type="text"
+	  @input="filterCallback()"
+	  class="p-column-filter"
+	  placeholder="Search By Invitation Mode"
+	  />
+      </template>
+    </Column>
     <Column
       :sortable="true"
       field="created_at"
       :header="$t('connect.table.createdAt')"
+      filterField="created"
     >
       <template #body="{ data }">
         {{ formatDateLong(data.created_at) }}
@@ -114,5 +137,14 @@ const filter = ref({
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   } as DataTableFilterMetaData,
+  invitation_mode: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  created: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+
 });
 </script>
