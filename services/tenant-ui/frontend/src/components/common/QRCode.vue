@@ -11,7 +11,7 @@
 
     <!-- Plain text of link -->
     <div class="field mt-5 w-full">
-      <label for="inviteUrl">{{ $t('qrCode.invitationUrl') }}</label>
+      <label for="inviteUrl">{{ $t('common.invitationUrl') }}</label>
       <div class="p-inputgroup">
         <InputText
           id="inviteUrl"
