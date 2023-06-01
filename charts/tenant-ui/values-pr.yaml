@@ -23,9 +23,7 @@ tenant_ui:
     server: apps.smtp.gov.bc.ca
     port: 25
     senderAddress: DoNotReplyTractionPR@gov.bc.ca
-    innkeeperInbox: 
-      - lucas.o'neil@gov.bc.ca
-      - lucasoneil@gmail.com
+    innkeeperInbox: ["lucas.o'neil@gov.bc.ca", "lucasoneil@gmail.com"]
   resources:
     limits:
       cpu: 200m
