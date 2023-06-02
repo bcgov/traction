@@ -450,7 +450,7 @@ const rules = {
   ACAPY_NOTIFY_REVOCATION: {},
   ACAPY_PUBLIC_INVITES: {},
   walletLabel: { required },
-  imageUrl: {},
+  imageUrl: { url },
 };
 const v$ = useVuelidate(rules, formFields);
 
