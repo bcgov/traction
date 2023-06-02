@@ -42,7 +42,7 @@ Random-Word = "^1.0.11"
 
 script is based on running acapy with traction plugins using the default demo local environment.
 
-see https://github.com/bcgov/traction/tree/develop/plugins/demo
+see https://github.com/bcgov/traction/tree/main/plugins/demo
 """
 
 # default configuration for local development...

@@ -23,8 +23,8 @@ helm upgrade -f ./charts/traction/values.yaml -f ./charts/traction/values-pr.yam
 For each set of charts (tenant-ui, traction), there is a base values.yaml file with default production configuration. 
 
 There are instance/deployment overrides for:
-- Pull Requests (-pr). This goes to our dev namespace and is pre-merge to the develop branch.
-- Development (-development). This goes to our dev namespace and is post-merge to the develop branch, pre-promotion to test.
+- Pull Requests (-pr). This goes to our dev namespace and is pre-merge to the main branch.
+- Development (-development). This goes to our dev namespace and is post-merge to the main branch, pre-promotion to test.
 - Test (-test). This goes to our test namespace and is pre-integration.
 - Integration (-int). This goes to our test namespace and is pre-production.
 - Production (-production). This goes to our production namespace. Production for us is not intended for client use; it is to prove out production scenarios before we deliver code to other interested business units to run their own instances.
