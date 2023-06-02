@@ -71,7 +71,17 @@
       <!-- Image URL -->
       <div class="field">
         <label for="imageUrl">{{ $t('profile.imageUrl') }}</label>
-        <InputText id="imageUrl" v-model="v$.imageUrl.$model" class="w-full" />
+        <InputText
+          id="imageUrl"
+          v-model="v$.imageUrl.$model"
+          class="w-full"
+          :class="{ 'p-invalid': v$.imageUrl.$invalid && submitted }"
+        />
+        <span v-if="v$.imageUrl.$error && submitted">
+          <span v-for="(error, index) of v$.imageUrl.$errors" :key="index">
+            <small class="p-error">{{ error.$message }}</small>
+          </span>
+        </span>
       </div>
 
       <!-- Extra Acapy Settings -->
