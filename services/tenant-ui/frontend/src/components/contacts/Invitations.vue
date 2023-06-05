@@ -5,7 +5,7 @@
     v-model:expandedRows="expandedRows"
     v-model:filters="filter"
     :loading="loading"
-    :value="filteredInvitations"
+    :value="formattedInvitations"
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
@@ -48,15 +48,20 @@
         <RegenerateInvitation :connection-id="data.connection_id" />
       </template>
     </Column>
-    <Column :sortable="true" field="alias" :header="$t('common.alias')" filterField="alias">
+    <Column
+      :sortable="true"
+      field="alias"
+      :header="$t('common.alias')"
+      filterField="alias"
+    >
       <template #filter="{ filterModel, filterCallback }">
-	<InputText
-	  v-model="filterModel.value"
-	  type="text"
-	  @input="filterCallback()"
-	  class="p-column-filter"
-	  placeholder="Search By Alias"
-	  />
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          @input="filterCallback()"
+          class="p-column-filter"
+          placeholder="Search By Alias"
+        />
       </template>
     </Column>
     <Column
@@ -64,25 +69,34 @@
       field="invitation_mode"
       :header="$t('connect.table.invitationMode')"
       filterField="invitation_mode"
-      >
+    >
       <template #filter="{ filterModel, filterCallback }">
-	<InputText
-	  v-model="filterModel.value"
-	  type="text"
-	  @input="filterCallback()"
-	  class="p-column-filter"
-	  placeholder="Search By Invitation Mode"
-	  />
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          @input="filterCallback()"
+          class="p-column-filter"
+          placeholder="Search By Invitation Mode"
+        />
       </template>
     </Column>
     <Column
       :sortable="true"
-      field="created_at"
+      field="created"
       :header="$t('connect.table.createdAt')"
       filterField="created"
     >
       <template #body="{ data }">
-        {{ formatDateLong(data.created_at) }}
+        {{ data.created }}
+      </template>
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          @input="filterCallback()"
+          class="p-column-filter"
+          placeholder="Search By Label"
+        />
       </template>
     </Column>
     <template #expansion="{ data }">
@@ -93,7 +107,7 @@
 
 <script setup lang="ts">
 // Vue
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, Ref, computed } from 'vue';
 // PrimeVue
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -118,6 +132,14 @@ const contactsStore = useContactsStore();
 
 const { loading, filteredInvitations } = storeToRefs(useContactsStore());
 
+const formattedInvitations = computed(() =>
+  filteredInvitations.value.map((inv) => ({
+    alias: inv.alias,
+    invitation_mode: inv.invitation_mode,
+    created: formatDateLong(inv.created_at as string),
+    created_at: inv.created_at,
+  }))
+);
 const loadTable = async () => {
   contactsStore.listContacts().catch((err) => {
     console.error(err);
@@ -145,6 +167,5 @@ const filter = ref({
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   } as DataTableFilterMetaData,
-
 });
 </script>

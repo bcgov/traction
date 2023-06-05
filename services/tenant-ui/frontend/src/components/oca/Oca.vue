@@ -7,7 +7,7 @@
     v-model:expandedRows="expandedRows"
     v-model:filters="filter"
     :loading="loading"
-    :value="ocas"
+    :value="formattedOcas"
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
@@ -15,6 +15,7 @@
     data-key="oca_id"
     sort-field="created_at"
     :sort-order="-1"
+    filter-display="menu"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -56,7 +57,17 @@
       field="cred_def_id"
       header="Cred Def ID"
       filter-field="cred_def_id"
-    />
+    >
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          @input="filterCallback()"
+          class="p-column-filter"
+          placeholder="Search By Cred Def ID"
+        />
+      </template>
+    </Column>
 
     <Column :sortable="true" header="OCA Bundle">
       <template #body="{ data }">
@@ -75,9 +86,23 @@
       </template>
     </Column>
 
-    <Column :sortable="true" field="created_at" header="Created at">
+    <Column
+      :sortable="true"
+      field="created"
+      header="Created at"
+      filter-field="created"
+    >
       <template #body="{ data }">
-        {{ formatDateLong(data.created_at) }}
+        {{ data.created }}
+      </template>
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          @input="filterCallback()"
+          class="p-column-filter"
+          placeholder="Search By Time"
+        />
       </template>
     </Column>
     <template #expansion="{ data }">
@@ -88,7 +113,7 @@
 
 <script setup lang="ts">
 // Vue
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, Ref, computed } from 'vue';
 // PrimeVue etc
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -112,6 +137,15 @@ const toast = useToast();
 const governanceStore = useGovernanceStore();
 const { loading, ocas } = storeToRefs(useGovernanceStore());
 
+const formattedOcas: Ref<any[]> = computed(() =>
+  ocas.value.map((oca) => ({
+    cred_def_id: oca.cred_def_id,
+    bundle: oca.bundle,
+    url: oca.url,
+    created: formatDateLong(oca.created_at ?? ''),
+    created_at: oca.created_at,
+  }))
+);
 // Loading the schema list and the stored cred defs
 const loadTable = async () => {
   try {
@@ -156,6 +190,14 @@ const expandedRows = ref([]);
 // Filter for search
 const filter = ref({
   global: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  created: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  cred_def_id: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   } as DataTableFilterMetaData,

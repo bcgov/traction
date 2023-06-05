@@ -58,15 +58,15 @@
       field="credential_definition_id"
       header="Credential Definition"
       filterField="credential_definition_id"
-      >
+    >
       <template #filter="{ filterModel, filterCallback }">
-	<InputText
-	  v-model="filterModel.value"
-	  type="text"
-	  @input="filterCallback()"
-	  class="p-column-filter"
-	  placeholder="Search By Invitation Mode"
-	  />
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          @input="filterCallback()"
+          class="p-column-filter"
+          placeholder="Search By Invitation Mode"
+        />
       </template>
     </Column>
     <Column
@@ -79,13 +79,13 @@
         {{ data.contact }}
       </template>
       <template #filter="{ filterModel, filterCallback }">
-	<InputText
-	  v-model="filterModel.value"
-	  type="text"
-	  @input="filterCallback()"
-	  class="p-column-filter"
-	  placeholder="Search By Invitation Mode"
-	  />
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          @input="filterCallback()"
+          class="p-column-filter"
+          placeholder="Search By Invitation Mode"
+        />
       </template>
     </Column>
     <Column :sortable="true" field="state" header="Status" filter-field="state">
@@ -94,17 +94,31 @@
       </template>
       <template #filter="{ filterModel, filterCallback }">
         <InputText
-	  v-model="filterModel.value"
-	  type="text"
-	  @input="filterCallback()"
-	  class="p-column-filter"
-	  placeholder="Search By Invitation Mode"
+          v-model="filterModel.value"
+          type="text"
+          @input="filterCallback()"
+          class="p-column-filter"
+          placeholder="Search By Invitation Mode"
         />
       </template>
     </Column>
-    <Column :sortable="true" field="created_at" header="Created at">
+    <Column
+      :sortable="true"
+      field="created"
+      header="Created at"
+      filter-field="created"
+    >
       <template #body="{ data }">
-        {{ data.created_at }}
+        {{ data.created }}
+      </template>
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          @input="filterCallback()"
+          class="p-column-filter"
+          placeholder="Search By Time"
+        />
       </template>
     </Column>
     <template #expansion="{ data }">
@@ -146,24 +160,27 @@ const issuerStore = useIssuerStore();
 // use the loading state from the store to disable the button...
 const { loading, credentials, selectedCredential } = storeToRefs(
   useIssuerStore()
- );
+);
 const findConnectionName = (connectionId: string): string => {
   const connection = contacts.value?.find((c: any) => {
     return c.connection_id === connectionId;
   });
-  return (connection ? connection.alias : '...')as string;
-}
+  return (connection ? connection.alias : '...') as string;
+};
 
- const formattedCredentials: Ref<any[]> = computed(() => credentials.value.map((cred: any) => ({
-   connection_id: cred.connection_id,
-   contact: findConnectionName(cred.connection_id),
-   credential_definition_id: cred.credential_definition_id,
-   sent_time: cred.sent_time,
-   created_at: formatDateLong(cred.created_at),
- })))
+const formattedCredentials: Ref<any[]> = computed(() =>
+  credentials.value.map((cred: any) => ({
+    connection_id: cred.connection_id,
+    contact: findConnectionName(cred.connection_id),
+    credential_definition_id: cred.credential_definition_id,
+    sent_time: cred.sent_time,
+    created: formatDateLong(cred.created_at),
+    created_at: cred.created_at,
+  }))
+);
 
- // Get the credentials
- const loadTable = async () => {
+// Get the credentials
+const loadTable = async () => {
   await issuerStore.listCredentials().catch((err) => {
     console.error(err);
     toast.error(`Failure: ${err}`);
@@ -177,6 +194,7 @@ const findConnectionName = (connectionId: string): string => {
     });
   }
 };
+
 onMounted(async () => {
   await loadTable();
 });
@@ -195,6 +213,10 @@ const filter = ref({
     matchMode: FilterMatchMode.CONTAINS,
   } as DataTableFilterMetaData,
   credential_definition_id: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  created: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   } as DataTableFilterMetaData,

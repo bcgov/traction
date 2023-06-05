@@ -7,7 +7,7 @@
     v-model:expandedRows="expandedRows"
     v-model:filters="filter"
     :loading="loading"
-    :value="storedCredDefs"
+    :value="formattedstoredCredDefs"
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
@@ -15,6 +15,7 @@
     data-key="cred_def_id"
     sort-field="created_at"
     :sort-order="-1"
+    filter-display="menu"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -54,14 +55,33 @@
       field="cred_def_id"
       header="ID"
       filter-field="cred_def_id"
-    />
+    >
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          @input="filterCallback()"
+          class="p-column-filter"
+          placeholder="Search By ID"
+        />
+      </template>
+    </Column>
     <Column
       :sortable="true"
       field="schema_id"
       header="Schema ID"
       filter-field="schema_id"
-    />
-
+    >
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          @input="filterCallback()"
+          class="p-column-filter"
+          placeholder="Search By Schema ID"
+        />
+      </template>
+    </Column>
     <Column :sortable="true" field="support_revocation" header="Revokable">
       <template #body="{ data }">
         <span v-if="data.support_revocation">
@@ -69,10 +89,18 @@
         </span>
       </template>
     </Column>
-
-    <Column :sortable="true" field="created_at" header="Created at">
+    <Column :sortable="true" field="created" header="Created at" filter-field="created">
       <template #body="{ data }">
-        {{ formatDateLong(data.created_at) }}
+        {{ data.created }}
+      </template>
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          @input="filterCallback()"
+          class="p-column-filter"
+          placeholder="Search By Time"
+        />
       </template>
     </Column>
     <template #expansion="{ data }">
@@ -85,81 +113,101 @@
 </template>
 
 <script setup lang="ts">
-// Vue
-import { onMounted, ref } from 'vue';
-// PrimeVue etc
-import Button from 'primevue/button';
-import Column from 'primevue/column';
-import DataTable, { DataTableFilterMetaData } from 'primevue/datatable';
-import InputText from 'primevue/inputtext';
-import { FilterMatchMode } from 'primevue/api';
-import { useConfirm } from 'primevue/useconfirm';
-import { useToast } from 'vue-toastification';
-// State
-import { useGovernanceStore } from '../../store';
-import { storeToRefs } from 'pinia';
-// Custom components
-import RowExpandData from '../common/RowExpandData.vue';
-import { TABLE_OPT, API_PATH } from '@/helpers/constants';
-import { formatDateLong } from '@/helpers';
+ // Vue
+ import { onMounted, ref, Ref, computed } from 'vue';
+ // PrimeVue etc
+ import Button from 'primevue/button';
+ import Column from 'primevue/column';
+ import DataTable, { DataTableFilterMetaData } from 'primevue/datatable';
+ import InputText from 'primevue/inputtext';
+ import { FilterMatchMode } from 'primevue/api';
+ import { useConfirm } from 'primevue/useconfirm';
+ import { useToast } from 'vue-toastification';
+ // State
+ import { useGovernanceStore } from '../../store';
+ import { storeToRefs } from 'pinia';
+ // Custom components
+ import RowExpandData from '../common/RowExpandData.vue';
+ import { TABLE_OPT, API_PATH } from '@/helpers/constants';
+ import { formatDateLong } from '@/helpers';
 
-const confirm = useConfirm();
-const toast = useToast();
+ const confirm = useConfirm();
+ const toast = useToast();
 
-const governanceStore = useGovernanceStore();
-const { loading, storedCredDefs } = storeToRefs(useGovernanceStore());
+ const governanceStore = useGovernanceStore();
+ const { loading, storedCredDefs } = storeToRefs(useGovernanceStore());
 
-// Loading the schema list and the stored cred defs
-const loadTable = async () => {
-  try {
-    await governanceStore.listStoredSchemas();
-    // Wait til schemas are loaded so the getter can map together the schems to creds
-    await governanceStore.listStoredCredentialDefinitions();
-  } catch (err) {
-    console.error(err);
-    toast.error(`Failure: ${err}`);
-  }
-};
+ const formattedstoredCredDefs: Ref<any[]> = computed(() =>
+   storedCredDefs.value.map((credDef: any) => ({
+     cred_def_id: credDef.cred_def_id,
+     schema_id: credDef.schema_id,
+     created_at: credDef.created_at,
+     created: formatDateLong(credDef.created_at),
+   }))
+ );
+ // LOADING the schema list and the stored cred defs
+ const loadTable = async () => {
+   try {
+     await governanceStore.listStoredSchemas();
+     // Wait til schemas are loaded so the getter can map together the schems to creds
+     await governanceStore.listStoredCredentialDefinitions();
+   } catch (err) {
+     console.error(err);
+     toast.error(`Failure: ${err}`);
+   }
+ };
 
-onMounted(async () => {
-  loadTable();
-});
+ onMounted(async () => {
+   loadTable();
+ });
 
-// Deleting a stored schema
-const deleteCredDef = (event: any, id: string) => {
-  confirm.require({
-    target: event.currentTarget,
-    message:
+ // Deleting a stored schema
+ const deleteCredDef = (event: any, id: string) => {
+   confirm.require({
+     target: event.currentTarget,
+     message:
       'Are you sure you want to remove this credential definition from storage?',
-    header: 'Confirmation',
-    icon: 'pi pi-exclamation-triangle',
-    accept: () => {
-      doDelete(id);
-    },
-  });
-};
-const doDelete = (id: string) => {
-  governanceStore
-    .deleteStoredCredentialDefinition(id)
-    .then(() => {
-      toast.success(`Credential definition removed from storage`);
-    })
-    .catch((err) => {
-      console.error(err);
-      toast.error(`Failure: ${err}`);
-    });
-};
+     header: 'Confirmation',
+     icon: 'pi pi-exclamation-triangle',
+     accept: () => {
+       doDelete(id);
+     },
+   });
+ };
+ const doDelete = (id: string) => {
+   governanceStore
+     .deleteStoredCredentialDefinition(id)
+     .then(() => {
+       toast.success(`Credential definition removed from storage`);
+     })
+     .catch((err) => {
+       console.error(err);
+       toast.error(`Failure: ${err}`);
+     });
+ };
 
-// necessary for expanding rows, we don't do anything with this
-const expandedRows = ref([]);
+ // necessary for expanding rows, we don't do anything with this
+ const expandedRows = ref([]);
 
-// Filter for search
-const filter = ref({
-  global: {
-    value: null,
-    matchMode: FilterMatchMode.CONTAINS,
-  } as DataTableFilterMetaData,
-});
+ // Filter for search
+ const filter = ref({
+   global: {
+     value: null,
+     matchMode: FilterMatchMode.CONTAINS,
+   } as DataTableFilterMetaData,
+   cred_def_id: {
+     value: null,
+     matchMode: FilterMatchMode.CONTAINS,
+   } as DataTableFilterMetaData,
+   schema_id: {
+     value: null,
+     matchMode: FilterMatchMode.CONTAINS,
+   } as DataTableFilterMetaData,
+   created: {
+     value: null,
+     matchMode: FilterMatchMode.CONTAINS,
+   } as DataTableFilterMetaData,
+ });
 </script>
 
 <style scoped>

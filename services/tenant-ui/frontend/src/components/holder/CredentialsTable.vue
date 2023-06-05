@@ -3,7 +3,7 @@
     v-model:expandedRows="expandedRows"
     v-model:filters="filter"
     :loading="loading"
-    :value="credentialExchanges"
+    :value="formattedcredentialExchanges"
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
@@ -70,18 +70,18 @@
       field="connection_id"
       header="Connection"
       filterField="credential_id"
-      >
+    >
       <template #body="{ data }">
         {{ findConnectionName(data.connection_id) }}
       </template>
       <template #filter="{ filterModel, filterCallback }">
-	<InputText
-	  v-model="filterModel.value"
-	  type="text"
-	  @input="filterCallback()"
-	  class="p-column-filter"
-	  placeholder="Search By Invitation Mode"
-	  />
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          @input="filterCallback()"
+          class="p-column-filter"
+          placeholder="Search By Connection"
+        />
       </template>
     </Column>
     <Column
@@ -89,39 +89,48 @@
       field="credential_definition_id"
       header="Credential"
       filterField="credential_definition_id"
-      >
+    >
       <template #filter="{ filterModel, filterCallback }">
-	<InputText
-	  v-model="filterModel.value"
-	  type="text"
-	  @input="filterCallback()"
-	  class="p-column-filter"
-	  placeholder="Search By Invitation Mode"
-	  />
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          @input="filterCallback()"
+          class="p-column-filter"
+          placeholder="Search By Credential"
+        />
       </template>
     </Column>
-    <Column
-      :sortable="true"
-      field="state"
-      header="Status"
-      filterField="state"
-    >
+    <Column :sortable="true" field="state" header="Status" filterField="state">
       <template #body="{ data }">
         <StatusChip :status="data.state" />
       </template>
       <template #filter="{ filterModel, filterCallback }">
-	<InputText
-	  v-model="filterModel.value"
-	  type="text"
-	  @input="filterCallback()"
-	  class="p-column-filter"
-	  placeholder="Search By Invitation Mode"
-	/>
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          @input="filterCallback()"
+          class="p-column-filter"
+          placeholder="Search By Status"
+        />
       </template>
     </Column>
-    <Column :sortable="true" field="updated_at" header="Last update">
+    <Column
+      :sortable="true"
+      field="updated"
+      header="Last update"
+      filter-field="updated"
+    >
       <template #body="{ data }">
-        {{ formatDateLong(data.created_at) }}
+        {{ data.updated }}
+      </template>
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          @input="filterCallback()"
+          class="p-column-filter"
+          placeholder="Search By Time"
+        />
       </template>
     </Column>
   </DataTable>
@@ -135,7 +144,7 @@ import {
 } from '@/types/acapyApi/acapyInterface';
 
 // Vue
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 // PrimeVue
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -163,6 +172,17 @@ const contactsStore = useContactsStore();
 const { contacts, findConnectionName } = storeToRefs(useContactsStore());
 const { loading, credentialExchanges } = storeToRefs(useHolderStore());
 const holderStore = useHolderStore();
+const formattedcredentialExchanges = computed(() =>
+  credentialExchanges.value.map((ce) => ({
+    connection_id: ce.connection_id,
+    credential_definition_id: ce.credential_definition_id,
+    state: ce.state,
+    updated: formatDateLong(ce.updated_at ?? ''),
+    updated_at: ce.updated_at,
+    created: formatDateLong(ce.created_at ?? ''),
+    created_at: ce.created_at,
+  }))
+);
 
 // Cred attributes
 const getAttributes = (data: V10CredentialExchange): CredAttrSpec[] => {
@@ -188,10 +208,14 @@ const filter = ref({
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   } as DataTableFilterMetaData,
- });
+  updated: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+});
 
- // Get the credential exchange list when loading the component
- const loadCredentials = async () => {
+// Get the credential exchange list when loading the component
+const loadCredentials = async () => {
   holderStore.listHolderCredentialExchanges().catch((err) => {
     console.error(err);
     toast.error(`Failure: ${err}`);
