@@ -7,6 +7,9 @@ appVersion: 0.2.14
 home: "https://github.com/bcgov/traction"
 sources: ["https://github.com/bcgov/traction"]
 maintainers:
+  - email: ivan.polchenko@quartech.com
+    name: i5okie
+    url: https://github.com/i5okie
   - email: tools@usingtechnolo.gy
     name: usingtechnology
     url: https://github.com/usingtechnology
