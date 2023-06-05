@@ -5,8 +5,22 @@ import { fetchListFromAPI } from './utils';
 import { API_PATH } from '@/helpers/constants';
 import { BasicMessageRecord } from '@/types/acapyApi/acapyInterface';
 
+/**
+ * This is the interface for the message list.
+ */
+export interface Message {
+  connection_id: string;
+  content: string;
+  created_at: string;
+  message_id: string;
+  sent_time: string;
+  state: string;
+  updated_at: string;
+  displayTime: boolean;
+}
+
 export const useMessageStore = defineStore('messages', () => {
-  const messages: Ref<BasicMessageRecord[]> = ref([]);
+  const messages: Ref<Message[]> = ref([]);
   const selectedMessage: any = ref(null);
   const loading: any = ref(false);
   const error: any = ref(null);

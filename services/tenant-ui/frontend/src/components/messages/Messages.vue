@@ -112,12 +112,12 @@ import { useToast } from 'vue-toastification';
 import { FilterMatchMode } from 'primevue/api';
 // State
 import { useMessageStore, useContactsStore } from '@/store';
+import { Message } from '@/store/messageStore';
 import { storeToRefs } from 'pinia';
 // Other components
 import { TABLE_OPT } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 import CreateMessage from './createMessage/CreateMessage.vue';
-import { BasicMessageRecord } from '@/types/acapyApi/acapyInterface';
 
 const toast = useToast();
 
@@ -151,21 +151,21 @@ const loadTable = async () => {
 };
 const expandedRows = ref([]);
 interface FilteredMessage {
-  connection_id: string | undefined;
-  contact: string | undefined;
-  state: string | undefined;
-  content: string | undefined;
-  sent_time: string | undefined;
-  created_at: string | undefined;
+  connection_id: string;
+  contact: string;
+  state: string;
+  content: string;
+  sent_time: string;
+  created_at: string;
 }
 const formattedMessages: Ref<FilteredMessage[]> = computed(() =>
-  messages.value.map((msg: BasicMessageRecord) => ({
+  messages.value.map((msg: Message) => ({
     connection_id: msg.connection_id,
-    contact: findConnectionName(msg.connection_id ?? ''),
+    contact: findConnectionName(msg.connection_id) ?? '',
     state: msg.state,
     content: msg.content,
     sent_time: msg.sent_time,
-    created_at: formatDateLong(msg.created_at ?? ''),
+    created_at: formatDateLong(msg.created_at),
   }))
 );
 const filter = ref({

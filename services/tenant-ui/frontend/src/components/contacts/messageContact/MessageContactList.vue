@@ -28,6 +28,7 @@ import { useMessageStore } from '@/store';
 
 // Other components
 import { MESSAGES } from '@/helpers/constants';
+import { Message } from '@/store/messageStore';
 
 /**
  * formatTime
@@ -49,20 +50,6 @@ const formatTime = (time: string) => {
     return date.toLocaleTimeString();
   }
 };
-
-/**
- * This is the interface for the message list.
- */
-interface Message {
-  connection_id: string;
-  content: string;
-  created_at: string;
-  message_id: string;
-  sent_time: string;
-  state: string;
-  updated_at: string;
-  displayTime: boolean;
-}
 
 // Array to contain the messages
 const messageList = ref<Array<Message>>([]);
