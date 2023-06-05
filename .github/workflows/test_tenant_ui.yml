@@ -5,9 +5,9 @@ name: Build and Test Tenant UI
 
 on:
   push:
-    branches: ["develop"]
+    branches: ["main"]
   pull_request:
-    branches: ["develop"]
+    branches: ["main"]
 
 jobs:
   backend:

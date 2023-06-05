@@ -2,7 +2,7 @@ name: Install/upgrade PR Instance
 on:
   pull_request:
     branches:
-      - develop
+      - main
     paths:
       - "plugins/**"
       - "services/tenant-ui/**"

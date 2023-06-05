@@ -217,7 +217,7 @@ curl -d '{\"seed\":\"$(ACAPY_WALLET_SEED)\", \"role\":\"TRUST_ANCHOR\", \"alias\
 generate tails baseUrl
 */}}
 {{- define "acapy.tails.baseUrl" -}}
-{{- $tailsBaseUrl := dict "bosch-test" "https://tails-dev.vonx.io" "bcovrin-test" "https://tails-test.vonx.io" "idu" (printf "https://tails%s" .Values.global.ingressSuffix) -}}
+{{- $tailsBaseUrl := dict "bcovrin-dev" "https://tails-dev.vonx.io" "bcovrin-test" "https://tails-test.vonx.io" "idu" (printf "https://tails%s" .Values.global.ingressSuffix) -}}
 {{ .Values.acapy.tails.baseUrlOverride| default ( get $tailsBaseUrl .Values.global.ledger ) }}
 {{- end }}
 
@@ -225,7 +225,7 @@ generate tails baseUrl
 generate tails uploadUrl
 */}}
 {{- define "acapy.tails.uploadUrl" -}}
-{{- $tailsUploadUrl:= dict "bosch-test" "https://tails-dev.vonx.io" "bcovrin-test" "https://tails-test.vonx.io" "idu" "http://idu-tails:6543" -}}
+{{- $tailsUploadUrl:= dict "bcovrin-dev" "https://tails-dev.vonx.io" "bcovrin-test" "https://tails-test.vonx.io" "idu" "http://idu-tails:6543" -}}
 {{ .Values.acapy.tails.uploadUrlOverride| default ( get $tailsUploadUrl .Values.global.ledger ) }}
 {{- end }}
 

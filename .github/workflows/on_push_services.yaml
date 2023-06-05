@@ -1,9 +1,9 @@
-name: Push Instance to Develop
+name: Push Instance to main
 on:
   workflow_dispatch:
   push:
     branches:
-      - develop
+      - main
     paths:
       - "plugins/**"
       - "services/tenant-ui/**"
