@@ -65,7 +65,7 @@
           type="text"
           @input="filterCallback()"
           class="p-column-filter"
-          placeholder="Search By Invitation Mode"
+          placeholder="Search By Name"
         />
       </template>
     </Column>
@@ -81,7 +81,7 @@
           type="text"
           @input="filterCallback()"
           class="p-column-filter"
-          placeholder="Search By Invitation Mode"
+          placeholder="Search By Schema ID"
         />
       </template>
     </Column>
@@ -97,7 +97,7 @@
           type="text"
           @input="filterCallback()"
           class="p-column-filter"
-          placeholder="Search By Invitation Mode"
+          placeholder="Search By Version"
         />
       </template>
     </Column>
@@ -113,7 +113,7 @@
           type="text"
           @input="filterCallback()"
           class="p-column-filter"
-          placeholder="Search By Invitation Mode"
+          placeholder="Search By Attributes"
         />
       </template>
     </Column>
@@ -129,7 +129,7 @@
           type="text"
           @input="filterCallback()"
           class="p-column-filter"
-          placeholder="Search By Invitation Mode"
+          placeholder="Search By Time"
         />
       </template>
     </Column>

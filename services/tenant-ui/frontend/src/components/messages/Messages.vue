@@ -48,7 +48,7 @@
           type="text"
           @input="filterCallback()"
           class="p-column-filter"
-          placeholder="Search By Invitation Mode"
+          placeholder="Search By Contact"
         />
       </template>
     </Column>
@@ -59,7 +59,7 @@
           type="text"
           @input="filterCallback()"
           class="p-column-filter"
-          placeholder="Search By Invitation Mode"
+          placeholder="Search By State"
         />
       </template>
     </Column>
@@ -75,7 +75,7 @@
           type="text"
           @input="filterCallback()"
           class="p-column-filter"
-          placeholder="Search By Invitation Mode"
+          placeholder="Search By Content"
         />
       </template>
     </Column>
@@ -94,7 +94,7 @@
           type="text"
           @input="filterCallback()"
           class="p-column-filter"
-          placeholder="Search By Invitation Mode"
+          placeholder="Search By Time"
         />
       </template>
     </Column>

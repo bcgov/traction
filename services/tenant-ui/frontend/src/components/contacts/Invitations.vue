@@ -95,7 +95,7 @@
           type="text"
           @input="filterCallback()"
           class="p-column-filter"
-          placeholder="Search By Label"
+          placeholder="Search By Date"
         />
       </template>
     </Column>
