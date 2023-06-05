@@ -171,7 +171,7 @@ const deleteCredDef = (event: any, id: string) => {
   confirm.require({
     target: event.currentTarget,
     message:
-     'Are you sure you want to remove this credential definition from storage?',
+      'Are you sure you want to remove this credential definition from storage?',
     header: 'Confirmation',
     icon: 'pi pi-exclamation-triangle',
     accept: () => {
