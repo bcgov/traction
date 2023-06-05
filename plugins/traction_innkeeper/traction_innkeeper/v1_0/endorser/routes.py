@@ -69,7 +69,9 @@ async def endorser_connection_set(request: web.BaseRequest):
     """
     context: AdminRequestContext = request["context"]
     profile = context.profile
-
+    # TODO use when multi ledger support is implemented
+    endorser_config = profile.settings.get("tenant.endorser_config", [])
+    public_did_config = profile.settings.get("tenant.public_did_config", [])
     endorser_srv = context.inject(EndorserConnectionService)
     info = endorser_srv.endorser_info(profile)
     if not info:

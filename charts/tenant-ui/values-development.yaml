@@ -2,9 +2,9 @@ global:
   ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
 tenant_ui:
   image:
-    tag: "ghcr.io/bcgov/traction-tenant-ui:sha-5fdc664"
-    version: 'sha-5fdc664'
-    buildtime: '2022-08-04T22:16:25.869Z'
+    tag: "ghcr.io/bcgov/traction-tenant-ui:0.2.14"
+    version: "0.2.14"
+    buildtime: "2022-08-04T22:16:25.869Z"
     pullPolicy: Always
   traction_api:
     endpoint: https://traction-tenant-proxy-dev.apps.silver.devops.gov.bc.ca
@@ -16,12 +16,12 @@ tenant_ui:
     authority: https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm
     jwksUri: https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm/protocol/openid-connect/certs
   ariesDetails:
-    ledgerDescription: 'bcovrin-test'
+    ledgerDescription: "bcovrin-test"
   smtp:
     server: apps.smtp.gov.bc.ca
     port: 25
     senderAddress: DoNotReplyTractionDEV@gov.bc.ca
-    innkeeperInbox: jason.sherman@gmail.com
+    innkeeperInbox: "lucas.o'neil@gov.bc.ca,emiliano.sune@quartech.com"
   resources:
     limits:
       cpu: 400m

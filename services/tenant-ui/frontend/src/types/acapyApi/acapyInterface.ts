@@ -1173,6 +1173,13 @@ export interface EndorserInfo {
   endorser_name?: string;
 }
 
+export interface EndorserLedgerConfig {
+  /** Endorser alias/identifier */
+  endorser_alias: string;
+  /** Ledger identifier */
+  ledger_id: string;
+}
+
 export interface EndpointsResult {
   /**
    * My endpoint
@@ -2955,12 +2962,15 @@ export interface ReservationList {
 }
 
 export interface ReservationRecord {
+  /** @example "{"endorser_alias": " ... ", "ledger_id": " ... "}" */
+  connect_to_endorsers?: object[];
   /** Contact email for this tenant request */
   contact_email: string;
   /** Contact name for this tenant request */
   contact_name: string;
   /** Contact phone number for this tenant request */
   contact_phone: string;
+  create_public_did?: string[];
   /**
    * Time of record creation
    * @pattern ^\d{4}-\d\d-\d\d[T ]\d\d:\d\d(?:\:(?:\d\d(?:\.\d{1,6})?))?(?:[+-]\d\d:?\d\d|Z|)$
@@ -3403,18 +3413,28 @@ export interface TAAResult {
   result?: TAAInfo;
 }
 
+export interface TenantConfig {
+  /** Endorser config */
+  connect_to_endorser?: EndorserLedgerConfig[];
+  /** Public DID config */
+  create_public_did?: string[];
+}
+
 export interface TenantList {
   /** List of tenants */
   results?: TenantRecord[];
 }
 
 export interface TenantRecord {
+  /** @example "{"endorser_alias": " ... ", "ledger_id": " ... "}" */
+  connected_to_endorsers?: object[];
   /**
    * Time of record creation
    * @pattern ^\d{4}-\d\d-\d\d[T ]\d\d:\d\d(?:\:(?:\d\d(?:\.\d{1,6})?))?(?:[+-]\d\d:?\d\d|Z|)$
    * @example "2021-12-31T23:59:59Z"
    */
   created_at?: string;
+  created_public_did?: string[];
   /**
    * The state of the tenant.
    * @example "active"

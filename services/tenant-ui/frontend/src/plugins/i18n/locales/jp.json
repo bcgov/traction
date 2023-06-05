@@ -31,6 +31,7 @@
   "common": {
     "actions": "Actions <JP>",
     "alias": "Alias <JP>",
+    "confirmation": "Confirmation <JP>",
     "contactName": "Contact Name <JP>",
     "credentialId": "Credential ID <JP>",
     "credentials": "Credentials <JP>",
@@ -224,6 +225,7 @@
     "config": "Config: <JP>",
     "connectionNotActiveYet": "Connection not Active yet, refresh or come back later. <JP>",
     "connectTenantToEndorser": "Connect Tenant To Endorser <JP>",
+    "connectTenantToEndorserNotAllowed": "Innkeeper has not approved endorser connections for your tenant <JP>",
     "createdAt": "Created at <JP>",
     "endorserConnection": "Endorser Connection <JP>",
     "endorserInfo": "Endorser Info <JP>",
@@ -233,6 +235,7 @@
     "noEndorserInfoFound": "No Endorser info found, issuance disabled <JP>",
     "publicDid": "Public DID <JP>",
     "registerPublicDid": "Register a public DID <JP>",
+    "registerPublicDidNotAllowed": "Innkeeper has not approved public DID registration for your tenant <JP>",
     "state": "State: {0} <JP>",
     "taa": {
       "accepted": "Accepted on",
@@ -282,6 +285,7 @@
     "enterPassword": "Please enter the reservation password below to validate your account. <JP>",
     "history": "History <JP>",
     "incorrectEmailOrReservationId": "Incorrect Email or Reservation ID. Please try again. <JP>",
+    "loadingCheckIn": "Checking in Reservation <JP>",
     "otp": "The password is shown below one-time if you need to communicate it via other means <JP>",
     "passwordAvailable": "The reservation password is visible below, please use it to complete your check-in. <JP>",
     "passwordValid48Hours": "The reservation password is only valid for 48 hours from the time it was sent to your email address. <JP>",
@@ -366,6 +370,14 @@
   },
   "tenants": {
     "checkIn": "Check-In Tenant <JP>",
+    "settings": {
+      "canConnectEndorser": "Tenant allowed to connect to Endorser <JP>",
+      "canRegisterDid": "Tenant allowed to register public DID <JP>",
+      "editSettings": "Edit Tenant Config <JP>",
+      "endorserAlias": "Endorser Alias <JP>",
+      "ledgerName": "Ledger Name <JP>",
+      "success": "Tenant Config Updated <FR>"
+    },
     "tenants": "Tenants <JP>"
   },
   "verifier": {
@@ -382,7 +394,16 @@
     "verifications": "Verifications <JP>"
   },
   "verify": {
-    "createRequest": "Create Presentation Requests <JP>",
+    "autoVerify": "Auto Verify <JP>",
+    "autoVerifyHelp": "Verifier choice to auto-verify proof presentation <JP>",
+    "comment": "Optional Comment <JP>",
+    "connection": "Connection <JP>",
+    "copyRequest": "Copy Existing Presentation Request <JP>",
+    "createRequest": "Create Presentation Request <JP>",
+    "delete": "Delete Presentation Exchange Record <JP>",
+    "deleteConfirmation": "Are you sure you want to delete this Presentation Exchange Record? <JP>",
+    "deleteSuccess": "Presentation Exchange Record successfully deleted <JP>",
+    "presentationRequestBody": "Proof Request <JP>",
     "verification": "Verification <JP>",
     "verifications": "Verifications <JP>"
   }

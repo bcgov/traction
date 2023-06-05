@@ -32,6 +32,7 @@
   "common": {
     "actions": "Actions",
     "alias": "Alias",
+    "confirmation": "Confirmation",
     "contactName": "Contact Name",
     "credentialId": "Credential ID",
     "credentials": "Credentials",
@@ -225,6 +226,7 @@
     "config": "Config:",
     "connectionNotActiveYet": "Connection not Active yet, refresh or come back later.",
     "connectTenantToEndorser": "Connect Tenant To Endorser",
+    "connectTenantToEndorserNotAllowed": "Innkeeper has not approved endorser connections.",
     "createdAt": "Created at",
     "endorserConnection": "Endorser Connection",
     "endorserInfo": "Endorser Info",
@@ -234,6 +236,7 @@
     "noEndorserInfoFound": "No Endorser info found, issuance disabled",
     "publicDid": "Public DID",
     "registerPublicDid": "Register a public DID",
+    "registerPublicDidNotAllowed": "Innkeeper has not approved public DID registration.",
     "state": "State: {0}",
     "taa": {
       "accepted": "Accepted on",
@@ -282,6 +285,7 @@
     "enterPassword": "Please enter the reservation password below to validate your account.",
     "history": "History",
     "incorrectEmailOrReservationId": "Incorrect Email or Reservation ID. Please try again.",
+    "loadingCheckIn": "Checking in Reservation",
     "otp": "The password is shown below one-time if you need to communicate it via other means",
     "passwordAvailable": "The reservation password is visible below, please use it to complete your check-in.",
     "passwordValid48Hours": "The reservation password is only valid for 48 hours from the time it was sent to your email address.",
@@ -362,6 +366,14 @@
   },
   "tenants": {
     "checkIn": "Check-In Tenant",
+    "settings": {
+      "canConnectEndorser": "Tenant allowed to connect to Endorser",
+      "canRegisterDid": "Tenant allowed to register public DID",
+      "editSettings": "Edit Tenant Config",
+      "endorserAlias": "Endorser Alias:",
+      "ledgerName": "Ledger Name:",
+      "success": "Tenant Config Updated"
+    },
     "tenants": "Tenants"
   },
   "verifier": {
@@ -378,7 +390,16 @@
     "verifications": "Verifications"
   },
   "verify": {
-    "createRequest": "Create Presentation Requests",
+    "autoVerify": "Auto Verify",
+    "autoVerifyHelp": "Verifier choice to auto-verify proof presentation",
+    "comment": "Optional Comment",
+    "connection": "Connection",
+    "copyRequest": "Copy Existing Presentation Request",
+    "createRequest": "Create Presentation Request",
+    "delete": "Delete Presentation Exchange Record",
+    "deleteConfirmation": "Are you sure you want to delete this Presentation Exchange Record?",
+    "deleteSuccess": "Presentation Exchange Record successfully deleted",
+    "presentationRequestBody": "Proof Request",
     "verification": "Verification",
     "verifications": "Verifications"
   }

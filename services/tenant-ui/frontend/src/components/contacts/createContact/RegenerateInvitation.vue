@@ -18,7 +18,7 @@
     <div v-else-if="invitation">
       <!-- Alias -->
       <div class="field w-full">
-        <label for="alias">{{ $t('connect.invitations.alias') }}</label>
+        <label for="alias">{{ $t('connect.invitation.alias') }}</label>
         <InputText
           :value="invitation.alias"
           class="w-full"

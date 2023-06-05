@@ -1,11 +1,20 @@
 <template>
   <!-- Request successful -->
   <div v-if="reservationIdResult">
-    <ReservationConfirmation
-      :id="reservationIdResult"
-      :email="formFields.contact_email"
-      :pwd="reservationPwdResult"
-    />
+    <div v-if="loading" class="flex flex-column align-items-center">
+      <ProgressSpinner />
+      <p>{{ $t('reservations.loadingCheckIn') }}</p>
+    </div>
+    <div v-else>
+      <!-- If auto-approve on, the confirmation will come right up -->
+      <ShowWallet v-if="status === RESERVATION_STATUSES.SHOW_WALLET" />
+      <ReservationConfirmation
+        v-else
+        :id="reservationIdResult"
+        :email="formFields.contact_email"
+        :pwd="reservationPwdResult"
+      />
+    </div>
   </div>
 
   <!-- Submit Request -->
@@ -146,6 +155,7 @@ import { ref, reactive } from 'vue';
 // PrimeVue/Validation/etc
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
+import ProgressSpinner from 'primevue/progressspinner';
 import Textarea from 'primevue/textarea';
 import { useToast } from 'vue-toastification';
 import { email, required } from '@vuelidate/validators';
@@ -153,6 +163,9 @@ import { useVuelidate } from '@vuelidate/core';
 // State
 import { useReservationStore } from '@/store';
 import { storeToRefs } from 'pinia';
+// Components
+import { RESERVATION_STATUSES } from '@/helpers/constants';
+import ShowWallet from './status/ShowWallet.vue';
 import ReservationConfirmation from './ReservationConfirmation.vue';
 
 const toast = useToast();
@@ -176,7 +189,7 @@ const v$ = useVuelidate(rules, formFields);
 
 // State setup
 const reservationStore = useReservationStore();
-const { loading } = storeToRefs(useReservationStore());
+const { loading, status } = storeToRefs(useReservationStore());
 
 // The reservation return object
 const reservationIdResult: any = ref('');

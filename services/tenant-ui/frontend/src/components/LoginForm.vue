@@ -105,8 +105,17 @@ const handleSubmit = async (isFormValid: boolean) => {
   if (token.value) {
     try {
       // token is loaded, now go fetch the global data about the tenant
-      await tenantStore.getSelf();
-      await tenantStore.getIssuanceStatus();
+      const results = await Promise.allSettled([
+        tenantStore.getSelf(),
+        tenantStore.getTenantConfig(),
+        tenantStore.getIssuanceStatus(),
+      ]);
+      // if any the Tenant details fetch fails, throw the first error
+      results.forEach((result) => {
+        if (result.status === 'rejected') {
+          throw result.reason;
+        }
+      });
     } catch (err) {
       console.error(err);
       toast.error(`Failure getting tenant info: ${err}`);

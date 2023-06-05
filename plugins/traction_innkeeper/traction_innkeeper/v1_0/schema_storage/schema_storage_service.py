@@ -73,7 +73,6 @@ class SchemaStorageService:
         # check if
         rec = await self.read_item(profile, schema_id)
         if not rec:
-
             async with profile.session() as session:
                 multitenant_mgr = session.inject_or(BaseMultitenantManager)
                 if multitenant_mgr:

@@ -51,9 +51,12 @@ export const API_PATH = {
   INNKEEPER_TOKEN: '/innkeeper/token',
   INNKEEPER_TENANTS: '/innkeeper/tenants/',
   INNKEEPER_TENANT: (id: string) => `/innkeeper/tenants/${id}`,
+  INNKEEPER_TENANT_CONFIG: (id: string) => `/innkeeper/tenants/${id}/config`,
   INNKEEPER_RESERVATIONS: '/innkeeper/reservations/',
   INNKEEPER_RESERVATIONS_APPROVE: (id: string) =>
     `/innkeeper/reservations/${id}/approve`,
+  INNKEEPER_RESERVATIONS_CONFIG: (id: string) =>
+    `/innkeeper/reservations/${id}/config`,
   INNKEEPER_RESERVATIONS_DENY: (id: string) =>
     `/innkeeper/reservations/${id}/deny`,
 
@@ -81,6 +84,22 @@ export const API_PATH = {
   OCAS: '/oca',
   OCA: (id: string) => `/oca/${id}`,
 
+  PRESENT_PROOF_CREATE_REQUEST: '/present-proof/create-request',
+  PRESENT_PROOF_RECORDS: '/present-proof/records',
+  PRESENT_PROOF_RECORD: (id: string) => `/present-proof/records/${id}`,
+  PRESENT_PROOF_RECORD_CREDENTIALS: (id: string) =>
+    `/present-proof/records/${id}/credentials`,
+  PRESENT_PROOF_RECORD_PROBLEM: (id: string) =>
+    `/present-proof/records/${id}/problem-report`,
+  PRESENT_PROOF_RECORD_SEND_PRESENTATION: (id: string) =>
+    `/present-proof/records/${id}/send-presentation`,
+  PRESENT_PROOF_RECORD_SEND_REQUEST: (id: string) =>
+    `/present-proof/records/${id}/send-request`,
+  PRESENT_PROOF_RECORD_VERIFY: (id: string) =>
+    `/present-proof/records/${id}/verify-presentation`,
+  PRESENT_PROOF_SEND_PROPOSAL: '/present-proof/send-proposal',
+  PRESENT_PROOF_SEND_REQUEST: '/present-proof/send-request',
+
   REVOCATION_REVOKE: '/revocation/revoke',
 
   SCHEMAS: '/schemas',
@@ -98,6 +117,7 @@ export const API_PATH = {
   TENANT_REGISTER_PUBLIC_DID: '/ledger/register-nym',
   TENANT_TOKEN: '/tenant/token',
   TENANT_WALLET: '/tenant/wallet',
+  TENANT_CONFIG: '/tenant/config',
 
   WALLET_DID_PUBLIC: '/wallet/did/public',
   WALLET_DID_CREATE: '/wallet/did/create',
@@ -146,3 +166,13 @@ export const RESERVATION_STATUSES = {
 };
 
 export const RESERVATION_STATUS_ROUTE = 'check-status';
+
+// json editor config
+export const JSON_EDITOR_DEFAULTS = {
+  mainMenuBar: false,
+  mode: 'text' as any,
+  statusBar: false,
+  navigationBar: false,
+  indentation: 2,
+  tabSize: 2,
+};

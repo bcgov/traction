@@ -27,10 +27,10 @@
       }
     },
     "ariesDetails": {
-      "acapyVersion": "1.0.0-rc",
+      "acapyVersion": "0.8.1",
       "ledgerName": "bcovrin-test",
       "ledgerBrowser": "http://test.bcovrin.vonx.io",
-      "tailsServer": "https://tails-dev.vonx.io"
+      "tailsServer": "https://tails-test.vonx.io"
     }
   },
   "image": {
@@ -59,7 +59,7 @@
       "server": "apps.smtp.gov.bc.ca",
       "port": 25,
       "senderAddress": "DoNotReplyTraction@gov.bc.ca",
-      "innkeeperInbox": "lucas.oneil@gov.bc.ca"
+      "innkeeperInbox": "lucas.o'neil@gov.bc.ca"
     }
   }
 }

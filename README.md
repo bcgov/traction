@@ -69,7 +69,7 @@ Currently authorized users can create a branch and run a pull request to merge i
 git fetch --all
 git pull
 
-git rebase origin/develop
+git rebase origin/main
 git push --force
 ```
 

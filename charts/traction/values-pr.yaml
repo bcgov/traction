@@ -21,6 +21,7 @@ acapy:
       printKey: true
       printToken: true
       reservationExpiryMinutes: 2880
+      reservationAutoApprove: false
   resources:
     limits:
       cpu: 200m

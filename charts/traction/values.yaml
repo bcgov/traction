@@ -23,9 +23,9 @@ global:
 acapy:
   image:
     # building our own acapy with plugins
-    tag: "ghcr.io/bcgov/traction-plugins-acapy:sha-25c438d"
-    version: 'sha-25c438d'
-    buildtime: '2022-10-28T01:30:31.105Z'
+    tag: "ghcr.io/bcgov/traction-plugins-acapy:0.2.14"
+    version: "0.2.14"
+    buildtime: "2022-10-28T01:30:31.105Z"
     pullPolicy: Always
     # repository: bcgovimages/aries-cloudagent
     # pullPolicy: IfNotPresent
@@ -49,14 +49,14 @@ acapy:
   # plugin-config.yaml configmap
   pluginValues:
     multitenantProvider:
-      manager:        
+      manager:
         className: traction_plugins.multitenant_provider.v1_0.manager.AskarMultitokenMultitenantManager
         alwaysCheckProvidedWalletKey: true
       errors:
         onUnneededWalletKey: false
       tokenExpiry:
         units: days
-        amount: 1  
+        amount: 1
     tractionInnkeeper:
       walletName: traction_innkeeper
       printKey: false
@@ -64,16 +64,15 @@ acapy:
       reservationExpiryMinutes: 2880
       reservationAutoApprove: false
 
-
   imagePullSecrets: []
   nameOverride: ""
   fullnameOverride: ""
 
   podAnnotations: {}
 
-  podSecurityContext: {}
+  podSecurityContext:
+    {}
     # fsGroup: 2000
-
 
   securityContext:
     # capabilities:
@@ -240,8 +239,8 @@ traction:
 tenant_proxy:
   image:
     tag: "ghcr.io/bcgov/traction-tenant-proxy:sha-0bd01da"
-    version: 'sha-0bd01da'
-    buildtime: '2022-01-20T22:37:11.102Z'
+    version: "sha-0bd01da"
+    buildtime: "2022-01-20T22:37:11.102Z"
     pullPolicy: IfNotPresent
 
   serviceAccount:
@@ -256,10 +255,12 @@ tenant_proxy:
 
   podAnnotations: {}
 
-  podSecurityContext: {}
+  podSecurityContext:
+    {}
     # fsGroup: 2000
 
-  securityContext: {}
+  securityContext:
+    {}
     # capabilities:
     #   drop:
     #   - ALL

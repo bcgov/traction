@@ -79,7 +79,4 @@ class OcaRecordSchema(BaseRecordSchema):
         required=False,
         description="OCA Bundle",
     )
-    owner_did = fields.Str(
-        required=False,
-        description="Public DID of OCA record owner"
-    )
+    owner_did = fields.Str(required=False, description="Public DID of OCA record owner")

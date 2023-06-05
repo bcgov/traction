@@ -2,9 +2,9 @@ global:
   ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
 acapy:
   image:
-    tag: "ghcr.io/bcgov/traction-plugins-acapy:sha-25c438d"
-    version: 'sha-25c438d'
-    buildtime: '2022-10-28T01:30:31.105Z'
+    tag: "ghcr.io/bcgov/traction-plugins-acapy:0.2.14"
+    version: "0.2.14"
+    buildtime: "2022-10-28T01:30:31.105Z"
     pullPolicy: Always
   secret:
     adminurl:
@@ -15,7 +15,7 @@ acapy:
     tractionInnkeeper:
       printKey: true
       printToken: true
-      reservationExpiryMinutes: 2880
+      reservationExpiryMinutes: 7200
   resources:
     limits:
       cpu: 400m
@@ -35,7 +35,7 @@ postgresql:
       memory: 820Mi
 tenant_proxy:
   image:
-    tag: "ghcr.io/bcgov/traction-tenant-proxy:sha-2aa3709"
-    version: 'sha-2aa3709'
+    tag: "ghcr.io/bcgov/traction-tenant-proxy:0.2.14"
+    version: "0.2.14"
     buildtime: "2022-01-28T18:19:10.574Z"
     pullPolicy: Always

@@ -2,22 +2,21 @@ name: Install/upgrade PR Instance
 on:
   pull_request:
     branches:
-      - develop
+      - main
     paths:
-      - 'plugins/**'
-      - 'services/tenant-ui/**'
-      - 'charts/traction/**'
-      - 'charts/tenant-ui/**'
+      - "plugins/**"
+      - "services/tenant-ui/**"
+      - "charts/traction/**"
+      - "charts/tenant-ui/**"
     types:
       - opened
       - synchronize
       - reopened
       - ready_for_review
-      
-jobs:
 
+jobs:
   ready:
-    name: 'Install if ready for review'
+    name: "Install if ready for review"
     runs-on: ubuntu-latest
     outputs:
       deploy: ${{ steps.ready_for_review.outputs.true_false }}
@@ -27,20 +26,20 @@ jobs:
         run: |
           echo "true_false=${{ toJSON(github.event.pull_request.draft != true && github.repository_owner == 'bcgov') }}" >> $GITHUB_OUTPUT
           echo "bcgov_true_false=${{ toJSON(github.repository_owner == 'bcgov') }}" >> $GITHUB_OUTPUT
-        
+
   build_ui:
-    name: 'Build Tenant UI'
+    name: "Build Tenant UI"
     runs-on: ubuntu-latest
     if: ${{ always() && fromJSON(needs.ready.outputs.build) == true }}
-    needs: 
+    needs:
       - ready
-    steps:      
-      - uses: actions/checkout@v3        
+    steps:
+      - uses: actions/checkout@v3
       - name: Build UI
         uses: ./.github/actions/build_ui
         id: builder
         with:
-          context: './services/tenant-ui'
+          context: "./services/tenant-ui"
           image_name: ${{ github.repository_owner}}/traction-tenant-ui
           registry: ghcr.io
           registry_username: ${{ github.repository_owner}}
@@ -51,19 +50,19 @@ jobs:
       buildtime: ${{ steps.builder.outputs.buildtime }}
 
   build_acapy:
-    name: 'Build Traction Aca-Py'
+    name: "Build Traction Aca-Py"
     runs-on: ubuntu-latest
     if: ${{ always() && fromJSON(needs.ready.outputs.build) == true }}
-    needs: 
+    needs:
       - ready
-    steps:      
-      - uses: actions/checkout@v3        
+    steps:
+      - uses: actions/checkout@v3
       - name: Build Aca-Py Image
         uses: ./.github/actions/build_acapy
         id: builder
         with:
-          context: './plugins'
-          dockerfile: './plugins/docker/Dockerfile'
+          context: "./plugins"
+          dockerfile: "./plugins/docker/Dockerfile"
           image_name: ${{ github.repository_owner}}/traction-plugins-acapy
           registry: ghcr.io
           registry_username: ${{ github.repository_owner}}
@@ -74,19 +73,19 @@ jobs:
       buildtime: ${{ steps.builder.outputs.buildtime }}
 
   build_proxy:
-    name: 'Build Traction Tenant Proxy'
+    name: "Build Traction Tenant Proxy"
     runs-on: ubuntu-latest
     if: ${{ always() && fromJSON(needs.ready.outputs.build) == true }}
-    needs: 
+    needs:
       - ready
-    steps:      
-      - uses: actions/checkout@v3        
+    steps:
+      - uses: actions/checkout@v3
       - name: Build Tenant Proxy Image
         uses: ./.github/actions/build_acapy
         id: builder
         with:
-          context: './plugins'
-          dockerfile: './plugins/docker/Dockerfile.tenant-proxy'
+          context: "./plugins"
+          dockerfile: "./plugins/docker/Dockerfile.tenant-proxy"
           image_name: ${{ github.repository_owner}}/traction-tenant-proxy
           registry: ghcr.io
           registry_username: ${{ github.repository_owner}}
@@ -100,15 +99,15 @@ jobs:
     name: Deploy PR
     environment: development
     runs-on: ubuntu-latest
-    needs: 
+    needs:
       - ready
       - build_ui
       - build_acapy
       - build_proxy
     if: ${{ always() && (fromJSON(needs.ready.outputs.deploy) == true) && !(contains(needs.*.result, 'failure')) }}
 
-    steps:  
-      - uses: actions/checkout@v3  
+    steps:
+      - uses: actions/checkout@v3
 
       - name: Authenticate and set context
         uses: redhat-actions/oc-login@v1
@@ -138,24 +137,24 @@ jobs:
           yq eval '.tenant_ui.image.version = "${{ needs.build_ui.outputs.image_version }}"' -i ./charts/tenant-ui/values-pr.yaml
           yq eval '.tenant_ui.image.buildtime = "${{ needs.build_ui.outputs.buildtime }}"' -i ./charts/tenant-ui/values-pr.yaml
           helm upgrade -f ./charts/tenant-ui/values.yaml -f ./charts/tenant-ui/values-pr.yaml pr-${{ github.event.number }}-tenant-ui ./charts/tenant-ui --install --wait
-  
+
   deploymenturls:
     name: Deployment URLs comment
     runs-on: ubuntu-latest
-    needs: 
+    needs:
       - deploy
     if: ${{ (fromJSON(needs.ready.outputs.deploy) == true) && !(contains(needs.*.result, 'failure')) }}
-    steps:  
-      - uses: actions/checkout@v3 
-      
+    steps:
+      - uses: actions/checkout@v3
+
       - name: Find Comment
         uses: peter-evans/find-comment@v1
         id: fc
         with:
           issue-number: ${{ github.event.number }}
-          comment-author: 'github-actions[bot]'
-          body-includes: Deployment URLs ready for review. 
-        
+          comment-author: "github-actions[bot]"
+          body-includes: Deployment URLs ready for review.
+
       - name: Create comment
         if: steps.fc.outputs.comment-id == ''
         uses: peter-evans/create-or-update-comment@v1
@@ -170,5 +169,5 @@ jobs:
             | Aca-Py | | |
             | | Admin Swagger | https://pr-${{ github.event.number }}-traction-acapy-admin-dev.apps.silver.devops.gov.bc.ca/api/doc |
             | | Tenant Proxy Swagger | https://pr-${{ github.event.number }}-traction-tenant-proxy-dev.apps.silver.devops.gov.bc.ca/api/doc |
-            
+
             Deployment URLs ready for review.

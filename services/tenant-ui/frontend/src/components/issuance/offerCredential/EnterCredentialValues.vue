@@ -15,11 +15,11 @@
     <div class="flex justify-content-between">
       <div class="flex justify-content-start">
         <label for="credentialValuesEdit">
-          <strong>{{ $t('issuse.credentialFieldValues') }}</strong>
+          <strong>{{ $t('issue.credentialFieldValues') }}</strong>
         </label>
       </div>
       <div class="flex justify-content-end">
-        {{ $t('issue.Json') }}
+        {{ $t('common.json') }}
         <InputSwitch v-model="showRawJson" class="ml-1" @input="toggleJson" />
       </div>
     </div>

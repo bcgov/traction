@@ -1,8 +1,8 @@
 tenant_ui:
   image:
-    tag: "ghcr.io/bcgov/traction-tenant-ui:sha-5fdc664"
-    version: 'sha-5fdc664'
-    buildtime: '2022-08-04T22:16:25.869Z'
+    tag: "ghcr.io/bcgov/traction-tenant-ui:0.2.14"
+    version: "0.2.14"
+    buildtime: "2022-08-04T22:16:25.869Z"
   traction_api:
     endpoint: https://traction-tenant-proxy-prod.apps.silver.devops.gov.bc.ca
   tenant_proxy:
@@ -13,9 +13,9 @@ tenant_ui:
     authority: https://loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm
     jwksUri: https://loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm/protocol/openid-connect/certs
   ariesDetails:
-    ledgerDescription: 'bcovrin-test'
+    ledgerDescription: "bcovrin-test"
   smtp:
     server: apps.smtp.gov.bc.ca
     port: 25
     senderAddress: DoNotReplyTraction@gov.bc.ca
-    innkeeperInbox: lucas.oneil@gov.bc.ca
+    innkeeperInbox: lucas.o'neil@gov.bc.ca
