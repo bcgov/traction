@@ -17,7 +17,7 @@ import {
 
 export const useGovernanceStore = defineStore('governance', () => {
   // state
-  const storedSchemas: any = ref([]);
+  const storedSchemas: Ref<any[]> = ref([]);
   const selectedSchema: any = ref(null);
 
   const storedCredDefs: any = ref([]);
@@ -30,7 +30,7 @@ export const useGovernanceStore = defineStore('governance', () => {
 
   // getters
 
-  const schemaList = computed(() => {
+  const schemaList: Ref<any[]> = computed(() => {
     // For the list of schemas in the schema table, add cred defs
     return storedSchemas.value.map((s: any) => {
       s.credentialDefinition = storedCredDefs.value.find(
@@ -88,7 +88,7 @@ export const useGovernanceStore = defineStore('governance', () => {
 
   async function listStoredSchemas() {
     selectedSchema.value = null;
-    storedSchemas.value = null;
+    storedSchemas.value = [];
     return fetchList(API_PATH.SCHEMA_STORAGE, storedSchemas, error, loading);
   }
 

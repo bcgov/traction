@@ -3,9 +3,10 @@ import { defineStore } from 'pinia';
 import { useAcapyApi } from './acapyApi';
 import { fetchListFromAPI } from './utils';
 import { API_PATH } from '@/helpers/constants';
+import { BasicMessageRecord } from '@/types/acapyApi/acapyInterface';
 
 export const useMessageStore = defineStore('messages', () => {
-  const messages: Ref<any[]> = ref([]);
+  const messages: Ref<BasicMessageRecord[]> = ref([]);
   const selectedMessage: any = ref(null);
   const loading: any = ref(false);
   const error: any = ref(null);
