@@ -62,9 +62,9 @@
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By Cred Def ID"
+          @input="filterCallback()"
         />
       </template>
     </Column>
@@ -99,9 +99,9 @@
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By Time"
+          @input="filterCallback()"
         />
       </template>
     </Column>

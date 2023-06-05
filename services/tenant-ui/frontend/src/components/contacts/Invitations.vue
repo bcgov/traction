@@ -14,7 +14,7 @@
     data-key="connection_id"
     sort-field="created_at"
     :sort-order="-1"
-    filterDisplay="menu"
+    filter-display="menu"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -52,15 +52,15 @@
       :sortable="true"
       field="alias"
       :header="$t('common.alias')"
-      filterField="alias"
+      filter-field="alias"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By Alias"
+          @input="filterCallback()"
         />
       </template>
     </Column>
@@ -68,15 +68,15 @@
       :sortable="true"
       field="invitation_mode"
       :header="$t('connect.table.invitationMode')"
-      filterField="invitation_mode"
+      filter-field="invitation_mode"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By Invitation Mode"
+          @input="filterCallback()"
         />
       </template>
     </Column>
@@ -84,7 +84,7 @@
       :sortable="true"
       field="created"
       :header="$t('connect.table.createdAt')"
-      filterField="created"
+      filter-field="created"
     >
       <template #body="{ data }">
         {{ data.created }}
@@ -93,9 +93,9 @@
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By Date"
+          @input="filterCallback()"
         />
       </template>
     </Column>

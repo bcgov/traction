@@ -14,7 +14,7 @@
     data-key="credential_exchange_id"
     sort-field="created_at"
     :sort-order="-1"
-    filterDisplay="menu"
+    filter-display="menu"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -57,15 +57,15 @@
       :sortable="true"
       field="credential_definition_id"
       header="Credential Definition"
-      filterField="credential_definition_id"
+      filter-field="credential_definition_id"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By Credential Definition"
+          @input="filterCallback()"
         />
       </template>
     </Column>
@@ -82,9 +82,9 @@
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By Contact"
+          @input="filterCallback()"
         />
       </template>
     </Column>
@@ -96,9 +96,9 @@
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By Status"
+          @input="filterCallback()"
         />
       </template>
     </Column>
@@ -115,9 +115,9 @@
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By Time"
+          @input="filterCallback()"
         />
       </template>
     </Column>

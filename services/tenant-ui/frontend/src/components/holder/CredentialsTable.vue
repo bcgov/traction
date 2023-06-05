@@ -12,7 +12,7 @@
     data-key="credential_exchange_id"
     sort-field="updated_at"
     :sort-order="-1"
-    filterDisplay="menu"
+    filter-display="menu"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -69,7 +69,7 @@
       :sortable="true"
       field="connection_id"
       header="Connection"
-      filterField="credential_id"
+      filter-field="credential_id"
     >
       <template #body="{ data }">
         {{ findConnectionName(data.connection_id) }}
@@ -78,9 +78,9 @@
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By Connection"
+          @input="filterCallback()"
         />
       </template>
     </Column>
@@ -88,19 +88,19 @@
       :sortable="true"
       field="credential_definition_id"
       header="Credential"
-      filterField="credential_definition_id"
+      filter-field="credential_definition_id"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By Credential"
+          @input="filterCallback()"
         />
       </template>
     </Column>
-    <Column :sortable="true" field="state" header="Status" filterField="state">
+    <Column :sortable="true" field="state" header="Status" filter-field="state">
       <template #body="{ data }">
         <StatusChip :status="data.state" />
       </template>
@@ -108,9 +108,9 @@
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By Status"
+          @input="filterCallback()"
         />
       </template>
     </Column>
@@ -127,9 +127,9 @@
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By Time"
+          @input="filterCallback()"
         />
       </template>
     </Column>

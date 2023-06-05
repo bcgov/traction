@@ -63,9 +63,9 @@
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By Name"
+          @input="filterCallback()"
         />
       </template>
     </Column>
@@ -79,9 +79,9 @@
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By Schema ID"
+          @input="filterCallback()"
         />
       </template>
     </Column>
@@ -95,9 +95,9 @@
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By Version"
+          @input="filterCallback()"
         />
       </template>
     </Column>
@@ -111,9 +111,9 @@
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By Attributes"
+          @input="filterCallback()"
         />
       </template>
     </Column>
@@ -127,9 +127,9 @@
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By Time"
+          @input="filterCallback()"
         />
       </template>
     </Column>

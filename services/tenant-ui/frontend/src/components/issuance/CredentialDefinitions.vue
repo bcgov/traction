@@ -60,9 +60,9 @@
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By ID"
+          @input="filterCallback()"
         />
       </template>
     </Column>
@@ -76,9 +76,9 @@
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By Schema ID"
+          @input="filterCallback()"
         />
       </template>
     </Column>
@@ -89,7 +89,12 @@
         </span>
       </template>
     </Column>
-    <Column :sortable="true" field="created" header="Created at" filter-field="created">
+    <Column
+      :sortable="true"
+      field="created"
+      header="Created at"
+      filter-field="created"
+    >
       <template #body="{ data }">
         {{ data.created }}
       </template>
@@ -97,9 +102,9 @@
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By Time"
+          @input="filterCallback()"
         />
       </template>
     </Column>

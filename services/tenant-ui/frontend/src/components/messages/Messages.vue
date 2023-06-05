@@ -12,7 +12,7 @@
     :global-filter-fields="['content']"
     selection-mode="single"
     data-key="message_id"
-    filterDisplay="menu"
+    filter-display="menu"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -46,9 +46,9 @@
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By Contact"
+          @input="filterCallback()"
         />
       </template>
     </Column>
@@ -57,9 +57,9 @@
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By State"
+          @input="filterCallback()"
         />
       </template>
     </Column>
@@ -73,9 +73,9 @@
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By Content"
+          @input="filterCallback()"
         />
       </template>
     </Column>
@@ -92,9 +92,9 @@
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By Time"
+          @input="filterCallback()"
         />
       </template>
     </Column>

@@ -14,7 +14,7 @@
     data-key="connection_id"
     sort-field="created_at"
     :sort-order="-1"
-    filterDisplay="menu"
+    filter-display="menu"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -62,31 +62,31 @@
       :sortable="true"
       field="alias"
       :header="$t('common.alias')"
-      filterField="alias"
+      filter-field="alias"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By Alias"
+          @input="filterCallback()"
         />
       </template>
     </Column>
     <Column
       :sortable="true"
       field="their_label"
-      filterField="their_label"
+      filter-field="their_label"
       :header="$t('connect.table.theirLabel')"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By Label"
+          @input="filterCallback()"
         />
       </template>
     </Column>
@@ -103,9 +103,9 @@
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By State"
+          @input="filterCallback()"
         />
       </template>
     </Column>
@@ -122,9 +122,9 @@
         <InputText
           v-model="filterModel.value"
           type="text"
-          @input="filterCallback()"
           class="p-column-filter"
           placeholder="Search By Date"
+          @input="filterCallback()"
         />
       </template>
     </Column>
