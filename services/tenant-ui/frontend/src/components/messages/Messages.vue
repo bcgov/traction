@@ -43,7 +43,7 @@
       field="contact"
       header="Contact"
       filter-field="contact"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #body="{ data }">
         {{ data.contact }}
@@ -63,7 +63,7 @@
       field="state"
       header="State"
       filter-field="state"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -80,7 +80,7 @@
       field="content"
       header="Content"
       filter-field="content"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -97,7 +97,7 @@
       field="created_at"
       header="Sent"
       filter-field="created_at"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #body="{ data }">
         {{ data.created_at }}

@@ -70,7 +70,7 @@
       field="connection_id"
       header="Connection"
       filter-field="credential_id"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #body="{ data }">
         {{ findConnectionName(data.connection_id) }}
@@ -90,7 +90,7 @@
       field="credential_definition_id"
       header="Credential"
       filter-field="credential_definition_id"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -107,7 +107,7 @@
       field="state"
       header="Status"
       filter-field="state"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #body="{ data }">
         <StatusChip :status="data.state" />
@@ -127,7 +127,7 @@
       field="updated"
       header="Last update"
       filter-field="updated"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #body="{ data }">
         {{ data.updated }}

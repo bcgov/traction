@@ -63,7 +63,7 @@
       field="alias"
       :header="$t('common.alias')"
       filter-field="alias"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -80,7 +80,7 @@
       field="their_label"
       filter-field="their_label"
       :header="$t('connect.table.theirLabel')"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -97,7 +97,7 @@
       field="state"
       :header="$t('common.status')"
       filter-field="state"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #body="{ data }">
         <StatusChip :status="data.state" />
@@ -117,7 +117,7 @@
       field="created"
       :header="$t('connect.table.createdAt')"
       filter-field="created"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #body="{ data }">
         {{ data.created }}

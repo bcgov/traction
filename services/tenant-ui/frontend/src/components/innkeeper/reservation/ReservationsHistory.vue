@@ -38,7 +38,7 @@
       field="state"
       filter-field="state"
       header="State"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #body="{ data }">
         <StatusChip :status="data.state" />
@@ -58,7 +58,7 @@
       field="reservation_id"
       filter-field="reservation_id"
       header="id"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -75,7 +75,7 @@
       field="contact_email"
       filter-field="contact_email"
       header="Contact Email"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -92,7 +92,7 @@
       field="contact_name"
       filter-field="contact_name"
       header="Contact Name"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -109,7 +109,7 @@
       field="contact_phone"
       filter-field="contact_phone"
       header="Contact Phone"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -126,7 +126,7 @@
       field="tenant_name"
       filter-field="tenant_name"
       header="Tenant Name"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -143,7 +143,7 @@
       field="tenant_reason"
       filter-field="tenant_reason"
       header="Tenant Reason"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -160,7 +160,7 @@
       field="created"
       filter-field="created"
       header="Created at"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #body="{ data }">
         {{ formatDateLong(data.created_at) }}

@@ -55,7 +55,7 @@
       field="cred_def_id"
       header="ID"
       filter-field="cred_def_id"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -72,7 +72,7 @@
       field="schema_id"
       header="Schema ID"
       filter-field="schema_id"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -96,7 +96,7 @@
       field="created"
       header="Created at"
       filter-field="created"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #body="{ data }">
         {{ data.created }}

@@ -58,7 +58,7 @@
       field="schema.name"
       header="Name"
       filter-field="schema.name"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -75,7 +75,7 @@
       field="schema_id"
       header="Schema ID"
       filter-field="schema_id"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -92,7 +92,7 @@
       field="schema.version"
       header="Version"
       filter-field="schema.version"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -109,7 +109,7 @@
       field="schema.attrNames"
       header="Attributes"
       filter-field="schema.attrNames"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -126,7 +126,7 @@
       field="created"
       header="Created at"
       filter-field="created"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText

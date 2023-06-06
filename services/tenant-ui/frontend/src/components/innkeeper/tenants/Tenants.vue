@@ -49,7 +49,7 @@
       field="tenant_name"
       header="Name"
       filter-field="tenant_name"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -66,7 +66,7 @@
       field="created"
       header="Created at"
       filter-field="created"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #body="{ data }">
         {{ data.created }}

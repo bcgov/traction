@@ -58,7 +58,7 @@
       field="credential_definition_id"
       header="Credential Definition"
       filter-field="credential_definition_id"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -75,7 +75,7 @@
       field="contact"
       header="Contact"
       filter-field="contact"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #body="{ data }">
         {{ data.contact }}
@@ -95,7 +95,7 @@
       field="state"
       header="Status"
       filter-field="state"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #body="{ data }">
         <StatusChip :status="data.state" />
@@ -115,7 +115,7 @@
       field="created"
       header="Created at"
       filter-field="created"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #body="{ data }">
         {{ data.created }}

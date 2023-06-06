@@ -53,7 +53,7 @@
       field="alias"
       :header="$t('common.alias')"
       filter-field="alias"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -70,7 +70,7 @@
       field="invitation_mode"
       :header="$t('connect.table.invitationMode')"
       filter-field="invitation_mode"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -87,7 +87,7 @@
       field="created"
       :header="$t('connect.table.createdAt')"
       filter-field="created"
-      :showFilterMatchModes="false"
+      :show-filter-match-modes="false"
     >
       <template #body="{ data }">
         {{ data.created }}
