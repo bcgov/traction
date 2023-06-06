@@ -4,7 +4,7 @@
   <DataTable
     v-model:filters="filter"
     :loading="loading"
-    :value="currentReservations"
+    :value="formattedReservations"
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
@@ -12,6 +12,7 @@
     data-key="reservation_id"
     sort-field="created_at"
     :sort-order="-1"
+    filter-display="menu"
   >
     <template #header>
       <div class="flex justify-content-end">
@@ -47,14 +48,109 @@
         />
       </template>
     </Column>
-    <Column :sortable="true" field="contact_email" header="Contact Email" />
-    <Column :sortable="true" field="contact_name" header="Contact Name" />
-    <Column :sortable="true" field="contact_phone" header="Contact Phone" />
-    <Column :sortable="true" field="tenant_name" header="Tenant Name" />
-    <Column :sortable="true" field="tenant_reason" header="Tenant Reason" />
-    <Column :sortable="true" field="created_at" header="Created at">
+    <Column
+      :sortable="true"
+      field="contact_email"
+      filter-field="contact_email"
+      header="Contact Email"
+      :showFilterMatchModes="false"
+    >
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          class="p-column-filter"
+          placeholder="Search By Contact"
+          @input="filterCallback()"
+        />
+      </template>
+    </Column>
+    <Column
+      :sortable="true"
+      field="contact_name"
+      filter-field="contact_name"
+      header="Contact Name"
+      :showFilterMatchModes="false"
+    >
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          class="p-column-filter"
+          placeholder="Search By Contact"
+          @input="filterCallback()"
+        />
+      </template>
+    </Column>
+    <Column
+      :sortable="true"
+      field="contact_phone"
+      filter-field="contact_phone"
+      header="Contact Phone"
+      :showFilterMatchModes="false"
+    >
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          class="p-column-filter"
+          placeholder="Search By Contact"
+          @input="filterCallback()"
+        />
+      </template>
+    </Column>
+    <Column
+      :sortable="true"
+      field="tenant_name"
+      filter-field="tenant_name"
+      header="Tenant Name"
+      :showFilterMatchModes="false"
+    >
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          class="p-column-filter"
+          placeholder="Search By Contact"
+          @input="filterCallback()"
+        />
+      </template>
+    </Column>
+    <Column
+      :sortable="true"
+      field="tenant_reason"
+      filter-field="tenant_reason"
+      header="Tenant Reason"
+      :showFilterMatchModes="false"
+    >
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          class="p-column-filter"
+          placeholder="Search By Contact"
+          @input="filterCallback()"
+        />
+      </template>
+    </Column>
+    <Column
+      :sortable="true"
+      field="created"
+      filter-field="created"
+      header="Created at"
+      :showFilterMatchModes="false"
+    >
       <template #body="{ data }">
         {{ formatDateLong(data.created_at) }}
+      </template>
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          class="p-column-filter"
+          placeholder="Search By Contact"
+          @input="filterCallback()"
+        />
       </template>
     </Column>
   </DataTable>
@@ -77,7 +173,7 @@
 
 <script setup lang="ts">
 // Vue
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 // PrimeVue
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -101,6 +197,19 @@ const { loading, currentReservations } = storeToRefs(
   useInnkeeperTenantsStore()
 );
 
+const formattedReservations = computed(() =>
+  currentReservations.value.map((msg) => ({
+    state: msg.state,
+    reservation_id: msg.reservation_id,
+    contact_email: msg.contact_email,
+    contact_name: msg.contact_name,
+    contact_phone: msg.contact_phone,
+    tenant_name: msg.contact_name,
+    tenant_reason: msg.tenant_reason,
+    created_at: msg.created_at,
+    created: formatDateLong(msg.created_at),
+  }))
+);
 // Loading table contents
 const loadTable = async () => {
   innkeeperTenantsStore.listReservations().catch((err: string) => {
@@ -125,6 +234,38 @@ const showApproveModal = (password: string, email: string) => {
 // Filter for search
 const filter = ref({
   global: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  state: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  reservation_id: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  contact_email: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  contact_name: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  contact_phone: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  tenant_name: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  tenant_reason: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  created: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   } as DataTableFilterMetaData,
