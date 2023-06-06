@@ -70,6 +70,7 @@
       field="connection_id"
       header="Connection"
       filter-field="credential_id"
+      :showFilterMatchModes="false"
     >
       <template #body="{ data }">
         {{ findConnectionName(data.connection_id) }}
@@ -89,6 +90,7 @@
       field="credential_definition_id"
       header="Credential"
       filter-field="credential_definition_id"
+      :showFilterMatchModes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -100,7 +102,13 @@
         />
       </template>
     </Column>
-    <Column :sortable="true" field="state" header="Status" filter-field="state">
+    <Column
+      :sortable="true"
+      field="state"
+      header="Status"
+      filter-field="state"
+      :showFilterMatchModes="false"
+    >
       <template #body="{ data }">
         <StatusChip :status="data.state" />
       </template>
@@ -119,6 +127,7 @@
       field="updated"
       header="Last update"
       filter-field="updated"
+      :showFilterMatchModes="false"
     >
       <template #body="{ data }">
         {{ data.updated }}

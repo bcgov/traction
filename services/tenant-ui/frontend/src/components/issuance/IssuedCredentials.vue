@@ -58,6 +58,7 @@
       field="credential_definition_id"
       header="Credential Definition"
       filter-field="credential_definition_id"
+      :showFilterMatchModes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -74,6 +75,7 @@
       field="contact"
       header="Contact"
       filter-field="contact"
+      :showFilterMatchModes="false"
     >
       <template #body="{ data }">
         {{ data.contact }}
@@ -88,7 +90,13 @@
         />
       </template>
     </Column>
-    <Column :sortable="true" field="state" header="Status" filter-field="state">
+    <Column
+      :sortable="true"
+      field="state"
+      header="Status"
+      filter-field="state"
+      :showFilterMatchModes="false"
+    >
       <template #body="{ data }">
         <StatusChip :status="data.state" />
       </template>
@@ -107,6 +115,7 @@
       field="created"
       header="Created at"
       filter-field="created"
+      :showFilterMatchModes="false"
     >
       <template #body="{ data }">
         {{ data.created }}
@@ -171,6 +180,7 @@ const findConnectionName = (connectionId: string): string => {
 const formattedCredentials: Ref<any[]> = computed(() =>
   credentials.value.map((cred: any) => ({
     connection_id: cred.connection_id,
+    state: cred.state,
     contact: findConnectionName(cred.connection_id),
     credential_definition_id: cred.credential_definition_id,
     sent_time: cred.sent_time,

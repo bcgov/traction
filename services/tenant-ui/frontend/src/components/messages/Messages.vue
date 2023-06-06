@@ -38,7 +38,13 @@
     </template>
     <template #empty>{{ $t('common.noRecordsFound') }}</template>
     <template #loading>{{ $t('common.loading') }}</template>
-    <Column sortable field="contact" header="Contact" filter-field="contact">
+    <Column
+      sortable
+      field="contact"
+      header="Contact"
+      filter-field="contact"
+      :showFilterMatchModes="false"
+    >
       <template #body="{ data }">
         {{ data.contact }}
       </template>
@@ -52,7 +58,13 @@
         />
       </template>
     </Column>
-    <Column :sortable="true" field="state" header="State" filter-field="state">
+    <Column
+      :sortable="true"
+      field="state"
+      header="State"
+      filter-field="state"
+      :showFilterMatchModes="false"
+    >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
           v-model="filterModel.value"
@@ -68,6 +80,7 @@
       field="content"
       header="Content"
       filter-field="content"
+      :showFilterMatchModes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -84,6 +97,7 @@
       field="created_at"
       header="Sent"
       filter-field="created_at"
+      :showFilterMatchModes="false"
     >
       <template #body="{ data }">
         {{ data.created_at }}

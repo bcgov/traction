@@ -53,6 +53,7 @@
       field="alias"
       :header="$t('common.alias')"
       filter-field="alias"
+      :showFilterMatchModes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -69,6 +70,7 @@
       field="invitation_mode"
       :header="$t('connect.table.invitationMode')"
       filter-field="invitation_mode"
+      :showFilterMatchModes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -85,6 +87,7 @@
       field="created"
       :header="$t('connect.table.createdAt')"
       filter-field="created"
+      :showFilterMatchModes="false"
     >
       <template #body="{ data }">
         {{ data.created }}
@@ -107,7 +110,7 @@
 
 <script setup lang="ts">
 // Vue
-import { onMounted, ref, Ref, computed } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 // PrimeVue
 import Button from 'primevue/button';
 import Column from 'primevue/column';

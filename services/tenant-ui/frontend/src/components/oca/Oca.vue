@@ -57,6 +57,7 @@
       field="cred_def_id"
       header="Cred Def ID"
       filter-field="cred_def_id"
+      :showFilterMatchModes="false"
     >
       <template #filter="{ filterModel, filterCallback }">
         <InputText
@@ -91,6 +92,7 @@
       field="created"
       header="Created at"
       filter-field="created"
+      :showFilterMatchModes="false"
     >
       <template #body="{ data }">
         {{ data.created }}
