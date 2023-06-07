@@ -29,7 +29,7 @@
         </div>
 
         <!-- URL or bundle json -->
-        <div>{{ $t('oca.bundleAssociationType') }}</div>
+        <div>{{ $t('configuration.oca.bundleAssociationType') }}</div>
         <div class="mt-2">
           <RadioButton
             v-model="bundleType"
@@ -38,7 +38,7 @@
             value="url"
             @change="resetBundle"
           />
-          <label for="radioUrl" class="ml-2">{{ $t('oca.url') }}</label>
+          <label for="radioUrl" class="ml-2">{{ $t('configuration.oca.url') }}</label>
         </div>
         <div class="mt-2">
           <RadioButton
@@ -49,7 +49,7 @@
             @change="resetBundle"
           />
           <label for="radioJson" class="ml-2">{{
-            $t('oca.storedBundleJson')
+            $t('configuration.oca.storedBundleJson')
           }}</label>
         </div>
 
@@ -58,7 +58,7 @@
           <label
             for="bundleUrl"
             :class="{ 'p-error': v$.bundleUrl.$invalid && submitted }"
-            >{{ $t('oca.bundleUrl') }}</label
+            >{{ $t('configuration.oca.bundleUrl') }}</label
           >
           <InputText
             id="bundleUrl"
@@ -80,7 +80,7 @@
 
         <!-- Bundle JSON -->
         <div v-else class="mt-3">
-          <span>{{ $t('oca.bundleJson') }}</span>
+          <span>{{ $t('configuration.oca.bundleJson') }}</span>
           <JsonEditorVue
             ref="jsonEditorVueRef"
             v-model="bundleJson"
