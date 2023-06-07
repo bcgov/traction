@@ -5,7 +5,7 @@
     v-model:expandedRows="expandedRows"
     v-model:filters="filter"
     :loading="loading"
-    :value="filteredConnections"
+    :value="formattedConnections"
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
@@ -14,6 +14,7 @@
     data-key="connection_id"
     sort-field="created_at"
     :sort-order="-1"
+    filter-display="menu"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -57,24 +58,78 @@
         <EditContact :connection-id="data.connection_id" />
       </template>
     </Column>
-    <Column :sortable="true" field="alias" :header="$t('common.alias')" />
     <Column
       :sortable="true"
-      field="their_label"
-      :header="$t('connect.table.theirLabel')"
-    />
-    <Column :sortable="true" field="status" :header="$t('common.status')">
-      <template #body="{ data }">
-        <StatusChip :status="data.state" />
+      field="alias"
+      :header="$t('common.alias')"
+      filter-field="alias"
+      :show-filter-match-modes="false"
+    >
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          class="p-column-filter"
+          placeholder="Search By Alias"
+          @input="filterCallback()"
+        />
       </template>
     </Column>
     <Column
       :sortable="true"
-      field="created_at"
-      :header="$t('connect.table.createdAt')"
+      field="their_label"
+      filter-field="their_label"
+      :header="$t('connect.table.theirLabel')"
+      :show-filter-match-modes="false"
+    >
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          class="p-column-filter"
+          placeholder="Search By Label"
+          @input="filterCallback()"
+        />
+      </template>
+    </Column>
+    <Column
+      :sortable="true"
+      field="state"
+      :header="$t('common.status')"
+      filter-field="state"
+      :show-filter-match-modes="false"
     >
       <template #body="{ data }">
-        {{ formatDateLong(data.created_at) }}
+        <StatusChip :status="data.state" />
+      </template>
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          class="p-column-filter"
+          placeholder="Search By State"
+          @input="filterCallback()"
+        />
+      </template>
+    </Column>
+    <Column
+      :sortable="true"
+      field="created"
+      :header="$t('connect.table.createdAt')"
+      filter-field="created"
+      :show-filter-match-modes="false"
+    >
+      <template #body="{ data }">
+        {{ data.created }}
+      </template>
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          class="p-column-filter"
+          placeholder="Search By Date"
+          @input="filterCallback()"
+        />
       </template>
     </Column>
     <template #expansion="{ data }">
@@ -85,7 +140,8 @@
 
 <script setup lang="ts">
 // Vue
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, Ref, computed } from 'vue';
+import { FilterMatchMode } from 'primevue/api';
 // PrimeVue
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -160,12 +216,35 @@ const deleteDisabled = (contactAlias: string) => {
     endorserInfo.value.endorser_name === contactAlias
   );
 };
-
+const formattedConnections: Ref<any[]> = computed(() =>
+  filteredConnections.value.map((conn) => ({
+    alias: conn.alias,
+    their_label: conn.their_label,
+    state: conn.state,
+    created: formatDateLong(conn.created_at as string),
+    created_at: conn.created_at,
+  }))
+);
 // necessary for expanding rows, we don't do anything with this
 const expandedRows = ref([]);
 
 const filter = ref({
-  alias: { value: null, matchMode: 'contains' } as DataTableFilterMetaData,
+  alias: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  created: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  their_label: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  state: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  },
 });
 </script>
 

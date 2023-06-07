@@ -7,7 +7,7 @@
     v-model:expandedRows="expandedRows"
     v-model:filters="filter"
     :loading="loading"
-    :value="storedCredDefs"
+    :value="formattedstoredCredDefs"
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
@@ -15,6 +15,7 @@
     data-key="cred_def_id"
     sort-field="created_at"
     :sort-order="-1"
+    filter-display="menu"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -54,14 +55,35 @@
       field="cred_def_id"
       header="ID"
       filter-field="cred_def_id"
-    />
+      :show-filter-match-modes="false"
+    >
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          class="p-column-filter"
+          placeholder="Search By ID"
+          @input="filterCallback()"
+        />
+      </template>
+    </Column>
     <Column
       :sortable="true"
       field="schema_id"
       header="Schema ID"
       filter-field="schema_id"
-    />
-
+      :show-filter-match-modes="false"
+    >
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          class="p-column-filter"
+          placeholder="Search By Schema ID"
+          @input="filterCallback()"
+        />
+      </template>
+    </Column>
     <Column :sortable="true" field="support_revocation" header="Revokable">
       <template #body="{ data }">
         <span v-if="data.support_revocation">
@@ -69,10 +91,24 @@
         </span>
       </template>
     </Column>
-
-    <Column :sortable="true" field="created_at" header="Created at">
+    <Column
+      :sortable="true"
+      field="created"
+      header="Created at"
+      filter-field="created"
+      :show-filter-match-modes="false"
+    >
       <template #body="{ data }">
-        {{ formatDateLong(data.created_at) }}
+        {{ data.created }}
+      </template>
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          class="p-column-filter"
+          placeholder="Search By Time"
+          @input="filterCallback()"
+        />
       </template>
     </Column>
     <template #expansion="{ data }">
@@ -86,7 +122,7 @@
 
 <script setup lang="ts">
 // Vue
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, Ref, computed } from 'vue';
 // PrimeVue etc
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -109,7 +145,15 @@ const toast = useToast();
 const governanceStore = useGovernanceStore();
 const { loading, storedCredDefs } = storeToRefs(useGovernanceStore());
 
-// Loading the schema list and the stored cred defs
+const formattedstoredCredDefs: Ref<any[]> = computed(() =>
+  storedCredDefs.value.map((credDef: any) => ({
+    cred_def_id: credDef.cred_def_id,
+    schema_id: credDef.schema_id,
+    created_at: credDef.created_at,
+    created: formatDateLong(credDef.created_at),
+  }))
+);
+// LOADING the schema list and the stored cred defs
 const loadTable = async () => {
   try {
     await governanceStore.listStoredSchemas();
@@ -156,6 +200,18 @@ const expandedRows = ref([]);
 // Filter for search
 const filter = ref({
   global: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  cred_def_id: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  schema_id: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  created: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   } as DataTableFilterMetaData,

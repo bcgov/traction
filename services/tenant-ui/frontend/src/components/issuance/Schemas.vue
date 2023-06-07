@@ -6,7 +6,7 @@
     v-model:expandedRows="expandedRows"
     v-model:filters="filter"
     :loading="loading"
-    :value="schemaList"
+    :value="formattedSchemaList"
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
@@ -15,6 +15,7 @@
     data-key="schema_id"
     sort-field="created_at"
     :sort-order="-1"
+    filter-display="menu"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -56,20 +57,85 @@
       :sortable="true"
       field="schema.name"
       header="Name"
-      filter-field="name"
-    />
+      filter-field="schema.name"
+      :show-filter-match-modes="false"
+    >
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          class="p-column-filter"
+          placeholder="Search By Name"
+          @input="filterCallback()"
+        />
+      </template>
+    </Column>
     <Column
       :sortable="true"
       field="schema_id"
       header="Schema ID"
       filter-field="schema_id"
-    />
-    <Column :sortable="true" field="schema.version" header="Version" />
-    <Column :sortable="true" field="schema.attrNames" header="Attributes" />
-
-    <Column :sortable="true" field="created_at" header="Created at">
-      <template #body="{ data }">
-        {{ formatDateLong(data.created_at) }}
+      :show-filter-match-modes="false"
+    >
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          class="p-column-filter"
+          placeholder="Search By Schema ID"
+          @input="filterCallback()"
+        />
+      </template>
+    </Column>
+    <Column
+      :sortable="true"
+      field="schema.version"
+      header="Version"
+      filter-field="schema.version"
+      :show-filter-match-modes="false"
+    >
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          class="p-column-filter"
+          placeholder="Search By Version"
+          @input="filterCallback()"
+        />
+      </template>
+    </Column>
+    <Column
+      :sortable="true"
+      field="schema.attrNames"
+      header="Attributes"
+      filter-field="schema.attrNames"
+      :show-filter-match-modes="false"
+    >
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          class="p-column-filter"
+          placeholder="Search By Attributes"
+          @input="filterCallback()"
+        />
+      </template>
+    </Column>
+    <Column
+      :sortable="true"
+      field="created"
+      header="Created at"
+      filter-field="created"
+      :show-filter-match-modes="false"
+    >
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          class="p-column-filter"
+          placeholder="Search By Time"
+          @input="filterCallback()"
+        />
       </template>
     </Column>
     <Column
@@ -89,7 +155,7 @@
 
 <script setup lang="ts">
 // Vue
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, Ref, computed } from 'vue';
 // PrimeVue etc
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -117,6 +183,19 @@ const { loading, schemaList, selectedSchema } = storeToRefs(
   useGovernanceStore()
 );
 
+const formattedSchemaList = computed(() =>
+  schemaList.value.map((schema) => ({
+    schema: {
+      name: schema.schema.name,
+      version: schema.schema.version,
+      attrNames: schema.schema.attrNames,
+    },
+    schema_id: schema.schema_id,
+    created: formatDateLong(schema.created_at),
+    created_at: schema.created_at,
+    credentialDefinition: schema.credentialDefinition,
+  }))
+);
 // Loading the schema list and the stored cred defs
 const loadTable = async () => {
   try {
@@ -162,6 +241,22 @@ const expandedRows = ref([]);
 
 const filter = ref({
   schema_id: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  'schema.name': {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  'schema.version': {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  'schema.attrNames': {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  created: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   } as DataTableFilterMetaData,
