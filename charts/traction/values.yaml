@@ -37,41 +37,101 @@ acapy:
 
   readOnlyMode: false
 
+  ## AcaPy Configuration file
+  #
+  argfile.yml:
+    auto-accept-invites: true
+    auto-accept-requests: true
+    auto-create-revocation-transactions: true
+    auto-ping-connection: true
+    auto-promote-author-did: true
+    auto-provision: true
+    auto-request-endorsement: true
+    auto-respond-credential-offer: false
+    auto-respond-credential-proposal: false
+    auto-respond-credential-request: true
+    auto-respond-messages: true
+    auto-respond-presentation-proposal: true
+    auto-respond-presentation-request: false
+    auto-store-credential: true
+    auto-verify-presentation: true
+    auto-write-transactions: true
+    emit-new-didcomm-mime-type: true
+    emit-new-didcomm-prefix: true
+    endorser-role: author
+    endorser-alias: endorser
+    endorser-public-did: 'UjmxKBZe1qv1NBE7GaohdP'
+    genesis-url: '{{ include "traction.genesisUrl" . }}'
+    label: '{{ include "acapy.label" .}}'
+    log-level: info
+    monitor-ping: true
+    monitor-revocation-notification: true
+    multitenant-admin: true
+    multitenant: true
+    notify-revocation: true
+    preserve-exchange-records: true
+    public-invites: true
+    read-only-ledger: false
+    tails-server-base-url: '{{ include "acapy.tails.baseUrl" . }}'
+    tails-server-upload-url: '{{ include "acapy.tails.uploadUrl" . }}'
+    wallet-name: askar-wallet
+    wallet-storage-type: postgres_storage
+    wallet-type: askar-profile
+
+  ## Wallet storage configuration
+  #
+  # walletStorageConfig:
+  #   # Database url
+  #   url: postgres://postgres:password@postgresql:5432/postgres?sslmode=disable
+  #   # Client max_connections, defaults to 10
+  #   max_connections: 10
+  #   # Wallet scheme
+  #   wallet_scheme: DatabasePerWallet
+
+  ## Plugins
+  #
   # list the plugins on our image we want to enable.
   plugins:
     basicmessageStorage: true
     connectionUpdate: true
     multitenantProvider: true
     tractionInnkeeper: true
-
-  # plugin-config.yaml configmap
-  pluginValues:
-    multitenantProvider:
+  # Plugin configuration file
+  #
+  plugin-config.yml:
+    multitenant_provider:
       manager:
-        className: traction_plugins.multitenant_provider.v1_0.manager.AskarMultitokenMultitenantManager
-        alwaysCheckProvidedWalletKey: true
+        class_name: traction_plugins.multitenant_provider.v1_0.manager.AskarMultitokenMultitenantManager
+        always_check_provided_wallet_key: true
       errors:
-        onUnneededWalletKey: false
-      tokenExpiry:
+        on_unneeded_wallet_key: false
+      token_expiry:
         units: days
         amount: 1
-    tractionInnkeeper:
-      walletName: traction_innkeeper
-      printKey: false
-      printToken: false
-      reservationExpiryMinutes: 2880
-      reservationAutoApprove: false
-
-  imagePullSecrets: []
-  nameOverride: ""
-  fullnameOverride: ""
+    traction_innkeeper:
+      innkeeper_wallet:
+        wallet_name: traction_innkeeper
+        print_key: false
+        print_token: false
+      reservation:
+        expiry_minutes: 2880
+        auto_approve:  false
+  
+  resources:
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    limits:
+      cpu: 600m
+      memory: 2600Mi
+    requests:
+      cpu: 300m
+      memory: 1300Mi
 
   podAnnotations: {}
-
-  podSecurityContext:
-    {}
+  podSecurityContext: {}
     # fsGroup: 2000
-
   securityContext:
     # capabilities:
     #   drop:
@@ -84,10 +144,10 @@ acapy:
     type: ClusterIP
     adminPort: 8031
     httpPort: 8030
-    walletScheme: DatabasePerWallet
-    endorserAlias: endorser
-    endorserPublicDID: UjmxKBZe1qv1NBE7GaohdP
-    endorserRole: author
+  
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
 
   openshift:
     route:
@@ -120,60 +180,6 @@ acapy:
 
     # -- Override the otherwise ledger-specifically generated upload URL of the external tails server
     uploadUrlOverride: ""
-
-  resources:
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    limits:
-      cpu: 600m
-      memory: 2600Mi
-    requests:
-      cpu: 300m
-      memory: 1300Mi
-
-  nodeSelector: {}
-
-  tolerations: []
-
-  affinity: {}
-
-  multitenancyConfig:
-    walletType: askar-profile
-    walletName: askar-wallet
-
-  staticArgs:
-    autoAcceptInvites: true
-    autoAcceptRequests: true
-    autoRespondMessages: true
-    autoRespondCredentialProposal: false
-    autoRespondCredentialOffer: false
-    autoRespondCredentialRequest: true
-    autoRespondPresentationProposal: true
-    autoRespondPresentationRequest: false
-    autoStoreCredential: true
-    autoVerifyPresentation: true
-    autoPingConnection: true
-    autoProvision: true
-    monitorPing: true
-    publicInvites: true
-    logLevel: info
-    multitenant: true
-    multitenantAdmin: true
-    walletType: askar
-    walletName: default
-    notifyRevocation: true
-    monitorRevocationNotification: true
-    preserveExchangeRecords: true
-    emitNewDidcommPrefix: true
-    emitNewDidcommMimeType: true
-    walletStorageType: postgres_storage
-    readOnlyLedger: false
-    autoRequestEndorsement: true
-    autoWriteTransactions: true
-    autoPromoteAuthorDid: true
-    createRevocationTransactions: true
 
   secret:
     adminurl:

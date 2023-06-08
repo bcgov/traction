@@ -42,7 +42,8 @@ spec:
            --outbound-transport http \
            --admin '0.0.0.0' {{ .Values.acapy.service.adminPort }} \
            --endpoint https://{{ include "acapy.host" . }} \
-           --wallet-storage-config '{\"url\":\"{{ include "global.postgresql.fullname" . }}:{{ .Values.postgresql.service.ports.postgresql }}\",\"max_connections\":5, \"wallet_scheme\":\"{{ .Values.acapy.service.walletScheme }}\"}' \
+           --arg-file '/home/indy/argfile.yml' \
+           --wallet-storage-config '{\"url\":\"{{ include "global.postgresql.fullname" . }}:{{ .Values.postgresql.service.ports.postgresql }}\",\"max_connections\":5, \"wallet_scheme\":\"{{ .Values.acapy.walletScheme }}\"}' \
            --wallet-storage-creds '{\"account\":\"{{ .Values.postgresql.auth.username }}\",\"password\":\"$(POSTGRES_PASSWORD)\",\"admin_account\":\"postgres\",\"admin_password\":\"$(POSTGRES_POSTGRES_PASSWORD)\"}' \
            --plugin 'aries_cloudagent.messaging.jsonld' \ 
            {{- if .Values.acapy.plugins.tractionInnkeeper }}
@@ -104,8 +105,6 @@ spec:
                 secretKeyRef:
                   name: {{ template "acapy.walletkey.secret.name" . }}
                   key: walletKey
-            - name: ACAPY_WALLET_NAME
-              value: {{ .Values.acapy.staticArgs.walletName }}
             - name: ACAPY_MULTITENANT_JWT_SECRET
               valueFrom:
                 secretKeyRef:
@@ -116,80 +115,6 @@ spec:
                 secretKeyRef:
                   name: {{ template "acapy.api.secret.name" . }}
                   key: adminurl
-            - name: ACAPY_LOG_LEVEL
-              value: {{ .Values.acapy.staticArgs.logLevel }}
-            - name: ACAPY_AUTO_PROVISION
-              value: '{{ .Values.acapy.staticArgs.autoProvision }}'
-            - name: ACAPY_WALLET_TYPE
-              value: {{ .Values.acapy.staticArgs.walletType }}
-            - name: ACAPY_WALLET_STORAGE_TYPE
-              value: {{ .Values.acapy.staticArgs.walletStorageType }}
-            - name: ACAPY_GENESIS_URL
-              value: {{ include "traction.genesisUrl" . }}
-            - name: ACAPY_READ_ONLY_LEDGER
-              value: '{{ .Values.acapy.staticArgs.readOnlyLedger }}'
-            - name: ACAPY_LABEL
-              value: {{ $acapyLabel }}
-            - name: ACAPY_AUTO_ACCEPT_INVITES
-              value: '{{ .Values.acapy.staticArgs.autoAcceptInvites }}'
-            - name: ACAPY_AUTO_ACCEPT_REQUESTS
-              value: '{{ .Values.acapy.staticArgs.autoAcceptRequests }}'
-            - name: ACAPY_AUTO_RESPOND_MESSAGES
-              value: '{{ .Values.acapy.staticArgs.autoRespondMessages }}'
-            - name: ACAPY_AUTO_RESPOND_CREDENTIAL_PROPOSAL
-              value: '{{ .Values.acapy.staticArgs.autoRespondCredentialProposal }}'
-            - name: ACAPY_AUTO_RESPOND_CREDENTIAL_OFFER
-              value: '{{ .Values.acapy.staticArgs.autoRespondCredentialOffer }}'
-            - name: ACAPY_AUTO_RESPOND_CREDENTIAL_REQUEST
-              value: '{{ .Values.acapy.staticArgs.autoRespondCredentialRequest }}'
-            - name: ACAPY_AUTO_RESPOND_PRESENTATION_PROPOSAL
-              value: '{{ .Values.acapy.staticArgs.autoRespondPresentationProposal }}'
-            - name: ACAPY_AUTO_RESPOND_PRESENTATION_REQUEST
-              value: '{{ .Values.acapy.staticArgs.autoRespondPresentationRequest }}'
-            - name: ACAPY_AUTO_VERIFY_PRESENTATION
-              value: '{{ .Values.acapy.staticArgs.autoVerifyPresentation }}'
-            - name: ACAPY_AUTO_PING_CONNECTION
-              value: '{{ .Values.acapy.staticArgs.autoPingConnection }}'
-            - name: ACAPY_MONITOR_PING
-              value: '{{ .Values.acapy.staticArgs.monitorPing }}'
-            - name: ACAPY_PUBLIC_INVITES
-              value: '{{ .Values.acapy.staticArgs.publicInvites }}'
-            - name: ACAPY_MULTITENANT
-              value: '{{ .Values.acapy.staticArgs.multitenant }}'
-            - name: ACAPY_MULTITENANT_ADMIN
-              value: '{{ .Values.acapy.staticArgs.multitenantAdmin }}'
-            - name: ACAPY_MULTITENANCY_CONFIGURATION
-              value: '{"wallet_type":"{{ .Values.acapy.multitenancyConfig.walletType }}","wallet_name":"{{ .Values.acapy.multitenancyConfig.walletName }}"}'
-            - name: ACAPY_EMIT_NEW_DIDCOMM_PREFIX
-              value: '{{ .Values.acapy.staticArgs.emitNewDidcommPrefix }}'
-            - name: ACAPY_EMIT_NEW_DIDCOMM_MIME_TYPE
-              value: '{{ .Values.acapy.staticArgs.emitNewDidcommMimeType }}'
-            - name: ACAPY_TAILS_SERVER_BASE_URL
-              value: {{ include "acapy.tails.baseUrl" . }}
-            - name: ACAPY_TAILS_SERVER_UPLOAD_URL
-              value: {{ include "acapy.tails.uploadUrl" . }}
-            - name: ACAPY_PRESERVE_EXCHANGE_RECORDS
-              value: '{{ .Values.acapy.staticArgs.preserveExchangeRecords }}'
-            - name: ACAPY_AUTO_STORE_CREDENTIAL
-              value: '{{ .Values.acapy.staticArgs.autoStoreCredential }}'
-            - name: ACAPY_NOTIFY_REVOCATION
-              value: '{{ .Values.acapy.staticArgs.notifyRevocation }}'
-            - name: ACAPY_MONITOR_REVOCATION_NOTIFICATION
-              value: '{{ .Values.acapy.staticArgs.monitorRevocationNotification }}'
-            - name: ACAPY_ENDORSER_ROLE
-              value: '{{ .Values.acapy.service.endorserRole }}'
-            - name: ACAPY_ENDORSER_PUBLIC_DID
-              value: '{{ .Values.acapy.service.endorserPublicDID }}'
-            - name: ACAPY_ENDORSER_ALIAS
-              value: '{{ .Values.acapy.service.endorserAlias }}' 
-            - name: ACAPY_AUTO_REQUEST_ENDORSEMENT
-              value: '{{ .Values.acapy.staticArgs.autoRequestEndorsement }}'
-            - name: ACAPY_AUTO_WRITE_TRANSACTIONS
-              value: '{{ .Values.acapy.staticArgs.autoWriteTransactions }}'      
-            - name: ACAPY_AUTO_PROMOTE_AUTHOR_DID
-              value: '{{ .Values.acapy.staticArgs.autoPromoteAuthorDid }}'
-            - name: ACAPY_CREATE_REVOCATION_TRANSACTIONS
-              value: '{{ .Values.acapy.staticArgs.createRevocationTransactions }}'
             - name: ACAPY_PLUGIN_CONFIG
               value: 'plugin-config.yml'
           readinessProbe:
@@ -205,16 +130,20 @@ spec:
             initialDelaySeconds: 90
             periodSeconds: 10 
           volumeMounts:
-          - name: pluginconfig
+          - name: config
+            mountPath: "/home/indy/argfile.yml"
+            subPath: "argfile.yml"
+            readOnly: true
+          - name: config
             mountPath: "/home/indy/plugin-config.yml"
             subPath: "plugin-config.yml"
             readOnly: true
           resources:
             {{- toYaml .Values.acapy.resources | nindent 12 }}
       volumes:
-        - name: pluginconfig
+        - name: config
           configMap:
-            name: {{ include "acapy.fullname" . }}-plugin-config
+            name: {{ include "acapy.fullname" . }}-config
             items:
             - key: "plugin-config.yml"
               path: "plugin-config.yml"
