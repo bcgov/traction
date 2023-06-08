@@ -25,9 +25,7 @@
 
     <div v-if="item" class="flex justify-content-end mb-0 mt-3">
       <small>
-        {{
-          $t('connect.edit.lastUpdated', [formatDateLong(item.updated_at)])
-        }}
+        {{ $t('connect.edit.lastUpdated', [formatDateLong(item.updated_at)]) }}
       </small>
     </div>
   </form>
