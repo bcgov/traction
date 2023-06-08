@@ -187,7 +187,7 @@ Return seed
 {{- if .Values.acapy.agentSeed -}}
     {{- .Values.acapy.agentSeed -}}
 {{- else -}}
-    {{- randAlphaNum 32 -}}
+    {{ include "getOrGeneratePass" (dict "Namespace" .Release.Namespace "Kind" "Secret" "Name" (include "acapy.fullname" .) "Key" "seed" "Length" 32) }}
 {{- end -}}
 {{- end -}}
 
