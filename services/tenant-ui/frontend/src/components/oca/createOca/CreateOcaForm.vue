@@ -38,7 +38,9 @@
             value="url"
             @change="resetBundle"
           />
-          <label for="radioUrl" class="ml-2">{{ $t('configuration.oca.url') }}</label>
+          <label for="radioUrl" class="ml-2">{{
+            $t('configuration.oca.url')
+          }}</label>
         </div>
         <div class="mt-2">
           <RadioButton
