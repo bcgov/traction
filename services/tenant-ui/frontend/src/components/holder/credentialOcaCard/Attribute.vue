@@ -12,10 +12,8 @@
 <script setup lang="ts">
 // Types
 import OverlayBundle from '@/overlayLibrary/types/overlay/OverlayBundle';
-import { OverlayAttribute } from '@/overlayLibrary/types/overlay/OverlayBundle';
 import { IndyCredInfo } from '@/types/acapyApi/acapyInterface';
 
-import { computed } from 'vue';
 import { textColorForBackground } from '@/overlayLibrary/utils/color';
 
 const props = defineProps<{

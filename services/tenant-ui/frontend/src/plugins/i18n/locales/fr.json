@@ -63,6 +63,7 @@
       "bundleAssociationType": "OCA Bundle association type <FR>",
       "bundleJson": "OCA Bundle JSON <FR>",
       "bundleUrl": "OCA Bundle URL* <FR>",
+      "disclaimer": "OCA Card View for Credentials is an experimental feature in the Tenant UI. <FR>",
       "oca": "OCA <FR>",
       "storedBundleJson": "Stored Bundle JSON <FR>",
       "url": "URL <FR>"
