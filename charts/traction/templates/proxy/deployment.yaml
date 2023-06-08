@@ -28,7 +28,7 @@ spec:
         - name: tenant-proxy
           securityContext:
             {{- toYaml .Values.tenant_proxy.securityContext | nindent 12 }}
-          image: "{{ .Values.tenant_proxy.image.tag }}"
+          image: "{{ .Values.tenant_proxy.image.repository }}:{{ .Values.tenant_proxy.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.tenant_proxy.image.pullPolicy }}
           ports:
             - name: http

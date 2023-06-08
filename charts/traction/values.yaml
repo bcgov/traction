@@ -236,10 +236,10 @@ traction:
 
 tenant_proxy:
   image:
-    tag: "ghcr.io/bcgov/traction-tenant-proxy:sha-0bd01da"
-    version: "sha-0bd01da"
-    buildtime: "2022-01-20T22:37:11.102Z"
+    repository: ghcr.io/bcgov/traction-tenant-proxy
     pullPolicy: IfNotPresent
+    # --  Overrides the image tag whose default is the chart appVersion.
+    # tag: 0.2.14
 
   serviceAccount:
     # -- Specifies whether a service account should be created
