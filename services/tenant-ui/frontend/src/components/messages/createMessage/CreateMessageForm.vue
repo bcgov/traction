@@ -7,7 +7,7 @@
           for="selectedContact"
           :class="{ 'p-error': v$.selectedContact.$invalid && submitted }"
         >
-          {{ $t('verify.connection') }}
+          {{ $t('common.contactName') }}
           <ProgressSpinner v-if="contactLoading" />
         </label>
 
