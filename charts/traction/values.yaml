@@ -3,7 +3,6 @@
 # Declare variables to be passed into your templates.
 
 global:
-  # fullnameOverride: ""
 
   # -- Domain suffix to be used for default hostpaths in ingress
   # override in different environments, or for each app
@@ -20,17 +19,16 @@ global:
   nsp:
     enabled: false
 
+nameOverride: ""
+fullnameOverride: ""
+
 acapy:
   image:
-    # building our own acapy with plugins
-    tag: "ghcr.io/bcgov/traction-plugins-acapy:0.2.14"
-    version: "0.2.14"
-    buildtime: "2022-10-28T01:30:31.105Z"
-    pullPolicy: Always
-    # repository: bcgovimages/aries-cloudagent
-    # pullPolicy: IfNotPresent
+    repository: ghcr.io/bcgov/traction-plugins-acapy
+    pullPolicy: IfNotPresent
     # --  Overrides the image tag whose default is the chart appVersion.
-    # tag: py36-1.16-1_0.7.4
+    # tag: 0.2.14
+  imagePullSecrets: []
 
   # The agent seed, 32 characters. Will be generated if not defined here
   agentSeed: ""
