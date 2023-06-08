@@ -110,6 +110,8 @@ docker compose build
 docker compose up
 ```
 
+**Note:** to use your `ngrok` auth token and prevent the tunnels from expiring, add the value in the `.env` file after uncommenting the line defining `NGROK_AUTHTOKEN` and then start the project with `docker compose up`.
+
 #### build errors
 
 Docker Compose (and docker) configurations vary greatly for every developer, we cannot assure that the docker compose files will work with every nuance and tweak a developer makes to their configuration (using buildkit or not, logged in or not, etc.). These scripts have been tested against Docker / Docker Compose V1 and V2. Using `docker compose` to build series of images seems to vary the most between V1 and V2 and various developer machines. If you have issues building try clearing out your docker and build images directly. See above for checking your versions.
