@@ -185,49 +185,6 @@ acapy:
       walletkey: "change-me"
       tenantid: "innkeeper"
 
-postgresql:
-  # when overriding global.fullnameOverride, you must override this to match.
-  fullnameOverride: ""
-
-  auth:
-    existingSecret: '{{ include "global.fullname" . }}'
-    secretKeys:
-      adminPasswordKey: postgres-password
-      userPasswordKey: database-password
-    # -- PostgreSQL Database to create.
-    database: traction
-    username: acapy
-
-  # --  PostgreSQL service configuration
-  service:
-    ports:
-      postgresql: 5432
-
-  primary:
-    # --  Persistent Volume Storage configuration. ref: https://kubernetes.io/docs/user-guide/persistent-volumes
-    persistence:
-      enabled: true
-      size: 1Gi
-      storageClass: netapp-file-standard
-
-    # -- add securityContext (fsGroup, runAsUser). These need to be false for Openshift 4
-    securityContext:
-      enabled: false
-
-    containerSecurityContext:
-      enabled: false
-
-    podSecurityContext:
-      enabled: false
-
-    resources:
-      limits:
-        cpu: 600m
-        memory: 2600Mi
-      requests:
-        cpu: 300m
-        memory: 1300Mi
-
 traction:
   config:
     ledger:
@@ -299,3 +256,47 @@ tenant_proxy:
   tolerations: []
 
   affinity: {}
+
+postgresql:
+  # when overriding global.fullnameOverride, you must override this to match.
+  fullnameOverride: ""
+
+  auth:
+    existingSecret: '{{ include "global.fullname" . }}'
+    secretKeys:
+      adminPasswordKey: postgres-password
+      userPasswordKey: database-password
+    # -- PostgreSQL Database to create.
+    database: traction
+    username: acapy
+
+  # --  PostgreSQL service configuration
+  service:
+    ports:
+      postgresql: 5432
+
+  primary:
+    # --  Persistent Volume Storage configuration. ref: https://kubernetes.io/docs/user-guide/persistent-volumes
+    persistence:
+      enabled: true
+      size: 1Gi
+
+    # -- add securityContext (fsGroup, runAsUser). These need to be false for Openshift 4
+    securityContext:
+      enabled: false
+    containerSecurityContext:
+      enabled: false
+    podSecurityContext:
+      enabled: false
+
+    resources:
+      limits:
+        cpu: 600m
+        memory: 2600Mi
+      requests:
+        cpu: 300m
+        memory: 1300Mi
+
+    # --  Increase max_connections to support higher workloads
+    extendedConfiguration: |
+      max_connections = 500;
