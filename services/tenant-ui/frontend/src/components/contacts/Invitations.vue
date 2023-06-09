@@ -137,6 +137,7 @@ const { loading, filteredInvitations } = storeToRefs(useContactsStore());
 
 const formattedInvitations = computed(() =>
   filteredInvitations.value.map((inv) => ({
+    connection_id: inv.connection_id,
     alias: inv.alias,
     invitation_mode: inv.invitation_mode,
     created: formatDateLong(inv.created_at as string),
