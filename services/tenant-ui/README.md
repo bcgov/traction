@@ -9,6 +9,8 @@ The architechture consists of
 - A Node app that serves the frontend, handles environment configuration, and can provide any minimal Tenant-UI-specific business functionality (like sending an email or something)
 - A Vue3 frontend app providing the UI
 
+![Arch Diagram](/docs/assets/tenant-ui-flow-chart-svg.svg)
+
 ## Set up your configuration
 
 In tenant-ui/config add a `local.json` file to add any specific config you'd like for your local instance (otheriwse see `default.json` for defaults). At this point the only thing you'll probably want to override is the Traction URL. So your local.json can just look like this for example:
