@@ -348,16 +348,7 @@ Create the name of the tenant proxy service account to use
 {{- end }}
 
 {{/*
-Mount the tenant proxy config map as env vars
-*/}}
-{{- define "tenant_proxy.configmap.env.vars" -}}
-envFrom:
-  - configMapRef:
-      name: {{ template "tenant_proxy.fullname" . }}-img
-{{- end -}}
-
-{{/*
-generate tenant proxy hosts if not overriden
+Generate tenant proxy hosts if not overriden
 */}}
 {{- define "tenant_proxy.host" -}}
 {{- include "tenant_proxy.fullname" . }}{{ .Values.global.ingressSuffix -}}
