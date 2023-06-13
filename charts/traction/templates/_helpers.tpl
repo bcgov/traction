@@ -277,6 +277,17 @@ tls:
 {{- end -}}
 
 {{/*
+Create the name of the acapy service account to use
+*/}}
+{{- define "acapy.serviceAccountName" -}}
+{{- if .Values.acapy.serviceAccount.create }}
+{{- default (include "acapy.fullname" .) .Values.acapy.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.acapy.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
+{{/*
 Common tenant proxy labels
 */}}
 {{- define "tenant_proxy.labels" -}}

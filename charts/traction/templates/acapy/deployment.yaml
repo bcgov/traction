@@ -26,6 +26,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      serviceAccountName: {{ include "acapy.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.acapy.podSecurityContext | nindent 8 }}
       containers:
