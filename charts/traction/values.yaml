@@ -30,6 +30,9 @@ acapy:
     # tag: 0.2.14
   imagePullSecrets: []
 
+  # Ignored if autoscaling is enabled
+  replicaCount: 1
+
   # The agent seed, 32 characters. Will be generated if not defined here
   agentSeed: ""
 
@@ -145,6 +148,13 @@ acapy:
     adminPort: 8031
     httpPort: 8030
   
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+
   nodeSelector: {}
   tolerations: []
   affinity: {}
@@ -214,6 +224,9 @@ tenant_proxy:
 
   imagePullSecrets: []
 
+  # Ignored if autoscaling is enabled
+  replicaCount: 1
+
   podAnnotations: {}
 
   podSecurityContext:
@@ -256,6 +269,13 @@ tenant_proxy:
     requests:
       cpu: 10m
       memory: 50Mi
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
 
   nodeSelector: {}
 

@@ -5,6 +5,9 @@ metadata:
   labels:
     {{- include "tenant_proxy.labels" . | nindent 4 }}
 spec:
+  {{- if not .Values.tenant_proxy.autoscaling.enabled }}
+  replicas: {{ .Values.tenant_proxy.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "tenant_proxy.selectorLabels" . | nindent 6 }}

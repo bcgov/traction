@@ -7,6 +7,9 @@ metadata:
   labels:
     {{- include "acapy.labels" . | nindent 4 }}
 spec:
+  {{- if not .Values.acapy.autoscaling.enabled }}
+  replicas: {{ .Values.acapy.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "acapy.selectorLabels" . | nindent 6 }}
