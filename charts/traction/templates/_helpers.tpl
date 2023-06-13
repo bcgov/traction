@@ -174,7 +174,7 @@ http://{{- include "acapy.fullname" . }}:{{.Values.acapy.service.adminPort }}
 {{- end }}
 
 {{/*
-generate hosts for acapy admin if not overriden
+Generate hosts for acapy admin if not overriden
 */}}
 {{- define "acapy.admin.host" -}}
 {{- include "acapy.fullname" . }}-admin{{ .Values.global.ingressSuffix -}}
@@ -185,11 +185,11 @@ Return seed
 */}}
 {{- define "acapy.seed" -}}
 {{- if .Values.acapy.agentSeed -}}
-    {{- .Values.acapy.agentSeed -}}
+    {{- .Values.acapy.agentSeed }}
 {{- else -}}
     {{ include "getOrGeneratePass" (dict "Namespace" .Release.Namespace "Kind" "Secret" "Name" (include "acapy.fullname" .) "Key" "seed" "Length" 32) }}
 {{- end -}}
-{{- end -}}
+{{- end }}
 
 {{/*
 Return acapy label
@@ -242,62 +242,22 @@ Create a default fully qualified app name for the postgres requirement.
 {{- end -}}
 
 {{/*
-Create the name for the database secret.
+Generate acapy wallet storage config
 */}}
-{{- define "global.externalDbSecret" -}}
-{{- if .Values.global.persistence.existingSecret -}}
-  {{- .Values.global.persistence.existingSecret -}}
+{{- define "acapy.walletStorageConfig" -}}
+{{- if and .Values.acapy.walletStorageConfig (not .Values.postgresql.enabled) (not index .Values "postgresql-ha" "enabled") -}}
+{{- if .Values.acapy.walletStorageConfig.json -}}
+{{- .Values.acapy.walletStorageConfig.json -}}
 {{- else -}}
-  {{- template "global.fullname" . -}}-db
+'{"url":"{{ .Values.acapy.walletStorageConfig.url }}","max_connections":"{{ .Values.acapy.walletStorageConfig.max_connection | default 10 }}"", "wallet_scheme":"{{ .Values.acapy.walletStorageConfig.wallet_scheme }}"}'
 {{- end -}}
-{{- end -}}
-
-{{/*
-Create the name for the password secret key.
-*/}}
-{{- define "global.dbPasswordKey" -}}
-{{- if .Values.global.persistence.existingSecret -}}
-  {{- .Values.global.persistence.existingSecretKey -}}
+{{- else if and .Values.postgresql.enabled ( not ( index .Values "postgresql-ha" "enabled") ) -}}
+'{"url":"{{ include "global.postgresql.fullname" . }}:{{ .Values.postgresql.service.ports.postgresql }}","max_connections":"{{ .Values.acapy.walletStorageConfig.max_connections }}", "wallet_scheme":"{{ .Values.acapy.walletStorageConfig.wallet_scheme }}"}'
+{{- else if and ( index .Values "postgresql-ha" "enabled" ) ( not .Values.postgresql.enabled ) -}}
+'{"url":"{{ include "global.postgresql-ha.fullname" . }}:{{ index .Values "postgresql-ha" "service" "ports" "postgresql" }}","max_connections":"5", "wallet_scheme":"{{ .Values.acapy.walletScheme }}"}'
 {{- else -}}
-  password
-{{- end -}}
-{{- end -}}
-
-{{/*
-Create environment variables for database configuration.
-*/}}
-{{- define "global.externalDbConfig" -}}
-- name: DB_VENDOR
-  value: {{ .Values.global.persistence.dbVendor | quote }}
-{{- if eq .Values.global.persistence.dbVendor "POSTGRES" }}
-- name: POSTGRES_PORT_5432_TCP_ADDR
-  value: {{ .Values.global.persistence.dbHost | quote }}
-- name: POSTGRES_PORT_5432_TCP_PORT
-  value: {{ .Values.global.persistence.dbPort | quote }}
-- name: POSTGRES_USER
-  value: {{ .Values.global.persistence.dbUser | quote }}
-- name: POSTGRES_PASSWORD
-  valueFrom:
-    secretKeyRef:
-      name: {{ template "global.externalDbSecret" . }}
-      key: {{ include "global.dbPasswordKey" . | quote }}
-- name: POSTGRES_DATABASE
-  value: {{ .Values.global.persistence.dbName | quote }}
-{{- else if eq .Values.global.persistence.dbVendor "MYSQL" }}
-- name: MYSQL_PORT_3306_TCP_ADDR
-  value: {{ .Values.global.persistence.dbHost | quote }}
-- name: MYSQL_PORT_3306_TCP_PORT
-  value: {{ .Values.global.persistence.dbPort | quote }}
-- name: MYSQL_USER
-  value: {{ .Values.global.persistence.dbUser | quote }}
-- name: MYSQL_PASSWORD
-  valueFrom:
-    secretKeyRef:
-      name: {{ template "global.externalDbSecret" . }}
-      key: {{ include "global.dbPasswordKey" . | quote }}
-- name: MYSQL_DATABASE
-  value: {{ .Values.global.persistence.dbName | quote }}
-{{- end }}
+''
+{{ end }}
 {{- end -}}
 
 {{- define "acapy.openshift.route.tls" -}}
@@ -361,4 +321,3 @@ tls:
   termination: {{ .Values.tenant_proxy.openshift.route.tls.termination }}
 {{- end -}}
 {{- end -}}
-

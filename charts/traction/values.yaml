@@ -82,14 +82,21 @@ acapy:
     wallet-type: askar-profile
 
   ## Wallet storage configuration
+  #  Specifies the storage configuration to use for the wallet. 
+  #  This is required if you are for using 'postgres_storage' wallet 'storage type. 
+  #  For example, '{"url":"localhost:5432", "wallet_scheme":"MultiWalletSingleTable"}'.
+  #  This configuration maps to the indy sdk postgres plugin (PostgresConfig).
   #
-  # walletStorageConfig:
-  #   # Database url
-  #   url: postgres://postgres:password@postgresql:5432/postgres?sslmode=disable
-  #   # Client max_connections, defaults to 10
-  #   max_connections: 10
-  #   # Wallet scheme
-  #   wallet_scheme: DatabasePerWallet
+  walletStorageConfig:
+    # Raw json, if uncommented, other values will be ignored
+    # json: '{"url":"localhost:5432", "max_connections":"10", "wallet_scheme":"DatabasePerWallet"}'
+    # Database url, uncomment only if you need to use own, external database
+    # this is set automatically when used with postgresql/-ha subchart
+    # url: postgresql:5432
+    # Client max_connections, defaults to 10
+    max_connections: 10
+    # Wallet scheme
+    wallet_scheme: DatabasePerWallet
 
   ## Plugins
   #
