@@ -298,6 +298,19 @@ tenant_proxy:
 
   affinity: {}
 
+# Create ingress resource for Acapy and Tenant Proxy
+ingress:
+  enabled: true
+  className: ""
+  annotations:
+    route.openshift.io/termination: edge
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
 postgresql:
   # when overriding global.fullnameOverride, you must override this to match.
   fullnameOverride: ""
