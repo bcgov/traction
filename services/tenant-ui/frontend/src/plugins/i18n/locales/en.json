@@ -37,6 +37,8 @@
     "credentialId": "Credential ID",
     "credentials": "Credentials",
     "developer": "Developer",
+    "encodedJwt": "Encoded JWT",
+    "decodedJwt": "Decoded JWT",
     "emailAddress": "Email Address",
     "endorser": "Endorser",
     "genericError": "An error occurred",
@@ -224,6 +226,7 @@
   },
   "profile": {
     "config": "Config:",
+    "token": "JWT Token",
     "connectionNotActiveYet": "Connection not Active yet, refresh or come back later.",
     "connectTenantToEndorser": "Connect Tenant To Endorser",
     "connectTenantToEndorserNotAllowed": "Innkeeper has not approved endorser connections.",
