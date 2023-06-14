@@ -124,12 +124,17 @@ class OcaService:
         self.logger.info(
             f"> list_oca_records({issuer_profile}, {schema_id}, {cred_def_id})"
         )
+        self.logger.info(f"self.issuer_profile = {issuer_profile}")
+        self.logger.info(f"self.profile = {self.profile}")
         is_root_profile = issuer_profile == self.profile
+        self.logger.info(f"is_root_profile = {is_root_profile}")
         public_info = await self.get_public_did_info(issuer_profile)
+        self.logger.info(f"public_info = {public_info}")
         tag_filter = self.build_tag_filter(schema_id, cred_def_id)
         post_filter = self.build_post_filter(public_info)
         records = []
         if is_root_profile or public_info:
+            self.logger.info(f"tag_filter = {tag_filter}")
             self.logger.info(f"post_filter = {post_filter}")
             async with self.profile.session() as session:
                 records = await OcaRecord.query(
