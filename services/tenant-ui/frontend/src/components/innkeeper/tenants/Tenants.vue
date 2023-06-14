@@ -119,13 +119,18 @@ const loadTable = async () => {
   });
 };
 
+// Formatting the Tenant table row
 const formattedTenants = computed(() =>
   tenants.value.map((ten: any) => ({
+    tenant_id: ten.tenant_id,
     tenant_name: ten.tenant_name,
+    connected_to_endorsers: ten.connected_to_endorsers,
+    created_public_did: ten.created_public_did,
     created: formatDateLong(ten.created_at),
     created_at: ten.created_at,
   }))
 );
+
 onMounted(async () => {
   loadTable();
 });

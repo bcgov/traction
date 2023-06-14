@@ -1,35 +1,13 @@
 <template>
   <div>
     <form @submit.prevent="handleSubmit(!v$.$invalid)">
-      <!-- Connection ID -->
-      <div class="field">
-        <label
-          for="connectionId"
-          :class="{ 'p-error': v$.connectionId.$invalid && submitted }"
-        >
-          {{ $t('messages.connectionId') }}
-        </label>
-        <InputText
-          id="connectionId"
-          v-model="v$.connectionId.$model"
-          class="w-full"
-          :class="{ 'p-invalid': v$.connectionId.$invalid && submitted }"
-        />
-        <span v-if="v$.connectionId.$error && submitted">
-          <span v-for="(error, index) of v$.connectionId.$errors" :key="index">
-            <small class="p-error">{{ error.$message }}</small>
-          </span>
-        </span>
-      </div>
-
-      <!-- TODO: add back once connections are in -->
       <!-- Contact -->
-      <!-- <div class="field">
+      <div class="field">
         <label
           for="selectedContact"
           :class="{ 'p-error': v$.selectedContact.$invalid && submitted }"
         >
-          Contact Name
+          {{ $t('common.contactName') }}
           <ProgressSpinner v-if="contactLoading" />
         </label>
 
@@ -49,7 +27,7 @@
           class="p-error"
           >{{ v$.selectedContact.required.$message }}</small
         >
-      </div> -->
+      </div>
 
       <!-- Message Body -->
       <div class="field">
@@ -91,11 +69,10 @@
 // Vue
 import { reactive, ref } from 'vue';
 // PrimeVue / Validation / etc
-// import AutoComplete from 'primevue/autocomplete';
+import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
-// import ProgressSpinner from 'primevue/progressspinner';
+import ProgressSpinner from 'primevue/progressspinner';
 import { required } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
 import { useToast } from 'vue-toastification';
@@ -105,7 +82,7 @@ import { useContactsStore, useMessageStore } from '@/store';
 
 const toast = useToast();
 
-// Store valuesloading
+// Store values
 const { loading } = storeToRefs(useMessageStore());
 const { loading: contactLoading, contactsDropdown } = storeToRefs(
   useContactsStore()
@@ -117,16 +94,11 @@ const emit = defineEmits(['closed', 'success']);
 // Form and Validation
 const filteredContacts = ref();
 const formFields = reactive({
-  connectionId: '',
   msgContent: '',
-  // TODO: reimplement
-  // This is not good typescript but need an object with fields
-  // in a dropdown that displays a string that can be blank. TODO
-  // selectedContact: undefined as any,
+  selectedContact: undefined as any,
 });
 const rules = {
-  connectionId: { required },
-  // selectedContact: { required },
+  selectedContact: { required },
   msgContent: { required },
 };
 const v$ = useVuelidate(rules, formFields);
@@ -159,9 +131,8 @@ const handleSubmit = async (isFormValid: boolean) => {
     };
 
     // call store
-    // TODO: reimplemnt
-    // const conn_id = formFields.selectedContact.conn_id;
-    await messageStore.sendMessage(formFields.connectionId, payload);
+    const conn_id = formFields.selectedContact.value;
+    await messageStore.sendMessage(conn_id, payload);
     toast.info('Message Sent');
     emit('success');
     // close up on success

@@ -216,8 +216,11 @@ const deleteDisabled = (contactAlias: string) => {
     endorserInfo.value.endorser_name === contactAlias
   );
 };
+
+// The formatted table row
 const formattedConnections: Ref<any[]> = computed(() =>
   filteredConnections.value.map((conn) => ({
+    connection_id: conn.connection_id,
     alias: conn.alias,
     their_label: conn.their_label,
     state: conn.state,

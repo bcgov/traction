@@ -31,7 +31,7 @@
     <template #empty>{{ $t('common.noRecordsFound') }}</template>
     <template #loading>{{ $t('common.loading') }}</template>
     <template #expansion="{ data }">
-      <CredentialAttributes :attributes="getAttributes(data)" />
+      <CredentialAttributes :attributes="data.credential_attributes" />
       <hr class="expand-divider" />
       <RowExpandData
         :id="data.credential_exchange_id"
@@ -67,14 +67,11 @@
     </Column>
     <Column
       :sortable="true"
-      field="connection_id"
+      field="connection"
       header="Connection"
-      filter-field="credential_id"
+      filter-field="connection"
       :show-filter-match-modes="false"
     >
-      <template #body="{ data }">
-        {{ findConnectionName(data.connection_id) }}
-      </template>
       <template #filter="{ filterModel, filterCallback }">
         <InputText
           v-model="filterModel.value"
@@ -178,12 +175,16 @@ const toast = useToast();
 
 // State
 const contactsStore = useContactsStore();
-const { contacts, findConnectionName } = storeToRefs(useContactsStore());
+const { contacts } = storeToRefs(useContactsStore());
 const { loading, credentialExchanges } = storeToRefs(useHolderStore());
 const holderStore = useHolderStore();
+
+// The data table row format
 const formattedcredentialExchanges = computed(() =>
   credentialExchanges.value.map((ce) => ({
-    connection_id: ce.connection_id,
+    credential_exchange_id: ce.credential_exchange_id,
+    credential_attributes: getAttributes(ce),
+    connection: contactsStore.findConnectionName(ce.connection_id ?? ''),
     credential_definition_id: ce.credential_definition_id,
     state: ce.state,
     updated: formatDateLong(ce.updated_at ?? ''),
@@ -210,6 +211,10 @@ const filter = ref({
     matchMode: FilterMatchMode.CONTAINS,
   } as DataTableFilterMetaData,
   credential_definition_id: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  connection: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   } as DataTableFilterMetaData,
