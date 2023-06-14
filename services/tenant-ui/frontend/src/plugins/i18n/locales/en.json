@@ -37,6 +37,8 @@
     "credentialId": "Credential ID",
     "credentials": "Credentials",
     "developer": "Developer",
+    "encodedJwt": "Encoded JWT",
+    "decodedJwt": "Decoded JWT",
     "emailAddress": "Email Address",
     "endorser": "Endorser",
     "genericError": "An error occurred",
