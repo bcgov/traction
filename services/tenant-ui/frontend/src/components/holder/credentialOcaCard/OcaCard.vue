@@ -4,33 +4,17 @@
   </div>
   <div v-else>
     <CredentialCard10 :overlay="overlay" :credential="props.credential" />
-    <!-- <Card>
-      <template #title> Simple Card </template>
-      <template #content>
-        <p>
-          {{ props.credential.state }}
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore
-          sed consequuntur error repudiandae numquam deserunt quisquam repellat
-          libero asperiores earum nam nobis, culpa ratione quam perferendis
-          esse, cupiditate neque quas!
-
-          {{  overlay }}
-        </p>
-      </template>
-    </Card> -->
   </div>
 </template>
 
 <script setup lang="ts">
 // Types
-import { OcaRecord, IndyCredInfo } from '@/types/acapyApi/acapyInterface';
+import { IndyCredInfo } from '@/types/acapyApi/acapyInterface';
 import OverlayBundle from '@/overlayLibrary/types/overlay/OverlayBundle';
 
 // Vue
 import { onMounted, ref, Ref } from 'vue';
 // PrimeVue
-import Card from 'primevue/card';
-import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';
 // State
 import { useHolderStore } from '@/store';
@@ -46,10 +30,8 @@ const props = defineProps<{
 }>();
 
 const toast = useToast();
-const confirm = useConfirm();
 
 // State
-const holderStore = useHolderStore();
 const { ocas } = storeToRefs(useHolderStore());
 
 // OCA Fetching

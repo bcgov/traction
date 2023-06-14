@@ -28,16 +28,6 @@ export const useHolderStore = defineStore('holder', () => {
   const loading: any = ref(false);
   const error: any = ref(null);
 
-  // getters
-  // const combinedCredentials = computed(() => {
-  //   return credentialExchanges.value.map((ex) => {
-  //     return {
-  //       credentialExchange: ex,
-  //       credential: credentials.value.find(c => c.),
-  //     };
-  //   });
-  // });
-
   // actions
 
   async function listCredentials() {
@@ -189,25 +179,25 @@ export const useHolderStore = defineStore('holder', () => {
   }
 
   return {
-    credentials,
     credentialExchanges,
-    presentations,
+    credentials,
+    error,
+    loading,
+    loadingOca,
     ocas,
+    presentations,
     selectedCredential,
     selectedPresentation,
-    loadingOca,
-    loading,
-    error,
-    listCredentials,
-    listOcas,
-    listHolderCredentialExchanges,
-    listPresentations,
+    acceptCredentialOffer,
+    deleteCredentialExchange,
     getCredential,
     getCredentialOca,
     getPresentation,
-    acceptCredentialOffer,
+    listCredentials,
+    listHolderCredentialExchanges,
+    listOcas,
+    listPresentations,
     rejectCredentialOffer,
-    deleteCredentialExchange,
   };
 });
 

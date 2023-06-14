@@ -1,6 +1,6 @@
 <template>
   <div class="text-container">
-    {{ overlay?.metadata?.name['en-CA'] }}
+    {{ displayName }}
   </div>
 </template>
 
@@ -8,11 +8,23 @@
 // Types
 import OverlayBundle from '@/overlayLibrary/types/overlay/OverlayBundle';
 
+// Overlay Library
 import { textColorForBackground } from '@/overlayLibrary/utils/color';
+import { localeDefault } from '@/overlayLibrary/utils/localeDefaults';
+// i18n
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+const { locale } = useI18n({ useScope: 'global' });
 
 const props = defineProps<{
   overlay?: OverlayBundle;
 }>();
+
+const displayName = computed(() => {
+  return props.overlay?.metadata?.name?.[
+    localeDefault(props.overlay.metadata.name, locale.value as string)
+  ];
+});
 </script>
 
 <style scoped>

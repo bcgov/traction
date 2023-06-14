@@ -8,16 +8,23 @@
 // Types
 import OverlayBundle from '@/overlayLibrary/types/overlay/OverlayBundle';
 
-import { computed } from 'vue';
+// Overlay Library
 import { textColorForBackground } from '@/overlayLibrary/utils/color';
+import { localeDefault } from '@/overlayLibrary/utils/localeDefaults';
+// i18n
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+const { locale } = useI18n({ useScope: 'global' });
 
 const props = defineProps<{
   overlay?: OverlayBundle;
 }>();
 
-const issuerName = computed(
-  () => props.overlay?.metadata?.issuer?.['en-CA'] ?? ''
-);
+const issuerName = computed((): any => {
+  return props.overlay?.metadata?.issuer?.[
+    localeDefault(props.overlay.metadata.issuer, locale.value as string)
+  ];
+});
 </script>
 
 <style scoped>
