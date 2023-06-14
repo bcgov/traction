@@ -53,7 +53,7 @@ import jwtDecode from 'jwt-decode';
 
 const toast = useToast();
 const { token } = storeToRefs(useTokenStore());
-const decodedToken: Ref<unknown> = computed(() => jwtDecode(token.value));
+const decodedToken: Ref<unknown> = computed(() => jwtDecode(token.value ?? ''));
 
 // tenant should be loaded by login...
 const { config } = storeToRefs(useConfigStore());
