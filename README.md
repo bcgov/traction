@@ -12,7 +12,7 @@
 - [What are the benefits of using Traction?](#what-are-the-benefits-of-using-traction)
 - [What is Traction comprised of?](#what-is-traction-comprised-of)
 - [Start contributing to Traction](#start-contributing-to-traction)
-- [Who is maintaining Tracion?](#who-is-maintaining-traction)
+- [Who is maintaining Traction?](#who-is-maintaining-traction)
 - [How is Traction licenced?](#how-is-traction-licensed)
 - [Engage with the community](#engage-with-the-community)
 
