@@ -224,6 +224,7 @@
   },
   "profile": {
     "config": "Config:",
+    "token": "JWT Token",
     "connectionNotActiveYet": "Connection not Active yet, refresh or come back later.",
     "connectTenantToEndorser": "Connect Tenant To Endorser",
     "connectTenantToEndorserNotAllowed": "Innkeeper has not approved endorser connections.",
