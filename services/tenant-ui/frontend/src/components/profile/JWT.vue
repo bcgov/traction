@@ -3,33 +3,33 @@
   <Accordion :multiple="true">
     <AccordionTab header="Encoded JWT">
       <div style="display: flex">
-	<div style="overflow: auto; width: 100%">
-	  <!-- Just used p-inputtext to keep styling consistent -->
-	  <div class="p-inputtext" style="overflow: auto">
-	    {{ token }}
-	  </div>
-	</div>
-	<Button
-	  icon="pi pi-copy"
-		outlined
-	  text
-	  @click="copyEncodedToClipboard"
-	/>
+        <div style="overflow: auto; width: 100%">
+          <!-- Just used p-inputtext to keep styling consistent -->
+          <div class="p-inputtext" style="overflow: auto">
+            {{ token }}
+          </div>
+        </div>
+        <Button
+          icon="pi pi-copy"
+	        outlined
+          text
+          @click="copyEncodedToClipboard"
+        />
       </div>
     </AccordionTab>
     <AccordionTab header="Decoded JWT">
       <div style="display: flex">
-	<div style="overflow: auto; width: 100%">
-	  <div class="p-inputtext" style="overflow: auto; display: block">
-	    {{ decodedToken }}
-	  </div>
-	</div>
-	<Button
-	  icon="pi pi-copy"
-		outlined
-	  text
-	  @click="copyDecodedToClipboard"
-	/>
+        <div style="overflow: auto; width: 100%">
+          <div class="p-inputtext" style="overflow: auto; display: block">
+            {{ decodedToken }}
+          </div>
+        </div>
+        <Button
+          icon="pi pi-copy"
+	        outlined
+          text
+          @click="copyDecodedToClipboard"
+        />
       </div>
     </AccordionTab>
   </Accordion>
