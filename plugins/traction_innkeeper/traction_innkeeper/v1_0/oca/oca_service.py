@@ -131,7 +131,7 @@ class OcaService:
         public_info = await self.get_public_did_info(issuer_profile)
         self.logger.info(f"public_info = {public_info}")
         tag_filter = self.build_tag_filter(schema_id, cred_def_id)
-        post_filter = self.build_post_filter(public_info)
+        post_filter = self.build_post_filter(public_info) if is_root_profile else {}
         records = []
         if is_root_profile or public_info:
             self.logger.info(f"tag_filter = {tag_filter}")
