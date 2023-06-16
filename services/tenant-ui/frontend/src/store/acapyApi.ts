@@ -34,14 +34,20 @@ export const useAcapyApi = defineStore('acapyApi', () => {
   // need to add authorization before we make traction tenant requests...
   acapyApi.interceptors.request.use(
     async (dataConfig: any) => {
-      // console.log('acapyApi.request.fulfilled');
+      // if the consumer provides an auth header (even blank) in options, then use it, otherwise default to the token
+      let auth = `Bearer ${tokenStore.token}`;
+      const authOverride = dataConfig.headers?.Authorization;
+      if (authOverride || authOverride === '') {
+        auth = authOverride;
+      }
+
       const result = {
         ...dataConfig,
         headers: {
           'Content-Type': 'application/json',
           accept: 'application/json',
           ...dataConfig.headers,
-          Authorization: `Bearer ${tokenStore.token}`,
+          Authorization: auth,
         },
       };
       return result;

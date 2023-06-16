@@ -30,9 +30,6 @@ import { storeToRefs } from 'pinia';
 import OcaCard from './credentialOcaCard/OcaCard.vue';
 import SkeletonCard from '@/components/common/SkeletonCard.vue';
 
-// The emits it can do (common things between table and card view handled in parent)
-// defineEmits(['accept', 'delete', 'reject']);
-
 const toast = useToast();
 
 // State
@@ -42,7 +39,7 @@ const holderStore = useHolderStore();
 onMounted(async () => {
   holderStore.listCredentials();
   // Get the oca list avaliable, each card will fetch it's OCA though
-  holderStore.listOcas().catch((err) => {
+  holderStore.listOcas(true).catch((err) => {
     console.error(err);
     toast.error(`Failed to load Credentials from your wallet: ${err}`);
   });

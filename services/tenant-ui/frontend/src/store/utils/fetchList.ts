@@ -7,10 +7,11 @@ export async function fetchList<T>(
   list: Ref<T[]>,
   error: Ref<any>,
   loading: Ref<boolean>,
-  params: object = {}
+  params: object = {},
+  options?: object
 ) {
   const acapyApi = useAcapyApi();
-  return fetchListFromAPI(acapyApi, url, list, error, loading, params);
+  return fetchListFromAPI(acapyApi, url, list, error, loading, params, options);
 }
 
 export async function fetchListFromAPI<T>(
@@ -19,7 +20,8 @@ export async function fetchListFromAPI<T>(
   list: Ref<T[]>,
   error: Ref<any>,
   loading: Ref<boolean>,
-  params: object = {}
+  params: object = {},
+  options?: object
 ): Promise<T[]> {
   console.log(`> fetchList(${url})`);
   list.value = [];
@@ -27,7 +29,7 @@ export async function fetchListFromAPI<T>(
   loading.value = true;
   params = { ...params };
   await api
-    .getHttp(url, params)
+    .getHttp(url, params, options)
     .then((res: AxiosRequestConfig): void => {
       if (res.data.results) {
         list.value = res.data.results;

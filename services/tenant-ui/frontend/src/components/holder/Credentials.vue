@@ -65,8 +65,7 @@ import Button from 'primevue/button';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';
 // State
-import { useContactsStore, useHolderStore } from '@/store';
-import { storeToRefs } from 'pinia';
+import { useHolderStore } from '@/store';
 // Other components
 import CredentialsCards from './CredentialsCards.vue';
 import CredentialsTable from './CredentialsTable.vue';
@@ -75,8 +74,6 @@ const toast = useToast();
 const confirm = useConfirm();
 
 // State
-const contactsStore = useContactsStore();
-const { contacts } = storeToRefs(useContactsStore());
 const holderStore = useHolderStore();
 
 // Table/card view toggle

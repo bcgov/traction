@@ -44,8 +44,12 @@ export const useHolderStore = defineStore('holder', () => {
     return fetchList(API_PATH.CREDENTIALS, credentials, error, loading);
   }
 
-  async function listOcas() {
-    return fetchList(API_PATH.OCAS, ocas, error, loadingOca);
+  async function listOcas(fetchPublic?: boolean) {
+    // If getting public, don't use the default auth token from the axios instance
+    const options = fetchPublic
+      ? { headers: { Authorization: '' } }
+      : undefined;
+    return fetchList(API_PATH.OCAS, ocas, error, loadingOca, {}, options);
   }
 
   async function listHolderCredentialExchanges() {
