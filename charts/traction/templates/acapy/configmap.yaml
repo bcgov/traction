@@ -6,54 +6,10 @@ metadata:
     {{- include "acapy.labels" . | nindent 4 }}
 data:
   argfile.yml: |
-    {{- range $elem, $elemVal := index .Values "argfile.yml" }}
-      {{- if not (kindIs "map" $elemVal) }}
-      {{- if kindIs "invalid" $elemVal }}
-      {{ $elem }} =
-      {{- else if kindIs "string" $elemVal }}
-      {{ $elem }} = {{ tpl $elemVal $ }}
-      {{- else }}
-      {{ $elem }} = {{ $elemVal }}
-      {{- end }}
-      {{- end }}
-    {{- end }}
-    {{- range $key, $value := index .Values "argfile.yml" }}
-      {{- if kindIs "map" $value }}
-      [{{ $key }}]
-      {{- range $elem, $elemVal := $value }}
-      {{- if kindIs "invalid" $elemVal }}
-      {{ $elem }} =
-      {{- else if kindIs "string" $elemVal }}
-      {{ $elem }} = {{ tpl $elemVal $ }}
-      {{- else }}
-      {{ $elem }} = {{ $elemVal }}
-      {{- end }}
-      {{- end }}
-      {{- end }}
+    {{- if (index .Values "acapy" "argfile.yml") }}
+    {{- include "common.tplvalues.render" ( dict "value" (index .Values "acapy" "argfile.yml") "context" $) | nindent 4 }}
     {{- end }}
   plugin-config.yml: |
-    {{- range $elem, $elemVal := index .Values "plugin-config.yml" }}
-      {{- if not (kindIs "map" $elemVal) }}
-      {{- if kindIs "invalid" $elemVal }}
-      {{ $elem }} =
-      {{- else if kindIs "string" $elemVal }}
-      {{ $elem }} = {{ tpl $elemVal $ }}
-      {{- else }}
-      {{ $elem }} = {{ $elemVal }}
-      {{- end }}
-      {{- end }}
-    {{- end }}
-    {{- range $key, $value := index .Values "plugin-config.yml" }}
-      {{- if kindIs "map" $value }}
-      [{{ $key }}]
-      {{- range $elem, $elemVal := $value }}
-      {{- if kindIs "invalid" $elemVal }}
-      {{ $elem }} =
-      {{- else if kindIs "string" $elemVal }}
-      {{ $elem }} = {{ tpl $elemVal $ }}
-      {{- else }}
-      {{ $elem }} = {{ $elemVal }}
-      {{- end }}
-      {{- end }}
-      {{- end }}
+    {{- if index .Values "acapy" "plugin-config.yml" }}
+    {{- include "common.tplvalues.render" ( dict "value" (index .Values "acapy" "plugin-config.yml") "context" $) | nindent 4 }}
     {{- end }}

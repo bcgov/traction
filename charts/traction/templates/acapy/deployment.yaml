@@ -163,9 +163,6 @@ spec:
         - name: config
           configMap:
             name: {{ include "acapy.fullname" . }}-config
-            items:
-            - key: "plugin-config.yml"
-              path: "plugin-config.yml"
       {{- with .Values.acapy.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
