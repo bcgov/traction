@@ -29,6 +29,22 @@ spec:
       serviceAccountName: {{ include "acapy.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.acapy.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: register
+          image: curlimages/curl
+          imagePullPolicy: IfNotPresent
+          command:
+          - /bin/sh
+          args: [
+           "-c",
+           "{{ include "acapy.registerLedger" . }}"
+          ]
+          env:
+            - name: ACAPY_WALLET_SEED
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "acapy.fullname" . }}
+                  key: seed
       containers:
         - name: acapy
           securityContext:
@@ -39,9 +55,7 @@ spec:
           - /bin/bash
           args: [
            "-c",
-           "{{ include "acapy.registerLedger" . }} \
-           sleep 30; \
-           aca-py start \
+           "aca-py start \
            --inbound-transport http '0.0.0.0' {{ .Values.acapy.service.httpPort }} \
            --outbound-transport http \
            --admin '0.0.0.0' {{ .Values.acapy.service.adminPort }} \
