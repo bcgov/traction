@@ -1,4 +1,3 @@
-{{- $acapyLabel := include "acapy.label" . -}}
 {{- $globalName := include "global.name"  . -}}
 apiVersion: apps/v1
 kind: Deployment

@@ -153,7 +153,7 @@ Common acapy labels
 {{- define "acapy.labels" -}}
 {{ include "common.labels" . }}
 {{ include "acapy.selectorLabels" . }}
-{{- end }}
+{{- end -}}
 
 {{/*
 Selector acapy labels
@@ -161,39 +161,39 @@ Selector acapy labels
 {{- define "acapy.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "acapy.fullname" . }}
 {{ include "common.selectorLabels" . }}
-{{- end }}
+{{- end -}}
 
 {{/*
 generate hosts if not overriden
 */}}
 {{- define "acapy.host" -}}
 {{- include "acapy.fullname" . }}{{ .Values.global.ingressSuffix -}}
-{{- end }}
+{{- end -}}
 
 {{/*
 generate admin url (internal)
 */}}
 {{- define "acapy.internal.admin.url" -}}
 http://{{- include "acapy.fullname" . }}:{{.Values.acapy.service.adminPort }}
-{{- end }}
+{{- end -}}
 
 {{/*
 Generate hosts for acapy admin if not overriden
 */}}
 {{- define "acapy.admin.host" -}}
 {{- include "acapy.fullname" . }}-admin{{ .Values.global.ingressSuffix -}}
-{{- end }}
+{{- end -}}
 
 {{/*
 Return seed
 */}}
 {{- define "acapy.seed" -}}
 {{- if .Values.acapy.agentSeed -}}
-    {{- .Values.acapy.agentSeed }}
+{{- .Values.acapy.agentSeed }}
 {{- else -}}
-    {{ include "getOrGeneratePass" (dict "Namespace" .Release.Namespace "Kind" "Secret" "Name" (include "acapy.fullname" .) "Key" "seed" "Length" 32) }}
+{{ include "getOrGeneratePass" (dict "Namespace" .Release.Namespace "Kind" "Secret" "Name" (include "acapy.fullname" .) "Key" "seed" "Length" 32) }}
 {{- end -}}
-{{- end }}
+{{- end -}}
 
 {{/*
 Return acapy label
@@ -223,7 +223,7 @@ generate tails baseUrl
 {{- define "acapy.tails.baseUrl" -}}
 {{- $tailsBaseUrl := dict "bcovrin-dev" "https://tails-dev.vonx.io" "bcovrin-test" "https://tails-test.vonx.io" "idu" (printf "https://tails%s" .Values.global.ingressSuffix) -}}
 {{ .Values.acapy.tails.baseUrlOverride| default ( get $tailsBaseUrl .Values.global.ledger ) }}
-{{- end }}
+{{- end -}}
 
 {{/*
 generate tails uploadUrl
@@ -231,7 +231,7 @@ generate tails uploadUrl
 {{- define "acapy.tails.uploadUrl" -}}
 {{- $tailsUploadUrl:= dict "bcovrin-dev" "https://tails-dev.vonx.io" "bcovrin-test" "https://tails-test.vonx.io" "idu" "http://idu-tails:6543" -}}
 {{ .Values.acapy.tails.uploadUrlOverride| default ( get $tailsUploadUrl .Values.global.ledger ) }}
-{{- end }}
+{{- end -}}
 
 {{/*
 Create a default fully qualified app name for the postgres requirement.
