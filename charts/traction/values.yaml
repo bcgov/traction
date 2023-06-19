@@ -156,16 +156,12 @@ acapy:
         auto_approve:  false
 
   resources:
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
     limits:
-      cpu: 600m
-      memory: 2600Mi
+      cpu: '1'
+      memory: 1000Mi
     requests:
-      cpu: 300m
-      memory: 1300Mi
+      cpu: 250m
+      memory: 384Mi
 
   podAnnotations: {}
   podSecurityContext: {}
@@ -295,16 +291,12 @@ tenant_proxy:
       wildcardPolicy: None
 
   resources:
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
     limits:
-      cpu: 20m
-      memory: 100Mi
+      cpu: 250m
+      memory: 256Mi
     requests:
-      cpu: 10m
-      memory: 50Mi
+      cpu: 125m
+      memory: 128Mi
 
   autoscaling:
     enabled: true
