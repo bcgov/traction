@@ -3,21 +3,12 @@
 # Declare variables to be passed into your templates.
 
 global:
-
   # -- Domain suffix to be used for default hostpaths in ingress
   # override in different environments, or for each app
   # --set global.ingressSuffix
-  ingressSuffix: -prod.apps.silver.devops.gov.bc.ca
-
-  persistence:
-    # -- If true, the Postgres chart is deployed
-    deployPostgres: true
-
+  ingressSuffix: .apps.silver.devops.gov.bc.ca
   # -- The used ledger. Will be used for default values.
   ledger: bcovrin-test
-
-  nsp:
-    enabled: false
 
 nameOverride: ""
 fullnameOverride: ""
@@ -32,7 +23,7 @@ acapy:
 
   serviceAccount:
     # -- Specifies whether a service account should be created
-    create: true
+    create: false
     # -- Annotations to add to the service account
     annotations: {}
     # -- The name of the service account to use. If not set and create is true, a name is generated using the fullname template
@@ -44,9 +35,8 @@ acapy:
   # The agent seed, 32 characters. Will be generated if not defined here
   agentSeed: ""
 
+  # AcaPy label override, defaults to Release name
   labelOverride: ""
-
-  readOnlyMode: false
 
   ## AcaPy Configuration file
   #
@@ -69,7 +59,7 @@ acapy:
     auto-write-transactions: true
     emit-new-didcomm-mime-type: true
     emit-new-didcomm-prefix: true
-    endorser-role: author
+    endorser-protocol-role: author
     endorser-alias: endorser
     endorser-public-did: 'UjmxKBZe1qv1NBE7GaohdP'
     genesis-url: '{{ include "traction.genesisUrl" . }}'
@@ -87,7 +77,15 @@ acapy:
     tails-server-upload-url: '{{ include "acapy.tails.uploadUrl" . }}'
     wallet-name: askar-wallet
     wallet-storage-type: postgres_storage
-    wallet-type: askar-profile
+    wallet-type: askar
+
+  ## Revocation settings
+  #
+  tails:
+    # -- Override the otherwise ledger-specifically generated base URL of the external tails server
+    baseUrlOverride: ""
+    # -- Override the otherwise ledger-specifically generated upload URL of the external tails server
+    uploadUrlOverride: ""
 
   ## Wallet storage configuration
   #  Specifies the storage configuration to use for the wallet. 
@@ -156,7 +154,7 @@ acapy:
       reservation:
         expiry_minutes: 2880
         auto_approve:  false
-  
+
   resources:
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
@@ -172,7 +170,7 @@ acapy:
   podAnnotations: {}
   podSecurityContext: {}
     # fsGroup: 2000
-  securityContext:
+  securityContext: {}
     # capabilities:
     #   drop:
     #   - ALL
@@ -186,7 +184,7 @@ acapy:
     httpPort: 8030
   
   autoscaling:
-    enabled: false
+    enabled: true
     minReplicas: 1
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
@@ -205,9 +203,10 @@ acapy:
       podSelector: {}
     namespaceSelector: {}
 
+  # Openshift route configuration, not required if ingress is enabled
   openshift:
     route:
-      enabled: true
+      enabled: false
       path: "/"
       targetPort: http
       timeout: 2m
@@ -217,7 +216,7 @@ acapy:
         termination: edge
       wildcardPolicy: None
     adminRoute:
-      enabled: true
+      enabled: false
       path: "/"
       targetPort: admin
       timeout: 2m
@@ -226,16 +225,6 @@ acapy:
         insecureEdgeTerminationPolicy: None
         termination: edge
       wildcardPolicy: None
-
-  tails:
-    # -- Set to true to enable revocation (external tails server required)
-    enabled: true
-
-    # -- Override the otherwise ledger-specifically generated base URL of the external tails server
-    baseUrlOverride: ""
-
-    # -- Override the otherwise ledger-specifically generated upload URL of the external tails server
-    uploadUrlOverride: ""
 
   secret:
     adminurl:
@@ -292,9 +281,10 @@ tenant_proxy:
     type: ClusterIP
     port: 8032
 
+  # Openshift route configuration, not required if ingress is enabled
   openshift:
     route:
-      enabled: true
+      enabled: false
       path: "/"
       targetPort: http
       timeout: 2m
@@ -317,7 +307,7 @@ tenant_proxy:
       memory: 50Mi
 
   autoscaling:
-    enabled: false
+    enabled: true
     minReplicas: 1
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
@@ -351,7 +341,14 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
+# Deploy HA PostgreSQL
+# Not currently supported
+postgresql-ha:
+  enabled: false
+
+# Deploy Bitnami PostgreSQL (non-HA)
 postgresql:
+  enabled: true
   # when overriding global.fullnameOverride, you must override this to match.
   fullnameOverride: ""
 
@@ -393,4 +390,4 @@ postgresql:
 
     # --  Increase max_connections to support higher workloads
     extendedConfiguration: |
-      max_connections = 500;
+      max_connections = 500
