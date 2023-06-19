@@ -47,8 +47,6 @@ spec:
            --admin '0.0.0.0' {{ .Values.acapy.service.adminPort }} \
            --endpoint https://{{ include "acapy.host" . }} \
            --arg-file '/home/indy/argfile.yml' \
-           --wallet-storage-config '{\"url\":\"{{ include "global.postgresql.fullname" . }}:{{ .Values.postgresql.service.ports.postgresql }}\",\"max_connections\":5, \"wallet_scheme\":\"{{ .Values.acapy.walletScheme }}\"}' \
-           --wallet-storage-creds '{\"account\":\"{{ .Values.postgresql.auth.username }}\",\"password\":\"$(POSTGRES_PASSWORD)\",\"admin_account\":\"postgres\",\"admin_password\":\"$(POSTGRES_POSTGRES_PASSWORD)\"}' \
            --plugin 'aries_cloudagent.messaging.jsonld' \ 
            {{- if .Values.acapy.plugins.tractionInnkeeper }}
            --plugin traction_plugins.traction_innkeeper.v1_0 \
@@ -121,6 +119,10 @@ spec:
                   key: adminurl
             - name: ACAPY_PLUGIN_CONFIG
               value: 'plugin-config.yml'
+            - name: ACAPY_WALLET_STORAGE_CONFIG
+              value: {{ include "acapy.walletStorageConfig" . }}
+            - name: ACAPY_WALLET_STORAGE_CREDS
+              value: {{ include "acapy.walletStorageCredentials" . }}
           readinessProbe:
             httpGet:
               path: /status/ready

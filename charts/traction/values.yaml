@@ -106,6 +106,28 @@ acapy:
     # Wallet scheme
     wallet_scheme: DatabasePerWallet
 
+  ## Wallet storage credentials
+  #  Specifies the storage credentials to use for the wallet.
+  #  This is required if you are for using 'postgres_storage' wallet 'storage type.
+  #  For example, '{"account":"postgres","password":"mysecretpassword","admin_account":"postgres","admin_password":"mysecretpassword"}'.
+  #  This configuration maps to the indy sdk postgres plugin (PostgresCredential).
+  #  NOTE: admin_user must have the CREATEDB role or else initialization will fail.
+  #
+  # Uncomment only if you need to use own database and wallet storage credentials
+  walletStorageCredentials:
+    # Raw json, if uncommented, other values will be ignored
+    # json: '{"account":"postgres","password":"mysecretpassword","admin_account":"postgres","admin_password":"mysecretpassword"}'
+    # Database account
+    # account: postgres
+    # Database password
+    # password: password
+    # Database admin account
+    admin_account: postgres
+    # Database admin password
+    # admin_password: password
+    # Overrides the otherwise generated secret for the database credentials, provided secret must contain the keys 'database-user', 'database-password', 'password-password'
+    existingSecret: ""
+
   ## Plugins
   #
   # list the plugins on our image we want to enable.

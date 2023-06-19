@@ -83,7 +83,11 @@ Create a default fully qualified postgresql name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "acapy.database.secret.name" -}}
+{{- if .Values.acapy.walletStorageCredentials.existingSecret -}}
+{{- .Values.acapy.walletStorageCredentials.existingSecret }}
+{{- else -}}
 {{ template "global.fullname" . }}-postgresql
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -258,6 +262,23 @@ Generate acapy wallet storage config
 {{- else -}}
 ''
 {{ end }}
+{{- end -}}
+
+{{/*
+Generate acapy wallet storage credentials
+*/}}
+{{- define "acapy.walletStorageCredentials" -}}
+{{- if and .Values.acapy.walletStorageCredentials (not .Values.postgresql.enabled) (not index .Values "postgresql-ha" "enabled") -}}
+{{- if .Values.acapy.walletStorageCredentials.json -}}
+{{- .Values.acapy.walletStorageCredentials.json -}}
+{{- else -}}
+'{"account":"{{ .Values.acapy.walletStorageCredentials.account | default "acapy" }}","password":"{{ .Values.acapy.walletStorageCredentials.password }}", "admin_account":"{{ .Values.acapy.walletStorageCredentials.admin_account }}", "admin_password":"{{ .Values.acapy.walletStorageCredentials.admin_password }}"}'
+{{- end -}}
+{{- else if and .Values.postgresql.enabled ( not ( index .Values "postgresql-ha" "enabled") ) -}}
+'{"account":"{{ .Values.postgresql.auth.username }}","password":"$(POSTGRES_PASSWORD)", "admin_account":"{{ .Values.acapy.walletStorageCredentials.admin_account }}", "admin_password":"$(POSTGRES_POSTGRES_PASSWORD)"}'
+{{- else if and ( index .Values "postgresql-ha" "enabled" ) ( not .Values.postgresql.enabled ) -}}
+'{"account":"{{ .Values.acapy.walletStorageCredentials.account | default "acapy" }}","password":"$(POSTGRES_PASSWORD)", "admin_account":"{{ .Values.acapy.walletStorageCredentials.admin_account }}", "admin_password":"$(POSTGRES_POSTGRES_PASSWORD)"}'
+{{- end -}}
 {{- end -}}
 
 {{- define "acapy.openshift.route.tls" -}}
