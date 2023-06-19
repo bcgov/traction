@@ -141,6 +141,7 @@ const { loading, ocas } = storeToRefs(useGovernanceStore());
 
 const formattedOcas: Ref<any[]> = computed(() =>
   ocas.value.map((oca) => ({
+    oca_id: oca.oca_id,
     cred_def_id: oca.cred_def_id,
     bundle: oca.bundle,
     url: oca.url,
