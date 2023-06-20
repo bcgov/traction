@@ -1,10 +1,33 @@
 import { format, fromUnixTime, parseJSON } from 'date-fns';
+import { enCA, fr, ja } from 'date-fns/locale';
+import { useI18n } from 'vue-i18n';
+
+export type i18nLocale = 'en' | 'fr' | 'jp';
+
+function i18n2DateLocale(i18nLocal: i18nLocale) {
+  switch (i18nLocal) {
+    case 'en':
+      return enCA;
+    case 'fr':
+      return fr;
+    case 'jp':
+      return ja;
+    default:
+      console.log(
+        `No valid translation found for ${i18nLocal} defaulting to enCA`
+      );
+      return enCA;
+  }
+}
 
 function _dateFnsFormat(value: string, formatter: string) {
+  const { locale } = useI18n();
   const formatted = '';
   try {
     if (value) {
-      return format(parseJSON(value), formatter);
+      return format(parseJSON(value), formatter, {
+        locale: i18n2DateLocale(locale.value as i18nLocale),
+      });
     }
   } catch (error) {
     console.error(`_dateFnsFormat: Error parsing ${value} to ${error}`);
