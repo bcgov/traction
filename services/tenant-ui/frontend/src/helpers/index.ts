@@ -2,22 +2,22 @@ import { format, fromUnixTime, parseJSON } from 'date-fns';
 import { enCA, fr, ja } from 'date-fns/locale';
 import { useI18n } from 'vue-i18n';
 
-export type i18nLocale = 'en' | 'fr' | 'jp';
+export type I18nLocale = 'en' | 'fr' | 'jp';
 
-function i18n2DateLocale(i18nLocal: i18nLocale) {
-  switch (i18nLocal) {
+function i18n2DateLocale(i18nLocale: I18nLocale): Locale {
+  switch (i18nLocale) {
     case 'en':
       return enCA;
     case 'fr':
       return fr;
     case 'jp':
       return ja;
-    default:
-      console.log(
-        `No valid translation found for ${i18nLocal} defaulting to enCA`
-      );
-      return enCA;
   }
+  // This way we can fall back to a default while using typescript to
+  // enforce that all instances of i18nLocale have a corresponding case in the
+  // switch statement
+  /* eslint no-unreachable: "error" */
+  throw new Error('No valid date-fn');
 }
 
 function _dateFnsFormat(value: string, formatter: string) {
@@ -25,9 +25,17 @@ function _dateFnsFormat(value: string, formatter: string) {
   const formatted = '';
   try {
     if (value) {
-      return format(parseJSON(value), formatter, {
-        locale: i18n2DateLocale(locale.value as i18nLocale),
-      });
+      try {
+        return format(parseJSON(value), formatter, {
+          locale: i18n2DateLocale(locale.value as I18nLocale),
+        });
+      } catch {
+        // Incase the locale was never set (used outside of a vue component)
+        console.log(
+          `No valid translation found for ${locale.value} defaulting to enCA`
+        );
+        return format(parseJSON(value), formatter, { locale: enCA });
+      }
     }
   } catch (error) {
     console.error(`_dateFnsFormat: Error parsing ${value} to ${error}`);
