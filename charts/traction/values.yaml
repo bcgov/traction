@@ -1,17 +1,13 @@
-# Default values for helm-chart.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+nameOverride: ""
+fullnameOverride: ""
 
 global:
   # -- Domain suffix to be used for default hostpaths in ingress
   # override in different environments, or for each app
   # --set global.ingressSuffix
-  ingressSuffix: .apps.silver.devops.gov.bc.ca
+  ingressSuffix: .example.com
   # -- The used ledger. Will be used for default values.
   ledger: bcovrin-test
-
-nameOverride: ""
-fullnameOverride: ""
 
 acapy:
   image:
@@ -31,6 +27,13 @@ acapy:
 
   # Ignored if autoscaling is enabled
   replicaCount: 1
+
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
 
   # The agent seed, 32 characters. Will be generated if not defined here
   agentSeed: ""
@@ -134,6 +137,7 @@ acapy:
     connectionUpdate: true
     multitenantProvider: true
     tractionInnkeeper: true
+
   # Plugin configuration file
   #
   plugin-config.yml:
@@ -178,13 +182,6 @@ acapy:
     type: ClusterIP
     adminPort: 8031
     httpPort: 8030
-  
-  autoscaling:
-    enabled: true
-    minReplicas: 1
-    maxReplicas: 100
-    targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
 
   nodeSelector: {}
   tolerations: []
@@ -226,11 +223,11 @@ acapy:
     adminurl:
       # set to false and provide a value to "hardcode" the password value
       generated: true
-      value: "change-me"
+      # value: "change-me"
     pluginInnkeeper:
       generated: true
-      walletkey: "change-me"
-      tenantid: "innkeeper"
+      # walletkey: "change-me"
+      # tenantid: "innkeeper"
 
 traction:
   config:
@@ -258,12 +255,17 @@ tenant_proxy:
   # Ignored if autoscaling is enabled
   replicaCount: 1
 
-  podAnnotations: {}
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
 
+  podAnnotations: {}
   podSecurityContext:
     {}
     # fsGroup: 2000
-
   securityContext:
     {}
     # capabilities:
@@ -298,13 +300,6 @@ tenant_proxy:
       cpu: 125m
       memory: 128Mi
 
-  autoscaling:
-    enabled: true
-    minReplicas: 1
-    maxReplicas: 100
-    targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
-
   nodeSelector: {}
 
   networkPolicy:
@@ -317,7 +312,6 @@ tenant_proxy:
     namespaceSelector: {}
 
   tolerations: []
-
   affinity: {}
 
 # Create ingress resource for Acapy and Tenant Proxy

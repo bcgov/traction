@@ -1,0 +1,13 @@
+global:
+  fullnameOverride: "int-traction"
+  ingressSuffix: -test.apps.silver.devops.gov.bc.ca
+postgresql:
+  fullnameOverride: "int-traction"
+acapy:
+  image:
+    tag: "0.2.14"
+    pullPolicy: Always
+tenant_proxy:
+  image:
+    tag: "0.2.14"
+    pullPolicy: Always

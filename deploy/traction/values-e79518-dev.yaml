@@ -1,30 +1,16 @@
 global:
   fullnameOverride: "traction-dts"
   ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
-  nsp:
-    enabled: true
 acapy:
   image:
-    tag: "ghcr.io/bcgov/traction-plugins-acapy:0.2.14"
-    version: "0.2.14"
-    buildtime: "2023-02-16T21:45:48.653Z"
+    tag: "0.2.14"
     pullPolicy: Always
-  secret:
-    adminurl:
-      generated: true
-    pluginInnkeeper:
-      generated: true
 
-  plugins:
-    basicmessageStorage: true
-    connectionUpdate: true
-    multitenantProvider: true
-    tractionInnkeeper: true
-
-  pluginValues:
-    tractionInnkeeper:
-      printKey: true
-      printToken: true
+  plugin-config.yml:
+    traction_innkeeper:
+      innkeeper_wallet:
+        print_key: true
+        print_token: true
 
   resources:
     limits:
@@ -33,10 +19,9 @@ acapy:
     requests:
       cpu: 120m
       memory: 400Mi
-  tails:
-    enabled: true
-  staticArgs:
-    walletName: mywallet
+
+  argfile.yml:
+    wallet-name: mywallet
 
 postgresql:
   fullnameOverride: "traction-dts"
@@ -62,7 +47,5 @@ postgresql:
 
 tenant_proxy:
   image:
-    tag: "ghcr.io/bcgov/traction-tenant-proxy:0.2.14"
-    version: "0.2.14"
-    buildtime: "2023-02-16T21:45:38.860Z"
+    tag: "0.2.14"
     pullPolicy: Always

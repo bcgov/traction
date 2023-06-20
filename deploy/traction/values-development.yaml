@@ -1,10 +1,9 @@
 global:
   ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
+  ledger: bcovrin-test
 acapy:
   image:
-    tag: "ghcr.io/bcgov/traction-plugins-acapy:0.2.14"
-    version: "0.2.14"
-    buildtime: "2022-10-28T01:30:31.105Z"
+    tag: "0.2.14"
     pullPolicy: Always
   secret:
     adminurl:
@@ -35,7 +34,5 @@ postgresql:
       memory: 820Mi
 tenant_proxy:
   image:
-    tag: "ghcr.io/bcgov/traction-tenant-proxy:0.2.14"
-    version: "0.2.14"
-    buildtime: "2022-01-28T18:19:10.574Z"
+    tag: "0.2.14"
     pullPolicy: Always

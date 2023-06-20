@@ -2,26 +2,34 @@ global:
   ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
 acapy:
   image:
-    tag: "ghcr.io/bcgov/traction-plugins-acapy:sha-f678ca9"
-    version: 'sha-f678ca9'
-    buildtime: '2023-03-01T03:07:45.860Z'
+    tag: "sha-f678ca9"
     pullPolicy: Always
   secret:
     adminurl:
       generated: false
+      value: "change-me"
     pluginInnkeeper:
       generated: false
+      walletkey: "change-me"
+      tenantid: "innkeeper"
   plugins:
     basicmessageStorage: true
     connectionUpdate: true
     multitenantProvider: true
     tractionInnkeeper: true
-  pluginValues:
-    tractionInnkeeper:
-      printKey: true
-      printToken: true
-      reservationExpiryMinutes: 2880
-      reservationAutoApprove: false
+
+  plugin-config.yml:
+    traction_innkeeper:
+      innkeeper_wallet:
+        print_key: true
+        print_token: true
+      reservation:
+        expiry_minutes: 2880
+        auto_approve: false
+
+  autoscaling:
+    enabled: false
+
   resources:
     limits:
       cpu: 200m
@@ -29,10 +37,9 @@ acapy:
     requests:
       cpu: 120m
       memory: 400Mi
-  tails:
-    enabled: true
-  staticArgs:
-    walletName: default
+
+  argfile.yml:
+    wallet-name: default
 
 postgresql:
   primary:
@@ -46,7 +53,7 @@ postgresql:
 
 tenant_proxy:
   image:
-    tag: "ghcr.io/bcgov/traction-tenant-proxy:sha-f678ca9"
-    version: 'sha-f678ca9'
-    buildtime: "2023-03-01T03:07:43.994Z"
+    tag: "sha-f678ca9"
     pullPolicy: Always
+  autoscaling:
+    enabled: false

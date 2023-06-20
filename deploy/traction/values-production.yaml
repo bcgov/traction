@@ -1,0 +1,6 @@
+acapy:
+  image:
+    tag: "0.2.14"
+tenant_proxy:
+  image:
+    tag: "0.2.14"
