@@ -14,7 +14,21 @@
         <!-- Logging In -->
         <div v-if="loginMode === LOGIN_MODE.SIGNIN" class="py-6">
           <LoginForm />
-          <div class="mt-6">
+          <div v-if="config.frontend.showOIDCLogin" class="oidc-login">
+            <div v-if="!user" class="oidc-choice">
+              <hr />
+              <span class="mb-0">{{ $t('admin.orSignInWith') }}</span>
+              <LoginOIDC class="mt-0" />
+            </div>
+          </div>
+
+          <div
+            v-if="
+              (config.frontend.showOIDCLogin && user) ||
+              !config.frontend.showOIDCLogin
+            "
+            class="mt-6"
+          >
             <p>
               {{ $t('login.noAccount') }}
               <a
@@ -70,6 +84,8 @@
 </template>
 
 <script setup lang="ts">
+import LoginOIDC from '@/components/oidc/LoginOIDC.vue';
+
 // Vue
 import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -84,11 +100,14 @@ import Status from './reservation/Status.vue';
 import { storeToRefs } from 'pinia';
 import { useConfigStore } from '@/store';
 import { useReservationStore } from '@/store';
+import { useOIDCStore } from '@/store';
+
 import { RESERVATION_STATUSES } from '@/helpers/constants';
 
-const { config } = storeToRefs(useConfigStore());
 const reservationStore = useReservationStore();
+const { config } = storeToRefs(useConfigStore());
 const { status } = storeToRefs(useReservationStore());
+const { user } = storeToRefs(useOIDCStore());
 
 const route = useRoute();
 const router = useRouter();

@@ -14,3 +14,6 @@ export { useReservationStore } from './reservationStore';
 export { useInnkeeperTokenStore } from './innkeeper/innkeeperTokenStore';
 export { useInnkeeperTenantsStore } from './innkeeper/innkeeperTenantsStore';
 export { useInnkeeperOidcStore } from './innkeeper/innkeeperOidcStore';
+
+// OIDC
+export { useOIDCStore } from './oidc/oidcStore';

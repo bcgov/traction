@@ -37,6 +37,7 @@
           name="email"
           autofocus
           class="w-full"
+          :disabled="config.frontend.showOIDCLogin"
         />
         <span v-if="v$.contact_email.$error && submitted">
           <span v-for="(error, index) of v$.contact_email.$errors" :key="index">
@@ -67,6 +68,7 @@
           autocomplete="full-name"
           name="fullName"
           class="w-full"
+          :disabled="config.frontend.showOIDCLogin"
         />
         <small v-if="v$.contact_name.$invalid && submitted" class="p-error">{{
           v$.contact_name.required.$message
@@ -161,7 +163,7 @@ import { useToast } from 'vue-toastification';
 import { email, required } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
 // State
-import { useReservationStore } from '@/store';
+import { useConfigStore, useOIDCStore, useReservationStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Components
 import { RESERVATION_STATUSES } from '@/helpers/constants';
@@ -170,10 +172,24 @@ import ReservationConfirmation from './ReservationConfirmation.vue';
 
 const toast = useToast();
 
+// State setup
+const reservationStore = useReservationStore();
+const { config } = storeToRefs(useConfigStore());
+const { loading, status } = storeToRefs(useReservationStore());
+const { user } = storeToRefs(useOIDCStore());
+
+// The reservation return object
+const reservationIdResult: any = ref('');
+const reservationPwdResult: any = ref('');
+
 // Login Form and validation
 const formFields = reactive({
-  contact_email: '',
-  contact_name: '',
+  contact_email: config.value.frontend.showOIDCLogin
+    ? user.value.profile.email
+    : '',
+  contact_name: config.value.frontend.showOIDCLogin
+    ? user.value.profile.name
+    : '',
   contact_phone: '',
   tenant_name: '',
   tenant_reason: '',
@@ -186,14 +202,6 @@ const rules = {
   tenant_reason: { required },
 };
 const v$ = useVuelidate(rules, formFields);
-
-// State setup
-const reservationStore = useReservationStore();
-const { loading, status } = storeToRefs(useReservationStore());
-
-// The reservation return object
-const reservationIdResult: any = ref('');
-const reservationPwdResult: any = ref('');
 
 // Form submission
 const submitted = ref(false);
