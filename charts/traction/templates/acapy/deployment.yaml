@@ -21,11 +21,12 @@ spec:
       labels:
         {{- include "acapy.selectorLabels" . | nindent 8 }}
     spec:
-      {{- with .Values.acapy.imagePullSecrets }}
+      {{- with .Values.acapy.image.pullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "acapy.serviceAccountName" . }}
+      automountServiceAccountToken: {{ .Values.acapy.serviceAccount.automountServiceAccountToken }}
       securityContext:
         {{- toYaml .Values.acapy.podSecurityContext | nindent 8 }}
       initContainers:
@@ -47,7 +48,7 @@ spec:
       containers:
         - name: acapy
           securityContext:
-            {{- toYaml .Values.acapy.securityContext | nindent 12 }}
+            {{- toYaml .Values.acapy.containerSecurityContext | nindent 12 }}
           image: "{{ .Values.acapy.image.repository }}:{{ .Values.acapy.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.acapy.image.pullPolicy }}
           command:

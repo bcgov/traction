@@ -37,4 +37,7 @@ spec:
           averageUtilization: {{ .Values.tenant_proxy.autoscaling.targetMemoryUtilizationPercentage }}
         {{- end }}
     {{- end }}
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: {{ .Values.tenant_proxy.autoscaling.stabilizationWindowSeconds }}
 {{- end }}

@@ -20,17 +20,18 @@ spec:
       labels:
         {{- include "tenant_proxy.selectorLabels" . | nindent 8 }}
     spec:
-      {{- with .Values.tenant_proxy.imagePullSecrets }}
+      {{- with .Values.tenant_proxy.image.pullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "tenant_proxy.serviceAccountName" . }}
+      automountServiceAccountToken: {{ .Values.tenant_proxy.serviceAccount.automountServiceAccountToken }}
       securityContext:
         {{- toYaml .Values.tenant_proxy.podSecurityContext | nindent 8 }}
       containers:
         - name: tenant-proxy
           securityContext:
-            {{- toYaml .Values.tenant_proxy.securityContext | nindent 12 }}
+            {{- toYaml .Values.tenant_proxy.containerSecurityContext | nindent 12 }}
           image: "{{ .Values.tenant_proxy.image.repository }}:{{ .Values.tenant_proxy.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.tenant_proxy.image.pullPolicy }}
           ports:

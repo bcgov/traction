@@ -256,7 +256,7 @@ Generate acapy wallet storage config
 '{"url":"{{ .Values.acapy.walletStorageConfig.url }}","max_connections":"{{ .Values.acapy.walletStorageConfig.max_connection | default 10 }}"", "wallet_scheme":"{{ .Values.acapy.walletStorageConfig.wallet_scheme }}"}'
 {{- end -}}
 {{- else if and .Values.postgresql.enabled ( not ( index .Values "postgresql-ha" "enabled") ) -}}
-'{"url":"{{ include "global.postgresql.fullname" . }}:{{ .Values.postgresql.service.ports.postgresql }}","max_connections":"{{ .Values.acapy.walletStorageConfig.max_connections }}", "wallet_scheme":"{{ .Values.acapy.walletStorageConfig.wallet_scheme }}"}'
+'{"url":"{{ include "global.postgresql.fullname" . }}:{{ .Values.postgresql.primary.service.ports.postgresql }}","max_connections":"{{ .Values.acapy.walletStorageConfig.max_connections }}", "wallet_scheme":"{{ .Values.acapy.walletStorageConfig.wallet_scheme }}"}'
 {{- else if and ( index .Values "postgresql-ha" "enabled" ) ( not .Values.postgresql.enabled ) -}}
 '{"url":"{{ include "global.postgresql-ha.fullname" . }}:{{ index .Values "postgresql-ha" "service" "ports" "postgresql" }}","max_connections":"5", "wallet_scheme":"{{ .Values.acapy.walletScheme }}"}'
 {{- else -}}
