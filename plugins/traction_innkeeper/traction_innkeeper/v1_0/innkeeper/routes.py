@@ -586,22 +586,36 @@ async def register(app: web.Application):
     # routes that do not require a tenant token can be easily slotted under multitenancy.
     app.add_routes(
         [
-            web.post("/multitenancy/reservations", tenant_reservation),
+            web.post(
+                "/multitenancy/reservations",
+                tenant_reservation
+            ),
             web.get(
                 "/multitenancy/reservations/{reservation_id}",
                 tenant_reservation_get,
                 allow_head=False,
             ),
             web.post(
-                "/multitenancy/reservations/{reservation_id}/check-in", tenant_checkin
+                "/multitenancy/reservations/{reservation_id}/check-in",
+                tenant_checkin
             ),
-            web.post("/multitenancy/tenant/{tenant_id}/token", tenant_create_token),
+            web.post(
+                "/multitenancy/tenant/{tenant_id}/token",
+                tenant_create_token
+            ),
         ]
     )
     # routes that require a tenant token for the innkeeper wallet/tenant/agent.
     # these require not only a tenant, but it has to be the innkeeper tenant!
     app.add_routes(
         [
+            # web.post
+            # add post method here to call multitenant reserve method
+            web.post(
+                "/innkeeper/reservations/",
+                tenant_reservation,
+                allow_head=False
+            ),
             web.get(
                 "/innkeeper/reservations/",
                 innkeeper_reservations_list,
@@ -619,11 +633,20 @@ async def register(app: web.Application):
                 "/innkeeper/reservations/{reservation_id}/deny",
                 innkeeper_reservations_deny,
             ),
-            web.get("/innkeeper/tenants/", innkeeper_tenants_list, allow_head=False),
             web.get(
-                "/innkeeper/tenants/{tenant_id}", innkeeper_tenant_get, allow_head=False
+                "/innkeeper/tenants/",
+                innkeeper_tenants_list,
+                allow_head=False
             ),
-            web.put("/innkeeper/tenants/{tenant_id}/config", tenant_config_update),
+            web.get(
+                "/innkeeper/tenants/{tenant_id}",
+                innkeeper_tenant_get,
+                allow_head=False
+            ),
+            web.put(
+                "/innkeeper/tenants/{tenant_id}/config",
+                tenant_config_update
+            ),
         ]
     )
     LOGGER.info("< registering routes")
