@@ -37,7 +37,7 @@
           name="email"
           autofocus
           class="w-full"
-          :disabled="config.frontend.showOIDCLogin"
+          :disabled="config.frontend.showOIDCReservationLogin"
         />
         <span v-if="v$.contact_email.$error && submitted">
           <span v-for="(error, index) of v$.contact_email.$errors" :key="index">
@@ -68,7 +68,7 @@
           autocomplete="full-name"
           name="fullName"
           class="w-full"
-          :disabled="config.frontend.showOIDCLogin"
+          :disabled="config.frontend.showOIDCReservationLogin"
         />
         <small v-if="v$.contact_name.$invalid && submitted" class="p-error">{{
           v$.contact_name.required.$message
@@ -184,10 +184,10 @@ const reservationPwdResult: any = ref('');
 
 // Login Form and validation
 const formFields = reactive({
-  contact_email: config.value.frontend.showOIDCLogin
+  contact_email: config.value.frontend.showOIDCReservationLogin
     ? user.value.profile.email
     : '',
-  contact_name: config.value.frontend.showOIDCLogin
+  contact_name: config.value.frontend.showOIDCReservationLogin
     ? user.value.profile.name
     : '',
   contact_phone: '',

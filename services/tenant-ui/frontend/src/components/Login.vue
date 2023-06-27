@@ -14,7 +14,10 @@
         <!-- Logging In -->
         <div v-if="loginMode === LOGIN_MODE.SIGNIN" class="py-6">
           <LoginForm />
-          <div v-if="config.frontend.showOIDCLogin" class="oidc-login">
+          <div
+            v-if="config.frontend.showOIDCReservationLogin"
+            class="oidc-login"
+          >
             <div v-if="!user" class="oidc-choice">
               <hr />
               <span class="mb-0">{{ $t('admin.orSignInWith') }}</span>
@@ -24,8 +27,8 @@
 
           <div
             v-if="
-              (config.frontend.showOIDCLogin && user) ||
-              !config.frontend.showOIDCLogin
+              (config.frontend.showOIDCReservationLogin && user) ||
+              !config.frontend.showOIDCReservationLogin
             "
             class="mt-6"
           >
