@@ -31,6 +31,8 @@ from .models import (
     ReservationRecordSchema,
     TenantRecord,
     TenantRecordSchema,
+    TenantAuthenticationUserRecord,
+    TenantAuthenticationUserRecordSchema
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -213,6 +215,20 @@ class TenantListSchema(OpenAPISchema):
     results = fields.List(
         fields.Nested(TenantRecordSchema()),
         description="List of tenants",
+    )
+
+class TenantAuthenticationUsersListSchema(OpenAPISchema):
+    """Response schema for authentications - users list."""
+
+    results = fields.List(
+        fields.Nested(TenantAuthenticationUserRecordSchema()),
+        description="List of reservations",
+    )
+
+class TenantAuthenticationUsersIdMatchInfoSchema(OpenAPISchema):
+    """Schema for finding a tenant auth user by the record ID."""
+    tenant_authentication_user_id = fields.Str(
+        description="Tenant authentication user identifier", required=True, example=UUIDFour.EXAMPLE
     )
 
 
@@ -592,6 +608,57 @@ async def innkeeper_tenant_get(request: web.BaseRequest):
     return web.json_response(rec.serialize())
 
 
+@docs(
+    tags=[SWAGGER_CATEGORY],
+)
+@response_schema(TenantAuthenticationUsersListSchema(), 200, description="")
+@innkeeper_only
+@error_handler
+async def innkeeper_authentications_user_list(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+
+    # records are under base/root profile, use Tenant Manager profile
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+
+    tag_filter = {}
+    post_filter = {}
+    async with profile.session() as session:
+        # innkeeper can access all reservation records
+        records = await TenantAuthenticationUserRecord.query(
+            session=session,
+            tag_filter=tag_filter,
+            post_filter_positive=post_filter,
+            alt=True,
+        )
+    results = [record.serialize() for record in records]
+
+    return web.json_response({"results": results})
+
+
+@docs(
+    tags=[SWAGGER_CATEGORY],
+)
+@match_info_schema(TenantAuthenticationUsersIdMatchInfoSchema())
+@response_schema(TenantAuthenticationUserRecordSchema(), 200, description="")
+@innkeeper_only
+@error_handler
+async def innkeeper_authentications_user_get(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    tenant_id = request.match_info["tenant_id"]
+
+    # records are under base/root profile, use Tenant Manager profile
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+
+    async with profile.session() as session:
+        # innkeeper can access all tenants..
+        rec = await TenantRecord.retrieve_by_id(session, tenant_id)
+        LOGGER.info(rec)
+
+    return web.json_response(rec.serialize())
+
+
 async def register(app: web.Application):
     """Register routes."""
     LOGGER.info("> registering routes")
@@ -637,6 +704,16 @@ async def register(app: web.Application):
                 "/innkeeper/tenants/{tenant_id}", innkeeper_tenant_get, allow_head=False
             ),
             web.put("/innkeeper/tenants/{tenant_id}/config", tenant_config_update),
+            web.get(
+                "/innkeeper/authentications/users/",
+                innkeeper_authentications_user_list,
+                allow_head=False,
+            ),
+            web.get(
+                "/innkeeper/authentications/users/{tenant_authentication_user_id}",
+                innkeeper_authentications_user_get,
+                allow_head=False,
+            ),
         ]
     )
     LOGGER.info("< registering routes")
