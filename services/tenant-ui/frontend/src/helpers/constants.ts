@@ -15,6 +15,7 @@ export const API_PATH = {
   EMAIL_STATUS: '/email/reservationStatus',
 
   OIDC_INNKEEPER_LOGIN: '/api/innkeeperLogin',
+  OIDC_INNKEEPER_RESERVATION: '/api/innkeeperReservation',
 
   // Acapy and Plugins
   BASICMESSAGES: '/basicmessages',

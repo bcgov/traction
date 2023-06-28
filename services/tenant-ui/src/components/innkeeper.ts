@@ -20,3 +20,20 @@ export const login = async () => {
 
   return res.data;
 };
+
+/**
+ * @function createReservation
+ * Create a reservation in Traction
+ * @returns {object} the reservation object
+ */
+export const createReservation = async (req: any) => {
+  const reservationUrl = `${TRACURL}/innkeeper/reservations`;
+  const res = await axios({
+    method: "post",
+    url: reservationUrl,
+    data: req.body,
+    headers: req.headers,
+  });
+
+  return res.data;
+};

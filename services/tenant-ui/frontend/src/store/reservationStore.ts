@@ -45,7 +45,12 @@ export const useReservationStore = defineStore('reservation', () => {
 
     // Send the request to the API to create the reservation
     await api
-      .post(API_PATH.MULTITENANCY_RESERVATIONS, payload)
+      .post(
+        config.value.frontend.showOIDCReservationLogin
+          ? API_PATH.OIDC_INNKEEPER_RESERVATION
+          : API_PATH.MULTITENANCY_RESERVATIONS,
+        payload
+      )
       .then((res) => {
         console.log('res from creating a res', res);
         reservation.value = res.data;

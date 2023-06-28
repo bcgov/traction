@@ -41,6 +41,30 @@ router.get(
   }
 );
 
+// Protected reservation endpoint
+router.post(
+  "/innkeeperReservation",
+  async (req: any, res: Response, next: NextFunction) => {
+    try {
+      // Get innkeeper token from login method
+      const { token } = await innkeeperComponent.login();
+
+      const auth = `Bearer ${token}`;
+      const headers = {
+        "Content-Type": "application/json",
+        accept: "application/json",
+        Authorization: auth,
+      };
+      req.headers = { ...req.headers, ...headers };
+
+      const result = await innkeeperComponent.createReservation(req);
+      res.status(201).send(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 // Email endpoint
 router.post(
   "/email/reservationConfirmation",
