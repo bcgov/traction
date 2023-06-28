@@ -1,4 +1,5 @@
 <template>
+  <MainCardContent />
   <div class="flex justify-content-between mb-3">
     <div class="flex justify-content-start">
       <h3 class="mt-0">{{ $t('verifier.verifications') }}</h3>
@@ -115,6 +116,7 @@ import { storeToRefs } from 'pinia';
 // Components
 import CreateRequest from './createPresentationRequest/CreateRequest.vue';
 import DeleteExchangeRecord from './DeleteExchangeRecord.vue';
+import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
 // import PresentationRowExpandData from './PresentationRowExpandData.vue';
 import RowExpandData from '@/components/common/RowExpandData.vue';
 import StatusChip from '@/components/common/StatusChip.vue';
