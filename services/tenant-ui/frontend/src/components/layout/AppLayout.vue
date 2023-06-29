@@ -11,13 +11,9 @@
           <Header />
         </header>
         <main class="layout-content">
-          <Card :class="{ cardExpanded: cardExpanded }">
-            <template #content>
-              <ExpandButton />
-
-              <router-view />
-            </template>
-          </Card>
+          <MainCard>
+            <router-view />
+          </MainCard>
         </main>
         <footer class="bottom-0 layout-footer">
           <Footer />
@@ -28,30 +24,15 @@
 </template>
 
 <script setup lang="ts">
-// PrimeVue
-import Card from 'primevue/card';
 // Layout Components
-import Header from './Header.vue';
 import Footer from './Footer.vue';
+import Header from './Header.vue';
+import MainCard from './mainCard/MainCard.vue';
 import Sidebar from './Sidebar.vue';
-import ExpandButton from './mainCard/ExpandButton.vue';
 
 // State
 import { storeToRefs } from 'pinia';
 import { useCommonStore } from '@/store/commonStore';
 
-const { cardExpanded, sidebarOpenClass } = storeToRefs(useCommonStore());
+const { sidebarOpenClass } = storeToRefs(useCommonStore());
 </script>
-
-<style scoped lang="scss">
-.cardExpanded {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  height: calc(100% - 20px);
-  width: calc(100% - 20px);
-  overflow: auto;
-
-  border: 1px solid lightgray;
-}
-</style>
