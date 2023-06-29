@@ -39,7 +39,10 @@ const toast = useToast();
 
 const reloadProfileDetails = async () => {
   try {
-    await tenantStore.getIssuanceStatus();
+    await Promise.allSettled([
+      tenantStore.getTenantConfig(),
+      tenantStore.getIssuanceStatus(),
+    ]);
   } catch (error) {
     toast.error(`Failure getting Issuer info: ${error}`);
   }
