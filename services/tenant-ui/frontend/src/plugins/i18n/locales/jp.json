@@ -140,7 +140,9 @@
         "connection": "Connection <JP>",
         "credential": "Credential <JP>",
         "lastUpdate": "Last Update <JP>"
-      }
+      },
+      "viewCard": "View in Card format <JP>",
+      "viewTable": "View in Table format <JP>"
     },
     "wallet": {
       "notFound": "There are no credentials in your Wallet <JP>",

@@ -140,7 +140,9 @@
         "connection": "Connection <FR>",
         "credential": "Credential <FR>",
         "lastUpdate": "Last Update <FR>"
-      }
+      },
+      "viewCard": "View in Card format <FR>",
+      "viewTable": "View in Table format <FR>"
     },
     "wallet": {
       "notFound": "There are no credentials in your Wallet <FR>",
