@@ -1,126 +1,124 @@
 <template>
-  <h3 class="mt-0">{{ $t('messages.messages') }}</h3>
-  <DataTable
-    v-model:expandedRows="expandedRows"
-    v-model:selection="selectedMessage"
-    v-model:filters="filter"
-    :loading="loading"
-    :paginator="true"
-    :rows="TABLE_OPT.ROWS_DEFAULT"
-    :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
-    :value="formattedMessages"
-    :global-filter-fields="['content']"
-    selection-mode="single"
-    data-key="message_id"
-    filter-display="menu"
+  <MainCardContent
+    :title="$t('messages.messages')"
+    :refresh-callback="loadTable"
   >
-    <template #header>
-      <div class="flex justify-content-between">
-        <div class="flex justify-content-start">
-          <CreateMessage @success="loadTable" />
+    <DataTable
+      v-model:expandedRows="expandedRows"
+      v-model:selection="selectedMessage"
+      v-model:filters="filter"
+      :loading="loading"
+      :paginator="true"
+      :rows="TABLE_OPT.ROWS_DEFAULT"
+      :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
+      :value="formattedMessages"
+      :global-filter-fields="['content']"
+      selection-mode="single"
+      data-key="message_id"
+      filter-display="menu"
+    >
+      <template #header>
+        <div class="flex justify-content-between">
+          <div class="flex justify-content-start">
+            <CreateMessage @success="loadTable" />
+          </div>
+          <div class="flex justify-content-end">
+            <span class="p-input-icon-left">
+              <i class="pi pi-search" />
+              <InputText
+                v-model="filter.content.value"
+                placeholder="Search Messages"
+              />
+            </span>
+          </div>
         </div>
-        <div class="flex justify-content-end">
-          <span class="p-input-icon-left message-search">
-            <i class="pi pi-search" />
-            <InputText
-              v-model="filter.content.value"
-              placeholder="Search Messages"
-            />
-          </span>
-          <Button
-            icon="pi pi-refresh"
-            class="p-button-rounded p-button-outlined"
-            title="Refresh Table"
-            @click="loadTable"
-          ></Button>
-        </div>
-      </div>
-    </template>
-    <template #empty>{{ $t('common.noRecordsFound') }}</template>
-    <template #loading>{{ $t('common.loading') }}</template>
-    <Column
-      sortable
-      field="contact"
-      header="Contact"
-      filter-field="contact"
-      :show-filter-match-modes="false"
-    >
-      <template #body="{ data }">
-        {{ data.contact }}
       </template>
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          type="text"
-          class="p-column-filter"
-          placeholder="Search By Contact"
-          @input="filterCallback()"
-        />
-      </template>
-    </Column>
-    <Column
-      :sortable="true"
-      field="state"
-      header="State"
-      filter-field="state"
-      :show-filter-match-modes="false"
-    >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          type="text"
-          class="p-column-filter"
-          placeholder="Search By State"
-          @input="filterCallback()"
-        />
-      </template>
-    </Column>
-    <Column
-      :sortable="true"
-      field="content"
-      header="Content"
-      filter-field="content"
-      :show-filter-match-modes="false"
-    >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          type="text"
-          class="p-column-filter"
-          placeholder="Search By Content"
-          @input="filterCallback()"
-        />
-      </template>
-    </Column>
-    <Column
-      :sortable="true"
-      field="created_at"
-      header="Sent"
-      filter-field="created_at"
-      :show-filter-match-modes="false"
-    >
-      <template #body="{ data }">
-        {{ data.created_at }}
-      </template>
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          type="text"
-          class="p-column-filter"
-          placeholder="Search By Time"
-          @input="filterCallback()"
-        />
-      </template>
-    </Column>
-  </DataTable>
+      <template #empty>{{ $t('common.noRecordsFound') }}</template>
+      <template #loading>{{ $t('common.loading') }}</template>
+      <Column
+        sortable
+        field="contact"
+        header="Contact"
+        filter-field="contact"
+        :show-filter-match-modes="false"
+      >
+        <template #body="{ data }">
+          {{ data.contact }}
+        </template>
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            placeholder="Search By Contact"
+            @input="filterCallback()"
+          />
+        </template>
+      </Column>
+      <Column
+        :sortable="true"
+        field="state"
+        header="State"
+        filter-field="state"
+        :show-filter-match-modes="false"
+      >
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            placeholder="Search By State"
+            @input="filterCallback()"
+          />
+        </template>
+      </Column>
+      <Column
+        :sortable="true"
+        field="content"
+        header="Content"
+        filter-field="content"
+        :show-filter-match-modes="false"
+      >
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            placeholder="Search By Content"
+            @input="filterCallback()"
+          />
+        </template>
+      </Column>
+      <Column
+        :sortable="true"
+        field="created_at"
+        header="Sent"
+        filter-field="created_at"
+        :show-filter-match-modes="false"
+      >
+        <template #body="{ data }">
+          {{ data.created_at }}
+        </template>
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            placeholder="Search By Time"
+            @input="filterCallback()"
+          />
+        </template>
+      </Column>
+    </DataTable>
+  </MainCardContent>
 </template>
+
 <script setup lang="ts">
 // Vue
 import { onMounted, ref, Ref, computed } from 'vue';
 // PrimeVue
-import Button from 'primevue/button';
 import Column from 'primevue/column';
-import DataTable, { DataTableFilterMetaData } from 'primevue/datatable';
+import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
 import { useToast } from 'vue-toastification';
 import { FilterMatchMode } from 'primevue/api';
@@ -132,6 +130,7 @@ import { storeToRefs } from 'pinia';
 import { TABLE_OPT } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 import CreateMessage from './createMessage/CreateMessage.vue';
+import MainCardContent from '../layout/mainCard/MainCardContent.vue';
 
 const toast = useToast();
 
@@ -190,34 +189,26 @@ const filter = ref({
   cred_def_id: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
-  } as DataTableFilterMetaData,
+  },
   contact: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
-  } as DataTableFilterMetaData,
+  },
   credential_definition_id: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
-  } as DataTableFilterMetaData,
+  },
   state: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
-  } as DataTableFilterMetaData,
+  },
   created_at: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   },
 });
+
 onMounted(() => {
   loadTable();
 });
 </script>
-
-<style>
-.message-search {
-  margin-right: 1.5rem;
-}
-.message-search input {
-  padding-left: 3rem !important;
-}
-</style>

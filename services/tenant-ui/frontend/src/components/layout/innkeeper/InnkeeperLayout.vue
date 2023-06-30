@@ -2,7 +2,7 @@
   <Suspense>
     <!-- the suspense tag is so we can await any of these components-->
     <div class="layout-container innkeeper-layout">
-      <nav class="layout-sidebar" :class="calcOpen()">
+      <nav class="layout-sidebar" :class="sidebarOpenClass">
         <Sidebar />
       </nav>
       <div class="layout-page">
@@ -34,17 +34,5 @@ import Header from './Header.vue';
 import { storeToRefs } from 'pinia';
 import { useCommonStore } from '@/store/commonStore';
 
-const { sidebarOpen } = storeToRefs(useCommonStore());
-
-const calcOpen = () => {
-  if (sidebarOpen.value === null) {
-    // Use media queries
-    return null;
-  } else if (sidebarOpen.value) {
-    // Default width
-    return 'open';
-  } else {
-    return 'closed'; // Mobile width
-  }
-};
+const { sidebarOpenClass } = storeToRefs(useCommonStore());
 </script>

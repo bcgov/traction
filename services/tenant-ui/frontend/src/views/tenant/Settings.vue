@@ -1,5 +1,4 @@
 <template>
-  <h3 class="mt-0">{{ $t('tenant.settings.tenantWalletSettings') }}</h3>
   <SettingsForm />
 </template>
 
