@@ -10,11 +10,9 @@
           <Header />
         </header>
         <main class="layout-content">
-          <Card>
-            <template #content>
-              <router-view />
-            </template>
-          </Card>
+          <MainCard>
+            <router-view />
+          </MainCard>
         </main>
         <footer class="bottom-0 layout-footer">
           <Footer />
@@ -25,10 +23,10 @@
 </template>
 
 <script setup lang="ts">
-import Card from 'primevue/card';
 import Footer from '../Footer.vue';
-import Sidebar from './Sidebar.vue';
 import Header from './Header.vue';
+import MainCard from '../mainCard/MainCard.vue';
+import Sidebar from './Sidebar.vue';
 
 // State
 import { storeToRefs } from 'pinia';

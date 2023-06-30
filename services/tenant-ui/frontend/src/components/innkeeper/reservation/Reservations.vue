@@ -1,159 +1,156 @@
 <template>
-  <h3 class="mt-0">{{ $t('reservations.reservations') }}</h3>
-
-  <DataTable
-    v-model:filters="filter"
-    :loading="loading"
-    :value="formattedReservations"
-    :paginator="true"
-    :rows="TABLE_OPT.ROWS_DEFAULT"
-    :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
-    selection-mode="single"
-    data-key="reservation_id"
-    sort-field="created_at"
-    :sort-order="-1"
-    filter-display="menu"
+  <MainCardContent
+    :title="$t('reservations.reservations')"
+    :refresh-callback="loadTable"
   >
-    <template #header>
-      <div class="flex justify-content-end">
-        <span class="p-input-icon-left mr-3">
-          <i class="pi pi-search ml-0" />
-          <InputText
-            v-model="filter.global.value"
-            placeholder="Search Reservations"
+    <DataTable
+      v-model:filters="filter"
+      :loading="loading"
+      :value="formattedReservations"
+      :paginator="true"
+      :rows="TABLE_OPT.ROWS_DEFAULT"
+      :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
+      selection-mode="single"
+      data-key="reservation_id"
+      sort-field="created_at"
+      :sort-order="-1"
+      filter-display="menu"
+    >
+      <template #header>
+        <div class="flex justify-content-end">
+          <span class="p-input-icon-left mr-3">
+            <i class="pi pi-search ml-0" />
+            <InputText
+              v-model="filter.global.value"
+              placeholder="Search Reservations"
+            />
+          </span>
+        </div>
+      </template>
+      <template #empty>{{ $t('common.noRecordsFound') }}</template>
+      <template #loading>{{ $t('common.loading') }}</template>
+      <Column :sortable="false" header="Actions">
+        <template #body="{ data }">
+          <ApproveReservation
+            :id="data.reservation_id"
+            :email="data.contact_email"
+            :name="data.contact_name"
+            @success="showApproveModal"
           />
-        </span>
-        <Button
-          icon="pi pi-refresh"
-          class="p-button-rounded p-button-outlined"
-          title="Refresh Table"
-          @click="loadTable"
-        />
-      </div>
-    </template>
-    <template #empty>{{ $t('common.noRecordsFound') }}</template>
-    <template #loading>{{ $t('common.loading') }}</template>
-    <Column :sortable="false" header="Actions">
-      <template #body="{ data }">
-        <ApproveReservation
-          :id="data.reservation_id"
-          :email="data.contact_email"
-          :name="data.contact_name"
-          @success="showApproveModal"
-        />
-        <DenyReservation
-          :id="data.reservation_id"
-          :email="data.contact_email"
-          :name="data.contact_name"
-        />
-      </template>
-    </Column>
-    <Column
-      :sortable="true"
-      field="contact_email"
-      filter-field="contact_email"
-      header="Contact Email"
-      :show-filter-match-modes="false"
-    >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          type="text"
-          class="p-column-filter"
-          placeholder="Search By Contact"
-          @input="filterCallback()"
-        />
-      </template>
-    </Column>
-    <Column
-      :sortable="true"
-      field="contact_name"
-      filter-field="contact_name"
-      header="Contact Name"
-      :show-filter-match-modes="false"
-    >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          type="text"
-          class="p-column-filter"
-          placeholder="Search By Contact"
-          @input="filterCallback()"
-        />
-      </template>
-    </Column>
-    <Column
-      :sortable="true"
-      field="contact_phone"
-      filter-field="contact_phone"
-      header="Contact Phone"
-      :show-filter-match-modes="false"
-    >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          type="text"
-          class="p-column-filter"
-          placeholder="Search By Contact"
-          @input="filterCallback()"
-        />
-      </template>
-    </Column>
-    <Column
-      :sortable="true"
-      field="tenant_name"
-      filter-field="tenant_name"
-      header="Tenant Name"
-      :show-filter-match-modes="false"
-    >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          type="text"
-          class="p-column-filter"
-          placeholder="Search By Contact"
-          @input="filterCallback()"
-        />
-      </template>
-    </Column>
-    <Column
-      :sortable="true"
-      field="tenant_reason"
-      filter-field="tenant_reason"
-      header="Tenant Reason"
-      :show-filter-match-modes="false"
-    >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          type="text"
-          class="p-column-filter"
-          placeholder="Search By Contact"
-          @input="filterCallback()"
-        />
-      </template>
-    </Column>
-    <Column
-      :sortable="true"
-      field="created"
-      filter-field="created"
-      header="Created at"
-      :show-filter-match-modes="false"
-    >
-      <template #body="{ data }">
-        {{ formatDateLong(data.created_at) }}
-      </template>
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          type="text"
-          class="p-column-filter"
-          placeholder="Search By Contact"
-          @input="filterCallback()"
-        />
-      </template>
-    </Column>
-  </DataTable>
+          <DenyReservation
+            :id="data.reservation_id"
+            :email="data.contact_email"
+            :name="data.contact_name"
+          />
+        </template>
+      </Column>
+      <Column
+        :sortable="true"
+        field="contact_email"
+        filter-field="contact_email"
+        header="Contact Email"
+        :show-filter-match-modes="false"
+      >
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            placeholder="Search By Contact"
+            @input="filterCallback()"
+          />
+        </template>
+      </Column>
+      <Column
+        :sortable="true"
+        field="contact_name"
+        filter-field="contact_name"
+        header="Contact Name"
+        :show-filter-match-modes="false"
+      >
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            placeholder="Search By Contact"
+            @input="filterCallback()"
+          />
+        </template>
+      </Column>
+      <Column
+        :sortable="true"
+        field="contact_phone"
+        filter-field="contact_phone"
+        header="Contact Phone"
+        :show-filter-match-modes="false"
+      >
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            placeholder="Search By Contact"
+            @input="filterCallback()"
+          />
+        </template>
+      </Column>
+      <Column
+        :sortable="true"
+        field="tenant_name"
+        filter-field="tenant_name"
+        header="Tenant Name"
+        :show-filter-match-modes="false"
+      >
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            placeholder="Search By Contact"
+            @input="filterCallback()"
+          />
+        </template>
+      </Column>
+      <Column
+        :sortable="true"
+        field="tenant_reason"
+        filter-field="tenant_reason"
+        header="Tenant Reason"
+        :show-filter-match-modes="false"
+      >
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            placeholder="Search By Contact"
+            @input="filterCallback()"
+          />
+        </template>
+      </Column>
+      <Column
+        :sortable="true"
+        field="created"
+        filter-field="created"
+        header="Created at"
+        :show-filter-match-modes="false"
+      >
+        <template #body="{ data }">
+          {{ formatDateLong(data.created_at) }}
+        </template>
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            placeholder="Search By Contact"
+            @input="filterCallback()"
+          />
+        </template>
+      </Column>
+    </DataTable>
+  </MainCardContent>
 
   <!-- Post-approve dialog -->
   <Dialog
@@ -188,6 +185,7 @@ import { storeToRefs } from 'pinia';
 // Other components
 import ApproveReservation from './ApproveReservation.vue';
 import DenyReservation from './DenyReservation.vue';
+import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
 import { TABLE_OPT } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 
