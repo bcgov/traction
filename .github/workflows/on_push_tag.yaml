@@ -138,7 +138,6 @@ jobs:
           echo "IMAGE_TAG=$(oc get ${{ needs.init.outputs.cm_tenant_ui }} -o 'jsonpath={ .data}' | jq .IMAGE_TAG)" >> $GITHUB_ENV
           echo "IMAGE_VERSION=$(oc get ${{ needs.init.outputs.cm_tenant_ui }} -o 'jsonpath={ .data}' | jq .IMAGE_VERSION)" >> $GITHUB_ENV
 
-
       - name: print outputs
         run: |
           echo "IMAGE_BUILDTIME: ${{ env.IMAGE_BUILDTIME }}"
@@ -178,7 +177,6 @@ jobs:
           echo "IMAGE_TAG=$(oc get configmap/traction-tenant-proxy-img -o 'jsonpath={ .data}' | jq .IMAGE_TAG)" >> $GITHUB_ENV
           echo "IMAGE_VERSION=$(oc get configmap/traction-tenant-proxy-img -o 'jsonpath={ .data}' | jq .IMAGE_VERSION)" >> $GITHUB_ENV
 
-
       - name: print outputs
         run: |
           echo "IMAGE_BUILDTIME: ${{ env.IMAGE_BUILDTIME }}"
@@ -214,14 +212,12 @@ jobs:
       
       - name: Run Traction Helm 
         run: |
-          yq eval '.acapy.image.tag = ${{ needs.read_config_acapy.outputs.image_tag }}' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml
-          yq eval '.acapy.image.version = ${{ needs.read_config_acapy.outputs.image_version }}' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml
-          yq eval '.acapy.image.buildtime = ${{ needs.read_config_acapy.outputs.buildtime }}' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml
-          yq eval '.tenant_proxy.image.tag = ${{ needs.read_config_proxy.outputs.image_tag }}' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml
-          yq eval '.tenant_proxy.image.version = ${{ needs.read_config_proxy.outputs.image_version }}' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml
-          yq eval '.tenant_proxy.image.buildtime = ${{ needs.read_config_proxy.outputs.buildtime }}' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml
-          helm upgrade -f ./charts/traction/values.yaml -f ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml ${{ needs.init.outputs.promote_to }}-traction ./charts/traction --install --wait
+          helm upgrade --install ${{ needs.init.outputs.promote_to }}-traction -f ./deploy/traction/values-${{ needs.init.outputs.promote_to }}.yaml --set acapy.image.tag=${{ needs.read_config_acapy.outputs.image_tag }} --set traction_proxy.image.tag=${{ needs.read_config_proxy.outputs.image_tag }} ./charts/traction --wait
       
+      - name: Restart Traction Pods
+        run: |
+          oc delete pod -l app.kubernetes.io/instance=${{ needs.init.outputs.promote_to }}-traction
+
       - name: Run Tenant UI Helm 
         run: |
           yq eval '.tenant_ui.image.tag = ${{ needs.read_config_ui.outputs.image_tag }}' -i ./charts/tenant-ui/values-${{ needs.init.outputs.promote_to }}.yaml

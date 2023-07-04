@@ -95,13 +95,11 @@ jobs:
 
       - name: Traction Dev Helm
         run: |
-          yq eval '.acapy.image.tag = "${{ needs.build_acapy.outputs.image_tag }}"' -i ./charts/traction/values-development.yaml
-          yq eval '.acapy.image.version = "${{ needs.build_acapy.outputs.image_version }}"' -i ./charts/traction/values-development.yaml
-          yq eval '.acapy.image.buildtime = "${{ needs.build_acapy.outputs.buildtime }}"' -i ./charts/traction/values-development.yaml
-          yq eval '.tenant_proxy.image.tag = "${{ needs.build_proxy.outputs.image_tag }}"' -i ./charts/traction/values-development.yaml
-          yq eval '.tenant_proxy.image.version = "${{ needs.build_proxy.outputs.image_version }}"' -i ./charts/traction/values-development.yaml
-          yq eval '.tenant_proxy.image.buildtime = "${{ needs.build_proxy.outputs.buildtime }}"' -i ./charts/traction/values-development.yaml
-          helm upgrade -f ./charts/traction/values.yaml -f ./charts/traction/values-development.yaml traction ./charts/traction --install --wait
+          helm upgrade --install traction -f ./deploy/traction/values-development.yaml --set acapy.image.tag=${{ needs.build_acapy.outputs.image_tag }} --set traction_proxy.image.tag=${{ needs.build_acapy.outputs.image_tag }} ./charts/traction --wait
+      
+      - name: Restart Traction Pods
+        run: |
+          oc delete pod -l app.kubernetes.io/instance=traction
 
       - name: Tenant UI Dev Helm
         run: |
