@@ -105,6 +105,11 @@ const handleSubmit = async (isFormValid: boolean) => {
 
   // Use the wallet creds to get a token
   try {
+    // Trim wallet ID and wallet key
+    formFields.walletId = formFields.walletId.trim();
+    formFields.walletSecret = formFields.walletSecret.trim();
+
+    // Get a token
     await tokenStore.login(formFields.walletId, formFields.walletSecret);
     console.log(token.value);
   } catch (err: any) {
