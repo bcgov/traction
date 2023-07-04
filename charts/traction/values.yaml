@@ -286,7 +286,6 @@ acapy:
 
   ## @param acapy.affinity Affinity for acapy pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
-  ## Note: acapy.podAffinityPreset, acapy.podAntiAffinityPreset, and acapy.nodeAffinityPreset will be ignored when it's set
   ##
   affinity: {}
   ## @param acapy.nodeSelector Node labels for acapy pods assignment
@@ -537,7 +536,6 @@ tenant_proxy:
 
   ## @param tenant_proxy.affinity Affinity for acapy pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
-  ## Note: tenant_proxy.podAffinityPreset, tenant_proxy.podAntiAffinityPreset, and tenant_proxy.nodeAffinityPreset will be ignored when it's set
   ##
   affinity: {}
   ## @param tenant_proxy.nodeSelector Node labels for acapy pods assignment
