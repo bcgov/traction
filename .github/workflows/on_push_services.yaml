@@ -97,9 +97,10 @@ jobs:
         run: |
           helm upgrade --install traction -f ./deploy/traction/values-development.yaml --set acapy.image.tag=${{ needs.build_acapy.outputs.image_tag }} --set traction_proxy.image.tag=${{ needs.build_acapy.outputs.image_tag }} ./charts/traction --wait
       
-      - name: Restart Traction Pods
+      - name: Restart Deployments
         run: |
-          oc delete pod -l app.kubernetes.io/instance=traction
+          oc rollout restart deployment/traction-acapy
+          oc rollout restart deployment/traction-tenant-proxy
 
       - name: Tenant UI Dev Helm
         run: |
