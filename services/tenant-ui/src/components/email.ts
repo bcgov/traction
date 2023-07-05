@@ -1,7 +1,7 @@
 import { Request } from "express";
 import config from "config";
 import nodemailer from "nodemailer";
-import * as eta from "eta"; // HTML templating engine
+import { Eta } from "eta"; // HTML templating engine
 import { buildStatusAutofill } from "../helpers";
 
 import { RESERVATION_APPROVED_TENANT_TEMPLATE } from "./email_templates/reservation_approved_tenant";
@@ -14,6 +14,8 @@ const SERVER: string = config.get("server.smtp.server");
 const PORT: number = config.get("server.smtp.port");
 const FROM: string = config.get("server.smtp.senderAddress");
 const INNKEEPER: string = config.get("server.smtp.innkeeperInbox");
+
+const eta = new Eta();
 
 /**
  * @function sendConfirmationEmail
@@ -29,7 +31,7 @@ export const sendConfirmationEmail = async (req: Request) => {
     });
 
     req.body.serverUrlStatusRouteAutofill = buildStatusAutofill(req.body);
-    const tenantHtml = eta.render(RESERVATION_RECIEVED_TENANT_TEMPLATE, req);
+    const tenantHtml = eta.renderString(RESERVATION_RECIEVED_TENANT_TEMPLATE, req);
 
     // Send a confirmation email to the person doing the reservation
     await transporter.sendMail({
@@ -39,7 +41,7 @@ export const sendConfirmationEmail = async (req: Request) => {
       html: tenantHtml, // html body
     });
 
-    const innkeeperHtml = eta.render(
+    const innkeeperHtml = eta.renderString(
       RESERVATION_RECIEVED_INNKEEPER_TEMPLATE,
       req
     );
@@ -82,7 +84,7 @@ export const sendStatusEmail = async (req: Request) => {
     } else {
       throw Error(`Unsupported reservation state: ${req.body.state}`);
     }
-    const tenantHtml = eta.render(template, req);
+    const tenantHtml = eta.renderString(template, req);
 
     // Send a status update email to the applicant
     await transporter.sendMail({

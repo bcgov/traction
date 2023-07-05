@@ -5,7 +5,7 @@
     v-model:expandedRows="expandedRows"
     v-model:filters="filter"
     :loading="loading"
-    :value="tenants"
+    :value="formattedTenants"
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
@@ -13,6 +13,7 @@
     data-key="tenant_id"
     sort-field="created_at"
     :sort-order="-1"
+    filter-display="menu"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -43,10 +44,41 @@
         <EditConfig :tenant="data" />
       </template>
     </Column>
-    <Column :sortable="true" field="tenant_name" header="Name" />
-    <Column :sortable="true" field="created_at" header="Created at">
+    <Column
+      :sortable="true"
+      field="tenant_name"
+      header="Name"
+      filter-field="tenant_name"
+      :show-filter-match-modes="false"
+    >
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          class="p-column-filter"
+          placeholder="Search By Contact"
+          @input="filterCallback()"
+        />
+      </template>
+    </Column>
+    <Column
+      :sortable="true"
+      field="created"
+      header="Created at"
+      filter-field="created"
+      :show-filter-match-modes="false"
+    >
       <template #body="{ data }">
-        {{ formatDateLong(data.created_at) }}
+        {{ data.created }}
+      </template>
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          class="p-column-filter"
+          placeholder="Search By Contact"
+          @input="filterCallback()"
+        />
       </template>
     </Column>
     <template #expansion="{ data }">
@@ -57,7 +89,7 @@
 
 <script setup lang="ts">
 // Vue
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 // PrimeVue
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -87,6 +119,18 @@ const loadTable = async () => {
   });
 };
 
+// Formatting the Tenant table row
+const formattedTenants = computed(() =>
+  tenants.value.map((ten: any) => ({
+    tenant_id: ten.tenant_id,
+    tenant_name: ten.tenant_name,
+    connected_to_endorsers: ten.connected_to_endorsers,
+    created_public_did: ten.created_public_did,
+    created: formatDateLong(ten.created_at),
+    created_at: ten.created_at,
+  }))
+);
+
 onMounted(async () => {
   loadTable();
 });
@@ -94,6 +138,14 @@ onMounted(async () => {
 // Filter for search
 const filter = ref({
   global: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  tenant_name: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  created: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   } as DataTableFilterMetaData,

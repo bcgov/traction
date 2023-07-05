@@ -3,6 +3,7 @@ services:
   ngrok-traction-agent:
     image: ngrok/ngrok
     environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
       - TRACTION_ACAPY_HTTP_PORT=${TRACTION_ACAPY_HTTP_PORT}
     ports:
       - 4052:4040

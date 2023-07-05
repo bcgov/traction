@@ -1,13 +1,12 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { Ref, ref } from 'vue';
 import axios from 'axios';
 import { useConfigStore } from './configStore';
-import jwtDecode from 'jwt-decode';
 import { API_PATH } from '@/helpers/constants';
 
 export const useTokenStore = defineStore('token', () => {
   // state
-  const token: any = ref(null);
+  const token: Ref<string | null> = ref(null);
   const loading: any = ref(false);
   const error: any = ref(null);
 

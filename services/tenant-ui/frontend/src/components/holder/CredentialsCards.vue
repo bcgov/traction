@@ -1,4 +1,8 @@
 <template>
+  <p class="pt-0">
+    <i class="pi pi-info-circle mr-1"></i>
+    {{ $t('configuration.oca.disclaimer') }}
+  </p>
   <div v-if="loading || loadingOca" class="grid">
     <div class="col-12 md:col-6 xl:col-3">
       <SkeletonCard />
@@ -15,7 +19,7 @@
     </div>
   </div>
 
-  <span v-else> {{ $t('credentials.wallet.notFound') }} </span>
+  <p v-else>{{ $t('credentials.wallet.notFound') }}</p>
 </template>
 
 <script setup lang="ts">
@@ -30,9 +34,6 @@ import { storeToRefs } from 'pinia';
 import OcaCard from './credentialOcaCard/OcaCard.vue';
 import SkeletonCard from '@/components/common/SkeletonCard.vue';
 
-// The emits it can do (common things between table and card view handled in parent)
-// defineEmits(['accept', 'delete', 'reject']);
-
 const toast = useToast();
 
 // State
@@ -42,7 +43,7 @@ const holderStore = useHolderStore();
 onMounted(async () => {
   holderStore.listCredentials();
   // Get the oca list avaliable, each card will fetch it's OCA though
-  holderStore.listOcas().catch((err) => {
+  holderStore.listOcas(true).catch((err) => {
     console.error(err);
     toast.error(`Failed to load Credentials from your wallet: ${err}`);
   });

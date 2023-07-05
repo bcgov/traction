@@ -28,24 +28,18 @@ export const useHolderStore = defineStore('holder', () => {
   const loading: any = ref(false);
   const error: any = ref(null);
 
-  // getters
-  // const combinedCredentials = computed(() => {
-  //   return credentialExchanges.value.map((ex) => {
-  //     return {
-  //       credentialExchange: ex,
-  //       credential: credentials.value.find(c => c.),
-  //     };
-  //   });
-  // });
-
   // actions
 
   async function listCredentials() {
     return fetchList(API_PATH.CREDENTIALS, credentials, error, loading);
   }
 
-  async function listOcas() {
-    return fetchList(API_PATH.OCAS, ocas, error, loadingOca);
+  async function listOcas(fetchPublic?: boolean) {
+    // If getting public, don't use the default auth token from the axios instance
+    const options = fetchPublic
+      ? { headers: { Authorization: '' } }
+      : undefined;
+    return fetchList(API_PATH.OCAS, ocas, error, loadingOca, {}, options);
   }
 
   async function listHolderCredentialExchanges() {
@@ -185,25 +179,25 @@ export const useHolderStore = defineStore('holder', () => {
   }
 
   return {
-    credentials,
     credentialExchanges,
-    presentations,
+    credentials,
+    error,
+    loading,
+    loadingOca,
     ocas,
+    presentations,
     selectedCredential,
     selectedPresentation,
-    loadingOca,
-    loading,
-    error,
-    listCredentials,
-    listOcas,
-    listHolderCredentialExchanges,
-    listPresentations,
+    acceptCredentialOffer,
+    deleteCredentialExchange,
     getCredential,
     getCredentialOca,
     getPresentation,
-    acceptCredentialOffer,
+    listCredentials,
+    listHolderCredentialExchanges,
+    listOcas,
+    listPresentations,
     rejectCredentialOffer,
-    deleteCredentialExchange,
   };
 });
 

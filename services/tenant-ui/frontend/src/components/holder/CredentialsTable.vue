@@ -3,7 +3,7 @@
     v-model:expandedRows="expandedRows"
     v-model:filters="filter"
     :loading="loading"
-    :value="credentialExchanges"
+    :value="formattedcredentialExchanges"
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
@@ -12,6 +12,7 @@
     data-key="credential_exchange_id"
     sort-field="updated_at"
     :sort-order="-1"
+    filter-display="menu"
   >
     <template #header>
       <div class="flex justify-content-between">
@@ -30,7 +31,7 @@
     <template #empty>{{ $t('common.noRecordsFound') }}</template>
     <template #loading>{{ $t('common.loading') }}</template>
     <template #expansion="{ data }">
-      <CredentialAttributes :attributes="getAttributes(data)" />
+      <CredentialAttributes :attributes="data.credential_attributes" />
       <hr class="expand-divider" />
       <RowExpandData
         :id="data.credential_exchange_id"
@@ -64,24 +65,78 @@
         />
       </template>
     </Column>
-    <Column :sortable="true" field="connection_id" header="Connection">
-      <template #body="{ data }">
-        {{ findConnectionName(data.connection_id) }}
+    <Column
+      :sortable="true"
+      field="connection"
+      header="Connection"
+      filter-field="connection"
+      :show-filter-match-modes="false"
+    >
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          class="p-column-filter"
+          placeholder="Search By Connection"
+          @input="filterCallback()"
+        />
       </template>
     </Column>
     <Column
       :sortable="true"
       field="credential_definition_id"
       header="Credential"
-    />
-    <Column :sortable="true" field="state" header="Status">
+      filter-field="credential_definition_id"
+      :show-filter-match-modes="false"
+    >
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          class="p-column-filter"
+          placeholder="Search By Credential"
+          @input="filterCallback()"
+        />
+      </template>
+    </Column>
+    <Column
+      :sortable="true"
+      field="state"
+      header="Status"
+      filter-field="state"
+      :show-filter-match-modes="false"
+    >
       <template #body="{ data }">
         <StatusChip :status="data.state" />
       </template>
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          class="p-column-filter"
+          placeholder="Search By Status"
+          @input="filterCallback()"
+        />
+      </template>
     </Column>
-    <Column :sortable="true" field="updated_at" header="Last update">
+    <Column
+      :sortable="true"
+      field="updated"
+      header="Last update"
+      filter-field="updated"
+      :show-filter-match-modes="false"
+    >
       <template #body="{ data }">
-        {{ formatDateLong(data.created_at) }}
+        {{ data.updated }}
+      </template>
+      <template #filter="{ filterModel, filterCallback }">
+        <InputText
+          v-model="filterModel.value"
+          type="text"
+          class="p-column-filter"
+          placeholder="Search By Time"
+          @input="filterCallback()"
+        />
       </template>
     </Column>
   </DataTable>
@@ -95,7 +150,7 @@ import {
 } from '@/types/acapyApi/acapyInterface';
 
 // Vue
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 // PrimeVue
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -120,9 +175,24 @@ const toast = useToast();
 
 // State
 const contactsStore = useContactsStore();
-const { contacts, findConnectionName } = storeToRefs(useContactsStore());
+const { contacts } = storeToRefs(useContactsStore());
 const { loading, credentialExchanges } = storeToRefs(useHolderStore());
 const holderStore = useHolderStore();
+
+// The data table row format
+const formattedcredentialExchanges = computed(() =>
+  credentialExchanges.value.map((ce) => ({
+    credential_exchange_id: ce.credential_exchange_id,
+    credential_attributes: getAttributes(ce),
+    connection: contactsStore.findConnectionName(ce.connection_id ?? ''),
+    credential_definition_id: ce.credential_definition_id,
+    state: ce.state,
+    updated: formatDateLong(ce.updated_at ?? ''),
+    updated_at: ce.updated_at,
+    created: formatDateLong(ce.created_at ?? ''),
+    created_at: ce.created_at,
+  }))
+);
 
 // Cred attributes
 const getAttributes = (data: V10CredentialExchange): CredAttrSpec[] => {
@@ -133,6 +203,26 @@ const expandedRows = ref([]);
 
 const filter = ref({
   cred_def_id: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  credential_id: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  credential_definition_id: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  connection: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  state: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  } as DataTableFilterMetaData,
+  updated: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   } as DataTableFilterMetaData,

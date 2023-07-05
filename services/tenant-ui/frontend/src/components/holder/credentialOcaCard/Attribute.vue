@@ -1,10 +1,10 @@
 <template>
   <div class="text-container attribute-list">
     <span class="attribute-label">
-      {{ displayAttributeLabel(props.attribute) }}
+      {{ displayAttributeLabel }}
     </span>
     <span class="attribute-value">
-      {{ displayAttributeValue(props.attribute) }}
+      {{ displayAttributeValue() }}
     </span>
   </div>
 </template>
@@ -12,11 +12,16 @@
 <script setup lang="ts">
 // Types
 import OverlayBundle from '@/overlayLibrary/types/overlay/OverlayBundle';
-import { OverlayAttribute } from '@/overlayLibrary/types/overlay/OverlayBundle';
 import { IndyCredInfo } from '@/types/acapyApi/acapyInterface';
 
-import { computed } from 'vue';
+// Overlay Library
 import { textColorForBackground } from '@/overlayLibrary/utils/color';
+import { localeDefault } from '@/overlayLibrary/utils/localeDefaults';
+
+// Other Imports
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+const { locale } = useI18n({ useScope: 'global' });
 
 const props = defineProps<{
   attribute: string;
@@ -24,15 +29,19 @@ const props = defineProps<{
   overlay?: OverlayBundle;
 }>();
 
-const displayAttributeLabel = (attributeName: string): string => {
+const displayAttributeLabel = computed(() => {
   const attrLabel = props.overlay?.attributes.find(
-    (attribute) => attribute.name === attributeName
+    (attribute) => attribute.name === props.attribute
   );
-  return attrLabel?.label?.['en-CA'] ?? '';
-};
+  return (
+    attrLabel?.label?.[
+      localeDefault(attrLabel.label, locale.value as string)
+    ] ?? ''
+  );
+});
 
-const displayAttributeValue = (attributeName: string): any =>
-  props.credential?.attrs?.[attributeName] ?? '';
+const displayAttributeValue = (): any =>
+  props.credential?.attrs?.[props.attribute] ?? '';
 </script>
 
 <style scoped>

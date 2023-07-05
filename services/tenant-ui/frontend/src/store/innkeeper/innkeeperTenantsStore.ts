@@ -24,7 +24,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
   const error: Ref<string | null> = ref(null);
   const loading: Ref<boolean> = ref(false);
   const reservations: Ref<any[]> = ref([]);
-  const tenants: Ref<any> = ref(null);
+  const tenants: Ref<any[]> = ref([]);
 
   // getters
   const currentReservations = computed(() =>

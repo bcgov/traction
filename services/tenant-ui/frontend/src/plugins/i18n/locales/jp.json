@@ -47,6 +47,7 @@
     "profile": "Profile <JP>",
     "refreshTable": "Refresh Table <JP>",
     "request": "Request <JP>",
+    "toggleCardExpand": "Toggle Expanded <JP>",
     "settings": "Settings <JP>",
     "status": "Status <JP>",
     "submit": "Submit <JP>",
@@ -63,6 +64,7 @@
       "bundleAssociationType": "OCA Bundle association type <JP>",
       "bundleJson": "OCA Bundle JSON <JP>",
       "bundleUrl": "OCA Bundle URL* <JP>",
+      "disclaimer": "OCA Card View for Credentials is an experimental feature in the Tenant UI. <JP>",
       "oca": "OCA <JP>",
       "storedBundleJson": "Stored Bundle JSON <JP>",
       "url": "URL <JP>"
@@ -138,7 +140,9 @@
         "connection": "Connection <JP>",
         "credential": "Credential <JP>",
         "lastUpdate": "Last Update <JP>"
-      }
+      },
+      "viewCard": "View in Card format <JP>",
+      "viewTable": "View in Table format <JP>"
     },
     "wallet": {
       "notFound": "There are no credentials in your Wallet <JP>",

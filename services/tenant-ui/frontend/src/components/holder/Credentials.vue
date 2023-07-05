@@ -1,62 +1,49 @@
 <template>
-  <div class="flex justify-content-between mb-3">
-    <div class="flex justify-content-start">
-      <h3 class="mt-0">
-        <span v-if="cardView">{{ $t('common.credentials') }}</span>
-        <span v-else>{{ $t('credentials.exchanges.exchanges') }}</span>
-      </h3>
-    </div>
-    <div class="flex justify-content-end">
+  <MainCardContent
+    :title="
+      cardView
+        ? $t('common.credentials')
+        : $t('credentials.exchanges.exchanges')
+    "
+    :refresh-callback="loadCredentials"
+  >
+    <template #buttons>
       <Button
         v-if="cardView"
         icon="pi pi-table"
-        title="View in Table format"
+        :title="$t('credentials.exchanges.viewTable')"
         text
         rounded
-        aria-label="Filter"
         @click="cardView = false"
       />
       <Button
         v-else
         icon="pi pi-th-large"
-        title="View in Card format"
+        :title="$t('credentials.exchanges.viewCard')"
         text
         rounded
-        aria-label="Filter"
         @click="cardView = true"
       />
+    </template>
 
-      <Button
-        icon="pi pi-refresh"
-        title="Refresh Credentials list"
-        text
-        rounded
-        aria-label="Filter"
-        @click="loadCredentials"
-      />
-    </div>
-  </div>
-
-  <CredentialsCards
-    v-if="cardView"
-    @accept="acceptOffer"
-    @delete="deleteCredential"
-    @reject="rejectOffer"
-  />
-  <CredentialsTable
-    v-else
-    @accept="acceptOffer"
-    @delete="deleteCredential"
-    @reject="rejectOffer"
-  />
+    <CredentialsCards
+      v-if="cardView"
+      @accept="acceptOffer"
+      @delete="deleteCredential"
+      @reject="rejectOffer"
+    />
+    <CredentialsTable
+      v-else
+      @accept="acceptOffer"
+      @delete="deleteCredential"
+      @reject="rejectOffer"
+    />
+  </MainCardContent>
 </template>
 
 <script setup lang="ts">
 // Types
-import {
-  CredAttrSpec,
-  V10CredentialExchange,
-} from '@/types/acapyApi/acapyInterface';
+import { V10CredentialExchange } from '@/types/acapyApi/acapyInterface';
 
 // Vue
 import { ref } from 'vue';
@@ -65,18 +52,16 @@ import Button from 'primevue/button';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';
 // State
-import { useContactsStore, useHolderStore } from '@/store';
-import { storeToRefs } from 'pinia';
+import { useHolderStore } from '@/store';
 // Other components
 import CredentialsCards from './CredentialsCards.vue';
 import CredentialsTable from './CredentialsTable.vue';
+import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
 
 const toast = useToast();
 const confirm = useConfirm();
 
 // State
-const contactsStore = useContactsStore();
-const { contacts } = storeToRefs(useContactsStore());
 const holderStore = useHolderStore();
 
 // Table/card view toggle

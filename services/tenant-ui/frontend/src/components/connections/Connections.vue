@@ -1,20 +1,19 @@
 <template>
   <MainCardContent
-    :title="$t('configuration.schemasCreds.schemas')"
+    :title="$t('connect.connections.connections')"
     :refresh-callback="loadTable"
   >
     <DataTable
-      v-model:selection="selectedSchema"
       v-model:expandedRows="expandedRows"
       v-model:filters="filter"
       :loading="loading"
-      :value="formattedSchemaList"
+      :value="formattedConnections"
       :paginator="true"
       :rows="TABLE_OPT.ROWS_DEFAULT"
       :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
-      :global-filter-fields="['schema_id', 'version']"
+      :global-filter-fields="['alias']"
       selection-mode="single"
-      data-key="schema_id"
+      data-key="connection_id"
       sort-field="created_at"
       :sort-order="-1"
       filter-display="menu"
@@ -22,15 +21,15 @@
       <template #header>
         <div class="flex justify-content-between">
           <div class="flex justify-content-start">
-            <CreateSchema />
-            <CopySchema class="ml-4" />
+            <AcceptInvitation />
+            <DidExchange class="ml-4" />
           </div>
           <div class="flex justify-content-end">
             <span class="p-input-icon-left">
               <i class="pi pi-search" />
               <InputText
-                v-model="filter.schema_id.value"
-                placeholder="Search Schemas"
+                v-model="filter.alias.value"
+                :placeholder="$t('connect.connections.search')"
               />
             </span>
           </div>
@@ -39,21 +38,27 @@
       <template #empty>{{ $t('common.noRecordsFound') }}</template>
       <template #loading>{{ $t('common.loading') }}</template>
       <Column :expander="true" header-style="width: 3rem" />
-      <Column :sortable="false" header="Actions">
+      <Column :sortable="false" :header="$t('common.actions')">
         <template #body="{ data }">
+          <MessageContact
+            :connection-id="data.connection_id"
+            :connection-name="data.alias"
+          />
           <Button
-            title="Delete Schema"
+            title="Delete Contact"
             icon="pi pi-trash"
             class="p-button-rounded p-button-icon-only p-button-text"
-            @click="deleteSchema($event, data)"
+            :disabled="deleteDisabled(data.alias)"
+            @click="deleteContact($event, data.connection_id)"
           />
+          <EditContact :connection-id="data.connection_id" />
         </template>
       </Column>
       <Column
         :sortable="true"
-        field="schema.name"
-        header="Name"
-        filter-field="schema.name"
+        field="alias"
+        :header="$t('common.alias')"
+        filter-field="alias"
         :show-filter-match-modes="false"
       >
         <template #filter="{ filterModel, filterCallback }">
@@ -61,16 +66,16 @@
             v-model="filterModel.value"
             type="text"
             class="p-column-filter"
-            placeholder="Search By Name"
+            placeholder="Search By Alias"
             @input="filterCallback()"
           />
         </template>
       </Column>
       <Column
         :sortable="true"
-        field="schema_id"
-        header="Schema ID"
-        filter-field="schema_id"
+        field="their_label"
+        filter-field="their_label"
+        :header="$t('connect.table.theirLabel')"
         :show-filter-match-modes="false"
       >
         <template #filter="{ filterModel, filterCallback }">
@@ -78,41 +83,27 @@
             v-model="filterModel.value"
             type="text"
             class="p-column-filter"
-            placeholder="Search By Schema ID"
+            placeholder="Search By Label"
             @input="filterCallback()"
           />
         </template>
       </Column>
       <Column
         :sortable="true"
-        field="schema.version"
-        header="Version"
-        filter-field="schema.version"
+        field="state"
+        :header="$t('common.status')"
+        filter-field="state"
         :show-filter-match-modes="false"
       >
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            type="text"
-            class="p-column-filter"
-            placeholder="Search By Version"
-            @input="filterCallback()"
-          />
+        <template #body="{ data }">
+          <StatusChip :status="data.state" />
         </template>
-      </Column>
-      <Column
-        :sortable="true"
-        field="schema.attrNames"
-        header="Attributes"
-        filter-field="schema.attrNames"
-        :show-filter-match-modes="false"
-      >
         <template #filter="{ filterModel, filterCallback }">
           <InputText
             v-model="filterModel.value"
             type="text"
             class="p-column-filter"
-            placeholder="Search By Attributes"
+            placeholder="Search By State"
             @input="filterCallback()"
           />
         </template>
@@ -120,31 +111,25 @@
       <Column
         :sortable="true"
         field="created"
-        header="Created at"
+        :header="$t('connect.table.createdAt')"
         filter-field="created"
         :show-filter-match-modes="false"
       >
+        <template #body="{ data }">
+          {{ data.created }}
+        </template>
         <template #filter="{ filterModel, filterCallback }">
           <InputText
             v-model="filterModel.value"
             type="text"
             class="p-column-filter"
-            placeholder="Search By Time"
+            placeholder="Search By Date"
             @input="filterCallback()"
           />
         </template>
       </Column>
-      <Column
-        :sortable="true"
-        field="credential_templates"
-        header="Credential Definition"
-      >
-        <template #body="{ data }">
-          <CreateCredentialDefinition :schema="data" @success="loadTable" />
-        </template>
-      </Column>
       <template #expansion="{ data }">
-        <RowExpandData :id="data.schema_id" :url="API_PATH.SCHEMA_STORAGE" />
+        <RowExpandData :id="data.connection_id" :url="API_PATH.CONNECTIONS" />
       </template>
     </DataTable>
   </MainCardContent>
@@ -152,105 +137,99 @@
 
 <script setup lang="ts">
 // Vue
-import { onMounted, ref, computed } from 'vue';
-// PrimeVue etc
+import { onMounted, ref, Ref, computed } from 'vue';
+import { FilterMatchMode } from 'primevue/api';
+// PrimeVue
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
-import { FilterMatchMode } from 'primevue/api';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';
 // State
-import { useGovernanceStore } from '../../store';
+import { useContactsStore, useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
-// Custom components
-import CreateSchema from './createSchema/CreateSchema.vue';
-import CopySchema from './copySchema/CopySchema.vue';
-import CreateCredentialDefinition from './createCredentialDefinition/CreateCredentialDefinition.vue';
+// Other components
+import AcceptInvitation from './acceptInvitation/AcceptInvitation.vue';
+import DidExchange from './didExchange/DidExchange.vue';
+import EditContact from './editContact/EditContact.vue';
 import MainCardContent from '../layout/mainCard/MainCardContent.vue';
+import MessageContact from './messageContact/MessageContact.vue';
 import RowExpandData from '../common/RowExpandData.vue';
+import StatusChip from '../common/StatusChip.vue';
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 
 const confirm = useConfirm();
 const toast = useToast();
 
-const governanceStore = useGovernanceStore();
-const { loading, schemaList, selectedSchema } = storeToRefs(
-  useGovernanceStore()
-);
+const contactsStore = useContactsStore();
+const tenantStore = useTenantStore();
 
-const formattedSchemaList = computed(() =>
-  schemaList.value.map((schema) => ({
-    schema: {
-      name: schema.schema.name,
-      version: schema.schema.version,
-      attrNames: schema.schema.attrNames,
-    },
-    schema_id: schema.schema_id,
-    created: formatDateLong(schema.created_at),
-    created_at: schema.created_at,
-    credentialDefinition: schema.credentialDefinition,
-  }))
-);
-// Loading the schema list and the stored cred defs
+const { loading, filteredConnections } = storeToRefs(useContactsStore());
+const { endorserInfo } = storeToRefs(useTenantStore());
+
 const loadTable = async () => {
-  try {
-    await governanceStore.listStoredSchemas();
-    // Wait til schemas are loaded so the getter can map together the schems to creds
-    await governanceStore.listStoredCredentialDefinitions();
-  } catch (err) {
+  contactsStore.listContacts().catch((err) => {
     console.error(err);
     toast.error(`Failure: ${err}`);
-  }
+  });
 };
 
 onMounted(async () => {
+  // So we can check endorser connection
+  tenantStore.getEndorserInfo();
+  // Load your contact list
   loadTable();
 });
 
-// Deleting a stored schema
-const deleteSchema = (event: any, schema: any) => {
+// Deleting a contact
+const deleteContact = (event: any, id: string) => {
   confirm.require({
     target: event.currentTarget,
-    message: 'Are you sure you want to delete this schema?',
+    message: 'Are you sure you want to delete this connection?',
     header: 'Confirmation',
     icon: 'pi pi-exclamation-triangle',
     accept: () => {
-      doDelete(schema);
+      doDelete(id);
     },
   });
 };
-const doDelete = (schema: any) => {
-  governanceStore
-    .deleteSchema(schema.schema_id)
+const doDelete = (id: string) => {
+  contactsStore
+    .deleteContact(id)
     .then(() => {
-      toast.success(`Schema successfully deleted`);
+      toast.success(`Connection successfully deleted`);
     })
     .catch((err) => {
       console.error(err);
       toast.error(`Failure: ${err}`);
     });
 };
+// Can't delete if it's endorser
+const deleteDisabled = (contactAlias: string) => {
+  return (
+    endorserInfo.value != null &&
+    endorserInfo.value.endorser_name === contactAlias
+  );
+};
 
+// The formatted table row
+const formattedConnections: Ref<any[]> = computed(() =>
+  filteredConnections.value.map((conn) => ({
+    connection_id: conn.connection_id,
+    alias: conn.alias,
+    their_label: conn.their_label,
+    state: conn.state,
+    created: formatDateLong(conn.created_at as string),
+    created_at: conn.created_at,
+  }))
+);
 // necessary for expanding rows, we don't do anything with this
 const expandedRows = ref([]);
 
 const filter = ref({
-  schema_id: {
-    value: null,
-    matchMode: FilterMatchMode.CONTAINS,
-  },
-  'schema.name': {
-    value: null,
-    matchMode: FilterMatchMode.CONTAINS,
-  },
-  'schema.version': {
-    value: null,
-    matchMode: FilterMatchMode.CONTAINS,
-  },
-  'schema.attrNames': {
+  alias: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   },
@@ -258,11 +237,19 @@ const filter = ref({
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   },
+  their_label: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  },
+  state: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  },
 });
 </script>
 
 <style scoped>
-.row.buttons {
+.create-contact {
   float: right;
   margin: 3rem 1rem 0 0;
 }

@@ -33,10 +33,12 @@
     "actions": "Actions",
     "alias": "Alias",
     "confirmation": "Confirmation",
-    "contactName": "Contact Name",
+    "contactName": "Connection Name",
     "credentialId": "Credential ID",
     "credentials": "Credentials",
     "developer": "Developer",
+    "encodedJwt": "Encoded JWT",
+    "decodedJwt": "Decoded JWT",
     "emailAddress": "Email Address",
     "endorser": "Endorser",
     "genericError": "An error occurred",
@@ -48,6 +50,7 @@
     "profile": "Profile",
     "refreshTable": "Refresh Table",
     "request": "Request",
+    "toggleCardExpand": "Toggle Expanded",
     "settings": "Settings",
     "status": "Status",
     "submit": "Submit",
@@ -64,6 +67,7 @@
       "bundleAssociationType": "OCA Bundle association type",
       "bundleJson": "OCA Bundle JSON",
       "bundleUrl": "OCA Bundle URL*",
+      "disclaimer": "OCA Card View for Credentials in the Tenant UI is an experimental feature.",
       "oca": "OCA",
       "storedBundleJson": "Stored Bundle JSON",
       "url": "URL"
@@ -139,7 +143,9 @@
         "connection": "Connection",
         "credential": "Credential",
         "lastUpdate": "Last Update"
-      }
+      },
+      "viewCard": "View in Card format",
+      "viewTable": "View in Table format"
     },
     "wallet": {
       "notFound": "There are no credentials in your Wallet",
@@ -224,6 +230,7 @@
   },
   "profile": {
     "config": "Config:",
+    "token": "JWT Token",
     "connectionNotActiveYet": "Connection not Active yet, refresh or come back later.",
     "connectTenantToEndorser": "Connect Tenant To Endorser",
     "connectTenantToEndorserNotAllowed": "Innkeeper has not approved endorser connections.",
