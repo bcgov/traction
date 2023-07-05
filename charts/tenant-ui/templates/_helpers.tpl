@@ -1,8 +1,8 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "global.name" -}}
-{{- default .Chart.Name .Values.global.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- define "tenant-ui.name" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
@@ -10,11 +10,11 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "global.fullname" -}}
-{{- if .Values.global.fullnameOverride }}
-{{- .Values.global.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- define "tenant-ui.fullname" -}}
+{{- if .Values.fullnameOverride }}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
-{{- $name := default .Chart.Name .Values.global.nameOverride }}
+{{- $name := default .Chart.Name .Values.nameOverride }}
 {{- if contains $name .Release.Name }}
 {{- .Release.Name | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -24,118 +24,18 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 
 {{/*
-Define the Traction instance name 
-So tenant UI can access config and secrets for traction and acapy in the same namespace
-*/}}
-{{- define "global.tractionName" -}}
-{{- .Values.global.tractionNameOverride | trunc 63 | trimSuffix "-" }}
-{{- end }}
-
-
-{{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "global.chart" -}}
+{{- define "tenant-ui.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "common.labels" -}}
-app: {{ include "global.name" . }}
-helm.sh/chart: {{ include "global.chart" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-{{- end }}
-
-{{/*
-Selector common labels
-*/}}
-{{- define "common.selectorLabels" -}}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
-
-{{/*
-Returns a secret if it already in Kubernetes, otherwise it creates
-it randomly.
-*/}}
-{{- define "getOrGeneratePass" }}
-{{- $len := (default 16 .Length) | int -}}
-{{- $obj := (lookup "v1" .Kind .Namespace .Name).data -}}
-{{- if $obj }}
-{{- index $obj .Key -}}
-{{- else if (eq (lower .Kind) "secret") -}}
-{{- randAlphaNum $len | b64enc -}}
-{{- else -}}
-{{- randAlphaNum $len -}}
-{{- end -}}
-{{- end }}
-
-{{/*
-Create a default fully qualified traction name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-*/}}
-{{- define "traction.fullname" -}}
-{{ template "global.tractionName" . }}
-{{- end -}}
-
-{{/*
-Create a default fully qualified traction API name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-*/}}
-{{- define "traction.api.secret.name" -}}
-{{ template "traction.fullname" . }}-api
-{{- end -}}
-
-{{/*
-Create a default fully qualified acapy name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-*/}}
-{{- define "acapy.fullname" -}}
-{{ template "global.tractionName" . }}-acapy
-{{- end -}}
-
-{{/*
-Create a default fully qualified acapy API name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-*/}}
-{{- define "acapy.api.secret.name" -}}
-{{ template "acapy.fullname" . }}-api
-{{- end -}}
-
-{{/*
-Create a default fully qualified acapy innkeeper plugin name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-*/}}
-{{- define "acapy.plugin.innkeeper.name" -}}
-{{ template "acapy.fullname" . }}-plugin-innkeeper
-{{- end -}}
-
-
-{{/*
-Create a default fully qualified traction tenant ui name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-*/}}
-{{- define "tenant_ui.fullname" -}}
-{{ template "global.fullname" . }}
-{{- end -}}
-
-{{/*
-Create a default fully qualified traction tenant ui name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-*/}}
-{{- define "tenant_ui.secret.name" -}}
-{{ template "tenant_ui.fullname" . }}
-{{- end -}}
-
-{{/*
-Common traction tenant ui labels
-*/}}
-{{- define "tenant_ui.labels" -}}
-{{ include "common.labels" . }}
-{{ include "tenant_ui.selectorLabels" . }}
+{{- define "tenant-ui.labels" -}}
+helm.sh/chart: {{ include "tenant-ui.chart" . }}
+{{ include "tenant-ui.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -143,44 +43,44 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
-Selector traction tenant ui labels
+Selector labels
 */}}
-{{- define "tenant_ui.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "tenant_ui.fullname" . }}
-{{ include "common.selectorLabels" . }}
+{{- define "tenant-ui.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "tenant-ui.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
-Mount the traction tenant ui config map as env vars
+Create the name of the service account to use
 */}}
-{{- define "tenant_ui.configmap.env.vars" -}}
-envFrom:
-  - configMapRef:
-      name: {{ template "tenant_ui.fullname" . }}
-{{- end -}}
-
-{{/*
-Create the name of the traction tenant ui service account to use
-*/}}
-{{- define "tenant_ui.serviceAccountName" -}}
-{{- if .Values.tenant_ui.serviceAccount.create }}
-{{- default (include "tenant_ui.fullname" .) .Values.tenant_ui.serviceAccount.name }}
+{{- define "tenant-ui.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create }}
+{{- default (include "tenant-ui.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
-{{- default "default" .Values.tenant_ui.serviceAccount.name }}
+{{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
 
 {{/*
-generate traction tenant ui hosts if not overriden
+Generate host if not overriden
 */}}
-{{- define "tenant_ui.host" -}}
-{{- include "tenant_ui.fullname" . }}{{ .Values.global.ingressSuffix -}}
-{{- end }}
+{{- define "tenant-ui.host" -}}
+{{- include "tenant-ui.fullname" . }}{{ .Values.ingressSuffix -}}
+{{- end -}}
 
-{{- define "tenant_ui.openshift.route.tls" -}}
-{{- if (.Values.tenant_ui.openshift.route.tls.enabled) -}}
+{{- define "tenant-ui.openshift.route.tls" -}}
+{{- if (.Values.openshift.route.tls.enabled) -}}
 tls:
-  insecureEdgeTerminationPolicy: {{ .Values.tenant_ui.openshift.route.tls.insecureEdgeTerminationPolicy }}
-  termination: {{ .Values.tenant_ui.openshift.route.tls.termination }}
+  insecureEdgeTerminationPolicy: {{ .Values.openshift.route.tls.insecureEdgeTerminationPolicy }}
+  termination: {{ .Values.openshift.route.tls.termination }}
 {{- end -}}
 {{- end -}}
+Returns a secret if it already in Kubernetes
+*/}}
+{{- define "getFromSecret" }}
+{{- $len := (default 16 .Length) | int -}}
+{{- $obj := (lookup "v1" .Kind .Namespace .Name).data -}}
+{{- if $obj }}
+{{- index $obj .Key -}}
+{{- end -}}
+{{- end }}
