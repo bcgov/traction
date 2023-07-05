@@ -28,12 +28,13 @@ The Traction service allows organizations to verify, hold, and issue verifiable 
 
 ## Parameters
 
-### Global Configuration
+### Traction configuration
 
-| Name                   | Description                                               | Value          |
-| ---------------------- | --------------------------------------------------------- | -------------- |
-| `global.ingressSuffix` | Domain suffix to be used for default hostpaths in ingress | `.example.com` |
-| `global.ledger`        | The ledger to be used.                                    | `bcovrin-test` |
+| Name                               | Description                  | Value          |
+| ---------------------------------- | ---------------------------- | -------------- |
+| `config.ledger.name`               | The ledger to be used.       | `bcovrin-test` |
+| `config.ledger.browserUrlOverride` | Overrides ledger browser url | `""`           |
+| `config.ledger.genesisUrlOverride` | Overrides genesis url        | `""`           |
 
 ### Acapy Configuration
 
@@ -48,11 +49,11 @@ The Traction service allows organizations to verify, hold, and issue verifiable 
 | `acapy.serviceAccount.automountServiceAccountToken`   | Automount service account token for the server service account                                                      | `true`                                 |
 | `acapy.serviceAccount.name`                           | Name of the service account to use. If not set and create is true, a name is generated using the fullname template. | `""`                                   |
 | `acapy.replicaCount`                                  | Number of AcaPy replicas to deploy                                                                                  | `1`                                    |
-| `acapy.autoscaling.enabled`                           | Enable Horizontal POD autoscaling for AcaPy                                                                         | `true`                                 |
+| `acapy.autoscaling.enabled`                           | Enable Horizontal POD autoscaling for AcaPy                                                                         | `false`                                |
 | `acapy.autoscaling.minReplicas`                       | Minimum number of AcaPy replicas                                                                                    | `1`                                    |
-| `acapy.autoscaling.maxReplicas`                       | Maximum number of AcaPy replicas                                                                                    | `100`                                  |
+| `acapy.autoscaling.maxReplicas`                       | Maximum number of AcaPy replicas                                                                                    | `10`                                   |
 | `acapy.autoscaling.targetCPUUtilizationPercentage`    | Target CPU utilization percentage                                                                                   | `80`                                   |
-| `acapy.autoscaling.targetMemoryUtilizationPercentage` | Target Memory utilization percentage                                                                                | `""`                                   |
+| `acapy.autoscaling.targetMemoryUtilizationPercentage` | Target Memory utilization percentage                                                                                | `80`                                   |
 | `acapy.autoscaling.stabilizationWindowSeconds`        | Stabilization window in seconds                                                                                     | `300`                                  |
 | `acapy.agentSeed`                                     |                                                                                                                     | `""`                                   |
 | `acapy.labelOverride`                                 |                                                                                                                     | `""`                                   |
@@ -155,65 +156,58 @@ The Traction service allows organizations to verify, hold, and issue verifiable 
 
 ### Acapy NetworkPolicy parameters
 
-| Name                                            | Description                                                               | Value  |
-| ----------------------------------------------- | ------------------------------------------------------------------------- | ------ |
-| `acapy.networkPolicy.enabled`                   | Enable network policies                                                   | `true` |
-| `acapy.networkPolicy.ingress.enabled`           | Enable ingress rules                                                      | `true` |
-| `acapy.networkPolicy.ingress.namespaceSelector` | Namespace selector label that is allowed to access the Tenant proxy pods. | `{}`   |
-| `acapy.networkPolicy.ingress.podSelector`       | Pod selector label that is allowed to access the Tenant proxy pods.       | `{}`   |
+| Name                                            | Description                                                               | Value   |
+| ----------------------------------------------- | ------------------------------------------------------------------------- | ------- |
+| `acapy.networkPolicy.enabled`                   | Enable network policies                                                   | `false` |
+| `acapy.networkPolicy.ingress.enabled`           | Enable ingress rules                                                      | `false` |
+| `acapy.networkPolicy.ingress.namespaceSelector` | Namespace selector label that is allowed to access the Tenant proxy pods. | `{}`    |
+| `acapy.networkPolicy.ingress.podSelector`       | Pod selector label that is allowed to access the Tenant proxy pods.       | `{}`    |
 
 ### Acapy OpenShift Route parameters
 
-| Name                                                           | Description                                                       | Value   |
-| -------------------------------------------------------------- | ----------------------------------------------------------------- | ------- |
-| `acapy.openshift.route.enabled`                                | Create OpenShift Route resource for Acapy                         | `false` |
-| `acapy.openshift.route.path`                                   | Path that the router watches for, to route traffic to the service | `/`     |
-| `acapy.openshift.route.targetPort`                             | Target port for the service                                       | `http`  |
-| `acapy.openshift.route.timeout`                                | Timeout in seconds for a route to return                          | `2m`    |
-| `acapy.openshift.route.tls.enabled`                            | Enable TLS termination                                            | `true`  |
-| `acapy.openshift.route.tls.insecureEdgeTerminationPolicy`      | TLS termination policy                                            | `None`  |
-| `acapy.openshift.route.tls.termination`                        | TLS termination type                                              | `edge`  |
-| `acapy.openshift.route.wildcardPolicy`                         | Wildcard policy for the route                                     | `None`  |
-| `acapy.openshift.adminRoute.enabled`                           | Create OpenShift Route resource for Acapy admin service           | `false` |
-| `acapy.openshift.adminRoute.path`                              | Path that the router watches for, to route traffic to the service | `/`     |
-| `acapy.openshift.adminRoute.targetPort`                        | Target port for the service                                       | `admin` |
-| `acapy.openshift.adminRoute.timeout`                           | Timeout in seconds for a route to return                          | `2m`    |
-| `acapy.openshift.adminRoute.tls.enabled`                       | Enable TLS termination                                            | `true`  |
-| `acapy.openshift.adminRoute.tls.insecureEdgeTerminationPolicy` | TLS termination policy                                            | `None`  |
-| `acapy.openshift.adminRoute.tls.termination`                   | TLS termination type                                              | `edge`  |
-| `acapy.openshift.adminRoute.wildcardPolicy`                    | Wildcard policy for the route                                     | `None`  |
-| `acapy.secret.adminurl.generated`                              | Generate admin api key                                            | `true`  |
-| `acapy.secret.adminurl.value`                                  | Override admin api key                                            | `""`    |
-| `acapy.secret.pluginInnkeeper.generated`                       | Generate plugin innkeeper secret values                           | `true`  |
-| `acapy.secret.pluginInnkeeper.walletkey`                       | Override plugin innkeeper wallet key                              | `""`    |
-| `acapy.secret.pluginInnkeeper.tenantid`                        | Override plugin innkeeper tenant id                               | `""`    |
-
-### Traction parameters
-
-| Name                                                         | Description                                                                                                         | Value                                 |
-| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
-| `traction.config.ledger.browserUrlOverride`                  | Overrides ledger browser url                                                                                        | `""`                                  |
-| `traction.config.ledger.genesisUrlOverride`                  | Overrides genesis url                                                                                               | `""`                                  |
-| `tenant_proxy.image.repository`                              |                                                                                                                     | `ghcr.io/bcgov/traction-tenant-proxy` |
-| `tenant_proxy.image.pullPolicy`                              |                                                                                                                     | `IfNotPresent`                        |
-| `tenant_proxy.image.pullSecrets`                             |                                                                                                                     | `[]`                                  |
-| `tenant_proxy.image.tag`                                     | Overrides the image tag which defaults to the chart appVersion.                                                     | `""`                                  |
-| `tenant_proxy.serviceAccount.create`                         | Specifies whether a ServiceAccount should be created                                                                | `false`                               |
-| `tenant_proxy.serviceAccount.annotations`                    | Annotations for service account. Evaluated as a template. Only used if `create` is `true`.                          | `{}`                                  |
-| `tenant_proxy.serviceAccount.automountServiceAccountToken`   | Automount service account token for the server service account                                                      | `true`                                |
-| `tenant_proxy.serviceAccount.name`                           | Name of the service account to use. If not set and create is true, a name is generated using the fullname template. | `""`                                  |
-| `tenant_proxy.replicaCount`                                  | Number of Tenant proxy replicas to deploy. Ignored if autoscaling is enabled.                                       | `1`                                   |
-| `tenant_proxy.autoscaling.enabled`                           | Enable Horizontal POD autoscaling for Tenant proxy                                                                  | `true`                                |
-| `tenant_proxy.autoscaling.minReplicas`                       | Minimum number of Tenant proxy replicas                                                                             | `1`                                   |
-| `tenant_proxy.autoscaling.maxReplicas`                       | Maximum number of Tenant proxy replicas                                                                             | `100`                                 |
-| `tenant_proxy.autoscaling.targetCPUUtilizationPercentage`    | Target CPU utilization percentage                                                                                   | `80`                                  |
-| `tenant_proxy.autoscaling.targetMemoryUtilizationPercentage` | Target Memory utilization percentage                                                                                | `""`                                  |
-| `tenant_proxy.autoscaling.stabilizationWindowSeconds`        | Stabilization window in seconds                                                                                     | `300`                                 |
-| `tenant_proxy.podAnnotations`                                | Map of annotations to add to the Tenant proxy pods                                                                  | `{}`                                  |
-| `tenant_proxy.podSecurityContext`                            | Pod Security Context                                                                                                | `{}`                                  |
-| `tenant_proxy.containerSecurityContext`                      | Container Security Context                                                                                          | `{}`                                  |
-| `tenant_proxy.service.type`                                  | Kubernetes Service type                                                                                             | `ClusterIP`                           |
-| `tenant_proxy.service.port`                                  | Port to expose for http services                                                                                    | `8032`                                |
+| Name                                                           | Description                                                                                                         | Value                                 |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| `acapy.openshift.route.enabled`                                | Create OpenShift Route resource for Acapy                                                                           | `false`                               |
+| `acapy.openshift.route.path`                                   | Path that the router watches for, to route traffic to the service                                                   | `/`                                   |
+| `acapy.openshift.route.targetPort`                             | Target port for the service                                                                                         | `http`                                |
+| `acapy.openshift.route.timeout`                                | Timeout in seconds for a route to return                                                                            | `2m`                                  |
+| `acapy.openshift.route.tls.enabled`                            | Enable TLS termination                                                                                              | `true`                                |
+| `acapy.openshift.route.tls.insecureEdgeTerminationPolicy`      | TLS termination policy                                                                                              | `None`                                |
+| `acapy.openshift.route.tls.termination`                        | TLS termination type                                                                                                | `edge`                                |
+| `acapy.openshift.route.wildcardPolicy`                         | Wildcard policy for the route                                                                                       | `None`                                |
+| `acapy.openshift.adminRoute.enabled`                           | Create OpenShift Route resource for Acapy admin service                                                             | `false`                               |
+| `acapy.openshift.adminRoute.path`                              | Path that the router watches for, to route traffic to the service                                                   | `/`                                   |
+| `acapy.openshift.adminRoute.targetPort`                        | Target port for the service                                                                                         | `admin`                               |
+| `acapy.openshift.adminRoute.timeout`                           | Timeout in seconds for a route to return                                                                            | `2m`                                  |
+| `acapy.openshift.adminRoute.tls.enabled`                       | Enable TLS termination                                                                                              | `true`                                |
+| `acapy.openshift.adminRoute.tls.insecureEdgeTerminationPolicy` | TLS termination policy                                                                                              | `None`                                |
+| `acapy.openshift.adminRoute.tls.termination`                   | TLS termination type                                                                                                | `edge`                                |
+| `acapy.openshift.adminRoute.wildcardPolicy`                    | Wildcard policy for the route                                                                                       | `None`                                |
+| `acapy.secret.adminApiKey.generated`                           | Generate admin api key                                                                                              | `true`                                |
+| `acapy.secret.adminApiKey.value`                               | Override admin api key                                                                                              | `""`                                  |
+| `acapy.secret.pluginInnkeeper.generated`                       | Generate plugin innkeeper secret values                                                                             | `true`                                |
+| `acapy.secret.pluginInnkeeper.walletkey`                       | Override plugin innkeeper wallet key                                                                                | `""`                                  |
+| `acapy.secret.pluginInnkeeper.tenantid`                        | Override plugin innkeeper tenant id                                                                                 | `""`                                  |
+| `tenant_proxy.image.repository`                                |                                                                                                                     | `ghcr.io/bcgov/traction-tenant-proxy` |
+| `tenant_proxy.image.pullPolicy`                                |                                                                                                                     | `IfNotPresent`                        |
+| `tenant_proxy.image.pullSecrets`                               |                                                                                                                     | `[]`                                  |
+| `tenant_proxy.image.tag`                                       | Overrides the image tag which defaults to the chart appVersion.                                                     | `""`                                  |
+| `tenant_proxy.serviceAccount.create`                           | Specifies whether a ServiceAccount should be created                                                                | `false`                               |
+| `tenant_proxy.serviceAccount.annotations`                      | Annotations for service account. Evaluated as a template. Only used if `create` is `true`.                          | `{}`                                  |
+| `tenant_proxy.serviceAccount.automountServiceAccountToken`     | Automount service account token for the server service account                                                      | `true`                                |
+| `tenant_proxy.serviceAccount.name`                             | Name of the service account to use. If not set and create is true, a name is generated using the fullname template. | `""`                                  |
+| `tenant_proxy.replicaCount`                                    | Number of Tenant proxy replicas to deploy. Ignored if autoscaling is enabled.                                       | `1`                                   |
+| `tenant_proxy.autoscaling.enabled`                             | Enable Horizontal POD autoscaling for Tenant proxy                                                                  | `false`                               |
+| `tenant_proxy.autoscaling.minReplicas`                         | Minimum number of Tenant proxy replicas                                                                             | `1`                                   |
+| `tenant_proxy.autoscaling.maxReplicas`                         | Maximum number of Tenant proxy replicas                                                                             | `5`                                   |
+| `tenant_proxy.autoscaling.targetCPUUtilizationPercentage`      | Target CPU utilization percentage                                                                                   | `80`                                  |
+| `tenant_proxy.autoscaling.targetMemoryUtilizationPercentage`   | Target Memory utilization percentage                                                                                | `80`                                  |
+| `tenant_proxy.autoscaling.stabilizationWindowSeconds`          | Stabilization window in seconds                                                                                     | `300`                                 |
+| `tenant_proxy.podAnnotations`                                  | Map of annotations to add to the Tenant proxy pods                                                                  | `{}`                                  |
+| `tenant_proxy.podSecurityContext`                              | Pod Security Context                                                                                                | `{}`                                  |
+| `tenant_proxy.containerSecurityContext`                        | Container Security Context                                                                                          | `{}`                                  |
+| `tenant_proxy.service.type`                                    | Kubernetes Service type                                                                                             | `ClusterIP`                           |
+| `tenant_proxy.service.port`                                    | Port to expose for http services                                                                                    | `8032`                                |
 
 ### Tenant proxy OpenShift Route parameters
 
@@ -234,26 +228,26 @@ The Traction service allows organizations to verify, hold, and issue verifiable 
 
 ### Tenant Proxy NetworkPolicy parameters
 
-| Name                                                   | Description                                                                   | Value  |
-| ------------------------------------------------------ | ----------------------------------------------------------------------------- | ------ |
-| `tenant_proxy.networkPolicy.enabled`                   | Enable network policies                                                       | `true` |
-| `tenant_proxy.networkPolicy.ingress.enabled`           | Enable ingress rules                                                          | `true` |
-| `tenant_proxy.networkPolicy.ingress.namespaceSelector` | Namespace selector label that is allowed to access the Tenant proxy pods.     | `{}`   |
-| `tenant_proxy.networkPolicy.ingress.podSelector`       | Pod selector label that is allowed to access the Tenant proxy pods.           | `{}`   |
-| `tenant_proxy.affinity`                                | Affinity for acapy pods assignment                                            | `{}`   |
-| `tenant_proxy.nodeSelector`                            | Node labels for acapy pods assignment                                         | `{}`   |
-| `tenant_proxy.tolerations`                             | Tolerations for acapy pods assignment                                         | `[]`   |
-| `ingress.enabled`                                      | Enable ingress record generation for traction                                 | `true` |
-| `ingress.className`                                    | IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+) | `""`   |
-| `ingress.annotations`                                  | Additional annotations for the Ingress resource.                              | `{}`   |
-| `ingress.tls`                                          | Enable TLS configuration for the host defined at ingress.                     | `[]`   |
+| Name                                                   | Description                                                                   | Value   |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------- | ------- |
+| `tenant_proxy.networkPolicy.enabled`                   | Enable network policies                                                       | `false` |
+| `tenant_proxy.networkPolicy.ingress.enabled`           | Enable ingress rules                                                          | `true`  |
+| `tenant_proxy.networkPolicy.ingress.namespaceSelector` | Namespace selector label that is allowed to access the Tenant proxy pods.     | `{}`    |
+| `tenant_proxy.networkPolicy.ingress.podSelector`       | Pod selector label that is allowed to access the Tenant proxy pods.           | `{}`    |
+| `tenant_proxy.affinity`                                | Affinity for acapy pods assignment                                            | `{}`    |
+| `tenant_proxy.nodeSelector`                            | Node labels for acapy pods assignment                                         | `{}`    |
+| `tenant_proxy.tolerations`                             | Tolerations for acapy pods assignment                                         | `[]`    |
+| `ingress.enabled`                                      | Enable ingress record generation for traction                                 | `true`  |
+| `ingress.className`                                    | IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+) | `""`    |
+| `ingress.annotations`                                  | Additional annotations for the Ingress resource.                              | `{}`    |
+| `ingress.tls`                                          | Enable TLS configuration for the host defined at ingress.                     | `[]`    |
 
 ### PostgreSQL parameters
 
 | Name                                                  | Description                                                                                                                                                                                                                                                                                                                                                                    | Value                               |
 | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------- |
 | `postgresql.enabled`                                  | Deploy Bitnami PostgreSQL chart.                                                                                                                                                                                                                                                                                                                                               | `true`                              |
-| `postgresql.fullnameOverride`                         | When overriding global.fullnameOverride, you must override this to match.                                                                                                                                                                                                                                                                                                      | `""`                                |
+| `postgresql.fullnameOverride`                         | When overriding fullnameOverride, you must override this to match.                                                                                                                                                                                                                                                                                                             | `""`                                |
 | `postgresql.architecture`                             | PostgreSQL architecture (`standalone` or `replication`)                                                                                                                                                                                                                                                                                                                        | `standalone`                        |
 | `postgresql.auth.enablePostgresUser`                  | Assign a password to the "postgres" admin user. Otherwise, remote access will be blocked for this user                                                                                                                                                                                                                                                                         | `true`                              |
 | `postgresql.auth.existingSecret`                      | Name of existing secret to use for PostgreSQL credentials. `postgresql.auth.postgresPassword`, `postgresql.auth.password`, and `postgresql.auth.replicationPassword` will be ignored and picked up from this secret. The secret might also contains the key `ldap-password` if LDAP is enabled. `ldap.bind_password` will be ignored and picked from this secret in this case. | `{{ include "global.fullname" . }}` |

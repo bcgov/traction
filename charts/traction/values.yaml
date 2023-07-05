@@ -2,14 +2,19 @@
 nameOverride: ""
 ## @param fullnameOverride
 fullnameOverride: ""
+## @param ingressSuffix Domain suffix to be used for default hostpaths in ingress
+ingressSuffix: -dev.example.com
 
-## @section Global Configuration
+## @section Traction configuration
 ##
-global:
-  ## @param global.ingressSuffix Domain suffix to be used for default hostpaths in ingress
-  ingressSuffix: .example.com
-  ## @param global.ledger The ledger to be used.
-  ledger: bcovrin-test
+## @param config.ledger.name The ledger to be used.
+## @param config.ledger.browserUrlOverride Overrides ledger browser url
+## @param config.ledger.genesisUrlOverride Overrides genesis url
+config:
+  ledger: 
+    name: bcovrin-test
+    browserUrlOverride: ""
+    genesisUrlOverride: ""
 
 ## @section Acapy Configuration
 ##
@@ -52,11 +57,11 @@ acapy:
   ## @param acapy.autoscaling.stabilizationWindowSeconds Stabilization window in seconds
   ##
   autoscaling:
-    enabled: true
+    enabled: false
     minReplicas: 1
-    maxReplicas: 100
+    maxReplicas: 10
     targetCPUUtilizationPercentage: 80
-    targetMemoryUtilizationPercentage: ''
+    targetMemoryUtilizationPercentage: 80
     stabilizationWindowSeconds: 300
 
   ## @param acapy.agentSeed
@@ -143,14 +148,12 @@ acapy:
     wallet-name: askar-wallet
     wallet-storage-type: postgres_storage
     wallet-type: askar
-
   ## @param acapy.tails.baseUrlOverride
   ## @param acapy.tails.uploadUrlOverride
   ##
   tails:
     baseUrlOverride: ""
     uploadUrlOverride: ""
-
   ## @section Wallet Storage configuration
   ##  Specifies the storage configuration to use for the wallet. 
   ##  This is required if you are for using 'postgres_storage' wallet 'storage type. 
@@ -167,7 +170,6 @@ acapy:
     url: ''
     max_connections: 10
     wallet_scheme: DatabasePerWallet
-
   ## @section Wallet Storage Credentials
   ##  Specifies the storage credentials to use for the wallet.
   ##  This is required if you are for using 'postgres_storage' wallet 'storage type.
@@ -189,7 +191,6 @@ acapy:
     admin_account: postgres
     admin_password: ''
     existingSecret: ""
-
   ## @section Acapy Plugins
   ##
   ## Specify the plugins to enable.
@@ -204,7 +205,6 @@ acapy:
     connectionUpdate: true
     multitenantProvider: true
     tractionInnkeeper: true
-
   ## Specify configuration values for each plugin.
   ## Configuration values are plugin specific, and are rendered as is into the plugin-config.yml file.
   ##
@@ -251,7 +251,6 @@ acapy:
     requests:
       cpu: 250m
       memory: 384Mi
-
   ## @param acapy.podAnnotations Map of annotations to add to the acapy pods
   ##
   podAnnotations: {}
@@ -270,7 +269,6 @@ acapy:
     # readOnlyRootFilesystem: true
     # runAsNonRoot: true
     # runAsUser: 1001
-
   ## Acapy service configuration
   ##
   service:
@@ -283,7 +281,6 @@ acapy:
     ## @param acapy.service.httpPort Port to expose for http service
     ##
     httpPort: 8030
-
   ## @param acapy.affinity Affinity for acapy pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
   ##
@@ -298,20 +295,20 @@ acapy:
   tolerations: []
   
   ## @section Acapy NetworkPolicy parameters
-
-  ## Add networkpolicies
+  ##
+  ## Network policy configuration
   ##
   networkPolicy:
     ## @param acapy.networkPolicy.enabled Enable network policies
     ##
-    enabled: true
+    enabled: false
     ## @param acapy.networkPolicy.ingress.enabled Enable ingress rules
     ## @param acapy.networkPolicy.ingress.namespaceSelector [object] Namespace selector label that is allowed to access the Tenant proxy pods.
     ## @param acapy.networkPolicy.ingress.podSelector [object] Pod selector label that is allowed to access the Tenant proxy pods.
     ingress:
-      enabled: true
-      namespaceSelector:
-        network.openshift.io/policy-group: ingress
+      enabled: false
+      namespaceSelector: {}
+        # network.openshift.io/policy-group: ingress
       podSelector: {}
 
   ## @section Acapy OpenShift Route parameters
@@ -374,11 +371,11 @@ acapy:
   ## Acapy secret configuration
   ##
   secret:
-    adminurl:
-      ## @param acapy.secret.adminurl.generated Generate admin api key
+    adminApiKey:
+      ## @param acapy.secret.adminApiKey.generated Generate admin api key
       ##
       generated: true
-      ## @param acapy.secret.adminurl.value Override admin api key
+      ## @param acapy.secret.adminApiKey.value Override admin api key
       ##
       value: ""
     pluginInnkeeper:
@@ -391,16 +388,6 @@ acapy:
       ## @param acapy.secret.pluginInnkeeper.tenantid Override plugin innkeeper tenant id
       ##
       tenantid: ""
-
-## @section Traction parameters
-##
-## @param traction.config.ledger.browserUrlOverride Overrides ledger browser url
-## @param traction.config.ledger.genesisUrlOverride Overrides genesis url
-traction:
-  config:
-    ledger: 
-      browserUrlOverride: ""
-      genesisUrlOverride: ""
 
 tenant_proxy:
   ## @param tenant_proxy.image.repository 
@@ -438,11 +425,11 @@ tenant_proxy:
   ## @param tenant_proxy.autoscaling.stabilizationWindowSeconds Stabilization window in seconds
   ##
   autoscaling:
-    enabled: true
+    enabled: false
     minReplicas: 1
-    maxReplicas: 100
+    maxReplicas: 5
     targetCPUUtilizationPercentage: 80
-    targetMemoryUtilizationPercentage: ''
+    targetMemoryUtilizationPercentage: 80
     stabilizationWindowSeconds: 300
 
   ## @param tenant_proxy.podAnnotations Map of annotations to add to the Tenant proxy pods
@@ -524,14 +511,14 @@ tenant_proxy:
   networkPolicy:
     ## @param tenant_proxy.networkPolicy.enabled Enable network policies
     ##
-    enabled: true
+    enabled: false
     ## @param tenant_proxy.networkPolicy.ingress.enabled Enable ingress rules
     ## @param tenant_proxy.networkPolicy.ingress.namespaceSelector [object] Namespace selector label that is allowed to access the Tenant proxy pods.
     ## @param tenant_proxy.networkPolicy.ingress.podSelector [object] Pod selector label that is allowed to access the Tenant proxy pods.
     ingress:
       enabled: true
-      namespaceSelector:
-        network.openshift.io/policy-group: ingress
+      namespaceSelector: {}
+        # network.openshift.io/policy-group: ingress
       podSelector: {}
 
   ## @param tenant_proxy.affinity Affinity for acapy pods assignment
@@ -574,7 +561,7 @@ ingress:
 postgresql:
   ## @param postgresql.enabled Deploy Bitnami PostgreSQL chart.
   enabled: true
-  ## @param postgresql.fullnameOverride When overriding global.fullnameOverride, you must override this to match.
+  ## @param postgresql.fullnameOverride When overriding fullnameOverride, you must override this to match.
   fullnameOverride: ""
   ## @param postgresql.architecture PostgreSQL architecture (`standalone` or `replication`)
   ##
