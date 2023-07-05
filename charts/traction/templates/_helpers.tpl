@@ -2,7 +2,7 @@
 Expand the name of the chart.
 */}}
 {{- define "global.name" -}}
-{{- default .Chart.Name .Values.global.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
@@ -11,10 +11,10 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 If release name contains chart name it will be used as a full name.
 */}}
 {{- define "global.fullname" -}}
-{{- if .Values.global.fullnameOverride }}
-{{- .Values.global.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- if .Values.fullnameOverride }}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
-{{- $name := default .Chart.Name .Values.global.nameOverride }}
+{{- $name := default .Chart.Name .Values.nameOverride }}
 {{- if contains $name .Release.Name }}
 {{- .Release.Name | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -136,14 +136,14 @@ generate ledger browser url
 */}}
 {{- define "traction.ledgerBrowser" -}}
 {{- $ledgerBrowser := dict "bcovrin-test" "http://test.bcovrin.vonx.io" -}}
-{{ .Values.traction.config.ledger.browserUrlOverride | default ( get $ledgerBrowser .Values.global.ledger ) }}
+{{ .Values.config.ledger.browserUrlOverride | default ( get $ledgerBrowser .Values.config.ledger.name ) }}
 {{- end }}
 
 {{/*
 generate genesisfileurl
 */}}
 {{- define "traction.genesisUrl" -}}
-{{ default (printf "%s%s" (include "traction.ledgerBrowser" .) "/genesis") .Values.traction.config.ledger.genesisUrlOverride }}
+{{ default (printf "%s%s" (include "traction.ledgerBrowser" .) "/genesis") .Values.config.ledger.genesisUrlOverride }}
 {{- end }}
 
 
@@ -167,7 +167,7 @@ app.kubernetes.io/name: {{ include "acapy.fullname" . }}
 generate hosts if not overriden
 */}}
 {{- define "acapy.host" -}}
-{{- include "acapy.fullname" . }}{{ .Values.global.ingressSuffix -}}
+{{- include "acapy.fullname" . }}{{ .Values.ingressSuffix -}}
 {{- end -}}
 
 {{/*
@@ -181,7 +181,7 @@ http://{{- include "acapy.fullname" . }}:{{.Values.acapy.service.adminPort }}
 Generate hosts for acapy admin if not overriden
 */}}
 {{- define "acapy.admin.host" -}}
-{{- include "acapy.fullname" . }}-admin{{ .Values.global.ingressSuffix -}}
+{{- include "acapy.fullname" . }}-admin{{ .Values.ingressSuffix -}}
 {{- end -}}
 
 {{/*
@@ -201,7 +201,7 @@ Return acapy label
 {{- define "acapy.label" -}}
 {{- if .Values.acapy.labelOverride -}}
     {{- .Values.acapy.labelOverride }}
-{{- else if eq .Values.global.ledger "idu" -}}
+{{- else if eq .Values.config.ledger.name "idu" -}}
 $identifier   
 {{- else -}} 
     {{- .Release.Name }}     
@@ -212,7 +212,7 @@ $identifier
 Return acapy initialization call
 */}}
 {{- define "acapy.registerLedger" -}}
-{{- if (eq .Values.global.ledger "bcovrin-test") -}}
+{{- if (eq .Values.config.ledger.name "bcovrin-test") -}}
 curl -d '{\"seed\":\"$(ACAPY_WALLET_SEED)\", \"role\":\"TRUST_ANCHOR\", \"alias\":\"{{ include "acapy.fullname" . }}\"}' -X POST {{ include "traction.ledgerBrowser" . }}/register;
 {{- end -}}
 {{- end -}}
@@ -221,8 +221,8 @@ curl -d '{\"seed\":\"$(ACAPY_WALLET_SEED)\", \"role\":\"TRUST_ANCHOR\", \"alias\
 generate tails baseUrl
 */}}
 {{- define "acapy.tails.baseUrl" -}}
-{{- $tailsBaseUrl := dict "bcovrin-dev" "https://tails-dev.vonx.io" "bcovrin-test" "https://tails-test.vonx.io" "idu" (printf "https://tails%s" .Values.global.ingressSuffix) -}}
-{{ .Values.acapy.tails.baseUrlOverride| default ( get $tailsBaseUrl .Values.global.ledger ) }}
+{{- $tailsBaseUrl := dict "bcovrin-dev" "https://tails-dev.vonx.io" "bcovrin-test" "https://tails-test.vonx.io" "idu" (printf "https://tails%s" .Values.ingressSuffix) -}}
+{{ .Values.acapy.tails.baseUrlOverride| default ( get $tailsBaseUrl .Values.config.ledger.name ) }}
 {{- end -}}
 
 {{/*
@@ -230,7 +230,7 @@ generate tails uploadUrl
 */}}
 {{- define "acapy.tails.uploadUrl" -}}
 {{- $tailsUploadUrl:= dict "bcovrin-dev" "https://tails-dev.vonx.io" "bcovrin-test" "https://tails-test.vonx.io" "idu" "http://idu-tails:6543" -}}
-{{ .Values.acapy.tails.uploadUrlOverride| default ( get $tailsUploadUrl .Values.global.ledger ) }}
+{{ .Values.acapy.tails.uploadUrlOverride| default ( get $tailsUploadUrl .Values.config.ledger.name ) }}
 {{- end -}}
 
 {{/*
@@ -343,7 +343,7 @@ Create the name of the tenant proxy service account to use
 Generate tenant proxy hosts if not overriden
 */}}
 {{- define "tenant_proxy.host" -}}
-{{- include "tenant_proxy.fullname" . }}{{ .Values.global.ingressSuffix -}}
+{{- include "tenant_proxy.fullname" . }}{{ .Values.ingressSuffix -}}
 {{- end }}
 
 {{- define "tenant_proxy.openshift.route.tls" -}}

@@ -55,7 +55,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ template "acapy.api.secret.name" . }}
-                  key: adminurl
+                  key: adminApiKey
             - name: ACAPY_ADMIN_URL
               value: {{ include "acapy.internal.admin.url" . }}
           resources:

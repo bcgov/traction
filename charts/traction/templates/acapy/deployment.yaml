@@ -130,7 +130,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ template "acapy.api.secret.name" . }}
-                  key: adminurl
+                  key: adminApiKey
             - name: ACAPY_PLUGIN_CONFIG
               value: 'plugin-config.yml'
             - name: ACAPY_WALLET_STORAGE_CONFIG
