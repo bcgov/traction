@@ -40,6 +40,8 @@ export default defineConfig({
     },
   },
   test: {
+    globals: true,
+    setupFiles: ['/test/setupGlobalMocks.ts', '/test/setupApi.ts'],
     environment: 'jsdom',
   },
 });

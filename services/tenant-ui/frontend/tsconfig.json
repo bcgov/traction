@@ -23,7 +23,8 @@
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "src/components/holder/credentialOcaCard/OcaStyleConstants.ts"
+    "src/components/holder/credentialOcaCard/OcaStyleConstants.ts",
+    "test/**/*.ts"
   ],
   "references": [
     {
