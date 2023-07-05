@@ -202,7 +202,7 @@ oidc:
 ## SMTP Configuration
 smtp:
   ## @param smtp.server SMTP server
-  server: apps.smtp.gov.bc.ca
+  server: ""
   ## @param smtp.port SMTP port
   port: 25
   ## @param smtp.senderAddress SMTP sender address
@@ -214,12 +214,12 @@ smtp:
 traction:
   pluginInnkeeper:
     ## @param traction.pluginInnkeeper.existingSecret Name of the existing secret for Acapy plugin Innkeeper. Must contain keys `tenantid` and `walletkey`
-    existingSecret: traction-vals-acapy-plugin-innkeeper
+    existingSecret: ""
     ## @param traction.pluginInnkeeper.tenantid Tenant ID, ignored if existingSecret is set
     tenantid: ""
     ## @param traction.pluginInnkeeper.walletkey Wallet key, ignored if existingSecret is set
     walletkey: ""
   ## @param traction.apiEndpoint Traction API endpoint
-  apiEndpoint: http://traction-vals-tenant-proxy:8032
+  apiEndpoint: http://traction-tenant-proxy:8030
   ## @param traction.tenantProxyEndpoint Traction Tenant Proxy endpoint
-  tenantProxyEndpoint: http://traction-vals-tenant-proxy:8032
+  tenantProxyEndpoint: http://traction-tenant-proxy:8030
