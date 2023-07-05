@@ -1,4 +1,4 @@
-ingressSuffix: .apps.silver.devops.gov.bc.ca
+ingressSuffix: -prod.apps.silver.devops.gov.bc.ca
 acapy:
   image:
     tag: "0.2.14"
