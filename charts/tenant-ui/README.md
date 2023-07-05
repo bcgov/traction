@@ -6,24 +6,46 @@ The Traction Tenant UI allows tenants to manage their agent.
 
 **Homepage:** <https://github.com/bcgov/traction>
 
-## Maintainers
+## TL;DR
 
-| Name | Email | Url |
-| ---- | ------ | --- |
-| i5okie | <ivan.polchenko@quartech.com> | <https://github.com/i5okie> |
-| usingtechnology | <tools@usingtechnolo.gy> | <https://github.com/usingtechnology> |
-| Jsyro | <jason.syrotuck@nttdata.com> | <https://github.com/Jsyro> |
-| esune | <emiliano.sune@quartech.com> | <https://github.com/esune> |
+```console
+helm install my-release charts/tenant-ui
+```
 
-## Source Code
+## Prerequisites
 
-* <https://github.com/bcgov/traction>
+- Kubernetes 1.19+
+- Helm 3.2.0+
 
-## Requirements
+## Installing the Chart
 
-| Repository | Name | Version |
-|------------|------|---------|
-| https://charts.bitnami.com/bitnami | common | 2.x.x |
+To install the chart with the release name `my-release`:
+
+```console
+git clone https://github.com/bcgov/traction.git
+cd traction
+helm install my-release charts/tenant-ui
+```
+
+The command deploys Tenant-UI on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
+
+> **Tip**: List all releases using `helm list`
+
+## Uninstalling the Chart
+
+To uninstall/delete the `my-release` deployment:
+
+```console
+helm delete my-release
+```
+
+The command removes all the Kubernetes components but the generated secret associated with the chart and deletes the release.
+
+To delete the secret associated with `my-release`:
+
+```console
+kubectl delete secret --selector "app.kubernetes.io/instance"=my-release
+```
 
 ## Parameters
 
@@ -115,3 +137,12 @@ The Traction Tenant UI allows tenants to manage their agent.
 | `traction.pluginInnkeeper.walletkey`      | Wallet key, ignored if existingSecret is set                                                         | `""`                                |
 | `traction.apiEndpoint`                    | Traction API endpoint                                                                                | `http://traction-tenant-proxy:8030` |
 | `traction.tenantProxyEndpoint`            | Traction Tenant Proxy endpoint                                                                       | `http://traction-tenant-proxy:8030` |
+
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| i5okie | <ivan.polchenko@quartech.com> | <https://github.com/i5okie> |
+| usingtechnology | <tools@usingtechnolo.gy> | <https://github.com/usingtechnology> |
+| Jsyro | <jason.syrotuck@nttdata.com> | <https://github.com/Jsyro> |
+| esune | <emiliano.sune@quartech.com> | <https://github.com/esune> |
