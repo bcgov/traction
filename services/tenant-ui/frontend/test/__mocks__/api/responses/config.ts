@@ -1,4 +1,4 @@
-const get = {
+const config = {
   frontend: {
     tenantProxyPath: 'http://localhost:8032',
     apiPath: 'api/',
@@ -53,11 +53,11 @@ const plugins = {
 };
 
 function setTenantProxyUrl(url: string) {
-  get.frontend.tenantProxyPath = url;
+  config.frontend.tenantProxyPath = url;
 }
 
 export default {
-  get,
+  config,
   plugins,
   setTenantProxyUrl,
 };

@@ -1,14 +1,8 @@
 import { createPinia, setActivePinia } from 'pinia';
-import {
-  afterAll,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  test,
-} from 'vitest';
+import { afterAll, beforeEach, describe, expect, test } from 'vitest';
 
 import { useConfigStore } from '@/store/configStore';
+import { testErrorResponse, testSuccessResponse } from 'test/commonTests';
 import { restHandlersUnknownError, server } from '../setupApi';
 
 import { configResponse } from '../__mocks__/api/responses';
@@ -35,9 +29,9 @@ describe('configStore', () => {
 
     test('load() properly sets values and loading correctly ', async () => {
       let config = store.load();
-      expect(store.loading).toEqual(true);
-      config = await config;
 
+      await testSuccessResponse(store, config, 'loading');
+      config = await config;
       expect(config).not.toBeNull();
       expect(config.frontend).not.toBeNull();
       expect(config.frontend.tenantProxyPath).not.toBeNull();
@@ -62,9 +56,6 @@ describe('configStore', () => {
       expect(config.frontend.ariesDetails.tailsServer).not.toBeNull();
       expect(config.image).not.toBeNull();
       expect(config.server.tractionUrl).not.toBeNull();
-
-      expect(store.loading).toEqual(false);
-      expect(store.error).toBeNull();
     });
 
     test('proxyPath() returns the correct value', async () => {
@@ -91,14 +82,12 @@ describe('configStore', () => {
   });
 
   describe('Unsuccessful API calls', () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       server.use(...restHandlersUnknownError);
     });
 
     test('load error sets store error and loading', async () => {
-      await expect(store.load()).rejects.toThrow();
-      expect(store.error).not.toBeNull();
-      expect(store.loading).toEqual(false);
+      await testErrorResponse(store, store.load(), 'loading');
     });
   });
 });

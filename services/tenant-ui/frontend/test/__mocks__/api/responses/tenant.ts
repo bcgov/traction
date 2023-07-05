@@ -99,13 +99,23 @@ const getTenantSubWallet = {
   created_at: '2023-06-23T22:24:37.068458Z',
 };
 
+const updateWallet = {
+  created_at: '2021-12-31T23:59:59Z',
+  key_management_mode: 'managed',
+  settings: {},
+  state: 'active',
+  updated_at: '2021-12-31T23:59:59Z',
+  wallet_id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+};
+
 export default {
-  self,
   config,
-  taa,
-  endorserInfo,
-  endorserConnection,
-  publicDid,
   connectToEndorser,
+  endorserConnection,
+  endorserInfo,
   getTenantSubWallet,
+  publicDid,
+  self,
+  taa,
+  updateWallet,
 };

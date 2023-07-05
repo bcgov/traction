@@ -12,7 +12,7 @@ export const successHandlers = [
     }
   ),
   rest.get(fullPathWithProxyTenant(API_PATH.BASICMESSAGES), (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(messageResponse.get));
+    return res(ctx.status(200), ctx.json(messageResponse.messages));
   }),
 ];
 

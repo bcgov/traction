@@ -10,6 +10,8 @@ import {
   contactsUnknownErrorHandlers,
   configSuccessHandlers,
   configUnknownErrorHandlers,
+  holderSuccessHandlers,
+  holderUnknownErrorHandlers,
   governanceSuccessHandlers,
   governanceUnknownErrorHandlers,
   issuerSuccessHandlers,
@@ -19,9 +21,16 @@ import {
   reservationSuccessHandlers,
   reservationUnknownErrorHandlers,
   tenantSuccessHandlers,
+  tenantUnknownErrorHandlers,
   tokenSuccessHandlers,
   tokenUnknownErrorHandlers,
   verifierSuccessHandlers,
+  verifierUnknownErrorHandlers,
+  // Innkeeper
+  innkeeperTokenSuccessHandlers,
+  innkeeperTokenUnknownErrorHandlers,
+  innkeeperTenantSuccessHandlers,
+  innkeeperTenantUnknownErrorHandlers,
 } from './__mocks__/api/routes';
 
 // Setup Server
@@ -29,6 +38,7 @@ export const restHandlers = [
   ...acapySuccessHandlers,
   ...contactsSuccessHandlers,
   ...configSuccessHandlers,
+  ...holderSuccessHandlers,
   ...governanceSuccessHandlers,
   ...issuerSuccessHandlers,
   ...messageSuccessHandlers,
@@ -36,6 +46,9 @@ export const restHandlers = [
   ...tenantSuccessHandlers,
   ...tokenSuccessHandlers,
   ...verifierSuccessHandlers,
+  // Innkeeper
+  ...innkeeperTokenSuccessHandlers,
+  ...innkeeperTenantSuccessHandlers,
 ];
 
 export const restHandlersAuthorizationError = [...acapyAuthErrorHandlers];
@@ -44,11 +57,17 @@ export const restHandlersUnknownError = [
   ...acapyUnknownErrorHandlers,
   ...contactsUnknownErrorHandlers,
   ...configUnknownErrorHandlers,
+  ...holderUnknownErrorHandlers,
   ...governanceUnknownErrorHandlers,
   ...issuerUnknownErrorHandlers,
   ...messageUnknownErrorHandlers,
   ...reservationUnknownErrorHandlers,
+  ...tenantUnknownErrorHandlers,
   ...tokenUnknownErrorHandlers,
+  ...verifierUnknownErrorHandlers,
+  // Innkeeper
+  ...innkeeperTokenUnknownErrorHandlers,
+  ...innkeeperTenantUnknownErrorHandlers,
 ];
 
 export const server = setupServer(...restHandlers);

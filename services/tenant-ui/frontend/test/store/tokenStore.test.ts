@@ -2,7 +2,8 @@ import { createPinia, setActivePinia } from 'pinia';
 import { beforeAll, beforeEach, describe, expect, test } from 'vitest';
 
 import { useTokenStore } from '@/store/tokenStore';
-import { server, restHandlersUnknownError } from '../setupApi';
+import { testErrorResponse, testSuccessResponse } from 'test/commonTests';
+import { restHandlersUnknownError, server } from '../setupApi';
 
 let store: any;
 
@@ -26,12 +27,11 @@ describe('tokenStore', () => {
 
   describe('Successful API calls', () => {
     test('login sets token and loading correctly', async () => {
-      const response = store.login('username', 'password');
-      expect(store.loading).toEqual(true);
-      await response;
-
-      expect(store.token).not.toBeNull();
-      expect(store.loading).toEqual(false);
+      await testSuccessResponse(
+        store,
+        store.login('username', 'password'),
+        'loading'
+      );
     });
   });
 
@@ -41,9 +41,11 @@ describe('tokenStore', () => {
     });
 
     test('login error sets store error and loading', async () => {
-      await expect(store.login('username', 'password')).rejects.toThrow();
-      expect(store.error).not.toBeNull();
-      expect(store.loading).toEqual(false);
+      await testErrorResponse(
+        store,
+        store.login('username', 'password'),
+        'loading'
+      );
     });
   });
 });

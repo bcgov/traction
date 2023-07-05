@@ -15,6 +15,11 @@ export {
 } from './config';
 
 export {
+  successHandlers as holderSuccessHandlers,
+  unknownErrorHandlers as holderUnknownErrorHandlers,
+} from './holder';
+
+export {
   successHandlers as governanceSuccessHandlers,
   unknownErrorHandlers as governanceUnknownErrorHandlers,
 } from './governance';
@@ -34,11 +39,28 @@ export {
   unknownErrorHandlers as reservationUnknownErrorHandlers,
 } from './reservation';
 
-export { successHandlers as tenantSuccessHandlers } from './tenant';
+export {
+  successHandlers as tenantSuccessHandlers,
+  unknownErrorHandlers as tenantUnknownErrorHandlers,
+} from './tenant';
 
 export {
   successHandlers as tokenSuccessHandlers,
   unknownErrorHandlers as tokenUnknownErrorHandlers,
 } from './token';
 
-export { successHandlers as verifierSuccessHandlers } from './verifier';
+export {
+  successHandlers as verifierSuccessHandlers,
+  unknownErrorHandlers as verifierUnknownErrorHandlers,
+} from './verifier';
+
+// Innkeeper
+export {
+  successHandlers as innkeeperTokenSuccessHandlers,
+  unknownErrorHandlers as innkeeperTokenUnknownErrorHandlers,
+} from './innkeeper/token';
+
+export {
+  successHandlers as innkeeperTenantSuccessHandlers,
+  unknownErrorHandlers as innkeeperTenantUnknownErrorHandlers,
+} from './innkeeper/tenant';

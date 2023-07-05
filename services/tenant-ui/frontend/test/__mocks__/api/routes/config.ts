@@ -6,7 +6,7 @@ import { fullPathWithProxyTenant } from './utils/utils';
 
 export const successHandlers = [
   rest.get(API_PATH.CONFIG, (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(configResponse.get));
+    return res(ctx.status(200), ctx.json(configResponse.config));
   }),
   rest.get(
     fullPathWithProxyTenant(API_PATH.SERVER_PLUGINS),

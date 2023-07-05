@@ -1,5 +1,5 @@
 import { createPinia, setActivePinia } from 'pinia';
-import { beforeAll, beforeEach, describe, expect, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { useAcapyApi } from '@/store/acapyApi';
 import {
@@ -15,11 +15,6 @@ import { store as tokenStore } from '../__mocks__/store/token';
 tokenStore.clearToken = vi.fn();
 tokenStore.setToken = 'token';
 tenantStore.clearTenant = vi.fn();
-
-vi.mock('@/store', () => ({
-  useTokenStore: vi.fn(() => tokenStore),
-  useTenantStore: vi.fn(() => tenantStore),
-}));
 
 let store: any;
 
@@ -62,7 +57,7 @@ describe('acapyApi', () => {
   });
 
   describe('Unauthorized API calls', () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       server.use(...restHandlersAuthorizationError);
     });
 
@@ -91,16 +86,12 @@ describe('acapyApi', () => {
   });
 
   describe('Unknown error API calls', () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       server.use(...restHandlersUnknownError);
     });
 
     test('get failure returns expected value', async () => {
-      try {
-        await store.getHttp('');
-      } catch (e: any) {
-        expect(e.response.status).toEqual(500);
-      }
+      await expect(store.getHttp('')).rejects.toThrow();
     });
   });
 });

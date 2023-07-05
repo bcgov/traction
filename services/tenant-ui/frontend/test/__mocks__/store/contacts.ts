@@ -22,27 +22,46 @@ const store: { [key: string]: any } = {
       },
     ],
   },
-};
-
-store.listContacts = vi
-  .fn()
-  .mockResolvedValue([
+  contactsDropdown: [
     {
-      connection_id: 'bb6f8738-b3ee-46e4-b979-a84e6b269a0a',
+      label: 'endorser',
+      value: '7dcfd983-71f9-4a05-a13b-a2026ed85bb9',
+      status: 'active',
     },
-  ])
-  .mockRejectedValue([]);
-
-store.createInvitation = vi.fn().mockResolvedValue({
-  invitation_url: 'test_invitation_url',
-});
-
-store.listContacts = vi.fn().mockResolvedValue([
-  {
-    connection_id: 'bb6f8738-b3ee-46e4-b979-a84e6b269a0a',
+  ],
+  createInvitation: vi.fn().mockResolvedValue({
+    invitation_url: 'test_invitation_url',
+  }),
+  didCreateRequest: vi.fn().mockResolvedValue({}),
+  filteredConnections: {
+    value: [
+      {
+        alias: 'test.alias',
+        connection_id: 'connection_id',
+        created_at: '2023-06-26T22:28:19.163437Z',
+        state: 'active',
+        their_label: 'BC Wallet',
+      },
+    ],
   },
-]);
-
-store.didCreateRequest = vi.fn().mockResolvedValue({});
+  filteredInvitations: {
+    value: [],
+  },
+  getInvitation: vi.fn().mockResolvedValue({
+    invitation_url: 'test_invitation_url',
+  }),
+  listContacts: vi
+    .fn()
+    .mockResolvedValue([
+      {
+        connection_id: 'bb6f8738-b3ee-46e4-b979-a84e6b269a0a',
+      },
+    ])
+    .mockRejectedValue([]),
+  updateConnection: vi.fn().mockResolvedValue({}),
+  receiveInvitation: vi.fn().mockResolvedValue({
+    invitation_url: 'test_invitation_url',
+  }),
+};
 
 export { store };

@@ -3,6 +3,7 @@ import { beforeAll, beforeEach, describe, expect, test } from 'vitest';
 
 import { useMessageStore } from '@/store/messageStore';
 import { restHandlersUnknownError, server } from '../setupApi';
+import { testErrorResponse, testSuccessResponse } from 'test/commonTests';
 
 let store: any;
 
@@ -22,21 +23,17 @@ describe('messageStore', () => {
 
   describe('Successful API calls', () => {
     test('post sendMessage does not throw exception and sets loading correctly', async () => {
-      let response = store.sendMessage('connId', { content: 'test' });
-      expect(store.loading).toEqual(true);
-      response = await response;
-
-      expect(store.loading).toEqual(false);
-      expect(store.error).toBeNull();
+      await testSuccessResponse(
+        store,
+        store.sendMessage('connId', { content: 'test' }),
+        'loading'
+      );
     });
 
     test('get listMessages returns the expected values and sets loading correctly', async () => {
       let response = store.listMessages();
-      expect(store.loading).toEqual(true);
+      await testSuccessResponse(store, response, 'loading');
       response = await response;
-
-      expect(store.loading).toEqual(false);
-      expect(store.error).toBeNull();
       expect(response).toHaveLength(2);
     });
   });
@@ -47,12 +44,11 @@ describe('messageStore', () => {
     });
 
     test('error responses are handled correctly', async () => {
-      await expect(
-        store.sendMessage('connId', { content: 'test' })
-      ).rejects.toThrow();
-
-      expect(store.loading).toEqual(false);
-      expect(store.error).not.toBeNull();
+      await testErrorResponse(
+        store,
+        store.sendMessage('connId', { content: 'test' }),
+        'loading'
+      );
     });
   });
 });

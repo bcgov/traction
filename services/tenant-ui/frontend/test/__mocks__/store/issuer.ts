@@ -1,13 +1,11 @@
+import { vi } from 'vitest';
+
 const store: { [key: string]: any } = {
   credentials: {
-    credentials: {
-      value: [],
-    },
-    selectedCredential: null,
-    loading: false,
-    error: null,
     value: [],
   },
+  listCredentials: vi.fn().mockResolvedValue([]),
+  selectedCredential: null,
 };
 
 export { store };

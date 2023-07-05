@@ -1,0 +1,9 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Business > mount matches snapshot with expected values 1`] = `
+"<div data-v-0eee3199=\\"\\" class=\\"grid\\">
+  <div data-v-0eee3199=\\"\\" class=\\"col-3\\">About Business</div>
+  <div data-v-0eee3199=\\"\\" class=\\"col-9 md:col-6\\"><a data-v-0eee3199=\\"\\" href=\\"http://link.com\\">http://link.com</a></div>
+  <div data-v-0eee3199=\\"\\" class=\\"col-12 md:col-3 flex justify-content-end pt-0\\"><img data-v-0eee3199=\\"\\" src=\\"http://image.com\\" class=\\"logo-business\\"></div>
+</div>"
+`;

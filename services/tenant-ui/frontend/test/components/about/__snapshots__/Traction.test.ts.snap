@@ -1,0 +1,27 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Traction > mount matches snapshot with expected values 1`] = `
+"<div data-v-0f0f6735=\\"\\" class=\\"grid align-items-start\\">
+  <div data-v-0f0f6735=\\"\\" class=\\"col-12 md:col-6\\"><strong data-v-0f0f6735=\\"\\">about.traction.info</strong>
+    <p data-v-0f0f6735=\\"\\" class=\\"my-0\\">about.traction.tractionVersion</p>
+    <p data-v-0f0f6735=\\"\\" class=\\"mt-0\\">about.traction.uiVersion</p>
+  </div>
+  <div data-v-0f0f6735=\\"\\" class=\\"col-12 md:col-6 flex justify-content-end pt-0\\"><img data-v-0f0f6735=\\"\\" src=\\"/img/logo/traction-logo-bc-text.svg\\" class=\\"logo-trac\\"></div>
+</div>
+<div data-v-0f0f6735=\\"\\" class=\\"grid\\">
+  <div data-v-0f0f6735=\\"\\" class=\\"col-2\\">about.traction.url</div>
+  <div data-v-0f0f6735=\\"\\" class=\\"col-10\\">/test</div>
+  <div data-v-0f0f6735=\\"\\" class=\\"col-2\\">about.traction.swagger</div>
+  <div data-v-0f0f6735=\\"\\" class=\\"col-10\\"><a data-v-0f0f6735=\\"\\" href=\\"/test/api/doc\\" target=\\"_blank\\">/test/api/doc</a></div>
+  <div data-v-0f0f6735=\\"\\" class=\\"col-2\\">about.traction.imageTag</div>
+  <div data-v-0f0f6735=\\"\\" class=\\"col-10\\">1.0</div>
+  <div data-v-0f0f6735=\\"\\" class=\\"col-2\\">about.traction.imageVersion</div>
+  <div data-v-0f0f6735=\\"\\" class=\\"col-10\\">1.0</div>
+  <div data-v-0f0f6735=\\"\\" class=\\"col-2\\">about.traction.imageCreated</div>
+  <div data-v-0f0f6735=\\"\\" class=\\"col-10\\">2021-01-01</div>
+  <div data-v-0f0f6735=\\"\\" class=\\"col-2\\">about.traction.repository</div>
+  <div data-v-0f0f6735=\\"\\" class=\\"col-10\\">
+    <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text --><a data-v-0f0f6735=\\"\\" href=\\"https://github.com/bcgov/traction\\" target=\\"_blank\\"> https://github.com/bcgov/traction </a>
+  </div>
+</div>"
+`;

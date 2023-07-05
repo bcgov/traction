@@ -2,7 +2,6 @@ import { API_PATH } from '@/helpers/constants';
 
 const store: { [key: string]: any } = {
   config: {
-    // When only the store is used without storeToRefs
     frontend: {
       ux: {
         appTitle: 'Tenant UI',
@@ -26,7 +25,6 @@ const store: { [key: string]: any } = {
       version: '1.0',
       buildtime: '2021-01-01',
     },
-    // When storeToRefs is used
     value: {
       frontend: {
         ux: {

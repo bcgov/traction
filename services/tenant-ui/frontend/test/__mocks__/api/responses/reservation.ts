@@ -1,16 +1,42 @@
-const makeReservation = {
+const makeReservationAutoApprove = {
   reservation_id: 'reservation_id',
   reservation_pwd: 'reservation_pwd',
 };
 
+const makeReservationVerify = {
+  reservation_id: 'reservation_id',
+  reservation_pwd: null,
+};
+
 const checkIn = {
-  wallet_id: 'b1f36c0b-7532-4029-b02b-7b833d290a98',
-  wallet_key: 'ddacf29b-7f53-48d6-9188-a0b32ea72704',
-  token:
-    'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ3YWxsZXRfaWQiOiJiMWYzNmMwYi03NTMyLTQwMjktYjAyYi03YjgzM2QyOTBhOTgiLCJpYXQiOjE2ODc5NzU1MTUsImV4cCI6MTY4ODA2MTkxNX0.X7djrtGTQY8a2wMl3xSq46csHHYIvsFdMcTZ0iDQB7M',
+  wallet_id: 'wallet_id',
+  wallet_key: 'wallet_key',
+  token: 'token',
+};
+
+const reservation = {
+  connect_to_endorsers: {
+    endorser_alias: ' ... ',
+    ledger_id: ' ... ',
+  },
+  contact_email: 'string',
+  contact_name: 'string',
+  contact_phone: 'string',
+  create_public_did: ['string'],
+  created_at: '2021-12-31T23:59:59Z',
+  reservation_id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+  state: 'requested',
+  state_notes: 'string',
+  tenant_id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+  tenant_name: 'line of business short name',
+  tenant_reason: 'Issue permits to clients',
+  updated_at: '2021-12-31T23:59:59Z',
+  wallet_id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
 };
 
 export default {
-  makeReservation,
   checkIn,
+  makeReservationAutoApprove,
+  makeReservationVerify,
+  reservation,
 };

@@ -1,12 +1,9 @@
+import { vi } from 'vitest';
+
 const store: { [key: string]: any } = {
+  resetState: vi.fn(),
   status: {
-    reservation: null,
-    loading: false,
-    error: null,
-    status: '',
-    walletId: '',
-    walletKey: '',
-    value: null,
+    value: '',
   },
 };
 

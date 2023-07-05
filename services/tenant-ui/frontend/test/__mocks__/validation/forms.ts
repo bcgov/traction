@@ -70,12 +70,14 @@ const didCreateRequest = {
 
 const login = {
   walletId: {
+    $model: 'test',
     $invalid: false,
     required: {
       $message: 'Wallet ID is required',
     },
   },
   walletSecret: {
+    $model: 'test',
     $invalid: false,
     required: {
       $message: 'Wallet Secret is required',

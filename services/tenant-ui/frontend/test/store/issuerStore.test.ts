@@ -2,10 +2,12 @@ import { createPinia, setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, test } from 'vitest';
 
 import { useIssuerStore } from '@/store/issuerStore';
+import { restHandlersUnknownError, server } from '../setupApi';
+import { testSuccessResponse, testErrorResponse } from 'test/commonTests';
 
 let store: any;
 
-describe('issuerStore', () => {
+describe('contactsStore', () => {
   beforeEach(async () => {
     setActivePinia(createPinia());
     store = useIssuerStore();
@@ -19,28 +21,62 @@ describe('issuerStore', () => {
   });
 
   describe('Successful API calls', () => {
-    // TODO: Test with non empty response
     test('listCredentials does not throw error and sets loading correctly', async () => {
-      let response = store.listCredentials();
-      expect(store.loading).toEqual(true);
-      response = await response;
+      await testSuccessResponse(store, store.listCredentials(), 'loading');
+    });
 
-      expect(response.result).not.toBeNull();
-      expect(store.loading).toEqual(false);
+    test('offerCredential does not throw error and sets loading correctly', async () => {
+      await testSuccessResponse(store, store.offerCredential(), 'loading');
+    });
+
+    test('getCredential does not throw error and sets loading correctly', async () => {
+      const response = await store.getCredential('test-id');
+
+      expect(response).not.toBeNull();
       expect(store.error).toBeNull();
     });
 
-    test.todo('offerCredential');
-    test.todo('getCredential');
-    test.todo('revokeCredential');
-    test.todo('deleteCredentialExchange');
+    test('revokeCredential does not throw error and sets loading correctly', async () => {
+      await testSuccessResponse(store, store.revokeCredential(), 'loading');
+    });
+
+    test('deleteCredentialExchange does not throw error and sets loading correctly', async () => {
+      await testSuccessResponse(
+        store,
+        store.deleteCredentialExchange('test-id'),
+        'loading'
+      );
+    });
   });
 
-  describe('Unsuccessful API calls', () => {
-    test.todo('listCredentials');
-    test.todo('offerCredential');
-    test.todo('getCredential');
-    test.todo('revokeCredential');
-    test.todo('deleteCredentialExchange');
+  describe('Unsuccessful API calls', async () => {
+    beforeEach(() => {
+      server.use(...restHandlersUnknownError);
+    });
+
+    test('listCredentials throws error and sets loading correctly', async () => {
+      await testErrorResponse(store, store.listCredentials(), 'loading');
+    });
+
+    test('offerCredential throws error and sets loading correctly', async () => {
+      await testErrorResponse(store, store.offerCredential(), 'loading');
+    });
+
+    test('getCredential does not throw error and sets loading correctly', async () => {
+      await expect(store.getCredential('test-id')).rejects.toThrow();
+      expect(store.error).not.toBeNull();
+    });
+
+    test('revokeCredential throws error and sets loading correctly', async () => {
+      await testErrorResponse(store, store.revokeCredential(), 'loading');
+    });
+
+    test('deleteCredentialExchange throws error and sets loading correctly', async () => {
+      await testErrorResponse(
+        store,
+        store.deleteCredentialExchange('test-id'),
+        'loading'
+      );
+    });
   });
 });

@@ -1,0 +1,8 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Header > mount matches snapshot with expected values 1`] = `
+"<div class=\\"traction-footer flex justify-content-between flex-wrap\\">
+  <div>dashboard.greeting</div>
+  <div> </div>
+</div>"
+`;

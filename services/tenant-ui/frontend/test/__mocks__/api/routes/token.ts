@@ -5,7 +5,7 @@ import { tokenResponse } from '../responses';
 
 export const successHandlers = [
   rest.post(API_PATH.MULTITENANCY_WALLET_TOKEN('username'), (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(tokenResponse.get));
+    return res(ctx.status(200), ctx.json(tokenResponse.token));
   }),
 ];
 

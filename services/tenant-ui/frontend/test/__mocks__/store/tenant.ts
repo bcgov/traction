@@ -2,25 +2,20 @@ import { vi } from 'vitest';
 
 const store: { [key: string]: any } = {
   tenant: {
-    loading: false,
-    loadingIssuance: false,
-    error: null,
-    endorserConnection: null,
-    endorserInfo: null,
-    publicDid: null,
-    publicDidRegistrationProgress: '',
-    taa: null,
-    tenantConfig: null,
-    tenantWallet: null,
     value: {
       tenant_name: 'test',
     },
   },
+  endorserInfo: {
+    value: null,
+  },
+  getEndorserInfo: vi.fn().mockResolvedValue({
+    endorser_did: 'SVfHGCEEvEFmpBPcxgNqRR',
+    endorser_name: 'endorser',
+  }),
+  getIssuanceStatus: vi.fn().mockResolvedValue('success'),
+  getSelf: vi.fn().mockResolvedValue('success'),
+  getTenantConfig: vi.fn().mockResolvedValue('success'),
 };
-
-store.getEndorserInfo = vi.fn().mockResolvedValue({
-  endorser_did: 'SVfHGCEEvEFmpBPcxgNqRR',
-  endorser_name: 'endorser',
-});
 
 export { store };

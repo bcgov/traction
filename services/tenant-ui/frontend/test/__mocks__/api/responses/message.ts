@@ -1,4 +1,4 @@
-const get = {
+const messages = {
   results: [
     {
       content: 'Test 2',
@@ -22,5 +22,5 @@ const get = {
 };
 
 export default {
-  get,
+  messages,
 };

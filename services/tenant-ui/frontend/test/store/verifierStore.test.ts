@@ -2,6 +2,8 @@ import { createPinia, setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, test } from 'vitest';
 
 import { useVerifierStore } from '@/store/verifierStore';
+import { testErrorResponse, testSuccessResponse } from 'test/commonTests';
+import { restHandlersUnknownError, server } from '../setupApi';
 
 let store: any;
 
@@ -21,22 +23,50 @@ describe('verifierStore', () => {
   describe('Successful API calls', () => {
     test('listPresentations sets presentations', async () => {
       await store.listPresentations();
-      expect(store.presentations).not.toBeNull();
       expect(store.presentations).toHaveLength(1);
       expect(store.selectedPresentation).toBeNull();
     });
 
-    // TODO: currently using legacy api
-    test.todo('getPresentation');
+    test('deleteRecord does not throw error and sets loading correctly', async () => {
+      await testSuccessResponse(
+        store,
+        store.deleteRecord('test-uuid'),
+        'loading'
+      );
+    });
 
-    test.todo('deleteRecord');
-    test.todo('sendPresentationRequest');
+    test('sendPresentationRequest does not throw error and sets loading correctly', async () => {
+      await testSuccessResponse(
+        store,
+        store.sendPresentationRequest('test-uuid'),
+        'loading'
+      );
+    });
   });
 
   describe('Unsuccessful API calls', () => {
-    test.todo('listPresentations');
-    test.todo('getPresentation');
-    test.todo('deleteRecord');
-    test.todo('sendPresentationRequest');
+    beforeEach(() => {
+      server.use(...restHandlersUnknownError);
+    });
+
+    test('listPresentations handles error correctly', async () => {
+      await expect(store.listPresentations).rejects.toThrow();
+    });
+
+    test('deleteRecord handles error correctly', async () => {
+      await testErrorResponse(
+        store,
+        store.deleteRecord('test-uuid'),
+        'loading'
+      );
+    });
+
+    test('sendPresentationRequest handles error correctly', async () => {
+      await testErrorResponse(
+        store,
+        store.sendPresentationRequest('test-uuid'),
+        'loading'
+      );
+    });
   });
 });

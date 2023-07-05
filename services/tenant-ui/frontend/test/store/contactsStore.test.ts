@@ -1,9 +1,12 @@
+import { flushPromises } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, test } from 'vitest';
 
 import { useContactsStore } from '@/store/contactsStore';
-
+import { testErrorResponse, testSuccessResponse } from 'test/commonTests';
 import { restHandlersUnknownError, server } from '../setupApi';
+
+import { contactsResponse } from '../__mocks__/api/responses/';
 
 let store: any;
 
@@ -21,57 +24,78 @@ describe('contactsStore', () => {
     expect(store.loadingItem).toEqual(false);
   });
 
+  test('contactsDropdown sorts by label and filters non active connections', async () => {
+    store.contacts = contactsResponse.listConnections.results;
+    await flushPromises();
+    const result = store.contactsDropdown;
+
+    expect(result).toHaveLength(2);
+    expect(result[0].label).toEqual('Atest');
+  });
+
   describe('Success API calls', async () => {
     test('listContacts does not throw error and sets loading correctly', async () => {
       let response = store.listContacts();
-      expect(store.loading).toEqual(true);
-      response = await response;
 
-      expect(response.result).not.toBeNull();
-      expect(store.loading).toEqual(false);
-      expect(store.error).toBeNull();
-      expect(response).toHaveLength(2);
+      await testSuccessResponse(store, response, 'loading');
+      response = await response;
+      expect(response).toHaveLength(3);
     });
 
     test('createInvitation does not throw error and sets loading correctly', async () => {
-      let response = store.createInvitation();
-      expect(store.loading).toEqual(true);
-      response = await response;
-
-      expect(response.result).not.toBeNull();
-      expect(store.loading).toEqual(false);
-      expect(store.error).toBeNull();
+      await testSuccessResponse(store, store.createInvitation(), 'loading');
     });
 
     test('receiveInvitation does not throw error and sets loading correctly', async () => {
-      let response = store.receiveInvitation(
-        '{"@type": "https://didcomm.org/connections/1.0/invitation", "@id": "8fbc2934-f7d1-4f46-aa98-41252847b3b9", "label": "Jamie", "recipientKeys": ["7pZ4SMd7KBDSqPT2HUnsbocJ1YjZQMrzzcGcsfN5NfTr"], "serviceEndpoint": "https://2682-70-66-140-105.ngrok-free.app"}',
-        'test'
+      await testSuccessResponse(
+        store,
+        store.receiveInvitation(
+          '{"@type": "https://didcomm.org/connections/1.0/invitation", "@id": "8fbc2934-f7d1-4f46-aa98-41252847b3b9", "label": "Jamie", "recipientKeys": ["7pZ4SMd7KBDSqPT2HUnsbocJ1YjZQMrzzcGcsfN5NfTr"], "serviceEndpoint": "https://2682-70-66-140-105.ngrok-free.app"}',
+          'test'
+        ),
+        'loading'
       );
-
-      expect(store.loading).toEqual(true);
-      response = await response;
-
-      expect(response.result).not.toBeNull();
-      expect(store.loading).toEqual(false);
-      expect(store.error).toBeNull();
     });
 
     test('deleteContact does not throw error and sets loading correctly', async () => {
-      let response = store.deleteContact('test-uuid');
-
-      expect(store.loading).toEqual(true);
-      response = await response;
-
-      expect(response.result).not.toBeNull();
-      expect(store.loading).toEqual(false);
-      expect(store.error).toBeNull();
+      await testSuccessResponse(
+        store,
+        store.deleteContact('test-uuid'),
+        'loading'
+      );
     });
 
-    test.todo('getContact');
-    test.todo('getInvitation');
-    test.todo('updateConnection');
-    test.todo('didCreateRequest');
+    test('getContact does not throw error and sets loadingItem correctly', async () => {
+      await testSuccessResponse(
+        store,
+        store.getContact('test-uuid'),
+        'loadingItem'
+      );
+    });
+
+    test('getInvitation does not throw error and sets loadingItem correctly', async () => {
+      await testSuccessResponse(
+        store,
+        store.getInvitation('test-uuid'),
+        'loadingItem'
+      );
+    });
+
+    test('updateConnection does not throw error and sets loading correctly', async () => {
+      await testSuccessResponse(
+        store,
+        store.updateConnection('test-uuid'),
+        'loading'
+      );
+    });
+
+    test('didCreateRequest does not throw error and sets loading correctly', async () => {
+      await testSuccessResponse(
+        store,
+        store.didCreateRequest('test-did', 'test.alias', 'test-label'),
+        'loading'
+      );
+    });
   });
 
   describe('Unsuccessful API calls', async () => {
@@ -80,55 +104,70 @@ describe('contactsStore', () => {
     });
 
     test('listContacts throws error and sets loading correctly', async () => {
-      let response = store.listContacts();
-
-      expect(store.loading).toEqual(true);
-      await expect(response).rejects.toThrow();
-      expect(store.loading).toEqual(false);
-      expect(store.error).not.toBeNull();
+      await testErrorResponse(store, store.listContacts(), 'loading');
     });
 
     test('createInvitation throws error and sets loading correctly', async () => {
-      let response = store.createInvitation();
-
-      expect(store.loading).toEqual(true);
-      await expect(response).rejects.toThrow();
-      expect(store.loading).toEqual(false);
-      expect(store.error).not.toBeNull();
+      await testErrorResponse(store, store.createInvitation(), 'loading');
     });
 
     test('createInvitation throws error and sets loading correctly', async () => {
-      let response = store.receiveInvitation(
-        '{"@type": "https://didcomm.org/connections/1.0/invitation", "@id": "8fbc2934-f7d1-4f46-aa98-41252847b3b9", "label": "Jamie", "recipientKeys": ["7pZ4SMd7KBDSqPT2HUnsbocJ1YjZQMrzzcGcsfN5NfTr"], "serviceEndpoint": "https://2682-70-66-140-105.ngrok-free.app"}',
-        'test'
+      await testErrorResponse(
+        store,
+        store.receiveInvitation(
+          '{"@type": "https://didcomm.org/connections/1.0/invitation", "@id": "8fbc2934-f7d1-4f46-aa98-41252847b3b9", "label": "Jamie", "recipientKeys": ["7pZ4SMd7KBDSqPT2HUnsbocJ1YjZQMrzzcGcsfN5NfTr"], "serviceEndpoint": "https://2682-70-66-140-105.ngrok-free.app"}',
+          'test'
+        ),
+        'loading'
       );
-
-      expect(store.loading).toEqual(true);
-      await expect(response).rejects.toThrow();
-      expect(store.loading).toEqual(false);
-      expect(store.error).not.toBeNull();
     });
 
     // FIXME: In src code: Does not set error or loading because exception isn't handled
     test('createInvitation with bad invite throws error and sets loading correctly', async () => {
-      let response = store.receiveInvitation('', 'test');
+      const response = store.receiveInvitation('', 'test');
 
       expect(store.loading).toEqual(true);
       await expect(response).rejects.toThrow();
     });
 
     test('deleteContact sets error and loading correctly', async () => {
-      let response = store.deleteContact('test-uuid');
-
-      expect(store.loading).toEqual(true);
-      await expect(response).rejects.toThrow();
-      expect(store.loading).toEqual(false);
-      expect(store.error).not.toBeNull();
+      await testErrorResponse(
+        store,
+        store.deleteContact('test-uuid'),
+        'loading'
+      );
     });
 
-    test.todo('getContact');
-    test.todo('getInvitation');
-    test.todo('updateConnection');
-    test.todo('didCreateRequest');
+    test('getContact sets error and loading correctly', async () => {
+      await testErrorResponse(
+        store,
+        store.getContact('test-uuid'),
+        'loadingItem'
+      );
+    });
+
+    test('getInvitation sets error and loading correctly', async () => {
+      await testErrorResponse(
+        store,
+        store.getInvitation('test-uuid'),
+        'loadingItem'
+      );
+    });
+
+    test('updateConnection sets error and loading correctly', async () => {
+      await testErrorResponse(
+        store,
+        store.updateConnection('test-uuid'),
+        'loading'
+      );
+    });
+
+    test('didCreateRequest sets error and loading correctly', async () => {
+      await testErrorResponse(
+        store,
+        store.didCreateRequest('test-did', 'test.alias', 'test-label'),
+        'loading'
+      );
+    });
   });
 });

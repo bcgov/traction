@@ -2,10 +2,12 @@ import { createPinia, setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, test } from 'vitest';
 
 import { useHolderStore } from '@/store/holderStore';
+import { testErrorResponse, testSuccessResponse } from 'test/commonTests';
+import { restHandlersUnknownError, server } from '../setupApi';
 
 let store: any;
 
-describe('holderStore', () => {
+describe('contactsStore', () => {
   beforeEach(async () => {
     setActivePinia(createPinia());
     store = useHolderStore();
@@ -23,26 +25,66 @@ describe('holderStore', () => {
     expect(store.error).toBeNull();
   });
 
-  describe('Successful API calls', () => {
-    test.todo('acceptCredentialOffer');
-    test.todo('deleteCredentialExchange');
+  describe('Success API calls', async () => {
+    test('acceptCredentialOffer does not throw exception and sets loading correctly', async () => {
+      await testSuccessResponse(
+        store,
+        store.acceptCredentialOffer('test-id'),
+        'loading'
+      );
+    });
+
+    test('deleteCredentialExchange does not throw exception and sets loading correctly', async () => {
+      await testSuccessResponse(
+        store,
+        store.deleteCredentialExchange('test-id'),
+        'loading'
+      );
+    });
+
+    // TODO: This doesn't seem to be used anywhere
     test.todo('getCredential');
+    // TODO: This doesn't seem to be used anywhere
     test.todo('getCredentialOca');
+    // TODO: This doesn't seem to be used anywhere
     test.todo('getPresentation');
-    test.todo('listCredentials');
+
+    test('listCredentials gets a response', async () => {
+      const response = await store.listCredentials();
+      expect(response).toBeDefined();
+    });
+
     test.todo('listHolderCredentialExchanges');
     test.todo('listOcas');
     test.todo('listPresentations');
     test.todo('rejectCredentialOffer');
   });
 
-  describe('Unuccessful API calls', () => {
-    test.todo('acceptCredentialOffer');
-    test.todo('deleteCredentialExchange');
-    test.todo('getCredential');
-    test.todo('getCredentialOca');
-    test.todo('getPresentation');
-    test.todo('listCredentials');
+  describe('Unsuccessful API calls', async () => {
+    beforeEach(() => {
+      server.use(...restHandlersUnknownError);
+    });
+
+    test('acceptCredentialOffer does not throw exception and sets loading correctly', async () => {
+      await testErrorResponse(
+        store,
+        store.acceptCredentialOffer('test-id'),
+        'loading'
+      );
+    });
+
+    test('deleteCredentialExchange does not throw exception and sets loading correctly', async () => {
+      await testErrorResponse(
+        store,
+        store.deleteCredentialExchange('test-id'),
+        'loading'
+      );
+    });
+
+    test('listCredentials throws an error', async () => {
+      await expect(store.listCredentials()).rejects.toThrow();
+    });
+
     test.todo('listHolderCredentialExchanges');
     test.todo('listOcas');
     test.todo('listPresentations');

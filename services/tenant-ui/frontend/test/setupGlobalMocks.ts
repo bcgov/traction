@@ -37,6 +37,18 @@ vi.mock('pinia', async () => {
   };
 });
 
+vi.mock('@/store', () => ({
+  useConfigStore: vi.fn(() => configStore),
+  useContactsStore: vi.fn(() => contactsStore),
+  useCommonStore: vi.fn(() => commonStore),
+  useGovernanceStore: vi.fn(() => governanceStore),
+  useIssuerStore: vi.fn(() => issuerStore),
+  useMessageStore: vi.fn(() => messageStore),
+  useReservationStore: vi.fn(() => reservationStore),
+  useTenantStore: vi.fn(() => tenantStore),
+  useTokenStore: vi.fn(() => tokenStore),
+}));
+
 vi.mock('vue-i18n', () => ({
   useI18n: vi.fn(() => ({
     locale: vi.fn(() => 'en'),
