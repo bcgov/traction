@@ -27,8 +27,6 @@ jobs:
           registry_password: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       image_tag: ${{ steps.builder.outputs.image_tag }}
-      image_version: ${{ steps.builder.outputs.image_version }}
-      buildtime: ${{ steps.builder.outputs.buildtime }}
 
   build_acapy:
     name: "Build Traction Aca-Py"
@@ -48,8 +46,6 @@ jobs:
           registry_password: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       image_tag: ${{ steps.builder.outputs.image_tag }}
-      image_version: ${{ steps.builder.outputs.image_version }}
-      buildtime: ${{ steps.builder.outputs.buildtime }}
 
   build_proxy:
     name: "Build Traction Tenant Proxy"
@@ -69,8 +65,6 @@ jobs:
           registry_password: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       image_tag: ${{ steps.builder.outputs.image_tag }}
-      image_version: ${{ steps.builder.outputs.image_version }}
-      buildtime: ${{ steps.builder.outputs.buildtime }}
 
   deploy:
     name: Deploy Dev
@@ -96,15 +90,13 @@ jobs:
       - name: Traction Dev Helm
         run: |
           helm upgrade --install traction -f ./deploy/traction/values-development.yaml --set acapy.image.tag=${{ needs.build_acapy.outputs.image_tag }} --set traction_proxy.image.tag=${{ needs.build_acapy.outputs.image_tag }} ./charts/traction --wait
-      
+
+      - name: Tenant UI Dev Helm
+        run: |
+          helm upgrade --install tenant-ui -f ./deploy/tenant-ui/values-development.yaml --set image.tag=${{ needs.build_ui.outputs.image_version }} ./charts/tenant-ui --wait
+
       - name: Restart Deployments
         run: |
           oc rollout restart deployment/traction-acapy
           oc rollout restart deployment/traction-tenant-proxy
-
-      - name: Tenant UI Dev Helm
-        run: |
-          yq eval '.tenant_ui.image.tag = "${{ needs.build_ui.outputs.image_tag }}"' -i ./charts/tenant-ui/values-development.yaml
-          yq eval '.tenant_ui.image.version = "${{ needs.build_ui.outputs.image_version }}"' -i ./charts/tenant-ui/values-development.yaml
-          yq eval '.tenant_ui.image.buildtime = "${{ needs.build_ui.outputs.buildtime }}"' -i ./charts/tenant-ui/values-development.yaml
-          helm upgrade -f ./charts/tenant-ui/values.yaml -f ./charts/tenant-ui/values-development.yaml tenant-ui ./charts/tenant-ui --install --wait
+          oc rollout restart deployment/tenant-ui
