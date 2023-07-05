@@ -1,23 +1,18 @@
-global:
-  ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
+ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
 acapy:
   image:
     tag: "sha-f678ca9"
     pullPolicy: Always
   secret:
-    adminurl:
+    adminApiKey:
       generated: false
       value: "change-me"
     pluginInnkeeper:
       generated: false
       walletkey: "change-me"
       tenantid: "innkeeper"
-  plugins:
-    basicmessageStorage: true
-    connectionUpdate: true
-    multitenantProvider: true
-    tractionInnkeeper: true
-
+  argfile.yml:
+    wallet-name: default
   plugin-config.yml:
     traction_innkeeper:
       innkeeper_wallet:
@@ -26,10 +21,6 @@ acapy:
       reservation:
         expiry_minutes: 2880
         auto_approve: false
-
-  autoscaling:
-    enabled: false
-
   resources:
     limits:
       cpu: 200m
@@ -37,10 +28,25 @@ acapy:
     requests:
       cpu: 120m
       memory: 400Mi
-
-  argfile.yml:
-    wallet-name: default
-
+  networkPolicy:
+    enabled: true
+    ingress:
+      enabled: true
+      namespaceSelector:
+        network.openshift.io/policy-group: ingress
+tenant_proxy:
+  image:
+    tag: "sha-f678ca9"
+    pullPolicy: Always
+  networkPolicy:
+    enabled: true
+    ingress:
+      enabled: true
+      namespaceSelector:
+        network.openshift.io/policy-group: ingress
+ingress:
+  annotations:
+    route.openshift.io/termination: edge
 postgresql:
   primary:
     resources:
@@ -50,10 +56,3 @@ postgresql:
       requests:
         cpu: 120m
         memory: 400Mi
-
-tenant_proxy:
-  image:
-    tag: "sha-f678ca9"
-    pullPolicy: Always
-  autoscaling:
-    enabled: false

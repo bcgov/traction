@@ -1,0 +1,29 @@
+fullnameOverride: "int-tenant-ui"
+ingressSuffix: -test.apps.silver.devops.gov.bc.ca
+image:
+  tag: "0.2.14"
+  pullPolicy: Always
+traction:
+  apiEndpoint: https://int-traction-tenant-proxy-test.apps.silver.devops.gov.bc.ca
+  tenantProxyEndpoint: https://int-traction-tenant-proxy-test.apps.silver.devops.gov.bc.ca
+oidc:
+  active: true
+  showInnkeeperAdminLogin: true
+  authority: https://test.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm
+  jwksUri: https://test.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm/protocol/openid-connect/certs
+ariesDetails:
+  ledgerDescription: "bcovrin-test"
+smtp:
+  server: apps.smtp.gov.bc.ca
+  port: 25
+  senderAddress: DoNotReplyTractionINT@gov.bc.ca
+  innkeeperInbox: lucas.o'neil@gov.bc.ca
+ingress:
+  annotations:
+    route.openshift.io/termination: edge
+networkPolicy:
+  enabled: true
+  ingress:
+    enabled: true
+    namespaceSelector:
+      network.openshift.io/policy-group: ingress

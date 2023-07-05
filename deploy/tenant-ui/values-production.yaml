@@ -1,0 +1,26 @@
+image:
+  tag: "0.2.14"
+traction:
+  apiEndpoint: https://traction-tenant-proxy-prod.apps.silver.devops.gov.bc.ca
+  tenantProxyEndpoint: https://traction-tenant-proxy-prod.apps.silver.devops.gov.bc.ca
+oidc:
+  active: true
+  showInnkeeperAdminLogin: true
+  authority: https://loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm
+  jwksUri: https://loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm/protocol/openid-connect/certs
+ariesDetails:
+  ledgerDescription: "bcovrin-test"
+smtp:
+  server: apps.smtp.gov.bc.ca
+  port: 25
+  senderAddress: DoNotReplyTraction@gov.bc.ca
+  innkeeperInbox: lucas.o'neil@gov.bc.ca
+ingress:
+  annotations:
+    route.openshift.io/termination: edge
+networkPolicy:
+  enabled: true
+  ingress:
+    enabled: true
+    namespaceSelector:
+      network.openshift.io/policy-group: ingress

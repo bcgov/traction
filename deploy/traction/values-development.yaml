@@ -1,12 +1,13 @@
-global:
-  ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
-  ledger: bcovrin-test
+ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
+config:
+  ledger:
+    name: bcovrin-test
 acapy:
   image:
     tag: "0.2.14"
     pullPolicy: Always
   secret:
-    adminurl:
+    adminApiKey:
       generated: false
     pluginInnkeeper:
       generated: false
@@ -22,8 +23,25 @@ acapy:
     requests:
       cpu: 200m
       memory: 820Mi
-  tails:
+  networkPolicy:
     enabled: true
+    ingress:
+      enabled: true
+      namespaceSelector:
+        network.openshift.io/policy-group: ingress
+tenant_proxy:
+  image:
+    tag: "0.2.14"
+    pullPolicy: Always
+  networkPolicy:
+    enabled: true
+    ingress:
+      enabled: true
+      namespaceSelector:
+        network.openshift.io/policy-group: ingress
+ingress:
+  annotations:
+    route.openshift.io/termination: edge
 postgresql:
   resources:
     limits:
@@ -32,7 +50,3 @@ postgresql:
     requests:
       cpu: 200m
       memory: 820Mi
-tenant_proxy:
-  image:
-    tag: "0.2.14"
-    pullPolicy: Always
