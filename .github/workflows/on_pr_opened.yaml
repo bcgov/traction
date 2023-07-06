@@ -124,7 +124,7 @@ jobs:
 
       - name: Run Tenant UI PR Helm
         run: |
-          helm upgrade --install pr-${{ github.event.number }}-tenant-ui -f ./charts/tenant-ui/values.yaml -f ./charts/tenant-ui/values-pr.yaml --set image.tag=pr-${{ github.event.number }} --set traction.apiEndpoint="https://pr-${{ github.event.number }}-traction-tenant-proxy-dev.apps.silver.devops.gov.bc.ca" --set traction.tenantProxyEndpoint="https://pr-${{ github.event.number }}-traction-tenant-proxy-dev.apps.silver.devops.gov.bc.ca" --set traction.pluginInnkeeper.existingSecret="pr-${{ github.event.number }}-traction-acapy-plugin-innkeeper" ./charts/tenant-ui --wait
+          helm upgrade --install pr-${{ github.event.number }}-tenant-ui -f ./deploy/tenant-ui/values-pr.yaml --set image.tag=pr-${{ github.event.number }} --set traction.apiEndpoint="https://pr-${{ github.event.number }}-traction-tenant-proxy-dev.apps.silver.devops.gov.bc.ca" --set traction.tenantProxyEndpoint="https://pr-${{ github.event.number }}-traction-tenant-proxy-dev.apps.silver.devops.gov.bc.ca" --set traction.pluginInnkeeper.existingSecret="pr-${{ github.event.number }}-traction-acapy-plugin-innkeeper" ./charts/tenant-ui --wait
 
       - name: Restart Tenant-UI PR Pods
         run: |
