@@ -48,13 +48,7 @@
     },
 
     "features": {
-        "ghcr.io/devcontainers/features/docker-in-docker": {
-            "version": "latest",
-            "moby": true            
-        },
-        "ghcr.io/devcontainers-contrib/features/poetry": {
-            
-        }
+        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
     },
     
     // Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
