@@ -119,7 +119,8 @@ jobs:
 
       - name: Restart Traction PR Pods
         run: |
-          oc rollout restart deployment/pr-${{ github.event.number }}-traction
+          oc rollout restart deployment/pr-${{ github.event.number }}-traction-acapy
+          oc rollout restart deployment/pr-${{ github.event.number }}-traction-tenant-proxy
 
       - name: Run Tenant UI PR Helm
         run: |
