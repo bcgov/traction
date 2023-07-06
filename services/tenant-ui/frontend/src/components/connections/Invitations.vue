@@ -1,28 +1,35 @@
 <template>
-  <MainCardContent :title="$t('tenants.tenants')" :refresh-callback="loadTable">
+  <MainCardContent
+    :title="$t('connect.invitations.invitations')"
+    :refresh-callback="loadTable"
+  >
     <DataTable
       v-model:expandedRows="expandedRows"
       v-model:filters="filter"
       :loading="loading"
-      :value="formattedTenants"
+      :value="formattedInvitations"
       :paginator="true"
       :rows="TABLE_OPT.ROWS_DEFAULT"
       :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
+      :global-filter-fields="['alias']"
       selection-mode="single"
-      data-key="tenant_id"
+      data-key="connection_id"
       sort-field="created_at"
       :sort-order="-1"
       filter-display="menu"
     >
       <template #header>
         <div class="flex justify-content-between">
-          <div class="flex justify-content-start"></div>
+          <div class="flex justify-content-start">
+            <CreateContact :multi="false" class="mr-3" />
+            <CreateContact :multi="true" />
+          </div>
           <div class="flex justify-content-end">
             <span class="p-input-icon-left">
               <i class="pi pi-search ml-0" />
               <InputText
-                v-model="filter.global.value"
-                placeholder="Search Tenants"
+                v-model="filter.alias.value"
+                :placeholder="$t('connect.invitations.search')"
               />
             </span>
           </div>
@@ -33,14 +40,15 @@
       <Column :expander="true" header-style="width: 3rem" />
       <Column :sortable="false" :header="$t('common.actions')">
         <template #body="{ data }">
-          <EditConfig :tenant="data" />
+          <DeleteContact :connection-id="data.connection_id" />
+          <RegenerateInvitation :connection-id="data.connection_id" />
         </template>
       </Column>
       <Column
         :sortable="true"
-        field="tenant_name"
-        header="Name"
-        filter-field="tenant_name"
+        field="alias"
+        :header="$t('common.alias')"
+        filter-field="alias"
         :show-filter-match-modes="false"
       >
         <template #filter="{ filterModel, filterCallback }">
@@ -48,7 +56,24 @@
             v-model="filterModel.value"
             type="text"
             class="p-column-filter"
-            placeholder="Search By Contact"
+            placeholder="Search By Alias"
+            @input="filterCallback()"
+          />
+        </template>
+      </Column>
+      <Column
+        :sortable="true"
+        field="invitation_mode"
+        :header="$t('connect.table.invitationMode')"
+        filter-field="invitation_mode"
+        :show-filter-match-modes="false"
+      >
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            placeholder="Search By Invitation Mode"
             @input="filterCallback()"
           />
         </template>
@@ -56,7 +81,7 @@
       <Column
         :sortable="true"
         field="created"
-        header="Created at"
+        :header="$t('connect.table.createdAt')"
         filter-field="created"
         :show-filter-match-modes="false"
       >
@@ -68,13 +93,13 @@
             v-model="filterModel.value"
             type="text"
             class="p-column-filter"
-            placeholder="Search By Contact"
+            placeholder="Search By Date"
             @input="filterCallback()"
           />
         </template>
       </Column>
       <template #expansion="{ data }">
-        <RowExpandData :id="data.tenant_id" :url="API_PATH.INNKEEPER_TENANTS" />
+        <RowExpandData :id="data.connection_id" :url="API_PATH.CONNECTIONS" />
       </template>
     </DataTable>
   </MainCardContent>
@@ -85,56 +110,57 @@
 import { onMounted, ref, computed } from 'vue';
 // PrimeVue
 import Column from 'primevue/column';
-import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
-import { FilterMatchMode } from 'primevue/api';
+import DataTable from 'primevue/datatable';
 import { useToast } from 'vue-toastification';
+import { FilterMatchMode } from 'primevue/api';
 // State
-import { useInnkeeperTenantsStore } from '@/store';
+import { useContactsStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other components
+import CreateContact from '@/components/connections/createContact/CreateContact.vue';
+import DeleteContact from '@/components/connections/editContact/DeleteContact.vue';
+import MainCardContent from '../layout/mainCard/MainCardContent.vue';
+import RegenerateInvitation from '@/components/connections/createContact/RegenerateInvitation.vue';
+import RowExpandData from '@/components/common/RowExpandData.vue';
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
-import EditConfig from './editConfig/editConfig.vue';
-import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
-import RowExpandData from '@/components/common/RowExpandData.vue';
 
 const toast = useToast();
 
-const innkeeperTenantsStore = useInnkeeperTenantsStore();
+const contactsStore = useContactsStore();
 
-// Populating the Table
-const { loading, tenants } = storeToRefs(useInnkeeperTenantsStore());
+const { loading, filteredInvitations } = storeToRefs(useContactsStore());
+
+const formattedInvitations = computed(() =>
+  filteredInvitations.value.map((inv) => ({
+    connection_id: inv.connection_id,
+    alias: inv.alias,
+    invitation_mode: inv.invitation_mode,
+    created: formatDateLong(inv.created_at as string),
+    created_at: inv.created_at,
+  }))
+);
 const loadTable = async () => {
-  innkeeperTenantsStore.listTenants().catch((err: string) => {
+  contactsStore.listContacts().catch((err) => {
     console.error(err);
     toast.error(`Failure: ${err}`);
   });
 };
 
-// Formatting the Tenant table row
-const formattedTenants = computed(() =>
-  tenants.value.map((ten: any) => ({
-    tenant_id: ten.tenant_id,
-    tenant_name: ten.tenant_name,
-    connected_to_endorsers: ten.connected_to_endorsers,
-    created_public_did: ten.created_public_did,
-    created: formatDateLong(ten.created_at),
-    created_at: ten.created_at,
-  }))
-);
-
 onMounted(async () => {
   loadTable();
 });
 
-// Filter for search
+// necessary for expanding rows, we don't do anything with this
+const expandedRows = ref([]);
+
 const filter = ref({
-  global: {
+  alias: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   },
-  tenant_name: {
+  invitation_mode: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   },
@@ -143,7 +169,4 @@ const filter = ref({
     matchMode: FilterMatchMode.CONTAINS,
   },
 });
-
-// necessary for expanding rows, we don't do anything with this
-const expandedRows = ref([]);
 </script>

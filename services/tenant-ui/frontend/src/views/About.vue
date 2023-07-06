@@ -1,23 +1,23 @@
 <template>
-  <h3 class="mt-0">{{ $t('about.about') }}</h3>
-
-  <Accordion :multiple="true">
-    <AccordionTab
-      v-if="
-        config.frontend.ux.aboutBusiness &&
-        config.frontend.ux.aboutBusiness.title
-      "
-      :header="config.frontend.ux.aboutBusiness.title"
-    >
-      <Business />
-    </AccordionTab>
-    <AccordionTab header="Traction">
-      <Traction />
-    </AccordionTab>
-    <AccordionTab header="ACA-Py">
-      <Acapy />
-    </AccordionTab>
-  </Accordion>
+  <MainCardContent :title="$t('about.about')">
+    <Accordion :multiple="true">
+      <AccordionTab
+        v-if="
+          config.frontend.ux.aboutBusiness &&
+          config.frontend.ux.aboutBusiness.title
+        "
+        :header="config.frontend.ux.aboutBusiness.title"
+      >
+        <Business />
+      </AccordionTab>
+      <AccordionTab header="Traction">
+        <Traction />
+      </AccordionTab>
+      <AccordionTab header="ACA-Py">
+        <Acapy />
+      </AccordionTab>
+    </Accordion>
+  </MainCardContent>
 </template>
 
 <script setup lang="ts">
@@ -30,6 +30,7 @@ import { useConfigStore } from '@/store/configStore';
 // Components
 import Acapy from '@/components/about/Acapy.vue';
 import Business from '@/components/about/Business.vue';
+import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
 import Traction from '@/components/about/Traction.vue';
 
 const { config } = storeToRefs(useConfigStore());
