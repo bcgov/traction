@@ -1,181 +1,178 @@
 <template>
-  <h3 class="mt-0">{{ $t('reservations.reservationHistory') }}</h3>
-
-  <DataTable
-    v-model:filters="filter"
-    :loading="loading"
-    :value="formattedReservationHistory"
-    :paginator="true"
-    :rows="TABLE_OPT.ROWS_DEFAULT"
-    :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
-    selection-mode="single"
-    data-key="reservation_id"
-    sort-field="created_at"
-    :sort-order="-1"
-    filter-display="menu"
+  <MainCardContent
+    :title="$t('reservations.reservationHistory')"
+    :refresh-callback="loadTable"
   >
-    <template #header>
-      <div class="flex justify-content-end">
-        <span class="p-input-icon-left mr-3">
-          <i class="pi pi-search ml-0" />
+    <DataTable
+      v-model:filters="filter"
+      :loading="loading"
+      :value="formattedReservationHistory"
+      :paginator="true"
+      :rows="TABLE_OPT.ROWS_DEFAULT"
+      :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
+      selection-mode="single"
+      data-key="reservation_id"
+      sort-field="created_at"
+      :sort-order="-1"
+      filter-display="menu"
+    >
+      <template #header>
+        <div class="flex justify-content-end">
+          <span class="p-input-icon-left mr-3">
+            <i class="pi pi-search ml-0" />
+            <InputText
+              v-model="filter.global.value"
+              placeholder="Search History"
+            />
+          </span>
+        </div>
+      </template>
+      <template #empty>{{ $t('common.noRecordsFound') }}</template>
+      <template #loading>{{ $t('common.loading') }}</template>
+      <Column
+        :sortable="true"
+        field="state"
+        filter-field="state"
+        header="State"
+        :show-filter-match-modes="false"
+      >
+        <template #body="{ data }">
+          <StatusChip :status="data.state" />
+        </template>
+        <template #filter="{ filterModel, filterCallback }">
           <InputText
-            v-model="filter.global.value"
-            placeholder="Search History"
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            placeholder="Search By Contact"
+            @input="filterCallback()"
           />
-        </span>
-        <Button
-          icon="pi pi-refresh"
-          class="p-button-rounded p-button-outlined"
-          title="Refresh Table"
-          @click="loadTable"
-        />
-      </div>
-    </template>
-    <template #empty>{{ $t('common.noRecordsFound') }}</template>
-    <template #loading>{{ $t('common.loading') }}</template>
-    <Column
-      :sortable="true"
-      field="state"
-      filter-field="state"
-      header="State"
-      :show-filter-match-modes="false"
-    >
-      <template #body="{ data }">
-        <StatusChip :status="data.state" />
-      </template>
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          type="text"
-          class="p-column-filter"
-          placeholder="Search By Contact"
-          @input="filterCallback()"
-        />
-      </template>
-    </Column>
-    <Column
-      :sortable="true"
-      field="reservation_id"
-      filter-field="reservation_id"
-      header="id"
-      :show-filter-match-modes="false"
-    >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          type="text"
-          class="p-column-filter"
-          placeholder="Search By Contact"
-          @input="filterCallback()"
-        />
-      </template>
-    </Column>
-    <Column
-      :sortable="true"
-      field="contact_email"
-      filter-field="contact_email"
-      header="Contact Email"
-      :show-filter-match-modes="false"
-    >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          type="text"
-          class="p-column-filter"
-          placeholder="Search By Contact"
-          @input="filterCallback()"
-        />
-      </template>
-    </Column>
-    <Column
-      :sortable="true"
-      field="contact_name"
-      filter-field="contact_name"
-      header="Contact Name"
-      :show-filter-match-modes="false"
-    >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          type="text"
-          class="p-column-filter"
-          placeholder="Search By Contact"
-          @input="filterCallback()"
-        />
-      </template>
-    </Column>
-    <Column
-      :sortable="true"
-      field="contact_phone"
-      filter-field="contact_phone"
-      header="Contact Phone"
-      :show-filter-match-modes="false"
-    >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          type="text"
-          class="p-column-filter"
-          placeholder="Search By Contact"
-          @input="filterCallback()"
-        />
-      </template>
-    </Column>
-    <Column
-      :sortable="true"
-      field="tenant_name"
-      filter-field="tenant_name"
-      header="Tenant Name"
-      :show-filter-match-modes="false"
-    >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          type="text"
-          class="p-column-filter"
-          placeholder="Search By Contact"
-          @input="filterCallback()"
-        />
-      </template>
-    </Column>
-    <Column
-      :sortable="true"
-      field="tenant_reason"
-      filter-field="tenant_reason"
-      header="Tenant Reason"
-      :show-filter-match-modes="false"
-    >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          type="text"
-          class="p-column-filter"
-          placeholder="Search By Contact"
-          @input="filterCallback()"
-        />
-      </template>
-    </Column>
-    <Column
-      :sortable="true"
-      field="created"
-      filter-field="created"
-      header="Created at"
-      :show-filter-match-modes="false"
-    >
-      <template #body="{ data }">
-        {{ formatDateLong(data.created_at) }}
-      </template>
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          type="text"
-          class="p-column-filter"
-          placeholder="Search By Contact"
-          @input="filterCallback()"
-        />
-      </template>
-    </Column>
-  </DataTable>
+        </template>
+      </Column>
+      <Column
+        :sortable="true"
+        field="reservation_id"
+        filter-field="reservation_id"
+        header="id"
+        :show-filter-match-modes="false"
+      >
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            placeholder="Search By Contact"
+            @input="filterCallback()"
+          />
+        </template>
+      </Column>
+      <Column
+        :sortable="true"
+        field="contact_email"
+        filter-field="contact_email"
+        header="Contact Email"
+        :show-filter-match-modes="false"
+      >
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            placeholder="Search By Contact"
+            @input="filterCallback()"
+          />
+        </template>
+      </Column>
+      <Column
+        :sortable="true"
+        field="contact_name"
+        filter-field="contact_name"
+        header="Contact Name"
+        :show-filter-match-modes="false"
+      >
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            placeholder="Search By Contact"
+            @input="filterCallback()"
+          />
+        </template>
+      </Column>
+      <Column
+        :sortable="true"
+        field="contact_phone"
+        filter-field="contact_phone"
+        header="Contact Phone"
+        :show-filter-match-modes="false"
+      >
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            placeholder="Search By Contact"
+            @input="filterCallback()"
+          />
+        </template>
+      </Column>
+      <Column
+        :sortable="true"
+        field="tenant_name"
+        filter-field="tenant_name"
+        header="Tenant Name"
+        :show-filter-match-modes="false"
+      >
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            placeholder="Search By Contact"
+            @input="filterCallback()"
+          />
+        </template>
+      </Column>
+      <Column
+        :sortable="true"
+        field="tenant_reason"
+        filter-field="tenant_reason"
+        header="Tenant Reason"
+        :show-filter-match-modes="false"
+      >
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            placeholder="Search By Contact"
+            @input="filterCallback()"
+          />
+        </template>
+      </Column>
+      <Column
+        :sortable="true"
+        field="created"
+        filter-field="created"
+        header="Created at"
+        :show-filter-match-modes="false"
+      >
+        <template #body="{ data }">
+          {{ formatDateLong(data.created_at) }}
+        </template>
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            placeholder="Search By Contact"
+            @input="filterCallback()"
+          />
+        </template>
+      </Column>
+    </DataTable>
+  </MainCardContent>
 </template>
 
 <script setup lang="ts">
@@ -192,6 +189,7 @@ import { useToast } from 'vue-toastification';
 import { useInnkeeperTenantsStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other components
+import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
 import StatusChip from '@/components/common/StatusChip.vue';
 import { TABLE_OPT } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';

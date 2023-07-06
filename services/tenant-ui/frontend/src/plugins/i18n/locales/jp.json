@@ -214,6 +214,7 @@
     "backToSignIn": "Go Back to Sign-in <JP>",
     "checkStatus": "Check Status! <JP>",
     "createRequest": "Create Request! <JP>",
+    "invalidCreds": "Incorrect Wallet ID or Wallet Key. Please try again. <JP>",
     "noAccount": "Don't have an account? <JP>",
     "submit": "Sign-In <JP>",
     "submittedRequest": "Already Submitted Request? <JP>",
