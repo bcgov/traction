@@ -46,8 +46,6 @@ jobs:
     
     outputs:
       image_tag: ${{ steps.builder.outputs.image_tag }}
-      image_version: ${{ steps.builder.outputs.image_version }}
-      buildtime: ${{ steps.builder.outputs.buildtime }}
 
   deploy:
     environment: ${{ github.event.inputs.deploy_env }}
@@ -69,10 +67,9 @@ jobs:
 
       - name: Run Helm
         run: |
-          yq eval '.global.fullnameOverride = "${{ github.event.inputs.instance_name }}"' -i ./charts/tenant-ui/values.yaml
-          yq eval '.global.tractionNameOverride = "${{ github.event.inputs.traction_name }}"' -i ./charts/tenant-ui/values.yaml
-          yq eval '.tenant_ui.traction_api.endpoint = "${{ github.event.inputs.traction_api_endpoint }}"' -i ./charts/tenant-ui/values-${{ github.event.inputs.deploy_env }}.yaml
-          yq eval '.tenant_ui.image.tag = "${{ needs.build_image.outputs.image_tag }}"' -i ./charts/tenant-ui/values-${{ github.event.inputs.deploy_env }}.yaml
-          yq eval '.tenant_ui.image.version = "${{ needs.build_image.outputs.image_version }}"' -i ./charts/tenant-ui/values-${{ github.event.inputs.deploy_env }}.yaml
-          yq eval '.tenant_ui.image.buildtime = "${{ needs.build_image.outputs.buildtime }}"' -i ./charts/tenant-ui/values-${{ github.event.inputs.deploy_env }}.yaml
-          helm upgrade -f ./charts/tenant-ui/values.yaml -f ./charts/tenant-ui/values-${{ github.event.inputs.deploy_env }}.yaml "${{ github.event.inputs.instance_name }}" ./charts/tenant-ui --install --wait
+          helm upgrade --install "${{ github.event.inputs.instance_name }}" -f ./deploy/tenant-ui/values-${{ github.event.inputs.deploy_env }}.yaml --set image.tag=${{ needs.build_image.outputs.image_tag }} --set traction.apiEndpoint="${{ github.event.inputs.traction_api_endpoint }}"  --set traction.pluginInnkeeper.existingSecret="${{ github.event.inputs.traction_name }}-acapy-plugin-innkeeper" ./charts/tenant-ui --wait
+
+      - name: Restart Tenant-UI Pods
+        run: |
+          oc rollout restart deployment/${{ github.event.inputs.instance_name }}
+      

@@ -69,8 +69,6 @@ jobs:
           registry_password: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       image_tag: ${{ steps.builder.outputs.image_tag }}
-      image_version: ${{ steps.builder.outputs.image_version }}
-      buildtime: ${{ steps.builder.outputs.buildtime }}
 
   build_proxy:
     name: "Build Traction Tenant Proxy"
@@ -92,8 +90,6 @@ jobs:
           registry_password: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       image_tag: ${{ steps.builder.outputs.image_tag }}
-      image_version: ${{ steps.builder.outputs.image_version }}
-      buildtime: ${{ steps.builder.outputs.buildtime }}
 
   deploy:
     name: Deploy PR
@@ -119,24 +115,20 @@ jobs:
 
       - name: Run Traction PR Helm
         run: |
-          yq eval '.acapy.image.tag = "ghcr.io/${{ github.repository_owner}}/traction-plugins-acapy:pr-${{ github.event.number }}"' -i ./charts/traction/values-pr.yaml
-          yq eval '.acapy.image.version = "${{ needs.build_acapy.outputs.image_version }}"' -i ./charts/traction/values-pr.yaml
-          yq eval '.acapy.image.buildtime = "${{ needs.build_acapy.outputs.buildtime }}"' -i ./charts/traction/values-pr.yaml
-          yq eval '.tenant_proxy.image.tag = "ghcr.io/${{ github.repository_owner}}/traction-tenant-proxy:pr-${{ github.event.number }}"' -i ./charts/traction/values-pr.yaml
-          yq eval '.tenant_proxy.image.version = "${{ needs.build_proxy.outputs.image_version }}"' -i ./charts/traction/values-pr.yaml
-          yq eval '.tenant_proxy.image.buildtime = "${{ needs.build_proxy.outputs.buildtime }}"' -i ./charts/traction/values-pr.yaml
-          helm upgrade -f ./charts/traction/values.yaml -f ./charts/traction/values-pr.yaml pr-${{ github.event.number }}-traction ./charts/traction --install --wait
+          helm upgrade --install pr-${{ github.event.number }}-traction -f ./deploy/traction/values-pr.yaml --set acapy.image.tag=pr-${{ github.event.number }} --set traction_proxy.image.tag=pr-${{ github.event.number }} ./charts/traction --wait
+
+      - name: Restart Traction PR Pods
+        run: |
+          oc rollout restart deployment/pr-${{ github.event.number }}-traction-acapy
+          oc rollout restart deployment/pr-${{ github.event.number }}-traction-tenant-proxy
 
       - name: Run Tenant UI PR Helm
         run: |
-          yq eval '.global.fullnameOverride = "pr-${{ github.event.number }}-tenant-ui"' -i ./charts/tenant-ui/values-pr.yaml
-          yq eval '.global.tractionNameOverride = "pr-${{ github.event.number }}-traction"' -i ./charts/tenant-ui/values-pr.yaml
-          yq eval '.tenant_ui.traction_api.endpoint = "https://pr-${{ github.event.number }}-traction-tenant-proxy-dev.apps.silver.devops.gov.bc.ca"' -i ./charts/tenant-ui/values-pr.yaml
-          yq eval '.tenant_ui.tenant_proxy.endpoint = "https://pr-${{ github.event.number }}-traction-tenant-proxy-dev.apps.silver.devops.gov.bc.ca"' -i ./charts/tenant-ui/values-pr.yaml
-          yq eval '.tenant_ui.image.tag = "ghcr.io/${{ github.repository_owner}}/traction-tenant-ui:pr-${{ github.event.number }}"' -i ./charts/tenant-ui/values-pr.yaml
-          yq eval '.tenant_ui.image.version = "${{ needs.build_ui.outputs.image_version }}"' -i ./charts/tenant-ui/values-pr.yaml
-          yq eval '.tenant_ui.image.buildtime = "${{ needs.build_ui.outputs.buildtime }}"' -i ./charts/tenant-ui/values-pr.yaml
-          helm upgrade -f ./charts/tenant-ui/values.yaml -f ./charts/tenant-ui/values-pr.yaml pr-${{ github.event.number }}-tenant-ui ./charts/tenant-ui --install --wait
+          helm upgrade --install pr-${{ github.event.number }}-tenant-ui -f ./deploy/tenant-ui/values-pr.yaml --set image.tag=pr-${{ github.event.number }} --set traction.apiEndpoint="https://pr-${{ github.event.number }}-traction-tenant-proxy-dev.apps.silver.devops.gov.bc.ca" --set traction.tenantProxyEndpoint="https://pr-${{ github.event.number }}-traction-tenant-proxy-dev.apps.silver.devops.gov.bc.ca" --set traction.pluginInnkeeper.existingSecret="pr-${{ github.event.number }}-traction-acapy-plugin-innkeeper" ./charts/tenant-ui --wait
+
+      - name: Restart Tenant-UI PR Pods
+        run: |
+          oc rollout restart deployment/pr-${{ github.event.number }}-tenant-ui
 
   deploymenturls:
     name: Deployment URLs comment
