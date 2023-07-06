@@ -7,6 +7,7 @@
   />
   <Dialog
     v-model:visible="displayModal"
+    :style="{ minWidth: '600px' }"
     :header="$t('reservations.denyRequest')"
     :modal="true"
   >
@@ -14,7 +15,12 @@
       <!-- Reason -->
       <div class="field">
         <label for="reason"> {{ $t('reservations.denied.reasonText') }} </label>
-        <InputText id="reason" v-model="reason" class="w-full" />
+        <InputText
+          id="reason"
+          v-model="reason"
+          class="w-full"
+          @keydown.enter.prevent
+        />
       </div>
       <Button
         type="submit"

@@ -51,6 +51,10 @@
         :disabled="!!loading"
         :loading="!!loading"
       />
+
+      <Message v-if="invalidCreds" severity="error" :closable="false">
+        {{ $t('login.invalidCreds') }}
+      </Message>
     </div>
   </form>
 </template>
@@ -61,6 +65,7 @@ import { ref, reactive } from 'vue';
 // PrimeVue/Validation/etc
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
+import Message from 'primevue/message';
 import { useToast } from 'vue-toastification';
 import { required } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
@@ -71,6 +76,7 @@ import { storeToRefs } from 'pinia';
 const toast = useToast();
 
 // Login Form and validation
+const invalidCreds = ref(false);
 const formFields = reactive({
   walletId: '',
   walletSecret: '',
@@ -90,21 +96,35 @@ const tenantStore = useTenantStore();
 // Form submission
 const submitted = ref(false);
 const handleSubmit = async (isFormValid: boolean) => {
+  invalidCreds.value = false;
   submitted.value = true;
 
   if (!isFormValid) {
     return;
   }
+
+  // Use the wallet creds to get a token
   try {
+    // Trim wallet ID and wallet key
+    formFields.walletId = formFields.walletId.trim();
+    formFields.walletSecret = formFields.walletSecret.trim();
+
+    // Get a token
     await tokenStore.login(formFields.walletId, formFields.walletSecret);
     console.log(token.value);
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
-    toast.error(`Failure getting token: ${err}`);
+    if (err.response?.status === 404 || err.response?.status === 409) {
+      // Handle wallet not found or bad password for this as a status not an exception
+      invalidCreds.value = true;
+    } else {
+      toast.error(`Failure getting token: ${err}`);
+    }
   }
+
+  // token is loaded, now go fetch the global data about the tenant
   if (token.value) {
     try {
-      // token is loaded, now go fetch the global data about the tenant
       const results = await Promise.allSettled([
         tenantStore.getSelf(),
         tenantStore.getTenantConfig(),

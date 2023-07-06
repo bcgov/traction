@@ -145,6 +145,7 @@ const formattedstoredCredDefs: Ref<any[]> = computed(() =>
   storedCredDefs.value.map((credDef: any) => ({
     cred_def_id: credDef.cred_def_id,
     schema_id: credDef.schema_id,
+    support_revocation: credDef.support_revocation,
     created_at: credDef.created_at,
     created: formatDateLong(credDef.created_at),
   }))

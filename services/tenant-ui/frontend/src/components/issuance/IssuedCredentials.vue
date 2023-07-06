@@ -178,6 +178,8 @@ const formattedCredentials: Ref<any[]> = computed(() =>
   credentials.value.map((cred: any) => ({
     connection_id: cred.connection_id,
     state: cred.state,
+    revocation_id: cred.revocation_id,
+    revoc_reg_id: cred.revoc_reg_id,
     contact: findConnectionName(cred.connection_id),
     credential_definition_id: cred.credential_definition_id,
     credential_exchange_id: cred.credential_exchange_id,
