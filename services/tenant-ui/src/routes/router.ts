@@ -49,15 +49,7 @@ router.post(
       // Get innkeeper token from login method
       const { token } = await innkeeperComponent.login();
 
-      const auth = `Bearer ${token}`;
-      const headers = {
-        "Content-Type": "application/json",
-        accept: "application/json",
-        Authorization: auth,
-      };
-      req.headers = { ...req.headers, ...headers };
-
-      const result = await innkeeperComponent.createReservation(req);
+      const result = await innkeeperComponent.createReservation(req, token);
       res.status(201).send(result);
     } catch (error) {
       next(error);

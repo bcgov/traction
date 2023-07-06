@@ -26,13 +26,15 @@ export const login = async () => {
  * Create a reservation in Traction
  * @returns {object} the reservation object
  */
-export const createReservation = async (req: any) => {
+export const createReservation = async (req: any, token: string) => {
+  const auth = `Bearer ${token}`;
   const reservationUrl = `${TRACURL}/innkeeper/reservations`;
+
   const res = await axios({
     method: "post",
     url: reservationUrl,
     data: req.body,
-    headers: req.headers,
+    headers: { Authorization: auth },
   });
 
   return res.data;
