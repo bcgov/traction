@@ -217,6 +217,7 @@
     "backToSignIn": "Go Back to Sign-in",
     "checkStatus": "Check Status!",
     "createRequest": "Create Request!",
+    "invalidCreds": "Incorrect Wallet ID or Wallet Key. Please try again.",
     "noAccount": "Don't have an account?",
     "submit": "Sign-In",
     "submittedRequest": "Already Submitted Request?",
