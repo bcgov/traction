@@ -49,6 +49,12 @@ server {
         try_files $uri $uri/ @proxy;
     }
 
+    location /healthz {
+        access_log off;
+        return 200 '{"status":"up"}';
+        add_header 'Content-Type' 'application/json';
+    }
+
     location @proxy {
         proxy_set_header X-API-KEY ${ACAPY_ADMIN_URL_API_KEY};
         proxy_pass ${ACAPY_ADMIN_URL};
