@@ -383,6 +383,17 @@ async def tenant_create_token(request: web.BaseRequest):
 @docs(
     tags=[SWAGGER_CATEGORY],
 )
+@request_schema(ReservationRequestSchema())
+@response_schema(ReservationResponseSchema(), 200, description="")
+@innkeeper_only
+@error_handler
+async def innkeeper_tenant_reservation(request: web.BaseRequest):
+    return tenant_reservation(request)
+
+
+@docs(
+    tags=[SWAGGER_CATEGORY],
+)
 @match_info_schema(TenantIdMatchInfoSchema())
 @request_schema(TenantConfigSchema())
 @response_schema(TenantRecordSchema(), 200, description="")
@@ -602,7 +613,7 @@ async def register(app: web.Application):
     # these require not only a tenant, but it has to be the innkeeper tenant!
     app.add_routes(
         [
-            web.post("/innkeeper/reservations", tenant_reservation),
+            web.post("/innkeeper/reservations", innkeeper_tenant_reservation),
             web.get(
                 "/innkeeper/reservations/",
                 innkeeper_reservations_list,
