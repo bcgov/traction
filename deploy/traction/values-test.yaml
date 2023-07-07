@@ -1,0 +1,24 @@
+ingressSuffix: -test.apps.silver.devops.gov.bc.ca
+acapy:
+  image:
+    tag: "0.2.14"
+    pullPolicy: Always
+  networkPolicy:
+    enabled: true
+    ingress:
+      enabled: true
+      namespaceSelector:
+        network.openshift.io/policy-group: ingress
+tenant_proxy:
+  image:
+    tag: "0.2.14"
+    pullPolicy: Always
+  networkPolicy:
+    enabled: true
+    ingress:
+      enabled: true
+      namespaceSelector:
+        network.openshift.io/policy-group: ingress
+ingress:
+  annotations:
+    route.openshift.io/termination: edge

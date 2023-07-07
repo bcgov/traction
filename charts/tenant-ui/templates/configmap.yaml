@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "tenant-ui.fullname" . }}
+  labels:
+    {{- include "tenant-ui.labels" . | nindent 4 }}
+data:
+  FRONTEND_ARIES_LEDGER_DESCRIPTION: {{ .Values.ariesDetails.ledgerDescription | quote }}
+  FRONTEND_INNKEEPER_OIDC_ACTIVE: {{ .Values.oidc.active | quote }}
+  FRONTEND_INNKEEPER_OIDC_AUTHORITY: {{ .Values.oidc.authority | quote }}
+  FRONTEND_INNKEEPER_OIDC_CLIENT: {{ .Values.oidc.client | quote }}
+  FRONTEND_INNKEEPER_OIDC_LABEL: {{ .Values.oidc.label | quote }}
+  FRONTEND_INNKEEPER_SHOW_ADMIN: {{ .Values.oidc.showInnkeeperAdminLogin | quote }}
+  FRONTEND_TENANT_PROXY_URL: {{ .Values.traction.tenantProxyEndpoint }}
+  SERVER_OIDC_JWKS: {{ .Values.oidc.jwksUri | quote }}
+  SERVER_OIDC_REALM: {{ .Values.oidc.realm | quote }}
+  SERVER_OIDC_ROLE: {{ .Values.oidc.roleName | quote }}
+  SERVER_SMTP_INNKEEPER_INBOX: {{ .Values.smtp.innkeeperInbox | quote }}
+  SERVER_SMTP_PORT: {{ .Values.smtp.port | quote }}
+  SERVER_SMTP_SENDER_ADDRESS: {{ .Values.smtp.senderAddress | quote }}
+  SERVER_SMTP_SERVER: {{ .Values.smtp.server | quote }}
+  SERVER_TRACTION_URL: {{ .Values.traction.apiEndpoint }}
+  UX_APP_INNKEEPER_TITLE: {{ .Values.ux.appInnkeeperTitle | quote }}
+  UX_APP_TITLE: {{ .Values.ux.appTitle | quote }}
+  UX_COPYRIGHT: {{ .Values.ux.copyright | quote }}
+  UX_COVERIMAGE_COPYRIGHT: {{ .Values.ux.coverImageCopyright | quote }}
+  UX_OWNER: {{ .Values.ux.owner | quote }}
+  UX_SIDEBAR_TITLE: {{ .Values.ux.sidebarTitle | quote }}

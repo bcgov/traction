@@ -78,9 +78,7 @@ jobs:
     runs-on: ubuntu-20.04
     if: github.repository_owner == 'bcgov'
     env:
-      IMAGE_BUILDTIME: ''
       IMAGE_TAG: ''
-      IMAGE_VERSION: ''   
     steps:  
       - uses: actions/checkout@v3  
 
@@ -94,21 +92,14 @@ jobs:
       
       - name: OC
         run: |
-          echo "IMAGE_BUILDTIME=$(oc get configmap/traction-acapy-img -o 'jsonpath={ .data}' | jq .IMAGE_BUILDTIME)" >> $GITHUB_ENV
-          echo "IMAGE_TAG=$(oc get configmap/traction-acapy-img -o 'jsonpath={ .data}' | jq .IMAGE_TAG)" >> $GITHUB_ENV
-          echo "IMAGE_VERSION=$(oc get configmap/traction-acapy-img -o 'jsonpath={ .data}' | jq .IMAGE_VERSION)" >> $GITHUB_ENV
-
+          echo "IMAGE_TAG=$(oc get deploy/traction-vals-acapy -o=jsonpath='{$.spec.template.spec.containers[:1].image}' | cut -d':' -f2)" >> $GITHUB_ENV
 
       - name: print outputs
         run: |
-          echo "IMAGE_BUILDTIME: ${{ env.IMAGE_BUILDTIME }}"
           echo "IMAGE_TAG: ${{ env.IMAGE_TAG }}"
-          echo "IMAGE_VERSION: ${{ env.IMAGE_VERSION }}"
 
     outputs:
-      buildtime: ${{ env.IMAGE_BUILDTIME }}
       image_tag: ${{ env.IMAGE_TAG }}
-      image_version: ${{ env.IMAGE_VERSION }}
 
   read_config_ui:
     name: Read Tenant UI Image Configuration
@@ -118,9 +109,7 @@ jobs:
     runs-on: ubuntu-20.04
     if: github.repository_owner == 'bcgov'
     env:
-      IMAGE_BUILDTIME: ''
       IMAGE_TAG: ''
-      IMAGE_VERSION: ''   
     steps:  
       - uses: actions/checkout@v2  
 
@@ -134,21 +123,14 @@ jobs:
       
       - name: OC
         run: |
-          echo "IMAGE_BUILDTIME=$(oc get ${{ needs.init.outputs.cm_tenant_ui }} -o 'jsonpath={ .data}' | jq .IMAGE_BUILDTIME)" >> $GITHUB_ENV
-          echo "IMAGE_TAG=$(oc get ${{ needs.init.outputs.cm_tenant_ui }} -o 'jsonpath={ .data}' | jq .IMAGE_TAG)" >> $GITHUB_ENV
-          echo "IMAGE_VERSION=$(oc get ${{ needs.init.outputs.cm_tenant_ui }} -o 'jsonpath={ .data}' | jq .IMAGE_VERSION)" >> $GITHUB_ENV
-
+          echo "IMAGE_TAG=$(oc get deploy/tenant-ui -o=jsonpath='{$.spec.template.spec.containers[:1].image}' | cut -d':' -f2)" >> $GITHUB_ENV
 
       - name: print outputs
         run: |
-          echo "IMAGE_BUILDTIME: ${{ env.IMAGE_BUILDTIME }}"
           echo "IMAGE_TAG: ${{ env.IMAGE_TAG }}"
-          echo "IMAGE_VERSION: ${{ env.IMAGE_VERSION }}"
 
     outputs:
-      buildtime: ${{ env.IMAGE_BUILDTIME }}
       image_tag: ${{ env.IMAGE_TAG }}
-      image_version: ${{ env.IMAGE_VERSION }}
 
   read_config_proxy:
     name: Read Image Configuration
@@ -158,9 +140,7 @@ jobs:
     runs-on: ubuntu-20.04
     if: github.repository_owner == 'bcgov'
     env:
-      IMAGE_BUILDTIME: ''
       IMAGE_TAG: ''
-      IMAGE_VERSION: ''   
     steps:  
       - uses: actions/checkout@v3  
 
@@ -174,21 +154,14 @@ jobs:
       
       - name: OC
         run: |
-          echo "IMAGE_BUILDTIME=$(oc get configmap/traction-tenant-proxy-img -o 'jsonpath={ .data}' | jq .IMAGE_BUILDTIME)" >> $GITHUB_ENV
-          echo "IMAGE_TAG=$(oc get configmap/traction-tenant-proxy-img -o 'jsonpath={ .data}' | jq .IMAGE_TAG)" >> $GITHUB_ENV
-          echo "IMAGE_VERSION=$(oc get configmap/traction-tenant-proxy-img -o 'jsonpath={ .data}' | jq .IMAGE_VERSION)" >> $GITHUB_ENV
-
+          echo "IMAGE_TAG=$(oc get deploy/traction-tenant-proxy -o=jsonpath='{$.spec.template.spec.containers[:1].image}' | cut -d':' -f2)" >> $GITHUB_ENV
 
       - name: print outputs
         run: |
-          echo "IMAGE_BUILDTIME: ${{ env.IMAGE_BUILDTIME }}"
-          echo "IMAGE_TAG: ${{ env.IMAGE_TAG }}"
-          echo "IMAGE_VERSION: ${{ env.IMAGE_VERSION }}"
+          echo "IMAGE_TAG: ${{ env.IMAGE_TAG }}"\
 
     outputs:
-      buildtime: ${{ env.IMAGE_BUILDTIME }}
       image_tag: ${{ env.IMAGE_TAG }}
-      image_version: ${{ env.IMAGE_VERSION }}
 
   deploy:
     name: Deploy Tag
@@ -214,17 +187,17 @@ jobs:
       
       - name: Run Traction Helm 
         run: |
-          yq eval '.acapy.image.tag = ${{ needs.read_config_acapy.outputs.image_tag }}' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml
-          yq eval '.acapy.image.version = ${{ needs.read_config_acapy.outputs.image_version }}' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml
-          yq eval '.acapy.image.buildtime = ${{ needs.read_config_acapy.outputs.buildtime }}' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml
-          yq eval '.tenant_proxy.image.tag = ${{ needs.read_config_proxy.outputs.image_tag }}' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml
-          yq eval '.tenant_proxy.image.version = ${{ needs.read_config_proxy.outputs.image_version }}' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml
-          yq eval '.tenant_proxy.image.buildtime = ${{ needs.read_config_proxy.outputs.buildtime }}' -i ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml
-          helm upgrade -f ./charts/traction/values.yaml -f ./charts/traction/values-${{ needs.init.outputs.promote_to }}.yaml ${{ needs.init.outputs.promote_to }}-traction ./charts/traction --install --wait
+          helm upgrade --install ${{ needs.init.outputs.promote_to }}-traction -f ./deploy/traction/values-${{ needs.init.outputs.promote_to }}.yaml --set acapy.image.tag=${{ needs.read_config_acapy.outputs.image_tag }} --set traction_proxy.image.tag=${{ needs.read_config_proxy.outputs.image_tag }} ./charts/traction --wait
       
+      - name: Restart Traction Pods
+        run: |
+          oc rollout restart deployment/${{ needs.init.outputs.promote_to }}-traction-acapy
+          oc rollout restart deployment/${{ needs.init.outputs.promote_to }}-traction-tenant-proxy
+
       - name: Run Tenant UI Helm 
         run: |
-          yq eval '.tenant_ui.image.tag = ${{ needs.read_config_ui.outputs.image_tag }}' -i ./charts/tenant-ui/values-${{ needs.init.outputs.promote_to }}.yaml
-          yq eval '.tenant_ui.image.version = ${{ needs.read_config_ui.outputs.image_version }}' -i ./charts/tenant-ui/values-${{ needs.init.outputs.promote_to }}.yaml
-          yq eval '.tenant_ui.image.buildtime = ${{ needs.read_config_ui.outputs.buildtime }}' -i ./charts/tenant-ui/values-${{ needs.init.outputs.promote_to }}.yaml
-          helm upgrade -f ./charts/tenant-ui/values.yaml -f ./charts/tenant-ui/values-${{ needs.init.outputs.promote_to }}.yaml ${{ needs.init.outputs.promote_to }}-tenant-ui ./charts/tenant-ui --install --wait
+          helm upgrade --instll ${{ needs.init.outputs.promote_to }}-tenant-ui -f ./deploy/tenant-ui/values-${{ needs.init.outputs.promote_to }}.yaml --set image.tag=${{ needs.read_config_ui.outputs.image_tag }} ./charts/tenant-ui --wait
+
+      - name: Restart Tenant-UI Pods
+        run: |
+          oc rollout restart deployment/${{ needs.init.outputs.promote_to }}-tenant-ui

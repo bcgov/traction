@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "tenant_proxy.fullname" . }}
+  labels:
+    {{- include "tenant_proxy.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.tenant_proxy.autoscaling.enabled }}
+  replicas: {{ .Values.tenant_proxy.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "tenant_proxy.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+    {{- with .Values.tenant_proxy.podAnnotations -}}
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "tenant_proxy.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.tenant_proxy.image.pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "tenant_proxy.serviceAccountName" . }}
+      automountServiceAccountToken: {{ .Values.tenant_proxy.serviceAccount.automountServiceAccountToken }}
+      securityContext:
+        {{- toYaml .Values.tenant_proxy.podSecurityContext | nindent 8 }}
+      containers:
+        - name: tenant-proxy
+          securityContext:
+            {{- toYaml .Values.tenant_proxy.containerSecurityContext | nindent 12 }}
+          image: "{{ .Values.tenant_proxy.image.repository }}:{{ .Values.tenant_proxy.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.tenant_proxy.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 90
+            periodSeconds: 10  
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 90
+            periodSeconds: 30   
+          env:
+            - name: ACAPY_ADMIN_URL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "acapy.api.secret.name" . }}
+                  key: adminApiKey
+            - name: ACAPY_ADMIN_URL
+              value: {{ include "acapy.internal.admin.url" . }}
+          resources:
+            {{- toYaml .Values.tenant_proxy.resources | nindent 12 }}
+      {{- with .Values.tenant_proxy.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tenant_proxy.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tenant_proxy.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
