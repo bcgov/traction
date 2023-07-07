@@ -27,15 +27,22 @@ export const login = async () => {
  * @returns {object} the reservation object
  */
 export const createReservation = async (req: any, token: string) => {
-  const auth = `Bearer ${token}`;
-  const reservationUrl = `${TRACURL}/innkeeper/reservations`;
+  try {
+    const auth = `Bearer ${token}`;
+    const reservationUrl = `${TRACURL}/innkeeper/reservations`;
 
-  const res = await axios({
-    method: "post",
-    url: reservationUrl,
-    data: req.body,
-    headers: { Authorization: auth },
-  });
-
-  return res.data;
+    const res = await axios({
+      method: "post",
+      url: reservationUrl,
+      data: {
+        ...req.body,
+      },
+      headers: {
+        Authorization: auth,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
 };
