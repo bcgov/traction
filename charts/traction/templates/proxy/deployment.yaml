@@ -45,8 +45,8 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 5  
           livenessProbe:
-            httpGet:
-              path: /healthz
+            tcpSocket:
+              path: /
               port: 8080
             initialDelaySeconds: 30
             periodSeconds: 10
