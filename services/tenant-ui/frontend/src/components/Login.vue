@@ -20,7 +20,7 @@
           >
             <div v-if="!user" class="oidc-choice">
               <hr />
-              <span class="mb-0">{{ $t('admin.orSignInWith') }}</span>
+              <span class="mb-0">{{ $t('admin.orRequestAccessWith') }}</span>
               <LoginOIDC class="mt-0" />
             </div>
           </div>
