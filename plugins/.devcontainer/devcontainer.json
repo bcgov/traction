@@ -58,7 +58,7 @@
         // "PATH": "${containerEnv:PATH}:${workspaceRoot}/.venv/bin"
     },
     
-    "mounts": [],
+    "mounts": ["source=${localWorkspaceFolder}/demo/configs,target=/configs,type=bind,consistency=cached"],
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
     
 	"forwardPorts": [
