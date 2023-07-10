@@ -40,7 +40,7 @@ spec:
               protocol: TCP
           readinessProbe:
             httpGet:
-              path: /healthz
+              path: /status/ready
               port: 8080
             initialDelaySeconds: 5
             periodSeconds: 5  
