@@ -89,11 +89,11 @@ jobs:
 
       - name: Traction Dev Helm
         run: |
-          helm upgrade --install traction -f ./deploy/traction/values-development.yaml --set acapy.image.tag=${{ needs.build_acapy.outputs.image_tag }} --set traction_proxy.image.tag=${{ needs.build_acapy.outputs.image_tag }} ./charts/traction --wait
+          helm upgrade --install traction -f ./deploy/traction/values-development.yaml --set acapy.image.tag=${{ github.ref }} --set traction_proxy.image.tag=${{ needs.build_acapy.outputs.image_tag }} ./charts/traction --wait
 
       - name: Tenant UI Dev Helm
         run: |
-          helm upgrade --install tenant-ui -f ./deploy/tenant-ui/values-development.yaml --set image.tag=${{ needs.build_ui.outputs.image_version }} ./charts/tenant-ui --wait
+          helm upgrade --install tenant-ui -f ./deploy/tenant-ui/values-development.yaml --set image.tag=${{ github.ref }} ./charts/tenant-ui --wait
 
       - name: Restart Deployments
         run: |
