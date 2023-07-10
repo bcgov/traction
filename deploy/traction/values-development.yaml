@@ -8,9 +8,9 @@ acapy:
     pullPolicy: Always
   secret:
     adminApiKey:
-      generated: false
+      generated: true
     pluginInnkeeper:
-      generated: false
+      generated: true
   pluginValues:
     tractionInnkeeper:
       printKey: true
