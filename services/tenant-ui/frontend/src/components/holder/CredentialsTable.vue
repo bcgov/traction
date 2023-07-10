@@ -18,7 +18,7 @@
       <div class="flex justify-content-between">
         <div class="flex justify-content-start"></div>
         <div class="flex justify-content-end">
-          <span class="p-input-icon-left credential-search">
+          <span class="p-input-icon-left">
             <i class="pi pi-search" />
             <InputText
               v-model="filter.cred_def_id.value"
