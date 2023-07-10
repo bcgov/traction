@@ -40,16 +40,15 @@ spec:
               protocol: TCP
           readinessProbe:
             httpGet:
-              path: /
+              path: /status/ready
               port: 8080
-            initialDelaySeconds: 90
-            periodSeconds: 10  
+            initialDelaySeconds: 5
+            periodSeconds: 5  
           livenessProbe:
-            httpGet:
-              path: /
+            tcpSocket:
               port: 8080
-            initialDelaySeconds: 90
-            periodSeconds: 30   
+            initialDelaySeconds: 30
+            periodSeconds: 10
           env:
             - name: ACAPY_ADMIN_URL_API_KEY
               valueFrom:
