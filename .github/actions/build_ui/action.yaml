@@ -114,6 +114,6 @@ runs:
     - id: values
       shell: bash
       run: |
-        echo "image_tag=${{ fromJSON(steps.meta.outputs.json).tags[0] }}" >> $GITHUB_OUTPUT
+        echo "image_tag=${{ inputs.ref != '' && inputs.ref ||  env.GITHUB_REF }}${{ inputs.ref }}" >> $GITHUB_OUTPUT
         echo "image_version=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}" >> $GITHUB_OUTPUT
         echo "buildtime=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}" >> $GITHUB_OUTPUT

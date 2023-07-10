@@ -1,4 +1,4 @@
-name: Deploy Tenant UI
+name: Build & Deploy Tenant UI
 on:
   workflow_dispatch:
     inputs:

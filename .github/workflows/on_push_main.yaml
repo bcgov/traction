@@ -1,4 +1,4 @@
-name: Push Instance to main
+name: Build & Deploy Development
 on:
   workflow_dispatch:
   push:
