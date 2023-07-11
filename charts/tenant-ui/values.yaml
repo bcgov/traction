@@ -1,126 +1,225 @@
-# Default values for helm-chart.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+## Default values for tenant-ui.
 
-global:
-  nameOverride: ""
-  # global.fullnameOverride and postgresql.fullnameOverride must be changed (and match!!!) if deploying multiple instances to the same namespace
-  # the postgresql chart creates secrets and pvcs related to the fullname and will be identical without the override.
-  # use the global.fullnameOverride to install a different named helm instance and will affect naming of all objects and routes for that chart.
-  # for pull requests, can set to something like pr-NN-tenant-ui.
-  fullnameOverride: "tenant-ui"
-  # The name of the sibling Traction deployment so that the tenant UI can reference Traction/acapy config and secrets
-  tractionNameOverride: "traction"
-
-  # -- Domain suffix to be used for default hostpaths in ingress
-  # override in different environments, or for each app
-  # --set global.ingressSuffix
-  ingressSuffix: -prod.apps.silver.devops.gov.bc.ca
-
-  persistence:
-    # -- If true, the Postgres chart is deployed
-    deployPostgres: true
-
-  # if true, run the Network Policy charts
-  nsp:
+## @section Common parameters
+image:
+  ## @param image.repository
+  repository: ghcr.io/bcgov/traction-tenant-ui
+  ## @param image.pullPolicy
+  pullPolicy: IfNotPresent
+  ## @param image.pullSecrets [array]
+  pullSecrets: []
+  ## @param image.tag Overrides the image tag which defaults to the chart appVersion.
+  tag: ''
+## @param nameOverride 
+nameOverride: ""
+## @param fullnameOverride
+fullnameOverride: ""
+## @param ingressSuffix Domain suffix to be used for default hostpaths in ingress
+ingressSuffix: -dev.example.com
+## ServiceAccount configuration
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+##
+serviceAccount:
+  ## @param serviceAccount.create Specifies whether a ServiceAccount should be created
+  create: false
+  ## @param serviceAccount.annotations Annotations for service account. Evaluated as a template. Only used if `create` is `true`.
+  annotations: {}
+  ## @param serviceAccount.automountServiceAccountToken Automount service account token for the server service account
+  automountServiceAccountToken: true
+  ## @param serviceAccount.name Name of the service account to use. If not set and create is true, a name is generated using the fullname template.
+  name: ""
+## @param podAnnotations Map of annotations to add to the pods
+##
+podAnnotations: {}
+## @param podSecurityContext Pod Security Context
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+##
+podSecurityContext: {}
+  # fsGroup: 2000
+## @param containerSecurityContext Container Security Context
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+##
+containerSecurityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+## Service configuration
+##
+service:
+  ## @param service.type Kubernetes Service type
+  ##
+  type: ClusterIP
+  ## @param service.httpPort Port to expose for http service
+  ##
+  httpPort: 8080
+## Add networkpolicies
+##
+networkPolicy:
+  ## @param networkPolicy.enabled Enable network policies
+  ##
+  enabled: false
+  ## @param networkPolicy.ingress.enabled Enable ingress rules
+  ## @param networkPolicy.ingress.namespaceSelector [object] Namespace selector label that is allowed to access the tenant-ui pods.
+  ## @param networkPolicy.ingress.podSelector [object] Pod selector label that is allowed to access the tenant-ui pods.
+  ingress:
     enabled: false
-
-tenant_ui:
-  image:
-    tag: "ghcr.io/bcgov/traction-tenant-ui:0.2.14"
-    version: "0.2.14"
-    buildtime: "2022-08-04T22:16:25.869Z"
-    pullPolicy: IfNotPresent
-  ux:
-    appTitle: "Traction Tenant Console"
-    appInnkeeperTitle: "Traction Innkeeper Console"
-    sidebarTitle: "Traction"
-    copyright: ""
-    owner: ""
-    coverImageCopyright: "Photo by Kristoffer Fredriksson on StockSnap"
-
-  oidc:
-    showInnkeeperAdminLogin: true
-    active: true
-    authority: ""
-    client: "innkeeper-frontend"
-    label: "IDIR"
-    jwksUri: ""
-    realm: "Traction"
-    roleName: "innkeeper"
-
-  ariesDetails:
-    ledgerDescription: "bcovrin-test"
-
-  smtp:
-    server: apps.smtp.gov.bc.ca
-    port: 25
-    senderAddress: ""
-    innkeeperInbox: ""
-
-  traction_api:
-    # this is the private endpoint
-    endpoint: http://traction-tenant-proxy:8032
-
-  tenant_proxy:
-    # this is the private endpoint
-    endpoint: http://traction-tenant-proxy:8032
-
-  serviceAccount:
-    # -- Specifies whether a service account should be created
-    create: false
-    # -- Annotations to add to the service account
-    annotations: {}
-    # -- The name of the service account to use. If not set and create is true, a name is generated using the fullname template
-    name: ""
-
-  imagePullSecrets: []
-
-  podAnnotations: {}
-
-  podSecurityContext:
-    {}
-    # fsGroup: 2000
-
-  securityContext:
-    {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
-
-  service:
-    type: ClusterIP
-    port: 5000
-
-  openshift:
-    route:
+    namespaceSelector: {}
+    podSelector: {}
+## Configure the ingress resource that allows you to access the tenant-ui installation
+## ref: https://kubernetes.io/docs/user-guide/ingress/
+##
+ingress:
+  ## @param ingress.enabled Enable ingress record generation for tenant-ui
+  ##
+  enabled: true
+  ## @param ingress.ingressClassName IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
+  ## This is supported in Kubernetes 1.18+ and required if you have more than one IngressClass marked as the default for your cluster .
+  ## ref: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
+  ##
+  ingressClassName: ""
+  ## @param ingress.annotations [object] Additional annotations for the Ingress resource.
+  ##
+  annotations: {}
+  ## @param ingress.tls Enable TLS configuration for the host defined at ingress.
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+##Resource requests and limits
+## ref: https://kubernetes.io/docs/user-guide/compute-resources/
+## @param resources.limits.memory The memory limit for the tenant-ui containers
+## @param resources.limits.cpu The cpu limit for the tenant-ui containers
+## @param resources.requests.memory The requested memory for the tenant-ui containers
+## @param resources.requests.cpu The requested cpu for the tenant-ui containers
+##
+resources:
+  limits:
+    cpu: 600m
+    memory: 2600Mi
+  requests:
+    cpu: 300m
+    memory: 1300Mi
+## @param replicaCount Number of tenant-ui replicas to deploy. Ignored if autoscaling is enabled.
+##
+replicaCount: 1
+## tenant-ui Autoscaling configuration
+## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+## @param autoscaling.enabled Enable Horizontal POD autoscaling for tenant-ui
+## @param autoscaling.minReplicas Minimum number of tenant-ui replicas
+## @param autoscaling.maxReplicas Maximum number of tenant-ui replicas
+## @param autoscaling.targetCPUUtilizationPercentage Target CPU utilization percentage
+## @param autoscaling.targetMemoryUtilizationPercentage Target Memory utilization percentage
+##
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+## @param nodeSelector Node labels for tenant-ui pods assignment
+## ref: https://kubernetes.io/docs/user-guide/node-selection/
+##
+nodeSelector: {}
+## @param tolerations Tolerations for tenant-ui pods assignment
+## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+##
+tolerations: []
+## @param affinity Affinity for tenant-ui pods assignment
+## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+##
+affinity: {}
+## @section OpenShift Route parameters
+## ref: https://docs.openshift.com/container-platform/4.11/networking/routes/route-configuration.html
+##
+## Not required if ingress is enabled
+openshift:
+  route:
+    ## @param openshift.route.enabled Create OpenShift Route resource for tenant-ui
+    ##
+    enabled: false
+    ## @param openshift.route.path Path that the router watches for, to route traffic to the service
+    ##
+    path: "/"
+    ## @param openshift.route.targetPort Target port for the service
+    ##
+    targetPort: http
+    ## @param openshift.route.timeout Timeout in seconds for a route to return
+    ##
+    timeout: 2m
+    tls:
+      ## @param openshift.route.tls.enabled Enable TLS termination
+      ##
       enabled: true
-      path: "/"
-      targetPort: http
-      timeout: 2m
-      tls:
-        enabled: true
-        insecureEdgeTerminationPolicy: None
-        termination: edge
-      wildcardPolicy: None
+      ## @param openshift.route.tls.insecureEdgeTerminationPolicy TLS termination policy
+      ##
+      insecureEdgeTerminationPolicy: None
+      ## @param openshift.route.tls.termination TLS termination type
+      ##
+      termination: edge
+    ## @param openshift.route.wildcardPolicy Wildcard policy for the route
+    wildcardPolicy: None
+## @section Frontend Configuration
+##
+ux:
+  ## @param ux.appTitle Title of the application
+  appTitle: "Traction Tenant Console"
+  ## @param ux.appInnkeeperTitle Title of the Innkeeper Console
+  appInnkeeperTitle: "Traction Innkeeper Console"
+  ## @param ux.sidebarTitle Sidebar title
+  sidebarTitle: "Traction"
+  ## @param ux.copyright
+  copyright: ""
+  ## @param ux.owner
+  owner: ""
+  ## @param ux.coverImageCopyright
+  coverImageCopyright: "Photo by Kristoffer Fredriksson on StockSnap"
 
-  resources:
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    limits:
-      cpu: 600m
-      memory: 2600Mi
-    requests:
-      cpu: 300m
-      memory: 1300Mi
-
-  nodeSelector: {}
-
-  tolerations: []
-
-  affinity: {}
+ariesDetails:
+  ## @param ariesDetails.ledgerDescription Ledger description
+  ledgerDescription: "bcovrin-test"
+## @section Backend Configuration
+##
+oidc:
+  ## @param oidc.showInnkeeperAdminLogin Show Innkeeper Admin Login
+  showInnkeeperAdminLogin: true
+  ## @param oidc.active Enable OIDC authentication
+  active: true
+  ## @param oidc.authority OIDC authority
+  authority: ""
+  ## @param oidc.client OIDC client
+  client: "innkeeper-frontend"
+  ## @param oidc.label OIDC label
+  label: "IDIR"
+  ## @param oidc.jwksUri OIDC jwksUri
+  jwksUri: ""
+  ## @param oidc.realm OIDC realm
+  realm: "Traction"
+  ## @param oidc.roleName OIDC role name
+  roleName: "innkeeper"
+## SMTP Configuration
+smtp:
+  ## @param smtp.server SMTP server
+  server: ""
+  ## @param smtp.port SMTP port
+  port: 25
+  ## @param smtp.senderAddress SMTP sender address
+  senderAddress: ""
+  ## @param smtp.innkeeperInbox innkeeper notification inbox
+  innkeeperInbox: ""
+## Traction Configuration
+##
+traction:
+  pluginInnkeeper:
+    ## @param traction.pluginInnkeeper.existingSecret Name of the existing secret for Acapy plugin Innkeeper. Must contain keys `tenantid` and `walletkey`
+    existingSecret: ""
+    ## @param traction.pluginInnkeeper.tenantid Tenant ID, ignored if existingSecret is set
+    tenantid: ""
+    ## @param traction.pluginInnkeeper.walletkey Wallet key, ignored if existingSecret is set
+    walletkey: ""
+  ## @param traction.apiEndpoint Traction API endpoint
+  apiEndpoint: http://traction-tenant-proxy:8030
+  ## @param traction.tenantProxyEndpoint Traction Tenant Proxy endpoint
+  tenantProxyEndpoint: http://traction-tenant-proxy:8030

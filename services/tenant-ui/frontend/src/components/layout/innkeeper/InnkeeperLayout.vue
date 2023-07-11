@@ -2,7 +2,7 @@
   <Suspense>
     <!-- the suspense tag is so we can await any of these components-->
     <div class="layout-container innkeeper-layout">
-      <nav class="layout-sidebar" :class="calcOpen()">
+      <nav class="layout-sidebar" :class="sidebarOpenClass">
         <Sidebar />
       </nav>
       <div class="layout-page">
@@ -10,11 +10,9 @@
           <Header />
         </header>
         <main class="layout-content">
-          <Card>
-            <template #content>
-              <router-view />
-            </template>
-          </Card>
+          <MainCard>
+            <router-view />
+          </MainCard>
         </main>
         <footer class="bottom-0 layout-footer">
           <Footer />
@@ -25,26 +23,14 @@
 </template>
 
 <script setup lang="ts">
-import Card from 'primevue/card';
 import Footer from '../Footer.vue';
-import Sidebar from './Sidebar.vue';
 import Header from './Header.vue';
+import MainCard from '../mainCard/MainCard.vue';
+import Sidebar from './Sidebar.vue';
 
 // State
 import { storeToRefs } from 'pinia';
 import { useCommonStore } from '@/store/commonStore';
 
-const { sidebarOpen } = storeToRefs(useCommonStore());
-
-const calcOpen = () => {
-  if (sidebarOpen.value === null) {
-    // Use media queries
-    return null;
-  } else if (sidebarOpen.value) {
-    // Default width
-    return 'open';
-  } else {
-    return 'closed'; // Mobile width
-  }
-};
+const { sidebarOpenClass } = storeToRefs(useCommonStore());
 </script>

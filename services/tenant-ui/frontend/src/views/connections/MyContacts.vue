@@ -1,7 +1,7 @@
 <template>
-  <Contacts />
+  <Connections />
 </template>
 
 <script setup lang="ts">
-import Contacts from '../../components/contacts/Contacts.vue';
+import Connections from '@/components/connections/Connections.vue';
 </script>

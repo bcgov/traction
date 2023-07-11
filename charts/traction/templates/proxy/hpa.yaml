@@ -1,0 +1,43 @@
+{{- if .Values.tenant_proxy.autoscaling.enabled }}
+apiVersion: {{ include "common.capabilities.hpa.apiVersion" ( dict "context" $ ) }}
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "tenant_proxy.fullname" . }}
+  labels:
+    {{- include "tenant_proxy.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "tenant_proxy.fullname" . }}
+  minReplicas: {{ .Values.tenant_proxy.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.tenant_proxy.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.tenant_proxy.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        {{- if semverCompare "<1.23-0" (include "common.capabilities.kubeVersion" .) }}
+        targetAverageUtilization: {{ .Values.tenant_proxy.autoscaling.targetCPUUtilizationPercentage }}
+        {{- else }}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.tenant_proxy.autoscaling.targetCPUUtilizationPercentage }}
+        {{- end }}
+    {{- end }}
+    {{- if .Values.tenant_proxy.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        {{- if semverCompare "<1.23-0" (include "common.capabilities.kubeVersion" .) }}
+        targetAverageUtilization: {{ .Values.tenant_proxy.autoscaling.targetMemoryUtilizationPercentage }}
+        {{- else }}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.tenant_proxy.autoscaling.targetMemoryUtilizationPercentage }}
+        {{- end }}
+    {{- end }}
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: {{ .Values.tenant_proxy.autoscaling.stabilizationWindowSeconds }}
+{{- end }}

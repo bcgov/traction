@@ -1,12 +1,15 @@
 apiVersion: v2
-name: traction-tenant-ui
+name: tenant-ui
 description: The Traction Tenant UI allows tenants to manage their agent.
 type: application
-version: 0.0.2
-appVersion: 0.2.14
+version: 0.1.0
+appVersion: "0.2.14"
 home: "https://github.com/bcgov/traction"
 sources: ["https://github.com/bcgov/traction"]
 maintainers:
+  - email: ivan.polchenko@quartech.com
+    name: i5okie
+    url: https://github.com/i5okie
   - email: tools@usingtechnolo.gy
     name: usingtechnology
     url: https://github.com/usingtechnology
@@ -16,3 +19,9 @@ maintainers:
   - email: emiliano.sune@quartech.com
     name: esune
     url: https://github.com/esune
+dependencies:
+  - name: common
+    repository: "https://charts.bitnami.com/bitnami"
+    tags:
+      - bitnami-common
+    version: 2.x.x

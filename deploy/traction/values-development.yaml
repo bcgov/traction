@@ -1,0 +1,52 @@
+ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
+config:
+  ledger:
+    name: bcovrin-test
+acapy:
+  image:
+    tag: "0.2.14"
+    pullPolicy: Always
+  secret:
+    adminApiKey:
+      generated: true
+    pluginInnkeeper:
+      generated: true
+  pluginValues:
+    tractionInnkeeper:
+      printKey: true
+      printToken: true
+      reservationExpiryMinutes: 7200
+  resources:
+    limits:
+      cpu: 400m
+      memory: 1600Mi
+    requests:
+      cpu: 200m
+      memory: 820Mi
+  networkPolicy:
+    enabled: true
+    ingress:
+      enabled: true
+      namespaceSelector:
+        network.openshift.io/policy-group: ingress
+tenant_proxy:
+  image:
+    tag: "0.2.14"
+    pullPolicy: Always
+  networkPolicy:
+    enabled: true
+    ingress:
+      enabled: true
+      namespaceSelector:
+        network.openshift.io/policy-group: ingress
+ingress:
+  annotations:
+    route.openshift.io/termination: edge
+postgresql:
+  resources:
+    limits:
+      cpu: 400m
+      memory: 1600Mi
+    requests:
+      cpu: 200m
+      memory: 820Mi
