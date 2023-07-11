@@ -388,7 +388,8 @@ async def tenant_create_token(request: web.BaseRequest):
 @innkeeper_only
 @error_handler
 async def innkeeper_tenant_reservation(request: web.BaseRequest):
-    return tenant_reservation(request)
+    res = await tenant_reservation(request)
+    return res
 
 
 @docs(

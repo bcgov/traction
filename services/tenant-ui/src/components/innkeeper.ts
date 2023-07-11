@@ -30,13 +30,12 @@ export const createReservation = async (req: any, token: string) => {
   try {
     const auth = `Bearer ${token}`;
     const reservationUrl = `${TRACURL}/innkeeper/reservations`;
+    const payload = req.body;
 
     const res = await axios({
       method: "post",
       url: reservationUrl,
-      data: {
-        ...req.body,
-      },
+      data: payload,
       headers: {
         Authorization: auth,
       },
