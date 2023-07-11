@@ -40,7 +40,6 @@ async function loadApp() {
         // Matomo Setup
         const MATOMO_URL: string = result?.frontend.matomoUrl;
         if (MATOMO_URL) {
-          // @ts-ignore
           import('./matomoSetup')
             .then((m: { setup: (url: string) => void }) => {
               console.log(m.setup(MATOMO_URL));
