@@ -27,6 +27,7 @@ jobs:
           registry_password: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       image_tag: ${{ steps.builder.outputs.image_tag }}
+      image_version: ${{ steps.builder.outputs.image_version }}
 
   build_acapy:
     name: "Build Traction Aca-Py"
@@ -46,6 +47,7 @@ jobs:
           registry_password: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       image_tag: ${{ steps.builder.outputs.image_tag }}
+      image_version: ${{ steps.builder.outputs.image_version }}
 
   build_proxy:
     name: "Build Traction Tenant Proxy"
@@ -65,6 +67,7 @@ jobs:
           registry_password: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       image_tag: ${{ steps.builder.outputs.image_tag }}
+      image_version: ${{ steps.builder.outputs.image_version }}
 
   deploy:
     name: Deploy Dev
@@ -89,7 +92,7 @@ jobs:
 
       - name: Traction Dev Helm
         run: |
-          helm upgrade --install traction -f ./deploy/traction/values-development.yaml --set acapy.image.tag=${{ needs.build_acapy.outputs.image_tag }} --set traction_proxy.image.tag=${{ needs.build_acapy.outputs.image_tag }} ./charts/traction --wait
+          helm upgrade --install traction -f ./deploy/traction/values-development.yaml --set acapy.image.tag=${{ needs.build_acapy.outputs.image_version }} --set traction_proxy.image.tag=${{ needs.build_acapy.outputs.image_version }} ./charts/traction --wait
 
       - name: Tenant UI Dev Helm
         run: |
