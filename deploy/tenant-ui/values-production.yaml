@@ -2,6 +2,8 @@ ingressSuffix: -prod.apps.silver.devops.gov.bc.ca
 image:
   tag: "0.2.14"
 traction:
+  pluginInnkeeper:
+    existingSecret: traction-acapy-plugin-innkeeper
   apiEndpoint: https://traction-tenant-proxy-prod.apps.silver.devops.gov.bc.ca
   tenantProxyEndpoint: https://traction-tenant-proxy-prod.apps.silver.devops.gov.bc.ca
 oidc:
