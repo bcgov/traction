@@ -44,8 +44,19 @@ export const useReservationStore = defineStore('reservation', () => {
     reservation.value = null;
 
     // Send the request to the API to create the reservation
-    await api
-      .post(API_PATH.MULTITENANCY_RESERVATIONS, payload)
+    // If OIDC is enabled, send the request to the tenant UI backend instead of the proxy
+    let _axios = api;
+    let _axiosConfig = {
+      url: API_PATH.MULTITENANCY_RESERVATIONS,
+    };
+    if (config.value.frontend.showOIDCReservationLogin) {
+      _axios = backendApi;
+      _axiosConfig = {
+        url: API_PATH.OIDC_INNKEEPER_RESERVATION,
+      };
+    }
+
+    await _axios({ method: 'post', data: payload, ..._axiosConfig })
       .then((res) => {
         console.log('res from creating a res', res);
         reservation.value = res.data;

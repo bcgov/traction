@@ -49,16 +49,4 @@ const { config } = storeToRefs(useConfigStore());
 .cover-image {
   background-image: url('/img/innkeeper/innkeeper-login-image.jpg');
 }
-.oidc-login {
-  margin-top: 2em;
-  hr {
-    height: 1px;
-    background-color: rgb(186, 186, 186);
-    border: 0;
-  }
-  span {
-    display: block;
-    text-align: center;
-  }
-}
 </style>
