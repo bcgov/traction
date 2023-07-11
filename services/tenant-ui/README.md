@@ -93,10 +93,7 @@ As well, the Innkeeper secret must be available to the Tenant UI server, this is
 
 ## Configuring Matomo
 
-If you would like to use Matomo for tracking you can set the `FRONTEND_MATOMO_URL`
-environment variable as a one time override to the url exposed by your Matomo instance.
-If you would like a more permanent solution set `frontend.matomoUrl` in
-[custom-environment-variables.json](../config/custom-environment-variables.json)
+If you would like to use Matomo for tracking you can set the FRONTEND_MATOMO_URL environment variable as exposed in [custom-environment-variables.json](../config/custom-environment-variables.json)
 
 If no value is set using either of these methods MATOMO tracker code will never be loaded.
 
