@@ -13,7 +13,9 @@ export const useReservationStore = defineStore('reservation', () => {
   // A raw api call without using the interceptors from the acapyApiStore
   // Needed for the open call to reservation at this point
   const api = axios.create({
-    baseURL: config.value.frontend.tenantProxyPath,
+    baseURL: config.value.frontend.showOIDCReservationLogin
+      ? '/'
+      : config.value.frontend.tenantProxyPath,
   });
 
   // A different axios instance with a basepath just of the tenant UI backend
@@ -44,13 +46,14 @@ export const useReservationStore = defineStore('reservation', () => {
     reservation.value = null;
 
     // Send the request to the API to create the reservation
-    await api
-      .post(
-        config.value.frontend.showOIDCReservationLogin
-          ? API_PATH.OIDC_INNKEEPER_RESERVATION
-          : API_PATH.MULTITENANCY_RESERVATIONS,
-        payload
-      )
+
+    await api({
+      method: 'post',
+      url: config.value.frontend.showOIDCReservationLogin
+        ? API_PATH.OIDC_INNKEEPER_RESERVATION
+        : API_PATH.MULTITENANCY_RESERVATIONS,
+      data: payload,
+    })
       .then((res) => {
         console.log('res from creating a res', res);
         reservation.value = res.data;
