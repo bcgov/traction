@@ -61,10 +61,10 @@ async function loadApp() {
         console.log(`${MATOMO_URL}`);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
       });
   } else {
-    console.log('Matomo not configured');
+    console.warn('Matomo not configured');
   }
 
   // 4. load/initialize other components
