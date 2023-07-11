@@ -37,21 +37,6 @@ async function loadApp() {
       after((result) => {
         console.log('configuration loaded from server.');
         console.log(result);
-        // Matomo Setup
-        const MATOMO_URL: string = result?.frontend.matomoUrl;
-        if (MATOMO_URL) {
-          import('./matomoSetup')
-            .then((m: { setup: (url: string) => void }) => {
-              console.log(m.setup(MATOMO_URL));
-              console.log('initialized Matomo');
-              console.log(`${MATOMO_URL}`);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        } else {
-          console.log('Matomo not configured');
-        }
       });
       onError((err) => {
         console.error('error loading configuration from server');
@@ -65,6 +50,22 @@ async function loadApp() {
   await configStore.load();
   // manually remove the listener
   unsubscribe();
+
+  // Matomo Setup
+  const MATOMO_URL: string = configStore.config.frontend.matomoUrl;
+  if (MATOMO_URL) {
+    import('./matomoSetup')
+      .then((m: { setup: (url: string) => void }) => {
+        console.log(m.setup(MATOMO_URL));
+        console.log('initialized Matomo');
+        console.log(`${MATOMO_URL}`);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  } else {
+    console.log('Matomo not configured');
+  }
 
   // 4. load/initialize other components
   app.use(i18n);
