@@ -41,7 +41,7 @@ async function loadApp() {
         const MATOMO_URL: string = result?.frontend.matomoUrl;
         if (MATOMO_URL) {
           // @ts-ignore
-          import('./matomoSetup.js')
+          import('./matomoSetup')
             .then((m: { setup: (url: string) => void }) => {
               console.log(m.setup(MATOMO_URL));
               console.log('initialized Matomo');
