@@ -28,3 +28,9 @@ networkPolicy:
     enabled: true
     namespaceSelector:
       network.openshift.io/policy-group: ingress
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
