@@ -11,6 +11,8 @@ import {
   reservationStore,
   tenantStore,
   tokenStore,
+  // oidc
+  oidcStore,
 } from './__mocks__/store';
 
 // Add mocks used in many files here. The mocks can be overridden in individual files if needed.
@@ -31,7 +33,9 @@ vi.mock('pinia', async () => {
         messageStore,
         reservationStore,
         tenantStore,
-        tokenStore
+        tokenStore,
+        // oidc
+        oidcStore
       )
     ),
   };
@@ -47,6 +51,8 @@ vi.mock('@/store', () => ({
   useReservationStore: vi.fn(() => reservationStore),
   useTenantStore: vi.fn(() => tenantStore),
   useTokenStore: vi.fn(() => tokenStore),
+  // oidc
+  useOIDCStore: vi.fn(() => oidcStore),
 }));
 
 vi.mock('vue-i18n', () => ({

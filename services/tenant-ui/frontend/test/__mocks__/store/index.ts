@@ -7,3 +7,6 @@ export { store as issuerStore } from './issuer';
 export { store as reservationStore } from './reservation';
 export { store as tenantStore } from './tenant';
 export { store as tokenStore } from './token';
+
+// Oidc
+export { store as oidcStore } from './oidc/oidc';
