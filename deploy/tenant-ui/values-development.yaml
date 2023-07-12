@@ -3,6 +3,8 @@ image:
   tag: "0.2.14"
   pullPolicy: Always
 traction:
+  pluginInnkeeper:
+    existingSecret: traction-acapy-plugin-innkeeper
   apiEndpoint: https://traction-tenant-proxy-dev.apps.silver.devops.gov.bc.ca
   tenantProxyEndpoint: https://traction-tenant-proxy-dev.apps.silver.devops.gov.bc.ca
 oidc:

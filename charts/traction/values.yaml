@@ -205,6 +205,7 @@ acapy:
     connectionUpdate: true
     multitenantProvider: true
     tractionInnkeeper: true
+
   ## Specify configuration values for each plugin.
   ## Configuration values are plugin specific, and are rendered as is into the plugin-config.yml file.
   ##
@@ -246,11 +247,11 @@ acapy:
   ##
   resources:
     limits:
-      cpu: '1'
-      memory: 1000Mi
+      cpu: 300m
+      memory: 512Mi
     requests:
-      cpu: 250m
-      memory: 384Mi
+      cpu: 10m
+      memory: 16Mi
   ## @param acapy.podAnnotations Map of annotations to add to the acapy pods
   ##
   podAnnotations: {}

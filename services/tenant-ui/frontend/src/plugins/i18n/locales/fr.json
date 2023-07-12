@@ -26,7 +26,8 @@
     "adminKey": "Admin Key <FR>",
     "adminName": "Admin Name <FR>",
     "error": "ERROR <FR>",
-    "orSignInWith": "Or Sign In With <FR>"
+    "orSignInWith": "Or Sign In With <FR>",
+    "orRequestAccessWith": "Or Request Access With <FR>"
   },
   "common": {
     "actions": "Actions <FR>",

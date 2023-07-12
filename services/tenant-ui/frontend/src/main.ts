@@ -51,6 +51,22 @@ async function loadApp() {
   // manually remove the listener
   unsubscribe();
 
+  // Matomo Setup
+  const MATOMO_URL: string = configStore.config.frontend.matomoUrl;
+  if (MATOMO_URL) {
+    import('./matomoSetup')
+      .then((m: { setup: (url: string) => void }) => {
+        console.log(m.setup(MATOMO_URL));
+        console.log('initialized Matomo');
+        console.log(`${MATOMO_URL}`);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  } else {
+    console.warn('Matomo not configured');
+  }
+
   // 4. load/initialize other components
   app.use(i18n);
   app.use(PrimeVue);
