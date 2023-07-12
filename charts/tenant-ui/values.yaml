@@ -97,11 +97,11 @@ ingress:
 ##
 resources:
   limits:
-    cpu: 600m
-    memory: 2600Mi
-  requests:
     cpu: 300m
-    memory: 1300Mi
+    memory: 256Mi
+  requests:
+    cpu: 10m
+    memory: 16Mi
 ## @param replicaCount Number of tenant-ui replicas to deploy. Ignored if autoscaling is enabled.
 ##
 replicaCount: 1
