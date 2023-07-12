@@ -10,6 +10,7 @@ export { store as tokenStore } from './token';
 
 // Innkeeper
 export { store as innkeeperTokenStore } from './innkeeper/token';
+export { store as innkeeperOidcStore } from './innkeeper/oidc';
 
 // Oidc
 export { store as oidcStore } from './oidc/oidc';

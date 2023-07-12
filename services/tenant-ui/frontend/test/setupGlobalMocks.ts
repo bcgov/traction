@@ -13,6 +13,7 @@ import {
   tokenStore,
   // Innkeeper,
   innkeeperTokenStore,
+  innkeeperOidcStore,
   // oidc
   oidcStore,
 } from './__mocks__/store';
@@ -38,6 +39,7 @@ vi.mock('pinia', async () => {
         tokenStore,
         // Innkeeper
         innkeeperTokenStore,
+        innkeeperOidcStore,
         // oidc
         oidcStore
       )
@@ -57,6 +59,7 @@ vi.mock('@/store', () => ({
   useTokenStore: vi.fn(() => tokenStore),
   // Innkeeper
   useInnkeeperTokenStore: vi.fn(() => innkeeperTokenStore),
+  useInnkeeperOidcStore: vi.fn(() => innkeeperOidcStore),
   // oidc
   useOIDCStore: vi.fn(() => oidcStore),
 }));
