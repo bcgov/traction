@@ -19,6 +19,7 @@ const store: { [key: string]: any } = {
         tailsServer: 'tailsServer',
       },
       tenantProxyPath: API_PATH.TEST_TENANT_PROXY,
+      showOIDCReservationLogin: false,
     },
     image: {
       tag: '1.0',

@@ -6,7 +6,7 @@ import { describe, expect, test, vi } from 'vitest';
 
 import Login from '@/components/Login.vue';
 
-import { reservationStore } from '../__mocks__/store';
+import { reservationStore, configStore } from '../__mocks__/store';
 
 // Mocks
 vi.mock('vue-router');
@@ -84,5 +84,13 @@ describe('LoginForm', async () => {
     await wrapper.getComponent({ name: 'Button' }).trigger('click');
 
     expect(requireSpy).toHaveBeenCalled();
+  });
+
+  test('LoginOIDC component is rendered when user is null and oidc config true', async () => {
+    configStore.config.frontend.showOIDCReservationLogin = true;
+    const wrapper = mountLogin();
+    await flushPromises();
+
+    wrapper.getComponent({ name: 'LoginOIDC' });
   });
 });
