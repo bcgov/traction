@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils';
+import { flushPromises, mount } from '@vue/test-utils';
 import PrimeVue from 'primevue/config';
 import { describe, expect, test } from 'vitest';
 
@@ -15,6 +15,8 @@ describe('StatusChip', () => {
         plugins: [PrimeVue],
       },
     });
+
+    await flushPromises();
 
     const expectedClasses = [
       'test-class',
