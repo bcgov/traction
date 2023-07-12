@@ -5,7 +5,7 @@ Testing the frontend consists of two distinct areas. One is testing the pinia st
 Api Mocking:
 
 - API mocking is done using Mock Service Worker (msw). Take a look a the documentation at https://mswjs.io/.
-  The file /test/setupApi.ts is used to load a mock api service. The mocked responses are found in /test/api/responses and each store has it's own response file. The routes are found in /test/api/routes and each file can have an array of successful and error paths. The successful responses are then loaded into the mock server in setupApi. Load the error responses using server.use(ErrorResponses) and they will get prepended before the success responses. The server is reset for every test file.
+  The file /test/setupApi.ts is used to load a mock api service. The mocked responses are found in /test/api/responses and each store has it's own response file. The routes are found in /test/api/routes and each file can have an array of successful and error paths. The successful responses are then loaded into the mock server in setupApi. Load the error responses using server.use(...ErrorResponses) and they will get prepended before the success responses. The server is reset for every test file.
 
 Global Mocking:
 
@@ -13,10 +13,19 @@ Global Mocking:
 
 Testing Components:
 
+- **_Important!_** Any component that uses a pinia store must mock it. If it doesn't it will fail to mount with a confusing error. When adding a new store to a component make sure that the store is mocked and loaded into pinia and @store mocks in setupGlobalMocks. If the store is new or doesn't exist add it with the required properties following the same pattern as the other store mocks and load it into pinia and @store mocks.
+
 - Any component that uses a pinia store should use the createTestingPinia plugin when mounting. Information can be found here https://pinia.vuejs.org/cookbook/testing.html#unit-testing-components. The stores are all loaded as global mocks so initial state shouldn't be needed but can overriden. It is then possible to alter state using the mocked config object before loading the store. There is an example of this in Login.test.
 
-- There are several ways to test toast notifications. Currently the best way to do this is like. \
-  `const wrapperVm = wrapper.vm as unknown as typeof CreateContactForm; `\
-  `const toastInfoSpy = vi.spyOn(wrapperVm.toast, 'info');`
+- There are several ways to test notifications and popups are triggered. The best way to do this seems to be: \
+  `const wrapperVm = wrapper.vm as unknown as typeof CreateContactForm; `
+
+  `const toastInfoSpy = vi.spyOn(wrapperVm.toast, 'info');` \
+  `expect(toastInfoSpy).toHaveBeenCalled();`
+
+  `const requireSpy = vi.spyOn(wrapperVm.confirm, 'require');` \
+  `expect(requireSpy).toHaveBeenCalled();`
+
+- You can use the primevue/confirmationservice plugin to avoid mocking primevue/useconfirm manually.
 
 - Forms are somewhat tricky. To mock them first mock useVuelidate the validation library @vuelidate/core and pass it a mock validation object. These are stored in /\_\_mocks\_\_/validation/forms.ts. There are several examples of this found in any \*\*Form.test.ts file. If the form field values are used in the component outside of a mocked function you must also mock vue itself by copying vue and overriding reactive. There is an example where this is needed in CreateMessageForm.test.ts. This could be avoided by changing the components code but is left an example as this pattern will likely be needed in the future.
