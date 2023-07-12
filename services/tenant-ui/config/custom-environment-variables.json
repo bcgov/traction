@@ -3,6 +3,7 @@
     "tenantProxyPath": "FRONTEND_TENANT_PROXY_URL",
     "showInnkeeperReservationPassword": "FRONTEND_INNKEEPER_SHOW_RESERVATION_PASSWORD",
     "showInnkeeperAdminLogin": "FRONTEND_INNKEEPER_SHOW_ADMIN",
+    "matomoUrl": "FRONTEND_MATOMO_URL",
     "oidc": {
       "active": "FRONTEND_INNKEEPER_OIDC_ACTIVE",
       "authority": "FRONTEND_INNKEEPER_OIDC_AUTHORITY",
