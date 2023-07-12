@@ -11,7 +11,8 @@ import {
   reservationStore,
   tenantStore,
   tokenStore,
-  // Innkeeper,
+  // Innkeeper
+  innkeeperTenantsStore,
   innkeeperTokenStore,
   innkeeperOidcStore,
   // oidc
@@ -38,6 +39,7 @@ vi.mock('pinia', async () => {
         tenantStore,
         tokenStore,
         // Innkeeper
+        innkeeperTenantsStore,
         innkeeperTokenStore,
         innkeeperOidcStore,
         // oidc
@@ -58,6 +60,7 @@ vi.mock('@/store', () => ({
   useTenantStore: vi.fn(() => tenantStore),
   useTokenStore: vi.fn(() => tokenStore),
   // Innkeeper
+  useInnkeeperTenantsStore: vi.fn(() => innkeeperTenantsStore),
   useInnkeeperTokenStore: vi.fn(() => innkeeperTokenStore),
   useInnkeeperOidcStore: vi.fn(() => innkeeperOidcStore),
   // oidc

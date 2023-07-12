@@ -9,6 +9,7 @@ export { store as tenantStore } from './tenant';
 export { store as tokenStore } from './token';
 
 // Innkeeper
+export { store as innkeeperTenantsStore } from './innkeeper/tenants';
 export { store as innkeeperTokenStore } from './innkeeper/token';
 export { store as innkeeperOidcStore } from './innkeeper/oidc';
 
