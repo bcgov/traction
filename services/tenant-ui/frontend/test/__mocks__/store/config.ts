@@ -18,8 +18,12 @@ const store: { [key: string]: any } = {
         ledgerBrowser: 'ledgerBrowser',
         tailsServer: 'tailsServer',
       },
+      oidc: {
+        active: false,
+      },
       tenantProxyPath: API_PATH.TEST_TENANT_PROXY,
       showOIDCReservationLogin: false,
+      showInnkeeperAdminLogin: true,
     },
     image: {
       tag: '1.0',

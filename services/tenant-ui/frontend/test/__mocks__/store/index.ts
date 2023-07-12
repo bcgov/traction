@@ -8,5 +8,8 @@ export { store as reservationStore } from './reservation';
 export { store as tenantStore } from './tenant';
 export { store as tokenStore } from './token';
 
+// Innkeeper
+export { store as innkeeperTokenStore } from './innkeeper/token';
+
 // Oidc
 export { store as oidcStore } from './oidc/oidc';

@@ -70,17 +70,31 @@ const didCreateRequest = {
 
 const login = {
   walletId: {
-    $model: 'test',
     $invalid: false,
     required: {
       $message: 'Wallet ID is required',
     },
   },
   walletSecret: {
-    $model: 'test',
     $invalid: false,
     required: {
       $message: 'Wallet Secret is required',
+    },
+  },
+  $invalid: false,
+};
+
+const innkeeperLogin = {
+  adminName: {
+    $invalid: false,
+    required: {
+      $message: 'Name is required',
+    },
+  },
+  adminKey: {
+    $invalid: false,
+    required: {
+      $message: 'Key is required',
     },
   },
   $invalid: false,
@@ -92,5 +106,6 @@ export {
   basicAlias,
   createMessage,
   didCreateRequest,
+  innkeeperLogin,
   login,
 };
