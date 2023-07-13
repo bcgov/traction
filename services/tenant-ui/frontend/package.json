@@ -39,12 +39,13 @@
   },
   "devDependencies": {
     "@intlify/eslint-plugin-vue-i18n": "^2.0.0",
+    "@pinia/testing": "^0.1.2",
     "@types/dompurify": "^3.0.2",
     "@types/marked": "^5.0.0",
     "@typescript-eslint/eslint-plugin": "^5.61.0",
     "@typescript-eslint/parser": "^5.61.0",
     "@vitejs/plugin-vue": "^4.2.2",
-    "@vitest/coverage-c8": "^0.33.0",
+    "@vitest/coverage-v8": "^0.32.4",
     "@vue/eslint-config-prettier": "^7.1.0",
     "@vue/eslint-config-typescript": "^11.0.3",
     "@vue/test-utils": "^2.4.0",
@@ -54,11 +55,13 @@
     "flat": "^5.0.2",
     "glob": "^10.3.3",
     "jsdom": "^22.1.0",
+    "msw": "^1.2.2",
     "prettier": "^2.8.8",
     "sass": "^1.63.6",
     "typescript": "^5.1.6",
     "vite": "^4.4.2",
     "vitest": "^0.33.0",
-    "vue-tsc": "^1.8.4"
+    "vue-tsc": "^1.8.4",
+    "whatwg-fetch": "^3.6.2"
   }
 }

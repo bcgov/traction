@@ -62,13 +62,13 @@ export const API_PATH = {
   INNKEEPER_RESERVATIONS_DENY: (id: string) =>
     `/innkeeper/reservations/${id}/deny`,
 
-  ISSUE_CREDENTIAL_RECORDS: 'issue-credential/records',
-  ISSUE_CREDENTIAL_RECORD: (id: string) => `issue-credential/records/${id}`,
+  ISSUE_CREDENTIAL_RECORDS: '/issue-credential/records',
+  ISSUE_CREDENTIAL_RECORD: (id: string) => `/issue-credential/records/${id}`,
   ISSUE_CREDENTIAL_RECORDS_SEND_OFFER: (id: string) =>
-    `issue-credential/records/${id}/send-offer`,
-  ISSUE_CREDENTIALS_SEND_OFFER: 'issue-credential/send-offer',
+    `/issue-credential/records/${id}/send-offer`,
+  ISSUE_CREDENTIALS_SEND_OFFER: '/issue-credential/send-offer',
   ISSUE_CREDENTIAL_RECORDS_SEND_REQUEST: (id: string) =>
-    `issue-credential/records/${id}/send-request`,
+    `/issue-credential/records/${id}/send-request`,
 
   LEDGER_TAA: '/ledger/taa',
   LEDGER_TAA_ACCEPT: '/ledger/taa/accept',
@@ -147,6 +147,9 @@ export const API_PATH = {
     '/tenant/v1/verifier/presentations/adhoc-request',
   VERIFIER_PRESENTATION_TEMPLATES:
     '/tenant/v1/verifier/presentation_templates/',
+
+  // Testing
+  TEST_TENANT_PROXY: '/test',
 };
 
 export const CONNECTION_STATUSES = {

@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`mount Traction 1`] = `
+exports[`Traction > mount matches snapshot with expected values 1`] = `
 "<div data-v-0f0f6735=\\"\\" class=\\"grid align-items-start\\">
   <div data-v-0f0f6735=\\"\\" class=\\"col-12 md:col-6\\"><strong data-v-0f0f6735=\\"\\">about.traction.info</strong>
     <p data-v-0f0f6735=\\"\\" class=\\"my-0\\">about.traction.tractionVersion</p>
@@ -10,9 +10,9 @@ exports[`mount Traction 1`] = `
 </div>
 <div data-v-0f0f6735=\\"\\" class=\\"grid\\">
   <div data-v-0f0f6735=\\"\\" class=\\"col-2\\">about.traction.url</div>
-  <div data-v-0f0f6735=\\"\\" class=\\"col-10\\">/api</div>
+  <div data-v-0f0f6735=\\"\\" class=\\"col-10\\">/test</div>
   <div data-v-0f0f6735=\\"\\" class=\\"col-2\\">about.traction.swagger</div>
-  <div data-v-0f0f6735=\\"\\" class=\\"col-10\\"><a data-v-0f0f6735=\\"\\" href=\\"/api/doc\\" target=\\"_blank\\">/api/doc</a></div>
+  <div data-v-0f0f6735=\\"\\" class=\\"col-10\\"><a data-v-0f0f6735=\\"\\" href=\\"/test/api/doc\\" target=\\"_blank\\">/test/api/doc</a></div>
   <div data-v-0f0f6735=\\"\\" class=\\"col-2\\">about.traction.imageTag</div>
   <div data-v-0f0f6735=\\"\\" class=\\"col-10\\">1.0</div>
   <div data-v-0f0f6735=\\"\\" class=\\"col-2\\">about.traction.imageVersion</div>
