@@ -13,5 +13,16 @@ const mountTenants = () =>
   });
 
 describe('InnkeeperLogin', async () => {
-  test.todo('formattedTenants formats and the data renders in table body');
+  test('formattedTenants formats and the data renders in table body', async () => {
+    const wrapper = mountTenants();
+    const expectedTexts = ['', 'Tenant'];
+
+    // td is an expected text or valid date
+    wrapper.findAll('tbody td').forEach((td) => {
+      const text = td.text();
+      expect(expectedTexts.includes(text) || !isNaN(Date.parse(text))).toBe(
+        true
+      );
+    });
+  });
 });

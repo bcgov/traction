@@ -33,7 +33,18 @@ describe('Connections', () => {
     expect(store.getEndorserInfo).toHaveBeenCalled();
   });
 
-  test.todo('formattedConnections maps connections and they render correctly');
+  test('formattedConnections maps connections and they render correctly', async () => {
+    const wrapper = mountConnections();
+    const expectedTexts = ['', 'test.alias', 'BC Wallet', 'active'];
+
+    // td is an expected text or valid date
+    wrapper.findAll('tbody td').forEach((td) => {
+      const text = td.text();
+      expect(expectedTexts.includes(text) || !isNaN(Date.parse(text))).toBe(
+        true
+      );
+    });
+  });
 
   test('deleteDisabled return truthy when endorser name is input parameter', async () => {
     tenantStore.endorserInfo.value = {
