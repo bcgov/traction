@@ -40,14 +40,13 @@ export const useContactsStore = defineStore('contacts', () => {
     contacts.value.filter((c) => c.state === CONNECTION_STATUSES.INVITATION)
   );
 
-  const findConnectionName = computed(() => {
-    return (connectionId: string) => {
-      // Find the connection alias for an ID
-      const connection = contacts.value?.find((c: any) => {
-        return c.connection_id === connectionId;
-      });
-      return connection && connection.alias ? connection.alias : '...';
-    };
+  const findConnectionName = computed(() => (connectionId: string) => {
+    if (loading.value) return undefined;
+    // Find the connection alias for an ID
+    const connection = contacts.value?.find((c: any) => {
+      return c.connection_id === connectionId;
+    });
+    return connection && connection.alias ? connection.alias : '';
   });
 
   // actions

@@ -72,6 +72,9 @@
       filter-field="connection"
       :show-filter-match-modes="false"
     >
+      <template #body="{ data }">
+        <LoadingLabel :value="data.connection" />
+      </template>
       <template #filter="{ filterModel, filterCallback }">
         <InputText
           v-model="filterModel.value"
@@ -150,23 +153,24 @@ import {
 } from '@/types/acapyApi/acapyInterface';
 
 // Vue
-import { onMounted, ref, computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 // PrimeVue
+import { FilterMatchMode } from 'primevue/api';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable, { DataTableFilterMetaData } from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
 import { useToast } from 'vue-toastification';
-import { FilterMatchMode } from 'primevue/api';
 // State
 import { useContactsStore, useHolderStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other components
-import CredentialAttributes from './CredentialAttributes.vue';
 import RowExpandData from '@/components/common/RowExpandData.vue';
-import StatusChip from '../common/StatusChip.vue';
-import { API_PATH, TABLE_OPT } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
+import { API_PATH, TABLE_OPT } from '@/helpers/constants';
+import LoadingLabel from '../common/LoadingLabel.vue';
+import StatusChip from '../common/StatusChip.vue';
+import CredentialAttributes from './CredentialAttributes.vue';
 
 // The emits it can do (common things between table and card view handled in parent)
 defineEmits(['accept', 'delete', 'reject']);
@@ -174,7 +178,7 @@ defineEmits(['accept', 'delete', 'reject']);
 const toast = useToast();
 
 // State
-const contactsStore = useContactsStore();
+const { listContacts, findConnectionName } = useContactsStore();
 const { contacts } = storeToRefs(useContactsStore());
 const { loading, credentialExchanges } = storeToRefs(useHolderStore());
 const holderStore = useHolderStore();
@@ -184,7 +188,7 @@ const formattedcredentialExchanges = computed(() =>
   credentialExchanges.value.map((ce) => ({
     credential_exchange_id: ce.credential_exchange_id,
     credential_attributes: getAttributes(ce),
-    connection: contactsStore.findConnectionName(ce.connection_id ?? ''),
+    connection: findConnectionName(ce.connection_id ?? ''),
     credential_definition_id: ce.credential_definition_id,
     state: ce.state,
     updated: formatDateLong(ce.updated_at ?? ''),
@@ -237,7 +241,7 @@ const loadCredentials = async () => {
 
   // Load contacts if not already there for display
   if (!contacts.value || !contacts.value.length) {
-    contactsStore.listContacts().catch((err) => {
+    listContacts().catch((err) => {
       console.error(err);
       toast.error(`Failure: ${err}`);
     });

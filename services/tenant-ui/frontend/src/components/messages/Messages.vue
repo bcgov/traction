@@ -43,7 +43,7 @@
         :show-filter-match-modes="false"
       >
         <template #body="{ data }">
-          {{ data.contact }}
+          <LoadingLabel :value="data.contact" />
         </template>
         <template #filter="{ filterModel, filterCallback }">
           <InputText
@@ -115,38 +115,31 @@
 
 <script setup lang="ts">
 // Vue
-import { onMounted, ref, Ref, computed } from 'vue';
+import { Ref, computed, onMounted, ref } from 'vue';
 // PrimeVue
+import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
 import { useToast } from 'vue-toastification';
-import { FilterMatchMode } from 'primevue/api';
 // State
-import { useMessageStore, useContactsStore } from '@/store';
+import { useContactsStore, useMessageStore } from '@/store';
 import { Message } from '@/store/messageStore';
 import { storeToRefs } from 'pinia';
 // Other components
-import { TABLE_OPT } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
-import CreateMessage from './createMessage/CreateMessage.vue';
+import { TABLE_OPT } from '@/helpers/constants';
 import MainCardContent from '../layout/mainCard/MainCardContent.vue';
+import CreateMessage from './createMessage/CreateMessage.vue';
+import LoadingLabel from '../common/LoadingLabel.vue';
 
 const toast = useToast();
 
 const messageStore = useMessageStore();
-const contactsStore = useContactsStore();
+const { listContacts, findConnectionName } = useContactsStore();
 
 const { loading, messages, selectedMessage } = storeToRefs(useMessageStore());
 const { contacts } = storeToRefs(useContactsStore());
-
-// Find the connection alias for an ID
-const findConnectionName = (connectionId: string) => {
-  const connection = contacts.value?.find((c: any) => {
-    return c.connection_id === connectionId;
-  });
-  return connection ? connection.alias : '...';
-};
 
 const loadTable = async () => {
   // should return latest message first
@@ -156,7 +149,7 @@ const loadTable = async () => {
   // messages = messages.map()
   // Load contacts if not already there for display
   if (!contacts.value || !contacts.value.length) {
-    contactsStore.listContacts().catch((err) => {
+    listContacts().catch((err) => {
       console.error(err);
       toast.error(`Failure: ${err}`);
     });
@@ -165,7 +158,7 @@ const loadTable = async () => {
 const expandedRows = ref([]);
 interface FilteredMessage {
   connection_id: string;
-  contact: string;
+  contact: string | undefined;
   state: string;
   content: string;
   sent_time: string;
@@ -174,7 +167,7 @@ interface FilteredMessage {
 const formattedMessages: Ref<FilteredMessage[]> = computed(() =>
   messages.value.map((msg: Message) => ({
     connection_id: msg.connection_id,
-    contact: findConnectionName(msg.connection_id) ?? '',
+    contact: findConnectionName(msg.connection_id),
     state: msg.state,
     content: msg.content,
     sent_time: msg.sent_time,
