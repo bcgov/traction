@@ -33,6 +33,34 @@ describe('contactsStore', () => {
     expect(result[0].label).toEqual('Atest');
   });
 
+  test('findConnectionName returns undefined while loading and connection exists', async () => {
+    store.contacts = contactsResponse.listConnections.results;
+    store.loading = true;
+    await flushPromises();
+    let result = store.findConnectionName(
+      '97bacd18-2b4e-47e8-81b4-a7e7c7ef64d7'
+    );
+    expect(result).not.toBeDefined();
+  });
+
+  test('findConnectionName returns name while not loading and connection exists', async () => {
+    store.contacts = contactsResponse.listConnections.results;
+    store.loading = false;
+    await flushPromises();
+    let result = store.findConnectionName(
+      '97bacd18-2b4e-47e8-81b4-a7e7c7ef64d7'
+    );
+    expect(result).toBe('Atest');
+  });
+
+  test('findConnectionName returns blank string when can not find matching connection', async () => {
+    store.contacts = contactsResponse.listConnections.results;
+    store.loading = false;
+    await flushPromises();
+    let result = store.findConnectionName('97bacd18-not-found');
+    expect(result).toBe('');
+  });
+
   describe('Success API calls', async () => {
     test('listContacts does not throw error and sets loading correctly', async () => {
       let response = store.listContacts();

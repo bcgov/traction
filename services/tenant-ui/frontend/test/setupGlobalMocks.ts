@@ -1,20 +1,24 @@
 import { config } from '@vue/test-utils';
 import { vi } from 'vitest';
 
+// If you looking for the holder store it isn't mocked here because it has the same function names
+// as issuer and verifier stores and merging them into one object would cause conflicts.
 import {
+  commonStore,
   configStore,
   contactsStore,
-  commonStore,
   governanceStore,
+  // holderStore: See comment above
   issuerStore,
   messageStore,
   reservationStore,
   tenantStore,
   tokenStore,
+  verifierStore,
   // Innkeeper
+  innkeeperOidcStore,
   innkeeperTenantsStore,
   innkeeperTokenStore,
-  innkeeperOidcStore,
   // oidc
   oidcStore,
 } from './__mocks__/store';
@@ -29,19 +33,21 @@ vi.mock('pinia', async () => {
     ...pinia,
     storeToRefs: vi.fn(() =>
       Object.assign(
+        commonStore,
         configStore,
         contactsStore,
-        commonStore,
         governanceStore,
+        // holderStore: See comment above
         issuerStore,
         messageStore,
         reservationStore,
         tenantStore,
         tokenStore,
+        verifierStore,
         // Innkeeper
+        innkeeperOidcStore,
         innkeeperTenantsStore,
         innkeeperTokenStore,
-        innkeeperOidcStore,
         // oidc
         oidcStore
       )
@@ -50,19 +56,21 @@ vi.mock('pinia', async () => {
 });
 
 vi.mock('@/store', () => ({
+  useCommonStore: vi.fn(() => commonStore),
   useConfigStore: vi.fn(() => configStore),
   useContactsStore: vi.fn(() => contactsStore),
-  useCommonStore: vi.fn(() => commonStore),
   useGovernanceStore: vi.fn(() => governanceStore),
+  // useHolderStore: vi.fn(() => holderStore), // See comment above
   useIssuerStore: vi.fn(() => issuerStore),
   useMessageStore: vi.fn(() => messageStore),
   useReservationStore: vi.fn(() => reservationStore),
   useTenantStore: vi.fn(() => tenantStore),
   useTokenStore: vi.fn(() => tokenStore),
+  useVerifierStore: vi.fn(() => verifierStore),
   // Innkeeper
+  useInnkeeperOidcStore: vi.fn(() => innkeeperOidcStore),
   useInnkeeperTenantsStore: vi.fn(() => innkeeperTenantsStore),
   useInnkeeperTokenStore: vi.fn(() => innkeeperTokenStore),
-  useInnkeeperOidcStore: vi.fn(() => innkeeperOidcStore),
   // oidc
   useOIDCStore: vi.fn(() => oidcStore),
 }));

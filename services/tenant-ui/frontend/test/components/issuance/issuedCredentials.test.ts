@@ -4,30 +4,33 @@ import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
 import { describe, expect, test } from 'vitest';
 
-import Invitations from '@/components/connections/Invitations.vue';
+import IssuedCredentials from '@/components/issuance/IssuedCredentials.vue';
 
-const mountInvitations = () =>
-  mount(Invitations, {
+const mountIssuedCredentials = () =>
+  mount(IssuedCredentials, {
     global: {
       plugins: [PrimeVue, createTestingPinia(), ConfirmationService],
     },
   });
 
-describe('Invitations', () => {
-  test('mount renders with expected components', async () => {
-    const wrapper = mountInvitations();
+describe('IssuedCredentials', () => {
+  test('mount has expected components', async () => {
+    const wrapper = mountIssuedCredentials();
 
     wrapper.getComponent({ name: 'DataTable' });
-    expect(wrapper.findAllComponents({ name: 'CreateContact' })).toHaveLength(
-      2
-    );
+    wrapper.getComponent({ name: 'OfferCredential' });
   });
 
   test('table body is rendered with expected values', async () => {
-    const wrapper = mountInvitations();
-    const expectedTexts = ['', 'test.alias', 'once'];
+    const wrapper = mountIssuedCredentials();
+    const expectedTexts = [
+      '',
+      'test-cred_def_id',
+      'test-name',
+      'credential_acked',
+    ];
 
-    // td is an expected text or valid date
+    //td is an expected text or valid date
     wrapper.findAll('tbody td').forEach((td) => {
       const text = td.text();
       expect(expectedTexts.includes(text) || !isNaN(Date.parse(text))).toBe(
