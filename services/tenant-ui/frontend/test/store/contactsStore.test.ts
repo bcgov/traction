@@ -37,7 +37,7 @@ describe('contactsStore', () => {
     store.contacts = contactsResponse.listConnections.results;
     store.loading = true;
     await flushPromises();
-    let result = store.findConnectionName(
+    const result = store.findConnectionName(
       '97bacd18-2b4e-47e8-81b4-a7e7c7ef64d7'
     );
     expect(result).not.toBeDefined();
@@ -47,7 +47,7 @@ describe('contactsStore', () => {
     store.contacts = contactsResponse.listConnections.results;
     store.loading = false;
     await flushPromises();
-    let result = store.findConnectionName(
+    const result = store.findConnectionName(
       '97bacd18-2b4e-47e8-81b4-a7e7c7ef64d7'
     );
     expect(result).toBe('Atest');
@@ -57,7 +57,7 @@ describe('contactsStore', () => {
     store.contacts = contactsResponse.listConnections.results;
     store.loading = false;
     await flushPromises();
-    let result = store.findConnectionName('97bacd18-not-found');
+    const result = store.findConnectionName('97bacd18-not-found');
     expect(result).toBe('');
   });
 
