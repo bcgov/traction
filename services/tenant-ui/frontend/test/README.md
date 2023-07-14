@@ -16,11 +16,12 @@ Testing Components:
 - **_Important!_** Any component that uses a pinia store must mock it. If it doesn't it will fail to mount with a confusing error. When adding a new store to a component make sure that the store is mocked and loaded into pinia and @store mocks in setupGlobalMocks. If the store is new or doesn't exist add it with the required properties following the same pattern as the other store mocks and load it into pinia and @store mocks.
 
 - **_Important!_** If a test is hanging it's probably a problem with the mocks. It can be frustrating to figure out why. Here are some tips to solve it:
-- if it is using a pinia store make sure that createTestingPinia plugin is used when mounting the component.
-- Make sure the store mock in `/test/__mocks__/store` has all the mocked functions and objects being used in the test component. If objects properties are used which don't exist in the mock they will be undefined and cause the test to hang.
-- It could missing another plugin or stub.
-- Commenting out template code one block from the inside out at a time can help narrow down the problem and see exceptions.
-- If it is still really hard to get right it might be better to test inner components seperatly or only do a shallow mount on parent object.
+
+  - if it is using a pinia store make sure that createTestingPinia plugin is used when mounting the component.
+  - Make sure the store mock in `/test/__mocks__/store` has all the mocked functions and objects being used in the test component. If objects properties are used which don't exist in the mock they will be undefined and cause the test to hang.
+  - It could missing another plugin or stub.
+  - Commenting out template code one block from the inside out at a time can help narrow down the problem and see exceptions.
+  - If it is still really hard to get right it might be better to test inner components seperatly or only do a shallow mount on parent object.
 
 - There are several ways to test notifications and popups are triggered. The best way to do this seems to be: \
   `const wrapperVm = wrapper.vm as unknown as typeof CreateContactForm; `
