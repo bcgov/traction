@@ -131,7 +131,7 @@ acapy:
     emit-new-didcomm-prefix: true
     endorser-alias: endorser
     endorser-protocol-role: author
-    endorser-public-did: 'UjmxKBZe1qv1NBE7GaohdP'
+    endorser-public-did: '4pgFAjnSVKCr7CMfpqDjhu'
     genesis-url: '{{ include "traction.genesisUrl" . }}'
     label: '{{ include "acapy.label" .}}'
     log-level: info

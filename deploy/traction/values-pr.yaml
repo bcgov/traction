@@ -20,7 +20,7 @@ acapy:
         print_token: true
       reservation:
         expiry_minutes: 2880
-        auto_approve: false
+        auto_approve: true
   resources:
     limits:
       cpu: 200m
