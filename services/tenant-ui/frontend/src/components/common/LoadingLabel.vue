@@ -8,18 +8,19 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, ref } from 'vue';
+import { ref } from 'vue';
 import ProgressSpinner from 'primevue/progressspinner';
 
-const props = defineProps({
-  value: {
-    type: String as PropType<string | undefined>,
-  },
-  size: {
-    type: Number as PropType<number>,
-    default: 1,
-  },
-});
+const props = withDefaults(
+  defineProps<{
+    value?: string;
+    size?: number;
+  }>(),
+  {
+    value: undefined,
+    size: 1,
+  }
+);
 
 const progressStyle = ref({
   width: `${props.size}rem`,
