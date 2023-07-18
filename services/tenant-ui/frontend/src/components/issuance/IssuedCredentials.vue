@@ -45,7 +45,7 @@
 
           <RevokeCredentialButton
             :cred-exch-record="data"
-            :connection-display="findConnectionName(data.connection_id)"
+            :connection-display="findConnectionName(data.connection_id) ?? ''"
           />
         </template>
       </Column>
@@ -74,7 +74,7 @@
         :show-filter-match-modes="false"
       >
         <template #body="{ data }">
-          {{ data.contact }}
+          <LoadingLabel :value="data.contact" />
         </template>
         <template #filter="{ filterModel, filterCallback }">
           <InputText
@@ -138,41 +138,36 @@
 
 <script setup lang="ts">
 // Vue
-import { onMounted, ref, Ref, computed } from 'vue';
+import { Ref, computed, onMounted, ref } from 'vue';
 // State
-import { useIssuerStore, useContactsStore } from '@/store';
+import { useContactsStore, useIssuerStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // PrimeVue/etc
+import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
-import { FilterMatchMode } from 'primevue/api';
 import { useToast } from 'vue-toastification';
 // Other Components
-import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
-import DeleteCredentialExchangeButton from './deleteCredential/DeleteCredentialExchangeButton.vue';
-import MainCardContent from '../layout/mainCard/MainCardContent.vue';
-import OfferCredential from './offerCredential/OfferCredential.vue';
-import RevokeCredentialButton from './deleteCredential/RevokeCredentialButton.vue';
+import { API_PATH, TABLE_OPT } from '@/helpers/constants';
+import LoadingLabel from '../common/LoadingLabel.vue';
 import RowExpandData from '../common/RowExpandData.vue';
 import StatusChip from '../common/StatusChip.vue';
+import MainCardContent from '../layout/mainCard/MainCardContent.vue';
+import DeleteCredentialExchangeButton from './deleteCredential/DeleteCredentialExchangeButton.vue';
+import RevokeCredentialButton from './deleteCredential/RevokeCredentialButton.vue';
+import OfferCredential from './offerCredential/OfferCredential.vue';
 
 const toast = useToast();
 
-const contactsStore = useContactsStore();
+const { listContacts, findConnectionName } = useContactsStore();
 const { contacts } = storeToRefs(useContactsStore());
 const issuerStore = useIssuerStore();
 // use the loading state from the store to disable the button...
 const { loading, credentials, selectedCredential } = storeToRefs(
   useIssuerStore()
 );
-const findConnectionName = (connectionId: string): string => {
-  const connection = contacts.value?.find((c: any) => {
-    return c.connection_id === connectionId;
-  });
-  return (connection ? connection.alias : '...') as string;
-};
 
 const formattedCredentials: Ref<any[]> = computed(() =>
   credentials.value.map((cred: any) => ({
@@ -198,7 +193,7 @@ const loadTable = async () => {
 
   // Load contacts if not already there for display
   if (!contacts.value || !contacts.value.length) {
-    contactsStore.listContacts().catch((err) => {
+    listContacts().catch((err) => {
       console.error(err);
       toast.error(`Failure: ${err}`);
     });

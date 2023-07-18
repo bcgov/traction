@@ -59,7 +59,7 @@
       <Column :sortable="true" field="role" header="Role" />
       <Column :sortable="true" field="connection_id" header="Connection">
         <template #body="{ data }">
-          {{ findConnectionName(data.connection_id) }}
+          <LoadingLabel :value="findConnectionName(data.connection_id)" />
         </template>
       </Column>
       <Column :sortable="true" field="status" header="Status">
@@ -96,30 +96,31 @@
 // Vue
 import { onMounted, ref } from 'vue';
 // PrimeVue
+import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
-import { FilterMatchMode } from 'primevue/api';
 import { useToast } from 'vue-toastification';
 // State
 import { useContactsStore, useVerifierStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Components
+import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
 import CreateRequest from './createPresentationRequest/CreateRequest.vue';
 import DeleteExchangeRecord from './DeleteExchangeRecord.vue';
-import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
 // import PresentationRowExpandData from './PresentationRowExpandData.vue';
+import LoadingLabel from '@/components/common/LoadingLabel.vue';
 import RowExpandData from '@/components/common/RowExpandData.vue';
 import StatusChip from '@/components/common/StatusChip.vue';
-import { API_PATH, TABLE_OPT } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
+import { API_PATH, TABLE_OPT } from '@/helpers/constants';
 
 const toast = useToast();
 
 // State
-const contactsStore = useContactsStore();
+const { listContacts, findConnectionName } = useContactsStore();
 const verifierStore = useVerifierStore();
-const { contacts, findConnectionName } = storeToRefs(useContactsStore());
+const { contacts } = storeToRefs(useContactsStore());
 const { loading, presentations, selectedPresentation } = storeToRefs(
   useVerifierStore()
 );
@@ -131,7 +132,7 @@ const loadTable = async () => {
 
   // Load contacts if not already there for display
   if (!contacts.value || !contacts.value.length) {
-    contactsStore.listContacts().catch((err) => {
+    listContacts().catch((err) => {
       console.error(err);
       toast.error(`Failure: ${err}`);
     });
