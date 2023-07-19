@@ -79,7 +79,6 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | `acapy.autoscaling.targetCPUUtilizationPercentage`    | Target CPU utilization percentage                                                                                   | `80`                                   |
 | `acapy.autoscaling.targetMemoryUtilizationPercentage` | Target Memory utilization percentage                                                                                | `80`                                   |
 | `acapy.autoscaling.stabilizationWindowSeconds`        | Stabilization window in seconds                                                                                     | `300`                                  |
-| `acapy.agentSeed`                                     |                                                                                                                     | `""`                                   |
 | `acapy.labelOverride`                                 |                                                                                                                     | `""`                                   |
 
 ### Acapy configuration file

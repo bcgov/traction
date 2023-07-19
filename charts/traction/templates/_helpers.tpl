@@ -185,17 +185,6 @@ Generate hosts for acapy admin if not overriden
 {{- end -}}
 
 {{/*
-Return seed
-*/}}
-{{- define "acapy.seed" -}}
-{{- if .Values.acapy.agentSeed -}}
-{{- .Values.acapy.agentSeed }}
-{{- else -}}
-{{ include "getOrGeneratePass" (dict "Namespace" .Release.Namespace "Kind" "Secret" "Name" (include "acapy.fullname" .) "Key" "seed" "Length" 32) }}
-{{- end -}}
-{{- end -}}
-
-{{/*
 Return acapy label
 */}}
 {{- define "acapy.label" -}}

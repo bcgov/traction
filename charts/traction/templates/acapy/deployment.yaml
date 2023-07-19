@@ -95,11 +95,6 @@ spec:
                 secretKeyRef:
                   name: {{ template "acapy.plugin.innkeeper.name" . }}
                   key: walletkey
-            - name: ACAPY_WALLET_SEED
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "acapy.fullname" . }}
-                  key: seed
             - name: ACAPY_WALLET_KEY
               valueFrom:
                 secretKeyRef:
