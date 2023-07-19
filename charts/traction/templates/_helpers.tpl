@@ -209,15 +209,6 @@ $identifier
 {{- end -}}
 
 {{/*
-Return acapy initialization call
-*/}}
-{{- define "acapy.registerLedger" -}}
-{{- if (eq .Values.config.ledger.name "bcovrin-test") -}}
-curl -d '{\"seed\":\"$(ACAPY_WALLET_SEED)\", \"role\":\"TRUST_ANCHOR\", \"alias\":\"{{ include "acapy.fullname" . }}\"}' -X POST {{ include "traction.ledgerBrowser" . }}/register;
-{{- end -}}
-{{- end -}}
-
-{{/*
 generate tails baseUrl
 */}}
 {{- define "acapy.tails.baseUrl" -}}

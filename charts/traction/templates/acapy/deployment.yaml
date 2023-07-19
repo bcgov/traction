@@ -29,22 +29,6 @@ spec:
       automountServiceAccountToken: {{ .Values.acapy.serviceAccount.automountServiceAccountToken }}
       securityContext:
         {{- toYaml .Values.acapy.podSecurityContext | nindent 8 }}
-      initContainers:
-        - name: register
-          image: curlimages/curl
-          imagePullPolicy: IfNotPresent
-          command:
-          - /bin/sh
-          args: [
-           "-c",
-           "{{ include "acapy.registerLedger" . }}"
-          ]
-          env:
-            - name: ACAPY_WALLET_SEED
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "acapy.fullname" . }}
-                  key: seed
       containers:
         - name: acapy
           securityContext:
