@@ -103,7 +103,7 @@ acapy:
   ## @param acapy.argfile.yml.notify-revocation Specifies that aca-py will notify credential recipients when revoking a credential it issued.
   ## @param acapy.argfile.yml.preserve-exchange-records Keep credential exchange records after exchange has completed.
   ## @param acapy.argfile.yml.public-invites Send invitations out using the public DID for the agent, and receive connection requests solicited by invitations which use the public DID. Default: false.
-  ## @param acapy.argfile.yml.read-only-ledger Sets ledger to read-only to prevent updates. Default: false.
+  ## @param acapy.argfile.yml.read-only-ledger Sets ledger to read-only to prevent updates. Default: true.
   ## @param acapy.argfile.yml.tails-server-base-url Sets the base url of the tails server in use.
   ## @param acapy.argfile.yml.tails-server-upload-url Sets the base url of the tails server for upload, defaulting to the tails server base url.
   ## @param acapy.argfile.yml.wallet-name Specifies the wallet name to be used by the agent. This is useful if your deployment has multiple wallets.
@@ -142,7 +142,7 @@ acapy:
     notify-revocation: true
     preserve-exchange-records: true
     public-invites: true
-    read-only-ledger: false
+    read-only-ledger: true
     tails-server-base-url: '{{ include "acapy.tails.baseUrl" . }}'
     tails-server-upload-url: '{{ include "acapy.tails.uploadUrl" . }}'
     wallet-name: askar-wallet
