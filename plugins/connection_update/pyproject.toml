@@ -8,12 +8,12 @@ readme = "README.md"
 packages = [{include = "connection_update"}]
 
 [tool.poetry.dependencies]
-python = ">=3.6.13,<4.0"
-aries-cloudagent = { version = "1.0.0rc1" }
+python = "^3.9"
+aries-cloudagent = { version = "0.8.2" }
 
 [tool.poetry.dev-dependencies]
-black = "^22.6.0"
 flake8 = "^5.0.4"
+black = "^22.6.0"
 
 [build-system]
 requires = ["setuptools", "poetry-core>=1.2"]

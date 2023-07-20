@@ -1,10 +1,12 @@
-FROM bcgovimages/von-image:py36-1.16-1 AS base
-# python 3.6.13
+FROM python:3.9-slim AS base
+WORKDIR /usr/src/app
 
-# Install and Configure Poetry
+# Install and configure poetry
 USER root
-ENV POETRY_VERSION=1.1.15
+
+ENV POETRY_VERSION=1.4.2
 ENV POETRY_HOME=/opt/poetry
+RUN apt-get update && apt-get install -y curl && apt-get clean
 RUN curl -sSL https://install.python-poetry.org | python -
 
 ENV PATH="/opt/poetry/bin:$PATH"
@@ -12,14 +14,18 @@ RUN poetry config virtualenvs.in-project true
 
 # Setup project
 RUN mkdir connection_update && touch connection_update/__init__.py
-COPY --chown=indy:indy pyproject.toml README.md ./
-RUN poetry install --no-dev
+COPY pyproject.toml poetry.lock README.md ./
+ARG install_flags=--no-dev
+RUN poetry install ${install_flags}
+USER $user
 
-FROM bcgovimages/von-image:py36-1.16-1
-COPY --from=base --chown=indy:indy /home/indy/.venv /home/indy/.venv
-ENV PATH="/home/indy/.venv/bin:$PATH"
+FROM python:3.9-bullseye
+WORKDIR /usr/src/app
+COPY --from=base /usr/src/app/.venv /usr/src/app/.venv
+ENV PATH="/usr/src/app/.venv/bin:$PATH"
 
+COPY connection_update/ connection_update/
 COPY docker/default.yml ./
-COPY connection_update connection_update
+
 ENTRYPOINT ["/bin/bash", "-c", "aca-py \"$@\"", "--"]
 CMD ["start", "--arg-file", "default.yml"]

@@ -12,7 +12,7 @@ services:
       - 3000:3000
       - 3002:3002
     volumes:
-      - ./configs:/home/indy/configs:ro,z
+      - ./configs:/home/aries/configs:ro,z
     extra_hosts:
       - host.docker.internal:host-gateway
     entrypoint: >
