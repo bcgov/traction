@@ -185,17 +185,6 @@ Generate hosts for acapy admin if not overriden
 {{- end -}}
 
 {{/*
-Return seed
-*/}}
-{{- define "acapy.seed" -}}
-{{- if .Values.acapy.agentSeed -}}
-{{- .Values.acapy.agentSeed }}
-{{- else -}}
-{{ include "getOrGeneratePass" (dict "Namespace" .Release.Namespace "Kind" "Secret" "Name" (include "acapy.fullname" .) "Key" "seed" "Length" 32) }}
-{{- end -}}
-{{- end -}}
-
-{{/*
 Return acapy label
 */}}
 {{- define "acapy.label" -}}
@@ -205,15 +194,6 @@ Return acapy label
 $identifier   
 {{- else -}} 
     {{- .Release.Name }}     
-{{- end -}}
-{{- end -}}
-
-{{/*
-Return acapy initialization call
-*/}}
-{{- define "acapy.registerLedger" -}}
-{{- if (eq .Values.config.ledger.name "bcovrin-test") -}}
-curl -d '{\"seed\":\"$(ACAPY_WALLET_SEED)\", \"role\":\"TRUST_ANCHOR\", \"alias\":\"{{ include "acapy.fullname" . }}\"}' -X POST {{ include "traction.ledgerBrowser" . }}/register;
 {{- end -}}
 {{- end -}}
 

@@ -64,9 +64,6 @@ acapy:
     targetMemoryUtilizationPercentage: 80
     stabilizationWindowSeconds: 300
 
-  ## @param acapy.agentSeed
-  agentSeed: ""
-
   ## @param acapy.labelOverride
   labelOverride: ""
 
