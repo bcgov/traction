@@ -16,6 +16,7 @@ from aries_cloudagent.wallet.models.wallet_record import (
     WalletRecordSchema,
     WalletRecord,
 )
+from marshmallow import fields, validate
 
 from ..innkeeper.routes import error_handler
 from ..innkeeper.tenant_manager import TenantManager
@@ -28,6 +29,15 @@ from ..innkeeper.utils import TenantConfigSchema
 LOGGER = logging.getLogger(__name__)
 
 SWAGGER_CATEGORY = "traction-tenant"
+
+
+class CustomUpdateWalletRequestSchema(UpdateWalletRequestSchema):
+    image_url = fields.Str(
+        description="Image url for this wallet. This image url is publicized\
+            (self-attested) to other agents as part of forming a connection.",
+        example="https://aries.ca/images/sample.png",
+        validate=validate.URL(),
+    )
 
 
 @docs(
@@ -94,7 +104,7 @@ async def tenant_config_get(request: web.BaseRequest):
 
 
 @docs(tags=[SWAGGER_CATEGORY], summary="Update tenant wallet")
-@request_schema(UpdateWalletRequestSchema)
+@request_schema(CustomUpdateWalletRequestSchema)
 @response_schema(WalletRecordSchema(), 200, description="")
 @error_handler
 async def tenant_wallet_update(request: web.BaseRequest):
