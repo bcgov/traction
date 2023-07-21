@@ -1,0 +1,31 @@
+version: "3.9"
+services:
+  traction-db:
+    image: "postgres:12"
+    environment:
+      - POSTGRES_PASSWORD=postgresPass
+    ports:
+      - 5432:5432
+    volumes:
+      - traction-wallet:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  tenant-proxy:
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile.tenant-proxy
+    restart: unless-stopped
+    environment:
+      - ACAPY_ADMIN_URL=http://host.docker.internal:3001
+      - ACAPY_ADMIN_URL_API_KEY=change-me
+    ports:
+      - 8032:8080
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+volumes:
+  traction-wallet:

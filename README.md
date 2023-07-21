@@ -60,6 +60,32 @@ If you would like to contribute to Traction, please review the following:
 - [Code of Conduct](./CODE_OF_CONDUCT.md) 
 - [Compliance](./COMPLIANCE.yaml) 
 
+## Developers: devcontainers
+To aid in developers, there are 2 `devcontainers`: [plugins](./plugins/.devcontainer/devcontainer.json) and [tenant-ui](./services/tenant-ui/.devcontainer/devcontainer.json).
+
+The devcontainers and associated vscode launch files are for convenience only, they are not mandatory for developing and debugging. Please feel free to develop anyway you choose.
+
+1. In VS code, open `plugins`.
+2. Follow all prompts to open the devcontainer.
+3. In a second VS Code window, open `services/tenant-ui`
+4. Follow all prompts to open the devcontainer.
+5. in `plugins`, start up the ACA-Py / Traction instance: Run and Debug view, "Run/Debug Plugin", start/F5
+6. in `services/tenant-ui`, start up the backend api: Run and Debug view, "backend - run dev", start/F5
+7. in `services/tenant-ui`, start up the frontend api: Run and Debug view, "frontend - run dev", start/F5
+8. in `services/tenant-ui`, load a Chrome browser for debugging frontend: Run and Debug view, "frontend - chrome", start/F5
+
+If all starts up without a hitch, then you should be able to breakpoint the tenant-ui frontend (Vue/Chrome), tenant-ui backend api (Node.js) and traction plugins (Python) for local debugging.
+
+Out of the box, the above will use the following ports:
+
+- ACA-Py/Traction Plugins: 3000, 3001 (admin)
+- Tenant Proxy: 8032
+- Traction DB: 5432
+- Tenant UI backend server: 8080
+- Tenant UI frontend server: 5173
+
+Note that Tenant Proxy and Traction DB are startec via docker compose when starting ACA-Py/Traction Plugins
+
 ### Repository workflow
 Currently authorized users can create a branch and run a pull request to merge in changes. Unauthorized can always create a fork.
 
