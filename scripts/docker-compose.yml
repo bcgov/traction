@@ -208,7 +208,7 @@ services:
       - host.docker.internal:host-gateway
 
   endorser-agent:
-    image: ghcr.io/hyperledger/aries-cloudagent-python:py3.9-0.8.3-pre
+    image: ghcr.io/hyperledger/aries-cloudagent-python:py3.9-0.9.0-rc0
     depends_on:
       endorser-db:
         condition: service_healthy
