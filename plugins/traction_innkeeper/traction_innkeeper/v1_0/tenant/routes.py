@@ -31,16 +31,11 @@ LOGGER = logging.getLogger(__name__)
 SWAGGER_CATEGORY = "traction-tenant"
 
 
-# extend the UpdateWalletRequestSchema class to make the image_url field a marshmallow type of url
-class UpdateWalletRequestSchema(UpdateWalletRequestSchema):
-    """Extend the schema to only allow url format."""
-
-    image_url = fields.str(
+class CustomUpdateWalletRequestSchema(UpdateWalletRequestSchema):
+    image_url = fields.Str(
         description="Image url for this wallet. This image url is publicized\
             (self-attested) to other agents as part of forming a connection.",
         example="https://aries.ca/images/sample.png",
-        required=False,
-        allow_none=True,
         validate=validate.URL(),
     )
 
@@ -109,7 +104,7 @@ async def tenant_config_get(request: web.BaseRequest):
 
 
 @docs(tags=[SWAGGER_CATEGORY], summary="Update tenant wallet")
-@request_schema(UpdateWalletRequestSchema)
+@request_schema(CustomUpdateWalletRequestSchema)
 @response_schema(WalletRecordSchema(), 200, description="")
 @error_handler
 async def tenant_wallet_update(request: web.BaseRequest):
