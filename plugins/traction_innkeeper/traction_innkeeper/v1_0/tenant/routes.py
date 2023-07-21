@@ -16,6 +16,7 @@ from aries_cloudagent.wallet.models.wallet_record import (
     WalletRecordSchema,
     WalletRecord,
 )
+from marshmallow import fields, validate
 
 from ..innkeeper.routes import error_handler
 from ..innkeeper.tenant_manager import TenantManager
@@ -28,6 +29,20 @@ from ..innkeeper.utils import TenantConfigSchema
 LOGGER = logging.getLogger(__name__)
 
 SWAGGER_CATEGORY = "traction-tenant"
+
+
+# extend the UpdateWalletRequestSchema class to make the image_url field a marshmallow type of url
+class UpdateWalletRequestSchema(UpdateWalletRequestSchema):
+    """Extend the schema to only allow url format."""
+
+    image_url = fields.str(
+        description="Image url for this wallet. This image url is publicized\
+            (self-attested) to other agents as part of forming a connection.",
+        example="https://aries.ca/images/sample.png",
+        required=False,
+        allow_none=True,
+        validate=validate.URL(),
+    )
 
 
 @docs(
