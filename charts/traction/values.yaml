@@ -118,7 +118,7 @@ acapy:
     endorser-alias: endorser
     endorser-protocol-role: author
     endorser-public-did: 'UjmxKBZe1qv1NBE7GaohdP'
-    genesis-url: http://test.bcovrin.vonx.io
+    genesis-url: http://test.bcovrin.vonx.io/genesis
     label: '{{ include "acapy.label" .}}'
     log-level: info
     monitor-ping: true
