@@ -410,9 +410,9 @@ async def tenant_config_update(request: web.BaseRequest):
     tenant_id = request.match_info["tenant_id"]
     async with profile.session() as session:
         tenant_record = await TenantRecord.retrieve_by_id(session, tenant_id)
-        if connect_to_endorser:
+        if connect_to_endorser or connect_to_endorser == []:
             tenant_record.connected_to_endorsers = connect_to_endorser
-        if create_public_did:
+        if create_public_did or create_public_did == []:
             tenant_record.created_public_did = create_public_did
         await tenant_record.save(session)
     return web.json_response(tenant_record.serialize())
