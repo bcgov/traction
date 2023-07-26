@@ -321,7 +321,7 @@
         <div>
           <Accordion>
             <AccordionTab header="Tenant Wallet Details">
-              <vue-json-pretty :data="tenantWallet" />
+              <vue-json-pretty :data="tenantWalletwithExtraSettings" />
             </AccordionTab>
           </Accordion>
         </div>
@@ -368,6 +368,7 @@ const tenantStore = useTenantStore();
 const { tenantWallet, loading, tenantDefaultSettings } = storeToRefs(
   useTenantStore()
 );
+const tenantWalletwithExtraSettings: any = ref(null);
 
 // Get Tenant Configuration
 const loadTenantSettings = async () => {
@@ -386,6 +387,10 @@ const loadTenantSettings = async () => {
       } else {
         settingMap = tenantDefaultSettings.value;
       }
+      tenantWalletwithExtraSettings.value = JSON.parse(
+        JSON.stringify(tenantWallet.value)
+      );
+      tenantWalletwithExtraSettings.value.settings = settingMap;
       formFields.ACAPY_AUTO_ACCEPT_INVITES =
         settingMap['debug.auto_accept_invites'];
       formFields.ACAPY_AUTO_ACCEPT_REQUESTS =
