@@ -5,17 +5,6 @@ fullnameOverride: ""
 ## @param ingressSuffix Domain suffix to be used for default hostpaths in ingress
 ingressSuffix: -dev.example.com
 
-## @section Traction configuration
-##
-## @param config.ledger.name The ledger to be used.
-## @param config.ledger.browserUrlOverride Overrides ledger browser url
-## @param config.ledger.genesisUrlOverride Overrides genesis url
-config:
-  ledger: 
-    name: bcovrin-test
-    browserUrlOverride: ""
-    genesisUrlOverride: ""
-
 ## @section Acapy Configuration
 ##
 acapy:
@@ -129,7 +118,7 @@ acapy:
     endorser-alias: endorser
     endorser-protocol-role: author
     endorser-public-did: 'UjmxKBZe1qv1NBE7GaohdP'
-    genesis-url: '{{ include "traction.genesisUrl" . }}'
+    genesis-url: http://test.bcovrin.vonx.io/genesis
     label: '{{ include "acapy.label" .}}'
     log-level: info
     monitor-ping: true
@@ -140,17 +129,11 @@ acapy:
     preserve-exchange-records: true
     public-invites: true
     read-only-ledger: false
-    tails-server-base-url: '{{ include "acapy.tails.baseUrl" . }}'
-    tails-server-upload-url: '{{ include "acapy.tails.uploadUrl" . }}'
+    tails-server-base-url: https://tails-test.vonx.io
+    tails-server-upload-url: https://tails-test.vonx.io
     wallet-name: askar-wallet
     wallet-storage-type: postgres_storage
     wallet-type: askar
-  ## @param acapy.tails.baseUrlOverride
-  ## @param acapy.tails.uploadUrlOverride
-  ##
-  tails:
-    baseUrlOverride: ""
-    uploadUrlOverride: ""
   ## @section Wallet Storage configuration
   ##  Specifies the storage configuration to use for the wallet. 
   ##  This is required if you are for using 'postgres_storage' wallet 'storage type. 

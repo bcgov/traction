@@ -130,23 +130,6 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{ template "global.fullname" . }}-tenant-proxy
 {{- end -}}
 
-
-{{/*
-generate ledger browser url
-*/}}
-{{- define "traction.ledgerBrowser" -}}
-{{- $ledgerBrowser := dict "bcovrin-test" "http://test.bcovrin.vonx.io" -}}
-{{ .Values.config.ledger.browserUrlOverride | default ( get $ledgerBrowser .Values.config.ledger.name ) }}
-{{- end }}
-
-{{/*
-generate genesisfileurl
-*/}}
-{{- define "traction.genesisUrl" -}}
-{{ default (printf "%s%s" (include "traction.ledgerBrowser" .) "/genesis") .Values.config.ledger.genesisUrlOverride }}
-{{- end }}
-
-
 {{/*
 Common acapy labels
 */}}
@@ -189,28 +172,10 @@ Return acapy label
 */}}
 {{- define "acapy.label" -}}
 {{- if .Values.acapy.labelOverride -}}
-    {{- .Values.acapy.labelOverride }}
-{{- else if eq .Values.config.ledger.name "idu" -}}
-$identifier   
+    {{- .Values.acapy.labelOverride }} 
 {{- else -}} 
     {{- .Release.Name }}     
 {{- end -}}
-{{- end -}}
-
-{{/*
-generate tails baseUrl
-*/}}
-{{- define "acapy.tails.baseUrl" -}}
-{{- $tailsBaseUrl := dict "bcovrin-dev" "https://tails-dev.vonx.io" "bcovrin-test" "https://tails-test.vonx.io" "idu" (printf "https://tails%s" .Values.ingressSuffix) -}}
-{{ .Values.acapy.tails.baseUrlOverride| default ( get $tailsBaseUrl .Values.config.ledger.name ) }}
-{{- end -}}
-
-{{/*
-generate tails uploadUrl
-*/}}
-{{- define "acapy.tails.uploadUrl" -}}
-{{- $tailsUploadUrl:= dict "bcovrin-dev" "https://tails-dev.vonx.io" "bcovrin-test" "https://tails-test.vonx.io" "idu" "http://idu-tails:6543" -}}
-{{ .Values.acapy.tails.uploadUrlOverride| default ( get $tailsUploadUrl .Values.config.ledger.name ) }}
 {{- end -}}
 
 {{/*
