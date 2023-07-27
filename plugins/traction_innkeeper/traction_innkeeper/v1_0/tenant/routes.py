@@ -10,6 +10,7 @@ from aries_cloudagent.admin.request_context import AdminRequestContext
 from aries_cloudagent.multitenant.admin.routes import (
     format_wallet_record,
     UpdateWalletRequestSchema,
+    get_extra_settings_dict_per_tenant,
 )
 from aries_cloudagent.multitenant.base import BaseMultitenantManager
 from aries_cloudagent.wallet.models.wallet_record import (
@@ -121,6 +122,7 @@ async def tenant_wallet_update(request: web.BaseRequest):
     wallet_dispatch_type = body.get("wallet_dispatch_type")
     label = body.get("label")
     image_url = body.get("image_url")
+    extra_settings = body.get("extra_settings") or {}
 
     if all(
         v is None for v in (wallet_webhook_urls, wallet_dispatch_type, label, image_url)
@@ -143,7 +145,19 @@ async def tenant_wallet_update(request: web.BaseRequest):
         settings["default_label"] = label
     if image_url is not None:
         settings["image_url"] = image_url
-
+    if "ACAPY_ENDORSER_ROLE" in extra_settings:
+        if extra_settings.get("ACAPY_ENDORSER_ROLE") == "author":
+            settings["endorser.endorser"] = False
+        elif extra_settings.get("ACAPY_ENDORSER_ROLE") == "endorser":
+            settings["endorser.author"] = False
+            settings["endorser.auto_request"] = False
+            settings["endorser.auto_write"] = False
+        elif extra_settings.get("ACAPY_ENDORSER_ROLE") == "none":
+            settings["endorser.author"] = False
+            settings["endorser.endorser"] = False
+            settings["endorser.auto_request"] = False
+            settings["endorser.auto_write"] = False
+    settings.update(get_extra_settings_dict_per_tenant(extra_settings))
     multitenant_mgr = context.profile.inject(BaseMultitenantManager)
     wallet_record = await multitenant_mgr.update_wallet(wallet_id, settings)
     result = format_wallet_record(wallet_record)

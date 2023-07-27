@@ -321,7 +321,7 @@
         <div>
           <Accordion>
             <AccordionTab header="Tenant Wallet Details">
-              <vue-json-pretty :data="tenantWallet" />
+              <vue-json-pretty :data="tenantWalletwithExtraSettings" />
             </AccordionTab>
           </Accordion>
         </div>
@@ -365,17 +365,69 @@ const toast = useToast();
 
 // State setup
 const tenantStore = useTenantStore();
-const { tenantWallet, loading } = storeToRefs(useTenantStore());
+const { tenantWallet, loading, tenantDefaultSettings } = storeToRefs(
+  useTenantStore()
+);
+const tenantWalletwithExtraSettings: any = ref(null);
 
 // Get Tenant Configuration
 const loadTenantSettings = async () => {
-  await tenantStore
-    .getTenantSubWallet()
+  Promise.all([
+    tenantStore.getTenantSubWallet(),
+    tenantStore.getTenantDefaultSettings(),
+  ])
     .then(() => {
       // set the local form settings (don't bind controls directly to state for this)
+      let settingMap: any = {};
+      if (tenantWallet.value.settings) {
+        settingMap = Object.assign(
+          tenantDefaultSettings.value,
+          tenantWallet.value.settings
+        );
+      } else {
+        settingMap = tenantDefaultSettings.value;
+      }
+      tenantWalletwithExtraSettings.value = JSON.parse(
+        JSON.stringify(tenantWallet.value)
+      );
+      tenantWalletwithExtraSettings.value.settings = settingMap;
+      formFields.ACAPY_AUTO_ACCEPT_INVITES =
+        settingMap['debug.auto_accept_invites'];
+      formFields.ACAPY_AUTO_ACCEPT_REQUESTS =
+        settingMap['debug.auto_accept_requests'];
+      formFields.ACAPY_AUTO_PING_CONNECTION =
+        settingMap['auto_ping_connection'];
+      formFields.ACAPY_AUTO_REQUEST_ENDORSEMENT =
+        settingMap['endorser.auto_request'];
+      formFields.ACAPY_AUTO_RESPOND_CREDENTIAL_OFFER =
+        settingMap['debug.auto_respond_credential_offer'];
+      formFields.ACAPY_AUTO_RESPOND_CREDENTIAL_REQUEST =
+        settingMap['debug.auto_respond_credential_request'];
+      formFields.ACAPY_AUTO_RESPOND_MESSAGES =
+        settingMap['debug.auto_respond_messages'];
+      formFields.ACAPY_AUTO_VERIFY_PRESENTATION =
+        settingMap['debug.auto_verify_presentation'];
+      formFields.ACAPY_AUTO_WRITE_TRANSACTIONS =
+        settingMap['endorser.auto_write'];
+      if ('endorser.author' in settingMap && settingMap['endorser.author']) {
+        formFields.ACAPY_ENDORSER_ROLE = 'author';
+      } else if (
+        'endorser.endorser' in settingMap &&
+        settingMap['endorser.endorser']
+      ) {
+        formFields.ACAPY_ENDORSER_ROLE = 'endorser';
+      } else {
+        formFields.ACAPY_ENDORSER_ROLE = 'none';
+      }
+      formFields.ACAPY_INVITE_PUBLIC = settingMap['debug.invite_public'];
+      formFields.ACAPY_LOG_LEVEL = settingMap['log.level'];
+      formFields.ACAPY_MONITOR_PING = settingMap['debug.monitor_ping'];
+      formFields.ACAPY_NOTIFY_REVOCATION = settingMap['revocation.notify'];
+      formFields.ACAPY_PUBLIC_INVITES = settingMap['public_invites'];
+      formFields.ACAPY_CREATE_REVOCATION_TRANSACTIONS =
+        settingMap['endorser.auto_create_rev_reg'];
       formFields.walletLabel = tenantWallet.value.settings.default_label;
       formFields.imageUrl = tenantWallet.value.settings.image_url;
-
       const webHookUrls = tenantWallet.value.settings['wallet.webhook_urls'];
 
       // Clear the webhook array if necessary
@@ -418,13 +470,14 @@ onMounted(async () => {
 });
 
 // Hide out the acapy settings until they are implemented
-const hideAcapySettings = ref(true);
+const hideAcapySettings = ref(false);
 
 // Dropdown values
 const endorserRole = ref(['author', 'endorser', 'none']);
 const logLevels = ref(['debug', 'info', 'warning', 'error', 'critical']);
 
 // Form Fields and Validation
+loadTenantSettings();
 const formFields = reactive({
   webhooks: [{ webhookUrl: '', webhookKey: '' }],
   walletLabel: '',
@@ -520,42 +573,34 @@ const handleSubmit = async (isFormValid: boolean) => {
       });
     }
 
-    // const extraSettings = {
-    //   ACAPY_AUTO_ACCEPT_INVITES: formFields.ACAPY_AUTO_ACCEPT_INVITES,
-    //   ACAPY_AUTO_ACCEPT_REQUESTS: formFields.ACAPY_AUTO_ACCEPT_REQUESTS,
-    //   ACAPY_AUTO_PING_CONNECTION: formFields.ACAPY_AUTO_PING_CONNECTION,
-    //   ACAPY_AUTO_REQUEST_ENDORSEMENT: formFields.ACAPY_AUTO_REQUEST_ENDORSEMENT,
-    //   ACAPY_AUTO_RESPOND_CREDENTIAL_OFFER:
-    //     formFields.ACAPY_AUTO_RESPOND_CREDENTIAL_OFFER,
-    //   ACAPY_AUTO_RESPOND_CREDENTIAL_REQUEST:
-    //     formFields.ACAPY_AUTO_RESPOND_CREDENTIAL_REQUEST,
-    //   ACAPY_AUTO_RESPOND_MESSAGES: formFields.ACAPY_AUTO_RESPOND_MESSAGES,
-    //   ACAPY_AUTO_VERIFY_PRESENTATION: formFields.ACAPY_AUTO_VERIFY_PRESENTATION,
-    //   ACAPY_AUTO_WRITE_TRANSACTIONS: formFields.ACAPY_AUTO_WRITE_TRANSACTIONS,
-    //   ACAPY_CREATE_REVOCATION_TRANSACTIONS:
-    //     formFields.ACAPY_CREATE_REVOCATION_TRANSACTIONS,
-    //   ACAPY_ENDORSER_ROLE: formFields.ACAPY_ENDORSER_ROLE,
-    //   ACAPY_INVITE_PUBLIC: formFields.ACAPY_INVITE_PUBLIC,
-    //   ACAPY_LOG_LEVEL: formFields.ACAPY_LOG_LEVEL,
-    //   ACAPY_MONITOR_PING: formFields.ACAPY_MONITOR_PING,
-    //   ACAPY_NOTIFY_REVOCATION: formFields.ACAPY_NOTIFY_REVOCATION,
-    //   ACAPY_PUBLIC_INVITE: formFields.ACAPY_PUBLIC_INVITES,
-    // };
-
-    // alert(`
-    // "Extra settings", will be added to payload in save call when implemented in acapy.
-    // (this to be commented out before merge)
-    // ${JSON.stringify(extraSettings, undefined, 2)}
-    // `);
+    const extraSettings = {
+      ACAPY_AUTO_ACCEPT_INVITES: formFields.ACAPY_AUTO_ACCEPT_INVITES,
+      ACAPY_AUTO_ACCEPT_REQUESTS: formFields.ACAPY_AUTO_ACCEPT_REQUESTS,
+      ACAPY_AUTO_PING_CONNECTION: formFields.ACAPY_AUTO_PING_CONNECTION,
+      ACAPY_AUTO_REQUEST_ENDORSEMENT: formFields.ACAPY_AUTO_REQUEST_ENDORSEMENT,
+      ACAPY_AUTO_RESPOND_CREDENTIAL_OFFER:
+        formFields.ACAPY_AUTO_RESPOND_CREDENTIAL_OFFER,
+      ACAPY_AUTO_RESPOND_CREDENTIAL_REQUEST:
+        formFields.ACAPY_AUTO_RESPOND_CREDENTIAL_REQUEST,
+      ACAPY_AUTO_RESPOND_MESSAGES: formFields.ACAPY_AUTO_RESPOND_MESSAGES,
+      ACAPY_AUTO_VERIFY_PRESENTATION: formFields.ACAPY_AUTO_VERIFY_PRESENTATION,
+      ACAPY_AUTO_WRITE_TRANSACTIONS: formFields.ACAPY_AUTO_WRITE_TRANSACTIONS,
+      ACAPY_CREATE_REVOCATION_TRANSACTIONS:
+        formFields.ACAPY_CREATE_REVOCATION_TRANSACTIONS,
+      ACAPY_ENDORSER_ROLE: formFields.ACAPY_ENDORSER_ROLE,
+      ACAPY_INVITE_PUBLIC: formFields.ACAPY_INVITE_PUBLIC,
+      ACAPY_LOG_LEVEL: formFields.ACAPY_LOG_LEVEL,
+      ACAPY_MONITOR_PING: formFields.ACAPY_MONITOR_PING,
+      ACAPY_NOTIFY_REVOCATION: formFields.ACAPY_NOTIFY_REVOCATION,
+      ACAPY_PUBLIC_INVITES: formFields.ACAPY_PUBLIC_INVITES,
+    };
 
     const payload = {
       image_url: formFields.imageUrl,
       label: formFields.walletLabel,
       wallet_webhook_urls: webhooks,
+      extra_settings: extraSettings,
     };
-    // if (!hideAcapySettings) {
-    //   payload.extra_settings = extraSettings;
-    // }
 
     await tenantStore.updateTenantSubWallet(payload);
     loadTenantSettings();

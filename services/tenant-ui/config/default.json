@@ -28,7 +28,7 @@
       }
     },
     "ariesDetails": {
-      "acapyVersion": "0.8.1",
+      "acapyVersion": "0.9.0rc0",
       "ledgerName": "bcovrin-test",
       "ledgerBrowser": "http://test.bcovrin.vonx.io",
       "tailsServer": "https://tails-test.vonx.io"
