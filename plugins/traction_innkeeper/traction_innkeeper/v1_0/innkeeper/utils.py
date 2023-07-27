@@ -41,6 +41,10 @@ class TenantConfigSchema(OpenAPISchema):
         ),
         description="Public DID config",
     )
+    self_issuer_permission = fields.Bool(
+        required=True,
+        description="True if tenant can make itself issuer, false if only innkeeper can",
+    )
 
 
 def generate_reservation_token_data(expiry_minutes: int):

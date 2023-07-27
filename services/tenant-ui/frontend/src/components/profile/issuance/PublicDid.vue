@@ -50,7 +50,10 @@ const { endorserConnection, publicDid, tenantConfig } =
 
 // Allowed to register a DID?
 const canRegisterDid = computed(() => {
-  if (tenantConfig.value?.create_public_did?.length) {
+  if (
+    tenantConfig.value?.create_public_did?.length > 0 ||
+    tenantConfig.value?.self_issuer_permission
+  ) {
     // At this point there's 1 ledger, check the first and deal with that
     // Will enhance once mult-ledger supported
     const allowedLedger = tenantConfig.value.create_public_did[0];

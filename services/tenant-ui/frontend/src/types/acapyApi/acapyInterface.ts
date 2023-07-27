@@ -3418,6 +3418,8 @@ export interface TenantConfig {
   connect_to_endorser?: EndorserLedgerConfig[];
   /** Public DID config */
   create_public_did?: string[];
+  /** self issuer permission flag */
+  self_issuer_permission?: boolean;
 }
 
 export interface TenantList {

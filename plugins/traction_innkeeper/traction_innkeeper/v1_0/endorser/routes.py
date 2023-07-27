@@ -77,7 +77,7 @@ async def endorser_connection_set(request: web.BaseRequest):
     async with root_profile.session() as session:
         tenant_record = await TenantRecord.query_by_wallet_id(session, tenant_wallet_id)
     # issuer check
-    if (
+    if tenant_record.self_issuer_permission or (
         not tenant_record.connected_to_endorsers
         or not tenant_record.created_public_did
         or (

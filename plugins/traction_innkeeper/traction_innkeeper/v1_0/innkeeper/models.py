@@ -259,6 +259,7 @@ class TenantRecord(BaseRecord):
         wallet_id: str = None,
         connected_to_endorsers: List = [],
         created_public_did: List = [],
+        self_issuer_permission: bool = False,
         **kwargs,
     ):
         """Construct record."""
@@ -271,6 +272,7 @@ class TenantRecord(BaseRecord):
         self.wallet_id = wallet_id
         self.connected_to_endorsers = connected_to_endorsers
         self.created_public_did = created_public_did
+        self.self_issuer_permission = self_issuer_permission
 
     @property
     def tenant_id(self) -> Optional[str]:
@@ -287,6 +289,7 @@ class TenantRecord(BaseRecord):
                 "wallet_id",
                 "connected_to_endorsers",
                 "created_public_did",
+                "self_issuer_permission",
             )
         }
 
@@ -369,4 +372,9 @@ class TenantRecordSchema(BaseRecordSchema):
     created_public_did = fields.List(
         fields.Str(description="Ledger id"),
         required=False,
+    )
+
+    self_issuer_permission = fields.Bool(
+        required=True,
+        description="True if tenant can make itself issuer, false if only innkeeper can",
     )

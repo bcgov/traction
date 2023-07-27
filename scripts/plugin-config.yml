@@ -18,3 +18,4 @@ traction_innkeeper:
   reservation:
     auto_approve: true
     expiry_minutes: 2880
+    self_issuer_permission: false

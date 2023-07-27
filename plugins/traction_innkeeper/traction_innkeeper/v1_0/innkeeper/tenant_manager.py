@@ -14,7 +14,7 @@ from aries_cloudagent.multitenant.base import BaseMultitenantManager
 from aries_cloudagent.storage.error import StorageError, StorageNotFoundError
 from aries_cloudagent.wallet.models.wallet_record import WalletRecord
 
-from .config import TractionInnkeeperConfig, InnkeeperWalletConfig
+from .config import TractionInnkeeperConfig, InnkeeperWalletConfig, ReservationConfig
 from .models import TenantRecord, ReservationRecord
 
 
@@ -94,6 +94,7 @@ class TenantManager:
             tenant_id=tenant_id,
             connected_to_endorsers=extra_settings.get("tenant.endorser_config"),
             created_public_did=extra_settings.get("tenant.public_did_config"),
+            self_issuer_permission=extra_settings.get("tenant.self_issuer_permission"),
         )
 
         return tenant, wallet_record, token
@@ -114,6 +115,7 @@ class TenantManager:
         wallet_id: str,
         connected_to_endorsers: List = [],
         created_public_did: List = [],
+        self_issuer_permission: bool = False,
         tenant_id: str = None,
     ):
         try:
@@ -131,6 +133,7 @@ class TenantManager:
                     new_with_id=tenant_id is not None,
                     connected_to_endorsers=connected_to_endorsers,
                     created_public_did=created_public_did,
+                    self_issuer_permission=self_issuer_permission,
                 )
                 await tenant.save(session, reason="New tenant")
                 # self._logger.info(tenant)
@@ -142,6 +145,7 @@ class TenantManager:
 
     async def create_innkeeper(self):
         config: InnkeeperWalletConfig = self._config.innkeeper_wallet
+        reservation_config: ReservationConfig = self._config.reservation
         tenant_id = config.tenant_id
         wallet_name = config.wallet_name
         wallet_key = config.wallet_key
@@ -163,7 +167,6 @@ class TenantManager:
             self._logger.info(f"'{wallet_name}' wallet exists.")
             token = await self.get_token(wallet_record, wallet_key)
         else:
-            self._logger.info(f"creating '{wallet_name}' wallet...")
             tenant_record, wallet_record, token = await self.create_wallet(
                 wallet_name,
                 wallet_key,
@@ -171,6 +174,7 @@ class TenantManager:
                     "wallet.innkeeper": True,
                     "tenant.endorser_config": config.connect_to_endorser,
                     "tenant.public_did_config": config.create_public_did,
+                    "tenant.self_issuer_permission": reservation_config.self_issuer_permission,
                 },
                 tenant_id,
             )
@@ -183,6 +187,9 @@ class TenantManager:
         print(f"wallet.wallet_id = {wallet_record.wallet_id}")
         print(f"tenant.endorser_config = {tenant_record.connected_to_endorsers}")
         print(f"tenant.public_did_config = {tenant_record.created_public_did}")
+        print(
+            f"tenant.self_issuer_permission = {str(tenant_record.self_issuer_permission)}"
+        )
         _key = wallet_record.wallet_key if config.print_key else "********"
         print(f"wallet.wallet_key = {_key}\n")
         if config.print_token:
