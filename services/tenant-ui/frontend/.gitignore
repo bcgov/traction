@@ -13,6 +13,9 @@ dist-ssr
 *.local
 coverage
 
+# Need this in the repo. Must contain no secrets.
+!.env
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
