@@ -54,6 +54,23 @@ class TenantManager:
         # (mostly) duplicate code.
 
         try:
+            if "tenant.endorser_config" in extra_settings:
+                connect_to_endorsers = extra_settings.get("tenant.endorser_config")
+                del extra_settings["tenant.endorser_config"]
+            else:
+                connect_to_endorsers = self._config.innkeeper_wallet.connect_to_endorser
+            if "tenant.public_did_config" in extra_settings:
+                created_public_did = extra_settings.get("tenant.public_did_config")
+                del extra_settings["tenant.public_did_config"]
+            else:
+                created_public_did = self._config.innkeeper_wallet.create_public_did
+            if "tenant.self_issuer_permission" in extra_settings:
+                self_issuer_permission = extra_settings.get(
+                    "tenant.self_issuer_permission"
+                )
+                del extra_settings["tenant.self_issuer_permission"]
+            else:
+                self_issuer_permission = self._config.reservation.self_issuer_permission
             # we must stick with managed until AcaPy has full support for unmanaged.
             # transport/inbound/session.py only deals with managed.
             key_management_mode = WalletRecord.MODE_MANAGED
@@ -92,9 +109,9 @@ class TenantManager:
         tenant = await self.create_tenant(
             wallet_id=wallet_record.wallet_id,
             tenant_id=tenant_id,
-            connected_to_endorsers=extra_settings.get("tenant.endorser_config"),
-            created_public_did=extra_settings.get("tenant.public_did_config"),
-            self_issuer_permission=extra_settings.get("tenant.self_issuer_permission"),
+            connected_to_endorsers=connect_to_endorsers,
+            created_public_did=created_public_did,
+            self_issuer_permission=self_issuer_permission,
         )
 
         return tenant, wallet_record, token
