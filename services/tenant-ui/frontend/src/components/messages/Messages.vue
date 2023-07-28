@@ -20,6 +20,7 @@
       <template #header>
         <div class="flex justify-content-between">
           <div class="flex justify-content-start">
+            <!-- TODO: Only if writable flag has been set -->
             <CreateMessage @success="loadTable" />
           </div>
           <div class="flex justify-content-end">
