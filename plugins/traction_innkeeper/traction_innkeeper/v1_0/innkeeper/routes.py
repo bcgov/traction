@@ -31,8 +31,8 @@ from .models import (
     ReservationRecordSchema,
     TenantRecord,
     TenantRecordSchema,
-    TenantAuthenticationUserRecord,
-    TenantAuthenticationUserRecordSchema
+    TenantAuthenticationApiRecord,
+    TenantAuthenticationApiRecordSchema
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -209,6 +209,31 @@ class TenantIdMatchInfoSchema(OpenAPISchema):
     )
 
 
+class TenantAuthenticationsApiRequestSchema(OpenAPISchema):
+    """Request schema for api auth record."""
+
+    tenant_id = fields.Str(
+        required=True,
+        description="Tenant ID",
+        example="000000-000000-00000-00000000",
+    )
+
+    alias = fields.Str(
+        required=False,
+        description="Optional alias/label",
+        example="API key for sample line of buisness",
+    )
+
+
+class TenantAuthenticationsApiResponseSchema(OpenAPISchema):
+    """Response schema for api auth record."""
+
+    reservation_id = fields.Str(
+        required=True,
+        description="The reservation record identifier",
+        example=UUIDFour.EXAMPLE,
+    )
+
 class TenantListSchema(OpenAPISchema):
     """Response schema for tenants list."""
 
@@ -217,15 +242,15 @@ class TenantListSchema(OpenAPISchema):
         description="List of tenants",
     )
 
-class TenantAuthenticationUsersListSchema(OpenAPISchema):
+class TenantAuthenticationApiListSchema(OpenAPISchema):
     """Response schema for authentications - users list."""
 
     results = fields.List(
-        fields.Nested(TenantAuthenticationUserRecordSchema()),
+        fields.Nested(TenantAuthenticationApiRecordSchema()),
         description="List of reservations",
     )
 
-class TenantAuthenticationUsersIdMatchInfoSchema(OpenAPISchema):
+class TenantAuthenticationApiIdMatchInfoSchema(OpenAPISchema):
     """Schema for finding a tenant auth user by the record ID."""
     tenant_authentication_user_id = fields.Str(
         description="Tenant authentication user identifier", required=True, example=UUIDFour.EXAMPLE
@@ -611,10 +636,33 @@ async def innkeeper_tenant_get(request: web.BaseRequest):
 @docs(
     tags=[SWAGGER_CATEGORY],
 )
-@response_schema(TenantAuthenticationUsersListSchema(), 200, description="")
+@request_schema(TenantAuthenticationsApiRequestSchema())
+@response_schema(TenantAuthenticationsApiResponseSchema(), 200, description="")
+@error_handler
+async def innkeeper_authentications_api(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+
+    body = await request.json()
+    rec: TenantAuthenticationApiRecord = TenantAuthenticationApiRecord(**body)
+
+    # reservations are under base/root profile, use Tenant Manager profile
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+
+    async with profile.session() as session:
+        await rec.save(session, reason="New API Key")
+        LOGGER.info(rec)
+
+    return web.json_response({"api_key": rec.api_key})
+
+
+@docs(
+    tags=[SWAGGER_CATEGORY],
+)
+@response_schema(TenantAuthenticationApiListSchema(), 200, description="")
 @innkeeper_only
 @error_handler
-async def innkeeper_authentications_user_list(request: web.BaseRequest):
+async def innkeeper_authentications_api_list(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
 
     # records are under base/root profile, use Tenant Manager profile
@@ -625,7 +673,7 @@ async def innkeeper_authentications_user_list(request: web.BaseRequest):
     post_filter = {}
     async with profile.session() as session:
         # innkeeper can access all reservation records
-        records = await TenantAuthenticationUserRecord.query(
+        records = await TenantAuthenticationApiRecord.query(
             session=session,
             tag_filter=tag_filter,
             post_filter_positive=post_filter,
@@ -639,11 +687,11 @@ async def innkeeper_authentications_user_list(request: web.BaseRequest):
 @docs(
     tags=[SWAGGER_CATEGORY],
 )
-@match_info_schema(TenantAuthenticationUsersIdMatchInfoSchema())
-@response_schema(TenantAuthenticationUserRecordSchema(), 200, description="")
+@match_info_schema(TenantAuthenticationApiIdMatchInfoSchema())
+@response_schema(TenantAuthenticationApiRecordSchema(), 200, description="")
 @innkeeper_only
 @error_handler
-async def innkeeper_authentications_user_get(request: web.BaseRequest):
+async def innkeeper_authentications_api_get(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     tenant_id = request.match_info["tenant_id"]
 
@@ -704,14 +752,15 @@ async def register(app: web.Application):
                 "/innkeeper/tenants/{tenant_id}", innkeeper_tenant_get, allow_head=False
             ),
             web.put("/innkeeper/tenants/{tenant_id}/config", tenant_config_update),
+            web.post("/innkeeper/authentications/api", innkeeper_authentications_api),
             web.get(
-                "/innkeeper/authentications/users/",
-                innkeeper_authentications_user_list,
+                "/innkeeper/authentications/api/",
+                innkeeper_authentications_api_list,
                 allow_head=False,
             ),
             web.get(
-                "/innkeeper/authentications/users/{tenant_authentication_user_id}",
-                innkeeper_authentications_user_get,
+                "/innkeeper/authentications/api/{tenant_authentication_api_id}",
+                innkeeper_authentications_api_get,
                 allow_head=False,
             ),
         ]

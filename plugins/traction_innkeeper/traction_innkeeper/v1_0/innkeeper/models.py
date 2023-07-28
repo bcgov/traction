@@ -372,41 +372,37 @@ class TenantRecordSchema(BaseRecordSchema):
     )
 
 
-class TenantAuthenticationUserRecord(BaseRecord):
-    """Innkeeper Tenant Authentication - User Record Schema"""
+class TenantAuthenticationApiRecord(BaseRecord):
+    """Innkeeper Tenant Authentication - API Record Schema"""
 
     class Meta:
-        """TenantAuthenticationUserRecord Meta."""
+        """TenantAuthenticationApiRecord Meta."""
 
-        schema_class = "TenantAuthenticationUserSchema"
+        schema_class = "TenantAuthenticationApiSchema"
 
-    RECORD_TYPE = "tenant_authentication_user"
-    RECORD_ID_NAME = "tenant_authentication_user_id"
+    RECORD_TYPE = "tenant_authentication_api"
+    RECORD_ID_NAME = "tenant_authentication_api_id"
     TAG_NAMES = {
         "tenant_id",
-        "user_id",
     }
 
     def __init__(
         self,
         *,
-        tenant_authentication_user_id: str = None,
+        tenant_authentication_api_id: str = None,
         tenant_id: str = None,
-        user_id: str = None,
-        user_name: str = None,
-        user_email: str = None,
+        api_key: str = None,
+        alias: str = None,
         **kwargs,
     ):
         """Construct record."""
-        super().__init__(tenant_authentication_user_id, **kwargs)
+        super().__init__(tenant_authentication_api_id, **kwargs)
         self.tenant_id = tenant_id
-        self.user_id = user_id
-        self.user_name = user_name
-        self.user_email = user_email
-        self.user_id = user_id
+        self.api_key = api_key
+        self.alias = alias
 
     @property
-    def tenant_authentication_user_id(self) -> Optional[str]:
+    def tenant_authentication_api_id(self) -> Optional[str]:
         """Return record id."""
         return uuid.UUID(self._id).hex
 
@@ -415,8 +411,8 @@ class TenantAuthenticationUserRecord(BaseRecord):
         cls,
         session: ProfileSession,
         tenant_id: str,
-    ) -> "TenantAuthenticationUserRecord":
-        """Retrieve TenantAuthenticationUserRecord by tenant_id.
+    ) -> "TenantAuthenticationApiRecord":
+        """Retrieve TenantAuthenticationApiRecord by tenant_id.
         Args:
             session: the profile session to use
             tenant_id: the tenant_id by which to filter
@@ -436,24 +432,23 @@ class TenantAuthenticationUserRecord(BaseRecord):
             for prop in (
                 "tenant_authentication_user_id",
                 "tenant_id",
-                "user_id",
-                "user_name",
-                "user_email",
+                "api_key",
+                "alias",
             )
         }
 
-class TenantAuthenticationUserRecordSchema(BaseRecordSchema):
-    """Innkeeper Tenant Authentication - User Record Schema."""
+class TenantAuthenticationApiRecordSchema(BaseRecordSchema):
+    """Innkeeper Tenant Authentication - API Record Schema."""
 
     class Meta:
-        """TenantAuthenticationUserSchema Meta."""
+        """TenantAuthenticationApiRecordSchema Meta."""
 
-        model_class = "TenantAuthenticationUser"
+        model_class = "TenantAuthenticationApi"
         unknown = EXCLUDE
 
-    tenant_authentication_user_id = fields.Str(
+    tenant_authentication_api_id = fields.Str(
         required=True,
-        description="Tenant Authentication User Record identifier",
+        description="Tenant Authentication API Record identifier",
         example=UUIDFour.EXAMPLE,
     )
 
@@ -463,18 +458,13 @@ class TenantAuthenticationUserRecordSchema(BaseRecordSchema):
         example=UUIDFour.EXAMPLE,
     )
 
-    user_id = fields.Str(
+    api_key = fields.Str(
         required=True,
         description="Externally associable user identifier",
         example="000000-1111111-aaaaa-bbbbb",
     )
 
-    user_name = fields.Str(
-        required=True,
-        description="Contact name for this external user",
-    )
-
-    user_email = fields.Str(
-        required=True,
-        description="Contact email for this tenant request",
+    alias = fields.Str(
+        required=False,
+        description="Alias description for this API key",
     )
