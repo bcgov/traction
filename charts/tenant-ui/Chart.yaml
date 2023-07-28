@@ -2,8 +2,8 @@ apiVersion: v2
 name: tenant-ui
 description: The Traction Tenant UI allows tenants to manage their agent.
 type: application
-version: 0.1.0
-appVersion: "0.2.14"
+version: 0.1.1
+appVersion: "0.3.0"
 home: "https://github.com/bcgov/traction"
 sources: ["https://github.com/bcgov/traction"]
 maintainers:

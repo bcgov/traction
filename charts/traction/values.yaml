@@ -117,7 +117,7 @@ acapy:
     emit-new-didcomm-prefix: true
     endorser-alias: endorser
     endorser-protocol-role: author
-    endorser-public-did: 'UjmxKBZe1qv1NBE7GaohdP'
+    endorser-public-did: 'Ket75eV5UQvVkW2XBjgDH7'
     genesis-url: http://test.bcovrin.vonx.io/genesis
     label: '{{ include "acapy.label" .}}'
     log-level: info
