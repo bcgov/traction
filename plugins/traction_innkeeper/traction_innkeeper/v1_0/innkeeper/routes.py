@@ -22,8 +22,9 @@ from marshmallow import fields
 from . import TenantManager
 from .utils import (
     approve_reservation,
-    generate_reservation_token_data,
+    create_api_key,
     ReservationException,
+    TenantApiKeyException,
     TenantConfigSchema,
 )
 from .models import (
@@ -252,8 +253,8 @@ class TenantAuthenticationApiListSchema(OpenAPISchema):
 
 class TenantAuthenticationApiIdMatchInfoSchema(OpenAPISchema):
     """Schema for finding a tenant auth user by the record ID."""
-    tenant_authentication_user_id = fields.Str(
-        description="Tenant authentication user identifier", required=True, example=UUIDFour.EXAMPLE
+    tenant_authentication_api_id = fields.Str(
+        description="Tenant authentication api key identifier", required=True, example=UUIDFour.EXAMPLE
     )
 
 
@@ -638,6 +639,7 @@ async def innkeeper_tenant_get(request: web.BaseRequest):
 )
 @request_schema(TenantAuthenticationsApiRequestSchema())
 @response_schema(TenantAuthenticationsApiResponseSchema(), 200, description="")
+@innkeeper_only
 @error_handler
 async def innkeeper_authentications_api(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
@@ -649,11 +651,12 @@ async def innkeeper_authentications_api(request: web.BaseRequest):
     mgr = context.inject(TenantManager)
     profile = mgr.profile
 
-    async with profile.session() as session:
-        await rec.save(session, reason="New API Key")
-        LOGGER.info(rec)
+    try:
+        api_key, tenant_authentication_api_id = await create_api_key(rec, mgr)
+    except TenantApiKeyException as err:
+        raise web.HTTPConflict(reason=str(err))
 
-    return web.json_response({"api_key": rec.api_key})
+    return web.json_response({"tenant_authentication_api_id": tenant_authentication_api_id, "api_key": api_key})
 
 
 @docs(
@@ -693,7 +696,7 @@ async def innkeeper_authentications_api_list(request: web.BaseRequest):
 @error_handler
 async def innkeeper_authentications_api_get(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
-    tenant_id = request.match_info["tenant_id"]
+    tenant_authentication_api_id = request.match_info["tenant_authentication_api_id"]
 
     # records are under base/root profile, use Tenant Manager profile
     mgr = context.inject(TenantManager)
@@ -701,7 +704,7 @@ async def innkeeper_authentications_api_get(request: web.BaseRequest):
 
     async with profile.session() as session:
         # innkeeper can access all tenants..
-        rec = await TenantRecord.retrieve_by_id(session, tenant_id)
+        rec = await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(session, tenant_authentication_api_id)
         LOGGER.info(rec)
 
     return web.json_response(rec.serialize())

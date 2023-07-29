@@ -378,7 +378,7 @@ class TenantAuthenticationApiRecord(BaseRecord):
     class Meta:
         """TenantAuthenticationApiRecord Meta."""
 
-        schema_class = "TenantAuthenticationApiSchema"
+        schema_class = "TenantAuthenticationApiRecordSchema"
 
     RECORD_TYPE = "tenant_authentication_api"
     RECORD_ID_NAME = "tenant_authentication_api_id"
@@ -391,20 +391,40 @@ class TenantAuthenticationApiRecord(BaseRecord):
         *,
         tenant_authentication_api_id: str = None,
         tenant_id: str = None,
-        api_key: str = None,
+        api_key_token_salt: str = None,
+        api_key_token_hash: str = None,
         alias: str = None,
         **kwargs,
     ):
         """Construct record."""
         super().__init__(tenant_authentication_api_id, **kwargs)
         self.tenant_id = tenant_id
-        self.api_key = api_key
+        self.api_key_token_salt = api_key_token_salt
+        self.api_key_token_hash = api_key_token_hash
         self.alias = alias
 
     @property
     def tenant_authentication_api_id(self) -> Optional[str]:
         """Return record id."""
         return uuid.UUID(self._id).hex
+    
+    @classmethod
+    async def retrieve_by_auth_api_id(
+        cls,
+        session: ProfileSession,
+        tenant_authentication_api_id: str,
+        *,
+        for_update=False,
+    ) -> "TenantAuthenticationApiRecord":
+        """Retrieve TenantAuthenticationApiRecord by tenant_authentication_api_id.
+        Args:
+            session: the profile session to use
+            tenant_authentication_api_id: the tenant_authentication_api_id by which to filter
+        """
+        record = await cls.retrieve_by_id(
+            session, tenant_authentication_api_id, for_update=for_update
+        )
+        return record
 
     @classmethod
     async def query_by_tenant_id(
@@ -430,9 +450,9 @@ class TenantAuthenticationApiRecord(BaseRecord):
         return {
             prop: getattr(self, prop)
             for prop in (
-                "tenant_authentication_user_id",
                 "tenant_id",
-                "api_key",
+                "api_key_token_salt",
+                "api_key_token_hash",
                 "alias",
             )
         }
@@ -456,12 +476,6 @@ class TenantAuthenticationApiRecordSchema(BaseRecordSchema):
         required=False,
         description="Tenant Record identifier",
         example=UUIDFour.EXAMPLE,
-    )
-
-    api_key = fields.Str(
-        required=True,
-        description="Externally associable user identifier",
-        example="000000-1111111-aaaaa-bbbbb",
     )
 
     alias = fields.Str(
