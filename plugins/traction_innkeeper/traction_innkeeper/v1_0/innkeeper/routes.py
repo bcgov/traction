@@ -258,6 +258,14 @@ class TenantAuthenticationApiIdMatchInfoSchema(OpenAPISchema):
     )
 
 
+class TenantAuthenticationApiOperationResponseSchema(OpenAPISchema):
+    """Response schema for simple operations."""
+
+    success = fields.Bool(
+        required=True,
+        description="True if operation successful, false if otherwise",
+    )
+
 @docs(
     tags=["multitenancy"],
 )
@@ -634,9 +642,7 @@ async def innkeeper_tenant_get(request: web.BaseRequest):
     return web.json_response(rec.serialize())
 
 
-@docs(
-    tags=[SWAGGER_CATEGORY],
-)
+@docs(tags=[SWAGGER_CATEGORY], summary="Create API Key Record")
 @request_schema(TenantAuthenticationsApiRequestSchema())
 @response_schema(TenantAuthenticationsApiResponseSchema(), 200, description="")
 @innkeeper_only
@@ -659,9 +665,7 @@ async def innkeeper_authentications_api(request: web.BaseRequest):
     return web.json_response({"tenant_authentication_api_id": tenant_authentication_api_id, "api_key": api_key})
 
 
-@docs(
-    tags=[SWAGGER_CATEGORY],
-)
+@docs(tags=[SWAGGER_CATEGORY], summary="List all API Key Records")
 @response_schema(TenantAuthenticationApiListSchema(), 200, description="")
 @innkeeper_only
 @error_handler
@@ -687,9 +691,7 @@ async def innkeeper_authentications_api_list(request: web.BaseRequest):
     return web.json_response({"results": results})
 
 
-@docs(
-    tags=[SWAGGER_CATEGORY],
-)
+@docs(tags=[SWAGGER_CATEGORY], summary="Read API Key Record")
 @match_info_schema(TenantAuthenticationApiIdMatchInfoSchema())
 @response_schema(TenantAuthenticationApiRecordSchema(), 200, description="")
 @innkeeper_only
@@ -708,6 +710,35 @@ async def innkeeper_authentications_api_get(request: web.BaseRequest):
         LOGGER.info(rec)
 
     return web.json_response(rec.serialize())
+
+
+@docs(tags=[SWAGGER_CATEGORY], summary="Delete API Key")
+@match_info_schema(TenantAuthenticationApiIdMatchInfoSchema)
+@response_schema(TenantAuthenticationApiOperationResponseSchema, 200, description="")
+@innkeeper_only
+@error_handler
+async def innkeeper_authentications_api_delete(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    tenant_authentication_api_id = request.match_info["tenant_authentication_api_id"]
+
+    # records are under base/root profile, use Tenant Manager profile
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+
+    result = False
+    async with profile.session() as session:
+        rec = await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(session, tenant_authentication_api_id)
+
+        await rec.delete_record(session)
+
+        try:
+            await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(session, tenant_authentication_api_id)
+        except StorageNotFoundError:
+            # this is to be expected... do nothing, do not log
+            result = True
+
+    return web.json_response({"success": result})
+
 
 
 async def register(app: web.Application):
@@ -765,6 +796,9 @@ async def register(app: web.Application):
                 "/innkeeper/authentications/api/{tenant_authentication_api_id}",
                 innkeeper_authentications_api_get,
                 allow_head=False,
+            ),
+            web.delete("/innkeeper/authentications/api/{tenant_authentication_api_id}", 
+                innkeeper_authentications_api_delete
             ),
         ]
     )
