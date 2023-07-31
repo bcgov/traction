@@ -37,6 +37,7 @@
       <Column :sortable="false" header="Actions">
         <template #body="{ data }">
           <Button
+            v-if="config.frontend.showWritableComponents"
             title="Delete Credential Definition"
             icon="pi pi-trash"
             class="p-button-rounded p-button-icon-only p-button-text"
@@ -129,6 +130,7 @@ import { useToast } from 'vue-toastification';
 // State
 import { useGovernanceStore } from '../../store';
 import { storeToRefs } from 'pinia';
+import { useConfigStore } from '@/store/configStore';
 // Custom components
 import RowExpandData from '../common/RowExpandData.vue';
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
@@ -137,6 +139,8 @@ import MainCardContent from '../layout/mainCard/MainCardContent.vue';
 
 const confirm = useConfirm();
 const toast = useToast();
+
+const { config } = storeToRefs(useConfigStore());
 
 const governanceStore = useGovernanceStore();
 const { loading, storedCredDefs } = storeToRefs(useGovernanceStore());

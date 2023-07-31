@@ -20,7 +20,7 @@
       <template #header>
         <div class="flex justify-content-between">
           <div class="flex justify-content-start">
-            <CreateOca />
+            <CreateOca v-if="config.frontend.showWritableComponents" />
           </div>
           <div class="flex justify-content-end">
             <span class="p-input-icon-left">
@@ -39,6 +39,7 @@
       <Column :sortable="false" header="Actions">
         <template #body="{ data }">
           <Button
+            v-if="config.frontend.showWritableComponents"
             title="Delete Credential Definition"
             icon="pi pi-trash"
             class="p-button-rounded p-button-icon-only p-button-text"
@@ -122,6 +123,8 @@ import { useToast } from 'vue-toastification';
 // State
 import { useGovernanceStore } from '../../store';
 import { storeToRefs } from 'pinia';
+import { useConfigStore } from '@/store/configStore';
+const { config } = storeToRefs(useConfigStore());
 // Custom components
 import CreateOca from './createOca/CreateOca.vue';
 import MainCardContent from '../layout/mainCard/MainCardContent.vue';
