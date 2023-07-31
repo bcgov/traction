@@ -22,8 +22,11 @@
       <template #header>
         <div class="flex justify-content-between">
           <div class="flex justify-content-start">
-            <CreateSchema />
-            <CopySchema class="ml-4" />
+            <CreateSchema v-if="config.frontend.showWritableComponents" />
+            <CopySchema
+              v-if="config.frontend.showWritableComponents"
+              class="ml-4"
+            />
           </div>
           <div class="flex justify-content-end">
             <span class="p-input-icon-left">
@@ -172,6 +175,10 @@ import MainCardContent from '../layout/mainCard/MainCardContent.vue';
 import RowExpandData from '../common/RowExpandData.vue';
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
+
+// State
+import { useConfigStore } from '@/store/configStore';
+const { config } = storeToRefs(useConfigStore());
 
 const confirm = useConfirm();
 const toast = useToast();

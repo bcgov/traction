@@ -10,7 +10,10 @@
       :connection-id="props.connectionId"
       :connection-name="props.connectionName"
     />
-    <div class="p-inputgroup flex-1 send-message">
+    <div
+      v-if="config.frontend.showWritableComponents"
+      class="p-inputgroup flex-1 send-message"
+    >
       <InputText
         v-model="message"
         type="text"
@@ -36,6 +39,10 @@ import MessageContactList from './MessageContactList.vue';
 
 // State
 import { useMessageStore } from '@/store';
+import { storeToRefs } from 'pinia';
+import { useConfigStore } from '@/store/configStore';
+
+const { config } = storeToRefs(useConfigStore());
 
 const messageStore = useMessageStore();
 

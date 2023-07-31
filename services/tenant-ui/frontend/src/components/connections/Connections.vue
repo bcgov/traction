@@ -45,13 +45,17 @@
             :connection-name="data.alias"
           />
           <Button
+            v-if="config.frontend.showWritableComponents"
             title="Delete Contact"
             icon="pi pi-trash"
             class="p-button-rounded p-button-icon-only p-button-text"
             :disabled="deleteDisabled(data.alias)"
             @click="deleteContact($event, data.connection_id)"
           />
-          <EditContact :connection-id="data.connection_id" />
+          <EditContact
+            v-if="config.frontend.showWritableComponents"
+            :connection-id="data.connection_id"
+          />
         </template>
       </Column>
       <Column
@@ -159,6 +163,10 @@ import RowExpandData from '../common/RowExpandData.vue';
 import StatusChip from '../common/StatusChip.vue';
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
+
+// State
+import { useConfigStore } from '@/store/configStore';
+const { config } = storeToRefs(useConfigStore());
 
 const confirm = useConfirm();
 const toast = useToast();

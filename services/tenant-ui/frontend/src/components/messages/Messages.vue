@@ -138,7 +138,6 @@ import LoadingLabel from '../common/LoadingLabel.vue';
 
 // State
 import { useConfigStore } from '@/store/configStore';
-
 const { config } = storeToRefs(useConfigStore());
 
 const toast = useToast();

@@ -23,7 +23,7 @@
     >
       <template #header>
         <div class="flex justify-content-between">
-          <CreateRequest />
+          <CreateRequest v-if="config.frontend.showWritableComponents" />
 
           <div class="flex justify-content-end">
             <span class="p-input-icon-left">
@@ -42,9 +42,15 @@
       <Column :sortable="false" :header="$t('common.actions')">
         <template #body="{ data }">
           <div class="flex">
-            <DeleteExchangeRecord :record-id="data.presentation_exchange_id" />
+            <DeleteExchangeRecord
+              v-if="config.frontend.showWritableComponents"
+              :record-id="data.presentation_exchange_id"
+            />
             <CreateRequest
-              v-if="data.role === 'verifier'"
+              v-if="
+                data.role === 'verifier' &&
+                config.frontend.showWritableComponents
+              "
               :existing-pres-req="data.presentation_request"
               icon-display
             />
@@ -104,6 +110,7 @@ import { useToast } from 'vue-toastification';
 // State
 import { useContactsStore, useVerifierStore } from '@/store';
 import { storeToRefs } from 'pinia';
+import { useConfigStore } from '@/store/configStore';
 // Components
 import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
 import CreateRequest from './createPresentationRequest/CreateRequest.vue';
@@ -124,6 +131,7 @@ const { contacts } = storeToRefs(useContactsStore());
 const { loading, presentations, selectedPresentation } = storeToRefs(
   useVerifierStore()
 );
+const { config } = storeToRefs(useConfigStore());
 
 const loadTable = async () => {
   verifierStore.listPresentations().catch((err) => {
