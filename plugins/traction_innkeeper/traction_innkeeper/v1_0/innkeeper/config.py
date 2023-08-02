@@ -19,6 +19,15 @@ class EndorserLedgerConfig(BaseModel):
         alias_generator = _alias_generator
         allow_population_by_field_name = True
 
+    def serialize(self) -> dict:
+        """Serialize the EndorserLedgerConfig to a mapping."""
+        ret = {}
+        if self.endorser_alias:
+            ret["endorser_alias"] = self.endorser_alias
+        if self.ledger_id:
+            ret["ledger_id"] = self.ledger_id
+        return ret
+
 
 class InnkeeperWalletConfig(BaseModel):
     tenant_id: Optional[str]  # real world, this is a UUID

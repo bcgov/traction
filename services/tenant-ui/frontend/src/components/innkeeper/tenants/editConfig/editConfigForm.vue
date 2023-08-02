@@ -64,9 +64,11 @@ const { loading } = storeToRefs(useInnkeeperTenantsStore());
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
 // For the innkeeper tenant, reuse here for getting configured endorser
 const tenantStore = useTenantStore();
-const { endorserInfo, loading: loadingEndorser } = storeToRefs(
-  useTenantStore()
-);
+const {
+  endorserInfo,
+  tenantConfig,
+  loading: loadingEndorser,
+} = storeToRefs(useTenantStore());
 
 // Props
 const props = defineProps<{
@@ -92,19 +94,32 @@ const handleSubmit = async (isFormValid: boolean) => {
   if (!isFormValid) {
     return;
   }
-
+  let connect_to_endorser_payload = [];
+  let create_public_did_payload = [];
+  if (tenantConfig.value?.connect_to_endorser?.length) {
+    connect_to_endorser_payload = tenantConfig.value.connect_to_endorser;
+  } else {
+    connect_to_endorser_payload = [
+      {
+        endorser_alias: endorserInfo.value?.endorser_name || '',
+        ledger_id: config.value.frontend?.ariesDetails?.ledgerName,
+      },
+    ];
+  }
+  if (tenantConfig.value?.connect_to_endorser?.length) {
+    create_public_did_payload = tenantConfig.value.create_public_did;
+  } else {
+    create_public_did_payload = [
+      config.value.frontend?.ariesDetails?.ledgerName,
+    ];
+  }
   try {
     await innkeeperTenantsStore.updateTenantConfig(props.tenant.tenant_id, {
       connect_to_endorser: formFields.canConnectEndorser
-        ? [
-            {
-              endorser_alias: endorserInfo.value?.endorser_name || '',
-              ledger_id: config.value.frontend?.ariesDetails?.ledgerName,
-            },
-          ]
+        ? connect_to_endorser_payload
         : [],
       create_public_did: formFields.canRegisterDid
-        ? [config.value.frontend?.ariesDetails?.ledgerName]
+        ? create_public_did_payload
         : [],
     });
     toast.success('Tenant Settings Updated');

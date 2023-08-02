@@ -15,6 +15,13 @@ traction_innkeeper:
     wallet_key: change-me
     print_key: true
     print_token: true
+    connect_to_endorser: [
+      {
+        "endorser_alias": "endorser",
+        "ledger_id": "bcovrin-test",
+      }
+    ]
+    create_public_did: ["bcovrin-test"]
   reservation:
     auto_approve: true
     expiry_minutes: 2880

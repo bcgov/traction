@@ -405,7 +405,6 @@ async def tenant_config_update(request: web.BaseRequest):
     body = await request.json()
     connect_to_endorser = body.get("connect_to_endorser")
     create_public_did = body.get("create_public_did")
-    tenant_issuer_flag = body.get("self_issuer_permission")
     mgr = context.inject(TenantManager)
     profile = mgr.profile
     tenant_id = request.match_info["tenant_id"]
@@ -415,8 +414,6 @@ async def tenant_config_update(request: web.BaseRequest):
             tenant_record.connected_to_endorsers = connect_to_endorser
         if create_public_did or create_public_did == []:
             tenant_record.created_public_did = create_public_did
-        if tenant_issuer_flag is not None:
-            tenant_record.self_issuer_permission = tenant_issuer_flag
         await tenant_record.save(session)
     return web.json_response(tenant_record.serialize())
 

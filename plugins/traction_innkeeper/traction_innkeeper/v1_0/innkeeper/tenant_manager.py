@@ -104,7 +104,11 @@ class TenantManager:
         except BaseError as err:
             self._logger.error(f"Error creating wallet ('{wallet_name}').", err)
             raise err
-
+        # self_issuer_permission check
+        innkeeper_tenant_id = self._config.innkeeper_wallet.tenant_id
+        if not self_issuer_permission or tenant_id == innkeeper_tenant_id:
+            connect_to_endorsers = []
+            created_public_did = []
         # ok, all is good, then create a tenant record
         tenant = await self.create_tenant(
             wallet_id=wallet_record.wallet_id,
@@ -148,7 +152,10 @@ class TenantManager:
                     tenant_name=tenant_name,
                     wallet_id=wallet_record.wallet_id,
                     new_with_id=tenant_id is not None,
-                    connected_to_endorsers=connected_to_endorsers,
+                    connected_to_endorsers=list(
+                        endorser_config.serialize()
+                        for endorser_config in connected_to_endorsers
+                    ),
                     created_public_did=created_public_did,
                     self_issuer_permission=self_issuer_permission,
                 )

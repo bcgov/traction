@@ -56,10 +56,7 @@ const { endorserConnection, endorserInfo, tenantConfig } =
 
 // Allowed to connect to endorser?
 const canConnectEndorser = computed(() => {
-  if (
-    tenantConfig.value?.connect_to_endorser?.length > 0 ||
-    tenantConfig.value?.self_issuer_permission
-  ) {
+  if (tenantConfig.value?.connect_to_endorser?.length) {
     // At this point there's 1 ledger/endorser, check the first and deal with that
     // Will enhance once mult-ledger supported
     const allowedConnection = tenantConfig.value.connect_to_endorser[0];

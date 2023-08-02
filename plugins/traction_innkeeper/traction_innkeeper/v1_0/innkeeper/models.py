@@ -375,6 +375,7 @@ class TenantRecordSchema(BaseRecordSchema):
     )
 
     self_issuer_permission = fields.Bool(
-        required=True,
+        required=False,
         description="True if tenant can make itself issuer, false if only innkeeper can",
+        default=False,
     )
