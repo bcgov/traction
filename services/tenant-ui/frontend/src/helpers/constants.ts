@@ -121,6 +121,8 @@ export const API_PATH = {
   TENANT_WALLET: '/tenant/wallet',
   TENANT_CONFIG: '/tenant/config',
 
+  TENANT_SETTINGS: '/settings',
+
   WALLET_DID_PUBLIC: '/wallet/did/public',
   WALLET_DID_CREATE: '/wallet/did/create',
 

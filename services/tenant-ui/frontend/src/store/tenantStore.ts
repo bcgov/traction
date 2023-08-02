@@ -20,6 +20,7 @@ export const useTenantStore = defineStore('tenant', () => {
   const taa: Ref<any> = ref(null);
   const tenantConfig: any = ref(null);
   const tenantWallet: any = ref(null);
+  const tenantDefaultSettings: any = ref(null);
 
   const { token } = storeToRefs(useTokenStore());
   const acapyApi = useAcapyApi();
@@ -261,6 +262,26 @@ export const useTenantStore = defineStore('tenant', () => {
     return tenantWallet.value;
   }
 
+  async function getTenantDefaultSettings() {
+    console.log('> tenantStore.getTenantDefaultSettings');
+    error.value = null;
+    loading.value = true;
+    tenantDefaultSettings.value = await fetchItem(
+      API_PATH.TENANT_SETTINGS,
+      '',
+      error,
+      loading
+    );
+    console.log('< tenantStore.getTenantDefaultSettings');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return tenantDefaultSettings.value;
+  }
+
   async function updateTenantSubWallet(payload: object) {
     console.log('> tenantStore.updateTenantSubWallet');
     error.value = null;
@@ -328,12 +349,14 @@ export const useTenantStore = defineStore('tenant', () => {
     publicDidRegistrationProgress,
     tenantConfig,
     tenantWallet,
+    tenantDefaultSettings,
     getSelf,
     getTenantConfig,
     getIssuanceStatus,
     clearTenant,
     getEndorserConnection,
     getEndorserInfo,
+    getTenantDefaultSettings,
     connectToEndorser,
     getPublicDid,
     registerPublicDid,
