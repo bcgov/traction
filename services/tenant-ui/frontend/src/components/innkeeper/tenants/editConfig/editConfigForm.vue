@@ -106,7 +106,7 @@ const handleSubmit = async (isFormValid: boolean) => {
       },
     ];
   }
-  if (tenantConfig.value?.connect_to_endorser?.length) {
+  if (tenantConfig.value?.create_public_did?.length) {
     create_public_did_payload = tenantConfig.value.create_public_did;
   } else {
     create_public_did_payload = [
