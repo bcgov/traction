@@ -378,6 +378,8 @@ class TenantRecordSchema(BaseRecordSchema):
         required=False,
         description="True if tenant can make itself issuer, false if only innkeeper can",
         default=False,
+    )
+
 
 class TenantAuthenticationApiRecord(BaseRecord):
     """Innkeeper Tenant Authentication - API Record Schema"""
