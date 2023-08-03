@@ -33,7 +33,7 @@ from .models import (
     TenantRecord,
     TenantRecordSchema,
     TenantAuthenticationApiRecord,
-    TenantAuthenticationApiRecordSchema
+    TenantAuthenticationApiRecordSchema,
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -235,6 +235,7 @@ class TenantAuthenticationsApiResponseSchema(OpenAPISchema):
         example=UUIDFour.EXAMPLE,
     )
 
+
 class TenantListSchema(OpenAPISchema):
     """Response schema for tenants list."""
 
@@ -242,6 +243,7 @@ class TenantListSchema(OpenAPISchema):
         fields.Nested(TenantRecordSchema()),
         description="List of tenants",
     )
+
 
 class TenantAuthenticationApiListSchema(OpenAPISchema):
     """Response schema for authentications - users list."""
@@ -251,10 +253,14 @@ class TenantAuthenticationApiListSchema(OpenAPISchema):
         description="List of reservations",
     )
 
+
 class TenantAuthenticationApiIdMatchInfoSchema(OpenAPISchema):
     """Schema for finding a tenant auth user by the record ID."""
+
     tenant_authentication_api_id = fields.Str(
-        description="Tenant authentication api key identifier", required=True, example=UUIDFour.EXAMPLE
+        description="Tenant authentication api key identifier",
+        required=True,
+        example=UUIDFour.EXAMPLE,
     )
 
 
@@ -265,6 +271,7 @@ class TenantAuthenticationApiOperationResponseSchema(OpenAPISchema):
         required=True,
         description="True if operation successful, false if otherwise",
     )
+
 
 @docs(
     tags=["multitenancy"],
@@ -662,7 +669,12 @@ async def innkeeper_authentications_api(request: web.BaseRequest):
     except TenantApiKeyException as err:
         raise web.HTTPConflict(reason=str(err))
 
-    return web.json_response({"tenant_authentication_api_id": tenant_authentication_api_id, "api_key": api_key})
+    return web.json_response(
+        {
+            "tenant_authentication_api_id": tenant_authentication_api_id,
+            "api_key": api_key,
+        }
+    )
 
 
 @docs(tags=[SWAGGER_CATEGORY], summary="List all API Key Records")
@@ -706,7 +718,9 @@ async def innkeeper_authentications_api_get(request: web.BaseRequest):
 
     async with profile.session() as session:
         # innkeeper can access all tenants..
-        rec = await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(session, tenant_authentication_api_id)
+        rec = await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(
+            session, tenant_authentication_api_id
+        )
         LOGGER.info(rec)
 
     return web.json_response(rec.serialize())
@@ -727,18 +741,21 @@ async def innkeeper_authentications_api_delete(request: web.BaseRequest):
 
     result = False
     async with profile.session() as session:
-        rec = await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(session, tenant_authentication_api_id)
+        rec = await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(
+            session, tenant_authentication_api_id
+        )
 
         await rec.delete_record(session)
 
         try:
-            await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(session, tenant_authentication_api_id)
+            await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(
+                session, tenant_authentication_api_id
+            )
         except StorageNotFoundError:
             # this is to be expected... do nothing, do not log
             result = True
 
     return web.json_response({"success": result})
-
 
 
 async def register(app: web.Application):
@@ -797,8 +814,9 @@ async def register(app: web.Application):
                 innkeeper_authentications_api_get,
                 allow_head=False,
             ),
-            web.delete("/innkeeper/authentications/api/{tenant_authentication_api_id}", 
-                innkeeper_authentications_api_delete
+            web.delete(
+                "/innkeeper/authentications/api/{tenant_authentication_api_id}",
+                innkeeper_authentications_api_delete,
             ),
         ]
     )

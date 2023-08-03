@@ -3419,7 +3419,7 @@ export interface TenantConfig {
   /** Public DID config */
   create_public_did?: string[];
   /** self issuer permission flag */
-  self_issuer_permission?: boolean;
+  auto_issuer?: boolean;
 }
 
 export interface TenantList {

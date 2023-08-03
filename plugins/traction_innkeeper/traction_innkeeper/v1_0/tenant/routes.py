@@ -96,12 +96,12 @@ async def tenant_config_get(request: web.BaseRequest):
         tenant_record = await TenantRecord.query_by_wallet_id(session, wallet_id)
     endorser_config = tenant_record.connected_to_endorsers
     public_did_config = tenant_record.created_public_did
-    tenant_issuer_flag = tenant_record.self_issuer_permission
+    tenant_issuer_flag = tenant_record.auto_issuer
     return web.json_response(
         {
             "connect_to_endorser": endorser_config,
             "create_public_did": public_did_config,
-            "self_issuer_permission": tenant_issuer_flag,
+            "auto_issuer": tenant_issuer_flag,
         }
     )
 

@@ -59,7 +59,7 @@ class InnkeeperWalletConfig(BaseModel):
 class ReservationConfig(BaseModel):
     expiry_minutes: int
     auto_approve: bool
-    self_issuer_permission: bool = False
+    auto_issuer: bool = False
 
     class Config:
         alias_generator = _alias_generator
@@ -67,7 +67,7 @@ class ReservationConfig(BaseModel):
 
     @classmethod
     def default(cls):
-        return cls(expiry_minutes=60, auto_approve=False, self_issuer_permission=False)
+        return cls(expiry_minutes=60, auto_approve=False, auto_issuer=False)
 
 
 class TractionInnkeeperConfig(BaseModel):
