@@ -59,6 +59,23 @@ npm run dev
 
 The Vite hot-module-reload app will serve from [here](http://127.0.0.1:5173/).
 
+### Running Tests
+
+To Run tests simply execute
+
+```bash
+  npm run test
+```
+
+In addition to running tests this will also produce code coverage statistics.
+
+To test your changes in the same environment you would see in production use
+
+```bash
+    npm run build
+    npm run start
+```
+
 ## Using docker
 
 Build and run a docker image (example shows using environment variable to point at a specific Traction Instance)
