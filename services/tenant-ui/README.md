@@ -101,7 +101,7 @@ Currently localization is handled at the Tenant UI frontend level, but data that
 
 To ensure that the language files are consistent with each other additional helper scripts have been added
 
-- `fill-keys` does is it takes everything in en.json and fills the other lang files with the entries suffixed by the locale code.
+- `fill-keys` takes everything in en.json and fills the other lang files with the entries suffixed by the locale code.
 - `common-keys` looks at which keys point to the same values so they can be refactored into a common key.
 - `sort-keys` does exactly what it says
 
