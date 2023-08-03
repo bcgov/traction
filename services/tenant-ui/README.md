@@ -98,6 +98,21 @@ When developing the Tenant UI, adhere to localization best practices including
 
 Currently localization is handled at the Tenant UI frontend level, but data that returns to the frontend from the Traction and AcaPy APIs may not include localization of text and status codes, etc. As such, full localization is a work in progress and will require some future work in integrating with Traction and AcaPy.
 
+
+To ensure that the language files are consistent with each other additional helper scripts have been added
+
+- `fill-keys` does is it takes everything in en.json and fills the other lang files with the entries suffixed by the locale code.
+- `common-keys` looks at which keys point to the same values so they can be refactored into a common key.
+- `sort-keys` does exactly what it says
+
+To execute any of these scripts navigate to `services/tenant-ui/frontend` and execute
+
+```
+npm run i18n:fill-keys
+```
+
+Replacing `fill-keys` with which ever script your would like to run
+
 ## OIDC Login for Innkeeper
 
 The Tenant UI Inkeeper functionality can be configured to log in with either (or both)
