@@ -123,6 +123,18 @@ To set up the OIDC provider of your choice, add configuration values in your dep
 
 As well, the Innkeeper secret must be available to the Tenant UI server, this is set in `server.innkeeper` configuration...
 
+## Email Mocking
+
+Email is used in multiple components of `tenent-ui` for development
+purposes we have included `maildev` to assist with monitoring and
+mocking these emails in place of a proper SMTP server.
+
+to enable this set the following environment variables before starting the `tenant-ui`
+- `SERVER_SMTP_SERVER=maildev`
+- `SERVER_SMTP_PORT=1025`
+
+To view the emails being sent open http://localhost:1080/ in your web browser
+
 ## Configuring Matomo
 
 If you would like to use Matomo for tracking you can set the FRONTEND_MATOMO_URL environment variable as exposed in [custom-environment-variables.json](../config/custom-environment-variables.json)
