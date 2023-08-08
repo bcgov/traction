@@ -28,7 +28,7 @@ acapy:
       reservation:
         expiry_minutes: 2880
         auto_approve: false
-        auto_issuer: false
+        auto_issuer: true
   resources:
     limits:
       cpu: 200m
