@@ -18,9 +18,17 @@ acapy:
       innkeeper_wallet:
         print_key: true
         print_token: true
+        connect_to_endorser: [
+          {
+            "endorser_alias": "endorser",
+            "ledger_id": "bcovrin-test",
+          }
+        ]
+        create_public_did: ["bcovrin-test"]
       reservation:
         expiry_minutes: 2880
         auto_approve: false
+        auto_issuer: false
   resources:
     limits:
       cpu: 200m

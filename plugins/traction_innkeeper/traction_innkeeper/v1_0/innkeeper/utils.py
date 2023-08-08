@@ -7,10 +7,7 @@ from aries_cloudagent.core.profile import Profile
 from aries_cloudagent.messaging.models.openapi import OpenAPISchema
 from marshmallow import fields
 
-from .models import (
-    ReservationRecord,
-    TenantAuthenticationApiRecord
-)
+from .models import ReservationRecord, TenantAuthenticationApiRecord
 
 
 from . import TenantManager
@@ -44,6 +41,11 @@ class TenantConfigSchema(OpenAPISchema):
             required=False,
         ),
         description="Public DID config",
+    )
+    auto_issuer = fields.Bool(
+        required=False,
+        description="True if tenant can make itself issuer, false if only innkeeper can",
+        default=False,
     )
 
 
@@ -104,9 +106,7 @@ def generate_api_key_data():
     return _key, _salt, _hash
 
 
-async def create_api_key(
-    rec: TenantAuthenticationApiRecord, manager: TenantManager
-):
+async def create_api_key(rec: TenantAuthenticationApiRecord, manager: TenantManager):
     async with manager.profile.session() as session:
         _key, _salt, _hash = generate_api_key_data()
         rec.api_key_token_salt = _salt.decode("utf-8")

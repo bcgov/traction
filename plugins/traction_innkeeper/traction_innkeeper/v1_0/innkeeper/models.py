@@ -259,6 +259,7 @@ class TenantRecord(BaseRecord):
         wallet_id: str = None,
         connected_to_endorsers: List = [],
         created_public_did: List = [],
+        auto_issuer: bool = False,
         **kwargs,
     ):
         """Construct record."""
@@ -271,6 +272,7 @@ class TenantRecord(BaseRecord):
         self.wallet_id = wallet_id
         self.connected_to_endorsers = connected_to_endorsers
         self.created_public_did = created_public_did
+        self.auto_issuer = auto_issuer
 
     @property
     def tenant_id(self) -> Optional[str]:
@@ -287,6 +289,7 @@ class TenantRecord(BaseRecord):
                 "wallet_id",
                 "connected_to_endorsers",
                 "created_public_did",
+                "auto_issuer",
             )
         }
 
@@ -371,6 +374,12 @@ class TenantRecordSchema(BaseRecordSchema):
         required=False,
     )
 
+    auto_issuer = fields.Bool(
+        required=False,
+        description="True if tenant can make itself issuer, false if only innkeeper can",
+        default=False,
+    )
+
 
 class TenantAuthenticationApiRecord(BaseRecord):
     """Innkeeper Tenant Authentication - API Record Schema"""
@@ -407,7 +416,7 @@ class TenantAuthenticationApiRecord(BaseRecord):
     def tenant_authentication_api_id(self) -> Optional[str]:
         """Return record id."""
         return uuid.UUID(self._id).hex
-    
+
     @classmethod
     async def retrieve_by_auth_api_id(
         cls,
@@ -456,6 +465,7 @@ class TenantAuthenticationApiRecord(BaseRecord):
                 "alias",
             )
         }
+
 
 class TenantAuthenticationApiRecordSchema(BaseRecordSchema):
     """Innkeeper Tenant Authentication - API Record Schema."""

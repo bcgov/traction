@@ -215,9 +215,17 @@ acapy:
         wallet_name: traction_innkeeper
         print_key: false
         print_token: false
+        connect_to_endorser: [
+          {
+            "endorser_alias": "endorser",
+            "ledger_id": "bcovrin-test",
+          }
+        ]
+        create_public_did: ["bcovrin-test"]
       reservation:
         expiry_minutes: 2880
         auto_approve:  false
+        auto_issuer: false
   ## Acapy resource requests and limits
   ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
   ## @param acapy.resources.limits.memory The memory limit for the Acapy containers

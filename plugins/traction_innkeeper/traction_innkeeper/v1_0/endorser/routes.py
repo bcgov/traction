@@ -18,6 +18,8 @@ from marshmallow import fields
 
 from .endorser_connection_service import EndorserConnectionService
 from ..tenant.routes import SWAGGER_CATEGORY
+from ..innkeeper.tenant_manager import TenantManager
+from ..innkeeper.models import TenantRecord
 
 LOGGER = logging.getLogger(__name__)
 
@@ -68,10 +70,28 @@ async def endorser_connection_set(request: web.BaseRequest):
 
     """
     context: AdminRequestContext = request["context"]
+    tenant_wallet_id = context.profile.settings.get("wallet.id")
+    tenant_mgr = context.inject(TenantManager)
+    root_profile = tenant_mgr.profile
     profile = context.profile
-    # TODO use when multi ledger support is implemented
-    endorser_config = profile.settings.get("tenant.endorser_config", [])
-    public_did_config = profile.settings.get("tenant.public_did_config", [])
+    async with root_profile.session() as session:
+        tenant_record = await TenantRecord.query_by_wallet_id(session, tenant_wallet_id)
+    # issuer check
+    if (
+        not tenant_record.connected_to_endorsers
+        or not tenant_record.created_public_did
+        or (
+            tenant_record.connected_to_endorsers
+            and tenant_record.connected_to_endorsers == []
+        )
+        or (tenant_record.created_public_did and tenant_record.created_public_did == [])
+    ):
+        raise web.HTTPBadRequest(
+            reason=(
+                "Tenant is not configured as an issuer, cannot "
+                "connect with endorser or create public did"
+            )
+        )
     endorser_srv = context.inject(EndorserConnectionService)
     info = endorser_srv.endorser_info(profile)
     if not info:
