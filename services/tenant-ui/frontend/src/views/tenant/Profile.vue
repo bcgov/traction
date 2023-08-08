@@ -16,7 +16,7 @@
           <img v-if="isIssuer" src="/img/badges/issuer.png" />
         </div>
       </div>
-      <hr class="mb-4" />
+      <hr class="mb-5" />
       <ProfileFooter />
     </div>
   </MainCardContent>
