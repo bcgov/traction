@@ -67,12 +67,12 @@
             v-model="item.name"
             type="text"
             name="{{ `attribute_${index}` }}"
+            class="mb-5 w-full"
             @keydown="
               (value) => {
                 if (value.key == 'Enter') addAttribute();
               }
             "
-            class="mb-5 w-full"
           />
           <div class="flex justify-content-between">
             <button
