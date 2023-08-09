@@ -45,17 +45,13 @@
             :connection-name="data.alias"
           />
           <Button
-            v-if="config.frontend.showWritableComponents"
             title="Delete Contact"
             icon="pi pi-trash"
             class="p-button-rounded p-button-icon-only p-button-text"
             :disabled="deleteDisabled(data.alias)"
             @click="deleteContact($event, data.connection_id)"
           />
-          <EditContact
-            v-if="config.frontend.showWritableComponents"
-            :connection-id="data.connection_id"
-          />
+          <EditContact :connection-id="data.connection_id" />
         </template>
       </Column>
       <Column

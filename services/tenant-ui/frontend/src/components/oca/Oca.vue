@@ -20,7 +20,7 @@
       <template #header>
         <div class="flex justify-content-between">
           <div class="flex justify-content-start">
-            <CreateOca v-if="config.frontend.showWritableComponents" />
+            <!-- <CreateOca v-if="config.frontend.showWritableComponents" /> -->
           </div>
           <div class="flex justify-content-end">
             <span class="p-input-icon-left">
