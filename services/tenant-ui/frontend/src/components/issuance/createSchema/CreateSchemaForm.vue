@@ -68,11 +68,7 @@
             type="text"
             name="{{ `attribute_${index}` }}"
             class="mb-5 w-full"
-            @keydown="
-              (value) => {
-                if (value.key == 'Enter') addAttribute();
-              }
-            "
+            @keydown.enter.prevent="addAttribute()"
           />
           <div class="flex justify-content-between">
             <button
