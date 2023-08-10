@@ -9,6 +9,7 @@ traction:
 oidc:
   active: true
   showInnkeeperAdminLogin: true
+  showWritableComponents: true
   authority: https://loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm
   jwksUri: https://loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm/protocol/openid-connect/certs
 ariesDetails:
