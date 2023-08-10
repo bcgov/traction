@@ -59,6 +59,23 @@ npm run dev
 
 The Vite hot-module-reload app will serve from [here](http://127.0.0.1:5173/).
 
+### Running Tests
+
+To Run tests simply execute
+
+```bash
+  npm run test
+```
+
+In addition to running tests this will also produce code coverage statistics.
+
+To test your changes in the same environment you would see in production use
+
+```bash
+    npm run build
+    npm run start
+```
+
 ## Using docker
 
 Build and run a docker image (example shows using environment variable to point at a specific Traction Instance)
@@ -81,6 +98,21 @@ When developing the Tenant UI, adhere to localization best practices including
 
 Currently localization is handled at the Tenant UI frontend level, but data that returns to the frontend from the Traction and AcaPy APIs may not include localization of text and status codes, etc. As such, full localization is a work in progress and will require some future work in integrating with Traction and AcaPy.
 
+
+To ensure that the language files are consistent with each other additional helper scripts have been added
+
+- `fill-keys` takes everything in en.json and fills the other lang files with the entries suffixed by the locale code.
+- `common-keys` looks at which keys point to the same values so they can be refactored into a common key.
+- `sort-keys` does exactly what it says
+
+To execute any of these scripts navigate to `services/tenant-ui/frontend` and execute
+
+```
+npm run i18n:fill-keys
+```
+
+Replacing `fill-keys` with which ever script your would like to run
+
 ## OIDC Login for Innkeeper
 
 The Tenant UI Inkeeper functionality can be configured to log in with either (or both)
@@ -90,6 +122,21 @@ The Tenant UI Inkeeper functionality can be configured to log in with either (or
 To set up the OIDC provider of your choice, add configuration values in your deployment to match the `frontend.innkeeperOidc` fields for a auth code grant client,a nd configure the `server.oidc` fields appropriately to veify the JWKS for tokens from that client. 
 
 As well, the Innkeeper secret must be available to the Tenant UI server, this is set in `server.innkeeper` configuration...
+
+## Email Mocking
+
+Email is used in multiple components of `tenent-ui` for development
+purposes we have included [maildev](https://maildev.github.io/maildev/) to assist with monitoring and
+mocking these emails in place of a proper SMTP server.
+
+To enable this set the following environment variables before starting the `tenant-ui`
+- `SERVER_SMTP_SERVER=maildev`
+- `SERVER_SMTP_PORT=1025`
+
+To view the emails being sent open http://localhost:1080/ in your web browser
+
+By default this is already configured in the docker-compose file. For
+local use you will need to start `maildev` manually.
 
 ## Configuring Matomo
 
