@@ -196,7 +196,7 @@ jobs:
 
       - name: Run Tenant UI Helm 
         run: |
-          helm upgrade --instll ${{ needs.init.outputs.promote_to }}-tenant-ui -f ./deploy/tenant-ui/values-${{ needs.init.outputs.promote_to }}.yaml --set image.tag=${{ needs.read_config_ui.outputs.image_tag }} ./charts/tenant-ui --wait
+          helm upgrade --install ${{ needs.init.outputs.promote_to }}-tenant-ui -f ./deploy/tenant-ui/values-${{ needs.init.outputs.promote_to }}.yaml --set image.tag=${{ needs.read_config_ui.outputs.image_tag }} ./charts/tenant-ui --wait
 
       - name: Restart Tenant-UI Pods
         run: |

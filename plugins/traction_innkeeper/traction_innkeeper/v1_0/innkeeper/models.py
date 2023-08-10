@@ -259,6 +259,7 @@ class TenantRecord(BaseRecord):
         wallet_id: str = None,
         connected_to_endorsers: List = [],
         created_public_did: List = [],
+        auto_issuer: bool = False,
         **kwargs,
     ):
         """Construct record."""
@@ -271,6 +272,7 @@ class TenantRecord(BaseRecord):
         self.wallet_id = wallet_id
         self.connected_to_endorsers = connected_to_endorsers
         self.created_public_did = created_public_did
+        self.auto_issuer = auto_issuer
 
     @property
     def tenant_id(self) -> Optional[str]:
@@ -287,6 +289,7 @@ class TenantRecord(BaseRecord):
                 "wallet_id",
                 "connected_to_endorsers",
                 "created_public_did",
+                "auto_issuer",
             )
         }
 
@@ -369,4 +372,123 @@ class TenantRecordSchema(BaseRecordSchema):
     created_public_did = fields.List(
         fields.Str(description="Ledger id"),
         required=False,
+    )
+
+    auto_issuer = fields.Bool(
+        required=False,
+        description="True if tenant can make itself issuer, false if only innkeeper can",
+        default=False,
+    )
+
+
+class TenantAuthenticationApiRecord(BaseRecord):
+    """Innkeeper Tenant Authentication - API Record Schema"""
+
+    class Meta:
+        """TenantAuthenticationApiRecord Meta."""
+
+        schema_class = "TenantAuthenticationApiRecordSchema"
+
+    RECORD_TYPE = "tenant_authentication_api"
+    RECORD_ID_NAME = "tenant_authentication_api_id"
+    TAG_NAMES = {
+        "tenant_id",
+    }
+
+    def __init__(
+        self,
+        *,
+        tenant_authentication_api_id: str = None,
+        tenant_id: str = None,
+        api_key_token_salt: str = None,
+        api_key_token_hash: str = None,
+        alias: str = None,
+        **kwargs,
+    ):
+        """Construct record."""
+        super().__init__(tenant_authentication_api_id, **kwargs)
+        self.tenant_id = tenant_id
+        self.api_key_token_salt = api_key_token_salt
+        self.api_key_token_hash = api_key_token_hash
+        self.alias = alias
+
+    @property
+    def tenant_authentication_api_id(self) -> Optional[str]:
+        """Return record id."""
+        return uuid.UUID(self._id).hex
+
+    @classmethod
+    async def retrieve_by_auth_api_id(
+        cls,
+        session: ProfileSession,
+        tenant_authentication_api_id: str,
+        *,
+        for_update=False,
+    ) -> "TenantAuthenticationApiRecord":
+        """Retrieve TenantAuthenticationApiRecord by tenant_authentication_api_id.
+        Args:
+            session: the profile session to use
+            tenant_authentication_api_id: the tenant_authentication_api_id by which to filter
+        """
+        record = await cls.retrieve_by_id(
+            session, tenant_authentication_api_id, for_update=for_update
+        )
+        return record
+
+    @classmethod
+    async def query_by_tenant_id(
+        cls,
+        session: ProfileSession,
+        tenant_id: str,
+    ) -> "TenantAuthenticationApiRecord":
+        """Retrieve TenantAuthenticationApiRecord by tenant_id.
+        Args:
+            session: the profile session to use
+            tenant_id: the tenant_id by which to filter
+        """
+        tag_filter = {
+            **{"tenant_id": tenant_id for _ in [""] if tenant_id},
+        }
+
+        result = await cls.query(session, tag_filter)
+        return result
+
+    @property
+    def record_value(self) -> dict:
+        """Return record value."""
+        return {
+            prop: getattr(self, prop)
+            for prop in (
+                "tenant_id",
+                "api_key_token_salt",
+                "api_key_token_hash",
+                "alias",
+            )
+        }
+
+
+class TenantAuthenticationApiRecordSchema(BaseRecordSchema):
+    """Innkeeper Tenant Authentication - API Record Schema."""
+
+    class Meta:
+        """TenantAuthenticationApiRecordSchema Meta."""
+
+        model_class = "TenantAuthenticationApi"
+        unknown = EXCLUDE
+
+    tenant_authentication_api_id = fields.Str(
+        required=True,
+        description="Tenant Authentication API Record identifier",
+        example=UUIDFour.EXAMPLE,
+    )
+
+    tenant_id = fields.Str(
+        required=False,
+        description="Tenant Record identifier",
+        example=UUIDFour.EXAMPLE,
+    )
+
+    alias = fields.Str(
+        required=False,
+        description="Alias description for this API key",
     )

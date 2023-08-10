@@ -2,8 +2,8 @@ apiVersion: v2
 name: traction
 description: The Traction service allows organizations to verify, hold, and issue verifiable credentials.
 type: application
-version: 0.1.0
-appVersion: 0.2.14
+version: 0.1.1
+appVersion: 0.3.0
 home: "https://github.com/bcgov/traction"
 sources: ["https://github.com/bcgov/traction"]
 icon: "https://github.com/bcgov/traction/raw/main/docs/assets/readme-logo.png"

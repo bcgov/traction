@@ -22,8 +22,9 @@ from marshmallow import fields
 from . import TenantManager
 from .utils import (
     approve_reservation,
-    generate_reservation_token_data,
+    create_api_key,
     ReservationException,
+    TenantApiKeyException,
     TenantConfigSchema,
 )
 from .models import (
@@ -31,6 +32,8 @@ from .models import (
     ReservationRecordSchema,
     TenantRecord,
     TenantRecordSchema,
+    TenantAuthenticationApiRecord,
+    TenantAuthenticationApiRecordSchema,
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -207,12 +210,66 @@ class TenantIdMatchInfoSchema(OpenAPISchema):
     )
 
 
+class TenantAuthenticationsApiRequestSchema(OpenAPISchema):
+    """Request schema for api auth record."""
+
+    tenant_id = fields.Str(
+        required=True,
+        description="Tenant ID",
+        example="000000-000000-00000-00000000",
+    )
+
+    alias = fields.Str(
+        required=False,
+        description="Optional alias/label",
+        example="API key for sample line of buisness",
+    )
+
+
+class TenantAuthenticationsApiResponseSchema(OpenAPISchema):
+    """Response schema for api auth record."""
+
+    reservation_id = fields.Str(
+        required=True,
+        description="The reservation record identifier",
+        example=UUIDFour.EXAMPLE,
+    )
+
+
 class TenantListSchema(OpenAPISchema):
     """Response schema for tenants list."""
 
     results = fields.List(
         fields.Nested(TenantRecordSchema()),
         description="List of tenants",
+    )
+
+
+class TenantAuthenticationApiListSchema(OpenAPISchema):
+    """Response schema for authentications - users list."""
+
+    results = fields.List(
+        fields.Nested(TenantAuthenticationApiRecordSchema()),
+        description="List of reservations",
+    )
+
+
+class TenantAuthenticationApiIdMatchInfoSchema(OpenAPISchema):
+    """Schema for finding a tenant auth user by the record ID."""
+
+    tenant_authentication_api_id = fields.Str(
+        description="Tenant authentication api key identifier",
+        required=True,
+        example=UUIDFour.EXAMPLE,
+    )
+
+
+class TenantAuthenticationApiOperationResponseSchema(OpenAPISchema):
+    """Response schema for simple operations."""
+
+    success = fields.Bool(
+        required=True,
+        description="True if operation successful, false if otherwise",
     )
 
 
@@ -410,9 +467,9 @@ async def tenant_config_update(request: web.BaseRequest):
     tenant_id = request.match_info["tenant_id"]
     async with profile.session() as session:
         tenant_record = await TenantRecord.retrieve_by_id(session, tenant_id)
-        if connect_to_endorser:
+        if connect_to_endorser or connect_to_endorser == []:
             tenant_record.connected_to_endorsers = connect_to_endorser
-        if create_public_did:
+        if create_public_did or create_public_did == []:
             tenant_record.created_public_did = create_public_did
         await tenant_record.save(session)
     return web.json_response(tenant_record.serialize())
@@ -592,6 +649,115 @@ async def innkeeper_tenant_get(request: web.BaseRequest):
     return web.json_response(rec.serialize())
 
 
+@docs(tags=[SWAGGER_CATEGORY], summary="Create API Key Record")
+@request_schema(TenantAuthenticationsApiRequestSchema())
+@response_schema(TenantAuthenticationsApiResponseSchema(), 200, description="")
+@innkeeper_only
+@error_handler
+async def innkeeper_authentications_api(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+
+    body = await request.json()
+    rec: TenantAuthenticationApiRecord = TenantAuthenticationApiRecord(**body)
+
+    # reservations are under base/root profile, use Tenant Manager profile
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+
+    try:
+        api_key, tenant_authentication_api_id = await create_api_key(rec, mgr)
+    except TenantApiKeyException as err:
+        raise web.HTTPConflict(reason=str(err))
+
+    return web.json_response(
+        {
+            "tenant_authentication_api_id": tenant_authentication_api_id,
+            "api_key": api_key,
+        }
+    )
+
+
+@docs(tags=[SWAGGER_CATEGORY], summary="List all API Key Records")
+@response_schema(TenantAuthenticationApiListSchema(), 200, description="")
+@innkeeper_only
+@error_handler
+async def innkeeper_authentications_api_list(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+
+    # records are under base/root profile, use Tenant Manager profile
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+
+    tag_filter = {}
+    post_filter = {}
+    async with profile.session() as session:
+        # innkeeper can access all reservation records
+        records = await TenantAuthenticationApiRecord.query(
+            session=session,
+            tag_filter=tag_filter,
+            post_filter_positive=post_filter,
+            alt=True,
+        )
+    results = [record.serialize() for record in records]
+
+    return web.json_response({"results": results})
+
+
+@docs(tags=[SWAGGER_CATEGORY], summary="Read API Key Record")
+@match_info_schema(TenantAuthenticationApiIdMatchInfoSchema())
+@response_schema(TenantAuthenticationApiRecordSchema(), 200, description="")
+@innkeeper_only
+@error_handler
+async def innkeeper_authentications_api_get(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    tenant_authentication_api_id = request.match_info["tenant_authentication_api_id"]
+
+    # records are under base/root profile, use Tenant Manager profile
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+
+    async with profile.session() as session:
+        # innkeeper can access all tenants..
+        rec = await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(
+            session, tenant_authentication_api_id
+        )
+        LOGGER.info(rec)
+
+    return web.json_response(rec.serialize())
+
+
+@docs(tags=[SWAGGER_CATEGORY], summary="Delete API Key")
+@match_info_schema(TenantAuthenticationApiIdMatchInfoSchema)
+@response_schema(TenantAuthenticationApiOperationResponseSchema, 200, description="")
+@innkeeper_only
+@error_handler
+async def innkeeper_authentications_api_delete(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    tenant_authentication_api_id = request.match_info["tenant_authentication_api_id"]
+
+    # records are under base/root profile, use Tenant Manager profile
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+
+    result = False
+    async with profile.session() as session:
+        rec = await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(
+            session, tenant_authentication_api_id
+        )
+
+        await rec.delete_record(session)
+
+        try:
+            await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(
+                session, tenant_authentication_api_id
+            )
+        except StorageNotFoundError:
+            # this is to be expected... do nothing, do not log
+            result = True
+
+    return web.json_response({"success": result})
+
+
 async def register(app: web.Application):
     """Register routes."""
     LOGGER.info("> registering routes")
@@ -637,6 +803,21 @@ async def register(app: web.Application):
                 "/innkeeper/tenants/{tenant_id}", innkeeper_tenant_get, allow_head=False
             ),
             web.put("/innkeeper/tenants/{tenant_id}/config", tenant_config_update),
+            web.post("/innkeeper/authentications/api", innkeeper_authentications_api),
+            web.get(
+                "/innkeeper/authentications/api/",
+                innkeeper_authentications_api_list,
+                allow_head=False,
+            ),
+            web.get(
+                "/innkeeper/authentications/api/{tenant_authentication_api_id}",
+                innkeeper_authentications_api_get,
+                allow_head=False,
+            ),
+            web.delete(
+                "/innkeeper/authentications/api/{tenant_authentication_api_id}",
+                innkeeper_authentications_api_delete,
+            ),
         ]
     )
     LOGGER.info("< registering routes")

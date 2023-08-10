@@ -7,7 +7,8 @@ from aries_cloudagent.core.profile import Profile
 from aries_cloudagent.messaging.models.openapi import OpenAPISchema
 from marshmallow import fields
 
-from .models import ReservationRecord
+from .models import ReservationRecord, TenantAuthenticationApiRecord
+
 
 from . import TenantManager
 
@@ -40,6 +41,11 @@ class TenantConfigSchema(OpenAPISchema):
             required=False,
         ),
         description="Public DID config",
+    )
+    auto_issuer = fields.Bool(
+        required=False,
+        description="True if tenant can make itself issuer, false if only innkeeper can",
+        default=False,
     )
 
 
@@ -87,5 +93,34 @@ async def approve_reservation(
     return _pwd
 
 
+def generate_api_key_data():
+    _key = str(uuid.uuid4().hex)
+    LOGGER.info(f"_key = {_key}")
+
+    _salt = bcrypt.gensalt()
+    LOGGER.info(f"_salt = {_salt}")
+
+    _hash = bcrypt.hashpw(_key.encode("utf-8"), _salt)
+    LOGGER.info(f"_hash = {_hash}")
+
+    return _key, _salt, _hash
+
+
+async def create_api_key(rec: TenantAuthenticationApiRecord, manager: TenantManager):
+    async with manager.profile.session() as session:
+        _key, _salt, _hash = generate_api_key_data()
+        rec.api_key_token_salt = _salt.decode("utf-8")
+        rec.api_key_token_hash = _hash.decode("utf-8")
+        await rec.save(session)
+        LOGGER.info(rec)
+
+    # return the generated key and the created record id
+    return _key, rec.tenant_authentication_api_id
+
+
 class ReservationException(Exception):
+    pass
+
+
+class TenantApiKeyException(Exception):
     pass
