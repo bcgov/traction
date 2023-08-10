@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, test } from 'vitest';
 
 import { useIssuerStore } from '@/store/issuerStore';
 import { restHandlersUnknownError, server } from '../setupApi';
-import { testSuccessResponse, testErrorResponse } from 'test/commonTests';
+import { testSuccessResponse, testErrorResponse } from '../../test/commonTests';
 
 let store: any;
 

@@ -2,7 +2,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import { afterAll, beforeEach, describe, expect, test } from 'vitest';
 
 import { useConfigStore } from '@/store/configStore';
-import { testErrorResponse, testSuccessResponse } from 'test/commonTests';
+import { testErrorResponse, testSuccessResponse } from '../../test/commonTests';
 import { restHandlersUnknownError, server } from '../setupApi';
 
 import { configResponse } from '../__mocks__/api/responses';
