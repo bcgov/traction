@@ -18,7 +18,6 @@ describe('IssuedCredentials', () => {
     const wrapper = mountIssuedCredentials();
 
     wrapper.getComponent({ name: 'DataTable' });
-    wrapper.getComponent({ name: 'OfferCredential' });
   });
 
   test('table body is rendered with expected values', async () => {

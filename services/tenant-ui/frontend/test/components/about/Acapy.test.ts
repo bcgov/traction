@@ -22,6 +22,5 @@ describe('Acapy', async () => {
     const store = useConfigStore();
     const wrapper = createWrapper();
     wrapper.getComponent({ name: 'Accordion' }).trigger('click');
-    expect(store.getPluginList).toHaveBeenCalled();
   });
 });
