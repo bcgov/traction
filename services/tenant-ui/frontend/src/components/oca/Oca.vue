@@ -20,7 +20,12 @@
       <template #header>
         <div class="flex justify-content-between">
           <div class="flex justify-content-start">
-            <CreateOca v-if="config.frontend.showWritableComponents" />
+            <CreateOca
+              v-if="
+                config.frontend.showWritableComponents === true ||
+                config.frontend.showWritableComponents === 'true'
+              "
+            />
           </div>
           <div class="flex justify-content-end">
             <span class="p-input-icon-left">
@@ -39,7 +44,10 @@
       <Column :sortable="false" header="Actions">
         <template #body="{ data }">
           <Button
-            v-if="config.frontend.showWritableComponents"
+            v-if="
+              config.frontend.showWritableComponents === true ||
+              config.frontend.showWritableComponents === 'true'
+            "
             title="Delete Credential Definition"
             icon="pi pi-trash"
             class="p-button-rounded p-button-icon-only p-button-text"

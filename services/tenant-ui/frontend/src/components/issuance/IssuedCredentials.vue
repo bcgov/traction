@@ -21,7 +21,12 @@
       <template #header>
         <div class="flex justify-content-between">
           <div class="flex justify-content-start">
-            <OfferCredential v-if="config.frontend.showWritableComponents" />
+            <OfferCredential
+              v-if="
+                config.frontend.showWritableComponents === true ||
+                config.frontend.showWritableComponents === 'true'
+              "
+            />
           </div>
           <div class="flex justify-content-end">
             <span class="p-input-icon-left">

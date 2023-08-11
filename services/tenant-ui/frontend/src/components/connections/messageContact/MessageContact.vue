@@ -11,7 +11,10 @@
       :connection-name="props.connectionName"
     />
     <div
-      v-if="config.frontend.showWritableComponents"
+      v-if="
+        config.frontend.showWritableComponents === true ||
+        config.frontend.showWritableComponents === 'true'
+      "
       class="p-inputgroup flex-1 send-message"
     >
       <InputText

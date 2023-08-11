@@ -23,7 +23,12 @@
     >
       <template #header>
         <div class="flex justify-content-between">
-          <CreateRequest v-if="config.frontend.showWritableComponents" />
+          <CreateRequest
+            v-if="
+              config.frontend.showWritableComponents === true ||
+              config.frontend.showWritableComponents === 'true'
+            "
+          />
 
           <div class="flex justify-content-end">
             <span class="p-input-icon-left">
@@ -43,13 +48,17 @@
         <template #body="{ data }">
           <div class="flex">
             <DeleteExchangeRecord
-              v-if="config.frontend.showWritableComponents"
+              v-if="
+                config.frontend.showWritableComponents === true ||
+                config.frontend.showWritableComponents === 'true'
+              "
               :record-id="data.presentation_exchange_id"
             />
             <CreateRequest
               v-if="
                 data.role === 'verifier' &&
-                config.frontend.showWritableComponents
+                (config.frontend.showWritableComponents === true ||
+                  config.frontend.showWritableComponents === 'true')
               "
               :existing-pres-req="data.presentation_request"
               icon-display

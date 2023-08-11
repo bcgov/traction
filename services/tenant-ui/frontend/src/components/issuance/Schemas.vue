@@ -22,9 +22,17 @@
       <template #header>
         <div class="flex justify-content-between">
           <div class="flex justify-content-start">
-            <CreateSchema v-if="config.frontend.showWritableComponents" />
+            <CreateSchema
+              v-if="
+                config.frontend.showWritableComponents === true ||
+                config.frontend.showWritableComponents === 'true'
+              "
+            />
             <CopySchema
-              v-if="config.frontend.showWritableComponents"
+              v-if="
+                config.frontend.showWritableComponents === true ||
+                config.frontend.showWritableComponents === 'true'
+              "
               class="ml-4"
             />
           </div>
