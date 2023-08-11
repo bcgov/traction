@@ -18,8 +18,12 @@ describe('CreateMessage', () => {
 
     wrapper.getComponent({ name: 'Button', props: { icon: 'pi pi-envelope' } });
     const dialog = wrapper.getComponent({ name: 'Dialog' });
-    expect(dialog.vm.visible).toBe(false);
-    expect(dialog.vm.modal).toBe(true);
+    expect(wrapper.getComponent({ name: 'Dialog' }).attributes().visible).toBe(
+      'false'
+    );
+    expect(wrapper.getComponent({ name: 'Dialog' }).attributes().modal).toBe(
+      'true'
+    );
   });
 
   test('clicking span sets dialog to visible', async () => {
@@ -30,6 +34,8 @@ describe('CreateMessage', () => {
       .trigger('click');
 
     const dialog = wrapper.getComponent({ name: 'Dialog' });
-    expect(dialog.vm.visible).toBe(true);
+    expect(wrapper.getComponent({ name: 'Dialog' }).attributes().visible).toBe(
+      'true'
+    );
   });
 });

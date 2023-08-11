@@ -2,10 +2,10 @@ import { createPinia, setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, test } from 'vitest';
 
 import { useTenantStore } from '@/store/tenantStore';
-import { testErrorResponse, testSuccessResponse } from 'test/commonTests';
+import { testErrorResponse, testSuccessResponse } from '../../test/commonTests';
 import { restHandlersUnknownError, server } from '../setupApi';
 
-import { tokenStore } from 'test/__mocks__/store';
+import { tokenStore } from '../../test/__mocks__/store';
 
 let store: any;
 

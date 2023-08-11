@@ -17,13 +17,17 @@ describe('AcceptInvitation', () => {
     const wrapper = mountAcceptInvitation();
 
     wrapper.getComponent({ name: 'Button' });
-    expect(wrapper.getComponent({ name: 'Dialog' }).vm.visible).toBe(false);
+    expect(wrapper.getComponent({ name: 'Dialog' }).attributes().visible).toBe(
+      'false'
+    );
   });
 
   test('dialog becomes visible on button click', async () => {
     const wrapper = mountAcceptInvitation();
 
     await wrapper.getComponent({ name: 'Button' }).trigger('click');
-    expect(wrapper.getComponent({ name: 'Dialog' }).vm.visible).toBe(true);
+    expect(wrapper.getComponent({ name: 'Dialog' }).attributes().visible).toBe(
+      'true'
+    );
   });
 });

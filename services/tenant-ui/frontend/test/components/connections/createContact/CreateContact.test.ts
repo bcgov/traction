@@ -21,7 +21,9 @@ describe('CreateContact', async () => {
 
     wrapper.getComponent({ name: 'Button' });
 
-    expect(wrapper.getComponent({ name: 'Dialog' }).vm.visible).toBe(false);
+    expect(wrapper.getComponent({ name: 'Dialog' }).attributes().visible).toBe(
+      'false'
+    );
   });
 
   test('button click opens modal', async () => {
@@ -29,6 +31,8 @@ describe('CreateContact', async () => {
 
     wrapper.getComponent({ name: 'Button' }).trigger('click');
     await flushPromises();
-    expect(wrapper.getComponent({ name: 'Dialog' }).vm.visible).toBe(true);
+    expect(wrapper.getComponent({ name: 'Dialog' }).attributes().visible).toBe(
+      'true'
+    );
   });
 });

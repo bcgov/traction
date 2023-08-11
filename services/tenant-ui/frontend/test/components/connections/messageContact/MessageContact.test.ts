@@ -23,8 +23,8 @@ describe('MessageContact', () => {
 
     wrapper.getComponent({ name: 'Button', props: { icon: 'pi pi-comments' } });
     const sidebar = wrapper.getComponent({ name: 'Sidebar' });
-    expect(sidebar.vm.visible).toBe(false);
-    expect(sidebar.vm.position).toBe('right');
+    expect(sidebar.attributes().visible).toBe('false');
+    expect(sidebar.attributes().position).toBe('right');
   });
 
   test('sidebar opens on button click', async () => {
@@ -35,6 +35,6 @@ describe('MessageContact', () => {
       .trigger('click');
 
     const sidebar = wrapper.getComponent({ name: 'Sidebar' });
-    expect(sidebar.vm.visible).toBe(true);
+    expect(sidebar.attributes().visible).toBe('true');
   });
 });
