@@ -1,12 +1,12 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Header > mount matches snapshot with expected values 1`] = `
-"<div data-v-243d8871=\\"\\" class=\\"p-toolbar p-component traction-header\\" role=\\"toolbar\\">
-  <div class=\\"p-toolbar-group-start p-toolbar-group-left\\">
+"<div data-v-243d8871=\\"\\" class=\\"p-toolbar p-component traction-header\\" role=\\"toolbar\\" data-pc-name=\\"toolbar\\" data-pc-section=\\"root\\">
+  <div class=\\"p-toolbar-group-start p-toolbar-group-left\\" data-pc-section=\\"start\\">
     <div data-v-243d8871=\\"\\" class=\\"hamburger\\" title=\\"layout.header.toggleSideMenu\\"><i data-v-243d8871=\\"\\" class=\\"pi pi-bars p-toolbar-separator mr-2\\"></i></div>
   </div>
-  <div class=\\"p-toolbar-group-center\\"></div>
-  <div class=\\"p-toolbar-group-end p-toolbar-group-right\\">
+  <div class=\\"p-toolbar-group-center\\" data-pc-section=\\"center\\"></div>
+  <div class=\\"p-toolbar-group-end p-toolbar-group-right\\" data-pc-section=\\"end\\">
     <locale-switcher-stub data-v-243d8871=\\"\\"></locale-switcher-stub>
     <profile-button-stub data-v-243d8871=\\"\\"></profile-button-stub>
   </div>

@@ -5,7 +5,7 @@ import ConfirmationService from 'primevue/confirmationservice';
 import { describe, expect, test, vi } from 'vitest';
 
 import CredentialsTable from '@/components/holder/CredentialsTable.vue';
-import { contactsStore, holderStore } from 'test/__mocks__/store';
+import { contactsStore, holderStore } from '../../../test/__mocks__/store';
 
 // Need to override global mocks that use holder store. Same function names cause conflicts.
 // Consider refactoring to use functions in issuer and verifier stores.
