@@ -21,7 +21,10 @@
         <div class="flex justify-content-between">
           <div class="flex justify-content-start">
             <CreateMessage
-              v-if="config.frontend.showWritableComponents"
+              v-if="
+                config.frontend.showWritableComponents === true ||
+                config.frontend.showWritableComponents === 'true'
+              "
               @success="loadTable"
             />
           </div>
