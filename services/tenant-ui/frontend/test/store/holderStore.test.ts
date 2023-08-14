@@ -2,7 +2,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, test } from 'vitest';
 
 import { useHolderStore } from '@/store/holderStore';
-import { testErrorResponse, testSuccessResponse } from 'test/commonTests';
+import { testErrorResponse, testSuccessResponse } from '../../test/commonTests';
 import { restHandlersUnknownError, server } from '../setupApi';
 
 let store: any;

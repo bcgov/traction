@@ -22,7 +22,9 @@ describe('RegenerateInvitation', async () => {
     const wrapper = mountRegenerateInvitation();
 
     wrapper.getComponent({ name: 'Button' });
-    expect(wrapper.getComponent({ name: 'Dialog' }).vm.visible).toBe(false);
+    expect(wrapper.getComponent({ name: 'Dialog' }).attributes().visible).toBe(
+      'false'
+    );
   });
 
   test('sucessful form calls toast info and external function', async () => {

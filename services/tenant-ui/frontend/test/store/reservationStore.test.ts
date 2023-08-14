@@ -3,7 +3,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import { beforeAll, beforeEach, describe, expect, test } from 'vitest';
 
 import { useReservationStore } from '@/store/reservationStore';
-import { testErrorResponse, testSuccessResponse } from 'test/commonTests';
+import { testErrorResponse, testSuccessResponse } from '../../test/commonTests';
 import { restHandlersUnknownError, server } from '../setupApi';
 
 let store: any;
