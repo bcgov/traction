@@ -45,20 +45,20 @@
       <Column header="Actions">
         <template #body="{ data }">
           <DeleteCredentialExchangeButton
-            :cred-exch-id="data.credential_exchange_id"
             v-if="
               config.frontend.showWritableComponents === true ||
               config.frontend.showWritableComponents === 'true'
             "
+            :cred-exch-id="data.credential_exchange_id"
           />
 
           <RevokeCredentialButton
-            :cred-exch-record="data"
-            :connection-display="findConnectionName(data.connection_id) ?? ''"
             v-if="
               config.frontend.showWritableComponents === true ||
               config.frontend.showWritableComponents === 'true'
             "
+            :cred-exch-record="data"
+            :connection-display="findConnectionName(data.connection_id) ?? ''"
           />
         </template>
       </Column>

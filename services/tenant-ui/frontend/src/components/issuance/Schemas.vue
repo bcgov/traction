@@ -53,13 +53,13 @@
       <Column :sortable="false" header="Actions">
         <template #body="{ data }">
           <Button
-            title="Delete Schema"
-            icon="pi pi-trash"
-            class="p-button-rounded p-button-icon-only p-button-text"
             v-if="
               config.frontend.showWritableComponents === true ||
               config.frontend.showWritableComponents === 'true'
             "
+            title="Delete Schema"
+            icon="pi pi-trash"
+            class="p-button-rounded p-button-icon-only p-button-text"
             @click="deleteSchema($event, data)"
           />
         </template>
