@@ -23,12 +23,14 @@
     >
       <template #header>
         <div class="flex justify-content-between">
-          <CreateRequest
-            v-if="
-              config.frontend.showWritableComponents === true ||
-              config.frontend.showWritableComponents === 'true'
-            "
-          />
+          <div class="flex justify-content-start">
+            <CreateRequest
+              v-if="
+                config.frontend.showWritableComponents === true ||
+                config.frontend.showWritableComponents === 'true'
+              "
+            />
+          </div>
 
           <div class="flex justify-content-end">
             <span class="p-input-icon-left">
