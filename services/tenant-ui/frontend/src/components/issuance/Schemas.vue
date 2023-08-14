@@ -56,6 +56,10 @@
             title="Delete Schema"
             icon="pi pi-trash"
             class="p-button-rounded p-button-icon-only p-button-text"
+            v-if="
+              config.frontend.showWritableComponents === true ||
+              config.frontend.showWritableComponents === 'true'
+            "
             @click="deleteSchema($event, data)"
           />
         </template>
@@ -187,6 +191,8 @@ import { formatDateLong } from '@/helpers';
 // State
 import { useConfigStore } from '@/store/configStore';
 const { config } = storeToRefs(useConfigStore());
+
+console.log('config', config);
 
 const confirm = useConfirm();
 const toast = useToast();

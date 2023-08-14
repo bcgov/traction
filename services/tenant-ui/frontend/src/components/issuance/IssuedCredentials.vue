@@ -46,11 +46,19 @@
         <template #body="{ data }">
           <DeleteCredentialExchangeButton
             :cred-exch-id="data.credential_exchange_id"
+            v-if="
+              config.frontend.showWritableComponents === true ||
+              config.frontend.showWritableComponents === 'true'
+            "
           />
 
           <RevokeCredentialButton
             :cred-exch-record="data"
             :connection-display="findConnectionName(data.connection_id) ?? ''"
+            v-if="
+              config.frontend.showWritableComponents === true ||
+              config.frontend.showWritableComponents === 'true'
+            "
           />
         </template>
       </Column>
