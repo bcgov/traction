@@ -27,8 +27,15 @@
     "adminKey": "Admin Key",
     "adminName": "Admin Name",
     "error": "ERROR",
-    "orSignInWith": "Or Sign In With",
-    "orRequestAccessWith": "Or Request Access With"
+    "orRequestAccessWith": "Or Request Access With",
+    "orSignInWith": "Or Sign In With"
+  },
+  "apiKey": {
+    "alias": "Alias for Key (Optional)",
+    "apiKeys": "API Keys",
+    "createApiKey": "Create API Key",
+    "createSuccess": "API Key created",
+    "search": "Search API Keys"
   },
   "common": {
     "actions": "Actions",
@@ -37,10 +44,10 @@
     "contactName": "Connection Name",
     "credentialId": "Credential ID",
     "credentials": "Credentials",
-    "developer": "Developer",
-    "encodedJwt": "Encoded JWT",
     "decodedJwt": "Decoded JWT",
+    "developer": "Developer",
     "emailAddress": "Email Address",
+    "encodedJwt": "Encoded JWT",
     "endorser": "Endorser",
     "genericError": "An error occurred",
     "invitationUrl": "Invitation URL",
@@ -51,12 +58,12 @@
     "profile": "Profile",
     "refreshTable": "Refresh Table",
     "request": "Request",
-    "toggleCardExpand": "Toggle Expanded",
     "settings": "Settings",
     "status": "Status",
     "submit": "Submit",
     "tenantName": "Tenant Name",
     "tenantReason": "Tenant Reason",
+    "toggleCardExpand": "Toggle Expanded",
     "walletId": "Wallet ID"
   },
   "configuration": {
@@ -149,9 +156,9 @@
       "viewTable": "View in Table format"
     },
     "wallet": {
-      "notFound": "There are no credentials in your Wallet",
       "noOca": "There is no OCA associated with this credential definition",
-      "noOcaNotImpl": "Cannot display card view for Credentials without OCA at this time."
+      "noOcaNotImpl": "Cannot display card view for Credentials without OCA at this time.",
+      "notFound": "There are no credentials in your Wallet"
     }
   },
   "dashboard": {
@@ -232,7 +239,6 @@
   },
   "profile": {
     "config": "Config:",
-    "token": "JWT Token",
     "connectionNotActiveYet": "Connection not Active yet, refresh or come back later.",
     "connectTenantToEndorser": "Connect Tenant To Endorser",
     "connectTenantToEndorserNotAllowed": "Innkeeper has not approved endorser connections.",
@@ -261,6 +267,7 @@
     },
     "tenantId": "Tenant ID",
     "tenantNotConnectedToEndorserYet": "Tenant not connected to Endorser yet",
+    "token": "JWT Token",
     "updatedAt": "Updated at",
     "walletLabel": "Wallet Label",
     "webHookKey": "WebHook Key",
@@ -341,16 +348,10 @@
       "acapyAutoRespondCredentialOffer": "Automatically respond to Credential Offers",
       "acapyAutoRespondCredentialRequest": "Automatically respond to Credential Requests",
       "acapyAutoRespondMessages": "Automatically respond to Messages",
-      "acapyAutoWriteTransactions": "Automatically write Endorsed Transactions",
       "acapyAutoVerifyPresentation": "Automatically verify Presentations",
+      "acapyAutoWriteTransactions": "Automatically write Endorsed Transactions",
       "acapyCreateRevocationTransactions": "Create Revocation Transactions",
       "acapyEndorserRole": "Endorser Role",
-      "acapyInvitePublic": "Generated invite should be public",
-      "acapyLogLevel": "Log Level",
-      "acapyMonitorPing": "Monitor Ping",
-      "acapyNotifyRevocation": "Notify of Revocation",
-      "acapyPublicInvites": "Send Invitations using public DID",
-
       "acapyHelpAutoAcceptInvites": "ACAPY_AUTO_ACCEPT_INVITES - Automatically accept invites without firing a webhook event or waiting for an admin request.",
       "acapyHelpAutoAcceptRequests": "ACAPY_AUTO_ACCEPT_REQUESTS - Automatically accept connection requests without firing a webhook event or waiting for an admin request.",
       "acapyHelpAutoPingConnection": "ACAPY_AUTO_PING_CONNECTION - Automatically send a trust ping immediately after a connection response is accepted. Some agents require this before marking a connection as 'active'",
@@ -358,8 +359,8 @@
       "acapyHelpAutoRespondCredentialOffer": "ACAPY_AUTO_RESPOND_CREDENTIAL_OFFER - Automatically respond to Indy credential offers with a credential request",
       "acapyHelpAutoRespondCredentialRequest": "ACAPY_AUTO_RESPOND_CREDENTIAL_REQUEST - Auto-respond to credential requests with corresponding credentials",
       "acapyHelpAutoRespondMessages": "ACAPY_AUTO_RESPOND_MESSAGES - Automatically respond to basic messages indicating the message was receieved",
-      "acapyHelpAutoWriteTransactions": "ACAPY_AUTO_WRITE_TRANSACTIONS - For Authors, specify whether to automatically write any endorsed transactions. (If not specified, the controller must invoke the write transaction operation for each transaction.)",
       "acapyHelpAutoVerifyPresentation": "ACAPY_AUTO_VERIFY_PRESENTATION - Automatically verify a presentation when it is received. ",
+      "acapyHelpAutoWriteTransactions": "ACAPY_AUTO_WRITE_TRANSACTIONS - For Authors, specify whether to automatically write any endorsed transactions. (If not specified, the controller must invoke the write transaction operation for each transaction.)",
       "acapyHelpCreateRevocationTransactions": "ACAPY_CREATE_REVOCATION_TRANSACTIONS - For Authors, specify whether to automatically create transactions for a cred def's revocation registry. (If not specified, the controller must invoke the endpoints required to create the revocation registry and assign to the cred def.)",
       "acapyHelpEndorserRole": "ACAPY_ENDORSER_ROLE - Specify the role ('author' or 'endorser') which this agent will participate. Authors will request transaction endorement from an Endorser. Endorsers will endorse transactions from Authors, and may write their own  transactions to the ledger. If no role (or 'none') is specified then the endorsement protocol will not  be used and this agent will write transactions to the ledger directly.",
       "acapyHelpInvitePublic": "ACAPY_INVITE_PUBLIC - Flag specifying the generated invite should be public.",
@@ -367,7 +368,11 @@
       "acapyHelpMonitorPing": "ACAPY_MONITOR_PING - Send a webhook when a ping is sent or received.",
       "acapyHelpNotifyRevocation": "ACAPY_NOTIFY_REVOCATION - Specifies that aca-py will notify credential recipients when revoking a credential it issued.",
       "acapyHelpPublicInvites": "ACAPY_PUBLIC_INVITES - Send invitations out using the public DID for the agent, and receive connection requests solicited by invitations which use the public DID. Default",
-
+      "acapyInvitePublic": "Generated invite should be public",
+      "acapyLogLevel": "Log Level",
+      "acapyMonitorPing": "Monitor Ping",
+      "acapyNotifyRevocation": "Notify of Revocation",
+      "acapyPublicInvites": "Send Invitations using public DID",
       "auto": "Auto Flags",
       "extraSettings": "Extra ACA-Py Settings",
       "tenantWalletSettings": "Tenant Wallet Settings"

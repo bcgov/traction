@@ -1,5 +1,11 @@
 // Types
-import { TenantConfig } from '@/types/acapyApi/acapyInterface';
+import {
+  ReservationRecord,
+  TenantAuthenticationApiRecord,
+  TenantAuthenticationsApiRequest,
+  TenantConfig,
+  TenantRecord,
+} from '@/types/acapyApi/acapyInterface';
 
 import { defineStore, storeToRefs } from 'pinia';
 import { computed, ref, Ref } from 'vue';
@@ -23,8 +29,9 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
   // state
   const error: Ref<string | null> = ref(null);
   const loading: Ref<boolean> = ref(false);
-  const reservations: Ref<any[]> = ref([]);
-  const tenants: Ref<any[]> = ref([]);
+  const apiKeys: Ref<TenantAuthenticationApiRecord[]> = ref([]);
+  const reservations: Ref<ReservationRecord[]> = ref([]);
+  const tenants: Ref<TenantRecord[]> = ref([]);
 
   // getters
   const currentReservations = computed(() =>
@@ -43,6 +50,17 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
   const backendApi = axios.create({
     baseURL: `${window.location.origin}/${config.value.frontend.apiPath}`,
   });
+
+  async function listApiKeys() {
+    return fetchListFromAPI(
+      acapyApi,
+      API_PATH.INNKEEPER_AUTHENTICATIONS_API,
+      apiKeys,
+      error,
+      loading,
+      {}
+    );
+  }
 
   async function listTenants() {
     return fetchListFromAPI(
@@ -179,6 +197,28 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     }
   }
 
+  
+  // Create an API key for a tenant
+  async function createApiKey(payload: TenantAuthenticationsApiRequest) {
+    error.value = null;
+    loading.value = true;
+
+    try {
+      await acapyApi.postHttp(API_PATH.INNKEEPER_AUTHENTICATIONS_API_POST, payload);
+      // Reload the keys list after updating
+      await listApiKeys();
+    } catch (err: any) {
+      error.value = err;
+    } finally {
+      loading.value = false;
+    }
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+  }
+
   // private methods
 
   // Helper method to send email
@@ -198,12 +238,15 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
   return {
     loading,
     error,
+    apiKeys,
     tenants,
     reservations,
     currentReservations,
     reservationHistory,
     approveReservation,
+    createApiKey,
     denyReservation,
+    listApiKeys,
     listTenants,
     listReservations,
     updateTenantConfig,

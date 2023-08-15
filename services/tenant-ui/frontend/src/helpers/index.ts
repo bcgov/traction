@@ -59,8 +59,8 @@ export function formatDate(value: string) {
  * @param {String} value A string representation of a date
  * @returns {String} A string representation of `value`
  */
-export function formatDateLong(value: string) {
-  return _dateFnsFormat(value, 'MMMM d yyyy, h:mm:ss a');
+export function formatDateLong(value: string | undefined) {
+  return value ? _dateFnsFormat(value, 'MMMM d yyyy, h:mm:ss a') : '';
 }
 
 /**
