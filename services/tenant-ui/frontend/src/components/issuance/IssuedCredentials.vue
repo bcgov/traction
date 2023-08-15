@@ -21,7 +21,12 @@
       <template #header>
         <div class="flex justify-content-between">
           <div class="flex justify-content-start">
-            <OfferCredential />
+            <OfferCredential
+              v-if="
+                config.frontend.showWritableComponents === true ||
+                config.frontend.showWritableComponents === 'true'
+              "
+            />
           </div>
           <div class="flex justify-content-end">
             <span class="p-input-icon-left">
@@ -40,10 +45,18 @@
       <Column header="Actions">
         <template #body="{ data }">
           <DeleteCredentialExchangeButton
+            v-if="
+              config.frontend.showWritableComponents === true ||
+              config.frontend.showWritableComponents === 'true'
+            "
             :cred-exch-id="data.credential_exchange_id"
           />
 
           <RevokeCredentialButton
+            v-if="
+              config.frontend.showWritableComponents === true ||
+              config.frontend.showWritableComponents === 'true'
+            "
             :cred-exch-record="data"
             :connection-display="findConnectionName(data.connection_id) ?? ''"
           />
@@ -142,6 +155,7 @@ import { Ref, computed, onMounted, ref } from 'vue';
 // State
 import { useContactsStore, useIssuerStore } from '@/store';
 import { storeToRefs } from 'pinia';
+import { useConfigStore } from '@/store/configStore';
 // PrimeVue/etc
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
@@ -158,6 +172,8 @@ import MainCardContent from '../layout/mainCard/MainCardContent.vue';
 import DeleteCredentialExchangeButton from './deleteCredential/DeleteCredentialExchangeButton.vue';
 import RevokeCredentialButton from './deleteCredential/RevokeCredentialButton.vue';
 import OfferCredential from './offerCredential/OfferCredential.vue';
+
+const { config } = storeToRefs(useConfigStore());
 
 const toast = useToast();
 

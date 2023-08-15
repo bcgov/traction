@@ -20,7 +20,13 @@
       <template #header>
         <div class="flex justify-content-between">
           <div class="flex justify-content-start">
-            <CreateMessage @success="loadTable" />
+            <CreateMessage
+              v-if="
+                config.frontend.showWritableComponents === true ||
+                config.frontend.showWritableComponents === 'true'
+              "
+              @success="loadTable"
+            />
           </div>
           <div class="flex justify-content-end">
             <span class="p-input-icon-left">
@@ -132,6 +138,12 @@ import { TABLE_OPT } from '@/helpers/constants';
 import MainCardContent from '../layout/mainCard/MainCardContent.vue';
 import CreateMessage from './createMessage/CreateMessage.vue';
 import LoadingLabel from '../common/LoadingLabel.vue';
+
+// State
+import { useConfigStore } from '@/store/configStore';
+const { config } = storeToRefs(useConfigStore());
+
+console.log('config', config);
 
 const toast = useToast();
 

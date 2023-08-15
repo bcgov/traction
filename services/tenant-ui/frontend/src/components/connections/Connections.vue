@@ -160,6 +160,10 @@ import StatusChip from '../common/StatusChip.vue';
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 
+// State
+import { useConfigStore } from '@/store/configStore';
+const { config } = storeToRefs(useConfigStore());
+
 const confirm = useConfirm();
 const toast = useToast();
 
