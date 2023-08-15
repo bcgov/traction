@@ -22,8 +22,19 @@
       <template #header>
         <div class="flex justify-content-between">
           <div class="flex justify-content-start">
-            <CreateSchema />
-            <CopySchema class="ml-4" />
+            <CreateSchema
+              v-if="
+                config.frontend.showWritableComponents === true ||
+                config.frontend.showWritableComponents === 'true'
+              "
+            />
+            <CopySchema
+              v-if="
+                config.frontend.showWritableComponents === true ||
+                config.frontend.showWritableComponents === 'true'
+              "
+              class="ml-4"
+            />
           </div>
           <div class="flex justify-content-end">
             <span class="p-input-icon-left">
@@ -42,6 +53,10 @@
       <Column :sortable="false" header="Actions">
         <template #body="{ data }">
           <Button
+            v-if="
+              config.frontend.showWritableComponents === true ||
+              config.frontend.showWritableComponents === 'true'
+            "
             title="Delete Schema"
             icon="pi pi-trash"
             class="p-button-rounded p-button-icon-only p-button-text"
@@ -172,6 +187,12 @@ import MainCardContent from '../layout/mainCard/MainCardContent.vue';
 import RowExpandData from '../common/RowExpandData.vue';
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
+
+// State
+import { useConfigStore } from '@/store/configStore';
+const { config } = storeToRefs(useConfigStore());
+
+console.log('config', config);
 
 const confirm = useConfirm();
 const toast = useToast();

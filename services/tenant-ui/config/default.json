@@ -7,6 +7,7 @@
     "showInnkeeperReservationPassword": true,
     "showInnkeeperAdminLogin": true,
     "showOIDCReservationLogin": false,
+    "showWritableComponents": true,
     "oidc": {
       "active": false,
       "authority": "https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm",

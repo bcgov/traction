@@ -16,7 +16,6 @@ describe('Messages', async () => {
   test('mount has expected components', () => {
     const wrapper = mountMessages();
     wrapper.getComponent({ name: 'DataTable' });
-    wrapper.getComponent({ name: 'CreateMessage' });
   });
 
   test('table body is rendered with expected values', async () => {

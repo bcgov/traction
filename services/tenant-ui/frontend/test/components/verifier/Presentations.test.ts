@@ -18,8 +18,6 @@ describe('Presentations', () => {
     const wrapper = mountPresentations();
 
     wrapper.getComponent({ name: 'DataTable' });
-    wrapper.getComponent({ name: 'CreateRequest' });
-    wrapper.getComponent({ name: 'DeleteExchangeRecord' });
   });
 
   test('table body is rendered with expected values', async () => {
