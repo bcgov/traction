@@ -39,6 +39,26 @@
         </template>
       </Column>
       <Column
+        sortable
+        field="name"
+        header="Tenant Name"
+        filter-field="name"
+        :show-filter-match-modes="false"
+      >
+        <template #body="{ data }">
+          <LoadingLabel :value="data.name" />
+        </template>
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            placeholder="Search By Tenant Name"
+            @input="filterCallback()"
+          />
+        </template>
+      </Column>
+      <Column
         :sortable="true"
         field="tenant_id"
         header="Tenant ID"
@@ -118,21 +138,31 @@ import { storeToRefs } from 'pinia';
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong, formatGuid } from '@/helpers';
 import CreateApiKey from './createApiKey/CreateApiKey.vue';
+import DeleteApiKey from './DeleteApiKey.vue';
+import LoadingLabel from '@/components/common/LoadingLabel.vue';
 import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
 import RowExpandData from '@/components/common/RowExpandData.vue';
-import DeleteApiKey from './DeleteApiKey.vue';
 
 const toast = useToast();
 
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
 
 // Populating the Table
-const { loading, apiKeys } = storeToRefs(useInnkeeperTenantsStore());
+const { findTenantName } = useInnkeeperTenantsStore();
+const { loading, apiKeys, tenants } = storeToRefs(useInnkeeperTenantsStore());
 const loadTable = async () => {
   innkeeperTenantsStore.listApiKeys().catch((err: string) => {
     console.error(err);
     toast.error(`Failure: ${err}`);
   });
+
+  // Load tenants if not already there for display
+  if (!tenants.value || !tenants.value.length) {
+    innkeeperTenantsStore.listTenants().catch((err) => {
+      console.error(err);
+      toast.error(`Failure: ${err}`);
+    });
+  }
 };
 
 // Formatting the table row
@@ -140,6 +170,7 @@ const formattedApiKeys = computed(() =>
   apiKeys.value.map((api: any) => ({
     tenant_authentication_api_id: formatGuid(api.tenant_authentication_api_id),
     tenant_id: api.tenant_id,
+    name: findTenantName(api.tenant_id),
     alias: api.alias,
     created: formatDateLong(api.created_at),
     created_at: api.created_at,
@@ -153,6 +184,10 @@ onMounted(async () => {
 // Filter for search
 const filter = ref({
   global: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  },
+  name: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   },

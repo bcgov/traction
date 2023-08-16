@@ -158,7 +158,7 @@ const loadTable = async () => {
   messageStore.listMessages().catch((err: any) => {
     toast.error(`Failure: ${err}`);
   });
-  // messages = messages.map()
+
   // Load contacts if not already there for display
   if (!contacts.value || !contacts.value.length) {
     listContacts().catch((err) => {

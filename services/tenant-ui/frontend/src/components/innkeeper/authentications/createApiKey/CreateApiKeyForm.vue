@@ -3,20 +3,27 @@
     <!-- Tenant -->
     <div class="field">
       <label
-        for="tenantId"
-        :class="{ 'p-error': v$.tenantId.$invalid && submitted }"
+        for="selectedTenant"
+        :class="{ 'p-error': v$.selectedTenant.$invalid && submitted }"
       >
-        {{ $t('profile.tenantId') }}
+        {{ $t('common.tenantName') }}
+        <ProgressSpinner v-if="loading" />
       </label>
-      <InputText
-        id="tenantId"
-        v-model="v$.tenantId.$model"
+
+      <AutoComplete
+        id="selectedTenant"
+        v-model="v$.selectedTenant.$model"
         class="w-full"
-        :class="{ 'p-invalid': v$.tenantId.$invalid && submitted }"
+        :disabled="loading"
+        :suggestions="filteredTenants"
+        :dropdown="true"
+        option-label="label"
+        force-selection
+        @complete="searchTenants($event)"
       />
-      <small v-if="v$.tenantId.$invalid && submitted" class="p-error"
-        >{{ v$.tenantId.required.$message }}
-      </small>
+      <small v-if="v$.selectedTenant.$invalid && submitted" class="p-error">{{
+        v$.selectedTenant.required.$message
+      }}</small>
     </div>
 
     <!-- Alias -->
@@ -42,7 +49,11 @@
   <!-- Display created key the one time -->
   <div v-else>
     <p>
-      {{ $t('apiKey.generatedKeyMessage', { key: v$.tenantId.$model }) }}
+      {{
+        $t('apiKey.generatedKeyMessage', {
+          key: formFields.selectedTenant.value,
+        })
+      }}
     </p>
     <p>
       {{ $t('apiKey.generatedKey') }} <br />
@@ -58,8 +69,10 @@ import { reactive, ref } from 'vue';
 import { useInnkeeperTenantsStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // PrimeVue / Validation
+import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
+import ProgressSpinner from 'primevue/progressspinner';
 import { required } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
 import { useToast } from 'vue-toastification';
@@ -70,17 +83,29 @@ const toast = useToast();
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
 
 // use the loading state from the store to disable the button...
-const { loading } = storeToRefs(useInnkeeperTenantsStore());
+const { loading, tenantsDropdown } = storeToRefs(useInnkeeperTenantsStore());
 
-const emit = defineEmits(['closed', 'success']);
+// Autocomplete setup
+const filteredTenants = ref();
+const searchTenants = (event: any) => {
+  if (!event.query.trim().length) {
+    filteredTenants.value = [...(tenantsDropdown as any).value];
+  } else {
+    filteredTenants.value = (tenantsDropdown.value as any).filter(
+      (tenant: any) => {
+        return tenant.label.toLowerCase().includes(event.query.toLowerCase());
+      }
+    );
+  }
+};
 
 // Validation
 const formFields = reactive({
-  tenantId: '',
+  selectedTenant: undefined as any,
   alias: '',
 });
 const rules = {
-  tenantId: { required },
+  selectedTenant: { required },
   alias: {},
 };
 const v$ = useVuelidate(rules, formFields);
@@ -97,7 +122,7 @@ const handleSubmit = async (isFormValid: boolean) => {
 
   try {
     const response = await innkeeperTenantsStore.createApiKey({
-      tenant_id: formFields.tenantId,
+      tenant_id: formFields.selectedTenant.value,
       alias: formFields.alias,
     });
     createdKey.value = response.data.api_key;

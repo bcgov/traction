@@ -3,7 +3,6 @@ import {
   ReservationRecord,
   TenantAuthenticationApiRecord,
   TenantAuthenticationsApiRequest,
-  TenantAuthenticationsApiResponse,
   TenantConfig,
   TenantRecord,
 } from '@/types/acapyApi/acapyInterface';
@@ -12,7 +11,12 @@ import { defineStore, storeToRefs } from 'pinia';
 import { computed, ref, Ref } from 'vue';
 import axios from 'axios';
 import { useAcapyApi } from '../acapyApi';
-import { fetchListFromAPI } from '../utils';
+import {
+  fetchListFromAPI,
+  filterByStateActive,
+  filterMapSortList,
+  sortByLabelAscending,
+} from '../utils';
 import { RESERVATION_STATUS_ROUTE } from '@/helpers/constants';
 import { API_PATH, RESERVATION_STATUSES } from '@/helpers/constants';
 import { useConfigStore } from '../configStore';
@@ -41,6 +45,25 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
   const reservationHistory = computed(() =>
     reservations.value.filter((r) => r.state !== RESERVATION_STATUSES.REQUESTED)
   );
+
+  const tenantsDropdown = computed(() => {
+    // Get the display list of active connections from the util
+    return filterMapSortList(
+      tenants.value,
+      _tenantLabelValue,
+      sortByLabelAscending,
+      filterByStateActive
+    );
+  });
+
+  const findTenantName = computed(() => (id: string) => {
+    if (loading.value) return undefined;
+    // Find the tenant name for an ID
+    const tenant = tenants.value?.find((t: TenantRecord) => {
+      return t.tenant_id === id;
+    });
+    return tenant && tenant.tenant_name ? tenant.tenant_name : '';
+  });
 
   // actions
 
@@ -262,11 +285,26 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
       });
   }
 
+  // Display for a tenant dropdown list item
+  const _tenantLabelValue = (item: TenantRecord) => {
+    let result = null;
+    if (item != null) {
+      result = {
+        label: item.tenant_name,
+        value: item.tenant_id,
+        status: item.state,
+      };
+    }
+    return result;
+  };
+
   return {
     loading,
     error,
     apiKeys,
+    findTenantName,
     tenants,
+    tenantsDropdown,
     reservations,
     currentReservations,
     reservationHistory,
