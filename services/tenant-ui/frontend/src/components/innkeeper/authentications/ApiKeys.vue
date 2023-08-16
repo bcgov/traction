@@ -33,6 +33,11 @@
       <template #empty>{{ $t('common.noRecordsFound') }}</template>
       <template #loading>{{ $t('common.loading') }}</template>
       <Column :expander="true" header-style="width: 3rem" />
+      <Column header="Actions">
+        <template #body="{ data }">
+          <DeleteApiKey :record-id="data.tenant_authentication_api_id" />
+        </template>
+      </Column>
       <Column
         :sortable="true"
         field="tenant_id"
@@ -111,10 +116,11 @@ import { useInnkeeperTenantsStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other components
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
-import { formatDateLong } from '@/helpers';
+import { formatDateLong, formatGuid } from '@/helpers';
 import CreateApiKey from './createApiKey/CreateApiKey.vue';
 import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
 import RowExpandData from '@/components/common/RowExpandData.vue';
+import DeleteApiKey from './DeleteApiKey.vue';
 
 const toast = useToast();
 
@@ -132,7 +138,7 @@ const loadTable = async () => {
 // Formatting the table row
 const formattedApiKeys = computed(() =>
   apiKeys.value.map((api: any) => ({
-    tenant_authentication_api_id: api.tenant_authentication_api_id,
+    tenant_authentication_api_id: formatGuid(api.tenant_authentication_api_id),
     tenant_id: api.tenant_id,
     alias: api.alias,
     created: formatDateLong(api.created_at),

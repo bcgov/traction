@@ -1,12 +1,12 @@
 <template>
-  <form @submit.prevent="handleSubmit(!v$.$invalid)">
+  <form v-if="!createdKey" @submit.prevent="handleSubmit(!v$.$invalid)">
     <!-- Tenant -->
     <div class="field">
       <label
         for="tenantId"
         :class="{ 'p-error': v$.tenantId.$invalid && submitted }"
       >
-        Tenant ID
+        {{ $t('profile.tenantId') }}
       </label>
       <InputText
         id="tenantId"
@@ -39,6 +39,16 @@
       :loading="loading"
     />
   </form>
+  <!-- Display created key the one time -->
+  <div v-else>
+    <p>
+      {{ $t('apiKey.generatedKeyMessage', { key: v$.tenantId.$model }) }}
+    </p>
+    <p>
+      {{ $t('apiKey.generatedKey') }} <br />
+      <strong>{{ createdKey }}</strong>
+    </p>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -76,6 +86,7 @@ const rules = {
 const v$ = useVuelidate(rules, formFields);
 
 // Form submission
+const createdKey = ref('');
 const submitted = ref(false);
 const handleSubmit = async (isFormValid: boolean) => {
   submitted.value = true;
@@ -85,14 +96,12 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 
   try {
-    await innkeeperTenantsStore.createApiKey({
+    const response = await innkeeperTenantsStore.createApiKey({
       tenant_id: formFields.tenantId,
       alias: formFields.alias,
     });
-    emit('success');
-    // close up on success
-    emit('closed');
-    toast.info(t('apiKey.createSuccess'));
+    createdKey.value = response.data.api_key;
+    toast.success(t('apiKey.createSuccess'));
   } catch (error) {
     toast.error(`Failure: ${error}`);
   } finally {

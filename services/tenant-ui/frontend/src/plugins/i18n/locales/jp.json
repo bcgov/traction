@@ -35,6 +35,11 @@
     "apiKeys": "API Keys <JP>",
     "createApiKey": "Create API Key <JP>",
     "createSuccess": "API Key created <JP>",
+    "delete": "Delete API Key <JP>",
+    "deleteConfirmation": "Are you sure you want to delete this API Key? <JP>",
+    "deleteSuccess": "API Key deleted <JP>",
+    "generatedKey": "The generated API key is shown below one-time. This dialog is the only time this key will be shown and can not be retrieved again. <JP>",
+    "generatedKeyMessage": "An API Key has been generated for Tenant ID {key} <JP>",
     "search": "Search API Keys <JP>"
   },
   "common": {

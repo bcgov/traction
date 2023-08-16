@@ -98,3 +98,7 @@ export function isJsonString(str: string) {
   }
   return true;
 }
+
+export function formatGuid(guid: string): string {
+  return guid.replace(/(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/, '$1-$2-$3-$4-$5');
+}

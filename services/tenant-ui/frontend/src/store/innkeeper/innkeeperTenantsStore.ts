@@ -3,6 +3,7 @@ import {
   ReservationRecord,
   TenantAuthenticationApiRecord,
   TenantAuthenticationsApiRequest,
+  TenantAuthenticationsApiResponse,
   TenantConfig,
   TenantRecord,
 } from '@/types/acapyApi/acapyInterface';
@@ -197,14 +198,18 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     }
   }
 
-  
   // Create an API key for a tenant
   async function createApiKey(payload: TenantAuthenticationsApiRequest) {
     error.value = null;
     loading.value = true;
 
+    // TODO: fix response type in plugin swagger generation
+    let createResponse: any = {};
     try {
-      await acapyApi.postHttp(API_PATH.INNKEEPER_AUTHENTICATIONS_API_POST, payload);
+      createResponse = await acapyApi.postHttp(
+        API_PATH.INNKEEPER_AUTHENTICATIONS_API_POST,
+        payload
+      );
       // Reload the keys list after updating
       await listApiKeys();
     } catch (err: any) {
@@ -213,6 +218,28 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
       loading.value = false;
     }
 
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+
+    // return the key
+    return createResponse;
+  }
+
+  // Delete an API Key
+  async function deleteApiKey(id: string) {
+    loading.value = true;
+    try {
+      await acapyApi.deleteHttp(
+        API_PATH.INNKEEPER_AUTHENTICATIONS_API_RECORD(id)
+      );
+      listApiKeys();
+    } catch (err: any) {
+      error.value = err;
+    } finally {
+      loading.value = false;
+    }
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
       throw error.value;
@@ -245,6 +272,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     reservationHistory,
     approveReservation,
     createApiKey,
+    deleteApiKey,
     denyReservation,
     listApiKeys,
     listTenants,
