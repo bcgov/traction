@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@intlify/unplugin-vue-i18n": "^0.12.3",
+    "@jsonforms/vue": "^3.1.0",
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.3",
     "axios": "^1.4.0",
