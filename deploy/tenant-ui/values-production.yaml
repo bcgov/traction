@@ -1,6 +1,4 @@
 ingressSuffix: -prod.apps.silver.devops.gov.bc.ca
-image:
-  tag: "0.2.14"
 traction:
   pluginInnkeeper:
     existingSecret: traction-acapy-plugin-innkeeper
