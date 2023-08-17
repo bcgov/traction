@@ -1,7 +1,6 @@
 ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
 acapy:
   image:
-    tag: "sha-f678ca9"
     pullPolicy: Always
   secret:
     adminApiKey:
@@ -44,7 +43,6 @@ acapy:
         network.openshift.io/policy-group: ingress
 tenant_proxy:
   image:
-    tag: "sha-f678ca9"
     pullPolicy: Always
   networkPolicy:
     enabled: true

@@ -4,7 +4,6 @@ config:
     name: bcovrin-test
 acapy:
   image:
-    tag: "0.2.14"
     pullPolicy: Always
   secret:
     adminApiKey:
@@ -31,7 +30,6 @@ acapy:
         network.openshift.io/policy-group: ingress
 tenant_proxy:
   image:
-    tag: "0.2.14"
     pullPolicy: Always
   networkPolicy:
     enabled: true
