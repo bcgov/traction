@@ -190,8 +190,8 @@ const { user } = storeToRefs(useOidcStore());
 const reservationIdResult: any = ref('');
 const reservationPwdResult: any = ref('');
 
-const onChange = (event: JsonFormsChangeEvent) => {
-  console.log(event);
+const onChange = function (event: JsonFormsChangeEvent) {
+  console.log('event', event.data);
 };
 
 const formSchema = {
@@ -199,7 +199,6 @@ const formSchema = {
   properties: {
     emailAddress: {
       type: 'string',
-      description: 'Email address for the reservation',
     },
     fullName: {
       type: 'string',
@@ -209,7 +208,6 @@ const formSchema = {
     },
     tenantName: {
       type: 'string',
-      description: 'Name of the tenant',
     },
     tenantReason: {
       type: 'string',
@@ -217,21 +215,17 @@ const formSchema = {
   },
   required: ['emailAddress', 'tenantName'],
 };
-const data = {
+const data: Object = ref({
   emailAddress: '',
   fullName: '',
   'phone/Mobile': '',
   tenantName: '',
   tenantReason: '',
-};
+});
 
 const renderers = [
   ...vanillaRenderers,
   // TODO: Add custom renderer for the form
-  // {
-  //   tester: () => true,
-  //   renderer: JsonForms,
-  // },
 ];
 
 // Login Form and validation
