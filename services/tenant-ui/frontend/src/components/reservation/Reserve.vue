@@ -19,6 +19,14 @@
 
   <!-- Submit Request -->
   <div v-else>
+    <json-forms
+      :schema="formSchema"
+      :renderers="renderers"
+      :data="data"
+      @change="onChange"
+    ></json-forms>
+
+    <!-- TODO: Replace this with the form schema logic -->
     <form @submit.prevent="handleSubmit(!v$.$invalid)">
       <!-- Email -->
       <div class="field mt-5 w-full">
@@ -160,6 +168,8 @@ import Textarea from 'primevue/textarea';
 import { useToast } from 'vue-toastification';
 import { email, required } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
+import { JsonForms, JsonFormsChangeEvent } from '@jsonforms/vue';
+import { vanillaRenderers } from '@jsonforms/vue-vanilla';
 // State
 import { useConfigStore, useOidcStore, useReservationStore } from '@/store';
 import { storeToRefs } from 'pinia';
@@ -179,6 +189,50 @@ const { user } = storeToRefs(useOidcStore());
 // The reservation return object
 const reservationIdResult: any = ref('');
 const reservationPwdResult: any = ref('');
+
+const onChange = (event: JsonFormsChangeEvent) => {
+  console.log(event);
+};
+
+const formSchema = {
+  type: 'object',
+  properties: {
+    emailAddress: {
+      type: 'string',
+      description: 'Email address for the reservation',
+    },
+    fullName: {
+      type: 'string',
+    },
+    'phone/Mobile': {
+      type: 'string',
+    },
+    tenantName: {
+      type: 'string',
+      description: 'Name of the tenant',
+    },
+    tenantReason: {
+      type: 'string',
+    },
+  },
+  required: ['emailAddress', 'tenantName'],
+};
+const data = {
+  emailAddress: '',
+  fullName: '',
+  'phone/Mobile': '',
+  tenantName: '',
+  tenantReason: '',
+};
+
+const renderers = [
+  ...vanillaRenderers,
+  // TODO: Add custom renderer for the form
+  // {
+  //   tester: () => true,
+  //   renderer: JsonForms,
+  // },
+];
 
 // Login Form and validation
 const formFields = reactive({
