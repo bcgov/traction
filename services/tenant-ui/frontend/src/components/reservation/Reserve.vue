@@ -279,3 +279,31 @@ const handleSubmit2 = (event: any) => {
   console.log('handleSubmit2 event', event);
 };
 </script>
+<style scoped lang="scss">
+:deep(.control) {
+  margin-bottom: 0.5rem;
+  input {
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+    padding: 0.45rem;
+    color: #495057;
+  }
+  input:hover,
+  input:focus {
+    border-color: #2b3f51;
+  }
+  input:focus {
+    box-shadow: 0 0 0.3rem 0.1rem #87a6c1;
+  }
+  input:focus-visible {
+    outline: none;
+  }
+  .error {
+    font-weight: 200;
+    color: red;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+  }
+}
+</style>
