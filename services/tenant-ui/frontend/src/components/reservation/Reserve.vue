@@ -19,12 +19,22 @@
 
   <!-- Submit Request -->
   <div v-else>
-    <json-forms
-      :schema="formSchema"
-      :renderers="renderers"
-      :data="data"
-      @change="onChange"
-    ></json-forms>
+    <form>
+      <json-forms
+        :schema="formSchema"
+        :renderers="renderers"
+        :data="data"
+        @change="onChange"
+      ></json-forms>
+      <Button
+        type="button"
+        class="w-full mt-5"
+        :label="$t('common.submit')"
+        :disabled="!!loading"
+        :loading="!!loading"
+        @click="handleSubmit2(data)"
+      />
+    </form>
 
     <!-- TODO: Replace this with the form schema logic -->
     <form @submit.prevent="handleSubmit(!v$.$invalid)">
@@ -190,8 +200,12 @@ const { user } = storeToRefs(useOidcStore());
 const reservationIdResult: any = ref('');
 const reservationPwdResult: any = ref('');
 
+// This stores the form data.
+const data: any = ref({});
+
+// Make sure the data object is updated when the form changes.
 const onChange = function (event: JsonFormsChangeEvent) {
-  console.log('event', event.data);
+  data.value = event.data;
 };
 
 const formSchema = {
@@ -203,7 +217,10 @@ const formSchema = {
     fullName: {
       type: 'string',
     },
-    'phone/Mobile': {
+    phoneNumber: {
+      type: 'string',
+    },
+    miningClientID: {
       type: 'string',
     },
     tenantName: {
@@ -215,18 +232,8 @@ const formSchema = {
   },
   required: ['emailAddress', 'tenantName'],
 };
-const data: Object = ref({
-  emailAddress: '',
-  fullName: '',
-  'phone/Mobile': '',
-  tenantName: '',
-  tenantReason: '',
-});
 
-const renderers = [
-  ...vanillaRenderers,
-  // TODO: Add custom renderer for the form
-];
+const renderers = [...vanillaRenderers];
 
 // Login Form and validation
 const formFields = reactive({
@@ -267,5 +274,8 @@ const handleSubmit = async (isFormValid: boolean) => {
     console.error(err);
     toast.error(`Failure making request: ${err}`);
   }
+};
+const handleSubmit2 = (event: any) => {
+  console.log('handleSubmit2 event', event);
 };
 </script>
