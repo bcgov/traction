@@ -434,13 +434,13 @@ class TenantAuthenticationApiRecord(BaseRecord):
             session, tenant_authentication_api_id, for_update=for_update
         )
         return record
-
+    
     @classmethod
     async def query_by_tenant_id(
         cls,
         session: ProfileSession,
         tenant_id: str,
-    ) -> "TenantAuthenticationApiRecord":
+    ) -> "List[TenantAuthenticationApiRecord]":
         """Retrieve TenantAuthenticationApiRecord by tenant_id.
         Args:
             session: the profile session to use
