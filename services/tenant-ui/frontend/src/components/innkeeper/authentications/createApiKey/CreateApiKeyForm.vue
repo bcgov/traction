@@ -37,6 +37,9 @@
         class="w-full"
         :class="{ 'p-invalid': v$.alias.$invalid && submitted }"
       />
+      <small v-if="v$.alias.$invalid && submitted" class="p-error">{{
+        v$.alias.required.$message
+      }}</small>
     </div>
     <Button
       type="submit"
@@ -106,7 +109,7 @@ const formFields = reactive({
 });
 const rules = {
   selectedTenant: { required },
-  alias: {},
+  alias: { required },
 };
 const v$ = useVuelidate(rules, formFields);
 

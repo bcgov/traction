@@ -31,7 +31,7 @@
     "orSignInWith": "Or Sign In With"
   },
   "apiKey": {
-    "alias": "Alias for Key (Optional)",
+    "alias": "Alias for Key",
     "apiKeys": "API Keys",
     "createApiKey": "Create API Key",
     "createSuccess": "API Key created",
