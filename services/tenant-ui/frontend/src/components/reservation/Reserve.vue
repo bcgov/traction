@@ -22,6 +22,7 @@
     <form>
       <json-forms
         :schema="formSchema"
+        :uischema="formUISchema"
         :renderers="renderers"
         :data="data"
         @change="onChange"
@@ -220,9 +221,6 @@ const formSchema = {
     phoneNumber: {
       type: 'string',
     },
-    miningClientID: {
-      type: 'string',
-    },
     tenantName: {
       type: 'string',
     },
@@ -231,6 +229,36 @@ const formSchema = {
     },
   },
   required: ['emailAddress', 'tenantName'],
+};
+
+const formUISchema = {
+  type: 'VerticalLayout',
+  elements: [
+    {
+      type: 'Control',
+      scope: '#/properties/tenantName',
+    },
+    {
+      type: 'Control',
+      scope: '#/properties/phoneNumber',
+      label: 'Phone / Mobile',
+    },
+    {
+      type: 'Control',
+      scope: '#/properties/fullName',
+    },
+    {
+      type: 'Control',
+      scope: '#/properties/emailAddress',
+    },
+    {
+      type: 'Control',
+      scope: '#/properties/tenantReason',
+      options: {
+        multi: true,
+      },
+    },
+  ],
 };
 
 const renderers = [...vanillaRenderers];
@@ -282,21 +310,28 @@ const handleSubmit2 = (event: any) => {
 <style scoped lang="scss">
 :deep(.control) {
   margin-bottom: 0.5rem;
-  input {
+  input,
+  textarea {
     width: 100%;
     border-radius: 5px;
     border: 1px solid #ced4da;
     padding: 0.45rem;
     color: #495057;
+    font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+    font-size: 1rem;
   }
   input:hover,
-  input:focus {
+  input:focus,
+  textarea:hover,
+  textarea:focus {
     border-color: #2b3f51;
   }
-  input:focus {
+  input:focus,
+  textarea:focus {
     box-shadow: 0 0 0.3rem 0.1rem #87a6c1;
   }
-  input:focus-visible {
+  input:focus-visible,
+  textarea:focus-visible {
     outline: none;
   }
   .error {
