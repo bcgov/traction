@@ -1,7 +1,6 @@
 ingressSuffix: -test.apps.silver.devops.gov.bc.ca
 acapy:
   image:
-    tag: "0.2.14"
     pullPolicy: Always
   networkPolicy:
     enabled: true
@@ -17,7 +16,6 @@ acapy:
     targetMemoryUtilizationPercentage: 80
 tenant_proxy:
   image:
-    tag: "0.2.14"
     pullPolicy: Always
   networkPolicy:
     enabled: true
