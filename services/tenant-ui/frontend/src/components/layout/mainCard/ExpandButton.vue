@@ -18,5 +18,3 @@ import { useCommonStore } from '@/store/commonStore';
 import { storeToRefs } from 'pinia';
 const { cardExpanded } = storeToRefs(useCommonStore());
 </script>
-
-<style scoped lang="scss"></style>

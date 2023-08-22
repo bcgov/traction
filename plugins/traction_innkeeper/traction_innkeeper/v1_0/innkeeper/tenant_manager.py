@@ -15,7 +15,7 @@ from aries_cloudagent.storage.error import StorageError, StorageNotFoundError
 from aries_cloudagent.wallet.models.wallet_record import WalletRecord
 
 from .config import TractionInnkeeperConfig, InnkeeperWalletConfig, ReservationConfig
-from .models import TenantRecord, ReservationRecord
+from .models import TenantAuthenticationApiRecord, TenantRecord, ReservationRecord
 
 
 class TenantManager:
@@ -291,3 +291,36 @@ class TenantManager:
         if not wallet_record:
             raise StorageNotFoundError(f"Tenant not found with wallet_id '{wallet_id}'")
         return wallet_record, tenant_record
+
+    def check_api_key(
+        self, api_key: str, apiRecord: TenantAuthenticationApiRecord
+    ):
+        if api_key is None or apiRecord is None:
+            return None
+
+        # make a hash from passed in value with saved salt...
+        key_token = bcrypt.hashpw(
+            api_key.encode("utf-8"),
+            apiRecord.api_key_token_salt.encode("utf-8"),
+        )
+        # check the passed in value/hash against the calculated hash.
+        checkpw = bcrypt.checkpw(api_key.encode("utf-8"), key_token)
+        self._logger.debug(
+            f"bcrypt.checkpw(api_key.encode('utf-8'), key_token) = {checkpw}"
+        )
+
+        # check the passed in value against the saved hash
+        checkpw2 = bcrypt.checkpw(
+            api_key.encode("utf-8"),
+            apiRecord.api_key_token_hash.encode("utf-8"),
+        )
+        self._logger.debug(
+            f"bcrypt.checkpw(api_key.encode('utf-8'), reservation.api_key_token_hash.encode('utf-8')) = {checkpw2}"
+        )
+
+        if checkpw and checkpw2:
+            # if password is correct, then return...
+            return key_token.decode("utf-8")
+        else:
+            # else return None
+            return None

@@ -413,9 +413,36 @@ async def tenant_create_token(request: web.BaseRequest):
     tenant_id = request.match_info["tenant_id"]
     wallet_key = None
 
-    if request.body_exists:
-        body = await request.json()
-        wallet_key = body.get("wallet_key")
+    # If no body raise an error
+    if not request.body_exists:
+        raise web.HTTPUnauthorized(reason="Wallet Key or API Key not provided")
+
+    body = await request.json()
+    wallet_key = body.get("wallet_key")
+    api_key = body.get("api_key")
+
+    # If neither wallet_key or api_key provided raise an error
+    if not wallet_key and not api_key:
+        raise web.HTTPUnauthorized(reason="Wallet Key or API Key not provided")
+    
+    # If both wallet_key and api_key provided raise an error
+    if wallet_key and api_key:
+        raise web.HTTPUnprocessableEntity(reason="Wallet Key and API Key cannot be provided together")
+
+    # if an API key is provided verify it is valid
+    if api_key:  
+        async with profile.session() as session:
+            tenant_keys = await TenantAuthenticationApiRecord.query_by_tenant_id(session, tenant_id)
+            LOGGER.warning(f"tenant_keys = {tenant_keys}")
+            # if no keys found raise an error
+            if not tenant_keys:
+                raise web.HTTPUnauthorized(reason="API Key not found")
+            # check if the provided key matches any of the tenant keys
+            for tenant_key in tenant_keys:
+                if mgr.check_api_key(api_key, tenant_key):
+                    break
+            else:
+                raise web.HTTPUnauthorized(reason="API Key mismatch")
 
     # first look up the tenant...
     async with profile.session() as session:
@@ -432,7 +459,9 @@ async def tenant_create_token(request: web.BaseRequest):
             f"Wallet {wallet_id} doesn't require the wallet key but one was provided"
         )
 
-    token = await multitenant_mgr.create_auth_token(wallet_record, wallet_key)
+    # Wallet key access use suppled, API key access used looked up key
+    key = wallet_key if wallet_key else wallet_record.wallet_key
+    token = await multitenant_mgr.create_auth_token(wallet_record, key)
 
     return web.json_response({"token": token})
 

@@ -30,12 +30,13 @@ describe('LoginForm', async () => {
     await mockVuelidate();
     const wrapper = mountLoginForm();
 
-    expect(wrapper.findAllComponents({ name: 'InputText' })).toHaveLength(2);
+    expect(wrapper.findAllComponents({ name: 'InputText' })).toHaveLength(4);
     wrapper.getComponent({ name: 'Button' });
   });
 
   test('invalid walletId renders error message', async () => {
     const loginValues = JSON.parse(JSON.stringify(login));
+    loginValues.activeTab = 0;
     loginValues.walletId.$invalid = true;
     loginValues.$invalid = true;
     await mockVuelidate(loginValues);
