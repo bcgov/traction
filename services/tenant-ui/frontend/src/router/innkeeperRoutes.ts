@@ -1,9 +1,10 @@
 import About from '@/views/About.vue';
 // Innkeeper
 import InnkeeperUi from '@/views/InnkeeperUi.vue';
-import InnkeeperTenants from '@/views/innkeeper/InnkeeperTenants.vue';
+import InnkeeperApiKeys from '@/views/innkeeper/InnkeeperApiKeys.vue';
 import InnkeeperReservations from '@/views/innkeeper/InnkeeperReservations.vue';
 import InnkeeperReservationsHistory from '@/views/innkeeper/InnkeeperReservationsHistory.vue';
+import InnkeeperTenants from '@/views/innkeeper/InnkeeperTenants.vue';
 
 const innkeeperRoutes = [
   {
@@ -25,6 +26,13 @@ const innkeeperRoutes = [
         path: 'reservations/history',
         name: 'InnkeeperReservationsHistory',
         component: InnkeeperReservationsHistory,
+      },
+
+      // Authentications
+      {
+        path: 'authentications/keys',
+        name: 'InnkeeperApiKeys',
+        component: InnkeeperApiKeys,
       },
 
       // About

@@ -39,6 +39,11 @@ const items = ref([
     to: { name: 'InnkeeperTenants' },
   },
   {
+    label: () => t('apiKey.apiKeys'),
+    icon: 'pi pi-fw pi-key',
+    to: { name: 'InnkeeperApiKeys' },
+  },
+  {
     label: () => t('about.about'),
     icon: 'pi pi-fw pi-question-circle',
     to: { name: 'InnkeeperAbout' },

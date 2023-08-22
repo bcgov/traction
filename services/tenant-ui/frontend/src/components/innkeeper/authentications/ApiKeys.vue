@@ -1,39 +1,30 @@
 <template>
-  <MainCardContent
-    :title="$t('messages.messages')"
-    :refresh-callback="loadTable"
-  >
+  <MainCardContent :title="$t('apiKey.apiKeys')" :refresh-callback="loadTable">
     <DataTable
       v-model:expandedRows="expandedRows"
-      v-model:selection="selectedMessage"
       v-model:filters="filter"
       :loading="loading"
+      :value="formattedApiKeys"
       :paginator="true"
       :rows="TABLE_OPT.ROWS_DEFAULT"
       :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
-      :value="formattedMessages"
-      :global-filter-fields="['content']"
       selection-mode="single"
-      data-key="message_id"
+      data-key="tenant_id"
+      sort-field="created_at"
+      :sort-order="-1"
       filter-display="menu"
     >
       <template #header>
         <div class="flex justify-content-between">
           <div class="flex justify-content-start">
-            <CreateMessage
-              v-if="
-                config.frontend.showWritableComponents === true ||
-                config.frontend.showWritableComponents === 'true'
-              "
-              @success="loadTable"
-            />
+            <CreateApiKey @success="loadTable" />
           </div>
           <div class="flex justify-content-end">
             <span class="p-input-icon-left">
-              <i class="pi pi-search" />
+              <i class="pi pi-search ml-0" />
               <InputText
-                v-model="filter.content.value"
-                placeholder="Search Messages"
+                v-model="filter.global.value"
+                :placeholder="$t('apiKey.search')"
               />
             </span>
           </div>
@@ -41,31 +32,37 @@
       </template>
       <template #empty>{{ $t('common.noRecordsFound') }}</template>
       <template #loading>{{ $t('common.loading') }}</template>
+      <Column :expander="true" header-style="width: 3rem" />
+      <Column header="Actions">
+        <template #body="{ data }">
+          <DeleteApiKey :record-id="data.tenant_authentication_api_id" />
+        </template>
+      </Column>
       <Column
         sortable
-        field="contact"
-        header="Contact"
-        filter-field="contact"
+        field="name"
+        header="Tenant Name"
+        filter-field="name"
         :show-filter-match-modes="false"
       >
         <template #body="{ data }">
-          <LoadingLabel :value="data.contact" />
+          <LoadingLabel :value="data.name" />
         </template>
         <template #filter="{ filterModel, filterCallback }">
           <InputText
             v-model="filterModel.value"
             type="text"
             class="p-column-filter"
-            placeholder="Search By Contact"
+            placeholder="Search By Tenant Name"
             @input="filterCallback()"
           />
         </template>
       </Column>
       <Column
         :sortable="true"
-        field="state"
-        header="State"
-        filter-field="state"
+        field="tenant_id"
+        header="Tenant ID"
+        filter-field="tenant_id"
         :show-filter-match-modes="false"
       >
         <template #filter="{ filterModel, filterCallback }">
@@ -73,16 +70,16 @@
             v-model="filterModel.value"
             type="text"
             class="p-column-filter"
-            placeholder="Search By State"
+            placeholder="Filter"
             @input="filterCallback()"
           />
         </template>
       </Column>
       <Column
         :sortable="true"
-        field="content"
-        header="Content"
-        filter-field="content"
+        field="alias"
+        header="Alias"
+        filter-field="alias"
         :show-filter-match-modes="false"
       >
         <template #filter="{ filterModel, filterCallback }">
@@ -90,130 +87,124 @@
             v-model="filterModel.value"
             type="text"
             class="p-column-filter"
-            placeholder="Search By Content"
+            placeholder="Filter"
             @input="filterCallback()"
           />
         </template>
       </Column>
       <Column
         :sortable="true"
-        field="created_at"
-        header="Sent"
-        filter-field="created_at"
+        field="created"
+        header="Created at"
+        filter-field="created"
         :show-filter-match-modes="false"
       >
         <template #body="{ data }">
-          {{ data.created_at }}
+          {{ data.created }}
         </template>
         <template #filter="{ filterModel, filterCallback }">
           <InputText
             v-model="filterModel.value"
             type="text"
             class="p-column-filter"
-            placeholder="Search By Time"
+            placeholder="Filter"
             @input="filterCallback()"
           />
         </template>
       </Column>
+      <template #expansion="{ data }">
+        <RowExpandData
+          :id="data.tenant_authentication_api_id"
+          :url="API_PATH.INNKEEPER_AUTHENTICATIONS_API"
+        />
+      </template>
     </DataTable>
   </MainCardContent>
 </template>
 
 <script setup lang="ts">
 // Vue
-import { Ref, computed, onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 // PrimeVue
-import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
+import { FilterMatchMode } from 'primevue/api';
 import { useToast } from 'vue-toastification';
 // State
-import { useContactsStore, useMessageStore } from '@/store';
-import { Message } from '@/store/messageStore';
+import { useInnkeeperTenantsStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other components
-import { formatDateLong } from '@/helpers';
-import { TABLE_OPT } from '@/helpers/constants';
-import MainCardContent from '../layout/mainCard/MainCardContent.vue';
-import CreateMessage from './createMessage/CreateMessage.vue';
-import LoadingLabel from '../common/LoadingLabel.vue';
-
-// State
-import { useConfigStore } from '@/store/configStore';
-const { config } = storeToRefs(useConfigStore());
-
-console.log('config', config);
+import { TABLE_OPT, API_PATH } from '@/helpers/constants';
+import { formatDateLong, formatGuid } from '@/helpers';
+import CreateApiKey from './createApiKey/CreateApiKey.vue';
+import DeleteApiKey from './DeleteApiKey.vue';
+import LoadingLabel from '@/components/common/LoadingLabel.vue';
+import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
+import RowExpandData from '@/components/common/RowExpandData.vue';
 
 const toast = useToast();
 
-const messageStore = useMessageStore();
-const { listContacts, findConnectionName } = useContactsStore();
+const innkeeperTenantsStore = useInnkeeperTenantsStore();
 
-const { loading, messages, selectedMessage } = storeToRefs(useMessageStore());
-const { contacts } = storeToRefs(useContactsStore());
-
+// Populating the Table
+const { findTenantName } = useInnkeeperTenantsStore();
+const { loading, apiKeys, tenants } = storeToRefs(useInnkeeperTenantsStore());
 const loadTable = async () => {
-  // should return latest message first
-  messageStore.listMessages().catch((err: any) => {
+  innkeeperTenantsStore.listApiKeys().catch((err: string) => {
+    console.error(err);
     toast.error(`Failure: ${err}`);
   });
 
-  // Load contacts if not already there for display
-  if (!contacts.value || !contacts.value.length) {
-    listContacts().catch((err) => {
+  // Load tenants if not already there for display
+  if (!tenants.value || !tenants.value.length) {
+    innkeeperTenantsStore.listTenants().catch((err) => {
       console.error(err);
       toast.error(`Failure: ${err}`);
     });
   }
 };
-const expandedRows = ref([]);
-interface FilteredMessage {
-  connection_id: string;
-  contact: string | undefined;
-  state: string;
-  content: string;
-  sent_time: string;
-  created_at: string;
-}
-const formattedMessages: Ref<FilteredMessage[]> = computed(() =>
-  messages.value.map((msg: Message) => ({
-    connection_id: msg.connection_id,
-    contact: findConnectionName(msg.connection_id),
-    state: msg.state,
-    content: msg.content,
-    sent_time: msg.sent_time,
-    created_at: formatDateLong(msg.created_at),
+
+// Formatting the table row
+const formattedApiKeys = computed(() =>
+  apiKeys.value.map((api: any) => ({
+    tenant_authentication_api_id: formatGuid(api.tenant_authentication_api_id),
+    tenant_id: api.tenant_id,
+    name: findTenantName(api.tenant_id),
+    alias: api.alias,
+    created: formatDateLong(api.created_at),
+    created_at: api.created_at,
   }))
 );
+
+onMounted(async () => {
+  loadTable();
+});
+
+// Filter for search
 const filter = ref({
-  content: {
+  global: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   },
-  cred_def_id: {
+  name: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   },
-  contact: {
+  tenant_id: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   },
-  credential_definition_id: {
+  alias: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   },
-  state: {
-    value: null,
-    matchMode: FilterMatchMode.CONTAINS,
-  },
-  created_at: {
+  created: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   },
 });
 
-onMounted(() => {
-  loadTable();
-});
+// necessary for expanding rows, we don't do anything with this
+const expandedRows = ref([]);
 </script>

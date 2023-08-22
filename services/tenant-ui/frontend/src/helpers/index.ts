@@ -59,8 +59,8 @@ export function formatDate(value: string) {
  * @param {String} value A string representation of a date
  * @returns {String} A string representation of `value`
  */
-export function formatDateLong(value: string) {
-  return _dateFnsFormat(value, 'MMMM d yyyy, h:mm:ss a');
+export function formatDateLong(value: string | undefined) {
+  return value ? _dateFnsFormat(value, 'MMMM d yyyy, h:mm:ss a') : '';
 }
 
 /**
@@ -97,4 +97,8 @@ export function isJsonString(str: string) {
     return false;
   }
   return true;
+}
+
+export function formatGuid(guid: string): string {
+  return guid.replace(/(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/, '$1-$2-$3-$4-$5');
 }

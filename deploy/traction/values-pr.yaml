@@ -26,8 +26,8 @@ acapy:
         create_public_did: ["bcovrin-test"]
       reservation:
         expiry_minutes: 2880
-        auto_approve: false
-        auto_issuer: false
+        auto_approve: true
+        auto_issuer: true
   resources:
     limits:
       cpu: 200m

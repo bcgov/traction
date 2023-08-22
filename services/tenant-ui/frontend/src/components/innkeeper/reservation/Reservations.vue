@@ -172,7 +172,6 @@
 // Vue
 import { onMounted, ref, computed } from 'vue';
 // PrimeVue
-import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable, { DataTableFilterMetaData } from 'primevue/datatable';
 import Dialog from 'primevue/dialog';
