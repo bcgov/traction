@@ -413,7 +413,6 @@ async def tenant_create_token(request: web.BaseRequest):
     tenant_id = request.match_info["tenant_id"]
     wallet_key = None
 
-    LOGGER.warning(f"HERE NOW")
     # If no body raise an error
     if not request.body_exists:
         raise web.HTTPUnauthorized(reason="Wallet Key or API Key not provided")
