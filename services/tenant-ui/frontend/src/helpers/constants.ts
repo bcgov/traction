@@ -50,6 +50,10 @@ export const API_PATH = {
   DID_EXCHANGE_ACCEPT_REQUEST: (id: string) =>
     `/didexchange/${id}/accept-request`,
 
+  INNKEEPER_AUTHENTICATIONS_API: '/innkeeper/authentications/api/',
+  INNKEEPER_AUTHENTICATIONS_API_RECORD: (id: string) =>
+    `/innkeeper/authentications/api/${id}`,
+  INNKEEPER_AUTHENTICATIONS_API_POST: '/innkeeper/authentications/api',
   INNKEEPER_TOKEN: '/innkeeper/token',
   INNKEEPER_TENANTS: '/innkeeper/tenants/',
   INNKEEPER_TENANT: (id: string) => `/innkeeper/tenants/${id}`,

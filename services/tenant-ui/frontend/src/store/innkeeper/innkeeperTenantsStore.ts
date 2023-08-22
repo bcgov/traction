@@ -1,11 +1,22 @@
 // Types
-import { TenantConfig } from '@/types/acapyApi/acapyInterface';
+import {
+  ReservationRecord,
+  TenantAuthenticationApiRecord,
+  TenantAuthenticationsApiRequest,
+  TenantConfig,
+  TenantRecord,
+} from '@/types/acapyApi/acapyInterface';
 
 import { defineStore, storeToRefs } from 'pinia';
 import { computed, ref, Ref } from 'vue';
 import axios from 'axios';
 import { useAcapyApi } from '../acapyApi';
-import { fetchListFromAPI } from '../utils';
+import {
+  fetchListFromAPI,
+  filterByStateActive,
+  filterMapSortList,
+  sortByLabelAscending,
+} from '../utils';
 import { RESERVATION_STATUS_ROUTE } from '@/helpers/constants';
 import { API_PATH, RESERVATION_STATUSES } from '@/helpers/constants';
 import { useConfigStore } from '../configStore';
@@ -23,8 +34,9 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
   // state
   const error: Ref<string | null> = ref(null);
   const loading: Ref<boolean> = ref(false);
-  const reservations: Ref<any[]> = ref([]);
-  const tenants: Ref<any[]> = ref([]);
+  const apiKeys: Ref<TenantAuthenticationApiRecord[]> = ref([]);
+  const reservations: Ref<ReservationRecord[]> = ref([]);
+  const tenants: Ref<TenantRecord[]> = ref([]);
 
   // getters
   const currentReservations = computed(() =>
@@ -33,6 +45,25 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
   const reservationHistory = computed(() =>
     reservations.value.filter((r) => r.state !== RESERVATION_STATUSES.REQUESTED)
   );
+
+  const tenantsDropdown = computed(() => {
+    // Get the display list of active connections from the util
+    return filterMapSortList(
+      tenants.value,
+      _tenantLabelValue,
+      sortByLabelAscending,
+      filterByStateActive
+    );
+  });
+
+  const findTenantName = computed(() => (id: string) => {
+    if (loading.value) return undefined;
+    // Find the tenant name for an ID
+    const tenant = tenants.value?.find((t: TenantRecord) => {
+      return t.tenant_id === id;
+    });
+    return tenant && tenant.tenant_name ? tenant.tenant_name : '';
+  });
 
   // actions
 
@@ -43,6 +74,17 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
   const backendApi = axios.create({
     baseURL: `${window.location.origin}/${config.value.frontend.apiPath}`,
   });
+
+  async function listApiKeys() {
+    return fetchListFromAPI(
+      acapyApi,
+      API_PATH.INNKEEPER_AUTHENTICATIONS_API,
+      apiKeys,
+      error,
+      loading,
+      {}
+    );
+  }
 
   async function listTenants() {
     return fetchListFromAPI(
@@ -179,6 +221,54 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     }
   }
 
+  // Create an API key for a tenant
+  async function createApiKey(payload: TenantAuthenticationsApiRequest) {
+    error.value = null;
+    loading.value = true;
+
+    // TODO: fix response type in plugin swagger generation
+    let createResponse: any = {};
+    try {
+      createResponse = await acapyApi.postHttp(
+        API_PATH.INNKEEPER_AUTHENTICATIONS_API_POST,
+        payload
+      );
+      // Reload the keys list after updating
+      await listApiKeys();
+    } catch (err: any) {
+      error.value = err;
+    } finally {
+      loading.value = false;
+    }
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+
+    // return the key
+    return createResponse;
+  }
+
+  // Delete an API Key
+  async function deleteApiKey(id: string) {
+    loading.value = true;
+    try {
+      await acapyApi.deleteHttp(
+        API_PATH.INNKEEPER_AUTHENTICATIONS_API_RECORD(id)
+      );
+      listApiKeys();
+    } catch (err: any) {
+      error.value = err;
+    } finally {
+      loading.value = false;
+    }
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+  }
+
   // private methods
 
   // Helper method to send email
@@ -195,15 +285,34 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
       });
   }
 
+  // Display for a tenant dropdown list item
+  const _tenantLabelValue = (item: TenantRecord) => {
+    let result = null;
+    if (item != null) {
+      result = {
+        label: item.tenant_name,
+        value: item.tenant_id,
+        status: item.state,
+      };
+    }
+    return result;
+  };
+
   return {
     loading,
     error,
+    apiKeys,
+    findTenantName,
     tenants,
+    tenantsDropdown,
     reservations,
     currentReservations,
     reservationHistory,
     approveReservation,
+    createApiKey,
+    deleteApiKey,
     denyReservation,
+    listApiKeys,
     listTenants,
     listReservations,
     updateTenantConfig,

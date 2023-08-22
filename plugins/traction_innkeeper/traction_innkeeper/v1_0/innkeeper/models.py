@@ -489,6 +489,6 @@ class TenantAuthenticationApiRecordSchema(BaseRecordSchema):
     )
 
     alias = fields.Str(
-        required=False,
+        required=True,
         description="Alias description for this API key",
     )
