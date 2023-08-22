@@ -21,7 +21,7 @@
   <div v-else>
     <form>
       <json-forms
-        :schema="formSchema"
+        :schema="formDataSchema"
         :uischema="formUISchema"
         :renderers="renderers"
         :data="data"
@@ -188,6 +188,10 @@ import { storeToRefs } from 'pinia';
 import { RESERVATION_STATUSES } from '@/helpers/constants';
 import ShowWallet from './status/ShowWallet.vue';
 import ReservationConfirmation from './ReservationConfirmation.vue';
+import axios from 'axios';
+
+// Import assertions
+import { formDataSchema, formUISchema } from './formConfig.json';
 
 const toast = useToast();
 
@@ -208,6 +212,18 @@ const data: any = ref({});
 const onChange = function (event: JsonFormsChangeEvent) {
   data.value = event.data;
 };
+
+// const formDataSchema: any = ref({});
+// const formUISchema: any = ref({});
+
+// await axios.get('/forms/reservation.json').then((response) => {
+//   formDataSchema.value = response.data.formDataSchema;
+//   formUISchema.value = response.data.formUISchema;
+// });
+
+// console.log('formDataSchema', formDataSchema.value);
+
+// console.log('formConfig', formConfig);
 
 const formSchema = {
   type: 'object',
@@ -231,35 +247,37 @@ const formSchema = {
   required: ['emailAddress', 'tenantName'],
 };
 
-const formUISchema = {
-  type: 'VerticalLayout',
-  elements: [
-    {
-      type: 'Control',
-      scope: '#/properties/tenantName',
-    },
-    {
-      type: 'Control',
-      scope: '#/properties/phoneNumber',
-      label: 'Phone / Mobile',
-    },
-    {
-      type: 'Control',
-      scope: '#/properties/fullName',
-    },
-    {
-      type: 'Control',
-      scope: '#/properties/emailAddress',
-    },
-    {
-      type: 'Control',
-      scope: '#/properties/tenantReason',
-      options: {
-        multi: true,
-      },
-    },
-  ],
-};
+console.log('formSchema', formSchema);
+
+// const formUISchema = {
+//   type: 'VerticalLayout',
+//   elements: [
+//     {
+//       type: 'Control',
+//       scope: '#/properties/tenantName',
+//     },
+//     {
+//       type: 'Control',
+//       scope: '#/properties/phoneNumber',
+//       label: 'Phone / Mobile',
+//     },
+//     {
+//       type: 'Control',
+//       scope: '#/properties/fullName',
+//     },
+//     {
+//       type: 'Control',
+//       scope: '#/properties/emailAddress',
+//     },
+//     {
+//       type: 'Control',
+//       scope: '#/properties/tenantReason',
+//       options: {
+//         multi: true,
+//       },
+//     },
+//   ],
+// };
 
 const renderers = [...vanillaRenderers];
 
