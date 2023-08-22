@@ -1,0 +1,52 @@
+{
+  "formDataSchema": {
+    "type": "object",
+    "properties": {
+      "emailAddress": {
+        "type": "string"
+      },
+      "fullName": {
+        "type": "string"
+      },
+      "phoneNumber": {
+        "type": "string"
+      },
+      "tenantName": {
+        "type": "string"
+      },
+      "tenantReason": {
+        "type": "string"
+      }
+    },
+    "required": ["emailAddress", "tenantName"]
+  },
+  "formUISchema": {
+    "type": "VerticalLayout",
+    "elements": [
+      {
+        "type": "Control",
+        "scope": "#/properties/tenantName"
+      },
+      {
+        "type": "Control",
+        "scope": "#/properties/phoneNumber",
+        "label": "Phone / Mobile"
+      },
+      {
+        "type": "Control",
+        "scope": "#/properties/fullName"
+      },
+      {
+        "type": "Control",
+        "scope": "#/properties/emailAddress"
+      },
+      {
+        "type": "Control",
+        "scope": "#/properties/tenantReason",
+        "options": {
+          "multi": true
+        }
+      }
+    ]
+  }
+}

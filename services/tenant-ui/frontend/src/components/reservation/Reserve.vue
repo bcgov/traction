@@ -190,8 +190,8 @@ import ShowWallet from './status/ShowWallet.vue';
 import ReservationConfirmation from './ReservationConfirmation.vue';
 import axios from 'axios';
 
-// Import assertions
-import { formDataSchema, formUISchema } from './formConfig.json';
+// TODO: Import assertions, This may not work.
+// import { formDataSchema, formUISchema } from './formConfig.json';
 
 const toast = useToast();
 
@@ -213,8 +213,40 @@ const onChange = function (event: JsonFormsChangeEvent) {
   data.value = event.data;
 };
 
-// const formDataSchema: any = ref({});
-// const formUISchema: any = ref({});
+const formDataSchema: any = ref({});
+const formUISchema: any = ref({});
+
+axios
+  .get('/forms/reservation.json')
+  .then((response) => {
+    formDataSchema.value = response.data.formDataSchema;
+    formUISchema.value = response.data.formUISchema;
+  })
+  .catch((error) => {
+    console.error('Could not get the form configuration', error);
+  });
+
+// const formConfig = await getFormConfig();
+
+// console.log('formConfig', formConfig);
+
+// const formDataSchema: any = formConfig.formDataSchema;
+// const formUISchema: any = formConfig.formUISchema;
+
+// console.log('formDataSchema', formDataSchema);
+
+// if (formConfig.data) {
+//   // const { formDataSchema, formUISchema } = formConfig.data;
+//   const formDataSchema = formConfig.data.formDataSchema;
+// }
+// console.log('formDataSchema', formDataSchema);
+
+// try {
+//   const formDataSchema = formConfig.data.formDataSchema;
+//   const formUISchema = formConfig.data.formUISchema;
+// } catch (err) {
+//   console.error('could not access form schema data', err);
+// }
 
 // await axios.get('/forms/reservation.json').then((response) => {
 //   formDataSchema.value = response.data.formDataSchema;
@@ -225,29 +257,29 @@ const onChange = function (event: JsonFormsChangeEvent) {
 
 // console.log('formConfig', formConfig);
 
-const formSchema = {
-  type: 'object',
-  properties: {
-    emailAddress: {
-      type: 'string',
-    },
-    fullName: {
-      type: 'string',
-    },
-    phoneNumber: {
-      type: 'string',
-    },
-    tenantName: {
-      type: 'string',
-    },
-    tenantReason: {
-      type: 'string',
-    },
-  },
-  required: ['emailAddress', 'tenantName'],
-};
+// const formSchema = {
+//   type: 'object',
+//   properties: {
+//     emailAddress: {
+//       type: 'string',
+//     },
+//     fullName: {
+//       type: 'string',
+//     },
+//     phoneNumber: {
+//       type: 'string',
+//     },
+//     tenantName: {
+//       type: 'string',
+//     },
+//     tenantReason: {
+//       type: 'string',
+//     },
+//   },
+//   required: ['emailAddress', 'tenantName'],
+// };
 
-console.log('formSchema', formSchema);
+// console.log('formSchema', formSchema);
 
 // const formUISchema = {
 //   type: 'VerticalLayout',
