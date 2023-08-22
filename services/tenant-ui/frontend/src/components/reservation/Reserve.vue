@@ -210,9 +210,13 @@ const onChange = function (event: JsonFormsChangeEvent) {
   data.value = event.data;
 };
 
+/**
+ * This is the form schema and UI schema.
+ * It is specifically not integrated into the front end build so that it can be
+ * updated separately depending on the deployment.
+ */
 const formDataSchema: any = ref({});
 const formUISchema: any = ref({});
-
 axios
   .get('forms/reservation.json')
   .then((response) => {
@@ -220,7 +224,7 @@ axios
     formUISchema.value = response.data.formUISchema;
   })
   .catch((error) => {
-    console.error('Could not get the form configuration', error);
+    console.error('Could not get the form configuration. :(', error);
   });
 
 const renderers = [...vanillaRenderers];
