@@ -13,11 +13,14 @@ export const useTokenStore = defineStore('token', () => {
   // getters
 
   // actions
-  async function login(username: string, password: string) {
+  async function login(username: string, password: string, isApiKey: boolean) {
     console.log('> tokenStore.load');
-    const payload = {
-      wallet_key: password,
-    };
+    const payload: any = {};
+    if (isApiKey) {
+      payload.api_key = password;
+    } else {
+      payload.wallet_key = password;
+    }
     token.value = null;
     error.value = null;
     loading.value = true;
@@ -25,7 +28,9 @@ export const useTokenStore = defineStore('token', () => {
     // TODO: isolate this to something reusable when we grab an axios connection.
     const configStore = useConfigStore();
     const url = configStore.proxyPath(
-      API_PATH.MULTITENANCY_WALLET_TOKEN(username)
+      isApiKey
+        ? API_PATH.MULTITENANCY_TENANT_TOKEN(username)
+        : API_PATH.MULTITENANCY_WALLET_TOKEN(username)
     );
     await axios({
       method: 'post',

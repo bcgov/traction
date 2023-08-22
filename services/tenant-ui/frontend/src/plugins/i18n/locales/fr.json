@@ -45,6 +45,7 @@
   "common": {
     "actions": "Actions <FR>",
     "alias": "Alias <FR>",
+    "apiKey": "API Key <FR>",
     "confirmation": "Confirmation <FR>",
     "contactName": "Contact Name <FR>",
     "credentialId": "Credential ID <FR>",
@@ -66,6 +67,7 @@
     "settings": "Settings <FR>",
     "status": "Status <FR>",
     "submit": "Submit <FR>",
+    "tenantId": "Tenant ID <FR>",
     "tenantName": "Tenant Name <FR>",
     "tenantReason": "Tenant Reason <FR>",
     "toggleCardExpand": "Toggle Expanded",

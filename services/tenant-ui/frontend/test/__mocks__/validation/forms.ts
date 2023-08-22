@@ -81,6 +81,18 @@ const login = {
       $message: 'Wallet Secret is required',
     },
   },
+  tenantId: {
+    $invalid: false,
+    required: {
+      $message: 'Tenant ID is required',
+    },
+  },
+  apiKey: {
+    $invalid: false,
+    required: {
+      $message: 'API Key is required',
+    },
+  },
   $invalid: false,
 };
 

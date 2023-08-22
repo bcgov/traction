@@ -455,13 +455,12 @@ async def tenant_create_token(request: web.BaseRequest):
     async with profile.session() as session:
         wallet_record = await WalletRecord.retrieve_by_id(session, wallet_id)
 
-    # todo remove log
-    LOGGER.warning(f"wallet_record = {wallet_record}")
     if (not wallet_record.requires_external_key) and wallet_key:
         LOGGER.warning(
             f"Wallet {wallet_id} doesn't require the wallet key but one was provided"
         )
 
+    # Wallet key access use suppled, API key access used looked up key
     key = wallet_key if wallet_key else wallet_record.wallet_key
     token = await multitenant_mgr.create_auth_token(wallet_record, key)
 
