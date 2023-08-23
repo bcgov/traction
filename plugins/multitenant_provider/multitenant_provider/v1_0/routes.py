@@ -87,10 +87,17 @@ async def plugin_wallet_create_token(request: web.BaseRequest):
     # which do not always return true, so wallet_key wasn't getting set or passed
     # into create_auth_token.
 
-    if request.body_exists:
-        body = await request.json()
-        wallet_key = body.get("wallet_key")
-        LOGGER.debug(f"wallet_key = {wallet_key}")
+    # if there's no body or the wallet_key is not in the body, or wallet_key is blank, return an error
+    if not request.body_exists:
+        raise web.HTTPUnauthorized(reason="Missing wallet_key")
+
+    body = await request.json()
+    wallet_key = body.get("wallet_key")
+    LOGGER.debug(f"wallet_key = {wallet_key}")
+
+    # If wallet_key is not there or blank return an error
+    if not wallet_key:
+        raise web.HTTPUnauthorized(reason="Missing wallet_key")
 
     profile = context.profile
     config = profile.inject(MultitenantProviderConfig)
