@@ -37,6 +37,11 @@
       />
     </form>
 
+    <!-- For the demo only -->
+    <Divider align="center" type="solid" style="margin-top: 5rem">
+      <b>Old Form Below</b>
+    </Divider>
+
     <!-- TODO: Replace this with the form schema logic -->
     <form @submit.prevent="handleSubmit(!v$.$invalid)">
       <!-- Email -->
@@ -176,6 +181,7 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import ProgressSpinner from 'primevue/progressspinner';
 import Textarea from 'primevue/textarea';
+import Divider from 'primevue/divider';
 import { useToast } from 'vue-toastification';
 import { email, required } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
@@ -272,17 +278,31 @@ const handleSubmit = async (isFormValid: boolean) => {
 };
 
 /**
- * Validate Form
+ * Check if the form is valid
+ * @returns boolean
  */
-const formIsInvalid = () => {
-  console.log('isFormValid data', data);
-  console.log('isFormValid schema', formDataSchema.value);
-  return true;
+const formIsValid = () => {
+  const schema = formDataSchema.value;
+  const fields = Object.keys(data.value);
+
+  // If there are no required fields, then the form is valid.
+  if (!('required' in schema) || schema.required?.length < 1) {
+    return true;
+
+    // If there are entries in the required array,
+    // then check if they are all in the form.
+  } else if (schema.required.every((field: string) => fields.includes(field))) {
+    return true;
+
+    // Otherwise, the form is not valid.
+  } else {
+    return false;
+  }
 };
 
 const handleSubmit2 = (event: any) => {
   const err = `Missing required fields.`;
-  if (formIsInvalid()) return toast.error(err);
+  if (!formIsValid()) return toast.error(err);
 
   console.log('form is valid');
 };
