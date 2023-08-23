@@ -9,7 +9,8 @@ The Traction Tenant UI allows tenants to manage their agent.
 ## TL;DR
 
 ```console
-helm install my-release charts/tenant-ui
+helm repo add traction https://bcgov.github.io/traction
+helm install my-release traction/tenant-ui
 ```
 
 ## Prerequisites
@@ -22,9 +23,8 @@ helm install my-release charts/tenant-ui
 To install the chart with the release name `my-release`:
 
 ```console
-git clone https://github.com/bcgov/traction.git
-cd traction
-helm install my-release charts/tenant-ui
+helm repo add traction https://bcgov.github.io/traction
+helm install my-release traction/tenant-ui
 ```
 
 The command deploys Tenant-UI on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
