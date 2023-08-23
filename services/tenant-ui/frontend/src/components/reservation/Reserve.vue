@@ -208,6 +208,7 @@ const data: any = ref({});
 // Make sure the data object is updated when the form changes.
 const onChange = function (event: JsonFormsChangeEvent) {
   data.value = event.data;
+  // console.log('onChange event', event);
 };
 
 /**
@@ -269,8 +270,21 @@ const handleSubmit = async (isFormValid: boolean) => {
     toast.error(`Failure making request: ${err}`);
   }
 };
+
+/**
+ * Validate Form
+ */
+const formIsInvalid = () => {
+  console.log('isFormValid data', data);
+  console.log('isFormValid schema', formDataSchema.value);
+  return true;
+};
+
 const handleSubmit2 = (event: any) => {
-  console.log('handleSubmit2 event', event);
+  const err = `Missing required fields.`;
+  if (formIsInvalid()) return toast.error(err);
+
+  console.log('form is valid');
 };
 </script>
 <style scoped lang="scss">
