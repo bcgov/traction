@@ -12,14 +12,14 @@
         </div>
 
         <!-- Logging In -->
-        <div v-if="loginMode === LOGIN_MODE.SIGNIN" class="py-6">
+        <div v-if="loginMode === LOGIN_MODE.SIGNIN" class="pt-6">
           <LoginForm />
           <div
             v-if="config.frontend.showOIDCReservationLogin"
             class="oidc-login"
           >
+            <hr />
             <div v-if="!user" class="oidc-choice">
-              <hr />
               <span class="mb-0">{{ $t('admin.orRequestAccessWith') }}</span>
               <LoginOIDC class="mt-0" />
             </div>
@@ -55,7 +55,7 @@
         </div>
 
         <!-- Making Reservation -->
-        <div v-else-if="loginMode === LOGIN_MODE.RESERVE" class="py-6">
+        <div v-else-if="loginMode === LOGIN_MODE.RESERVE" class="pt-6 pb-4">
           <Button
             :label="$t('login.backToSignIn')"
             icon="pi pi-arrow-left"
@@ -66,7 +66,7 @@
         </div>
 
         <!-- Checking Status -->
-        <div v-else-if="loginMode === LOGIN_MODE.STATUS" class="py-6">
+        <div v-else-if="loginMode === LOGIN_MODE.STATUS" class="pt-6 pb-4">
           <Button
             :label="$t('login.backToSignIn')"
             icon="pi pi-arrow-left"
@@ -74,6 +74,13 @@
             @click="goBack($event)"
           />
           <Status />
+        </div>
+
+        <!-- Show OIDC user if logged in -->
+        <div v-if="config.frontend.showOIDCReservationLogin">
+          <div class="flex justify-content-end mt-4">
+            <OidcUserDisplayVue />
+          </div>
         </div>
       </div>
     </div>
@@ -97,20 +104,21 @@ import Button from 'primevue/button';
 import { useConfirm } from 'primevue/useconfirm';
 // Components
 import LoginForm from '@/components/LoginForm.vue';
+import OidcUserDisplayVue from './reservation/user/OidcUserDisplay.vue';
 import Reserve from './reservation/Reserve.vue';
 import Status from './reservation/Status.vue';
 // State
 import { storeToRefs } from 'pinia';
 import { useConfigStore } from '@/store';
 import { useReservationStore } from '@/store';
-import { useOIDCStore } from '@/store';
+import { useOidcStore } from '@/store';
 
 import { RESERVATION_STATUSES } from '@/helpers/constants';
 
 const reservationStore = useReservationStore();
 const { config } = storeToRefs(useConfigStore());
 const { status } = storeToRefs(useReservationStore());
-const { user } = storeToRefs(useOIDCStore());
+const { user } = storeToRefs(useOidcStore());
 
 const route = useRoute();
 const router = useRouter();

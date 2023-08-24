@@ -16,4 +16,4 @@ export { useInnkeeperTenantsStore } from './innkeeper/innkeeperTenantsStore';
 export { useInnkeeperOidcStore } from './innkeeper/innkeeperOidcStore';
 
 // OIDC
-export { useOIDCStore } from './oidc/oidcStore';
+export { useOidcStore } from './oidc/oidcStore';

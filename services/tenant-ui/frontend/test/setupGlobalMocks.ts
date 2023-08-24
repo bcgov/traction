@@ -72,7 +72,7 @@ vi.mock('@/store', () => ({
   useInnkeeperTenantsStore: vi.fn(() => innkeeperTenantsStore),
   useInnkeeperTokenStore: vi.fn(() => innkeeperTokenStore),
   // oidc
-  useOIDCStore: vi.fn(() => oidcStore),
+  useOidcStore: vi.fn(() => oidcStore),
 }));
 
 vi.mock('vue-i18n', () => ({

@@ -185,7 +185,9 @@ const searchConnections = (event: any) => {
   } else {
     filteredConnections.value = (connectionsDropdown.value as any).filter(
       (connection: any) => {
-        return connection.label.toLowerCase().includes(event.query.toLowerCase());
+        return connection.label
+          .toLowerCase()
+          .includes(event.query.toLowerCase());
       }
     );
   }
