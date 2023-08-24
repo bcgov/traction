@@ -3,6 +3,10 @@
     :title="$t('messages.messages')"
     :refresh-callback="loadTable"
   >
+    <p class="pt-0">
+      <i class="pi pi-info-circle mr-1"></i>
+      {{ $t('messages.disclaimer') }}
+    </p>
     <DataTable
       v-model:expandedRows="expandedRows"
       v-model:selection="selectedMessage"

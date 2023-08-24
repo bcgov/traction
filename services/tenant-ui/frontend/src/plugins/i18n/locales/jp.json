@@ -242,6 +242,7 @@
   "messages": {
     "connectionId": "Connection ID <JP>",
     "createMessage": "Create a Message <JP>",
+    "disclaimer": "Note: This table contains the message storage records. For per-connection conversations, see the 'Connections' page. <JP>",
     "messageContent": "Message Content <JP>",
     "messages": "Messages <JP>"
   },
