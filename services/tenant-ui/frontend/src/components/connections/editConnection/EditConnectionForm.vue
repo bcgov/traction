@@ -35,7 +35,7 @@
 // Vue
 import { onMounted, reactive, ref, PropType } from 'vue';
 // State/etc
-import { useContactsStore } from '../../../store';
+import { useConnectionStore } from '../../../store';
 import useGetItem from '@/composables/useGetItem';
 import { formatDateLong } from '@/helpers';
 import { API_PATH } from '@/helpers/constants';
@@ -55,7 +55,7 @@ const props = defineProps({
   },
 });
 
-const contactsStore = useContactsStore();
+const connectionStore = useConnectionStore();
 const emit = defineEmits(['closed', 'success']);
 const toast = useToast();
 
@@ -77,7 +77,10 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 
   try {
-    await contactsStore.updateConnection(props.connectionId, formFields.alias);
+    await connectionStore.updateConnection(
+      props.connectionId,
+      formFields.alias
+    );
     emit('success');
     // close up on success
     emit('closed');
@@ -89,7 +92,7 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 };
 
-// Get the latest details about this contact when opening
+// Get the latest details about this connection when opening
 const { loading, item, fetchItem } = useGetItem(API_PATH.CONNECTIONS);
 onMounted(async () => {
   try {

@@ -4,7 +4,7 @@
     "acaPy": {
       "acaPy": "ACA-Py",
       "acapyVersion": "ACA-Py version {version}",
-      "info": "Licence information for ACA-Py",
+      "info": "Version information for ACA-Py",
       "ledger": "Ledger",
       "ledgerBrowser": "Ledger Browser",
       "plugins": "List of Installed Plugins",
@@ -14,7 +14,7 @@
       "imageCreated": "Image created at",
       "imageTag": "Image tag",
       "imageVersion": "Image version",
-      "info": "Licence information for TRACTION",
+      "info": "Version/hosting information for TRACTION",
       "repository": "GitHub repo for Traction",
       "swagger": "Swagger URL",
       "traction": "Traction",
@@ -47,7 +47,8 @@
     "alias": "Alias",
     "apiKey": "API Key",
     "confirmation": "Confirmation",
-    "contactName": "Connection Name",
+    "connectionName": "Connection Name",
+    "contactName": "Contact Name",
     "credentialId": "Credential ID",
     "credentials": "Credentials",
     "decodedJwt": "Decoded JWT",
@@ -123,7 +124,7 @@
       "lastUpdated": "Connection Last Updated: {0}"
     },
     "invitation": {
-      "alias": "Contact Alias",
+      "alias": "Connection Alias",
       "close": "Close",
       "submit": "Submit"
     },
@@ -134,7 +135,7 @@
       "search": "Search Invitations"
     },
     "message": {
-      "messageContact": "Chat with {0}"
+      "messageConnection": "Chat with {0}"
     },
     "multiUseInvitation": {
       "multi": "Multi Use Invitation",
@@ -400,7 +401,7 @@
   "verifier": {
     "attributeRestrictionsSatisfied": "All attribute restrictions were satisfied",
     "comingSoon": "Coming Soon",
-    "contactAlias: ": "Contact Alias: ",
+    "contactAlias: ": "Connection Alias: ",
     "credentialHeldBy": "Credential is held by",
     "credentialTamperFree ": "Credential is tamper-free ",
     "credentialValid": "Credential is valid",

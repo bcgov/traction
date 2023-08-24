@@ -1,6 +1,6 @@
 export { useConfigStore } from './configStore';
 // Tenant
-export { useContactsStore } from './contactsStore';
+export { useConnectionStore } from './connectionStore';
 export { useGovernanceStore } from './governanceStore';
 export { useHolderStore } from './holderStore';
 export { useIssuerStore } from './issuerStore';

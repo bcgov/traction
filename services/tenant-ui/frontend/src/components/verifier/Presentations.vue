@@ -119,7 +119,7 @@ import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
 import { useToast } from 'vue-toastification';
 // State
-import { useContactsStore, useVerifierStore } from '@/store';
+import { useConnectionStore, useVerifierStore } from '@/store';
 import { storeToRefs } from 'pinia';
 import { useConfigStore } from '@/store/configStore';
 // Components
@@ -136,9 +136,9 @@ import { API_PATH, TABLE_OPT } from '@/helpers/constants';
 const toast = useToast();
 
 // State
-const { listContacts, findConnectionName } = useContactsStore();
+const { listConnections, findConnectionName } = useConnectionStore();
 const verifierStore = useVerifierStore();
-const { contacts } = storeToRefs(useContactsStore());
+const { connections } = storeToRefs(useConnectionStore());
 const { loading, presentations, selectedPresentation } = storeToRefs(
   useVerifierStore()
 );
@@ -149,9 +149,9 @@ const loadTable = async () => {
     toast.error(`Failure: ${err}`);
   });
 
-  // Load contacts if not already there for display
-  if (!contacts.value || !contacts.value.length) {
-    listContacts().catch((err) => {
+  // Load connections if not already there for display
+  if (!connections.value || !connections.value.length) {
+    listConnections().catch((err) => {
       console.error(err);
       toast.error(`Failure: ${err}`);
     });

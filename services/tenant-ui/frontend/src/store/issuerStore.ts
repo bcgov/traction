@@ -108,7 +108,7 @@ export const useIssuerStore = defineStore('issuer', () => {
   }
 
   async function deleteCredentialExchange(credExchangeId: string) {
-    console.log('> contactsStore.deleteCredential');
+    console.log('> connectionStore.deleteCredential');
 
     error.value = null;
     loading.value = true;
@@ -129,7 +129,7 @@ export const useIssuerStore = defineStore('issuer', () => {
       .finally(() => {
         loading.value = false;
       });
-    console.log('< contactsStore.deleteCredential');
+    console.log('< connectionStore.deleteCredential');
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler

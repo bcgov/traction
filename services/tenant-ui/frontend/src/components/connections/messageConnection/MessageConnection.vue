@@ -6,7 +6,7 @@
     @click="openSidebar"
   />
   <Sidebar v-model:visible="displaySidebar" position="right" class="lg:w-30rem">
-    <MessageContactList
+    <MessageConnectionList
       :connection-id="props.connectionId"
       :connection-name="props.connectionName"
     />
@@ -38,7 +38,7 @@ import Sidebar from 'primevue/sidebar';
 import InputText from 'primevue/inputtext';
 
 // Components
-import MessageContactList from './MessageContactList.vue';
+import MessageConnectionList from './MessageConnectionList.vue';
 
 // State
 import { useMessageStore } from '@/store';

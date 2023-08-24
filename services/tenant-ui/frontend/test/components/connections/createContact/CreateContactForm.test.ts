@@ -4,8 +4,8 @@ import PrimeVue from 'primevue/config';
 import { describe, expect, test, vi } from 'vitest';
 import VueToastificationPlugin from 'vue-toastification';
 
-import CreateContactForm from '@/components/connections/createContact/CreateContactForm.vue';
-import { useContactsStore } from '@/store';
+import CreateConnectionForm from '@/components/connections/createConnection/CreateConnectionForm.vue';
+import { useConnectionStore } from '@/store';
 
 import { basicAlias } from '../../../__mocks__/validation/forms';
 
@@ -18,8 +18,8 @@ const mockVuelidate = async (values: object = basicAlias) => {
 };
 
 // Tests
-const mountCreateContactForm = () =>
-  shallowMount(CreateContactForm, {
+const mountCreateConnectionForm = () =>
+  shallowMount(CreateConnectionForm, {
     props: {
       multi: false,
     },
@@ -28,11 +28,11 @@ const mountCreateContactForm = () =>
     },
   });
 
-describe('CreateContactForm', async () => {
+describe('CreateConnectionForm', async () => {
   test('renders as snapshot', async () => {
     await mockVuelidate();
 
-    const wrapper = mountCreateContactForm();
+    const wrapper = mountCreateConnectionForm();
 
     wrapper.getComponent({ name: 'InputText' });
     wrapper.getComponent({ name: 'Button' });
@@ -44,7 +44,7 @@ describe('CreateContactForm', async () => {
     values.$invalid = true;
     await mockVuelidate(values);
 
-    const wrapper = mountCreateContactForm();
+    const wrapper = mountCreateConnectionForm();
 
     await wrapper.find('form').trigger('submit.prevent');
     expect(wrapper.html()).toContain('Alias is required');
@@ -52,9 +52,9 @@ describe('CreateContactForm', async () => {
 
   test('sucessful form calls toast info and external function', async () => {
     await mockVuelidate();
-    const wrapper = mountCreateContactForm();
-    const store = useContactsStore();
-    const wrapperVm = wrapper.vm as unknown as typeof CreateContactForm;
+    const wrapper = mountCreateConnectionForm();
+    const store = useConnectionStore();
+    const wrapperVm = wrapper.vm as unknown as typeof CreateConnectionForm;
     const toastInfoSpy = vi.spyOn(wrapperVm.toast, 'info');
     const toastErrorSpy = vi.spyOn(wrapperVm.toast, 'error');
 

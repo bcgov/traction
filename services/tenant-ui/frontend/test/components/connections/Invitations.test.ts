@@ -18,7 +18,7 @@ describe('Invitations', () => {
     const wrapper = mountInvitations();
 
     wrapper.getComponent({ name: 'DataTable' });
-    expect(wrapper.findAllComponents({ name: 'CreateContact' })).toHaveLength(
+    expect(wrapper.findAllComponents({ name: 'CreateConnection' })).toHaveLength(
       2
     );
   });

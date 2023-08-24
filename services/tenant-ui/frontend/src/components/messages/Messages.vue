@@ -43,20 +43,20 @@
       <template #loading>{{ $t('common.loading') }}</template>
       <Column
         sortable
-        field="contact"
-        header="Contact"
-        filter-field="contact"
+        field="connection"
+        header="Connection"
+        filter-field="connection"
         :show-filter-match-modes="false"
       >
         <template #body="{ data }">
-          <LoadingLabel :value="data.contact" />
+          <LoadingLabel :value="data.connection" />
         </template>
         <template #filter="{ filterModel, filterCallback }">
           <InputText
             v-model="filterModel.value"
             type="text"
             class="p-column-filter"
-            placeholder="Search By Contact"
+            placeholder="Search By Connection"
             @input="filterCallback()"
           />
         </template>
@@ -121,7 +121,7 @@
 
 <script setup lang="ts">
 // Vue
-import { Ref, computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 // PrimeVue
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
@@ -129,7 +129,7 @@ import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
 import { useToast } from 'vue-toastification';
 // State
-import { useContactsStore, useMessageStore } from '@/store';
+import { useConnectionStore, useMessageStore } from '@/store';
 import { Message } from '@/store/messageStore';
 import { storeToRefs } from 'pinia';
 // Other components
@@ -148,10 +148,10 @@ console.log('config', config);
 const toast = useToast();
 
 const messageStore = useMessageStore();
-const { listContacts, findConnectionName } = useContactsStore();
+const { listConnections, findConnectionName } = useConnectionStore();
 
 const { loading, messages, selectedMessage } = storeToRefs(useMessageStore());
-const { contacts } = storeToRefs(useContactsStore());
+const { connections } = storeToRefs(useConnectionStore());
 
 const loadTable = async () => {
   // should return latest message first
@@ -159,27 +159,20 @@ const loadTable = async () => {
     toast.error(`Failure: ${err}`);
   });
 
-  // Load contacts if not already there for display
-  if (!contacts.value || !contacts.value.length) {
-    listContacts().catch((err) => {
+  // Load connections if not already there for display
+  if (!connections.value || !connections.value.length) {
+    listConnections().catch((err) => {
       console.error(err);
       toast.error(`Failure: ${err}`);
     });
   }
 };
 const expandedRows = ref([]);
-interface FilteredMessage {
-  connection_id: string;
-  contact: string | undefined;
-  state: string;
-  content: string;
-  sent_time: string;
-  created_at: string;
-}
-const formattedMessages: Ref<FilteredMessage[]> = computed(() =>
+const formattedMessages = computed(() =>
   messages.value.map((msg: Message) => ({
+    message_id: msg.message_id,
     connection_id: msg.connection_id,
-    contact: findConnectionName(msg.connection_id),
+    connection: findConnectionName(msg.connection_id),
     state: msg.state,
     content: msg.content,
     sent_time: msg.sent_time,
@@ -195,7 +188,7 @@ const filter = ref({
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   },
-  contact: {
+  connection: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   },

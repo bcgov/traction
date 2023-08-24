@@ -4,7 +4,7 @@
     "acaPy": {
       "acaPy": "ACA-Py <JP>",
       "acapyVersion": "ACA-Py version {version} <JP>",
-      "info": "Licence information for ACA-Py <JP>",
+      "info": "Version information for ACA-Py <JP>",
       "ledger": "Ledger <JP>",
       "ledgerBrowser": "Ledger Browser <JP>",
       "plugins": "List of Installed Plugins <JP>",
@@ -14,7 +14,7 @@
       "imageCreated": "Image created at <JP>",
       "imageTag": "Image tag <JP>",
       "imageVersion": "Image version <JP>",
-      "info": "Licence information for TRACTION <JP>",
+      "info": "Version/hosting information for TRACTION <JP>",
       "repository": "GitHub repo for Traction <JP>",
       "swagger": "Swagger URL <JP>",
       "traction": "Traction <JP>",
@@ -47,6 +47,7 @@
     "alias": "Alias <JP>",
     "apiKey": "API Key <JP>",
     "confirmation": "Confirmation <JP>",
+    "connectionName": "Connection Name <JP>",
     "contactName": "Contact Name <JP>",
     "credentialId": "Credential ID <JP>",
     "credentials": "Credentials <JP>",
@@ -123,7 +124,7 @@
       "lastUpdated": "Connection Last Updated: {0} <JP>"
     },
     "invitation": {
-      "alias": "Contact Alias <JP>",
+      "alias": "Connection Alias <JP>",
       "close": "Close <JP>",
       "submit": "Submit <JP>"
     },
@@ -134,7 +135,7 @@
       "search": "Search Invitations <JP>"
     },
     "message": {
-      "messageContact": "Chat with {0} <JP>"
+      "messageConnection": "Chat with {0} <JP>"
     },
     "multiUseInvitation": {
       "multi": "Multi Use Invitation <JP>",
@@ -405,7 +406,7 @@
   "verifier": {
     "attributeRestrictionsSatisfied": "All attribute restrictions were satisfied <JP>",
     "comingSoon": "Coming Soon <JP>",
-    "contactAlias: ": "Contact Alias:  <JP>",
+    "contactAlias: ": "Connection Alias:  <JP>",
     "credentialHeldBy": "Credential is held by <JP>",
     "credentialTamperFree ": "Credential is tamper-free  <JP>",
     "credentialValid": "Credential is valid <JP>",

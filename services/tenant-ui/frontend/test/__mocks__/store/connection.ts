@@ -21,10 +21,10 @@ const connections = [
 ];
 
 const store: { [key: string]: any } = {
-  contacts: {
+  connections: {
     value: connections,
   },
-  contactsDropdown: [
+  connectionsDropdown: [
     {
       label: 'endorser',
       value: '7dcfd983-71f9-4a05-a13b-a2026ed85bb9',
@@ -44,7 +44,7 @@ const store: { [key: string]: any } = {
   getInvitation: vi.fn().mockResolvedValue({
     invitation_url: 'test_invitation_url',
   }),
-  listContacts: vi
+  listConnections: vi
     .fn()
     .mockResolvedValue([
       {

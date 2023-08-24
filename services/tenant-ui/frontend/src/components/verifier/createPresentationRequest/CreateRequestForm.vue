@@ -1,31 +1,31 @@
 <template>
   <div>
     <form @submit.prevent="handleSubmit(!v$.$invalid)">
-      <!-- Contact -->
+      <!-- Connection -->
       <div class="field">
         <label
-          for="selectedContact"
-          :class="{ 'p-error': v$.selectedContact.$invalid && submitted }"
+          for="selectedConnection"
+          :class="{ 'p-error': v$.selectedConnection.$invalid && submitted }"
         >
           {{ $t('verify.connection') }}
-          <ProgressSpinner v-if="contactLoading" />
+          <ProgressSpinner v-if="connectionsLoading" />
         </label>
 
         <AutoComplete
-          id="selectedContact"
-          v-model="v$.selectedContact.$model"
+          id="selectedConnection"
+          v-model="v$.selectedConnection.$model"
           class="w-full"
-          :disabled="contactLoading"
-          :suggestions="filteredContacts"
+          :disabled="connectionsLoading"
+          :suggestions="filteredConnections"
           :dropdown="true"
           option-label="label"
           force-selection
-          @complete="searchContacts($event)"
+          @complete="searchConnections($event)"
         />
         <small
-          v-if="v$.selectedContact.$invalid && submitted"
+          v-if="v$.selectedConnection.$invalid && submitted"
           class="p-error"
-          >{{ v$.selectedContact.required.$message }}</small
+          >{{ v$.selectedConnection.required.$message }}</small
         >
       </div>
 
@@ -94,7 +94,7 @@ import { useVuelidate } from '@vuelidate/core';
 import { useToast } from 'vue-toastification';
 // State
 import { storeToRefs } from 'pinia';
-import { useContactsStore, useVerifierStore } from '@/store';
+import { useConnectionStore, useVerifierStore } from '@/store';
 // Other imports
 import JsonEditorVue from 'json-editor-vue';
 import { JSON_EDITOR_DEFAULTS } from '@/helpers/constants';
@@ -103,8 +103,8 @@ const toast = useToast();
 
 // Store values
 const { loading } = storeToRefs(useVerifierStore());
-const { loading: contactLoading, contactsDropdown } = storeToRefs(
-  useContactsStore()
+const { loading: connectionsLoading, connectionsDropdown } = storeToRefs(
+  useConnectionStore()
 );
 const verifierStore = useVerifierStore();
 
@@ -151,31 +151,31 @@ const proofRequestJson = ref(
 
 // Autocomplete setup
 // These can maybe be generalized into a util function (for all dropdown searches)
-const searchContacts = (event: any) => {
+const searchConnections = (event: any) => {
   if (!event.query.trim().length) {
-    filteredContacts.value = [...(contactsDropdown as any).value];
+    filteredConnections.value = [...(connectionsDropdown as any).value];
   } else {
-    filteredContacts.value = (contactsDropdown.value as any).filter(
-      (contact: any) => {
-        return contact.label.toLowerCase().includes(event.query.toLowerCase());
+    filteredConnections.value = (connectionsDropdown.value as any).filter(
+      (connection: any) => {
+        return connection.label.toLowerCase().includes(event.query.toLowerCase());
       }
     );
   }
 };
 
 // Form Fields
-const filteredContacts = ref();
+const filteredConnections = ref();
 const formFields = reactive({
   autoVerify: false,
   comment: '',
   // This is not good typescript but need an object with fields
   // in a dropdown that displays a string that can be blank. TODO
-  selectedContact: undefined as any,
+  selectedConnection: undefined as any,
 });
 const rules = {
   autoVerify: {},
   comment: {},
-  selectedContact: { required },
+  selectedConnection: { required },
 };
 const v$ = useVuelidate(rules, formFields);
 
@@ -195,7 +195,7 @@ const handleSubmit = async (isFormValid: boolean) => {
         : proofRequestJson.value;
     // Set up the body with the fields from the form
     const payload: V10PresentationSendRequestRequest = {
-      connection_id: formFields.selectedContact.value,
+      connection_id: formFields.selectedConnection.value,
       auto_verify: false,
       comment: formFields.comment,
       trace: false,

@@ -1,9 +1,9 @@
 <template>
   <Button
-    title="Delete Contact"
+    title="Delete Connection"
     icon="pi pi-trash"
     class="p-button-rounded p-button-icon-only p-button-text"
-    @click="deleteContact($event)"
+    @click="deleteConnection($event)"
   />
 </template>
 
@@ -15,12 +15,12 @@ import Button from 'primevue/button';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';
 // State
-import { useContactsStore } from '@/store';
+import { useConnectionStore } from '@/store';
 
 const confirm = useConfirm();
 const toast = useToast();
 
-const contactsStore = useContactsStore();
+const connectionStore = useConnectionStore();
 
 // Props
 const props = defineProps({
@@ -31,7 +31,7 @@ const props = defineProps({
 });
 
 // Delete the connection record by connection id
-const deleteContact = (event: any) => {
+const deleteConnection = (event: any) => {
   confirm.require({
     target: event.currentTarget,
     message: 'Are you sure you want to delete this connection?',
@@ -43,8 +43,8 @@ const deleteContact = (event: any) => {
   });
 };
 const doDelete = () => {
-  contactsStore
-    .deleteContact(props.connectionId)
+  connectionStore
+    .deleteConnection(props.connectionId)
     .then(() => {
       toast.success(`Connection successfully deleted`);
     })

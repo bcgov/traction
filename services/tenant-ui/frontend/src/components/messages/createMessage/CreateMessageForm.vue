@@ -1,31 +1,31 @@
 <template>
   <div>
     <form @submit.prevent="handleSubmit(!v$.$invalid)">
-      <!-- Contact -->
+      <!-- Connection -->
       <div class="field">
         <label
-          for="selectedContact"
-          :class="{ 'p-error': v$.selectedContact.$invalid && submitted }"
+          for="selectedConnection"
+          :class="{ 'p-error': v$.selectedConnection.$invalid && submitted }"
         >
-          {{ $t('common.contactName') }}
-          <ProgressSpinner v-if="contactLoading" />
+          {{ $t('common.connectionName') }}
+          <ProgressSpinner v-if="connectionsLoading" />
         </label>
 
         <AutoComplete
-          id="selectedContact"
-          v-model="v$.selectedContact.$model"
+          id="selectedConnection"
+          v-model="v$.selectedConnection.$model"
           class="w-full"
-          :disabled="contactLoading"
-          :suggestions="filteredContacts"
+          :disabled="connectionsLoading"
+          :suggestions="filteredConnections"
           :dropdown="true"
           option-label="label"
           force-selection
-          @complete="searchContacts($event)"
+          @complete="searchConnections($event)"
         />
         <small
-          v-if="v$.selectedContact.$invalid && submitted"
+          v-if="v$.selectedConnection.$invalid && submitted"
           class="p-error"
-          >{{ v$.selectedContact.required.$message }}</small
+          >{{ v$.selectedConnection.required.$message }}</small
         >
       </div>
 
@@ -78,40 +78,42 @@ import { useVuelidate } from '@vuelidate/core';
 import { useToast } from 'vue-toastification';
 // State
 import { storeToRefs } from 'pinia';
-import { useContactsStore, useMessageStore } from '@/store';
+import { useConnectionStore, useMessageStore } from '@/store';
 
 const toast = useToast();
 
 // Store values
 const { loading } = storeToRefs(useMessageStore());
-const { loading: contactLoading, contactsDropdown } = storeToRefs(
-  useContactsStore()
+const { loading: connectionsLoading, connectionsDropdown } = storeToRefs(
+  useConnectionStore()
 );
 const messageStore = useMessageStore();
 
 const emit = defineEmits(['closed', 'success']);
 
 // Form and Validation
-const filteredContacts = ref();
+const filteredConnections = ref();
 const formFields = reactive({
   msgContent: '',
-  selectedContact: undefined as any,
+  selectedConnection: undefined as any,
 });
 const rules = {
-  selectedContact: { required },
+  selectedConnection: { required },
   msgContent: { required },
 };
 const v$ = useVuelidate(rules, formFields);
 
 // Autocomplete setup
 // These can maybe be generalized into a util function (for all dropdown searches)
-const searchContacts = (event: any) => {
+const searchConnections = (event: any) => {
   if (!event.query.trim().length) {
-    filteredContacts.value = [...(contactsDropdown as any).value];
+    filteredConnections.value = [...(connectionsDropdown as any).value];
   } else {
-    filteredContacts.value = (contactsDropdown.value as any).filter(
-      (contact: any) => {
-        return contact.label.toLowerCase().includes(event.query.toLowerCase());
+    filteredConnections.value = (connectionsDropdown.value as any).filter(
+      (connection: any) => {
+        return connection.label
+          .toLowerCase()
+          .includes(event.query.toLowerCase());
       }
     );
   }
@@ -131,7 +133,7 @@ const handleSubmit = async (isFormValid: boolean) => {
     };
 
     // call store
-    const conn_id = formFields.selectedContact.value;
+    const conn_id = formFields.selectedConnection.value;
     await messageStore.sendMessage(conn_id, payload);
     toast.info('Message Sent');
     emit('success');

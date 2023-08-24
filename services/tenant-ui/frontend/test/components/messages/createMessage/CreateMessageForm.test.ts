@@ -22,7 +22,7 @@ vi.mock('vue', async () => {
     ...actual,
     reactive: vi.fn(() => ({
       msgContent: 'test',
-      selectedContact: {
+      selectedConnection: {
         value: 'test',
       },
     })),
@@ -59,9 +59,9 @@ describe('CreateMessageForm', async () => {
     expect(wrapper.html()).toContain('Message content is required');
   });
 
-  test('invalid selectedContact renders error message', async () => {
+  test('invalid selectedConnection renders error message', async () => {
     const values = JSON.parse(JSON.stringify(createMessage));
-    values.selectedContact.$invalid = true;
+    values.selectedConnection.$invalid = true;
     values.$invalid = true;
     await mockVuelidate(values);
     const wrapper = mountCreateMessageForm();

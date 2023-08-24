@@ -6,8 +6,8 @@ import {
   acapyAuthErrorHandlers,
   acapySuccessHandlers,
   acapyUnknownErrorHandlers,
-  contactsSuccessHandlers,
-  contactsUnknownErrorHandlers,
+  connectionSuccessHandlers,
+  connectionUnknownErrorHandlers,
   configSuccessHandlers,
   configUnknownErrorHandlers,
   holderSuccessHandlers,
@@ -36,7 +36,7 @@ import {
 // Setup Server
 export const restHandlers = [
   ...acapySuccessHandlers,
-  ...contactsSuccessHandlers,
+  ...connectionSuccessHandlers,
   ...configSuccessHandlers,
   ...holderSuccessHandlers,
   ...governanceSuccessHandlers,
@@ -55,7 +55,7 @@ export const restHandlersAuthorizationError = [...acapyAuthErrorHandlers];
 
 export const restHandlersUnknownError = [
   ...acapyUnknownErrorHandlers,
-  ...contactsUnknownErrorHandlers,
+  ...connectionUnknownErrorHandlers,
   ...configUnknownErrorHandlers,
   ...holderUnknownErrorHandlers,
   ...governanceUnknownErrorHandlers,

@@ -42,7 +42,7 @@
 // Vue
 import { reactive, ref, PropType } from 'vue';
 // State
-import { useContactsStore } from '../../../store';
+import { useConnectionStore } from '../../../store';
 // PrimeVue / Validation
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
@@ -52,7 +52,7 @@ import { useToast } from 'vue-toastification';
 // Other Components
 import QRCode from '../../common/QRCode.vue';
 
-const contactsStore = useContactsStore();
+const connectionStore = useConnectionStore();
 
 const toast = useToast();
 
@@ -87,14 +87,14 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
   try {
     // call store
-    const result = await contactsStore.createInvitation(
+    const result = await connectionStore.createInvitation(
       formFields.alias,
       props.multi
     );
     if (result != null && result['invitation_url']) {
       invitation_url.value = result['invitation_url'];
       console.log(`invitation_url: ${invitation_url.value}`);
-      toast.info('Contact Created');
+      toast.info('Connection Created');
       emit('success');
     }
     return false;

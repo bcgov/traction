@@ -26,13 +26,17 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import { useToast } from 'vue-toastification';
 // State
-import { useContactsStore, useGovernanceStore, useTenantStore } from '@/store';
+import {
+  useConnectionStore,
+  useGovernanceStore,
+  useTenantStore,
+} from '@/store';
 import { storeToRefs } from 'pinia';
 // Custom Components
 import OfferCredentialForm from './OfferCredentialForm.vue';
 
 // State setup
-const contactsStore = useContactsStore();
+const connectionStore = useConnectionStore();
 const governanceStore = useGovernanceStore();
 
 const toast = useToast();
@@ -44,15 +48,15 @@ defineEmits(['success']);
 // Display popup and load needed lists
 const displayModal = ref(false);
 const openModal = async () => {
-  // Kick of the loading asyncs in the store to fetch contacts/creds
+  // Kick of the loading asyncs in the store to fetch connections/creds
   Promise.all([
-    contactsStore.listContacts(),
+    connectionStore.listConnections(),
     governanceStore.listStoredSchemas(),
     governanceStore.listStoredCredentialDefinitions(),
   ]).catch((err) => {
     console.error(err);
     toast.error(
-      `An error occurred loading your contacts or credentials: ${err}`
+      `An error occurred loading your connections or credentials: ${err}`
     );
   });
   displayModal.value = true;

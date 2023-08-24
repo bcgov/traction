@@ -1,6 +1,6 @@
 export { store as commonStore } from './common';
 export { store as configStore } from './config';
-export { store as contactsStore } from './contacts';
+export { store as connectionStore } from './connection';
 export { store as holderStore } from './holder';
 export { store as issuerStore } from './issuer';
 export { store as governanceStore } from './governance';
