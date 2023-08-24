@@ -257,7 +257,7 @@ const rules = {
 };
 const v$ = useVuelidate(rules, formFields);
 
-// Form submission
+// Old form submission
 const submitted = ref(false);
 const handleSubmit = async (isFormValid: boolean) => {
   submitted.value = true;
@@ -300,9 +300,30 @@ const formIsValid = () => {
   }
 };
 
-const handleSubmit2 = (event: any) => {
+/**
+ * Submit the form
+ * @param event
+ * TODO: Align the mandatory fields with what the API is expecting. Then stuff the entire form object into something like a 'context' parameter??? This will break things until I follow up with this ticket: https://github.com/bcgov/traction/issues/773
+ * formFields from old logic Proxy(Object) {contact_email: 'popkinj@littleearth.ca', contact_name: 'Jfjkdsljfkl', contact_phone: '555555555', tenant_name: 'Jamie', tenant_reason: 'jfkdsljflksdjfl'}
+ * data from new logic 
+Proxy(Object) {tenantName: 'My Name', phoneNumber: 'My phone number', fullName: 'Full name', emailAddress: 'my email address', tenantReason: 'Some sill reason'}
+ */
+const handleSubmit2 = async (event: any) => {
   const err = `Missing required fields.`;
   if (!formIsValid()) return toast.error(err);
+
+  try {
+    console.log('formFields from old logic', formFields);
+    console.log('data from new logic', data.value);
+    // const res = await reservationStore.makeReservation(formFields);
+    // reservationIdResult.value = res.reservation_id;
+    // reservationPwdResult.value = res.reservation_pwd
+    //   ? res.reservation_pwd
+    //   : undefined;
+  } catch (err) {
+    console.error(err);
+    toast.error(`Failure making request: ${err}`);
+  }
 
   console.log('form is valid');
 };
