@@ -89,7 +89,12 @@
         </div>
 
         <!-- Extra Acapy Settings -->
-        <Panel v-if="!hideAcapySettings" class="settings-group mb-5" toggleable collapsed>
+        <Panel
+          v-if="!hideAcapySettings"
+          class="settings-group mb-5"
+          toggleable
+          collapsed
+        >
           <template #header>
             <b>{{ $t('tenant.settings.extraSettings') }}</b>
           </template>
