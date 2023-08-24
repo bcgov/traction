@@ -1,0 +1,434 @@
+{
+  "about": {
+    "about": "About <JA>",
+    "acaPy": {
+      "acaPy": "ACA-Py <JA>",
+      "acapyVersion": "ACA-Py version {version} <JA>",
+      "info": "Version information for ACA-Py <JA>",
+      "ledger": "Ledger <JA>",
+      "ledgerBrowser": "Ledger Browser <JA>",
+      "plugins": "List of Installed Plugins <JA>",
+      "tailsServer": "Tails Server <JA>"
+    },
+    "traction": {
+      "imageCreated": "Image created at <JA>",
+      "imageTag": "Image tag <JA>",
+      "imageVersion": "Image version <JA>",
+      "info": "Version/hosting information for TRACTION <JA>",
+      "repository": "GitHub repo for Traction <JA>",
+      "swagger": "Swagger URL <JA>",
+      "traction": "Traction <JA>",
+      "tractionVersion": "Traction version {version} <JA>",
+      "uiVersion": "Tenant UI version {version} <JA>",
+      "url": "Traction URL <JA>"
+    }
+  },
+  "admin": {
+    "adminKey": "Admin Key <JA>",
+    "adminName": "Admin Name <JA>",
+    "error": "ERROR <JA>",
+    "orRequestAccessWith": "Or Request Access With <JA>",
+    "orSignInWith": "Or Sign In With <JA>"
+  },
+  "apiKey": {
+    "alias": "Alias for Key <JA>",
+    "apiKeys": "API Keys <JA>",
+    "createApiKey": "Create API Key <JA>",
+    "createSuccess": "API Key created <JA>",
+    "delete": "Delete API Key <JA>",
+    "deleteConfirmation": "Are you sure you want to delete this API Key? <JA>",
+    "deleteSuccess": "API Key deleted <JA>",
+    "generatedKey": "The generated API key is shown below one-time. This dialog is the only time this key will be shown and can not be retrieved again. <JA>",
+    "generatedKeyMessage": "An API Key has been generated for Tenant ID {key} <JA>",
+    "search": "Search API Keys <JA>"
+  },
+  "common": {
+    "actions": "Actions <JA>",
+    "alias": "Alias <JA>",
+    "apiKey": "API Key <JA>",
+    "confirmation": "Confirmation <JA>",
+    "connectionName": "Connection Name <JA>",
+    "contactName": "Contact Name <JA>",
+    "credentialId": "Credential ID <JA>",
+    "credentials": "Credentials <JA>",
+    "decodedJwt": "Decoded JWT <JA>",
+    "developer": "Developer <JA>",
+    "emailAddress": "Email Address <JA>",
+    "encodedJwt": "Encoded JWT <JA>",
+    "endorser": "Endorser <JA>",
+    "genericError": "An error occurred <JA>",
+    "invitationUrl": "Invitation URL <JA>",
+    "json": "JSON <JA>",
+    "loading": "Loading data. Please wait... <JA>",
+    "logout": "Logout <JA>",
+    "noRecordsFound": "No Records Found <JA>",
+    "profile": "Profile <JA>",
+    "refreshTable": "Refresh Table <JA>",
+    "request": "Request <JA>",
+    "settings": "Settings <JA>",
+    "status": "Status <JA>",
+    "submit": "Submit <JA>",
+    "tenantId": "Tenant ID <JA>",
+    "tenantName": "Tenant Name <JA>",
+    "tenantReason": "Tenant Reason <JA>",
+    "toggleCardExpand": "Toggle Expanded <JA>",
+    "walletId": "Wallet ID <JA>"
+  },
+  "configuration": {
+    "configuration": "Configuration <JA>",
+    "credentialDefinitions": {
+      "storage": "Credential Definition Storage <JA>"
+    },
+    "oca": {
+      "bundleAssociationType": "OCA Bundle association type <JA>",
+      "bundleJson": "OCA Bundle JSON <JA>",
+      "bundleUrl": "OCA Bundle URL* <JA>",
+      "disclaimer": "OCA Card View for Credentials is an experimental feature in the Tenant UI. <JA>",
+      "oca": "OCA <JA>",
+      "storedBundleJson": "Stored Bundle JSON <JA>",
+      "url": "URL <JA>"
+    },
+    "presentationTemplates": {
+      "templates": "Presentation Templates <JA>"
+    },
+    "schemas": {
+      "copy": "Copy Schema <JA>",
+      "create": "Create Schema <JA>",
+      "storage": "Schema Storage <JA>"
+    },
+    "schemasCreds": {
+      "credentialDefinitions": "Stored Credential Definitions <JA>",
+      "schemas": "Stored Schemas <JA>"
+    }
+  },
+  "connect": {
+    "acceptInvitation": {
+      "accept": "Accept Invitation <JA>",
+      "invitation": "Invitation <JA>",
+      "skipUrl": "Skip URL and use JSON <JA>",
+      "submit": "Accept <JA>",
+      "supportedUrl": "Supported URL format is <JA>",
+      "url": "Invitation URL <JA>"
+    },
+    "connections": {
+      "connections": "Connections <JA>",
+      "delete": "Delete Connection <JA>",
+      "edit": "Edit Connection <JA>",
+      "search": "Search Connections <JA>"
+    },
+    "didExchange": {
+      "did": "DID <JA>",
+      "didExchange": "DID Exchange <JA>"
+    },
+    "edit": {
+      "lastUpdated": "Connection Last Updated: {0} <JA>"
+    },
+    "invitation": {
+      "alias": "Connection Alias <JA>",
+      "close": "Close <JA>",
+      "submit": "Submit <JA>"
+    },
+    "invitations": {
+      "create": "Create Invitation <JA>",
+      "invitations": "Invitations <JA>",
+      "regenerate": "Regenerate Invitation <JA>",
+      "search": "Search Invitations <JA>"
+    },
+    "message": {
+      "messageConnection": "Chat with {0} <JA>"
+    },
+    "multiUseInvitation": {
+      "multi": "Multi Use Invitation <JA>",
+      "multiCreate": "Create Multi Use Invitation <JA>"
+    },
+    "singleUseInvitation": {
+      "single": "Single Use Invitation <JA>",
+      "singleCreate": "Create Single Use Invitation <JA>"
+    },
+    "table": {
+      "createdAt": "Created At <JA>",
+      "invitationMode": "Invitation Mode <JA>",
+      "theirLabel": "Their Label <JA>"
+    }
+  },
+  "credentials": {
+    "exchanges": {
+      "exchanges": "Credential Exchanges <JA>",
+      "search": "Search Credential Exchanges <JA>",
+      "table": {
+        "connection": "Connection <JA>",
+        "credential": "Credential <JA>",
+        "lastUpdate": "Last Update <JA>"
+      },
+      "viewCard": "View in Card format <JA>",
+      "viewTable": "View in Table format <JA>"
+    },
+    "wallet": {
+      "noOca": "There is no OCA associated with this credential definition <JA>",
+      "noOcaNotImpl": "Cannot display card view for Credentials without OCA at this time. <JA>",
+      "notFound": "There are no credentials in your Wallet <JA>"
+    }
+  },
+  "dashboard": {
+    "backToDashboard": "Back to Dashboard <JA>",
+    "dashboard": "Dashboard <JA>",
+    "greeting": "Powered by Traction <JA>"
+  },
+  "holder": {
+    "holder": "Holder <JA>"
+  },
+  "home": {
+    "dashboard": "Dashboard <JA>",
+    "greeting": "Powered by Traction <JA>",
+    "login": {
+      "id": "Wallet ID <JA>",
+      "secret": "Wallet Key <JA>",
+      "submit": "Sign-In <JA>"
+    }
+  },
+  "httpStatus": {
+    "404": {
+      "code": "404 <JA>",
+      "status": "Page Not Found <JA>"
+    }
+  },
+  "issue": {
+    "attributes": "Attributes* <JA>",
+    "connection": "Connection:  <JA>",
+    "credentialDefinitionTag": "Credential Definition Tag* <JA>",
+    "credentialFieldValues": "Credential Field Values <JA>",
+    "credentials": "Issued/Offered Credentials <JA>",
+    "credentialValue": "Credential Value <JA>",
+    "delete": {
+      "confirm": "Are you sure you want to DELETE this credential exchange record? <JA>",
+      "removeExchange": "Remove Credential Exchange Record <JA>",
+      "success": "Credential exchange record deleted <JA>"
+    },
+    "id": "ID:  <JA>",
+    "issuance": "Issuance <JA>",
+    "offer": "Offer Credential <JA>",
+    "revocationEnabled": "Revocation Enabled <JA>",
+    "revocationId": "Revocation ID:  <JA>",
+    "revocationRegistry": "Revocation Registry:  <JA>",
+    "revocationRegistrySize": "Revocation Registry Size <JA>",
+    "revoke": {
+      "action": "Revoke <JA>",
+      "comment": "Optional Comment <JA>",
+      "confirm": "Are you sure you want to REVOKE this credential? <JA>",
+      "revokeCred": "Revoke Credential <JA>",
+      "success": "Credential revoked <JA>"
+    },
+    "schema": "Schema <JA>",
+    "schemaId": "Schema Id* <JA>",
+    "schemaName": "Schema Name* <JA>",
+    "schemaVersion": "Schema Version* <JA>",
+    "version": "Version: <JA>"
+  },
+  "layout": {
+    "header": {
+      "toggleSideMenu": "Toggle the side menu <JA>"
+    }
+  },
+  "login": {
+    "backToSignIn": "Go Back to Sign-in <JA>",
+    "checkStatus": "Check Status! <JA>",
+    "createRequest": "Create Request! <JA>",
+    "invalidCreds": "Incorrect Wallet ID or Wallet Key. Please try again. <JA>",
+    "noAccount": "Don't have an account? <JA>",
+    "submit": "Sign-In <JA>",
+    "submittedRequest": "Already Submitted Request? <JA>",
+    "walletSecret": "Wallet Key <JA>"
+  },
+  "messages": {
+    "connectionId": "Connection ID <JA>",
+    "createMessage": "Create a Message <JA>",
+    "disclaimer": "Note: This table contains the message storage records. For per-connection conversations, see the 'Connections' page. <JA>",
+    "messageContent": "Message Content <JA>",
+    "messages": "Messages <JA>"
+  },
+  "profile": {
+    "config": "Config: <JA>",
+    "connectionNotActiveYet": "Connection not Active yet, refresh or come back later. <JA>",
+    "connectTenantToEndorser": "Connect Tenant To Endorser <JA>",
+    "connectTenantToEndorserNotAllowed": "Innkeeper has not approved endorser connections for your tenant <JA>",
+    "createdAt": "Created at <JA>",
+    "endorserConnection": "Endorser Connection <JA>",
+    "endorserInfo": "Endorser Info <JA>",
+    "imageUrl": "Image URL <JA>",
+    "issuer": "Issuer <JA>",
+    "name": "Name <JA>",
+    "noEndorserInfoFound": "No Endorser info found, issuance disabled <JA>",
+    "publicDid": "Public DID <JA>",
+    "registerPublicDid": "Register a public DID <JA>",
+    "registerPublicDidNotAllowed": "Innkeeper has not approved public DID registration for your tenant <JA>",
+    "state": "State: {0} <JA>",
+    "taa": {
+      "accepted": "Accepted on",
+      "agreeAccept": "I agree to the terms of the Transaction Author Agreement <JA>",
+      "mechanism": "Mechanism <JA>",
+      "ratification": "Ratification <JA>",
+      "requiredNo": "No Transaction Author Agreement is required for this ledger. <JA>",
+      "requiredYes": "A Transaction Author Agreement is required for this ledger. <JA>",
+      "reviewButton": "Review/Accept TAA <JA>",
+      "taaAcceptance": "TAA Acceptance <JA>",
+      "taaDetails": "TAA Details <JA>",
+      "version": "TAA Version <JA>"
+    },
+    "tenantId": "Tenant ID <JA>",
+    "tenantNotConnectedToEndorserYet": "Tenant not connected to Endorser yet <JA>",
+    "token": "JWT Token <JA>",
+    "updatedAt": "Updated at <JA>",
+    "walletLabel": "Wallet Label <JA>",
+    "webHookKey": "WebHook Key <JA>",
+    "webhooks": "Webhooks <JA>",
+    "webHookUrl": "WebHook URL <JA>"
+  },
+  "qrCode": {
+    "noContentFound": "No content found <JA>"
+  },
+  "reservations": {
+    "alreadyComplete": "Already Complete <JA>",
+    "approved!": "APPROVED! <JA>",
+    "approved": {
+      "text": "The Check-In password has been generated. An email has been sent to {email} <JA>",
+      "title": "Reservation Approved <JA>",
+      "toast": "Reservation Approved for {email} <JA>"
+    },
+    "approveRequest": "Approve Request <JA>",
+    "checkJunkFolder": "(Please check your junk/spam folder before contacting us, as it is very common to have the email delivery problems because of automated filters.) <JA>",
+    "contactEmail": "Contact Email <JA>",
+    "contactPhone": "Contact Phone <JA>",
+    "current": "Current <JA>",
+    "dateOccurred": "The date this occurred was {0} <JA>",
+    "declined!": "DECLINED! <JA>",
+    "denied": {
+      "reasonText": "Reason for Denial (Optional) <JA>",
+      "toast": "Reservation Denied for {email} <JA>"
+    },
+    "denyRequest": "Deny Request <JA>",
+    "emailAddress": "Email Address <JA>",
+    "emailSentTo": "An email has also been sent to {0} with the reservation number below. <JA>",
+    "enterPassword": "Please enter the reservation password below to validate your account. <JA>",
+    "history": "History <JA>",
+    "incorrectEmailOrReservationId": "Incorrect Email or Reservation ID. Please try again. <JA>",
+    "loadingCheckIn": "Checking in Reservation <JA>",
+    "otp": "The password is shown below one-time if you need to communicate it via other means <JA>",
+    "passwordAvailable": "The reservation password is visible below, please use it to complete your check-in. <JA>",
+    "passwordValid48Hours": "The reservation password is only valid for 48 hours from the time it was sent to your email address. <JA>",
+    "pending!": "PENDING! <JA>",
+    "requestDeclined": "We regret to inform you that your request has been declined. <JA>",
+    "requestProcessingTime": "It ususally takes 3-4 business days to process a request. Thanks for your patience. <JA>",
+    "requestReservedOn": "Your request has been received on {0} <JA>",
+    "requests": "Requests <JA>",
+    "reservationHistory": "Reservation History <JA>",
+    "reservationId": "Reservation ID <JA>",
+    "reservationPassword": "Reservation Password <JA>",
+    "reservationPreviouslyCompleted": "This reservation has already previously been completed and the wallet details given out. <JA>",
+    "reservations": "Reservations <JA>",
+    "reservationValidated": "Your reservation is validated successfully. <JA>",
+    "resonForRejection": "Reason for rejection <JA>",
+    "saveWalletIdAndWalletKey": "Please save your newly generated wallet id and wallet key in a secure location. You will loose the data once this window is closed or you go back to sign-in. We will never share these information over the email nor do we re-issue upon request. <JA>",
+    "sentPasswordOn": "We have sent a reservation password to your email address on {0} <JA>",
+    "submitNewRequest": "If you think there has been an error you can submit a new request again. <JA>",
+    "submitted": "Your request has been submitted successfully.  <JA>",
+    "thankYou": "Thank You! <JA>",
+    "thankYou!": "Thank You! <JA>",
+    "validated!": "VALIDATED! <JA>",
+    "walletId": "Wallet ID <JA>",
+    "walletIdAndWalletKey": "Here is your new Wallet ID and Wallet Key associated with the email address mentioned while registering. <JA>",
+    "walletKey": "Wallet Key <JA>",
+    "walletKeyCannotBeRetrieved": "The wallet key cannot be retrieved again once supplied. If you require a new wallet you can go back and start a new reservation. <JA>",
+    "walletKeyCannotBeRetrievedAgain": "The wallet key cannot be retrieved again once supplied. If you require a new wallet you can go back and start a new reservation. <JA>"
+  },
+  "reserve": {
+    "email": "Email Address <JA>",
+    "fullName": "Full Name <JA>",
+    "phone": "Phone / Mobile <JA>"
+  },
+  "status": {
+    "email": "Enter your Email Address of request <JA>",
+    "reservationId": "Enter your Reservation ID <JA>",
+    "submit": "Check Status <JA>"
+  },
+  "tenant": {
+    "profile": {
+      "tenantProfile": "Tenant Profile <JA>"
+    },
+    "settings": {
+      "acapyAutoAcceptInvites": "Auto accept Invitations <JA>",
+      "acapyAutoAcceptRequests": "Auto accept Requests <JA>",
+      "acapyAutoPingConnection": "Automatically ping Connection <JA>",
+      "acapyAutoRequestEndorsement": "Automatically request Endorsement <JA>",
+      "acapyAutoRespondCredentialOffer": "Automatically respond to Credential Offers <JA>",
+      "acapyAutoRespondCredentialRequest": "Automatically respond to Credential Requests <JA>",
+      "acapyAutoRespondMessages": "Automatically respond to Messages <JA>",
+      "acapyAutoVerifyPresentation": "Automatically verify Presentations <JA>",
+      "acapyAutoWriteTransactions": "Automatically write Endorsed Transactions <JA>",
+      "acapyCreateRevocationTransactions": "Create Revocation Transactions <JA>",
+      "acapyEndorserRole": "Endorser Role <JA>",
+      "acapyHelpAutoAcceptInvites": "ACAPY_AUTO_ACCEPT_INVITES - Automatically accept invites without firing a webhook event or waiting for an admin request. <JA>",
+      "acapyHelpAutoAcceptRequests": "ACAPY_AUTO_ACCEPT_REQUESTS - Automatically accept connection requests without firing a webhook event or waiting for an admin request. <JA>",
+      "acapyHelpAutoPingConnection": "ACAPY_AUTO_PING_CONNECTION - Automatically send a trust ping immediately after a connection response is accepted. Some agents require this before marking a connection as 'active' <JA>",
+      "acapyHelpAutoRequestEndorsement": "ACAPY_AUTO_REQUEST_ENDORSEMENT - For Authors, specify whether to automatically request endorsement for all transactions. (If not specified, the controller must invoke the request endorse operation for each transaction.) <JA>",
+      "acapyHelpAutoRespondCredentialOffer": "ACAPY_AUTO_RESPOND_CREDENTIAL_OFFER - Automatically respond to Indy credential offers with a credential request <JA>",
+      "acapyHelpAutoRespondCredentialRequest": "ACAPY_AUTO_RESPOND_CREDENTIAL_REQUEST - Auto-respond to credential requests with corresponding credentials <JA>",
+      "acapyHelpAutoRespondMessages": "ACAPY_AUTO_RESPOND_MESSAGES - Automatically respond to basic messages indicating the message was receieved <JA>",
+      "acapyHelpAutoVerifyPresentation": "ACAPY_AUTO_VERIFY_PRESENTATION - Automatically verify a presentation when it is received.  <JA>",
+      "acapyHelpAutoWriteTransactions": "ACAPY_AUTO_WRITE_TRANSACTIONS - For Authors, specify whether to automatically write any endorsed transactions. (If not specified, the controller must invoke the write transaction operation for each transaction.) <JA>",
+      "acapyHelpCreateRevocationTransactions": "ACAPY_CREATE_REVOCATION_TRANSACTIONS - For Authors, specify whether to automatically create transactions for a cred def's revocation registry. (If not specified, the controller must invoke the endpoints required to create the revocation registry and assign to the cred def.) <JA>",
+      "acapyHelpEndorserRole": "ACAPY_ENDORSER_ROLE - Specify the role ('author' or 'endorser') which this agent will participate. Authors will request transaction endorement from an Endorser. Endorsers will endorse transactions from Authors, and may write their own  transactions to the ledger. If no role (or 'none') is specified then the endorsement protocol will not  be used and this agent will write transactions to the ledger directly. <JA>",
+      "acapyHelpInvitePublic": "ACAPY_INVITE_PUBLIC - Flag specifying the generated invite should be public. <JA>",
+      "acapyHelpLogLevel": "ACAPY_LOG_LEVEL - Specifies a custom logging level. <JA>",
+      "acapyHelpMonitorPing": "ACAPY_MONITOR_PING - Send a webhook when a ping is sent or received. <JA>",
+      "acapyHelpNotifyRevocation": "ACAPY_NOTIFY_REVOCATION - Specifies that aca-py will notify credential recipients when revoking a credential it issued. <JA>",
+      "acapyHelpPublicInvites": "ACAPY_PUBLIC_INVITES - Send invitations out using the public DID for the agent, and receive connection requests solicited by invitations which use the public DID. Default <JA>",
+      "acapyInvitePublic": "Generated invite should be public <JA>",
+      "acapyLogLevel": "Log Level <JA>",
+      "acapyMonitorPing": "Monitor Ping <JA>",
+      "acapyNotifyRevocation": "Notify of Revocation <JA>",
+      "acapyPublicInvites": "Send Invitations using public DID <JA>",
+      "auto": "Auto Flags <JA>",
+      "extraSettings": "Extra Settings (wording TBD) <JA>",
+      "tenantWalletSettings": "Tenant Wallet Settings <JA>"
+    }
+  },
+  "tenants": {
+    "checkIn": "Check-In Tenant <JA>",
+    "settings": {
+      "canConnectEndorser": "Tenant allowed to connect to Endorser <JA>",
+      "canRegisterDid": "Tenant allowed to register public DID <JA>",
+      "editSettings": "Edit Tenant Config <JA>",
+      "endorserAlias": "Endorser Alias <JA>",
+      "ledgerName": "Ledger Name <JA>",
+      "success": "Tenant Config Updated <FR>"
+    },
+    "tenants": "Tenants <JA>"
+  },
+  "verifier": {
+    "attributeRestrictionsSatisfied": "All attribute restrictions were satisfied <JA>",
+    "comingSoon": "Coming Soon <JA>",
+    "contactAlias: ": "Connection Alias:  <JA>",
+    "credentialHeldBy": "Credential is held by <JA>",
+    "credentialTamperFree ": "Credential is tamper-free  <JA>",
+    "credentialValid": "Credential is valid <JA>",
+    "presentationShouldHaveStatus": "This is not the component you are looking for, presentation should have status='verified' <JA>",
+    "presentationTemplates": "Presentation Templates <JA>",
+    "status: ": "Status <JA>",
+    "updatedAt": "Updated at <JA>",
+    "verifications": "Verifications <JA>"
+  },
+  "verify": {
+    "autoVerify": "Auto Verify <JA>",
+    "autoVerifyHelp": "Verifier choice to auto-verify proof presentation <JA>",
+    "comment": "Optional Comment <JA>",
+    "connection": "Connection <JA>",
+    "copyRequest": "Copy Existing Presentation Request <JA>",
+    "createRequest": "Create Presentation Request <JA>",
+    "delete": "Delete Presentation Exchange Record <JA>",
+    "deleteConfirmation": "Are you sure you want to delete this Presentation Exchange Record? <JA>",
+    "deleteSuccess": "Presentation Exchange Record successfully deleted <JA>",
+    "presentationRequestBody": "Proof Request <JA>",
+    "verification": "Verification <JA>",
+    "verifications": "Verifications <JA>"
+  }
+}
