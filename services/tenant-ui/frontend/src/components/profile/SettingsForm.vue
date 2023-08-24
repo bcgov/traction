@@ -52,7 +52,7 @@
 
               <Button
                 title="Delete this webhook"
-                icon="pi pi-trash"
+                icon="pi pi-times"
                 text
                 rounded
                 @click="() => removeWebhook(index)"
@@ -89,7 +89,7 @@
         </div>
 
         <!-- Extra Acapy Settings -->
-        <Panel v-if="!hideAcapySettings" class="settings-group mb-5" toggleable>
+        <Panel v-if="!hideAcapySettings" class="settings-group mb-5" toggleable collapsed>
           <template #header>
             <b>{{ $t('tenant.settings.extraSettings') }}</b>
           </template>
@@ -639,10 +639,10 @@ hr {
     width: 41%;
   }
   :deep(button) {
-    margin-top: 20px;
+    margin-top: 21px;
   }
   :deep(button .p-button-icon) {
-    font-size: 30px !important;
+    font-size: 20px !important;
   }
   button.add {
     visibility: hidden;
