@@ -199,6 +199,7 @@ acapy:
   ## @param acapy.plugin-config.yml.traction_innkeeper.innkeeper_wallet.print_token
   ## @param acapy.plugin-config.yml.traction_innkeeper.reservation.expiry_minutes
   ## @param acapy.plugin-config.yml.traction_innkeeper.reservation.auto_approve
+  ## @param acapy.plugin-config.yml.traction_innkeeper.reservation.auto_issuer
   ##
   plugin-config.yml:
     multitenant_provider:
