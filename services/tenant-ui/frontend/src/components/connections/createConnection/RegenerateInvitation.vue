@@ -43,14 +43,14 @@ import ProgressSpinner from 'primevue/progressspinner';
 import { useToast } from 'vue-toastification';
 // State
 import { storeToRefs } from 'pinia';
-import { useContactsStore } from '@/store';
+import { useConnectionStore } from '@/store';
 // Other Components
 import QRCode from '../../common/QRCode.vue';
 
 const toast = useToast();
 
-const contactsStore = useContactsStore();
-const { loadingItem } = storeToRefs(useContactsStore());
+const connectionStore = useConnectionStore();
+const { loadingItem } = storeToRefs(useConnectionStore());
 
 // Props
 const props = defineProps({
@@ -66,7 +66,7 @@ const invitation: any = ref(null);
 const openModal = async () => {
   displayModal.value = true;
   try {
-    invitation.value = await contactsStore.getInvitation(props.connectionId);
+    invitation.value = await connectionStore.getInvitation(props.connectionId);
   } catch (err) {
     console.error(err);
     toast.error(`Failure getting invitation: ${err}`);

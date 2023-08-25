@@ -5,9 +5,9 @@ export {
 } from './acapy';
 
 export {
-  successHandlers as contactsSuccessHandlers,
-  unknownErrorHandlers as contactsUnknownErrorHandlers,
-} from './contacts';
+  successHandlers as connectionSuccessHandlers,
+  unknownErrorHandlers as connectionUnknownErrorHandlers,
+} from './connection';
 
 export {
   successHandlers as configSuccessHandlers,

@@ -7,7 +7,7 @@ import { restHandlersUnknownError, server } from '../setupApi';
 
 let store: any;
 
-describe('contactsStore', () => {
+describe('connectionStore', () => {
   beforeEach(async () => {
     setActivePinia(createPinia());
     store = useHolderStore();

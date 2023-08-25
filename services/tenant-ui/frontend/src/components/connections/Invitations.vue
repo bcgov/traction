@@ -21,8 +21,8 @@
       <template #header>
         <div class="flex justify-content-between">
           <div class="flex justify-content-start">
-            <CreateContact :multi="false" class="mr-3" />
-            <CreateContact :multi="true" />
+            <CreateConnection :multi="false" class="mr-3" />
+            <CreateConnection :multi="true" />
           </div>
           <div class="flex justify-content-end">
             <span class="p-input-icon-left">
@@ -40,7 +40,7 @@
       <Column :expander="true" header-style="width: 3rem" />
       <Column :sortable="false" :header="$t('common.actions')">
         <template #body="{ data }">
-          <DeleteContact :connection-id="data.connection_id" />
+          <DeleteConnection :connection-id="data.connection_id" />
           <RegenerateInvitation :connection-id="data.connection_id" />
         </template>
       </Column>
@@ -115,22 +115,22 @@ import DataTable from 'primevue/datatable';
 import { useToast } from 'vue-toastification';
 import { FilterMatchMode } from 'primevue/api';
 // State
-import { useContactsStore } from '@/store';
+import { useConnectionStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other components
-import CreateContact from '@/components/connections/createContact/CreateContact.vue';
-import DeleteContact from '@/components/connections/editContact/DeleteContact.vue';
+import CreateConnection from '@/components/connections/createConnection/CreateConnection.vue';
+import DeleteConnection from '@/components/connections/editConnection/DeleteConnection.vue';
 import MainCardContent from '../layout/mainCard/MainCardContent.vue';
-import RegenerateInvitation from '@/components/connections/createContact/RegenerateInvitation.vue';
+import RegenerateInvitation from '@/components/connections/createConnection/RegenerateInvitation.vue';
 import RowExpandData from '@/components/common/RowExpandData.vue';
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 
 const toast = useToast();
 
-const contactsStore = useContactsStore();
+const connectionStore = useConnectionStore();
 
-const { loading, filteredInvitations } = storeToRefs(useContactsStore());
+const { loading, filteredInvitations } = storeToRefs(useConnectionStore());
 
 const formattedInvitations = computed(() =>
   filteredInvitations.value.map((inv) => ({
@@ -142,7 +142,7 @@ const formattedInvitations = computed(() =>
   }))
 );
 const loadTable = async () => {
-  contactsStore.listContacts().catch((err) => {
+  connectionStore.listConnections().catch((err) => {
     console.error(err);
     toast.error(`Failure: ${err}`);
   });

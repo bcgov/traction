@@ -87,7 +87,7 @@ const receiveInvitation = {
   request_id: '657093be-86dd-4650-86b9-ea8ed454997d',
 };
 
-const getContact = {
+const getConnection = {
   invitation_mode: 'once',
   their_did: 'CvcxvRBZLccBNF16DrPQC6',
   accept: 'manual',
@@ -146,7 +146,7 @@ export default {
   createConnection,
   didExchange,
   getConnectionInvitation,
-  getContact,
+  getConnection,
   listConnections,
   receiveInvitation,
 };

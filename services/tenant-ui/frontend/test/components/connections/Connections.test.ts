@@ -68,7 +68,7 @@ describe('Connections', () => {
     ).toBeFalsy();
   });
 
-  test('clicking delete button triggers delete contact function and confirmation dialog', async () => {
+  test('clicking delete button triggers delete connection function and confirmation dialog', async () => {
     tenantStore.endorserInfo.value = {
       endorser_name: null,
     };

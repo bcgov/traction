@@ -4,8 +4,8 @@ import PrimeVue from 'primevue/config';
 import { describe, expect, test, vi } from 'vitest';
 import VueToastificationPlugin from 'vue-toastification';
 
-import RegenerateInvitation from '@/components/connections/createContact/RegenerateInvitation.vue';
-import { useContactsStore } from '@/store';
+import RegenerateInvitation from '@/components/connections/createConnection/RegenerateInvitation.vue';
+import { useConnectionStore } from '@/store';
 
 const mountRegenerateInvitation = () =>
   shallowMount(RegenerateInvitation, {
@@ -31,7 +31,7 @@ describe('RegenerateInvitation', async () => {
     const wrapper = mountRegenerateInvitation();
     const wrapperVm = wrapper.vm as unknown as typeof RegenerateInvitation;
     const toastErrorSpy = vi.spyOn(wrapperVm.toast, 'error');
-    const store = useContactsStore();
+    const store = useConnectionStore();
     wrapper.getComponent({ name: 'Button' }).trigger('click');
 
     await flushPromises();

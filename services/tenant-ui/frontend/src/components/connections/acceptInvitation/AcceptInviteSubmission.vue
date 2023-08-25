@@ -57,7 +57,7 @@
 // Vue
 import { reactive, ref } from 'vue';
 // State
-import { useContactsStore } from '@/store';
+import { useConnectionStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // PrimeVue / Validation
 import Button from 'primevue/button';
@@ -70,10 +70,10 @@ import { useToast } from 'vue-toastification';
 import { isJsonString } from '@/helpers';
 
 const toast = useToast();
-const contactsStore = useContactsStore();
+const connectionStore = useConnectionStore();
 
 // use the loading state from the store to disable the button...
-const { loading } = storeToRefs(useContactsStore());
+const { loading } = storeToRefs(useConnectionStore());
 
 const emit = defineEmits(['closed', 'success']);
 
@@ -109,7 +109,7 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 
   try {
-    await contactsStore.receiveInvitation(
+    await connectionStore.receiveInvitation(
       formFields.invitationJson,
       formFields.alias
     );

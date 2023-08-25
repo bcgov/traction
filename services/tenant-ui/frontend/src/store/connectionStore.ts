@@ -14,36 +14,36 @@ import {
 } from './utils';
 import { fetchItem } from './utils/fetchItem';
 
-export const useContactsStore = defineStore('contacts', () => {
+export const useConnectionStore = defineStore('connection', () => {
   // state
-  const contacts: Ref<ConnRecord[]> = ref([]);
-  const selectedContact: any = ref(null);
+  const connections: Ref<ConnRecord[]> = ref([]);
+  const selectedConnection: any = ref(null);
   const loading: Ref<boolean> = ref(false);
   const loadingItem: Ref<boolean> = ref(false);
   const error: Ref<string | null> = ref(null);
 
   // getters
-  const contactsDropdown = computed(() => {
+  const connectionsDropdown = computed(() => {
     // Get the display list of active connections from the util
     return filterMapSortList(
-      contacts.value,
-      contactLabelValue,
+      connections.value,
+      connectionLabelValue,
       sortByLabelAscending,
       filterByStateActive
     );
   });
 
   const filteredConnections = computed(() =>
-    contacts.value.filter((c) => c.state !== CONNECTION_STATUSES.INVITATION)
+    connections.value.filter((c) => c.state !== CONNECTION_STATUSES.INVITATION)
   );
   const filteredInvitations = computed(() =>
-    contacts.value.filter((c) => c.state === CONNECTION_STATUSES.INVITATION)
+    connections.value.filter((c) => c.state === CONNECTION_STATUSES.INVITATION)
   );
 
   const findConnectionName = computed(() => (connectionId: string) => {
     if (loading.value) return undefined;
     // Find the connection alias for an ID
-    const connection = contacts.value?.find((c: any) => {
+    const connection = connections.value?.find((c: any) => {
       return c.connection_id === connectionId;
     });
     return connection && connection.alias ? connection.alias : '';
@@ -54,13 +54,13 @@ export const useContactsStore = defineStore('contacts', () => {
   // grab the tenant api
   const acapyApi = useAcapyApi();
 
-  async function listContacts() {
-    selectedContact.value = null;
-    return fetchList(API_PATH.CONNECTIONS, contacts, error, loading, {});
+  async function listConnections() {
+    selectedConnection.value = null;
+    return fetchList(API_PATH.CONNECTIONS, connections, error, loading, {});
   }
 
   async function createInvitation(alias: string, multiUse: boolean) {
-    console.log('> contactsStore.createInvitation');
+    console.log('> connectionStore.createInvitation');
     error.value = null;
     loading.value = true;
 
@@ -79,7 +79,7 @@ export const useContactsStore = defineStore('contacts', () => {
         invitationData = res.data;
       })
       .then(() => {
-        listContacts();
+        listConnections();
       })
       .catch((err) => {
         error.value = err;
@@ -88,7 +88,7 @@ export const useContactsStore = defineStore('contacts', () => {
       .finally(() => {
         loading.value = false;
       });
-    console.log('< contactsStore.createInvitation');
+    console.log('< connectionStore.createInvitation');
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
@@ -99,7 +99,7 @@ export const useContactsStore = defineStore('contacts', () => {
   }
 
   async function receiveInvitation(invite: string, alias: string) {
-    console.log('> contactsStore.receiveInvitation');
+    console.log('> connectionStore.receiveInvitation');
     error.value = null;
     loading.value = true;
 
@@ -120,7 +120,7 @@ export const useContactsStore = defineStore('contacts', () => {
         console.log(
           'invitation accepted. the store calls load automatically, but do we want this done "manually"?'
         );
-        listContacts();
+        listConnections();
       })
       .catch((err) => {
         error.value = err;
@@ -129,7 +129,7 @@ export const useContactsStore = defineStore('contacts', () => {
       .finally(() => {
         loading.value = false;
       });
-    console.log('< contactsStore.receiveInvitation');
+    console.log('< connectionStore.receiveInvitation');
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
@@ -139,8 +139,8 @@ export const useContactsStore = defineStore('contacts', () => {
     return acceptedData;
   }
 
-  async function deleteContact(connectionId: string) {
-    console.log('> contactsStore.deleteContact');
+  async function deleteConnection(connectionId: string) {
+    console.log('> connectionStore.deleteConnection');
 
     error.value = null;
     loading.value = true;
@@ -153,7 +153,7 @@ export const useContactsStore = defineStore('contacts', () => {
         result = res.data;
       })
       .then(() => {
-        listContacts(); // Refresh table
+        listConnections(); // Refresh table
       })
       .catch((err) => {
         error.value = err;
@@ -161,7 +161,7 @@ export const useContactsStore = defineStore('contacts', () => {
       .finally(() => {
         loading.value = false;
       });
-    console.log('< contactsStore.deleteContact');
+    console.log('< connectionStore.deleteConnection');
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
@@ -171,7 +171,7 @@ export const useContactsStore = defineStore('contacts', () => {
     return result;
   }
 
-  async function getContact(id: string, params: any = {}) {
+  async function getConnection(id: string, params: any = {}) {
     loadingItem.value = true;
     return fetchItem(API_PATH.CONNECTIONS, id, error, loadingItem, params);
   }
@@ -189,7 +189,7 @@ export const useContactsStore = defineStore('contacts', () => {
 
   // Only going to do alias right now but expand to other params if needed later
   async function updateConnection(id: string, alias: string) {
-    console.log('> contactsStore.updateConnection');
+    console.log('> connectionStore.updateConnection');
     error.value = null;
     loading.value = true;
 
@@ -203,7 +203,7 @@ export const useContactsStore = defineStore('contacts', () => {
         updatedConnection = res.data;
       })
       .then(() => {
-        listContacts();
+        listConnections();
       })
       .catch((err) => {
         error.value = err;
@@ -211,7 +211,7 @@ export const useContactsStore = defineStore('contacts', () => {
       .finally(() => {
         loading.value = false;
       });
-    console.log('< contactsStore.updateConnection');
+    console.log('< connectionStore.updateConnection');
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
@@ -222,7 +222,7 @@ export const useContactsStore = defineStore('contacts', () => {
   }
 
   async function didCreateRequest(did: string, alias: string, myLabel: string) {
-    console.log('> contactsStore.didCreateRequest');
+    console.log('> connectionStore.didCreateRequest');
     error.value = null;
     loading.value = true;
 
@@ -238,7 +238,7 @@ export const useContactsStore = defineStore('contacts', () => {
         console.log(res);
       })
       .then(() => {
-        listContacts();
+        listConnections();
       })
       .catch((err) => {
         error.value = err;
@@ -246,7 +246,7 @@ export const useContactsStore = defineStore('contacts', () => {
       .finally(() => {
         loading.value = false;
       });
-    console.log('< contactsStore.didCreateRequest');
+    console.log('< connectionStore.didCreateRequest');
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
@@ -255,7 +255,7 @@ export const useContactsStore = defineStore('contacts', () => {
   }
 
   // private functions
-  const contactLabelValue = (item: any) => {
+  const connectionLabelValue = (item: any) => {
     let result = null;
     if (item != null) {
       // TODO: determine UX for multiuse blank alias ones
@@ -275,20 +275,20 @@ export const useContactsStore = defineStore('contacts', () => {
   };
 
   return {
-    contacts,
-    contactsDropdown,
-    selectedContact,
+    connections,
+    connectionsDropdown,
+    selectedConnection,
     loading,
     loadingItem,
     error,
     filteredConnections,
     filteredInvitations,
     findConnectionName,
-    listContacts,
+    listConnections,
     createInvitation,
     receiveInvitation,
-    deleteContact,
-    getContact,
+    deleteConnection,
+    getConnection,
     getInvitation,
     updateConnection,
     didCreateRequest,
@@ -296,5 +296,5 @@ export const useContactsStore = defineStore('contacts', () => {
 });
 
 export default {
-  useContactsStore,
+  useConnectionStore,
 };

@@ -1,6 +1,6 @@
 export { useConfigStore } from './configStore';
 // Tenant
-export { useContactsStore } from './contactsStore';
+export { useConnectionStore } from './connectionStore';
 export { useGovernanceStore } from './governanceStore';
 export { useHolderStore } from './holderStore';
 export { useIssuerStore } from './issuerStore';
@@ -16,4 +16,4 @@ export { useInnkeeperTenantsStore } from './innkeeper/innkeeperTenantsStore';
 export { useInnkeeperOidcStore } from './innkeeper/innkeeperOidcStore';
 
 // OIDC
-export { useOIDCStore } from './oidc/oidcStore';
+export { useOidcStore } from './oidc/oidcStore';

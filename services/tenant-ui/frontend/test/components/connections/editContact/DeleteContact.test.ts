@@ -4,10 +4,10 @@ import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
 import { describe, expect, test, vi } from 'vitest';
 
-import DeleteContact from '@/components/connections/editContact/DeleteContact.vue';
+import DeleteConnection from '@/components/connections/editConnection/DeleteConnection.vue';
 
-const mountDeleteContact = () =>
-  mount(DeleteContact, {
+const mountDeleteConnection = () =>
+  mount(DeleteConnection, {
     props: {
       connectionId: 'test-connection-id',
     },
@@ -16,10 +16,10 @@ const mountDeleteContact = () =>
     },
   });
 
-describe('DeleteContact', () => {
+describe('DeleteConnection', () => {
   test('mount has expected components and calls delete on click', async () => {
-    const wrapper = mountDeleteContact();
-    const wrapperVm = wrapper.vm as unknown as typeof DeleteContact;
+    const wrapper = mountDeleteConnection();
+    const wrapperVm = wrapper.vm as unknown as typeof DeleteConnection;
     const spy = vi.spyOn(wrapperVm.confirm, 'require');
     wrapper
       .getComponent({ name: 'Button', props: { icon: 'pi pi-trash' } })

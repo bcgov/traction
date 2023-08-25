@@ -40,18 +40,18 @@
       <Column :expander="true" header-style="width: 3rem" />
       <Column :sortable="false" :header="$t('common.actions')">
         <template #body="{ data }">
-          <MessageContact
+          <MessageConnection
             :connection-id="data.connection_id"
             :connection-name="data.alias"
           />
           <Button
-            title="Delete Contact"
+            title="Delete Connection"
             icon="pi pi-trash"
             class="p-button-rounded p-button-icon-only p-button-text"
             :disabled="deleteDisabled(data.alias)"
-            @click="deleteContact($event, data.connection_id)"
+            @click="deleteConnection($event, data.connection_id)"
           />
-          <EditContact :connection-id="data.connection_id" />
+          <EditConnection :connection-id="data.connection_id" />
         </template>
       </Column>
       <Column
@@ -147,34 +147,31 @@ import InputText from 'primevue/inputtext';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';
 // State
-import { useContactsStore, useTenantStore } from '@/store';
+import { useConnectionStore, useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other components
 import AcceptInvitation from './acceptInvitation/AcceptInvitation.vue';
 import DidExchange from './didExchange/DidExchange.vue';
-import EditContact from './editContact/EditContact.vue';
+import EditConnection from './editConnection/EditConnection.vue';
 import MainCardContent from '../layout/mainCard/MainCardContent.vue';
-import MessageContact from './messageContact/MessageContact.vue';
+import MessageConnection from './messageConnection/MessageConnection.vue';
 import RowExpandData from '../common/RowExpandData.vue';
 import StatusChip from '../common/StatusChip.vue';
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 
-// State
-import { useConfigStore } from '@/store/configStore';
-const { config } = storeToRefs(useConfigStore());
-
 const confirm = useConfirm();
 const toast = useToast();
 
-const contactsStore = useContactsStore();
+// State
+const connectionStore = useConnectionStore();
 const tenantStore = useTenantStore();
 
-const { loading, filteredConnections } = storeToRefs(useContactsStore());
+const { loading, filteredConnections } = storeToRefs(useConnectionStore());
 const { endorserInfo } = storeToRefs(useTenantStore());
 
 const loadTable = async () => {
-  contactsStore.listContacts().catch((err) => {
+  connectionStore.listConnections().catch((err) => {
     console.error(err);
     toast.error(`Failure: ${err}`);
   });
@@ -183,12 +180,12 @@ const loadTable = async () => {
 onMounted(async () => {
   // So we can check endorser connection
   tenantStore.getEndorserInfo();
-  // Load your contact list
+  // Load your connection list
   loadTable();
 });
 
-// Deleting a contact
-const deleteContact = (event: any, id: string) => {
+// Deleting a connection
+const deleteConnection = (event: any, id: string) => {
   confirm.require({
     target: event.currentTarget,
     message: 'Are you sure you want to delete this connection?',
@@ -200,8 +197,8 @@ const deleteContact = (event: any, id: string) => {
   });
 };
 const doDelete = (id: string) => {
-  contactsStore
-    .deleteContact(id)
+  connectionStore
+    .deleteConnection(id)
     .then(() => {
       toast.success(`Connection successfully deleted`);
     })
@@ -211,10 +208,10 @@ const doDelete = (id: string) => {
     });
 };
 // Can't delete if it's endorser
-const deleteDisabled = (contactAlias: string) => {
+const deleteDisabled = (connectionAlias: string) => {
   return (
     endorserInfo.value != null &&
-    endorserInfo.value.endorser_name === contactAlias
+    endorserInfo.value.endorser_name === connectionAlias
   );
 };
 
@@ -251,10 +248,3 @@ const filter = ref({
   },
 });
 </script>
-
-<style scoped>
-.create-contact {
-  float: right;
-  margin: 3rem 1rem 0 0;
-}
-</style>

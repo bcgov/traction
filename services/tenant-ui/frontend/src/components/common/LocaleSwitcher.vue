@@ -9,7 +9,7 @@ import { I18nLocale } from '@/helpers';
 
 const { locale } = useI18n({ useScope: 'global' });
 
-const localeList: Array<I18nLocale> = ['en', 'fr', 'jp'];
+const localeList: Array<I18nLocale> = ['en', 'fr', 'ja'];
 </script>
 
 <style lang="scss" scoped>

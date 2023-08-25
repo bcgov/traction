@@ -29,30 +29,30 @@
           }}</small>
         </div>
 
-        <!-- Contact -->
+        <!-- Connection -->
         <div class="field mt-5">
           <label
-            for="selectedContact"
-            :class="{ 'p-error': v$.selectedContact.$invalid && submitted }"
-            >{{ $t('common.contactName') }}
-            <ProgressSpinner v-if="contactLoading" />
+            for="selectedConnection"
+            :class="{ 'p-error': v$.selectedConnection.$invalid && submitted }"
+            >{{ $t('common.connectionName') }}
+            <ProgressSpinner v-if="connectionLoading" />
           </label>
 
           <AutoComplete
-            id="selectedContact"
-            v-model="v$.selectedContact.$model"
+            id="selectedConnection"
+            v-model="v$.selectedConnection.$model"
             class="w-full"
-            :disabled="contactLoading"
-            :suggestions="filteredContacts"
+            :disabled="connectionLoading"
+            :suggestions="filteredConnections"
             :dropdown="true"
             option-label="label"
             force-selection
-            @complete="searchContacts($event)"
+            @complete="searchConnections($event)"
           />
           <small
-            v-if="v$.selectedContact.$invalid && submitted"
+            v-if="v$.selectedConnection.$invalid && submitted"
             class="p-error"
-            >{{ v$.selectedContact.required.$message }}</small
+            >{{ v$.selectedConnection.required.$message }}</small
           >
         </div>
 
@@ -98,8 +98,8 @@
           type="submit"
           label="Send Offer"
           class="mt-5 w-full"
-          :disabled="contactLoading || credsLoading || issueLoading"
-          :loading="contactLoading || credsLoading || issueLoading"
+          :disabled="connectionLoading || credsLoading || issueLoading"
+          :loading="connectionLoading || credsLoading || issueLoading"
         />
       </div>
 
@@ -130,15 +130,19 @@ import { useVuelidate } from '@vuelidate/core';
 import { useToast } from 'vue-toastification';
 // State
 import { storeToRefs } from 'pinia';
-import { useContactsStore, useGovernanceStore, useIssuerStore } from '@/store';
+import {
+  useConnectionStore,
+  useGovernanceStore,
+  useIssuerStore,
+} from '@/store';
 // Other components
 import EnterCredentialValues from './EnterCredentialValues.vue';
 
 const toast = useToast();
 
 // Store values
-const { loading: contactLoading, contactsDropdown } = storeToRefs(
-  useContactsStore()
+const { loading: connectionLoading, connectionsDropdown } = storeToRefs(
+  useConnectionStore()
 );
 const {
   loading: credsLoading,
@@ -154,7 +158,7 @@ const emit = defineEmits(['closed', 'success']);
 // Form and Validation
 const credentialValuesRaw = ref([] as { name: string; value: string }[]);
 const filteredCreds = ref();
-const filteredContacts = ref();
+const filteredConnections = ref();
 const schemaForSelectedCred = ref();
 const showEditCredValues = ref(false);
 const formFields = reactive({
@@ -162,26 +166,28 @@ const formFields = reactive({
   credentialValuesPretty: '',
   // This is not good typescript but need an object with fields
   // in a dropdown that displays a string that can be blank. TODO
-  selectedContact: undefined as any,
+  selectedConnection: undefined as any,
   selectedCred: undefined as any,
 });
 const rules = {
   credentialValuesEditing: {},
   credentialValuesPretty: { required },
   selectedCred: { required },
-  selectedContact: { required },
+  selectedConnection: { required },
 };
 const v$ = useVuelidate(rules, formFields);
 
 // Autocomplete setup
 // These can maybe be generalized into a util function (for all dropdown searches)
-const searchContacts = (event: any) => {
+const searchConnections = (event: any) => {
   if (!event.query.trim().length) {
-    filteredContacts.value = [...(contactsDropdown as any).value];
+    filteredConnections.value = [...(connectionsDropdown as any).value];
   } else {
-    filteredContacts.value = (contactsDropdown.value as any).filter(
-      (contact: any) => {
-        return contact.label.toLowerCase().includes(event.query.toLowerCase());
+    filteredConnections.value = (connectionsDropdown.value as any).filter(
+      (connection: any) => {
+        return connection.label
+          .toLowerCase()
+          .includes(event.query.toLowerCase());
       }
     );
   }
@@ -237,7 +243,7 @@ const handleSubmit = async (isFormValid: boolean) => {
     const payload = {
       auto_issue: true,
       auto_remove: false,
-      connection_id: formFields.selectedContact.value,
+      connection_id: formFields.selectedConnection.value,
       cred_def_id: formFields.selectedCred.value,
       credential_preview: {
         '@type': 'issue-credential/1.0/credential-preview',

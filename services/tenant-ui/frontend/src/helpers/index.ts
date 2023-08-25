@@ -2,7 +2,7 @@ import { format, fromUnixTime, parseJSON } from 'date-fns';
 import { enCA, fr, ja } from 'date-fns/locale';
 import { useI18n } from 'vue-i18n';
 
-export type I18nLocale = 'en' | 'fr' | 'jp';
+export type I18nLocale = 'en' | 'fr' | 'ja';
 
 function i18n2DateLocale(i18nLocale: I18nLocale): Locale {
   switch (i18nLocale) {
@@ -10,7 +10,7 @@ function i18n2DateLocale(i18nLocale: I18nLocale): Locale {
       return enCA;
     case 'fr':
       return fr;
-    case 'jp':
+    case 'ja':
       return ja;
   }
   // This way we can fall back to a default while using typescript to

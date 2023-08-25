@@ -37,7 +37,7 @@ const items = ref([
         // Icons are manadatory for mobile layout
         label: () => t('connect.connections.connections'),
         icon: 'pi pi-fw pi-users',
-        to: { name: 'MyContacts' },
+        to: { name: 'MyConnections' },
       },
       {
         label: () => t('connect.invitations.invitations'),

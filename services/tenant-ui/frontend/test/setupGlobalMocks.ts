@@ -6,7 +6,7 @@ import { vi } from 'vitest';
 import {
   commonStore,
   configStore,
-  contactsStore,
+  connectionStore,
   governanceStore,
   // holderStore: See comment above
   issuerStore,
@@ -35,7 +35,7 @@ vi.mock('pinia', async () => {
       Object.assign(
         commonStore,
         configStore,
-        contactsStore,
+        connectionStore,
         governanceStore,
         // holderStore: See comment above
         issuerStore,
@@ -58,7 +58,7 @@ vi.mock('pinia', async () => {
 vi.mock('@/store', () => ({
   useCommonStore: vi.fn(() => commonStore),
   useConfigStore: vi.fn(() => configStore),
-  useContactsStore: vi.fn(() => contactsStore),
+  useConnectionStore: vi.fn(() => connectionStore),
   useGovernanceStore: vi.fn(() => governanceStore),
   // useHolderStore: vi.fn(() => holderStore), // See comment above
   useIssuerStore: vi.fn(() => issuerStore),
@@ -72,7 +72,7 @@ vi.mock('@/store', () => ({
   useInnkeeperTenantsStore: vi.fn(() => innkeeperTenantsStore),
   useInnkeeperTokenStore: vi.fn(() => innkeeperTokenStore),
   // oidc
-  useOIDCStore: vi.fn(() => oidcStore),
+  useOidcStore: vi.fn(() => oidcStore),
 }));
 
 vi.mock('vue-i18n', () => ({

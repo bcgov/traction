@@ -20,7 +20,7 @@
       :style="{ minWidth: '400px' }"
       @update:visible="handleClose"
     >
-      <CreateContactForm
+      <CreateConnectionForm
         :multi="props.multi"
         @success="$emit('success')"
         @closed="handleClose"
@@ -36,7 +36,7 @@ import { ref, PropType } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 // Custom Components
-import CreateContactForm from './CreateContactForm.vue';
+import CreateConnectionForm from './CreateConnectionForm.vue';
 
 defineEmits(['success']);
 

@@ -24,7 +24,7 @@ Testing Components:
   - If it is still really hard to get right it might be better to test inner components seperatly or only do a shallow mount on parent object.
 
 - There are several ways to test notifications and popups are triggered. The best way to do this seems to be: \
-  `const wrapperVm = wrapper.vm as unknown as typeof CreateContactForm; `
+  `const wrapperVm = wrapper.vm as unknown as typeof CreateConnectionForm; `
 
   `const toastInfoSpy = vi.spyOn(wrapperVm.toast, 'info');` \
   `expect(toastInfoSpy).toHaveBeenCalled();`

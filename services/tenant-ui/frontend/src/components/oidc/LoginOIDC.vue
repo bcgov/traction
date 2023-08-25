@@ -6,14 +6,14 @@
 
 <script setup lang="ts">
 import Button from 'primevue/button';
-import { useOIDCStore } from '@/store';
+import { useOidcStore } from '@/store';
 
 import { storeToRefs } from 'pinia';
 import { useToast } from 'vue-toastification';
 
 const toast = useToast();
-const oidcStore = useOIDCStore();
-const { loading, error } = storeToRefs(useOIDCStore());
+const oidcStore = useOidcStore();
+const { loading, error } = storeToRefs(useOidcStore());
 
 // OIDC Login
 const login = async () => {
