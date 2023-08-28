@@ -3,8 +3,8 @@ import { mount } from '@vue/test-utils';
 import PrimeVue from 'primevue/config';
 import { describe, expect, test, vi } from 'vitest';
 
-import EditContactForm from '@/components/connections/editContact/EditContactForm.vue';
-import { useContactsStore } from '@/store';
+import EditConnectionForm from '@/components/connections/editConnection/EditConnectionForm.vue';
+import { useConnectionStore } from '@/store';
 
 import { basicAlias } from '../../../__mocks__/validation/forms';
 
@@ -16,8 +16,8 @@ const mockVuelidate = async (values: object = basicAlias) => {
   vuelidateMock.useVuelidate = vi.fn().mockReturnValue(values);
 };
 
-const mountEditContactForm = () =>
-  mount(EditContactForm, {
+const mountEditConnectionForm = () =>
+  mount(EditConnectionForm, {
     props: {
       connectionId: 'test-connection-id',
     },
@@ -27,11 +27,11 @@ const mountEditContactForm = () =>
   });
 
 // Tests
-describe('EditContactForm', async () => {
+describe('EditConnectionForm', async () => {
   test('renders with expected components', async () => {
     await mockVuelidate();
 
-    const wrapper = mountEditContactForm();
+    const wrapper = mountEditConnectionForm();
 
     wrapper.getComponent({ name: 'InputText' });
     wrapper.getComponent({ name: 'Button' });
@@ -43,7 +43,7 @@ describe('EditContactForm', async () => {
     values.$invalid = true;
     await mockVuelidate(values);
 
-    const wrapper = mountEditContactForm();
+    const wrapper = mountEditConnectionForm();
     await wrapper.find('form').trigger('submit.prevent');
 
     expect(wrapper.html()).toContain('Alias is required');
@@ -51,8 +51,8 @@ describe('EditContactForm', async () => {
 
   test('sucessful form calls toast info and external function', async () => {
     await mockVuelidate();
-    const wrapper = mountEditContactForm();
-    const store = useContactsStore();
+    const wrapper = mountEditConnectionForm();
+    const store = useConnectionStore();
     await wrapper.find('form').trigger('submit.prevent');
 
     expect(store.updateConnection).toHaveBeenCalled();

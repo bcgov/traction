@@ -2,10 +2,10 @@ import { flushPromises, mount } from '@vue/test-utils';
 import PrimeVue from 'primevue/config';
 import { describe, expect, test } from 'vitest';
 
-import EditContact from '@/components/connections/editContact/EditContact.vue';
+import EditConnection from '@/components/connections/editConnection/EditConnection.vue';
 
-const mountEditContact = () =>
-  mount(EditContact, {
+const mountEditConnection = () =>
+  mount(EditConnection, {
     props: {
       connectionId: 'test-connection-id',
     },
@@ -15,9 +15,9 @@ const mountEditContact = () =>
     },
   });
 
-describe('EditContact', () => {
+describe('EditConnection', () => {
   test('mount matches expected components with modal closed', async () => {
-    const wrapper = mountEditContact();
+    const wrapper = mountEditConnection();
 
     wrapper.getComponent({ name: 'Button' });
     expect(wrapper.getComponent({ name: 'Dialog' }).attributes().visible).toBe(
@@ -26,7 +26,7 @@ describe('EditContact', () => {
   });
 
   test('modal becomes visible on button click', async () => {
-    const wrapper = mountEditContact();
+    const wrapper = mountEditConnection();
 
     await wrapper.getComponent({ name: 'Button' }).trigger('click');
     expect(wrapper.getComponent({ name: 'Dialog' }).attributes().visible).toBe(

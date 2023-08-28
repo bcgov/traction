@@ -2,39 +2,39 @@ import { flushPromises } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, test } from 'vitest';
 
-import { useContactsStore } from '@/store/contactsStore';
+import { useConnectionStore } from '@/store/connectionStore';
 import { testErrorResponse, testSuccessResponse } from '../../test/commonTests';
 import { restHandlersUnknownError, server } from '../setupApi';
 
-import { contactsResponse } from '../__mocks__/api/responses/';
+import { connectionResponse } from '../__mocks__/api/responses/';
 
 let store: any;
 
-describe('contactsStore', () => {
+describe('connectionStore', () => {
   beforeEach(async () => {
     setActivePinia(createPinia());
-    store = useContactsStore();
+    store = useConnectionStore();
   });
 
   test("initial values haven't changed from expected", async () => {
-    expect(store.contacts).toEqual([]);
+    expect(store.connections).toEqual([]);
     expect(store.loading).toEqual(false);
     expect(store.error).toBeNull();
-    expect(store.selectedContact).toBeNull();
+    expect(store.selectedConnection).toBeNull();
     expect(store.loadingItem).toEqual(false);
   });
 
-  test('contactsDropdown sorts by label and filters non active connections', async () => {
-    store.contacts = contactsResponse.listConnections.results;
+  test('connectionsDropdown sorts by label and filters non active connections', async () => {
+    store.connections = connectionResponse.listConnections.results;
     await flushPromises();
-    const result = store.contactsDropdown;
+    const result = store.connectionsDropdown;
 
     expect(result).toHaveLength(2);
     expect(result[0].label).toEqual('Atest');
   });
 
   test('findConnectionName returns undefined while loading and connection exists', async () => {
-    store.contacts = contactsResponse.listConnections.results;
+    store.connections = connectionResponse.listConnections.results;
     store.loading = true;
     await flushPromises();
     const result = store.findConnectionName(
@@ -44,7 +44,7 @@ describe('contactsStore', () => {
   });
 
   test('findConnectionName returns name while not loading and connection exists', async () => {
-    store.contacts = contactsResponse.listConnections.results;
+    store.connections = connectionResponse.listConnections.results;
     store.loading = false;
     await flushPromises();
     const result = store.findConnectionName(
@@ -54,7 +54,7 @@ describe('contactsStore', () => {
   });
 
   test('findConnectionName returns blank string when can not find matching connection', async () => {
-    store.contacts = contactsResponse.listConnections.results;
+    store.connections = connectionResponse.listConnections.results;
     store.loading = false;
     await flushPromises();
     const result = store.findConnectionName('97bacd18-not-found');
@@ -62,8 +62,8 @@ describe('contactsStore', () => {
   });
 
   describe('Success API calls', async () => {
-    test('listContacts does not throw error and sets loading correctly', async () => {
-      let response = store.listContacts();
+    test('listConnections does not throw error and sets loading correctly', async () => {
+      let response = store.listConnections();
 
       await testSuccessResponse(store, response, 'loading');
       response = await response;
@@ -85,18 +85,18 @@ describe('contactsStore', () => {
       );
     });
 
-    test('deleteContact does not throw error and sets loading correctly', async () => {
+    test('deleteConnection does not throw error and sets loading correctly', async () => {
       await testSuccessResponse(
         store,
-        store.deleteContact('test-uuid'),
+        store.deleteConnection('test-uuid'),
         'loading'
       );
     });
 
-    test('getContact does not throw error and sets loadingItem correctly', async () => {
+    test('getConnection does not throw error and sets loadingItem correctly', async () => {
       await testSuccessResponse(
         store,
-        store.getContact('test-uuid'),
+        store.getConnection('test-uuid'),
         'loadingItem'
       );
     });
@@ -131,8 +131,8 @@ describe('contactsStore', () => {
       server.use(...restHandlersUnknownError);
     });
 
-    test('listContacts throws error and sets loading correctly', async () => {
-      await testErrorResponse(store, store.listContacts(), 'loading');
+    test('listConnections throws error and sets loading correctly', async () => {
+      await testErrorResponse(store, store.listConnections(), 'loading');
     });
 
     test('createInvitation throws error and sets loading correctly', async () => {
@@ -158,18 +158,18 @@ describe('contactsStore', () => {
       await expect(response).rejects.toThrow();
     });
 
-    test('deleteContact sets error and loading correctly', async () => {
+    test('deleteConnection sets error and loading correctly', async () => {
       await testErrorResponse(
         store,
-        store.deleteContact('test-uuid'),
+        store.deleteConnection('test-uuid'),
         'loading'
       );
     });
 
-    test('getContact sets error and loading correctly', async () => {
+    test('getConnection sets error and loading correctly', async () => {
       await testErrorResponse(
         store,
-        store.getContact('test-uuid'),
+        store.getConnection('test-uuid'),
         'loadingItem'
       );
     });

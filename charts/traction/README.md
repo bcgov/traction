@@ -9,7 +9,8 @@ The Traction service allows organizations to verify, hold, and issue verifiable 
 ## TL;DR
 
 ```console
-helm install my-release charts/traction
+helm repo add traction https://bcgov.github.io/traction
+helm install my-release traction/traction
 ```
 
 ## Prerequisites
@@ -23,9 +24,8 @@ helm install my-release charts/traction
 To install the chart with the release name `my-release`:
 
 ```console
-git clone https://github.com/bcgov/traction.git
-cd traction
-helm install my-release charts/traction
+helm repo add traction https://bcgov.github.io/traction
+helm install my-release traction/traction
 ```
 
 The command deploys Traction and PostgrSQL on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.

@@ -7,7 +7,7 @@ import { testSuccessResponse, testErrorResponse } from '../../test/commonTests';
 
 let store: any;
 
-describe('contactsStore', () => {
+describe('connectionStore', () => {
   beforeEach(async () => {
     setActivePinia(createPinia());
     store = useIssuerStore();

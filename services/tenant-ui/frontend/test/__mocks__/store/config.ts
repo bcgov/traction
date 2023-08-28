@@ -24,7 +24,7 @@ const store: { [key: string]: any } = {
       tenantProxyPath: API_PATH.TEST_TENANT_PROXY,
       showOIDCReservationLogin: false,
       showInnkeeperAdminLogin: true,
-      showWritableComponents: false,
+      showWritableComponents: true,
     },
     image: {
       tag: '1.0',

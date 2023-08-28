@@ -6,6 +6,8 @@ import { describe, expect, test } from 'vitest';
 
 import IssuedCredentials from '@/components/issuance/IssuedCredentials.vue';
 
+import { configStore } from '../../__mocks__/store';
+
 const mountIssuedCredentials = () =>
   mount(IssuedCredentials, {
     global: {
@@ -18,6 +20,16 @@ describe('IssuedCredentials', () => {
     const wrapper = mountIssuedCredentials();
 
     wrapper.getComponent({ name: 'DataTable' });
+    wrapper.getComponent({ name: 'OfferCredential' });
+  });
+
+  test('mount with showWritableComponents false does not have OfferCredential component', async () => {
+    configStore.config.frontend.showWritableComponents = false;
+    const wrapper = mountIssuedCredentials();
+
+    expect(wrapper.findComponent({ name: 'OfferCredential' }).exists()).toBe(
+      false
+    );
   });
 
   test('table body is rendered with expected values', async () => {

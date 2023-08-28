@@ -50,7 +50,7 @@
 // Vue
 import { reactive, ref } from 'vue';
 // State
-import { useContactsStore, useTenantStore } from '@/store';
+import { useConnectionStore, useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // PrimeVue / Validation
 import Button from 'primevue/button';
@@ -60,10 +60,10 @@ import { useVuelidate } from '@vuelidate/core';
 import { useToast } from 'vue-toastification';
 
 const toast = useToast();
-const contactsStore = useContactsStore();
+const connectionStore = useConnectionStore();
 
 // use the loading state from the store to disable the button...
-const { loading } = storeToRefs(useContactsStore());
+const { loading } = storeToRefs(useConnectionStore());
 // Tenant details for my_label
 const { tenant } = storeToRefs(useTenantStore());
 
@@ -90,7 +90,7 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 
   try {
-    await contactsStore.didCreateRequest(
+    await connectionStore.didCreateRequest(
       formFields.did,
       formFields.alias,
       tenant.value.tenant_name

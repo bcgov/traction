@@ -5,7 +5,7 @@ import ConfirmationService from 'primevue/confirmationservice';
 import { describe, expect, test, vi } from 'vitest';
 
 import CredentialsTable from '@/components/holder/CredentialsTable.vue';
-import { contactsStore, holderStore } from '../../../test/__mocks__/store';
+import { connectionStore, holderStore } from '../../../test/__mocks__/store';
 
 // Need to override global mocks that use holder store. Same function names cause conflicts.
 // Consider refactoring to use functions in issuer and verifier stores.
@@ -14,12 +14,12 @@ vi.mock('pinia', async () => {
 
   return {
     ...pinia,
-    storeToRefs: vi.fn(() => Object.assign(contactsStore, holderStore)),
+    storeToRefs: vi.fn(() => Object.assign(connectionStore, holderStore)),
   };
 });
 
 vi.mock('@/store', () => ({
-  useContactsStore: vi.fn(() => contactsStore),
+  useConnectionStore: vi.fn(() => connectionStore),
   useHolderStore: vi.fn(() => holderStore),
 }));
 

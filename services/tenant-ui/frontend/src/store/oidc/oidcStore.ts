@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { useConfigStore } from '../configStore';
 import { UserManager } from 'oidc-client-ts';
 
-export const useOIDCStore = defineStore('oidcStore', () => {
+export const useOidcStore = defineStore('oidcStore', () => {
   // Stores
   const { config } = storeToRefs(useConfigStore());
 

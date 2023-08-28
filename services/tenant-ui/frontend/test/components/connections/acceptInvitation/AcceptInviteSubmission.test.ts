@@ -5,7 +5,7 @@ import { describe, expect, test, vi } from 'vitest';
 import VueToastificationPlugin from 'vue-toastification';
 
 import AcceptInviteSubmission from '@/components/connections/acceptInvitation/AcceptInviteSubmission.vue';
-import { useContactsStore } from '@/store';
+import { useConnectionStore } from '@/store';
 
 import { acceptInviteSubmission } from '../../../__mocks__/validation/forms';
 
@@ -74,7 +74,7 @@ describe('AcceptInviteSubmission', async () => {
     const wrapperVm = wrapper.vm as unknown as typeof AcceptInviteSubmission;
     const toastInfoSpy = vi.spyOn(wrapperVm.toast, 'info');
     const toastErrorSpy = vi.spyOn(wrapperVm.toast, 'error');
-    const store = useContactsStore();
+    const store = useConnectionStore();
 
     await wrapper.find('form').trigger('submit.prevent');
 

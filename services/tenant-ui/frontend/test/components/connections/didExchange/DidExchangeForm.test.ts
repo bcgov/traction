@@ -5,9 +5,9 @@ import { createTestingPinia } from '@pinia/testing';
 import VueToastificationPlugin from 'vue-toastification';
 
 import DidExchangeForm from '@/components/connections/didExchange/DidExchangeForm.vue';
-import { useContactsStore } from '@/store';
+import { useConnectionStore } from '@/store';
 
-import { contactsStore, tenantStore } from '../../../__mocks__/store';
+import { connectionStore, tenantStore } from '../../../__mocks__/store';
 import { didCreateRequest } from '../../../__mocks__/validation/forms';
 
 // Mocks
@@ -26,7 +26,7 @@ const mountDidExchangeForm = () =>
         PrimeVue,
         VueToastificationPlugin,
         createTestingPinia({
-          initialState: Object.assign(contactsStore, tenantStore),
+          initialState: Object.assign(connectionStore, tenantStore),
         }),
       ],
     },
@@ -72,7 +72,7 @@ describe('DidExchangeForm', async () => {
     const wrapperVm = wrapper.vm as unknown as typeof DidExchangeForm;
     const toastInfoSpy = vi.spyOn(wrapperVm.toast, 'info');
     const toastErrorSpy = vi.spyOn(wrapperVm.toast, 'error');
-    const store = useContactsStore();
+    const store = useConnectionStore();
 
     await wrapper.find('form').trigger('submit.prevent');
 

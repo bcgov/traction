@@ -143,7 +143,7 @@ export const useTenantStore = defineStore('tenant', () => {
   }
 
   async function connectToEndorser() {
-    console.log('> contactsStore.createInvitation');
+    console.log('> connectionStore.createInvitation');
     error.value = null;
     loadingIssuance.value = true;
 
@@ -159,7 +159,7 @@ export const useTenantStore = defineStore('tenant', () => {
       .finally(() => {
         loadingIssuance.value = false;
       });
-    console.log('< contactsStore.connectToEndorser');
+    console.log('< connectionStore.connectToEndorser');
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
@@ -177,7 +177,7 @@ export const useTenantStore = defineStore('tenant', () => {
   }
 
   async function registerPublicDid() {
-    console.log('> contactsStore.registerPublicDid');
+    console.log('> connectionStore.registerPublicDid');
     error.value = null;
     loadingIssuance.value = true;
     publicDidRegistrationProgress.value = '';
@@ -228,7 +228,7 @@ export const useTenantStore = defineStore('tenant', () => {
       loadingIssuance.value = false;
       publicDidRegistrationProgress.value = '';
     }
-    console.log('< contactsStore.registerPublicDid');
+    console.log('< connectionStore.registerPublicDid');
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler

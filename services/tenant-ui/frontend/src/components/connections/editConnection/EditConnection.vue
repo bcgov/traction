@@ -12,7 +12,7 @@
     :modal="true"
     @update:visible="handleClose"
   >
-    <EditContactForm
+    <EditConnectionForm
       :connection-id="props.connectionId"
       @closed="handleClose"
     />
@@ -26,7 +26,7 @@ import { ref, PropType } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 // Custom Components
-import EditContactForm from './EditContactForm.vue';
+import EditConnectionForm from './EditConnectionForm.vue';
 
 // Props
 const props = defineProps({

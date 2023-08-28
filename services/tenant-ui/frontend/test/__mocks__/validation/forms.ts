@@ -42,7 +42,7 @@ const createMessage = {
       $message: 'Message content is required',
     },
   },
-  selectedContact: {
+  selectedConnection: {
     value: 'test',
     $invalid: false,
     required: {

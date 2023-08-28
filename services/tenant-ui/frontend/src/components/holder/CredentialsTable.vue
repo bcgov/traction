@@ -162,7 +162,7 @@ import DataTable, { DataTableFilterMetaData } from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
 import { useToast } from 'vue-toastification';
 // State
-import { useContactsStore, useHolderStore } from '@/store';
+import { useConnectionStore, useHolderStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other components
 import RowExpandData from '@/components/common/RowExpandData.vue';
@@ -178,8 +178,8 @@ defineEmits(['accept', 'delete', 'reject']);
 const toast = useToast();
 
 // State
-const { listContacts, findConnectionName } = useContactsStore();
-const { contacts } = storeToRefs(useContactsStore());
+const { listConnections, findConnectionName } = useConnectionStore();
+const { connections } = storeToRefs(useConnectionStore());
 const { loading, credentialExchanges } = storeToRefs(useHolderStore());
 const holderStore = useHolderStore();
 
@@ -239,9 +239,9 @@ const loadCredentials = async () => {
     toast.error(`Failure: ${err}`);
   });
 
-  // Load contacts if not already there for display
-  if (!contacts.value || !contacts.value.length) {
-    listContacts().catch((err) => {
+  // Load connections if not already there for display
+  if (!connections.value || !connections.value.length) {
+    listConnections().catch((err) => {
       console.error(err);
       toast.error(`Failure: ${err}`);
     });

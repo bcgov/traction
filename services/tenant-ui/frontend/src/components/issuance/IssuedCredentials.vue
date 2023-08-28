@@ -81,20 +81,20 @@
       </Column>
       <Column
         :sortable="true"
-        field="contact"
-        header="Contact"
-        filter-field="contact"
+        field="connection"
+        header="Connection"
+        filter-field="Connection"
         :show-filter-match-modes="false"
       >
         <template #body="{ data }">
-          <LoadingLabel :value="data.contact" />
+          <LoadingLabel :value="data.connection" />
         </template>
         <template #filter="{ filterModel, filterCallback }">
           <InputText
             v-model="filterModel.value"
             type="text"
             class="p-column-filter"
-            placeholder="Search By Contact"
+            placeholder="Search By Connection"
             @input="filterCallback()"
           />
         </template>
@@ -153,7 +153,7 @@
 // Vue
 import { Ref, computed, onMounted, ref } from 'vue';
 // State
-import { useContactsStore, useIssuerStore } from '@/store';
+import { useConnectionStore, useIssuerStore } from '@/store';
 import { storeToRefs } from 'pinia';
 import { useConfigStore } from '@/store/configStore';
 // PrimeVue/etc
@@ -177,8 +177,8 @@ const { config } = storeToRefs(useConfigStore());
 
 const toast = useToast();
 
-const { listContacts, findConnectionName } = useContactsStore();
-const { contacts } = storeToRefs(useContactsStore());
+const { listConnections, findConnectionName } = useConnectionStore();
+const { connections } = storeToRefs(useConnectionStore());
 const issuerStore = useIssuerStore();
 // use the loading state from the store to disable the button...
 const { loading, credentials, selectedCredential } = storeToRefs(
@@ -191,7 +191,7 @@ const formattedCredentials: Ref<any[]> = computed(() =>
     state: cred.state,
     revocation_id: cred.revocation_id,
     revoc_reg_id: cred.revoc_reg_id,
-    contact: findConnectionName(cred.connection_id),
+    connection: findConnectionName(cred.connection_id),
     credential_definition_id: cred.credential_definition_id,
     credential_exchange_id: cred.credential_exchange_id,
     sent_time: cred.sent_time,
@@ -207,9 +207,9 @@ const loadTable = async () => {
     toast.error(`Failure: ${err}`);
   });
 
-  // Load contacts if not already there for display
-  if (!contacts.value || !contacts.value.length) {
-    listContacts().catch((err) => {
+  // Load connections if not already there for display
+  if (!connections.value || !connections.value.length) {
+    listConnections().catch((err) => {
       console.error(err);
       toast.error(`Failure: ${err}`);
     });
@@ -229,7 +229,7 @@ const filter = ref({
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   },
-  contact: {
+  connection: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   },

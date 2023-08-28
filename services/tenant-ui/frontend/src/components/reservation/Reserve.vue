@@ -161,7 +161,7 @@ import { useToast } from 'vue-toastification';
 import { email, required } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
 // State
-import { useConfigStore, useOIDCStore, useReservationStore } from '@/store';
+import { useConfigStore, useOidcStore, useReservationStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Components
 import { RESERVATION_STATUSES } from '@/helpers/constants';
@@ -174,7 +174,7 @@ const toast = useToast();
 const reservationStore = useReservationStore();
 const { config } = storeToRefs(useConfigStore());
 const { loading, status } = storeToRefs(useReservationStore());
-const { user } = storeToRefs(useOIDCStore());
+const { user } = storeToRefs(useOidcStore());
 
 // The reservation return object
 const reservationIdResult: any = ref('');

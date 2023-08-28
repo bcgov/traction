@@ -1,5 +1,5 @@
 export { default as acapyResponse } from './acapy';
-export { default as contactsResponse } from './contacts';
+export { default as connectionResponse } from './connection';
 export { default as configResponse } from './config';
 export { default as governanceResponse } from './governance';
 export { default as holderResponse } from './holder';

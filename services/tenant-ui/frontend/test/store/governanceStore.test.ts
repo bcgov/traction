@@ -9,7 +9,7 @@ import responses from '../__mocks__/api/responses/governance';
 
 let store: any;
 
-describe('contactsStore', () => {
+describe('connectionStore', () => {
   beforeEach(async () => {
     setActivePinia(createPinia());
     store = useGovernanceStore();

@@ -5,6 +5,8 @@ import { describe, expect, test } from 'vitest';
 
 import Messages from '@/components/messages/Messages.vue';
 
+import { configStore } from '../../__mocks__/store';
+
 const mountMessages = () =>
   mount(Messages, {
     global: {
@@ -16,6 +18,16 @@ describe('Messages', async () => {
   test('mount has expected components', () => {
     const wrapper = mountMessages();
     wrapper.getComponent({ name: 'DataTable' });
+    wrapper.getComponent({ name: 'CreateMessage' });
+  });
+
+  test('mount with showWritableComponents false does not have CreateMessage component', async () => {
+    configStore.config.frontend.showWritableComponents = false;
+    const wrapper = mountMessages();
+
+    expect(wrapper.findComponent({ name: 'CreateMessage' }).exists()).toBe(
+      false
+    );
   });
 
   test('table body is rendered with expected values', async () => {

@@ -7,7 +7,7 @@ import Profile from '@/views/tenant/Profile.vue';
 import Settings from '@/views/tenant/Settings.vue';
 import Developer from '@/views/tenant/Developer.vue';
 // Connections
-import MyContacts from '@/views/connections/MyContacts.vue';
+import MyConnections from '@/views/connections/MyConnections.vue';
 import MyInvitations from '@/views/connections/MyInvitations.vue';
 // Issuance
 import MyIssuedCredentials from '@/views/issuance/MyIssuedCredentials.vue';
@@ -70,8 +70,8 @@ const tenantRoutes = [
         children: [
           {
             path: '',
-            name: 'MyContacts',
-            component: MyContacts,
+            name: 'MyConnections',
+            component: MyConnections,
           },
           {
             path: 'invitations',
