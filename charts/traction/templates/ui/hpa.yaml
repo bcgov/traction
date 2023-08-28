@@ -1,4 +1,4 @@
-{{- if .Values.autoscaling.enabled }}
+{{- if and .Values.ui.enabled .Values.ui.autoscaling.enabled -}}
 apiVersion: {{ include "common.capabilities.hpa.apiVersion" ( dict "context" $ ) }}
 kind: HorizontalPodAutoscaler
 metadata:
@@ -10,31 +10,31 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: {{ include "tenant-ui.fullname" . }}
-  minReplicas: {{ .Values.autoscaling.minReplicas }}
-  maxReplicas: {{ .Values.autoscaling.maxReplicas }}
+  minReplicas: {{ .Values.ui.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.ui.autoscaling.maxReplicas }}
   metrics:
-    {{- if .Values.autoscaling.targetCPUUtilizationPercentage }}
+    {{- if .Values.ui.autoscaling.targetCPUUtilizationPercentage }}
     - type: Resource
       resource:
         name: cpu
         {{- if semverCompare "<1.23-0" (include "common.capabilities.kubeVersion" .) }}
-        targetAverageUtilization: {{ .Values.autoscaling.targetCPUUtilizationPercentage }}
+        targetAverageUtilization: {{ .Values.ui.autoscaling.targetCPUUtilizationPercentage }}
         {{- else }}
         target:
           type: Utilization
-          averageUtilization: {{ .Values.autoscaling.targetCPUUtilizationPercentage }}
+          averageUtilization: {{ .Values.ui.autoscaling.targetCPUUtilizationPercentage }}
         {{- end }}
     {{- end }}
-    {{- if .Values.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- if .Values.ui.autoscaling.targetMemoryUtilizationPercentage }}
     - type: Resource
       resource:
         name: memory
         {{- if semverCompare "<1.23-0" (include "common.capabilities.kubeVersion" .) }}
-        targetAverageUtilization: {{ .Values.autoscaling.targetMemoryUtilizationPercentage }}
+        targetAverageUtilization: {{ .Values.ui.autoscaling.targetMemoryUtilizationPercentage }}
         {{- else }}
         target:
           type: Utilization
-          averageUtilization: {{ .Values.autoscaling.targetMemoryUtilizationPercentage }}
+          averageUtilization: {{ .Values.ui.autoscaling.targetMemoryUtilizationPercentage }}
         {{- end }}
     {{- end }}
-{{- end }}
+{{- end -}}

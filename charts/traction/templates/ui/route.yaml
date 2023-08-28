@@ -1,22 +1,22 @@
-{{- if .Values.openshift.route.enabled -}}
+{{- if and .Values.ui.enabled .Values.ui.openshift.route.enabled -}}
 {{- $fullName := include "tenant-ui.fullname" . -}}
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: {{ include "tenant-ui.fullname" . }}
   annotations:
-    haproxy.router.openshift.io/timeout: {{ .Values.openshift.route.timeout }}
+    haproxy.router.openshift.io/timeout: {{ .Values.ui.openshift.route.timeout }}
   labels:
     {{- include "tenant-ui.labels" . | nindent 4 }}
 spec:
   host: {{ include "tenant-ui.host" . | quote }}
-  path: {{ .Values.openshift.route.path }}
+  path: {{ .Values.ui.openshift.route.path }}
   to:
     kind: Service
     name: {{ $fullName }}
     weight: 100
   port:
-    targetPort: {{ .Values.openshift.route.targetPort }}
-  wildcardPolicy: {{ .Values.openshift.route.wildcardPolicy }}
+    targetPort: {{ .Values.ui.openshift.route.targetPort }}
+  wildcardPolicy: {{ .Values.ui.openshift.route.wildcardPolicy }}
 {{ include "tenant-ui.openshift.route.tls" . | indent 2}}
-{{- end }}
+{{- end -}}
