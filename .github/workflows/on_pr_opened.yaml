@@ -149,8 +149,8 @@ jobs:
             | Deployment | Resource | Location |
             | --- | --- | --- |
             | Traction | | 
-            | | Tenant UI | https://pr-${{ github.event.number }}-tenant-ui-dev.apps.silver.devops.gov.bc.ca |
-            | | Innkeeper UI | https://pr-${{ github.event.number }}-tenant-ui-dev.apps.silver.devops.gov.bc.ca/innkeeper |
+            | | Tenant UI | https://pr-${{ github.event.number }}-traction-tenant-ui-dev.apps.silver.devops.gov.bc.ca |
+            | | Innkeeper UI | https://pr-${{ github.event.number }}-traction-tenant-ui-dev.apps.silver.devops.gov.bc.ca/innkeeper |
             | Aca-Py | | |
             | | Admin Swagger | https://pr-${{ github.event.number }}-traction-acapy-admin-dev.apps.silver.devops.gov.bc.ca/api/doc |
             | | Tenant Proxy Swagger | https://pr-${{ github.event.number }}-traction-tenant-proxy-dev.apps.silver.devops.gov.bc.ca/api/doc |
