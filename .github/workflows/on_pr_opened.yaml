@@ -115,20 +115,13 @@ jobs:
 
       - name: Run Traction PR Helm
         run: |
-          helm upgrade --install pr-${{ github.event.number }}-traction -f ./deploy/traction/values-pr.yaml --set acapy.image.tag=pr-${{ github.event.number }} --set traction_proxy.image.tag=pr-${{ github.event.number }} ./charts/traction --wait
+          helm upgrade --install pr-${{ github.event.number }}-traction -f ./deploy/traction/values-pr.yaml --set acapy.image.tag=pr-${{ github.event.number }} --set traction_proxy.image.tag=pr-${{ github.event.number }} --set ui.image.tag=pr-${{ github.event.number }} ./charts/traction --wait
 
       - name: Restart Traction PR Pods
         run: |
           oc rollout restart deployment/pr-${{ github.event.number }}-traction-acapy
           oc rollout restart deployment/pr-${{ github.event.number }}-traction-tenant-proxy
-
-      - name: Run Tenant UI PR Helm
-        run: |
-          helm upgrade --install pr-${{ github.event.number }}-tenant-ui -f ./deploy/tenant-ui/values-pr.yaml --set image.tag=pr-${{ github.event.number }} --set traction.apiEndpoint="https://pr-${{ github.event.number }}-traction-tenant-proxy-dev.apps.silver.devops.gov.bc.ca" --set traction.tenantProxyEndpoint="https://pr-${{ github.event.number }}-traction-tenant-proxy-dev.apps.silver.devops.gov.bc.ca" --set traction.pluginInnkeeper.existingSecret="pr-${{ github.event.number }}-traction-acapy-plugin-innkeeper" ./charts/tenant-ui --wait
-
-      - name: Restart Tenant-UI PR Pods
-        run: |
-          oc rollout restart deployment/pr-${{ github.event.number }}-tenant-ui
+          oc rollout restart deployment/pr-${{ github.event.number }}-traction-tenant-ui
 
   deploymenturls:
     name: Deployment URLs comment

@@ -37,14 +37,8 @@ jobs:
         continue-on-error: true
         run: |
           helm uninstall pr-${{ github.event.number }}-traction
-          helm uninstall pr-${{ github.event.number }}-tenant-ui
       
       - name: Remove Traction Openshift Objects
         continue-on-error: true 
         run: |
           oc delete secret,pvc --selector "app.kubernetes.io/instance"=pr-${{ github.event.number }}-traction
-
-      - name: Remove Tenant-UI Openshift Objects
-        continue-on-error: true 
-        run: |
-          oc delete secret --selector "app.kubernetes.io/instance"=pr-${{ github.event.number }}-tenant-ui
