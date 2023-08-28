@@ -1,7 +1,4 @@
 ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
-config:
-  ledger:
-    name: bcovrin-test
 acapy:
   image:
     pullPolicy: Always
@@ -10,11 +7,18 @@ acapy:
       generated: true
     pluginInnkeeper:
       generated: true
-  pluginValues:
-    tractionInnkeeper:
-      printKey: true
-      printToken: true
-      reservationExpiryMinutes: 7200
+  plugin-config.yml:
+    traction_innkeeper:
+      innkeeper_wallet:
+        print_key: true
+        print_token: true
+        connect_to_endorser:
+          - endorser_alias: endorser
+            ledger_id: bcovrin-test
+        create_public_did:
+          - bcovrin-test
+      reservation:
+        expiry_minutes: 7200
   resources:
     limits:
       cpu: 400m
@@ -38,6 +42,8 @@ tenant_proxy:
       namespaceSelector:
         network.openshift.io/policy-group: ingress
 ui:
+  image:
+    pullPolicy: Always
   oidc:
     active: true
     showInnkeeperAdminLogin: true

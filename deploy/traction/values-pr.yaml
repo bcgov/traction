@@ -17,13 +17,11 @@ acapy:
       innkeeper_wallet:
         print_key: true
         print_token: true
-        connect_to_endorser: [
-          {
-            "endorser_alias": "endorser",
-            "ledger_id": "bcovrin-test",
-          }
-        ]
-        create_public_did: ["bcovrin-test"]
+        connect_to_endorser:
+          - endorser_alias: endorser
+            ledger_id: bcovrin-test
+        create_public_did:
+          - bcovrin-test
       reservation:
         expiry_minutes: 2880
         auto_approve: true
@@ -82,7 +80,6 @@ ui:
       enabled: true
       namespaceSelector:
         network.openshift.io/policy-group: ingress
-
 ingress:
   annotations:
     route.openshift.io/termination: edge
