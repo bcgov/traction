@@ -179,6 +179,58 @@ Return acapy label
 {{- end -}}
 
 {{/*
+Create a default fully qualified tenant-ui name.
+*/}}
+{{- define "tenant-ui.fullname" -}}
+{{ template "global.fullname" . }}-tenant-ui
+{{- end -}}
+
+{{/*
+tenant-ui labels
+*/}}
+{{- define "tenant-ui.labels" -}}
+{{ include "common.labels" . }}
+{{ include "tenant-ui.selectorLabels" . }}
+{{- end }}
+
+{{/*
+tenant-ui selector labels
+*/}}
+{{- define "tenant-ui.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "tenant-ui.fullname" . }}
+{{ include "common.selectorLabels" . }}
+{{- end }}
+
+{{/*
+Create the name of the tenant-ui service account to use
+*/}}
+{{- define "tenant-ui.serviceAccountName" -}}
+{{- if .Values.ui.serviceAccount.create }}
+{{- default (include "tenant-ui.fullname" .) .Values.ui.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.ui.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
+{{/*
+Generate tenant-ui host if not overriden
+*/}}
+{{- define "tenant-ui.host" -}}
+{{- include "tenant-ui.fullname" . }}{{ .Values.ingressSuffix -}}
+{{- end -}}
+
+{{/*
+Generate tenant-ui openshift route tls config
+*/}}
+{{- define "tenant-ui.openshift.route.tls" -}}
+{{- if (.Values.openshift.route.tls.enabled) -}}
+tls:
+  insecureEdgeTerminationPolicy: {{ .Values.openshift.route.tls.insecureEdgeTerminationPolicy }}
+  termination: {{ .Values.openshift.route.tls.termination }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Create a default fully qualified app name for the postgres requirement.
 */}}
 {{- define "global.postgresql.fullname" -}}
