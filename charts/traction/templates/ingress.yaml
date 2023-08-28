@@ -1,6 +1,8 @@
 {{- if .Values.ingress.enabled -}}
 {{- $acapyFullName := include "acapy.fullname" . -}}
 {{- $tenantProxyFullName := include "tenant_proxy.fullname" . -}}
+{{- $uiFullName := include "tenant-ui.fullname" . -}}
+{{- $uiHttpPort := .Values.ui.service.httpPort -}}
 {{- $httpPort := .Values.acapy.service.httpPort -}}
 {{- $adminPort := .Values.acapy.service.adminPort -}}
 {{- $tenantProxyPort := .Values.tenant_proxy.service.port -}}
@@ -91,4 +93,23 @@ spec:
               serviceName: {{ $tenantProxyFullName }}
               servicePort: {{ $tenantProxyPort }}
               {{- end }}
+    {{- if .Values.ui.enabled }}
+    - host: {{ include "tenant-ui.host" . | quote }}
+      http:
+        paths:
+          - path: /
+            {{- if (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+            pathType: ImplementationSpecific
+            {{- end }}
+            backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ $uiFullName }}
+                port:
+                  number: {{ $uiHttpPort }}
+              {{- else }}
+              serviceName: {{ $uiFullName }}
+              servicePort: {{ $uiHttpPort }}
+              {{- end }}
+    {{- end }}
 {{- end }}
