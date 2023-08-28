@@ -17,7 +17,6 @@ describe('CreateMessage', () => {
     const wrapper = mountCreateMessage();
 
     wrapper.getComponent({ name: 'Button', props: { icon: 'pi pi-envelope' } });
-    const dialog = wrapper.getComponent({ name: 'Dialog' });
     expect(wrapper.getComponent({ name: 'Dialog' }).attributes().visible).toBe(
       'false'
     );
@@ -33,7 +32,6 @@ describe('CreateMessage', () => {
       .getComponent({ name: 'Button', props: { icon: 'pi pi-envelope' } })
       .trigger('click');
 
-    const dialog = wrapper.getComponent({ name: 'Dialog' });
     expect(wrapper.getComponent({ name: 'Dialog' }).attributes().visible).toBe(
       'true'
     );

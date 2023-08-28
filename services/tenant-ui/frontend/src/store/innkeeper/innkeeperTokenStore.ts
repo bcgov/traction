@@ -47,6 +47,7 @@ export const useInnkeeperTokenStore = defineStore(
         .post(API_PATH.MULTITENANCY_TENANT_TOKEN(params.adminName), payload)
         .then((res) => {
           token.value = res.data.token;
+          if (token.value) localStorage.setItem('innkeeper-token', token.value);
         })
         .catch((err) => {
           error.value = err;
@@ -68,7 +69,14 @@ export const useInnkeeperTokenStore = defineStore(
     function clearToken(): void {
       console.log('> clearToken');
       token.value = null;
+      localStorage.removeItem('innkeeper-token');
       console.log('< clearToken');
+    }
+
+    function setToken(newToken: string) {
+      console.log('> setToken');
+      token.value = newToken;
+      console.log('< setToken');
     }
 
     return {
@@ -76,6 +84,7 @@ export const useInnkeeperTokenStore = defineStore(
       error,
       innkeeperReady,
       clearToken,
+      setToken,
       login,
     };
   }

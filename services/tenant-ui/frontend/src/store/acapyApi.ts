@@ -61,8 +61,6 @@ export const useAcapyApi = defineStore('acapyApi', () => {
 
   acapyApi.interceptors.response.use(
     (response) => {
-      // console.log('acapyApi.response.fulfilled');
-      // console.log(response);
       return response;
     },
     (error: any) => {
@@ -71,7 +69,11 @@ export const useAcapyApi = defineStore('acapyApi', () => {
       if (error.response.status === 401) {
         tokenStore.clearToken();
         tenantStore.clearTenant();
-        return Promise.reject(`Unauthorized: ${error.response.data.reason}`);
+        return Promise.reject(
+          `Unauthorized ${
+            ': ' + error.response.data.reason ? error.response.data.reason : ''
+          }`
+        );
       }
       return Promise.reject(error);
     }
