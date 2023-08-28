@@ -186,6 +186,7 @@ acapy:
     multitenantProvider: true
     tractionInnkeeper: true
 
+  ## @section Acapy Plugin Configuration
   ## Specify configuration values for each plugin.
   ## Configuration values are plugin specific, and are rendered as is into the plugin-config.yml file.
   ##
@@ -197,8 +198,11 @@ acapy:
   ## @param acapy.plugin-config.yml.traction_innkeeper.innkeeper_wallet.wallet_name
   ## @param acapy.plugin-config.yml.traction_innkeeper.innkeeper_wallet.print_key
   ## @param acapy.plugin-config.yml.traction_innkeeper.innkeeper_wallet.print_token
+  ## @param acapy.plugin-config.yml.traction_innkeeper.innkeeper_wallet.connect_to_endorser [array]
+  ## @param acapy.plugin-config.yml.traction_innkeeper.innkeeper_wallet.create_public_did [array]
   ## @param acapy.plugin-config.yml.traction_innkeeper.reservation.expiry_minutes
   ## @param acapy.plugin-config.yml.traction_innkeeper.reservation.auto_approve
+  ## @param acapy.plugin-config.yml.traction_innkeeper.reservation.auto_issuer
   ##
   plugin-config.yml:
     multitenant_provider:
@@ -286,8 +290,6 @@ acapy:
   
   ## @section Acapy NetworkPolicy parameters
   ##
-  ## Network policy configuration
-  ##
   networkPolicy:
     ## @param acapy.networkPolicy.enabled Enable network policies
     ##
@@ -358,7 +360,7 @@ acapy:
       ##
       wildcardPolicy: None
 
-  ## Acapy secret configuration
+  ## @section Acapy Secrets Configuration
   ##
   secret:
     adminApiKey:
@@ -379,6 +381,8 @@ acapy:
       ##
       tenantid: ""
 
+## @section Tenant Proxy configuration
+##
 tenant_proxy:
   ## @param tenant_proxy.image.repository 
   ## @param tenant_proxy.image.pullPolicy
@@ -603,7 +607,7 @@ ui:
     automountServiceAccountToken: true
     ## @param ui.serviceAccount.name Name of the service account to use. If not set and create is true, a name is generated using the fullname template.
     name: ""
-  ## @param podAnnotations Map of annotations to add to the pods
+  ## @param ui.podAnnotations Map of annotations to add to the pods
   ##
   podAnnotations: {}
   ## @param ui.podSecurityContext Pod Security Context
@@ -686,7 +690,7 @@ ui:
   ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
   ##
   affinity: {}
-  ## @section OpenShift Route parameters
+  ## @section Tenant-UI OpenShift Route parameters
   ## ref: https://docs.openshift.com/container-platform/4.11/networking/routes/route-configuration.html
   ##
   ## Not required if ingress is enabled
@@ -717,23 +721,24 @@ ui:
       ## @param ui.openshift.route.wildcardPolicy Wildcard policy for the route
       wildcardPolicy: None
 
+## @section Ingress Configuration
 ## Configure the ingress resource that allows you to access the traction installation
 ## ref: https://kubernetes.io/docs/user-guide/ingress/
 ##
 ingress:
-  ## @param ui.ingress.enabled Enable ingress record generation for traction
+  ## @param ingress.enabled Enable ingress record generation for traction
   ##
   enabled: true
-  ## @param ui.ingress.className IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
+  ## @param ingress.className IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
   ## This is supported in Kubernetes 1.18+ and required if you have more than one IngressClass marked as the default for your cluster .
   ## ref: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
   ##
   className: ""
-  ## @param ui.ingress.annotations Additional annotations for the Ingress resource.
+  ## @param ingress.annotations Additional annotations for the Ingress resource.
   ##
   annotations: {}
   #  route.openshift.io/termination: edge
-  ## @param ui.ingress.tls Enable TLS configuration for the host defined at ingress.
+  ## @param ingress.tls Enable TLS configuration for the host defined at ingress.
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
