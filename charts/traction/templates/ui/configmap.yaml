@@ -13,7 +13,7 @@ data:
   FRONTEND_INNKEEPER_OIDC_LABEL: {{ .Values.ui.oidc.label | quote }}
   FRONTEND_INNKEEPER_SHOW_ADMIN: {{ .Values.ui.oidc.showInnkeeperAdminLogin | quote }}
   FRONTEND_TENANT_SHOW_WRITABLE_COMPONENTS: {{ .Values.ui.oidc.showWritableComponents | quote }}
-  FRONTEND_TENANT_PROXY_URL: https://{{ include "tenant_proxy.host" . }}
+  FRONTEND_TENANT_PROXY_URL: http://{{ include "tenant_proxy.fullname" . }}
   SERVER_OIDC_JWKS: {{ .Values.ui.oidc.jwksUri | quote }}
   SERVER_OIDC_REALM: {{ .Values.ui.oidc.realm | quote }}
   SERVER_OIDC_ROLE: {{ .Values.ui.oidc.roleName | quote }}
@@ -21,7 +21,7 @@ data:
   SERVER_SMTP_PORT: {{ .Values.ui.smtp.port | quote }}
   SERVER_SMTP_SENDER_ADDRESS: {{ .Values.ui.smtp.senderAddress | quote }}
   SERVER_SMTP_SERVER: {{ .Values.ui.smtp.server | quote }}
-  SERVER_TRACTION_URL: http://{{ include "acapy.fullname" . }}:{{ .Values.acapy.service.httpPort }}
+  SERVER_TRACTION_URL: http://{{ include "tenant_proxy.fullname" . }}
   UX_APP_INNKEEPER_TITLE: {{ .Values.ui.ux.appInnkeeperTitle | quote }}
   UX_APP_TITLE: {{ .Values.ui.ux.appTitle | quote }}
   UX_COPYRIGHT: {{ .Values.ui.ux.copyright | quote }}
