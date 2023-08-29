@@ -107,6 +107,7 @@ class ReservationRequestSchema(OpenAPISchema):
     context_data = fields.Dict(
         required=False,
         description="Optional context data for this tenant request",
+        example={"contact_phone": "555-555-5555"},
     )
 
 class ReservationResponseSchema(OpenAPISchema):

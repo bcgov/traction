@@ -305,6 +305,7 @@ const formIsValid = () => {
  * @param event
  * TODO: Align the mandatory fields with what the API is expecting. Then stuff the entire form object into something like a 'context' parameter??? This will break things until I follow up with this ticket: https://github.com/bcgov/traction/issues/773
  * formFields from old logic Proxy(Object) {contact_email: 'popkinj@littleearth.ca', contact_name: 'Jfjkdsljfkl', contact_phone: '555555555', tenant_name: 'Jamie', tenant_reason: 'jfkdsljflksdjfl'}
+
  * data from new logic 
 Proxy(Object) {tenantName: 'My Name', phoneNumber: 'My phone number', fullName: 'Full name', emailAddress: 'my email address', tenantReason: 'Some sill reason'}
  */
@@ -315,6 +316,14 @@ const handleSubmit2 = async (event: any) => {
   try {
     console.log('formFields from old logic', formFields);
     console.log('data from new logic', data.value);
+    const { emailAddress, tenantName, ...contextData } = data.value;
+    const fields = {
+      contact_email: emailAddress,
+      tenant_name: tenantName,
+      context_data: contextData,
+    };
+
+    console.log('fields', fields);
     // const res = await reservationStore.makeReservation(formFields);
     // reservationIdResult.value = res.reservation_id;
     // reservationPwdResult.value = res.reservation_pwd
