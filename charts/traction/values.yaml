@@ -186,6 +186,7 @@ acapy:
     multitenantProvider: true
     tractionInnkeeper: true
 
+  ## @section Acapy Plugin Configuration
   ## Specify configuration values for each plugin.
   ## Configuration values are plugin specific, and are rendered as is into the plugin-config.yml file.
   ##
@@ -197,6 +198,8 @@ acapy:
   ## @param acapy.plugin-config.yml.traction_innkeeper.innkeeper_wallet.wallet_name
   ## @param acapy.plugin-config.yml.traction_innkeeper.innkeeper_wallet.print_key
   ## @param acapy.plugin-config.yml.traction_innkeeper.innkeeper_wallet.print_token
+  ## @param acapy.plugin-config.yml.traction_innkeeper.innkeeper_wallet.connect_to_endorser [array]
+  ## @param acapy.plugin-config.yml.traction_innkeeper.innkeeper_wallet.create_public_did [array]
   ## @param acapy.plugin-config.yml.traction_innkeeper.reservation.expiry_minutes
   ## @param acapy.plugin-config.yml.traction_innkeeper.reservation.auto_approve
   ## @param acapy.plugin-config.yml.traction_innkeeper.reservation.auto_issuer
@@ -216,17 +219,18 @@ acapy:
         wallet_name: traction_innkeeper
         print_key: false
         print_token: false
-        connect_to_endorser: [
-          {
-            "endorser_alias": "endorser",
-            "ledger_id": "bcovrin-test",
-          }
-        ]
-        create_public_did: ["bcovrin-test"]
+        connect_to_endorser: []
+        ## Example:
+        # - endorser_alias: endorser
+        #   ledger_id: bcovrin-test
+        create_public_did: []
+        ## Example:
+        # - bcovrin-test
       reservation:
         expiry_minutes: 2880
         auto_approve:  false
         auto_issuer: false
+  ## @section Acapy common configurations
   ## Acapy resource requests and limits
   ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
   ## @param acapy.resources.limits.memory The memory limit for the Acapy containers
@@ -285,8 +289,6 @@ acapy:
   tolerations: []
   
   ## @section Acapy NetworkPolicy parameters
-  ##
-  ## Network policy configuration
   ##
   networkPolicy:
     ## @param acapy.networkPolicy.enabled Enable network policies
@@ -358,7 +360,7 @@ acapy:
       ##
       wildcardPolicy: None
 
-  ## Acapy secret configuration
+  ## @section Acapy Secrets Configuration
   ##
   secret:
     adminApiKey:
@@ -379,6 +381,8 @@ acapy:
       ##
       tenantid: ""
 
+## @section Tenant Proxy configuration
+##
 tenant_proxy:
   ## @param tenant_proxy.image.repository 
   ## @param tenant_proxy.image.pullPolicy
@@ -524,6 +528,200 @@ tenant_proxy:
   ##
   tolerations: []
 
+## @section Tenant-UI Configuration
+##
+ui:
+  ## @param ui.enabled Deploy tenant-ui
+  enabled: true
+  image:
+    ## @param ui.image.repository
+    repository: ghcr.io/bcgov/traction-tenant-ui
+    ## @param ui.image.pullPolicy
+    pullPolicy: IfNotPresent
+    ## @param ui.image.pullSecrets [array]
+    pullSecrets: []
+    ## @param ui.image.tag Overrides the image tag which defaults to the chart appVersion.
+    tag: ''
+
+  ##  Frontend Configuration
+  ##
+  ux:
+    ## @param ui.ux.appTitle Title of the application
+    appTitle: "Traction Tenant Console"
+    ## @param ui.ux.appInnkeeperTitle Title of the Innkeeper Console
+    appInnkeeperTitle: "Traction Innkeeper Console"
+    ## @param ui.ux.sidebarTitle Sidebar title
+    sidebarTitle: "Traction"
+    ## @param ui.ux.copyright
+    copyright: ""
+    ## @param ui.ux.owner
+    owner: ""
+    ## @param ui.ux.coverImageCopyright
+    coverImageCopyright: "Photo by Kristoffer Fredriksson on StockSnap"
+
+  ariesDetails:
+    ## @param ui.ariesDetails.ledgerDescription Ledger description
+    ledgerDescription: "bcovrin-test"
+
+  ##  Backend Configuration
+  ##
+  oidc:
+    ## @param ui.oidc.showInnkeeperAdminLogin Show Innkeeper Admin Login
+    showInnkeeperAdminLogin: true
+    ## @param ui.oidc.active Enable OIDC authentication
+    active: true
+    ## @param ui.oidc.authority OIDC authority
+    authority: ""
+    ## @param ui.oidc.client OIDC client
+    client: "innkeeper-frontend"
+    ## @param ui.oidc.label OIDC label
+    label: "IDIR"
+    ## @param ui.oidc.jwksUri OIDC jwksUri
+    jwksUri: ""
+    ## @param ui.oidc.realm OIDC realm
+    realm: "Traction"
+    ## @param ui.oidc.roleName OIDC role name
+    roleName: "innkeeper"
+
+  ## SMTP Configuration
+  smtp:
+    ## @param ui.smtp.server SMTP server
+    server: ""
+    ## @param ui.smtp.port SMTP port
+    port: 25
+    ## @param ui.smtp.senderAddress SMTP sender address
+    senderAddress: ""
+    ## @param ui.smtp.innkeeperInbox innkeeper notification inbox
+    innkeeperInbox: ""
+  
+  ## ServiceAccount configuration
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+  ##
+  serviceAccount:
+    ## @param ui.serviceAccount.create Specifies whether a ServiceAccount should be created
+    create: false
+    ## @param ui.serviceAccount.annotations Annotations for service account. Evaluated as a template. Only used if `create` is `true`.
+    annotations: {}
+      # network.openshift.io/policy-group: ingress
+    ## @param ui.serviceAccount.automountServiceAccountToken Automount service account token for the server service account
+    automountServiceAccountToken: true
+    ## @param ui.serviceAccount.name Name of the service account to use. If not set and create is true, a name is generated using the fullname template.
+    name: ""
+  ## @param ui.podAnnotations Map of annotations to add to the pods
+  ##
+  podAnnotations: {}
+  ## @param ui.podSecurityContext Pod Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+  ##
+  podSecurityContext: {}
+    # fsGroup: 2000
+  ## @param ui.containerSecurityContext Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+  ##
+  containerSecurityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+  ## Service configuration
+  ##
+  service:
+    ## @param ui.service.type Kubernetes Service type
+    ##
+    type: ClusterIP
+    ## @param ui.service.httpPort Port to expose for http service
+    ##
+    httpPort: 8080
+  ## Add networkpolicies
+  ##
+  networkPolicy:
+    ## @param ui.networkPolicy.enabled Enable network policies
+    ##
+    enabled: false
+    ## @param ui.networkPolicy.ingress.enabled Enable ingress rules
+    ## @param ui.networkPolicy.ingress.namespaceSelector [object] Namespace selector label that is allowed to access the tenant-ui pods.
+    ## @param ui.networkPolicy.ingress.podSelector [object] Pod selector label that is allowed to access the tenant-ui pods.
+    ingress:
+      enabled: false
+      namespaceSelector: {}
+      podSelector: {}
+  ##Resource requests and limits
+  ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param ui.resources.limits.memory The memory limit for the tenant-ui containers
+  ## @param ui.resources.limits.cpu The cpu limit for the tenant-ui containers
+  ## @param ui.resources.requests.memory The requested memory for the tenant-ui containers
+  ## @param ui.resources.requests.cpu The requested cpu for the tenant-ui containers
+  ##
+  resources:
+    limits:
+      cpu: 300m
+      memory: 256Mi
+    requests:
+      cpu: 10m
+      memory: 16Mi
+  ## @param ui.replicaCount Number of tenant-ui replicas to deploy. Ignored if autoscaling is enabled.
+  ##
+  replicaCount: 1
+  ## tenant-ui Autoscaling configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+  ## @param ui.autoscaling.enabled Enable Horizontal POD autoscaling for tenant-ui
+  ## @param ui.autoscaling.minReplicas Minimum number of tenant-ui replicas
+  ## @param ui.autoscaling.maxReplicas Maximum number of tenant-ui replicas
+  ## @param ui.autoscaling.targetCPUUtilizationPercentage Target CPU utilization percentage
+  ## @param ui.autoscaling.targetMemoryUtilizationPercentage Target Memory utilization percentage
+  ##
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+  ## @param ui.nodeSelector Node labels for tenant-ui pods assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  ## @param ui.tolerations Tolerations for tenant-ui pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  ## @param ui.affinity Affinity for tenant-ui pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ##
+  affinity: {}
+  ## @section Tenant-UI OpenShift Route parameters
+  ## ref: https://docs.openshift.com/container-platform/4.11/networking/routes/route-configuration.html
+  ##
+  ## Not required if ingress is enabled
+  openshift:
+    route:
+      ## @param ui.openshift.route.enabled Create OpenShift Route resource for tenant-ui
+      ##
+      enabled: false
+      ## @param ui.openshift.route.path Path that the router watches for, to route traffic to the service
+      ##
+      path: "/"
+      ## @param ui.openshift.route.targetPort Target port for the service
+      ##
+      targetPort: http
+      ## @param ui.openshift.route.timeout Timeout in seconds for a route to return
+      ##
+      timeout: 2m
+      tls:
+        ## @param ui.openshift.route.tls.enabled Enable TLS termination
+        ##
+        enabled: true
+        ## @param ui.openshift.route.tls.insecureEdgeTerminationPolicy TLS termination policy
+        ##
+        insecureEdgeTerminationPolicy: None
+        ## @param ui.openshift.route.tls.termination TLS termination type
+        ##
+        termination: edge
+      ## @param ui.openshift.route.wildcardPolicy Wildcard policy for the route
+      wildcardPolicy: None
+
+## @section Ingress Configuration
 ## Configure the ingress resource that allows you to access the traction installation
 ## ref: https://kubernetes.io/docs/user-guide/ingress/
 ##

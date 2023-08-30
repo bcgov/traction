@@ -1,0 +1,31 @@
+{{- if .Values.ui.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "tenant-ui.fullname" . }}
+  labels:
+    {{- include "tenant-ui.labels" . | nindent 4 }}
+data:
+  FRONTEND_ARIES_LEDGER_DESCRIPTION: {{ .Values.ui.ariesDetails.ledgerDescription | quote }}
+  FRONTEND_INNKEEPER_OIDC_ACTIVE: {{ .Values.ui.oidc.active | quote }}
+  FRONTEND_INNKEEPER_OIDC_AUTHORITY: {{ .Values.ui.oidc.authority | quote }}
+  FRONTEND_INNKEEPER_OIDC_CLIENT: {{ .Values.ui.oidc.client | quote }}
+  FRONTEND_INNKEEPER_OIDC_LABEL: {{ .Values.ui.oidc.label | quote }}
+  FRONTEND_INNKEEPER_SHOW_ADMIN: {{ .Values.ui.oidc.showInnkeeperAdminLogin | quote }}
+  FRONTEND_TENANT_SHOW_WRITABLE_COMPONENTS: {{ .Values.ui.oidc.showWritableComponents | quote }}
+  FRONTEND_TENANT_PROXY_URL: https://{{ include "tenant_proxy.host" . }}
+  SERVER_OIDC_JWKS: {{ .Values.ui.oidc.jwksUri | quote }}
+  SERVER_OIDC_REALM: {{ .Values.ui.oidc.realm | quote }}
+  SERVER_OIDC_ROLE: {{ .Values.ui.oidc.roleName | quote }}
+  SERVER_SMTP_INNKEEPER_INBOX: {{ .Values.ui.smtp.innkeeperInbox | quote }}
+  SERVER_SMTP_PORT: {{ .Values.ui.smtp.port | quote }}
+  SERVER_SMTP_SENDER_ADDRESS: {{ .Values.ui.smtp.senderAddress | quote }}
+  SERVER_SMTP_SERVER: {{ .Values.ui.smtp.server | quote }}
+  SERVER_TRACTION_URL: http://{{ include "tenant_proxy.fullname" . }}:{{ .Values.tenant_proxy.service.port }}
+  UX_APP_INNKEEPER_TITLE: {{ .Values.ui.ux.appInnkeeperTitle | quote }}
+  UX_APP_TITLE: {{ .Values.ui.ux.appTitle | quote }}
+  UX_COPYRIGHT: {{ .Values.ui.ux.copyright | quote }}
+  UX_COVERIMAGE_COPYRIGHT: {{ .Values.ui.ux.coverImageCopyright | quote }}
+  UX_OWNER: {{ .Values.ui.ux.owner | quote }}
+  UX_SIDEBAR_TITLE: {{ .Values.ui.ux.sidebarTitle | quote }}
+{{- end -}}
