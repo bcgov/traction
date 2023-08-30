@@ -72,11 +72,11 @@ const reservationPwdResult: any = ref('');
 
 // This stores the form data.
 const data: any = ref({});
+const formFields: any = ref({});
 
 // Make sure the data object is updated when the form changes.
 const onChange = function (event: JsonFormsChangeEvent) {
   data.value = event.data;
-  // console.log('onChange event', event);
 };
 
 /**
@@ -97,26 +97,6 @@ axios
   });
 
 const renderers = [...vanillaRenderers];
-
-// Login Form and validation
-const formFields = reactive({
-  contact_email: config.value.frontend.showOIDCReservationLogin
-    ? user.value.profile.email
-    : '',
-  contact_name: config.value.frontend.showOIDCReservationLogin
-    ? user.value.profile.name
-    : '',
-  contact_phone: '',
-  tenant_name: '',
-  tenant_reason: '',
-});
-const rules = {
-  contact_email: { required, email },
-  contact_name: { required },
-  contact_phone: { required },
-  tenant_name: { required },
-  tenant_reason: { required },
-};
 
 /**
  * Check if the form is valid
@@ -154,19 +134,18 @@ const handleSubmit2 = async (event: any) => {
   try {
     // Destructure and rebuild data object for the API
     const { emailAddress, tenantName, ...contextData } = data.value;
-    const fields = {
+    formFields.value = {
       contact_email: emailAddress,
       tenant_name: tenantName,
       context_data: contextData,
     };
 
-    console.log('fields', fields);
-    // TODO: Make the API call
-    // const res = await reservationStore.makeReservation(formFields);
-    // reservationIdResult.value = res.reservation_id;
-    // reservationPwdResult.value = res.reservation_pwd
-    //   ? res.reservation_pwd
-    //   : undefined;
+    console.log('submitting form fields', formFields.value);
+    const res = await reservationStore.makeReservation(formFields.value);
+    reservationIdResult.value = res.reservation_id;
+    reservationPwdResult.value = res.reservation_pwd
+      ? res.reservation_pwd
+      : undefined;
   } catch (err) {
     console.error(err);
     toast.error(`Failure making request: ${err}`);
