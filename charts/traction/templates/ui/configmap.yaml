@@ -21,7 +21,7 @@ data:
   SERVER_SMTP_PORT: {{ .Values.ui.smtp.port | quote }}
   SERVER_SMTP_SENDER_ADDRESS: {{ .Values.ui.smtp.senderAddress | quote }}
   SERVER_SMTP_SERVER: {{ .Values.ui.smtp.server | quote }}
-  SERVER_TRACTION_URL: https://{{ include "tenant_proxy.host" . }}
+  SERVER_TRACTION_URL: http://{{ include "tenant_proxy.fullname" . }}:{{ .Values.tenant_proxy.service.port }}
   UX_APP_INNKEEPER_TITLE: {{ .Values.ui.ux.appInnkeeperTitle | quote }}
   UX_APP_TITLE: {{ .Values.ui.ux.appTitle | quote }}
   UX_COPYRIGHT: {{ .Values.ui.ux.copyright | quote }}
