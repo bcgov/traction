@@ -216,7 +216,7 @@ class TenantAuthenticationsApiRequestSchema(OpenAPISchema):
     tenant_id = fields.Str(
         required=True,
         description="Tenant ID",
-        example="000000-000000-00000-00000000",
+        example=UUIDFour.EXAMPLE,
     )
 
     alias = fields.Str(
@@ -233,6 +233,12 @@ class TenantAuthenticationsApiResponseSchema(OpenAPISchema):
         required=True,
         description="The API key record identifier",
         example=UUIDFour.EXAMPLE,
+    )
+
+    api_key = fields.Str(
+        required=True,
+        description="The API key",
+        example="3bd14a1e8fb645ddadf9913c0922ff3b",
     )
 
 
