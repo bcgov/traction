@@ -4,6 +4,7 @@ export { useConnectionStore } from './connectionStore';
 export { useGovernanceStore } from './governanceStore';
 export { useHolderStore } from './holderStore';
 export { useIssuerStore } from './issuerStore';
+export { useKeyManagementStore } from './keyManagementStore';
 export { useTenantStore } from './tenantStore';
 export { useTokenStore } from './tokenStore';
 export { useVerifierStore } from './verifierStore';

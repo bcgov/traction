@@ -40,6 +40,7 @@
     "deleteSuccess": "API Key deleted <JA>",
     "generatedKey": "The generated API key is shown below one-time. This dialog is the only time this key will be shown and can not be retrieved again. <JA>",
     "generatedKeyMessage": "An API Key has been generated for Tenant ID {key} <JA>",
+    "generatedKeyMessageInnkeeper": "An API Key has been generated for Tenant ID {key} <JA>",
     "search": "Search API Keys <JA>"
   },
   "common": {

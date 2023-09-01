@@ -153,13 +153,25 @@ exports[`Sidebar > mount matches snapshot with expected values 1`] = `
       </transition-stub>
     </div>
     <div class=\\"p-panelmenu-panel\\" data-pc-section=\\"panel\\">
-      <div id=\\"undefined_7_header\\" class=\\"p-panelmenu-header\\" tabindex=\\"0\\" role=\\"button\\" aria-label=\\"about.about\\" aria-expanded=\\"false\\" aria-controls=\\"undefined_7_content\\" data-pc-section=\\"header\\" data-p-highlight=\\"false\\">
+      <div id=\\"undefined_7_header\\" class=\\"p-panelmenu-header\\" tabindex=\\"0\\" role=\\"button\\" aria-label=\\"apiKey.apiKeys\\" aria-expanded=\\"false\\" aria-controls=\\"undefined_7_content\\" data-pc-section=\\"header\\" data-p-highlight=\\"false\\">
         <div class=\\"p-panelmenu-header-content\\" data-pc-section=\\"headercontent\\">
           <router-link-stub to=\\"[object Object]\\" custom=\\"\\"></router-link-stub>
         </div>
       </div>
       <transition-stub name=\\"p-toggleable-content\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\">
         <div id=\\"undefined_7_content\\" class=\\"p-toggleable-content\\" role=\\"region\\" aria-labelledby=\\"undefined_7_header\\" data-pc-section=\\"toggleablecontent\\" style=\\"display: none;\\">
+          <!---->
+        </div>
+      </transition-stub>
+    </div>
+    <div class=\\"p-panelmenu-panel\\" data-pc-section=\\"panel\\">
+      <div id=\\"undefined_8_header\\" class=\\"p-panelmenu-header\\" tabindex=\\"0\\" role=\\"button\\" aria-label=\\"about.about\\" aria-expanded=\\"false\\" aria-controls=\\"undefined_8_content\\" data-pc-section=\\"header\\" data-p-highlight=\\"false\\">
+        <div class=\\"p-panelmenu-header-content\\" data-pc-section=\\"headercontent\\">
+          <router-link-stub to=\\"[object Object]\\" custom=\\"\\"></router-link-stub>
+        </div>
+      </div>
+      <transition-stub name=\\"p-toggleable-content\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\">
+        <div id=\\"undefined_8_content\\" class=\\"p-toggleable-content\\" role=\\"region\\" aria-labelledby=\\"undefined_8_header\\" data-pc-section=\\"toggleablecontent\\" style=\\"display: none;\\">
           <!---->
         </div>
       </transition-stub>

@@ -5,9 +5,9 @@ import {
 
 import { defineStore } from 'pinia';
 import { Ref, ref } from 'vue';
-import { fetchList } from './utils/fetchList.js';
 import { useAcapyApi } from './acapyApi';
 import { fetchItem } from './utils/fetchItem';
+import { fetchList } from './utils/fetchList.js';
 import { API_PATH } from '@/helpers/constants';
 
 export const useIssuerStore = defineStore('issuer', () => {
