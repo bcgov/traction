@@ -7,6 +7,7 @@ from aiohttp_apispec import (
     request_schema,
 )
 from aries_cloudagent.admin.request_context import AdminRequestContext
+from aries_cloudagent.messaging.models.openapi import OpenAPISchema
 from aries_cloudagent.multitenant.admin.routes import (
     format_wallet_record,
     UpdateWalletRequestSchema,
@@ -19,13 +20,22 @@ from aries_cloudagent.wallet.models.wallet_record import (
 )
 from marshmallow import fields, validate
 
-from ..innkeeper.routes import error_handler
+from ..innkeeper.routes import (
+    error_handler,
+    TenantAuthenticationApiListSchema,
+    TenantAuthenticationsApiResponseSchema
+)
 from ..innkeeper.tenant_manager import TenantManager
 from ..innkeeper.models import (
+    TenantAuthenticationApiRecord,
     TenantRecord,
     TenantRecordSchema,
 )
-from ..innkeeper.utils import TenantConfigSchema
+from ..innkeeper.utils import (
+    create_api_key,
+    TenantConfigSchema,
+    TenantApiKeyException
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -38,6 +48,15 @@ class CustomUpdateWalletRequestSchema(UpdateWalletRequestSchema):
             (self-attested) to other agents as part of forming a connection.",
         example="https://aries.ca/images/sample.png",
         validate=validate.URL(),
+    )
+
+class TenantAuthenticationsApiRequestSchema(OpenAPISchema):
+    """Request schema for api auth record."""
+
+    alias = fields.Str(
+        required=True,
+        description="Alias/label",
+        example="API key for my Tenant",
     )
 
 
@@ -165,6 +184,67 @@ async def tenant_wallet_update(request: web.BaseRequest):
     return web.json_response(result)
 
 
+@docs(tags=[SWAGGER_CATEGORY], summary="Create API Key Record")
+@request_schema(TenantAuthenticationsApiRequestSchema())
+@response_schema(TenantAuthenticationsApiResponseSchema(), 200, description="")
+@error_handler
+async def tenant_api_key(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    wallet_id = context.profile.settings.get("wallet.id")
+
+
+    # keys are under base/root profile, use Tenant Manager profile
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+
+    async with profile.session() as session:
+        # use the id from the Tenant record and fetch associated api keys
+        rec = await TenantRecord.query_by_wallet_id(session, wallet_id)
+        LOGGER.debug(rec)
+        tenant_id = rec.tenant_id
+
+    try:
+        body = await request.json()
+        body["tenant_id"] = tenant_id
+        rec: TenantAuthenticationApiRecord = TenantAuthenticationApiRecord(**body)
+        api_key, tenant_authentication_api_id = await create_api_key(rec, mgr)
+    except TenantApiKeyException as err:
+        raise web.HTTPConflict(reason=str(err))
+
+    return web.json_response(
+        {
+            "tenant_authentication_api_id": tenant_authentication_api_id,
+            "api_key": api_key,
+        }
+    )
+
+
+@docs(tags=[SWAGGER_CATEGORY], summary="List tenant API Key Records")
+@response_schema(TenantAuthenticationApiListSchema(), 200, description="")
+@error_handler
+async def tenant_api_key_list(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    wallet_id = context.profile.settings.get("wallet.id")
+
+    # records are under base/root profile, use Tenant Manager profile
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+
+    async with profile.session() as session:
+        # use the id from the Tenant record and fetch associated api keys
+        rec = await TenantRecord.query_by_wallet_id(session, wallet_id)
+        LOGGER.debug(rec)
+        tenant_id = rec.tenant_id
+
+        records = await TenantAuthenticationApiRecord.query_by_tenant_id(
+            session,
+            tenant_id
+        )
+    results = [record.serialize() for record in records]
+
+    return web.json_response({"results": results})
+
+
 async def register(app: web.Application):
     """Register routes."""
     LOGGER.info("> registering routes")
@@ -175,6 +255,9 @@ async def register(app: web.Application):
             web.get("/tenant/wallet", tenant_wallet_get, allow_head=False),
             web.put("/tenant/wallet", tenant_wallet_update),
             web.get("/tenant/config", tenant_config_get, allow_head=False),
+
+            web.post("/tenant/authentications/api", tenant_api_key),
+            web.get("/tenant/authentications/api/", tenant_api_key_list, allow_head=False),
         ]
     )
     LOGGER.info("< registering routes")
