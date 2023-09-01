@@ -22,6 +22,8 @@ import MyHeldCredentials from '@/views/holder/MyHeldCredentials.vue';
 import MyMessages from '@/views/messages/MyMessages.vue';
 // OCA
 import Oca from '@/views/oca/Oca.vue';
+// API Keys
+import ApiKeys from '@/views/ApiKeys.vue';
 // Const
 import { RESERVATION_STATUS_ROUTE } from '@/helpers/constants';
 
@@ -149,6 +151,13 @@ const tenantRoutes = [
             component: MyMessages,
           },
         ],
+      },
+
+      // Tenant - API Keys
+      {
+        path: 'authentications/keys',
+        name: 'ApiKeys',
+        component: ApiKeys,
       },
     ],
   },

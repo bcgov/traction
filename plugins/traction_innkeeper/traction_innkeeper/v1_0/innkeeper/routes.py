@@ -216,23 +216,29 @@ class TenantAuthenticationsApiRequestSchema(OpenAPISchema):
     tenant_id = fields.Str(
         required=True,
         description="Tenant ID",
-        example="000000-000000-00000-00000000",
+        example=UUIDFour.EXAMPLE,
     )
 
     alias = fields.Str(
-        required=False,
-        description="Optional alias/label",
-        example="API key for sample line of buisness",
+        required=True,
+        description="Alias/label",
+        example="API key for sample line of business",
     )
 
 
 class TenantAuthenticationsApiResponseSchema(OpenAPISchema):
     """Response schema for api auth record."""
 
-    reservation_id = fields.Str(
+    tenant_authentication_api_id = fields.Str(
         required=True,
-        description="The reservation record identifier",
+        description="The API key record identifier",
         example=UUIDFour.EXAMPLE,
+    )
+
+    api_key = fields.Str(
+        required=True,
+        description="The API key",
+        example="3bd14a1e8fb645ddadf9913c0922ff3b",
     )
 
 
@@ -689,7 +695,7 @@ async def innkeeper_authentications_api(request: web.BaseRequest):
     body = await request.json()
     rec: TenantAuthenticationApiRecord = TenantAuthenticationApiRecord(**body)
 
-    # reservations are under base/root profile, use Tenant Manager profile
+    # keys are under base/root profile, use Tenant Manager profile
     mgr = context.inject(TenantManager)
     profile = mgr.profile
 

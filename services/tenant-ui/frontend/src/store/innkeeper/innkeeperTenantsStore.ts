@@ -3,6 +3,7 @@ import {
   ReservationRecord,
   TenantAuthenticationApiRecord,
   TenantAuthenticationsApiRequest,
+  TenantAuthenticationsApiResponse,
   TenantConfig,
   TenantRecord,
 } from '@/types/acapyApi/acapyInterface';
@@ -226,13 +227,14 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     error.value = null;
     loading.value = true;
 
-    // TODO: fix response type in plugin swagger generation
-    let createResponse: any = {};
+    let createResponse: TenantAuthenticationsApiResponse | undefined;
     try {
-      createResponse = await acapyApi.postHttp(
-        API_PATH.INNKEEPER_AUTHENTICATIONS_API_POST,
-        payload
-      );
+      createResponse = (
+        await acapyApi.postHttp(
+          API_PATH.INNKEEPER_AUTHENTICATIONS_API_POST,
+          payload
+        )
+      ).data;
       // Reload the keys list after updating
       await listApiKeys();
     } catch (err: any) {

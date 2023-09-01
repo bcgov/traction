@@ -3,29 +3,44 @@ import logging
 from aiohttp import web
 from aiohttp_apispec import (
     docs,
+    match_info_schema,
     response_schema,
     request_schema,
 )
 from aries_cloudagent.admin.request_context import AdminRequestContext
+from aries_cloudagent.messaging.models.openapi import OpenAPISchema
 from aries_cloudagent.multitenant.admin.routes import (
     format_wallet_record,
     UpdateWalletRequestSchema,
     get_extra_settings_dict_per_tenant,
 )
 from aries_cloudagent.multitenant.base import BaseMultitenantManager
+from aries_cloudagent.storage.error import StorageNotFoundError
 from aries_cloudagent.wallet.models.wallet_record import (
     WalletRecordSchema,
     WalletRecord,
 )
 from marshmallow import fields, validate
 
-from ..innkeeper.routes import error_handler
+from ..innkeeper.routes import (
+    error_handler,
+    TenantAuthenticationApiIdMatchInfoSchema,
+    TenantAuthenticationApiListSchema,
+    TenantAuthenticationApiRecordSchema,
+    TenantAuthenticationsApiResponseSchema,
+    TenantAuthenticationApiOperationResponseSchema
+)
 from ..innkeeper.tenant_manager import TenantManager
 from ..innkeeper.models import (
+    TenantAuthenticationApiRecord,
     TenantRecord,
     TenantRecordSchema,
 )
-from ..innkeeper.utils import TenantConfigSchema
+from ..innkeeper.utils import (
+    create_api_key,
+    TenantConfigSchema,
+    TenantApiKeyException
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -38,6 +53,15 @@ class CustomUpdateWalletRequestSchema(UpdateWalletRequestSchema):
             (self-attested) to other agents as part of forming a connection.",
         example="https://aries.ca/images/sample.png",
         validate=validate.URL(),
+    )
+
+class TenantApiKeyRequestSchema(OpenAPISchema):
+    """Request schema for api auth record."""
+
+    alias = fields.Str(
+        required=True,
+        description="Alias/label",
+        example="API key for my Tenant",
     )
 
 
@@ -165,6 +189,140 @@ async def tenant_wallet_update(request: web.BaseRequest):
     return web.json_response(result)
 
 
+@docs(tags=[SWAGGER_CATEGORY], summary="Create API Key Record")
+@request_schema(TenantApiKeyRequestSchema())
+@response_schema(TenantAuthenticationsApiResponseSchema(), 200, description="")
+@error_handler
+async def tenant_api_key(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    wallet_id = context.profile.settings.get("wallet.id")
+
+
+    # keys are under base/root profile, use Tenant Manager profile
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+
+    async with profile.session() as session:
+        # use the id from the Tenant record and fetch associated api keys
+        rec = await TenantRecord.query_by_wallet_id(session, wallet_id)
+        LOGGER.debug(rec)
+        tenant_id = rec.tenant_id
+
+    try:
+        body = await request.json()
+        body["tenant_id"] = tenant_id
+        rec: TenantAuthenticationApiRecord = TenantAuthenticationApiRecord(**body)
+        api_key, tenant_authentication_api_id = await create_api_key(rec, mgr)
+    except TenantApiKeyException as err:
+        raise web.HTTPConflict(reason=str(err))
+
+    return web.json_response(
+        {
+            "tenant_authentication_api_id": tenant_authentication_api_id,
+            "api_key": api_key,
+        }
+    )
+
+
+@docs(tags=[SWAGGER_CATEGORY], summary="Read API Key Record")
+@match_info_schema(TenantAuthenticationApiIdMatchInfoSchema())
+@response_schema(TenantAuthenticationApiRecordSchema(), 200, description="")
+@error_handler
+async def tenant_api_key_get(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    wallet_id = context.profile.settings.get("wallet.id")
+    tenant_authentication_api_id = request.match_info["tenant_authentication_api_id"]
+
+    # records are under base/root profile, use Tenant Manager profile
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+
+    async with profile.session() as session:
+        # use the id from the Tenant record and fetch associated api key
+        rec = await TenantRecord.query_by_wallet_id(session, wallet_id)
+        LOGGER.debug(rec)
+        tenant_id = rec.tenant_id
+
+        rec = await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(
+            session, tenant_authentication_api_id
+        )
+        LOGGER.info(rec)
+
+        # if rec tenant_id does not match the tenant_id from the wallet, raise 404
+        if rec.tenant_id != tenant_id:
+            raise web.HTTPNotFound(reason="No such record")
+        
+    return web.json_response(rec.serialize())
+
+
+@docs(tags=[SWAGGER_CATEGORY], summary="List tenant API Key Records")
+@response_schema(TenantAuthenticationApiListSchema(), 200, description="")
+@error_handler
+async def tenant_api_key_list(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    wallet_id = context.profile.settings.get("wallet.id")
+
+    # records are under base/root profile, use Tenant Manager profile
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+
+    async with profile.session() as session:
+        # use the id from the Tenant record and fetch associated api keys
+        rec = await TenantRecord.query_by_wallet_id(session, wallet_id)
+        LOGGER.debug(rec)
+        tenant_id = rec.tenant_id
+
+        records = await TenantAuthenticationApiRecord.query_by_tenant_id(
+            session,
+            tenant_id
+        )
+    results = [record.serialize() for record in records]
+
+    return web.json_response({"results": results})
+
+
+@docs(tags=[SWAGGER_CATEGORY], summary="Delete API Key")
+@match_info_schema(TenantAuthenticationApiIdMatchInfoSchema)
+@response_schema(TenantAuthenticationApiOperationResponseSchema, 200, description="")
+@error_handler
+async def tenant_api_key_delete(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    wallet_id = context.profile.settings.get("wallet.id")
+    tenant_authentication_api_id = request.match_info["tenant_authentication_api_id"]
+
+    # records are under base/root profile, use Tenant Manager profile
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+
+    result = False
+    async with profile.session() as session:
+        # use the id from the Tenant record and fetch associated api key
+        rec = await TenantRecord.query_by_wallet_id(session, wallet_id)
+        LOGGER.debug(rec)
+        tenant_id = rec.tenant_id
+
+        rec = await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(
+            session, tenant_authentication_api_id
+        )
+        LOGGER.debug(rec)
+
+        # if rec tenant_id does not match the tenant_id from the wallet, raise 404
+        if rec.tenant_id != tenant_id:
+            raise web.HTTPNotFound(reason="No such record")
+
+        await rec.delete_record(session)
+
+        try:
+            await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(
+                session, tenant_authentication_api_id
+            )
+        except StorageNotFoundError:
+            # this is to be expected... do nothing, do not log
+            result = True
+
+    return web.json_response({"success": result})
+
+
 async def register(app: web.Application):
     """Register routes."""
     LOGGER.info("> registering routes")
@@ -175,6 +333,11 @@ async def register(app: web.Application):
             web.get("/tenant/wallet", tenant_wallet_get, allow_head=False),
             web.put("/tenant/wallet", tenant_wallet_update),
             web.get("/tenant/config", tenant_config_get, allow_head=False),
+
+            web.post("/tenant/authentications/api", tenant_api_key),
+            web.get("/tenant/authentications/api/", tenant_api_key_list, allow_head=False),
+            web.get("/tenant/authentications/api/{tenant_authentication_api_id}", tenant_api_key_get, allow_head=False),
+            web.delete("/tenant/authentications/api/{tenant_authentication_api_id}", tenant_api_key_delete),
         ]
     )
     LOGGER.info("< registering routes")

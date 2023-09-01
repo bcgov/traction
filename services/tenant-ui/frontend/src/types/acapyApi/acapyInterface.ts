@@ -3544,6 +3544,14 @@ export interface TailsDeleteResponse {
   message?: string;
 }
 
+export interface TenantApiKeyRequest {
+  /**
+   * Alias/label
+   * @example "API key for my Tenant"
+   */
+  alias: string;
+}
+
 export interface TenantAuthenticationApiList {
   /** List of reservations */
   results?: TenantAuthenticationApiRecord[];
@@ -3556,7 +3564,7 @@ export interface TenantAuthenticationApiOperationResponse {
 
 export interface TenantAuthenticationApiRecord {
   /** Alias description for this API key */
-  alias?: string;
+  alias: string;
   /**
    * Time of record creation
    * @pattern ^\d{4}-\d\d-\d\d[T ]\d\d:\d\d(?:\:(?:\d\d(?:\.\d{1,6})?))?(?:[+-]\d\d:?\d\d|Z|)$
@@ -3588,23 +3596,28 @@ export interface TenantAuthenticationApiRecord {
 
 export interface TenantAuthenticationsApiRequest {
   /**
-   * Optional alias/label
-   * @example "API key for sample line of buisness"
+   * Alias/label
+   * @example "API key for sample line of business"
    */
-  alias?: string;
+  alias: string;
   /**
    * Tenant ID
-   * @example "000000-000000-00000-00000000"
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
    */
   tenant_id: string;
 }
 
 export interface TenantAuthenticationsApiResponse {
   /**
-   * The reservation record identifier
+   * The API key
+   * @example "3bd14a1e8fb645ddadf9913c0922ff3b"
+   */
+  api_key: string;
+  /**
+   * The API key record identifier
    * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
    */
-  reservation_id: string;
+  tenant_authentication_api_id: string;
 }
 
 export interface TenantConfig {
