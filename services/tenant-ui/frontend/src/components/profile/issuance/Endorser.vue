@@ -162,12 +162,10 @@ const connecttoLedger = async (ledger_id: string) => {
   }
   try {
     await tenantStore.setWriteLedger(ledger_id);
-    await new Promise((r) => setTimeout(r, 2000));
     await connectToEndorser();
     await registerPublicDid();
   } catch (error) {
     await tenantStore.setWriteLedger(prevLedgerId);
-    await new Promise((r) => setTimeout(r, 2000));
     try {
       await connectToEndorser();
     } catch (endorserError) {
