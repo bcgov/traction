@@ -20,9 +20,11 @@ from aries_cloudagent.wallet.models.wallet_record import WalletRecord
 from marshmallow import fields
 
 from . import TenantManager
+from .config import InnkeeperWalletConfig
 from .utils import (
     approve_reservation,
     create_api_key,
+    EndorserLedgerConfigSchema,
     ReservationException,
     TenantApiKeyException,
     TenantConfigSchema,
@@ -88,6 +90,22 @@ def error_handler(func):
                 raise err
 
     return wrapper
+
+
+class DefaultConfigValuesSchema(OpenAPISchema):
+    """Response schema for default config values."""
+
+    connected_to_endorsers = fields.List(
+        fields.Nested(EndorserLedgerConfigSchema()),
+        description="Endorser config",
+    )
+    created_public_did = fields.List(
+        fields.Str(
+            description="Ledger identifier",
+            required=False,
+        ),
+        description="Public DID config",
+    )
 
 
 class ReservationRequestSchema(OpenAPISchema):
@@ -430,15 +448,19 @@ async def tenant_create_token(request: web.BaseRequest):
     # If neither wallet_key or api_key provided raise an error
     if not wallet_key and not api_key:
         raise web.HTTPUnauthorized(reason="Wallet Key or API Key not provided")
-    
+
     # If both wallet_key and api_key provided raise an error
     if wallet_key and api_key:
-        raise web.HTTPUnprocessableEntity(reason="Wallet Key and API Key cannot be provided together")
+        raise web.HTTPUnprocessableEntity(
+            reason="Wallet Key and API Key cannot be provided together"
+        )
 
     # if an API key is provided verify it is valid
-    if api_key:  
+    if api_key:
         async with profile.session() as session:
-            tenant_keys = await TenantAuthenticationApiRecord.query_by_tenant_id(session, tenant_id)
+            tenant_keys = await TenantAuthenticationApiRecord.query_by_tenant_id(
+                session, tenant_id
+            )
             LOGGER.warning(f"tenant_keys = {tenant_keys}")
             # if no keys found raise an error
             if not tenant_keys:
@@ -487,6 +509,27 @@ async def innkeeper_tenant_reservation(request: web.BaseRequest):
 @docs(
     tags=[SWAGGER_CATEGORY],
 )
+@response_schema(DefaultConfigValuesSchema(), 200, description="")
+@innkeeper_only
+@error_handler
+async def tenant_default_config_settings(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    mgr = context.inject(TenantManager)
+    innkeeper_wallet_config: InnkeeperWalletConfig = mgr._config.innkeeper_wallet
+    return web.json_response(
+        {
+            "connected_to_endorsers": list(
+                endorser_config.serialize()
+                for endorser_config in innkeeper_wallet_config.connect_to_endorser
+            ),
+            "created_public_did": innkeeper_wallet_config.create_public_did,
+        }
+    )
+
+
+@docs(
+    tags=[SWAGGER_CATEGORY],
+)
 @match_info_schema(TenantIdMatchInfoSchema())
 @request_schema(TenantConfigSchema())
 @response_schema(TenantRecordSchema(), 200, description="")
@@ -497,6 +540,8 @@ async def tenant_config_update(request: web.BaseRequest):
     body = await request.json()
     connect_to_endorser = body.get("connect_to_endorser")
     create_public_did = body.get("create_public_did")
+    enable_ledger_switch = body.get("enable_ledger_switch") or False
+    curr_ledger_id = body.get("curr_ledger_id")
     mgr = context.inject(TenantManager)
     profile = mgr.profile
     tenant_id = request.match_info["tenant_id"]
@@ -506,6 +551,10 @@ async def tenant_config_update(request: web.BaseRequest):
             tenant_record.connected_to_endorsers = connect_to_endorser
         if create_public_did or create_public_did == []:
             tenant_record.created_public_did = create_public_did
+        if enable_ledger_switch:
+            tenant_record.enable_ledger_switch = enable_ledger_switch
+        if curr_ledger_id:
+            tenant_record.curr_ledger_id = curr_ledger_id
         await tenant_record.save(session)
     return web.json_response(tenant_record.serialize())
 
@@ -838,6 +887,11 @@ async def register(app: web.Application):
                 "/innkeeper/tenants/{tenant_id}", innkeeper_tenant_get, allow_head=False
             ),
             web.put("/innkeeper/tenants/{tenant_id}/config", tenant_config_update),
+            web.get(
+                "/innkeeper/default-config",
+                tenant_default_config_settings,
+                allow_head=False,
+            ),
             web.post("/innkeeper/authentications/api", innkeeper_authentications_api),
             web.get(
                 "/innkeeper/authentications/api/",

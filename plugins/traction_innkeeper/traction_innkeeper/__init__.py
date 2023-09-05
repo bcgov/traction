@@ -1,0 +1,21 @@
+from aries_cloudagent.messaging.valid import (
+    INDY_SCHEMA_ID_VALIDATE,
+    INDY_SCHEMA_ID_EXAMPLE,
+    INDY_REV_REG_SIZE_VALIDATE,
+    INDY_REV_REG_SIZE_EXAMPLE,
+    INDY_CRED_DEF_ID_VALIDATE,
+    INDY_CRED_DEF_ID_EXAMPLE,
+)
+
+INDY_SCHEMA_ID = {
+    "validate": INDY_SCHEMA_ID_VALIDATE,
+    "example": INDY_SCHEMA_ID_EXAMPLE,
+}
+INDY_REV_REG_SIZE = {
+    "validate": INDY_REV_REG_SIZE_VALIDATE,
+    "example": INDY_REV_REG_SIZE_EXAMPLE,
+}
+INDY_CRED_DEF_ID = {
+    "validate": INDY_CRED_DEF_ID_VALIDATE,
+    "example": INDY_CRED_DEF_ID_EXAMPLE,
+}

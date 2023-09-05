@@ -11,6 +11,19 @@ from aries_cloudagent.messaging.valid import (
 )
 from marshmallow import EXCLUDE, fields
 
+try:
+    from aries_cloudagent.messaging.valid import (
+        INDY_SCHEMA_ID,
+        INDY_REV_REG_SIZE,
+        INDY_CRED_DEF_ID,
+    )
+except ImportError:
+    from ... import (
+        INDY_SCHEMA_ID,
+        INDY_REV_REG_SIZE,
+        INDY_CRED_DEF_ID,
+    )
+
 
 class CredDefStorageRecord(BaseRecord):
     """Traction CredDef Storage Record."""

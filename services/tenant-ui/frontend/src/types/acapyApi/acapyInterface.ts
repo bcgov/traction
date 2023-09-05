@@ -3627,6 +3627,10 @@ export interface TenantConfig {
   connect_to_endorser?: EndorserLedgerConfig[];
   /** Public DID config */
   create_public_did?: string[];
+  /** Enable ledger switch config */
+  enable_ledger_switch?: boolean;
+  /** Current set ledger ident */
+  curr_ledger_id?: string;
 }
 
 export interface TenantList {
@@ -3645,6 +3649,7 @@ export interface TenantRecord {
    * @example "2021-12-31T23:59:59Z"
    */
   created_at?: string;
+  enable_ledger_switch?: boolean;
   created_public_did?: string[];
   /**
    * The state of the tenant.

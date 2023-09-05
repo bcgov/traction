@@ -10,6 +10,16 @@ from aries_cloudagent.messaging.valid import (
 )
 from marshmallow import EXCLUDE, fields
 
+try:
+    from aries_cloudagent.messaging.valid import (
+        INDY_SCHEMA_ID,
+        INDY_CRED_DEF_ID,
+        UUIDFour,
+    )
+except ImportError:
+    from ... import INDY_SCHEMA_ID, INDY_CRED_DEF_ID
+    from aries_cloudagent.messaging.valid import UUIDFour
+
 
 class OcaRecord(BaseRecord):
     """Traction OCA Record."""

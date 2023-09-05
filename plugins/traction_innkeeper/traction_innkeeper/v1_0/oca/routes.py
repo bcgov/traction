@@ -22,6 +22,16 @@ from aries_cloudagent.messaging.valid import (
 from aries_cloudagent.storage.error import StorageNotFoundError, StorageError
 from marshmallow import fields, ValidationError
 
+try:
+    from aries_cloudagent.messaging.valid import (
+        INDY_SCHEMA_ID,
+        INDY_CRED_DEF_ID,
+        UUIDFour,
+    )
+except ImportError:
+    from ... import INDY_SCHEMA_ID, INDY_CRED_DEF_ID
+    from aries_cloudagent.messaging.valid import UUIDFour
+
 from . import OcaService
 from .models import OcaRecordSchema
 from .oca_service import PublicDIDRequiredError, PublicDIDMismatchError

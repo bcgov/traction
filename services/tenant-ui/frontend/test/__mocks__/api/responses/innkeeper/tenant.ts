@@ -44,6 +44,7 @@ const tenants = {
       tenant_name: 'line of business short name',
       updated_at: '2021-12-31T23:59:59Z',
       wallet_id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+      enable_ledger_switch: true,
     },
   ],
 };
@@ -60,6 +61,7 @@ const updateTenant = {
   tenant_name: 'line of business short name',
   updated_at: '2021-12-31T23:59:59Z',
   wallet_id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+  enable_ledger_switch: true,
 };
 
 export default {

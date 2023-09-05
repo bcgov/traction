@@ -65,6 +65,13 @@ class TenantApiKeyRequestSchema(OpenAPISchema):
     )
 
 
+class TenantLedgerIdConfigSchema(OpenAPISchema):
+    ledger_id = fields.Str(
+        description="Ledger identifier",
+        required=True,
+    )
+
+
 @docs(
     tags=[SWAGGER_CATEGORY],
 )
@@ -121,11 +128,38 @@ async def tenant_config_get(request: web.BaseRequest):
     endorser_config = tenant_record.connected_to_endorsers
     public_did_config = tenant_record.created_public_did
     tenant_issuer_flag = tenant_record.auto_issuer
+    enable_ledger_switch = tenant_record.enable_ledger_switch
+    curr_ledger_id = tenant_record.curr_ledger_id
     return web.json_response(
         {
             "connect_to_endorser": endorser_config,
             "create_public_did": public_did_config,
             "auto_issuer": tenant_issuer_flag,
+            "enable_ledger_switch": enable_ledger_switch,
+            "curr_ledger_id": curr_ledger_id,
+        }
+    )
+
+
+@docs(tags=[SWAGGER_CATEGORY], summary="Set tenant curr_ledger_id setting")
+@request_schema(TenantLedgerIdConfigSchema)
+@response_schema(TenantLedgerIdConfigSchema(), 200, description="")
+@error_handler
+async def tenant_config_ledger_id_set(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    wallet_id = context.profile.settings.get("wallet.id")
+    body = await request.json()
+    curr_ledger_id = body.get("ledger_id")
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+    async with profile.session() as session:
+        tenant_record = await TenantRecord.query_by_wallet_id(session, wallet_id)
+        if curr_ledger_id:
+            tenant_record.curr_ledger_id = curr_ledger_id
+        await tenant_record.save(session)
+    return web.json_response(
+        {
+            "ledger_id": curr_ledger_id,
         }
     )
 
@@ -333,7 +367,7 @@ async def register(app: web.Application):
             web.get("/tenant/wallet", tenant_wallet_get, allow_head=False),
             web.put("/tenant/wallet", tenant_wallet_update),
             web.get("/tenant/config", tenant_config_get, allow_head=False),
-
+            web.put("/tenant/config/set-ledger-id", tenant_config_ledger_id_set),
             web.post("/tenant/authentications/api", tenant_api_key),
             web.get("/tenant/authentications/api/", tenant_api_key_list, allow_head=False),
             web.get("/tenant/authentications/api/{tenant_authentication_api_id}", tenant_api_key_get, allow_head=False),

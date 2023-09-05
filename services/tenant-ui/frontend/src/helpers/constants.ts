@@ -58,6 +58,7 @@ export const API_PATH = {
   INNKEEPER_TENANTS: '/innkeeper/tenants/',
   INNKEEPER_TENANT: (id: string) => `/innkeeper/tenants/${id}`,
   INNKEEPER_TENANT_CONFIG: (id: string) => `/innkeeper/tenants/${id}/config`,
+  INNKEEPER_TENANT_DEFAULT_CONFIG: '/innkeeper/default-config',
   INNKEEPER_RESERVATIONS: '/innkeeper/reservations/',
   INNKEEPER_RESERVATIONS_APPROVE: (id: string) =>
     `/innkeeper/reservations/${id}/approve`,
@@ -121,6 +122,10 @@ export const API_PATH = {
   TENANT_ENDORSER_CONNECTION: '/tenant/endorser-connection',
   TENANT_ENDORSER_INFO: '/tenant/endorser-info',
   TENANT_REGISTER_PUBLIC_DID: '/ledger/register-nym',
+  TENANT_GET_VERKEY_POSTED_DID: '/ledger/did-verkey',
+  TENANT_SWITCH_WRITE_LEDGER: (id: string) => `/ledger/${id}/set-write-ledger`,
+  TENANT_GET_WRITE_LEDGER: '/ledger/get-write-ledger',
+  TENANT_CONFIG_SET_LEDGER_ID: '/tenant/config/set-ledger-id',
   TENANT_TOKEN: '/tenant/token',
   TENANT_WALLET: '/tenant/wallet',
   TENANT_CONFIG: '/tenant/config',

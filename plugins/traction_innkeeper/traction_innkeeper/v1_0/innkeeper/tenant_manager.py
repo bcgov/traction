@@ -69,6 +69,13 @@ class TenantManager:
                 del extra_settings["tenant.auto_issuer"]
             else:
                 auto_issuer = self._config.reservation.auto_issuer
+            if "tenant.enable_ledger_switch" in extra_settings:
+                enable_ledger_switch = extra_settings.get("tenant.enable_ledger_switch")
+                del extra_settings["tenant.enable_ledger_switch"]
+            else:
+                enable_ledger_switch = (
+                    self._config.innkeeper_wallet.enable_ledger_switch
+                )
             # we must stick with managed until AcaPy has full support for unmanaged.
             # transport/inbound/session.py only deals with managed.
             key_management_mode = WalletRecord.MODE_MANAGED
@@ -114,6 +121,7 @@ class TenantManager:
             connected_to_endorsers=connect_to_endorsers,
             created_public_did=created_public_did,
             auto_issuer=auto_issuer,
+            enable_ledger_switch=enable_ledger_switch,
         )
 
         return tenant, wallet_record, token
@@ -136,6 +144,7 @@ class TenantManager:
         created_public_did: List = [],
         auto_issuer: bool = False,
         tenant_id: str = None,
+        enable_ledger_switch: bool = False,
     ):
         try:
             async with self._profile.session() as session:
@@ -155,6 +164,7 @@ class TenantManager:
                         for endorser_config in connected_to_endorsers
                     ),
                     created_public_did=created_public_did,
+                    enable_ledger_switch=enable_ledger_switch,
                     auto_issuer=auto_issuer,
                 )
                 await tenant.save(session, reason="New tenant")
@@ -210,6 +220,9 @@ class TenantManager:
         print(f"tenant.endorser_config = {tenant_record.connected_to_endorsers}")
         print(f"tenant.public_did_config = {tenant_record.created_public_did}")
         print(f"tenant.auto_issuer = {str(tenant_record.auto_issuer)}")
+        print(
+            f"tenant.enable_ledger_switch = {str(tenant_record.enable_ledger_switch)}"
+        )
         _key = wallet_record.wallet_key if config.print_key else "********"
         print(f"wallet.wallet_key = {_key}\n")
         if config.print_token:
@@ -292,9 +305,7 @@ class TenantManager:
             raise StorageNotFoundError(f"Tenant not found with wallet_id '{wallet_id}'")
         return wallet_record, tenant_record
 
-    def check_api_key(
-        self, api_key: str, apiRecord: TenantAuthenticationApiRecord
-    ):
+    def check_api_key(self, api_key: str, apiRecord: TenantAuthenticationApiRecord):
         if api_key is None or apiRecord is None:
             return None
 

@@ -17,6 +17,7 @@ import {
   filterByStateActive,
   filterMapSortList,
   sortByLabelAscending,
+  fetchItem,
 } from '../utils';
 import { RESERVATION_STATUS_ROUTE } from '@/helpers/constants';
 import { API_PATH, RESERVATION_STATUSES } from '@/helpers/constants';
@@ -38,6 +39,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
   const apiKeys: Ref<TenantAuthenticationApiRecord[]> = ref([]);
   const reservations: Ref<ReservationRecord[]> = ref([]);
   const tenants: Ref<TenantRecord[]> = ref([]);
+  const defaultConfigValues: any = ref(null);
 
   // getters
   const currentReservations = computed(() =>
@@ -84,6 +86,15 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
       error,
       loading,
       {}
+    );
+  }
+
+  async function getDefaultConfigValues() {
+    defaultConfigValues.value = await fetchItem(
+      API_PATH.INNKEEPER_TENANT_DEFAULT_CONFIG,
+      '',
+      error,
+      ref(false)
     );
   }
 
@@ -307,6 +318,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     findTenantName,
     tenants,
     tenantsDropdown,
+    defaultConfigValues,
     reservations,
     currentReservations,
     reservationHistory,
@@ -318,6 +330,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     listTenants,
     listReservations,
     updateTenantConfig,
+    getDefaultConfigValues,
   };
 });
 
