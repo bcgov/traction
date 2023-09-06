@@ -164,8 +164,29 @@ export const useTenantStore = defineStore('tenant', () => {
     return endorserInfo.value;
   }
 
+  async function getEndorserConnectionState(connId: string) {
+    console.log('> tenantStore.getEndorserConnectionState');
+    error.value = null;
+    loadingIssuance.value = true;
+    let status: any = null;
+    await acapyApi
+      .getHttp(API_PATH.CONNECTION(connId), {})
+      .then((res) => {
+        status = res.data.state;
+      })
+      .catch((err) => {
+        error.value = err;
+      })
+      .finally(() => {
+        loadingIssuance.value = false;
+        getEndorserInfo();
+      });
+    console.log('< tenantStore.getEndorserConnectionState');
+    return status;
+  }
+
   async function connectToEndorser() {
-    console.log('> connectionStore.createInvitation');
+    console.log('> tenantStore.connectToEndorser');
     error.value = null;
     loadingIssuance.value = true;
 
@@ -181,7 +202,7 @@ export const useTenantStore = defineStore('tenant', () => {
       .finally(() => {
         loadingIssuance.value = false;
       });
-    console.log('< connectionStore.connectToEndorser');
+    console.log('< tenantStore.connectToEndorser');
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
@@ -209,23 +230,32 @@ export const useTenantStore = defineStore('tenant', () => {
     );
   }
 
-  async function setWriteLedger(ledger_id?: string) {
+  async function setWriteLedger(ledger_id: string) {
     console.log('> tenantStore.setWriteLedger');
-    if (ledger_id !== undefined) {
-      const res = await acapyApi.putHttp(
-        API_PATH.TENANT_SWITCH_WRITE_LEDGER(ledger_id)
-      );
-      if (!res.data.write_ledger) {
-        throw Error('No write_ledger in set write ledger response');
-      }
-      const curr_ledger_id = res.data.write_ledger;
-      writeLedger.value = {
-        ledger_id: curr_ledger_id,
-      };
-    } else {
-      writeLedger.value = undefined;
+    const res = await acapyApi.putHttp(
+      API_PATH.TENANT_SWITCH_WRITE_LEDGER(ledger_id)
+    );
+    if (!res.data.write_ledger) {
+      throw Error('No write_ledger in set write ledger response');
     }
+    const curr_ledger_id = res.data.write_ledger;
+    writeLedger.value = {
+      ledger_id: curr_ledger_id,
+    };
     console.log('< tenantStore.setWriteLedger');
+  }
+
+  async function waitForTxnCompletion(txnId: string) {
+    let retries = 0;
+    for (;;) {
+      const pRes = await acapyApi.getHttp(API_PATH.TRANSACTION_GET(txnId));
+      if (pRes.data.state === 'transaction_acked') {
+        return;
+      }
+      retries = retries + 1;
+      const wait_interval = Math.pow(3, 1 + 0.25 * (retries - 1));
+      await new Promise((r) => setTimeout(r, wait_interval));
+    }
   }
 
   async function registerPublicDid() {
@@ -257,20 +287,25 @@ export const useTenantStore = defineStore('tenant', () => {
         {}
       );
       console.log(rRes);
+      console.log(`posted ${did} on ledger ${writeLedger.value.ledger_id}`);
 
-      // Give 2 seconds to wait
       // TODO: should this be here? Or register and assign as 2 different buttons...?
-      // await new Promise((r) => setTimeout(r, 2000));
+      // Wait for endorse transaction completion
+      const txnId = rRes.data.txn.transaction_id;
+      await waitForTxnCompletion(txnId);
+      // Verify DID is posted on correct ledger
       const pRes = await acapyApi.getHttp(
         `${API_PATH.TENANT_GET_VERKEY_POSTED_DID}?did=${did}`,
         {}
       );
-      console.log(pRes);
       if (!pRes.data.verkey) {
+        console.log(`DID ${did} is not posted on ledger`);
         postedDID = null;
-      }
-      if (pRes.data && pRes.data.ledger_id) {
+      } else if (pRes.data && pRes.data.ledger_id) {
         const posted_did_ledger_id = pRes.data.ledger_id;
+        console.log(
+          `Verified DID ${did} is posted on ledger ${posted_did_ledger_id}`
+        );
         if (posted_did_ledger_id === writeLedger.value.ledger_id) {
           postedDID = did;
         } else {
@@ -307,11 +342,8 @@ export const useTenantStore = defineStore('tenant', () => {
       );
       console.log(aRes);
 
-      // Give 2 seconds to wait then fetch it
-      await new Promise((r) => setTimeout(r, 2000));
       publicDidRegistrationProgress.value = 'Fetching created public DID';
       getPublicDid();
-      getWriteLedger();
     } catch (err) {
       error.value = err;
     } finally {
@@ -325,6 +357,7 @@ export const useTenantStore = defineStore('tenant', () => {
         API_PATH.TENANT_CONFIG_SET_LEDGER_ID,
         payload
       );
+      getWriteLedger();
     }
     console.log('< connectionStore.assignPublicDid');
 
@@ -494,6 +527,7 @@ export const useTenantStore = defineStore('tenant', () => {
     getEndorserConnection,
     getEndorserInfo,
     getTenantDefaultSettings,
+    getEndorserConnectionState,
     connectToEndorser,
     getPublicDid,
     getWriteLedger,

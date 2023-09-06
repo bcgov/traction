@@ -13,10 +13,13 @@ acapy:
         print_key: true
         print_token: true
         connect_to_endorser:
-          - endorser_alias: endorser
+          - endorser_alias: endorser-1
             ledger_id: bcovrin-test
+          - endorser_alias: endorser-2
+            ledger_id: bcovrin-dev
         create_public_did:
           - bcovrin-test
+          - bcovrin-dev
       reservation:
         expiry_minutes: 7200
   resources:

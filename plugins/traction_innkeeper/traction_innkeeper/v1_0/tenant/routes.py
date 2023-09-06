@@ -28,7 +28,7 @@ from ..innkeeper.routes import (
     TenantAuthenticationApiListSchema,
     TenantAuthenticationApiRecordSchema,
     TenantAuthenticationsApiResponseSchema,
-    TenantAuthenticationApiOperationResponseSchema
+    TenantAuthenticationApiOperationResponseSchema,
 )
 from ..innkeeper.tenant_manager import TenantManager
 from ..innkeeper.models import (
@@ -36,11 +36,7 @@ from ..innkeeper.models import (
     TenantRecord,
     TenantRecordSchema,
 )
-from ..innkeeper.utils import (
-    create_api_key,
-    TenantConfigSchema,
-    TenantApiKeyException
-)
+from ..innkeeper.utils import create_api_key, TenantConfigSchema, TenantApiKeyException
 
 LOGGER = logging.getLogger(__name__)
 
@@ -54,6 +50,7 @@ class CustomUpdateWalletRequestSchema(UpdateWalletRequestSchema):
         example="https://aries.ca/images/sample.png",
         validate=validate.URL(),
     )
+
 
 class TenantApiKeyRequestSchema(OpenAPISchema):
     """Request schema for api auth record."""
@@ -231,7 +228,6 @@ async def tenant_api_key(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     wallet_id = context.profile.settings.get("wallet.id")
 
-
     # keys are under base/root profile, use Tenant Manager profile
     mgr = context.inject(TenantManager)
     profile = mgr.profile
@@ -285,7 +281,7 @@ async def tenant_api_key_get(request: web.BaseRequest):
         # if rec tenant_id does not match the tenant_id from the wallet, raise 404
         if rec.tenant_id != tenant_id:
             raise web.HTTPNotFound(reason="No such record")
-        
+
     return web.json_response(rec.serialize())
 
 
@@ -307,8 +303,7 @@ async def tenant_api_key_list(request: web.BaseRequest):
         tenant_id = rec.tenant_id
 
         records = await TenantAuthenticationApiRecord.query_by_tenant_id(
-            session,
-            tenant_id
+            session, tenant_id
         )
     results = [record.serialize() for record in records]
 
@@ -369,9 +364,18 @@ async def register(app: web.Application):
             web.get("/tenant/config", tenant_config_get, allow_head=False),
             web.put("/tenant/config/set-ledger-id", tenant_config_ledger_id_set),
             web.post("/tenant/authentications/api", tenant_api_key),
-            web.get("/tenant/authentications/api/", tenant_api_key_list, allow_head=False),
-            web.get("/tenant/authentications/api/{tenant_authentication_api_id}", tenant_api_key_get, allow_head=False),
-            web.delete("/tenant/authentications/api/{tenant_authentication_api_id}", tenant_api_key_delete),
+            web.get(
+                "/tenant/authentications/api/", tenant_api_key_list, allow_head=False
+            ),
+            web.get(
+                "/tenant/authentications/api/{tenant_authentication_api_id}",
+                tenant_api_key_get,
+                allow_head=False,
+            ),
+            web.delete(
+                "/tenant/authentications/api/{tenant_authentication_api_id}",
+                tenant_api_key_delete,
+            ),
         ]
     )
     LOGGER.info("< registering routes")

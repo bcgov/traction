@@ -165,13 +165,19 @@ const connecttoLedger = async (ledger_id: string) => {
     await connectToEndorser();
     await registerPublicDid();
   } catch (error) {
-    await tenantStore.setWriteLedger(prevLedgerId);
-    try {
-      await connectToEndorser();
-    } catch (endorserError) {
-      toast.error(`${endorserError}`);
+    if (prevLedgerId) {
+      try {
+        await tenantStore.setWriteLedger(prevLedgerId);
+        await connectToEndorser();
+      } catch (endorserError) {
+        toast.error(`${endorserError}`);
+      }
+      toast.error(
+        `${error}, reverting to previously set ledger ${prevLedgerId}`
+      );
+    } else {
+      toast.error(`${error}`);
     }
-    toast.error(`${error}, reverting to previously set ledger ${prevLedgerId}`);
   }
 };
 
@@ -179,9 +185,9 @@ const connecttoLedger = async (ledger_id: string) => {
 const connectToEndorser = async () => {
   try {
     await tenantStore.connectToEndorser();
-    // Give a couple seconds to wait for active. If not done by then a message
-    // appears to the user saying to refresh themselves
-    await new Promise((r) => setTimeout(r, 2000));
+    // Give a couple seconds to wait for active. If not done by then
+    // a message appears to the user saying to refresh themselves
+    await waitForActiveEndorserConnection();
     await tenantStore.getEndorserConnection();
     toast.success('Endorser connection request sent');
   } catch (error) {
@@ -189,12 +195,31 @@ const connectToEndorser = async () => {
   }
 };
 
+const waitForActiveEndorserConnection = async () => {
+  const connId = endorserConnection.value.connection_id;
+  let retries = 0;
+  for (;;) {
+    const connState = await tenantStore.getEndorserConnectionState(connId);
+    if (connState === 'active') {
+      console.log(`Endorser connection ${connId} state is active`);
+      return;
+    }
+    retries = retries + 1;
+    const wait_interval = Math.pow(3, 1 + 0.25 * (retries - 1));
+    await new Promise((r) => setTimeout(r, wait_interval));
+  }
+};
+
 // Register DID
 const registerPublicDid = async () => {
   try {
     const createdDID = await tenantStore.registerPublicDid();
-    await tenantStore.assignPublicDid(createdDID);
-    toast.success('Public DID registration sent');
+    if (createdDID) {
+      await tenantStore.assignPublicDid(createdDID);
+      toast.success('Public DID registration sent');
+    } else {
+      toast.error('Unable to post DID to ledger');
+    }
   } catch (error) {
     throw Error(`Failure while registering: ${error}`);
   }

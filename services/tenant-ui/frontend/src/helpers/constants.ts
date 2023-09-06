@@ -141,6 +141,7 @@ export const API_PATH = {
   WALLET_DID_CREATE: '/wallet/did/create',
 
   SERVER_PLUGINS: '/plugins',
+  TRANSACTION_GET: (id: string) => `/transactions/${id}`,
 
   // Legacy (to be removed)
 

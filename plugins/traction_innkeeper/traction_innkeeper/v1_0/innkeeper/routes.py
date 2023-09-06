@@ -551,10 +551,9 @@ async def tenant_config_update(request: web.BaseRequest):
             tenant_record.connected_to_endorsers = connect_to_endorser
         if create_public_did or create_public_did == []:
             tenant_record.created_public_did = create_public_did
-        if enable_ledger_switch:
-            tenant_record.enable_ledger_switch = enable_ledger_switch
         if curr_ledger_id:
             tenant_record.curr_ledger_id = curr_ledger_id
+        tenant_record.enable_ledger_switch = enable_ledger_switch
         await tenant_record.save(session)
     return web.json_response(tenant_record.serialize())
 

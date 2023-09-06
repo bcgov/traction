@@ -189,18 +189,19 @@ services:
       endorser-db:
         condition: service_healthy
     environment:
-      - POSTGRESQL_HOST=${ENDORSER_POSTGRESQL_HOST}
+      - POSTGRESQL_HOST=${ENDORSER_1_POSTGRESQL_HOST}
       - POSTGRESQL_PORT=${POSTGRESQL_PORT}
       - POSTGRESQL_DB=${ENDORSER_PSQL_DB}
       - ENDORSER_API_ADMIN_USER=${ENDORSER_API_ADMIN_USER}
       - ENDORSER_API_ADMIN_KEY=${ENDORSER_API_ADMIN_KEY}
-      - ACAPY_ADMIN_URL=${ENDORSER_ACAPY_ADMIN_URL}
+      - ACAPY_ADMIN_URL=${ENDORSER_1_ACAPY_ADMIN_URL}
       - ACAPY_ADMIN_URL_API_KEY=${ENDORSER_ACAPY_ADMIN_URL_API_KEY}
       - ENVIRONMENT=production
-      - TRACTION_WEBHOOK_URL=${ENDORSER_WEBHOOK_URL}
+      - TRACTION_WEBHOOK_URL=${ENDORSER_1_WEBHOOK_URL}
       - ACAPY_WEBHOOK_URL_API_KEY=${ENDORSER_ACAPY_WEBHOOK_URL_API_KEY}
+      - ENDORSER_API_PORT=${ENDORSER_API_1_PORT}
     ports:
-      - ${ENDORSER_SERVICE_PORT}:5000
+      - ${ENDORSER_1_SERVICE_PORT}:${ENDORSER_API_1_PORT}
     volumes:
       - ../services/endorser:/app:rw
     extra_hosts:
@@ -212,8 +213,8 @@ services:
       endorser-db:
         condition: service_healthy
     ports:
-      - ${ACAPY_ENDORSER_ADMIN_PORT}:${ACAPY_ENDORSER_ADMIN_PORT}
-      - ${ACAPY_ENDORSER_HTTP_PORT}:${ACAPY_ENDORSER_HTTP_PORT}
+      - ${ACAPY_ENDORSER_1_ADMIN_PORT}:${ACAPY_ENDORSER_1_ADMIN_PORT}
+      - ${ACAPY_ENDORSER_1_HTTP_PORT}:${ACAPY_ENDORSER_1_HTTP_PORT}
     entrypoint: /bin/bash
     command: [
         "-c",
@@ -221,19 +222,19 @@ services:
         aca-py start \
         --auto-provision
         --arg-file endorser-acapy-args.yml \
-        --inbound-transport http '0.0.0.0' ${ACAPY_ENDORSER_HTTP_PORT} \
-        --webhook-url '${ENDORSER_WEBHOOK_URL}' \
-        --genesis-url '${ACAPY_GENESIS_URL}' \
-        --endpoint ${ACAPY_ENDORSER_ENDPOINT} \
-        --wallet-name '${ENDORSER_ACAPY_WALLET_DATABASE}' \
+        --inbound-transport http '0.0.0.0' ${ACAPY_ENDORSER_1_HTTP_PORT} \
+        --webhook-url '${ENDORSER_1_WEBHOOK_URL}' \
+        --genesis-url '${ACAPY_GENESIS_URL_1}' \
+        --endpoint ${ACAPY_ENDORSER_1_ENDPOINT} \
+        --wallet-name '${ENDORSER_1_ACAPY_WALLET_DATABASE}' \
         --wallet-key '${ENDORSER_ACAPY_WALLET_ENCRYPTION_KEY}' \
         --wallet-type '${ENDORSER_ACAPY_WALLET_TYPE}' \
         --wallet-storage-type '${ENDORSER_ACAPY_WALLET_STORAGE_TYPE}' \
-        --wallet-storage-config '{\"url\":\"${ENDORSER_POSTGRESQL_HOST}:5432\",\"max_connections\":5}' \
+        --wallet-storage-config '{\"url\":\"${ENDORSER_1_POSTGRESQL_HOST}:5432\",\"max_connections\":5}' \
         --wallet-storage-creds '{\"account\":\"${POSTGRESQL_USER}\",\"password\":\"${POSTGRESQL_PASSWORD}\",\"admin_account\":\"${POSTGRESQL_USER}\",\"admin_password\":\"${POSTGRESQL_PASSWORD}\"}' \
         --wallet-name endorser-wallet  \
-        --seed '${ACAPY_ENDORSER_SEED}' \
-        --admin '0.0.0.0' ${ACAPY_ENDORSER_ADMIN_PORT} \
+        --seed '${ACAPY_ENDORSER_SEED_1}' \
+        --admin '0.0.0.0' ${ACAPY_ENDORSER_1_ADMIN_PORT} \
         --label '${ENDORSER_AGENT_NAME}' \
         ${ENDORSER_ACAPY_ADMIN_CONFIG} \
         ${ENDORSER_ACAPY_READ_ONLY_MODE} \
@@ -255,9 +256,99 @@ services:
       - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
       - POSTGRES_DB=${POSTGRESQL_DB}
     ports:
-      - ${ENDORSER_POSTGRESQL_PORT}:5432
+      - ${ENDORSER_1_POSTGRESQL_PORT}:5432
     volumes:
       - endorser-wallet:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+  endorser-api-1:
+    pull_policy: missing
+    build:
+      context: ../services/endorser
+      dockerfile: Dockerfile
+    image: traction:endorser-api
+    depends_on:
+      endorser-agent-1:
+        condition: service_started
+      endorser-db-1:
+        condition: service_healthy
+    environment:
+      - POSTGRESQL_HOST=${ENDORSER_2_POSTGRESQL_HOST}
+      - POSTGRESQL_PORT=${POSTGRESQL_PORT}
+      - POSTGRESQL_DB=${ENDORSER_PSQL_DB}
+      - ENDORSER_API_ADMIN_USER=${ENDORSER_API_ADMIN_USER}
+      - ENDORSER_API_ADMIN_KEY=${ENDORSER_API_ADMIN_KEY}
+      - ACAPY_ADMIN_URL=${ENDORSER_2_ACAPY_ADMIN_URL}
+      - ACAPY_ADMIN_URL_API_KEY=${ENDORSER_ACAPY_ADMIN_URL_API_KEY}
+      - ENVIRONMENT=production
+      - TRACTION_WEBHOOK_URL=${ENDORSER_2_WEBHOOK_URL}
+      - ACAPY_WEBHOOK_URL_API_KEY=${ENDORSER_ACAPY_WEBHOOK_URL_API_KEY}
+      - ENDORSER_API_PORT=${ENDORSER_API_2_PORT}
+    ports:
+      - ${ENDORSER_2_SERVICE_PORT}:${ENDORSER_API_2_PORT}
+    volumes:
+      - ../services/endorser:/app:rw
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+  endorser-agent-1:
+    image: ghcr.io/hyperledger/aries-cloudagent-python:py3.9-0.10.1
+    depends_on:
+      endorser-db-1:
+        condition: service_healthy
+    ports:
+      - ${ACAPY_ENDORSER_2_ADMIN_PORT}:${ACAPY_ENDORSER_2_ADMIN_PORT}
+      - ${ACAPY_ENDORSER_2_HTTP_PORT}:${ACAPY_ENDORSER_2_HTTP_PORT}
+    entrypoint: /bin/bash
+    command: [
+        "-c",
+        "sleep 5;
+        aca-py start \
+        --auto-provision
+        --arg-file endorser-acapy-args.yml \
+        --inbound-transport http '0.0.0.0' ${ACAPY_ENDORSER_2_HTTP_PORT} \
+        --webhook-url '${ENDORSER_2_WEBHOOK_URL}' \
+        --genesis-url '${ACAPY_GENESIS_URL_2}' \
+        --endpoint ${ACAPY_ENDORSER_2_ENDPOINT} \
+        --wallet-name '${ENDORSER_2_ACAPY_WALLET_DATABASE}' \
+        --wallet-key '${ENDORSER_ACAPY_WALLET_ENCRYPTION_KEY}' \
+        --wallet-type '${ENDORSER_ACAPY_WALLET_TYPE}' \
+        --wallet-storage-type '${ENDORSER_ACAPY_WALLET_STORAGE_TYPE}' \
+        --wallet-storage-config '{\"url\":\"${ENDORSER_2_POSTGRESQL_HOST}:5432\",\"max_connections\":5}' \
+        --wallet-storage-creds '{\"account\":\"${POSTGRESQL_USER}\",\"password\":\"${POSTGRESQL_PASSWORD}\",\"admin_account\":\"${POSTGRESQL_USER}\",\"admin_password\":\"${POSTGRESQL_PASSWORD}\"}' \
+        --wallet-name endorser-wallet-1  \
+        --seed '${ACAPY_ENDORSER_SEED_2}' \
+        --admin '0.0.0.0' ${ACAPY_ENDORSER_2_ADMIN_PORT} \
+        --label '${ENDORSER_AGENT_NAME}' \
+        ${ENDORSER_ACAPY_ADMIN_CONFIG} \
+        ${ENDORSER_ACAPY_READ_ONLY_MODE} \
+        --endorser-protocol-role endorser \
+        --auto-endorse-transactions \
+        ",
+      ]
+    environment:
+      - RUST_LOG=error
+    volumes:
+      - "./endorser-acapy-args.yml:/home/aries/endorser-acapy-args.yml"
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+  endorser-db-1:
+    image: "postgres:14.5"
+    environment:
+      - POSTGRES_USER=${POSTGRESQL_USER}
+      - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
+      - POSTGRES_DB=${POSTGRESQL_DB}
+    ports:
+      - ${ENDORSER_2_POSTGRESQL_PORT}:5432
+    volumes:
+      - endorser-wallet-1:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -275,3 +366,4 @@ services:
 volumes:
   traction-wallet:
   endorser-wallet:
+  endorser-wallet-1:
