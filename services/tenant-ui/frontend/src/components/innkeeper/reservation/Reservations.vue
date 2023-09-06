@@ -201,7 +201,7 @@ const formattedReservations = computed(() =>
     contact_email: msg.contact_email,
     contact_name: msg.contact_name,
     contact_phone: msg.contact_phone,
-    tenant_name: msg.contact_name,
+    tenant_name: msg.tenant_name,
     tenant_reason: msg.tenant_reason,
     created_at: msg.created_at,
     created: formatDateLong(msg.created_at),

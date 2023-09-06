@@ -42,31 +42,27 @@
 
 <script setup lang="ts">
 //Vue
-import { ref, reactive } from 'vue';
+import { ref } from 'vue';
 // PrimeVue/Validation/etc
 import Button from 'primevue/button';
 import ProgressSpinner from 'primevue/progressspinner';
 import { useToast } from 'vue-toastification';
-import { email, required } from '@vuelidate/validators';
 import { JsonForms, JsonFormsChangeEvent } from '@jsonforms/vue';
 import { vanillaRenderers } from '@jsonforms/vue-vanilla';
 // State
-import { useConfigStore, useOidcStore, useReservationStore } from '@/store';
+import { useReservationStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Components
 import { RESERVATION_STATUSES } from '@/helpers/constants';
 import ShowWallet from './status/ShowWallet.vue';
 import ReservationConfirmation from './ReservationConfirmation.vue';
 import axios from 'axios';
-import { e } from 'vitest/dist/types-63abf2e0';
 
 const toast = useToast();
 
 // State setup
 const reservationStore = useReservationStore();
-const { config } = storeToRefs(useConfigStore());
 const { loading, status } = storeToRefs(useReservationStore());
-const { user } = storeToRefs(useOidcStore());
 
 // The reservation return object
 const reservationIdResult: any = ref('');
