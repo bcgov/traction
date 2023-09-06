@@ -25,6 +25,7 @@
         :uischema="formUISchema"
         :renderers="renderers"
         :data="data"
+        :validation-mode="formValidationMode"
         @change="onChange"
       ></json-forms>
       <Button
@@ -57,6 +58,7 @@ import { RESERVATION_STATUSES } from '@/helpers/constants';
 import ShowWallet from './status/ShowWallet.vue';
 import ReservationConfirmation from './ReservationConfirmation.vue';
 import axios from 'axios';
+import { e } from 'vitest/dist/types-63abf2e0';
 
 const toast = useToast();
 
@@ -73,6 +75,12 @@ const reservationPwdResult: any = ref('');
 // This stores the form data.
 const data: any = ref({});
 const formFields: any = ref({});
+
+// Possible values of validationMode are:
+//   ValidateAndShow, ValidateAndHide, NoValidation
+const formValidationMode: any = ref('ValidateAndHide');
+
+// Store additional error messages
 let formErrorMessage: any = '';
 
 // Make sure the data object is updated when the form changes.
@@ -145,6 +153,9 @@ const formIsValid = () => {
  * if the form is valid.
  */
 const handleSubmit = async (event: any) => {
+  // Show messages for the build in validator
+  formValidationMode.value = 'ValidateAndShow';
+
   if (!formIsValid())
     return toast.error(`Missing required fields. ${formErrorMessage}`);
 
