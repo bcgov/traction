@@ -62,6 +62,7 @@ jobs:
           registry_password: ${{ secrets.GITHUB_TOKEN }}
 
   helm_release:
+    name: Publish Helm Chart
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source
