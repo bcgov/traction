@@ -4,8 +4,8 @@ from aries_cloudagent.messaging.models.base_record import BaseRecord, BaseRecord
 from aries_cloudagent.messaging.valid import (
     INDY_SCHEMA_ID_VALIDATE,
     INDY_SCHEMA_ID_EXAMPLE,
-    INDY_REV_REG_ID_VALIDATE,
-    INDY_REV_REG_ID_EXAMPLE,
+    INDY_REV_REG_SIZE_VALIDATE,
+    INDY_REV_REG_SIZE_EXAMPLE,
     INDY_CRED_DEF_ID_VALIDATE,
     INDY_CRED_DEF_ID_EXAMPLE
 )
@@ -77,15 +77,15 @@ class CredDefStorageRecordSchema(BaseRecordSchema):
         example=INDY_SCHEMA_ID_EXAMPLE
     )
     support_revocation = fields.Boolean(
-        required=False,description="Revocation supported flag"
+        required=False, description="Revocation supported flag"
     )
     rev_reg_size = fields.Int(
         description="Revocation registry size",
         required=False,
         strict=True,
         allow_none=True,
-        validate=INDY_REV_REG_ID_VALIDATE,
-        example=INDY_REV_REG_ID_EXAMPLE,
+        validate=INDY_REV_REG_SIZE_VALIDATE,
+        example=INDY_REV_REG_SIZE_EXAMPLE,
     )
     tag = fields.Str(
         required=False,
