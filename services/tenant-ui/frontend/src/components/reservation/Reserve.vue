@@ -33,7 +33,7 @@
         :label="$t('common.submit')"
         :disabled="!!loading"
         :loading="!!loading"
-        @click="handleSubmit2(data)"
+        @click="handleSubmit(data)"
       />
     </form>
   </div>
@@ -73,6 +73,7 @@ const reservationPwdResult: any = ref('');
 // This stores the form data.
 const data: any = ref({});
 const formFields: any = ref({});
+let formErrorMessage: any = '';
 
 // Make sure the data object is updated when the form changes.
 const onChange = function (event: JsonFormsChangeEvent) {
@@ -106,6 +107,22 @@ const formIsValid = () => {
   const schema = formDataSchema.value;
   const fields = Object.keys(data.value);
 
+  // If there is an email address, make sure it is valid.
+  if (
+    data.value.emailAddress &&
+    !data.value.emailAddress.match(/^.*@.*\..*$/)
+  ) {
+    // Provide a more specific error message
+    formErrorMessage = 'Please enter a valid email address.';
+    return false;
+  } else if (
+    // Clear error message if it was set before. Then allow for other checks.
+    !data.value.emailAddress ||
+    data.value.emailAddress.match(/^.*@.*\..*$/)
+  ) {
+    formErrorMessage = '';
+  }
+
   // If there are no required fields, then the form is valid.
   if (!('required' in schema) || schema.required?.length < 1) {
     return true;
@@ -127,9 +144,9 @@ const formIsValid = () => {
  * Send the reservation form data to the API. But only
  * if the form is valid.
  */
-const handleSubmit2 = async (event: any) => {
-  const err = `Missing required fields.`;
-  if (!formIsValid()) return toast.error(err);
+const handleSubmit = async (event: any) => {
+  if (!formIsValid())
+    return toast.error(`Missing required fields. ${formErrorMessage}`);
 
   try {
     // Destructure and rebuild data object for the API
@@ -140,7 +157,6 @@ const handleSubmit2 = async (event: any) => {
       context_data: contextData,
     };
 
-    console.log('submitting form fields', formFields.value);
     const res = await reservationStore.makeReservation(formFields.value);
     reservationIdResult.value = res.reservation_id;
     reservationPwdResult.value = res.reservation_pwd
