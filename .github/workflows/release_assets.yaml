@@ -64,10 +64,10 @@ jobs:
   helm_release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Source
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 2147483647 # workaround to check-out a non-shallow repo clone
 
       - name: Configure Git
         run: |
