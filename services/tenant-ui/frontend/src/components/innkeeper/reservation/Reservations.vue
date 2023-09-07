@@ -4,6 +4,7 @@
     :refresh-callback="loadTable"
   >
     <DataTable
+      v-model:expandedRows="expandedRows"
       v-model:filters="filter"
       :loading="loading"
       :value="formattedReservations"
@@ -29,6 +30,7 @@
       </template>
       <template #empty>{{ $t('common.noRecordsFound') }}</template>
       <template #loading>{{ $t('common.loading') }}</template>
+      <Column :expander="true" header-style="width: 3rem" />
       <Column :sortable="false" header="Actions">
         <template #body="{ data }">
           <ApproveReservation
@@ -98,6 +100,13 @@
           />
         </template>
       </Column>
+      <template #expansion="{ data }">
+        <Accordion>
+          <AccordionTab header="View Raw Content">
+            <vue-json-pretty :data="data" />
+          </AccordionTab>
+        </Accordion>
+      </template>
     </DataTable>
   </MainCardContent>
 
@@ -127,6 +136,9 @@ import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import { FilterMatchMode } from 'primevue/api';
 import { useToast } from 'vue-toastification';
+import Accordion from 'primevue/accordion';
+import AccordionTab from 'primevue/accordiontab';
+import VueJsonPretty from 'vue-json-pretty';
 // State
 import { useInnkeeperTenantsStore } from '@/store';
 import { storeToRefs } from 'pinia';
@@ -149,6 +161,10 @@ const formattedReservations = computed(() =>
     reservation_id: msg.reservation_id,
     contact_email: msg.contact_email,
     tenant_name: msg.tenant_name,
+    contact_name: msg.contact_name,
+    contact_phone: msg.contact_phone,
+    tenant_reason: msg.tenant_reason,
+    context_data: msg.context_data,
     created_at: msg.created_at,
     created: formatDateLong(msg.created_at),
   }))
@@ -201,4 +217,7 @@ const filter = ref({
     matchMode: FilterMatchMode.CONTAINS,
   } as DataTableFilterMetaData,
 });
+
+// necessary for expanding rows, we don't do anything with this
+const expandedRows = ref([]);
 </script>
