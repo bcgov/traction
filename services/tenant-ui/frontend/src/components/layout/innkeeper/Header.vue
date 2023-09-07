@@ -13,6 +13,7 @@
     <template #end>
       <LocaleSwitcher />
       <InnkeeperBadge />
+      <SessionTimer />
     </template>
   </Toolbar>
 </template>
@@ -21,6 +22,7 @@
 import Toolbar from 'primevue/toolbar';
 import InnkeeperBadge from '@/components/innkeeper/InnkeeperBadge.vue';
 import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue';
+import SessionTimer from '@/components/common/SessionTimer.vue';
 
 // State
 import { storeToRefs } from 'pinia';

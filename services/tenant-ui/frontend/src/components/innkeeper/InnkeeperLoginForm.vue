@@ -55,6 +55,7 @@
 <script setup lang="ts">
 //Vue
 import { ref, reactive } from 'vue';
+import { useRouter } from 'vue-router';
 // PrimeVue/Validation/etc
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
@@ -66,6 +67,7 @@ import { useInnkeeperTokenStore } from '@/store';
 import { storeToRefs } from 'pinia';
 
 const toast = useToast();
+const router = useRouter();
 
 // Login Form and validation
 const formFields = reactive({
@@ -93,6 +95,7 @@ const handleSubmit = async (isFormValid: boolean): Promise<void> => {
   }
   try {
     await innkeeperTokenStore.login(formFields);
+    router.push({ name: 'InnkeeperTenants' });
   } catch (err) {
     console.error(err);
     toast.error(`Failure getting token: ${err}`);

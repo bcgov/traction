@@ -40,6 +40,7 @@ export const useTokenStore = defineStore('token', () => {
       .then((res) => {
         console.log(res);
         token.value = res.data.token;
+        if (token.value) localStorage.setItem('token', token.value);
       })
       .catch((err) => {
         error.value = err;
@@ -61,10 +62,17 @@ export const useTokenStore = defineStore('token', () => {
   function clearToken() {
     console.log('> clearToken');
     token.value = null;
+    localStorage.removeItem('token');
     console.log('< clearToken');
   }
 
-  return { token, loading, error, clearToken, login };
+  function setToken(newToken: string) {
+    console.log('> setToken');
+    token.value = newToken;
+    console.log('< setToken');
+  }
+
+  return { token, loading, error, clearToken, setToken, login };
 });
 
 export default {

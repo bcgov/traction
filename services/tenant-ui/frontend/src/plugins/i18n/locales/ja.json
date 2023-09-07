@@ -431,5 +431,9 @@
     "presentationRequestBody": "Proof Request <JA>",
     "verification": "Verification <JA>",
     "verifications": "Verifications <JA>"
+  },
+  "session": {
+    "countdown": "You are going to be logged out in { seconds } seconds... <JA>",
+    "header": "Session timing out <JA>"
   }
 }

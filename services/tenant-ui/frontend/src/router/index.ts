@@ -7,7 +7,12 @@ import innkeeperRoutes from './innkeeperRoutes';
 import tenantRoutes from './tenantRoutes';
 
 import { storeToRefs } from 'pinia';
-import { useConfigStore } from '../store';
+import {
+  useConfigStore,
+  useTenantStore,
+  useTokenStore,
+  useInnkeeperTokenStore,
+} from '../store';
 
 const routes = [
   { path: '/:pathMatch(.*)', component: NotFound },
@@ -36,5 +41,51 @@ router.afterEach((to) => {
     document.title = config.value.frontend.ux.appInnkeeperTitle;
   }
 });
+
+/**
+ * Global router middleware for logout and refresh handling.
+ */
+router.beforeEach((to, from, next) => {
+  const logoutPath = getLogoutPath(to);
+  if (logoutPath) return next(logoutPath);
+  else resetLoginDataOnRefresh(to.path, from.path);
+  next();
+});
+
+const getLogoutPath = (to: any) => {
+  if (to.path === '/logout') {
+    removeLoginData();
+    return '/';
+  }
+  if (to.path === '/innkeeper/logout') {
+    removeInnkeeperLoginData();
+    return '/innkeeper';
+  }
+};
+
+const resetLoginDataOnRefresh = (toPath: string, fromPath: string) => {
+  if (fromPath !== '/' && fromPath !== '/innkeeper') return;
+  if (toPath.includes('/innkeeper')) {
+    const innkeeperToken = localStorage.getItem('innkeeper-token');
+    if (innkeeperToken) useInnkeeperTokenStore().setToken(innkeeperToken);
+  } else {
+    const token = localStorage.getItem('token');
+    if (token) setLocalStorage(token);
+  }
+};
+
+const removeLoginData = () => {
+  useTokenStore().clearToken();
+  useTenantStore().clearTenant();
+};
+
+const removeInnkeeperLoginData = () => {
+  useInnkeeperTokenStore().clearToken();
+};
+
+const setLocalStorage = (token: string) => {
+  useTokenStore().setToken(token);
+  useTenantStore().setTenantLoginDataFromLocalStorage();
+};
 
 export default router;
