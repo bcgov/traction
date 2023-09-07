@@ -219,10 +219,11 @@ class ReservationRecordSchema(BaseRecordSchema):
         example=UUIDFour.EXAMPLE,
     )
 
-    connect_to_endorsers = fields.List(
+    connect_to_endorser = fields.List(
         fields.Dict(description="Endorser and ledger config", required=False),
         example=json.dumps(ENDORSER_LEDGER_CONFIG_EXAMPLE),
         required=False,
+        attribute="connect_to_endorsers"
     )
 
     create_public_did = fields.List(
@@ -363,10 +364,11 @@ class TenantRecordSchema(BaseRecordSchema):
         example=UUIDFour.EXAMPLE,
     )
 
-    connected_to_endorsers = fields.List(
+    connect_to_endorser = fields.List(
         fields.Dict(description="Endorser and ledger config", required=False),
         example=json.dumps(ENDORSER_LEDGER_CONFIG_EXAMPLE),
         required=False,
+        attribute="connected_to_endorsers",
     )
 
     created_public_did = fields.List(
