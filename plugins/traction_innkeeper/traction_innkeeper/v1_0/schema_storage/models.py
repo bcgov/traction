@@ -1,7 +1,10 @@
 from typing import Optional
 
 from aries_cloudagent.messaging.models.base_record import BaseRecord, BaseRecordSchema
-from aries_cloudagent.messaging.valid import INDY_SCHEMA_ID
+from aries_cloudagent.messaging.valid import (
+    INDY_SCHEMA_ID_EXAMPLE,
+    INDY_SCHEMA_ID_VALIDATE,
+)
 from marshmallow import EXCLUDE, fields
 
 
@@ -60,7 +63,10 @@ class SchemaStorageRecordSchema(BaseRecordSchema):
         unknown = EXCLUDE
 
     schema_id = fields.Str(
-        required=True, description="Schema identifier", **INDY_SCHEMA_ID
+        required=True,
+        description="Schema identifier",
+        validate=INDY_SCHEMA_ID_VALIDATE,
+        example=INDY_SCHEMA_ID_EXAMPLE,
     )
     ledger_id = fields.Str(required=False, description="Schema identifier")
 

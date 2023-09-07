@@ -1,6 +1,9 @@
 from aries_cloudagent.core.profile import ProfileSession
 from aries_cloudagent.messaging.models.base_record import BaseRecord, BaseRecordSchema
-from aries_cloudagent.messaging.valid import INDY_ISO8601_DATETIME
+from aries_cloudagent.messaging.valid import (
+    INDY_ISO8601_DATETIME_EXAMPLE,
+    INDY_ISO8601_DATETIME_VALIDATE,
+)
 from marshmallow import fields
 
 
@@ -80,6 +83,9 @@ class BasicMessageRecordSchema(BaseRecordSchema):
 
     connection_id = fields.Str(required=False)
     message_id = fields.Str(required=False)
-    sent_time = fields.Str(required=False, **INDY_ISO8601_DATETIME)
+    sent_time = fields.Str(required=False,
+        validate=INDY_ISO8601_DATETIME_VALIDATE,
+        example=INDY_ISO8601_DATETIME_EXAMPLE
+    )
     locale = fields.Str(required=False)
     content = fields.Str(required=False)
