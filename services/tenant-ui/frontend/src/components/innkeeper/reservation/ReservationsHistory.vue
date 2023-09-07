@@ -85,60 +85,9 @@
       </Column>
       <Column
         :sortable="true"
-        field="contact_name"
-        filter-field="contact_name"
-        header="Contact Name"
-        :show-filter-match-modes="false"
-      >
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            type="text"
-            class="p-column-filter"
-            placeholder="Search By Contact"
-            @input="filterCallback()"
-          />
-        </template>
-      </Column>
-      <Column
-        :sortable="true"
-        field="contact_phone"
-        filter-field="contact_phone"
-        header="Contact Phone"
-        :show-filter-match-modes="false"
-      >
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            type="text"
-            class="p-column-filter"
-            placeholder="Search By Contact"
-            @input="filterCallback()"
-          />
-        </template>
-      </Column>
-      <Column
-        :sortable="true"
         field="tenant_name"
         filter-field="tenant_name"
         header="Tenant Name"
-        :show-filter-match-modes="false"
-      >
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            type="text"
-            class="p-column-filter"
-            placeholder="Search By Contact"
-            @input="filterCallback()"
-          />
-        </template>
-      </Column>
-      <Column
-        :sortable="true"
-        field="tenant_reason"
-        filter-field="tenant_reason"
-        header="Tenant Reason"
         :show-filter-match-modes="false"
       >
         <template #filter="{ filterModel, filterCallback }">
@@ -212,10 +161,7 @@ const formattedReservationHistory = computed(() =>
     state: msg.state,
     reservation_id: msg.reservation_id,
     contact_email: msg.contact_email,
-    contact_name: msg.contact_name,
-    contact_phone: msg.contact_phone,
     tenant_name: msg.contact_name,
-    tenant_reason: msg.tenant_reason,
     created_at: msg.created_at,
     created: formatDateLong(msg.created_at),
   }))
@@ -243,19 +189,7 @@ const filter = ref({
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   } as DataTableFilterMetaData,
-  contact_name: {
-    value: null,
-    matchMode: FilterMatchMode.CONTAINS,
-  } as DataTableFilterMetaData,
-  contact_phone: {
-    value: null,
-    matchMode: FilterMatchMode.CONTAINS,
-  } as DataTableFilterMetaData,
   tenant_name: {
-    value: null,
-    matchMode: FilterMatchMode.CONTAINS,
-  } as DataTableFilterMetaData,
-  tenant_reason: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   } as DataTableFilterMetaData,
