@@ -3,7 +3,7 @@ import PrimeVue from 'primevue/config';
 import { describe, expect, test } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
 
-import Header from '@/components/layout/Header.vue';
+import Header from '@/components/layout/innkeeper/Header.vue';
 
 describe('Header', async () => {
   test('mount matches snapshot with expected values', async () => {

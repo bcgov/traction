@@ -1,6 +1,7 @@
 import { vi } from 'vitest';
 
 const store: { [key: string]: any } = {
+  clearTenant: vi.fn(),
   tenant: {
     value: {
       tenant_name: 'test',

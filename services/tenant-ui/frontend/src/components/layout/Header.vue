@@ -12,8 +12,8 @@
 
     <template #end>
       <LocaleSwitcher />
-
       <ProfileButton />
+      <SessionTimer />
     </template>
   </Toolbar>
 </template>
@@ -22,6 +22,7 @@
 import Toolbar from 'primevue/toolbar';
 import ProfileButton from '@/components/profile/ProfileButton.vue';
 import LocaleSwitcher from '../common/LocaleSwitcher.vue';
+import SessionTimer from '../common/SessionTimer.vue';
 
 // State
 import { storeToRefs } from 'pinia';

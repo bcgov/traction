@@ -49,7 +49,7 @@ const items = [
   {
     label: t('common.logout'),
     class: 'logout-menu-item',
-    url: '/', // TODO: this should be a logout route
+    url: '/logout',
   },
 ];
 </script>

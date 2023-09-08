@@ -42,12 +42,19 @@ export const useTenantStore = defineStore('tenant', () => {
   function clearTenant() {
     console.log('> clearTenant');
     tenant.value = null;
+    localStorage.removeItem('tenant');
+    localStorage.removeItem('tenantConfig');
+    localStorage.removeItem('tenantTaa');
+    localStorage.removeItem('tenantEndorserInfo');
+    localStorage.removeItem('tenantEndorserConnection');
     console.log('< clearTenant');
   }
 
   async function getSelf() {
     tenant.value = await fetchItem(API_PATH.TENANT_SELF, '', error, loading);
+    localStorage.setItem('tenant', JSON.stringify(tenant.value));
   }
+
   async function getTenantConfig() {
     tenantConfig.value = await fetchItem(
       API_PATH.TENANT_CONFIG,
@@ -55,6 +62,7 @@ export const useTenantStore = defineStore('tenant', () => {
       error,
       loading
     );
+    localStorage.setItem('tenantConfig', JSON.stringify(tenantConfig.value));
   }
 
   async function getIssuanceStatus() {
@@ -91,6 +99,10 @@ export const useTenantStore = defineStore('tenant', () => {
       .getHttp(API_PATH.TENANT_ENDORSER_CONNECTION)
       .then((res: any) => {
         endorserConnection.value = res.data;
+        localStorage.setItem(
+          'tenantEndorserConnection',
+          JSON.stringify(endorserConnection.value)
+        );
       })
       .catch((err) => {
         endorserConnection.value = null;
@@ -124,6 +136,10 @@ export const useTenantStore = defineStore('tenant', () => {
       .getHttp(API_PATH.TENANT_ENDORSER_INFO)
       .then((res: any) => {
         endorserInfo.value = res.data;
+        localStorage.setItem(
+          'tenantEndorderInfo',
+          JSON.stringify(endorserInfo.value)
+        );
       })
       .catch((err) => {
         error.value = err;
@@ -174,6 +190,7 @@ export const useTenantStore = defineStore('tenant', () => {
       error,
       !loadingIssuance.value ? loadingIssuance : ref(false)
     );
+    localStorage.setItem('tenantPublicDid', JSON.stringify(publicDid.value));
   }
 
   async function registerPublicDid() {
@@ -313,6 +330,7 @@ export const useTenantStore = defineStore('tenant', () => {
       error,
       !loadingIssuance.value ? loadingIssuance : ref(false)
     );
+    localStorage.setItem('tenantTaa', JSON.stringify(taa.value));
   }
 
   async function acceptTaa(payload: object) {
@@ -335,6 +353,42 @@ export const useTenantStore = defineStore('tenant', () => {
     }
   }
 
+  function setTenantLoginDataFromLocalStorage() {
+    console.log('> setTenantFromLocalStorage');
+    try {
+      const savedTenant = localStorage.getItem('tenant');
+      tenant.value = savedTenant ? JSON.parse(savedTenant) : null;
+
+      const savedTenantConfig = localStorage.getItem('tenantConfig');
+      tenantConfig.value = savedTenantConfig
+        ? JSON.parse(savedTenantConfig)
+        : null;
+
+      const savedTaa = localStorage.getItem('tenantTaa');
+      taa.value = savedTaa ? JSON.parse(savedTaa) : null;
+
+      const savedEndorserInfo = localStorage.getItem('tenantEndorserInfo');
+      endorserInfo.value = savedEndorserInfo
+        ? JSON.parse(savedEndorserInfo)
+        : null;
+
+      const savedEndorserConnection = localStorage.getItem(
+        'tenantEndorserConnection'
+      );
+      endorserConnection.value = savedEndorserConnection
+        ? JSON.parse(savedEndorserConnection)
+        : null;
+
+      const savedPublicDid = localStorage.getItem('tenantPublicDid');
+      publicDid.value = savedPublicDid ? JSON.parse(savedPublicDid) : null;
+    } catch (err) {
+      console.info('Error processing tenant info from local storage');
+      console.error(err);
+    }
+
+    console.log('< setTenantFromLocalStorage');
+  }
+
   return {
     loading,
     loadingIssuance,
@@ -354,6 +408,7 @@ export const useTenantStore = defineStore('tenant', () => {
     getTenantConfig,
     getIssuanceStatus,
     clearTenant,
+    setTenantLoginDataFromLocalStorage,
     getEndorserConnection,
     getEndorserInfo,
     getTenantDefaultSettings,

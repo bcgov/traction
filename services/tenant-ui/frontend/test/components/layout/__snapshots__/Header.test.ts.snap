@@ -9,6 +9,7 @@ exports[`Header > mount matches snapshot with expected values 1`] = `
   <div class=\\"p-toolbar-group-end p-toolbar-group-right\\" data-pc-section=\\"end\\">
     <locale-switcher-stub data-v-243d8871=\\"\\"></locale-switcher-stub>
     <profile-button-stub data-v-243d8871=\\"\\"></profile-button-stub>
+    <session-timer-stub data-v-243d8871=\\"\\"></session-timer-stub>
   </div>
 </div>"
 `;

@@ -55,6 +55,9 @@ ui:
     active: true
     showInnkeeperAdminLogin: true
     showWritableComponents: true
+    session:
+      timeoutSeconds: 600
+      countdownSeconds: 30
     authority: https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm
     jwksUri: https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm/protocol/openid-connect/certs
   ariesDetails:

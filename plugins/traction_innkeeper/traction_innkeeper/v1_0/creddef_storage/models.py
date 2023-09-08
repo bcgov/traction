@@ -2,9 +2,12 @@ from typing import Optional
 
 from aries_cloudagent.messaging.models.base_record import BaseRecord, BaseRecordSchema
 from aries_cloudagent.messaging.valid import (
-    INDY_SCHEMA_ID,
-    INDY_REV_REG_SIZE,
-    INDY_CRED_DEF_ID,
+    INDY_SCHEMA_ID_VALIDATE,
+    INDY_SCHEMA_ID_EXAMPLE,
+    INDY_REV_REG_SIZE_VALIDATE,
+    INDY_REV_REG_SIZE_EXAMPLE,
+    INDY_CRED_DEF_ID_VALIDATE,
+    INDY_CRED_DEF_ID_EXAMPLE
 )
 from marshmallow import EXCLUDE, fields
 
@@ -63,9 +66,16 @@ class CredDefStorageRecordSchema(BaseRecordSchema):
         unknown = EXCLUDE
 
     cred_def_id = fields.Str(
-        required=True, description="Cred Def identifier", **INDY_CRED_DEF_ID
+        required=True,
+        description="Cred Def identifier",
+        validate=INDY_CRED_DEF_ID_VALIDATE,
+        example=INDY_CRED_DEF_ID_EXAMPLE
     )
-    schema_id = fields.Str(description="Schema identifier", **INDY_SCHEMA_ID)
+    schema_id = fields.Str(
+        description="Schema identifier",
+        validate=INDY_SCHEMA_ID_VALIDATE,
+        example=INDY_SCHEMA_ID_EXAMPLE
+    )
     support_revocation = fields.Boolean(
         required=False, description="Revocation supported flag"
     )
@@ -74,7 +84,8 @@ class CredDefStorageRecordSchema(BaseRecordSchema):
         required=False,
         strict=True,
         allow_none=True,
-        **INDY_REV_REG_SIZE,
+        validate=INDY_REV_REG_SIZE_VALIDATE,
+        example=INDY_REV_REG_SIZE_EXAMPLE,
     )
     tag = fields.Str(
         required=False,

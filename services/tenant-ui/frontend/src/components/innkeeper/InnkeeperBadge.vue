@@ -27,7 +27,7 @@ const items = [
   {
     label: 'Logout',
     class: 'logout-menu-item',
-    url: '/innkeeper', // TODO: this should be a logout route
+    url: '/innkeeper/logout',
   },
 ];
 </script>

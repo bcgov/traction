@@ -1,7 +1,13 @@
 from typing import Optional
 
 from aries_cloudagent.messaging.models.base_record import BaseRecord, BaseRecordSchema
-from aries_cloudagent.messaging.valid import INDY_SCHEMA_ID, INDY_CRED_DEF_ID, UUIDFour
+from aries_cloudagent.messaging.valid import (
+    INDY_SCHEMA_ID_VALIDATE,
+    INDY_SCHEMA_ID_EXAMPLE,
+    INDY_CRED_DEF_ID_VALIDATE,
+    INDY_CRED_DEF_ID_EXAMPLE,
+    UUIDFour
+)
 from marshmallow import EXCLUDE, fields
 
 
@@ -69,10 +75,16 @@ class OcaRecordSchema(BaseRecordSchema):
         example=UUIDFour.EXAMPLE,
     )
     schema_id = fields.Str(
-        required=False, description="Schema identifier", **INDY_SCHEMA_ID
+        required=False,
+        description="Schema identifier",
+        validate=INDY_SCHEMA_ID_VALIDATE,
+        example=INDY_SCHEMA_ID_EXAMPLE
     )
     cred_def_id = fields.Str(
-        required=False, description="Cred Def identifier", **INDY_CRED_DEF_ID
+        required=False, 
+        description="Cred Def identifier",
+        validate=INDY_CRED_DEF_ID_VALIDATE,
+        example=INDY_CRED_DEF_ID_EXAMPLE
     )
     url = fields.Str(required=False, description="(Public) Url for OCA Bundle")
     bundle = fields.Dict(
