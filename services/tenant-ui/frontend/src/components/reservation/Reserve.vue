@@ -173,8 +173,6 @@ const handleSubmit = async (event: any) => {
     console.error(err);
     toast.error(`Failure making request: ${err}`);
   }
-
-  console.log('form is valid');
 };
 </script>
 <style scoped lang="scss">
@@ -210,5 +208,8 @@ const handleSubmit = async (event: any) => {
     margin-bottom: 0.5rem;
     font-size: 0.9rem;
   }
+}
+:deep(.vertical-layout-item) {
+  margin: 1.5rem 0 1rem 0;
 }
 </style>
