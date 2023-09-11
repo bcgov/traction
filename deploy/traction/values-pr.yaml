@@ -11,6 +11,10 @@ acapy:
       walletkey: "change-me"
       tenantid: "innkeeper"
   argfile.yml:
+    endorser-public-did: 'N5bxk3jWkpZ2tEaMtjPjPa'
+    genesis-url: http://dev.bcovrin.vonx.io/genesis
+    tails-server-base-url: https://dev-test.vonx.io
+    tails-server-upload-url: https://dev-test.vonx.io
     wallet-name: default
   plugin-config.yml:
     traction_innkeeper:
@@ -19,9 +23,9 @@ acapy:
         print_token: true
         connect_to_endorser:
           - endorser_alias: endorser
-            ledger_id: bcovrin-test
+            ledger_id: bcovrin-dev
         create_public_did:
-          - bcovrin-test
+          - bcovrin-dev
       reservation:
         expiry_minutes: 2880
         auto_approve: true

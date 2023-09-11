@@ -34,7 +34,7 @@
     },
     "ariesDetails": {
       "acapyVersion": "0.10.1",
-      "ledgerName": "bcovrin-test",
+      "ledgerName": "bcovrin-dev",
       "ledgerBrowser": "http://test.bcovrin.vonx.io",
       "tailsServer": "https://tails-test.vonx.io"
     }

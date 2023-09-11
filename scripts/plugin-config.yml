@@ -18,10 +18,10 @@ traction_innkeeper:
     connect_to_endorser: [
       {
         "endorser_alias": "endorser",
-        "ledger_id": "bcovrin-test",
+        "ledger_id": "bcovrin-dev",
       }
     ]
-    create_public_did: ["bcovrin-test"]
+    create_public_did: ["bcovrin-dev"]
   reservation:
     auto_approve: true
     expiry_minutes: 2880

@@ -561,7 +561,7 @@ ui:
 
   ariesDetails:
     ## @param ui.ariesDetails.ledgerDescription Ledger description
-    ledgerDescription: "bcovrin-test"
+    ledgerDescription: "bcovrin-dev"
 
   ##  Backend Configuration
   ##
