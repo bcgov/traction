@@ -141,13 +141,24 @@ const compileForm = (response: any) => {
     mergedProperties = manProperties;
   }
 
+  /**
+   * If there is a custom required array,
+   * then merge it with the mandatory required array.
+   */
   let mergedRequired = [];
   if (response.data?.formDataSchema?.required) {
     mergedRequired = [...manRequired, ...response.data.formDataSchema.required];
+    /**
+     * Otherwise, just use the mandatory required array.
+     */
   } else {
     mergedRequired = manRequired;
   }
 
+  /**
+   * Build the final form data schema object,
+   * and save it to the formDataSchema ref.
+   */
   formDataSchema.value = {
     type: 'object',
     properties: { ...mergedProperties },
