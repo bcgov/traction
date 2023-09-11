@@ -89,16 +89,100 @@ const onChange = function (event: JsonFormsChangeEvent) {
  * It is specifically not integrated into the front end build so that it can be
  * updated separately depending on the deployment.
  */
+
+/**
+ * Create the form object by first defining the mandatory properties.
+ */
+const manProperties = {
+  tenantName: {
+    type: 'string',
+  },
+  emailAddress: {
+    type: 'string',
+  },
+};
+
+const manRequired = ['emailAddress', 'tenantName'];
+const manElements = [
+  {
+    type: 'Control',
+    scope: '#/properties/tenantName',
+  },
+  {
+    type: 'Control',
+    scope: '#/properties/emailAddress',
+  },
+];
+
 const formDataSchema: any = ref({});
 const formUISchema: any = ref({});
+
+/**
+ * ## compileForm
+ * Compile the JSON Forms object by blending the mandatory properties
+ * and schema above with any customizations from the forms/reservations.json file.
+ * @param response Axios response object
+ */
+const compileForm = (response: any) => {
+  /**
+   * If there is a custom properties object,
+   * then merge it with the mandatory properties.
+   */
+  let mergedProperties = {};
+  if (response.data?.formDataSchema?.properties) {
+    mergedProperties = {
+      ...manProperties,
+      ...response.data.formDataSchema.properties,
+    };
+    /**
+     * Otherwise, just use the mandatory properties.
+     */
+  } else {
+    mergedProperties = manProperties;
+  }
+
+  let mergedRequired = [];
+  if (response.data?.formDataSchema?.required) {
+    mergedRequired = [...manRequired, ...response.data.formDataSchema.required];
+  } else {
+    mergedRequired = manRequired;
+  }
+
+  formDataSchema.value = {
+    type: 'object',
+    properties: { ...mergedProperties },
+    required: [...mergedRequired],
+  };
+
+  let mergedElements = [];
+  if (response.data?.formUISchema?.elements) {
+    mergedElements = [...manElements, ...response.data.formUISchema.elements];
+  } else {
+    mergedElements = manElements;
+  }
+
+  formUISchema.value = {
+    type: 'VerticalLayout',
+    elements: [...mergedElements],
+  };
+};
+
 axios
   .get('forms/reservation.json')
-  .then((response) => {
-    formDataSchema.value = response.data.formDataSchema;
-    formUISchema.value = response.data.formUISchema;
-  })
+  .then(compileForm)
   .catch((error) => {
-    console.error('Could not get the form configuration. :(', error);
+    console.error('Could not find any custom form configuration. :(', error);
+    console.info('Defaulting to the hard-coded form configuration.');
+
+    formDataSchema.value = {
+      type: 'object',
+      properties: { ...manProperties },
+      required: [...manRequired],
+    };
+    formUISchema.value = {
+      type: 'VerticalLayout',
+      elements: [...manElements],
+    };
   });
 
 const renderers = [...vanillaRenderers];
