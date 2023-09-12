@@ -19,7 +19,7 @@
 
   <!-- Submit Request -->
   <div v-else>
-    <form>
+    <form @change="myChange">
       <json-forms
         :schema="formDataSchema"
         :uischema="formUISchema"
@@ -79,8 +79,33 @@ const formValidationMode: any = ref('ValidateAndHide');
 // Store additional error messages
 let formErrorMessage: any = '';
 
+/**
+ * A separate change handler because jsonforms is being difficult.
+ * If this is a required field, then highlight it.
+ * @param event Native form event
+ */
+const myChange = (event: any) => {
+  const value = event.target.value; // Value of element
+  const required = formDataSchema.value.required; // Required fields
+  const name = event.target.id.match(/.*\/properties\/(.*)-.*/)[1];
+
+  // If a required field and it's empty, highlight it.
+  if (required.includes(name) && value === '') {
+    event.target.classList.add('highlight');
+  } else {
+    event.target.classList.remove('highlight');
+  }
+
+  // Special use case for email address
+  if (name === 'emailAddress' && !value.match(/^.*@.*\..*$/)) {
+    event.target.classList.add('highlight');
+  } else if (name === 'emailAddress' && value.match(/^.*@.*\..*$/)) {
+    event.target.classList.remove('highlight');
+  }
+};
+
 // Make sure the data object is updated when the form changes.
-const onChange = function (event: JsonFormsChangeEvent) {
+const onChange = (event: JsonFormsChangeEvent) => {
   data.value = event.data;
 };
 
