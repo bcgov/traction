@@ -137,7 +137,7 @@ onMounted(() => {
   // Determine if the Tenant already has the config permission
   // This will change in the future for multi-ledger support but
   // for now determine by the fields being set.
-  formFields.canConnectEndorser = !!props.tenant.connected_to_endorsers?.length;
+  formFields.canConnectEndorser = !!props.tenant.connect_to_endorser?.length;
   formFields.canRegisterDid = !!props.tenant.created_public_did?.length;
 
   // Fetch the configured instance endorser details

@@ -15,7 +15,7 @@ const checkIn = {
 };
 
 const reservation = {
-  connect_to_endorsers: {
+  connect_to_endorser: {
     endorser_alias: ' ... ',
     ledger_id: ' ... ',
   },
