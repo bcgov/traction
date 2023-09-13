@@ -328,6 +328,9 @@ const handleSubmit = async (event: any) => {
     margin-bottom: 0.5rem;
     font-size: 0.9rem;
   }
+  input.highlight {
+    background: rgb(255, 255, 177);
+  }
 }
 :deep(.vertical-layout-item) {
   margin: 1.5rem 0 1rem 0;
