@@ -1,12 +1,10 @@
 name: Helm Chart Release
 
 on:
+  push:
+    tags:
+      - 'v*'
   workflow_dispatch:
-    inputs:
-      version:
-        description: 'Release version including "v" prefix eg: v0.0.1 (Optional)'
-        required: false
-        type: string
 
 jobs:
   # Sometimes chart-releaser might fetch an outdated index.yaml from gh-pages, causing a WAW hazard on the repo
