@@ -1,5 +1,13 @@
 import { createPinia, setActivePinia } from 'pinia';
-import { beforeAll, beforeEach, describe, expect, test } from 'vitest';
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  test,
+  vi,
+} from 'vitest';
 
 import { useInnkeeperTokenStore } from '@/store/innkeeper/innkeeperTokenStore';
 import {
@@ -10,10 +18,24 @@ import { restHandlersUnknownError, server } from '../../setupApi';
 
 let store: any;
 
+vi.mock('global.localStorage', () => ({
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+}));
+
+const setLocalStorageSpy = vi.spyOn(Storage.prototype, 'setItem');
+const removeLocalStorageSpy = vi.spyOn(Storage.prototype, 'removeItem');
+
 describe('innkeeperTokenStore', () => {
   beforeEach(async () => {
     setActivePinia(createPinia());
     store = useInnkeeperTokenStore();
+  });
+
+  afterEach(() => {
+    setLocalStorageSpy.mockClear();
+    removeLocalStorageSpy.mockClear();
+    localStorage.clear();
   });
 
   test("initial values haven't changed from expected", () => {
@@ -25,6 +47,7 @@ describe('innkeeperTokenStore', () => {
     store.clearToken();
 
     expect(store.innkeeperReady).toBeFalsy();
+    expect(removeLocalStorageSpy).toHaveBeenCalledOnce();
   });
 
   describe('Successful API calls', async () => {
@@ -38,6 +61,8 @@ describe('innkeeperTokenStore', () => {
         'loading'
       );
       expect(store.innkeeperReady).toBeTruthy();
+      // local storage is called 3 times by vitest
+      expect(setLocalStorageSpy).toHaveBeenCalledTimes(4);
     });
   });
 

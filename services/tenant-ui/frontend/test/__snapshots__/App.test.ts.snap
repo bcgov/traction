@@ -1,8 +1,0 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
-
-exports[`App Component > renders as snapshot 1`] = `
-"<router-view-stub data-v-7a7a37b1=\\"\\"></router-view-stub>
-<!-- Shared confirm popup  -->
-<!--teleport start-->
-<!--teleport end-->"
-`;

@@ -12,7 +12,13 @@ from aiohttp_apispec import (
 from aries_cloudagent.admin.request_context import AdminRequestContext
 from aries_cloudagent.messaging.models.base import BaseModelError
 from aries_cloudagent.messaging.models.openapi import OpenAPISchema
-from aries_cloudagent.messaging.valid import INDY_SCHEMA_ID, INDY_CRED_DEF_ID, UUIDFour
+from aries_cloudagent.messaging.valid import (
+    INDY_SCHEMA_ID_EXAMPLE,
+    INDY_SCHEMA_ID_VALIDATE,
+    INDY_CRED_DEF_ID_EXAMPLE,
+    INDY_CRED_DEF_ID_VALIDATE,
+    UUIDFour
+)
 from aries_cloudagent.storage.error import StorageNotFoundError, StorageError
 from marshmallow import fields, ValidationError
 
@@ -67,10 +73,16 @@ class AddOcaRecordRequestSchema(OpenAPISchema):
     """Request schema for adding oca record link."""
 
     schema_id = fields.Str(
-        required=False, description="Schema identifier", **INDY_SCHEMA_ID
+        required=False,
+        description="Schema identifier",
+        validate=INDY_SCHEMA_ID_VALIDATE,
+        example=INDY_SCHEMA_ID_EXAMPLE
     )
     cred_def_id = fields.Str(
-        required=False, description="Cred Def identifier", **INDY_CRED_DEF_ID
+        required=False,
+        description="Cred Def identifier",
+        validate=INDY_CRED_DEF_ID_VALIDATE,
+        example=INDY_CRED_DEF_ID_EXAMPLE
     )
     url = fields.Str(required=False, description="(Public) Url for OCA Bundle")
     bundle = fields.Dict(

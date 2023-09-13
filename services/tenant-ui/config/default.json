@@ -8,6 +8,10 @@
     "showInnkeeperAdminLogin": true,
     "showOIDCReservationLogin": false,
     "showWritableComponents": true,
+    "session": {
+      "timeoutSeconds": "600",
+      "countdownSeconds": "30"
+    },
     "oidc": {
       "active": false,
       "authority": "https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm",
@@ -29,7 +33,7 @@
       }
     },
     "ariesDetails": {
-      "acapyVersion": "0.9.0",
+      "acapyVersion": "0.10.1",
       "ledgerName": "bcovrin-test",
       "ledgerBrowser": "http://test.bcovrin.vonx.io",
       "tailsServer": "https://tails-test.vonx.io"

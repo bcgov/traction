@@ -426,5 +426,9 @@
     "presentationRequestBody": "Proof Request",
     "verification": "Verification",
     "verifications": "Verifications"
+  },
+  "session": {
+    "countdown": "You are going to be logged out in { seconds } seconds...",
+    "header": "Session timing out"
   }
 }

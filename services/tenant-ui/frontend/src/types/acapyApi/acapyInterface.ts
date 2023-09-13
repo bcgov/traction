@@ -3649,7 +3649,7 @@ export interface TenantRecord {
   /** True if tenant can make itself issuer, false if only innkeeper can */
   auto_issuer?: boolean;
   /** @example "{"endorser_alias": " ... ", "ledger_id": " ... "}" */
-  connected_to_endorsers?: object[];
+  connect_to_endorser?: object[];
   /**
    * Time of record creation
    * @pattern ^\d{4}-\d\d-\d\d[T ]\d\d:\d\d(?:\:(?:\d\d(?:\.\d{1,6})?))?(?:[+-]\d\d:?\d\d|Z|)$

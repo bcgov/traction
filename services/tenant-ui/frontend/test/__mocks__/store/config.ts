@@ -25,12 +25,17 @@ const store: { [key: string]: any } = {
       showOIDCReservationLogin: false,
       showInnkeeperAdminLogin: true,
       showWritableComponents: true,
+      session: {
+        timeoutSeconds: '600',
+        countdownSeconds: '30',
+      },
     },
     image: {
       tag: '1.0',
       version: '1.0',
       buildtime: '2021-01-01',
     },
+    // These mocks are used for storeToRefs in the components
     value: {
       frontend: {
         ux: {
@@ -52,6 +57,10 @@ const store: { [key: string]: any } = {
           authority: 'authority',
         },
         tenantProxyPath: API_PATH.TEST_TENANT_PROXY,
+        session: {
+          timeoutSeconds: '3600',
+          countdownSeconds: '10',
+        },
       },
     },
   },

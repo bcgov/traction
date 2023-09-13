@@ -431,5 +431,9 @@
     "presentationRequestBody": "Proof Request <FR>",
     "verification": "Verification <FR>",
     "verifications": "Verifications <FR>"
+  },
+  "session": {
+    "countdown": "Vous allez être déconnecté dans { seconds } secondes...",
+    "header": "Expiration du délai de session"
   }
 }

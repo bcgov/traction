@@ -1,9 +1,36 @@
 import { createPinia, setActivePinia } from 'pinia';
-import { beforeAll, beforeEach, describe, expect, test } from 'vitest';
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  test,
+  vi,
+} from 'vitest';
 
 import { useTokenStore } from '@/store/tokenStore';
 import { testErrorResponse, testSuccessResponse } from '../../test/commonTests';
 import { restHandlersUnknownError, server } from '../setupApi';
+
+import { API_PATH } from '@/helpers/constants';
+import { configStore } from '../../test/__mocks__/store';
+
+vi.mock('@/store/configStore', () => ({
+  useConfigStore: () => configStore,
+}));
+
+vi.mock('global.localStorage', () => ({
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+}));
+
+const setLocalStorageSpy = vi.spyOn(Storage.prototype, 'setItem');
+const removeLocalStorageSpy = vi.spyOn(Storage.prototype, 'removeItem');
+
+configStore.proxyPath = vi
+  .fn()
+  .mockReturnValue(API_PATH.MULTITENANCY_WALLET_TOKEN('username'));
 
 let store: any;
 
@@ -13,25 +40,35 @@ describe('tokenStore', () => {
     store = useTokenStore();
   });
 
+  afterEach(() => {
+    setLocalStorageSpy.mockClear();
+    removeLocalStorageSpy.mockClear();
+    localStorage.clear();
+  });
+
   test("initial values haven't changed from expected", () => {
     expect(store.token).toBeNull();
     expect(store.loading).toEqual(false);
     expect(store.error).toBeNull();
   });
 
-  test('clearToken sets token to null', () => {
+  test('clearToken sets token to null and removes local storage', () => {
     store.clearToken();
 
     expect(store.token).toBeNull();
+    expect(removeLocalStorageSpy).toHaveBeenCalledOnce();
   });
 
   describe('Successful API calls', () => {
-    test('login sets token and loading correctly', async () => {
+    test('login sets token, local storage and loading correctly', async () => {
       await testSuccessResponse(
         store,
         store.login('username', 'password'),
         'loading'
       );
+
+      // localStorage is used by the tests (3 times). This is same as called once.
+      expect(setLocalStorageSpy).toHaveBeenCalledTimes(4);
     });
   });
 
@@ -46,6 +83,9 @@ describe('tokenStore', () => {
         store.login('username', 'password'),
         'loading'
       );
+
+      // localStorage is used by the tests (3 times). This is same as not called.
+      expect(setLocalStorageSpy).toHaveBeenCalledTimes(3);
     });
   });
 });

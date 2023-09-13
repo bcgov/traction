@@ -7,9 +7,22 @@ import InnkeeperLoginForm from '@/components/innkeeper/InnkeeperLoginForm.vue';
 import { useInnkeeperTokenStore } from '@/store';
 
 import { innkeeperLogin } from '../../__mocks__/validation/forms';
+import { beforeEach } from 'node:test';
 
 // Mocks
 vi.mock('@vuelidate/core');
+
+vi.mock('vue-router');
+
+const mockRouter = async (name = 'test') => {
+  const routerMock = await import('vue-router');
+  routerMock.useRoute = vi.fn().mockReturnValue({
+    name,
+  });
+  routerMock.useRouter = vi.fn().mockReturnValue({
+    push: vi.fn(),
+  });
+};
 
 const mockVuelidate = async (values: object = innkeeperLogin) => {
   const vuelidateMock = await import('@vuelidate/core');
@@ -26,6 +39,7 @@ const mountLoginForm = () =>
 
 describe('InnkeeperLoginForm', async () => {
   test('renders with expected inner components', async () => {
+    await mockRouter();
     await mockVuelidate();
     const wrapper = mountLoginForm();
 
@@ -34,6 +48,7 @@ describe('InnkeeperLoginForm', async () => {
   });
 
   test('invalid admin name renders error message', async () => {
+    await mockRouter();
     const loginValues = JSON.parse(JSON.stringify(innkeeperLogin));
     loginValues.adminName.$invalid = true;
     loginValues.$invalid = true;
@@ -44,6 +59,7 @@ describe('InnkeeperLoginForm', async () => {
   });
 
   test('invalid admin key renders error message', async () => {
+    await mockRouter();
     const loginValues = JSON.parse(JSON.stringify(innkeeperLogin));
     loginValues.adminKey.$invalid = true;
     loginValues.$invalid = true;
@@ -54,6 +70,7 @@ describe('InnkeeperLoginForm', async () => {
   });
 
   test('successful login triggers expected methods', async () => {
+    await mockRouter();
     await mockVuelidate();
     const wrapper = mountLoginForm();
     const wrapperVm = wrapper.vm as unknown as typeof InnkeeperLoginForm;
@@ -67,6 +84,7 @@ describe('InnkeeperLoginForm', async () => {
   });
 
   test('if login call fails, toast error triggered in catch block', async () => {
+    await mockRouter();
     const wrapper = mountLoginForm();
     const wrapperVm = wrapper.vm as unknown as typeof InnkeeperLoginForm;
     const toastSpy = vi.spyOn(wrapperVm.toast, 'error');

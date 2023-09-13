@@ -13,8 +13,11 @@ const innkeeperRoutes = [
     component: InnkeeperUi,
     meta: { isInnkeeper: true },
     children: [
-      // Blank route uses dashboard view
-      { path: '', name: 'InnkeeperTenants', component: InnkeeperTenants },
+      {
+        path: 'tenants',
+        name: 'InnkeeperTenants',
+        component: InnkeeperTenants,
+      },
 
       // Reservations
       {

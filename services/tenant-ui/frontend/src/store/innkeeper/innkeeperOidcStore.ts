@@ -49,6 +49,7 @@ export const useInnkeeperOidcStore = defineStore('innkeeperOidcStore', () => {
         loginCfg
       );
       token.value = response.data.token;
+      if (token.value) localStorage.setItem('token-innkeeper', token.value);
 
       // strip the oidc return params
       window.history.pushState({}, document.title, '/innkeeper');

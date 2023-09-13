@@ -113,6 +113,7 @@
 <script setup lang="ts">
 //Vue
 import { ref, reactive } from 'vue';
+import { useRouter } from 'vue-router';
 // PrimeVue/Validation/etc
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
@@ -127,6 +128,7 @@ import { useTenantStore, useTokenStore } from '../store';
 import { storeToRefs } from 'pinia';
 
 const toast = useToast();
+const router = useRouter();
 
 // Tabs
 const activeTab = ref(0);
@@ -206,6 +208,7 @@ const handleSubmit = async (isFormValid: boolean) => {
           throw result.reason;
         }
       });
+      router.push({ name: 'Dashboard' });
     } catch (err) {
       console.error(err);
       toast.error(`Failure getting tenant info: ${err}`);
