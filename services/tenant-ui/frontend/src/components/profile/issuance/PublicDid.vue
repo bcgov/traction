@@ -1,8 +1,7 @@
 <template>
   <div v-if="canBecomeIssuer" class="my-1">
     <DataTable
-      v-model:filters="filter"
-      :loading="loading"
+      v-model:loading="loading"
       :value="formattedLedgers"
       :paginator="false"
       :rows="TABLE_OPT.ROWS_DEFAULT"
@@ -10,18 +9,8 @@
       selection-mode="single"
       data-key="ledger_id"
       filter-display="menu"
+      :sort-order="1"
     >
-      <template #header>
-        <div class="flex justify-content-end">
-          <span class="p-input-icon-left mr-3">
-            <i class="pi pi-search ml-0" />
-            <InputText
-              v-model="filter.global.value"
-              placeholder="Search Ledgers"
-            />
-          </span>
-        </div>
-      </template>
       <template #empty>{{ $t('common.noRecordsFound') }}</template>
       <template #loading>{{ $t('common.loading') }}</template>
       <Column :sortable="false" header="Status">
@@ -34,23 +23,11 @@
       <Column
         :sortable="true"
         field="ledger_id"
-        filter-field="ledger_id"
         header="Ledger Identifier"
-        :show-filter-match-modes="false"
-      >
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            type="text"
-            class="p-column-filter"
-            placeholder="Search By Ledger"
-            @input="filterCallback()"
-          />
-        </template>
-      </Column>
+      ></Column>
     </DataTable>
     <div v-if="hasPublicDid" class="true-1">
-      <div v-if="hasPublicDid" class="field">
+      <div class="field">
         <label for="didField">{{ $t('profile.publicDid') }}</label>
         <InputText
           id="didField"
@@ -60,7 +37,7 @@
         />
       </div>
 
-      <div>
+      <div class="mt-3">
         <Accordion>
           <AccordionTab header="Public DID Details">
             <h5 class="my-0">{{ $t('profile.publicDid') }}</h5>
@@ -77,11 +54,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import DataTable, { DataTableFilterMetaData } from 'primevue/datatable';
+import { computed } from 'vue';
+import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
 import Column from 'primevue/column';
-import { FilterMatchMode } from 'primevue/api';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import VueJsonPretty from 'vue-json-pretty';
@@ -123,15 +99,4 @@ const currWriteLedger = computed(() => {
 });
 // Public DID status
 const hasPublicDid = computed(() => !!publicDid.value && !!publicDid.value.did);
-
-const filter = ref({
-  global: {
-    value: null,
-    matchMode: FilterMatchMode.CONTAINS,
-  } as DataTableFilterMetaData,
-  ledger_id: {
-    value: null,
-    matchMode: FilterMatchMode.CONTAINS,
-  } as DataTableFilterMetaData,
-});
 </script>

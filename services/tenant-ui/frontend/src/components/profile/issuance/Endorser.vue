@@ -1,8 +1,7 @@
 <template>
   <div v-if="canBecomeIssuer" class="my-1">
     <DataTable
-      v-model:filters="filter"
-      :loading="loading"
+      v-model:loading="loading"
       :value="formattedLedgers"
       :paginator="false"
       :rows="TABLE_OPT.ROWS_DEFAULT"
@@ -10,23 +9,9 @@
       selection-mode="single"
       data-key="ledger_id"
       sort-field="ledger_id"
-      :sort-order="-1"
       filter-display="menu"
+      :sort-order="1"
     >
-      <template #header>
-        <div class="flex justify-content-between">
-          <div class="flex justify-content-start"></div>
-          <div class="flex justify-content-end">
-            <span class="p-input-icon-left">
-              <i class="pi pi-search ml-0" />
-              <InputText
-                v-model="filter.global.value"
-                placeholder="Search Endorsers"
-              />
-            </span>
-          </div>
-        </div>
-      </template>
       <template #empty>{{ $t('common.noRecordsFound') }}</template>
       <template #loading>{{ $t('common.loading') }}</template>
       <Column :sortable="false" header="Actions">
@@ -55,36 +40,12 @@
         :sortable="true"
         field="ledger_id"
         header="Ledger Identifier"
-        filter-field="ledger_id"
-        :show-filter-match-modes="false"
-      >
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            type="text"
-            class="p-column-filter"
-            placeholder="Search By Ledger"
-            @input="filterCallback()"
-          />
-        </template>
-      </Column>
+      ></Column>
       <Column
         :sortable="true"
         field="endorser_alias"
         header="Endorser Alias"
-        filter-field="endorser_alias"
-        :show-filter-match-modes="false"
-      >
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            type="text"
-            class="p-column-filter"
-            placeholder="Search By Endorser"
-            @input="filterCallback()"
-          />
-        </template>
-      </Column>
+      ></Column>
     </DataTable>
     <div v-if="showNotActiveWarn" class="inactive-endorser">
       <i class="pi pi-exclamation-triangle"></i>
@@ -94,7 +55,7 @@
       </p>
     </div>
 
-    <div>
+    <div class="mt-3">
       <Accordion>
         <AccordionTab header="Endorser Details">
           <h5 class="my-0">{{ $t('profile.endorserInfo') }}</h5>
@@ -117,9 +78,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { FilterMatchMode } from 'primevue/api';
-import DataTable, { DataTableFilterMetaData } from 'primevue/datatable';
-import InputText from 'primevue/inputtext';
+import DataTable from 'primevue/datatable';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import Accordion from 'primevue/accordion';
@@ -187,7 +146,7 @@ const connectToEndorser = async () => {
     await tenantStore.connectToEndorser();
     // Give a couple seconds to wait for active. If not done by then
     // a message appears to the user saying to refresh themselves
-    await waitForActiveEndorserConnection();
+    await tenantStore.waitForActiveEndorserConnection();
     await tenantStore.getEndorserConnection();
     toast.success('Endorser connection request sent');
   } catch (error) {
@@ -195,38 +154,17 @@ const connectToEndorser = async () => {
   }
 };
 
-const waitForActiveEndorserConnection = async () => {
-  const connId = endorserConnection.value.connection_id;
-  let retries = 0;
-  for (;;) {
-    const connState = await tenantStore.getEndorserConnectionState(connId);
-    if (connState === 'active') {
-      console.log(`Endorser connection ${connId} state is active`);
-      return;
-    }
-    retries = retries + 1;
-    const wait_interval = Math.pow(3, 1 + 0.25 * (retries - 1));
-    await new Promise((r) => setTimeout(r, wait_interval));
-  }
-};
-
 // Register DID
 const registerPublicDid = async () => {
   try {
-    const createdDID = await tenantStore.registerPublicDid();
-    if (createdDID) {
-      await tenantStore.assignPublicDid(createdDID);
-      toast.success('Public DID registration sent');
-    } else {
-      toast.error('Unable to post DID to ledger');
-    }
+    await tenantStore.registerPublicDid();
+    toast.success('Public DID registration sent');
   } catch (error) {
     throw Error(`Failure while registering: ${error}`);
   }
 };
 
 // Details about endorser connection
-const hasEndorserConn = computed(() => !!endorserConnection.value);
 const showNotActiveWarn = computed(
   () => endorserConnection.value && endorserConnection.value.state !== 'active'
 );
@@ -243,21 +181,6 @@ const currWriteLedger = computed(() => {
 const enableLedgerSwitch = computed(
   () => tenantConfig.value.enable_ledger_switch
 );
-
-const filter = ref({
-  global: {
-    value: null,
-    matchMode: FilterMatchMode.CONTAINS,
-  } as DataTableFilterMetaData,
-  ledger_id: {
-    value: null,
-    matchMode: FilterMatchMode.CONTAINS,
-  } as DataTableFilterMetaData,
-  endorser_alias: {
-    value: null,
-    matchMode: FilterMatchMode.CONTAINS,
-  } as DataTableFilterMetaData,
-});
 </script>
 
 <style lang="scss" scoped>
