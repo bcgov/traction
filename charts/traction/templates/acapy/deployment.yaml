@@ -142,7 +142,7 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: {{ include "acapy.fullname" . }}-config
+            name: {{ include "acapy.configmap.name" . }}
       {{- with .Values.acapy.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

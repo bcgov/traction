@@ -99,6 +99,13 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- end -}}
 
 {{/*
+Create a default fully qualified acapy configmap name.
+*/}}
+{{- define "acapy.configmap.name" -}}
+{{ template "acapy.fullname" . }}-config
+{{- end -}}
+
+{{/*
 Create a default fully qualified acapy name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
