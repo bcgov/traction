@@ -7,22 +7,9 @@ from aries_cloudagent.messaging.valid import (
     INDY_REV_REG_SIZE_VALIDATE,
     INDY_REV_REG_SIZE_EXAMPLE,
     INDY_CRED_DEF_ID_VALIDATE,
-    INDY_CRED_DEF_ID_EXAMPLE
+    INDY_CRED_DEF_ID_EXAMPLE,
 )
 from marshmallow import EXCLUDE, fields
-
-try:
-    from aries_cloudagent.messaging.valid import (
-        INDY_SCHEMA_ID,
-        INDY_REV_REG_SIZE,
-        INDY_CRED_DEF_ID,
-    )
-except ImportError:
-    from ... import (
-        INDY_SCHEMA_ID,
-        INDY_REV_REG_SIZE,
-        INDY_CRED_DEF_ID,
-    )
 
 
 class CredDefStorageRecord(BaseRecord):
@@ -82,12 +69,12 @@ class CredDefStorageRecordSchema(BaseRecordSchema):
         required=True,
         description="Cred Def identifier",
         validate=INDY_CRED_DEF_ID_VALIDATE,
-        example=INDY_CRED_DEF_ID_EXAMPLE
+        example=INDY_CRED_DEF_ID_EXAMPLE,
     )
     schema_id = fields.Str(
         description="Schema identifier",
         validate=INDY_SCHEMA_ID_VALIDATE,
-        example=INDY_SCHEMA_ID_EXAMPLE
+        example=INDY_SCHEMA_ID_EXAMPLE,
     )
     support_revocation = fields.Boolean(
         required=False, description="Revocation supported flag"

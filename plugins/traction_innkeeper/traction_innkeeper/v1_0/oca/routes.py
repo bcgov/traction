@@ -17,20 +17,10 @@ from aries_cloudagent.messaging.valid import (
     INDY_SCHEMA_ID_VALIDATE,
     INDY_CRED_DEF_ID_EXAMPLE,
     INDY_CRED_DEF_ID_VALIDATE,
-    UUIDFour
+    UUIDFour,
 )
 from aries_cloudagent.storage.error import StorageNotFoundError, StorageError
 from marshmallow import fields, ValidationError
-
-try:
-    from aries_cloudagent.messaging.valid import (
-        INDY_SCHEMA_ID,
-        INDY_CRED_DEF_ID,
-        UUIDFour,
-    )
-except ImportError:
-    from ... import INDY_SCHEMA_ID, INDY_CRED_DEF_ID
-    from aries_cloudagent.messaging.valid import UUIDFour
 
 from . import OcaService
 from .models import OcaRecordSchema
@@ -86,13 +76,13 @@ class AddOcaRecordRequestSchema(OpenAPISchema):
         required=False,
         description="Schema identifier",
         validate=INDY_SCHEMA_ID_VALIDATE,
-        example=INDY_SCHEMA_ID_EXAMPLE
+        example=INDY_SCHEMA_ID_EXAMPLE,
     )
     cred_def_id = fields.Str(
         required=False,
         description="Cred Def identifier",
         validate=INDY_CRED_DEF_ID_VALIDATE,
-        example=INDY_CRED_DEF_ID_EXAMPLE
+        example=INDY_CRED_DEF_ID_EXAMPLE,
     )
     url = fields.Str(required=False, description="(Public) Url for OCA Bundle")
     bundle = fields.Dict(

@@ -7,11 +7,6 @@ from aries_cloudagent.messaging.valid import (
 )
 from marshmallow import EXCLUDE, fields
 
-try:
-    from aries_cloudagent.messaging.valid import INDY_SCHEMA_ID
-except ImportError:
-    from ... import INDY_SCHEMA_ID
-
 
 class SchemaStorageRecord(BaseRecord):
     """Traction Schema Storage Record."""
