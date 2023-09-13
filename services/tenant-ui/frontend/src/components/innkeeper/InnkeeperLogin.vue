@@ -32,11 +32,13 @@
       <span class="copyright">Photo by Julia Volk on StockSnap</span>
     </div>
   </div>
+  <SessionTimeoutModal />
 </template>
 
 <script setup lang="ts">
 import InnkeeperLoginForm from '@/components/innkeeper/InnkeeperLoginForm.vue';
 import InnkeeperLoginOidc from '@/components/innkeeper/InnkeeperLoginOidc.vue';
+import SessionTimeoutModal from '../common/SessionTimeoutModal.vue';
 // State
 import { storeToRefs } from 'pinia';
 import { useConfigStore } from '@/store';
