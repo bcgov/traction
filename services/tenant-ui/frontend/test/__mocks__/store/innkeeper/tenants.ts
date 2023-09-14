@@ -3,7 +3,7 @@ import { vi } from 'vitest';
 const tenant = {
   created_public_did: ['bcovrin-test'],
   wallet_id: 'ec8fd0b2-d4c7-4579-a213-14b753ef3b53',
-  connected_to_endorsers: [
+  connect_to_endorser: [
     {
       endorser_alias: 'endorser',
       ledger_id: 'bcovrin-test',

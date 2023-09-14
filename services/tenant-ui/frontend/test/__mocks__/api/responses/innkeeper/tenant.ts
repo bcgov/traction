@@ -1,7 +1,7 @@
 const reservations = {
   results: [
     {
-      connect_to_endorsers: {
+      connect_to_endorser: {
         endorser_alias: ' ... ',
         ledger_id: ' ... ',
       },
@@ -33,7 +33,7 @@ const denyReservation = {
 const tenants = {
   results: [
     {
-      connected_to_endorsers: {
+      connect_to_endorser: {
         endorser_alias: ' ... ',
         ledger_id: ' ... ',
       },
@@ -50,7 +50,7 @@ const tenants = {
 };
 
 const updateTenant = {
-  connected_to_endorsers: {
+  connect_to_endorser: {
     endorser_alias: ' ... ',
     ledger_id: ' ... ',
   },
