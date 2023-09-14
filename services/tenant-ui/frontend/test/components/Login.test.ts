@@ -30,7 +30,6 @@ const mountLogin = () =>
   });
 
 describe('LoginForm', async () => {
-
   test('when login mode is preset to STATUS render status component', async () => {
     await mockRouter('TenantUiReservationStatus');
     const wrapper = mountLogin();
