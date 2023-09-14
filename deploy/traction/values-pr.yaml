@@ -24,7 +24,7 @@ acapy:
           - bcovrin-test
       reservation:
         expiry_minutes: 2880
-        auto_approve: true
+        auto_approve: false
         auto_issuer: true
   resources:
     limits:
