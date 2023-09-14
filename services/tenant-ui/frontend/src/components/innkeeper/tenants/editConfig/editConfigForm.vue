@@ -164,7 +164,7 @@ onMounted(() => {
   // This will change in the future for multi-ledger support but
   // for now determine by the fields being set.
   formFields.canBecomeIssuer =
-    !!props.tenant.connected_to_endorsers?.length &&
+    !!props.tenant.connect_to_endorser?.length &&
     !!props.tenant.created_public_did?.length;
   formFields.enableLedgerSwitch = !!props.tenant.enable_ledger_switch;
 
