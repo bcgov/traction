@@ -27,6 +27,6 @@ traction_innkeeper:
     ]
     create_public_did: ["bcovrin-test", "bcovrin-dev"]
   reservation:
-    auto_approve: true
+    auto_approve: false
     expiry_minutes: 2880
     auto_issuer: false

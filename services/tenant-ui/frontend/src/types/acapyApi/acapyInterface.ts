@@ -3090,13 +3090,12 @@ export interface ReservationList {
 
 export interface ReservationRecord {
   /** @example "{"endorser_alias": " ... ", "ledger_id": " ... "}" */
-  connect_to_endorser?: object[];
+  connect_to_endorsers?: object[];
+  /** Object for storing text data */
+  context_data: object;
   /** Contact email for this tenant request */
   contact_email: string;
-  /** Contact name for this tenant request */
-  contact_name: string;
-  /** Contact phone number for this tenant request */
-  contact_phone: string;
+
   create_public_did?: string[];
   /**
    * Time of record creation
@@ -3127,11 +3126,6 @@ export interface ReservationRecord {
    */
   tenant_name: string;
   /**
-   * Reason(s) for requesting a tenant
-   * @example "Issue permits to clients"
-   */
-  tenant_reason: string;
-  /**
    * Time of last record update
    * @pattern ^\d{4}-\d\d-\d\d[T ]\d\d:\d\d(?:\:(?:\d\d(?:\.\d{1,6})?))?(?:[+-]\d\d:?\d\d|Z|)$
    * @example "2021-12-31T23:59:59Z"
@@ -3147,20 +3141,11 @@ export interface ReservationRecord {
 export interface ReservationRequest {
   /** Contact email for this tenant request */
   contact_email: string;
-  /** Contact name for this tenant request */
-  contact_name: string;
-  /** Contact phone number for this tenant request */
-  contact_phone: string;
   /**
    * Proposed name of Tenant
    * @example "line of business short name"
    */
   tenant_name: string;
-  /**
-   * Reason(s) for requesting a tenant
-   * @example "Issue permits to clients"
-   */
-  tenant_reason: string;
 }
 
 export interface ReservationResponse {

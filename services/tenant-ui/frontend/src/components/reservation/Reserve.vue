@@ -19,131 +19,22 @@
 
   <!-- Submit Request -->
   <div v-else>
-    <form @submit.prevent="handleSubmit(!v$.$invalid)">
-      <!-- Email -->
-      <div class="field mt-5 w-full">
-        <label
-          for="email"
-          :class="{ 'p-error': v$.contact_email.$invalid && submitted }"
-        >
-          {{ $t('common.emailAddress') }}
-        </label>
-        <InputText
-          id="email"
-          v-model="v$.contact_email.$model"
-          type="text"
-          option-label="label"
-          autocomplete="email"
-          name="email"
-          autofocus
-          class="w-full"
-        />
-        <span v-if="v$.contact_email.$error && submitted">
-          <span v-for="(error, index) of v$.contact_email.$errors" :key="index">
-            <small class="p-error block">{{ error.$message }}</small>
-          </span>
-        </span>
-        <small
-          v-else-if="v$.contact_email.$invalid && submitted"
-          class="p-error"
-        >
-          {{ v$.contact_email.required.$message }}
-        </small>
-      </div>
-
-      <!-- FullName -->
-      <div class="field mt-5 w-full">
-        <label
-          for="full-name"
-          :class="{ 'p-error': v$.contact_name.$invalid && submitted }"
-        >
-          {{ $t('reserve.fullName') }}
-        </label>
-        <InputText
-          id="full-name"
-          v-model="v$.contact_name.$model"
-          type="text"
-          option-label="label"
-          autocomplete="full-name"
-          name="fullName"
-          class="w-full"
-        />
-        <small v-if="v$.contact_name.$invalid && submitted" class="p-error">{{
-          v$.contact_name.required.$message
-        }}</small>
-      </div>
-
-      <!-- Phone -->
-      <div class="field mt-5 w-full">
-        <label
-          for="phone"
-          :class="{ 'p-error': v$.contact_phone.$invalid && submitted }"
-        >
-          {{ $t('reserve.phone') }}
-        </label>
-        <InputText
-          id="phone"
-          v-model="v$.contact_phone.$model"
-          type="text"
-          option-label="label"
-          autocomplete="phone"
-          name="phone"
-          class="w-full"
-        />
-        <small v-if="v$.contact_phone.$invalid && submitted" class="p-error">{{
-          v$.contact_phone.required.$message
-        }}</small>
-      </div>
-
-      <!-- Tenant Name -->
-      <div class="field mt-5 w-full">
-        <label
-          for="tenant-name"
-          :class="{ 'p-error': v$.tenant_name.$invalid && submitted }"
-        >
-          {{ $t('common.tenantName') }}
-        </label>
-        <InputText
-          id="tenant-name"
-          v-model="v$.tenant_name.$model"
-          type="text"
-          option-label="label"
-          name="tenantName"
-          class="w-full"
-        />
-        <small v-if="v$.tenant_name.$invalid && submitted" class="p-error">{{
-          v$.tenant_name.required.$message
-        }}</small>
-      </div>
-
-      <!-- Tenant Reason -->
-      <div class="field mt-5 w-full">
-        <label
-          for="tenant-reason"
-          :class="{ 'p-error': v$.tenant_reason.$invalid && submitted }"
-        >
-          {{ $t('common.tenantReason') }}
-        </label>
-        <Textarea
-          id="tenant-reason"
-          v-model="v$.tenant_reason.$model"
-          option-label="label"
-          name="tenantReason"
-          class="w-full"
-          :auto-resize="true"
-          rows="2"
-        />
-        <small v-if="v$.tenant_reason.$invalid && submitted" class="p-error">{{
-          v$.tenant_reason.required.$message
-        }}</small>
-      </div>
-
+    <form @change="myChange">
+      <json-forms
+        :schema="formDataSchema"
+        :uischema="formUISchema"
+        :renderers="renderers"
+        :data="data"
+        :validation-mode="formValidationMode"
+        @change="onChange"
+      ></json-forms>
       <Button
-        type="submit"
+        type="button"
         class="w-full mt-5"
         :label="$t('common.submit')"
         :disabled="!!loading"
         :loading="!!loading"
+        @click="handleSubmit(data)"
       />
     </form>
   </div>
@@ -151,66 +42,249 @@
 
 <script setup lang="ts">
 //Vue
-import { ref, reactive } from 'vue';
+import { ref } from 'vue';
 // PrimeVue/Validation/etc
 import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
 import ProgressSpinner from 'primevue/progressspinner';
-import Textarea from 'primevue/textarea';
 import { useToast } from 'vue-toastification';
-import { email, required } from '@vuelidate/validators';
-import { useVuelidate } from '@vuelidate/core';
+import { JsonForms, JsonFormsChangeEvent } from '@jsonforms/vue';
+import { vanillaRenderers } from '@jsonforms/vue-vanilla';
 // State
-import { useConfigStore, useOidcStore, useReservationStore } from '@/store';
+import { useReservationStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Components
 import { RESERVATION_STATUSES } from '@/helpers/constants';
 import ShowWallet from './status/ShowWallet.vue';
 import ReservationConfirmation from './ReservationConfirmation.vue';
+import axios from 'axios';
 
 const toast = useToast();
 
 // State setup
 const reservationStore = useReservationStore();
-const { config } = storeToRefs(useConfigStore());
 const { loading, status } = storeToRefs(useReservationStore());
-const { user } = storeToRefs(useOidcStore());
 
 // The reservation return object
 const reservationIdResult: any = ref('');
 const reservationPwdResult: any = ref('');
 
-// Login Form and validation
-const formFields = reactive({
-  contact_email: config.value.frontend.showOIDCReservationLogin
-    ? user.value.profile.email
-    : '',
-  contact_name: config.value.frontend.showOIDCReservationLogin
-    ? user.value.profile.name
-    : '',
-  contact_phone: '',
-  tenant_name: '',
-  tenant_reason: '',
-});
-const rules = {
-  contact_email: { required, email },
-  contact_name: { required },
-  contact_phone: { required },
-  tenant_name: { required },
-  tenant_reason: { required },
-};
-const v$ = useVuelidate(rules, formFields);
+// This stores the form data.
+const data: any = ref({});
+const formFields: any = ref({});
 
-// Form submission
-const submitted = ref(false);
-const handleSubmit = async (isFormValid: boolean) => {
-  submitted.value = true;
+// Possible values of validationMode are:
+//   ValidateAndShow, ValidateAndHide, NoValidation
+const formValidationMode: any = ref('ValidateAndHide');
 
-  if (!isFormValid) {
-    return;
+// Store additional error messages
+let formErrorMessage: any = '';
+
+/**
+ * A separate change handler because jsonforms is being difficult.
+ * If this is a required field, then highlight it.
+ * @param event Native form event
+ */
+const myChange = (event: any) => {
+  const value = event.target.value; // Value of element
+  const required = formDataSchema.value.required; // Required fields
+  const name = event.target.id.match(/.*\/properties\/(.*)-.*/)[1];
+
+  // If a required field and it's empty, highlight it.
+  if (required.includes(name) && value === '') {
+    event.target.classList.add('highlight');
+  } else {
+    event.target.classList.remove('highlight');
   }
+
+  // Special use case for email address
+  if (name === 'emailAddress' && !value.match(/^.*@.*\..*$/)) {
+    event.target.classList.add('highlight');
+  } else if (name === 'emailAddress' && value.match(/^.*@.*\..*$/)) {
+    event.target.classList.remove('highlight');
+  }
+};
+
+// Make sure the data object is updated when the form changes.
+const onChange = (event: JsonFormsChangeEvent) => {
+  data.value = event.data;
+};
+
+/**
+ * This is the form schema and UI schema.
+ * It is specifically not integrated into the front end build so that it can be
+ * updated separately depending on the deployment.
+ */
+
+/**
+ * Create the form object by first defining the mandatory properties.
+ */
+const manProperties = {
+  tenantName: {
+    type: 'string',
+  },
+  emailAddress: {
+    type: 'string',
+  },
+};
+
+const manRequired = ['emailAddress', 'tenantName'];
+const manElements = [
+  {
+    type: 'Control',
+    scope: '#/properties/tenantName',
+  },
+  {
+    type: 'Control',
+    scope: '#/properties/emailAddress',
+  },
+];
+
+const formDataSchema: any = ref({});
+const formUISchema: any = ref({});
+
+/**
+ * ## compileForm
+ * Compile the JSON Forms object by blending the mandatory properties
+ * and schema above with any customizations from the forms/reservations.json file.
+ * @param response Axios response object
+ */
+const compileForm = (response: any) => {
+  /**
+   * If there is a custom properties object,
+   * then merge it with the mandatory properties.
+   */
+  let mergedProperties = {};
+  if (response.data?.formDataSchema?.properties) {
+    mergedProperties = {
+      ...manProperties,
+      ...response.data.formDataSchema.properties,
+    };
+    /**
+     * Otherwise, just use the mandatory properties.
+     */
+  } else {
+    mergedProperties = manProperties;
+  }
+
+  /**
+   * If there is a custom required array,
+   * then merge it with the mandatory required array.
+   */
+  let mergedRequired = [];
+  if (response.data?.formDataSchema?.required) {
+    mergedRequired = [...manRequired, ...response.data.formDataSchema.required];
+    /**
+     * Otherwise, just use the mandatory required array.
+     */
+  } else {
+    mergedRequired = manRequired;
+  }
+
+  /**
+   * Build the final form data schema object,
+   * and save it to the formDataSchema ref.
+   */
+  formDataSchema.value = {
+    type: 'object',
+    properties: { ...mergedProperties },
+    required: [...mergedRequired],
+  };
+
+  let mergedElements = [];
+  if (response.data?.formUISchema?.elements) {
+    mergedElements = [...manElements, ...response.data.formUISchema.elements];
+  } else {
+    mergedElements = manElements;
+  }
+
+  formUISchema.value = {
+    type: 'VerticalLayout',
+    elements: [...mergedElements],
+  };
+};
+
+axios
+  .get('forms/reservation.json')
+  .then(compileForm)
+  .catch((error) => {
+    console.error('Could not find any custom form configuration. :(', error);
+    console.info('Defaulting to the hard-coded form configuration.');
+
+    formDataSchema.value = {
+      type: 'object',
+      properties: { ...manProperties },
+      required: [...manRequired],
+    };
+    formUISchema.value = {
+      type: 'VerticalLayout',
+      elements: [...manElements],
+    };
+  });
+
+const renderers = [...vanillaRenderers];
+
+/**
+ * Check if the form is valid
+ * @returns boolean
+ */
+const formIsValid = () => {
+  const schema = formDataSchema.value;
+  const fields = Object.keys(data.value);
+
+  // If there is an email address, make sure it is valid.
+  if (
+    data.value.emailAddress &&
+    !data.value.emailAddress.match(/^.*@.*\..*$/)
+  ) {
+    // Provide a more specific error message
+    formErrorMessage = 'Please enter a valid email address.';
+    return false;
+  } else if (
+    // Clear error message if it was set before. Then allow for other checks.
+    !data.value.emailAddress ||
+    data.value.emailAddress.match(/^.*@.*\..*$/)
+  ) {
+    formErrorMessage = '';
+  }
+
+  // If there are no required fields, then the form is valid.
+  if (!('required' in schema) || schema.required?.length < 1) {
+    return true;
+
+    // If there are entries in the required array,
+    // then check if they are all in the form.
+  } else if (schema.required.every((field: string) => fields.includes(field))) {
+    return true;
+
+    // Otherwise, the form is not valid.
+  } else {
+    return false;
+  }
+};
+
+/**
+ * Submit the form
+ * @param event
+ * Send the reservation form data to the API. But only
+ * if the form is valid.
+ */
+const handleSubmit = async (event: any) => {
+  // Show messages for the build in validator
+  formValidationMode.value = 'ValidateAndShow';
+
+  if (!formIsValid())
+    return toast.error(`Missing required fields. ${formErrorMessage}`);
+
   try {
-    const res = await reservationStore.makeReservation(formFields);
+    // Destructure and rebuild data object for the API
+    const { emailAddress, tenantName, ...contextData } = data.value;
+    formFields.value = {
+      contact_email: emailAddress,
+      tenant_name: tenantName,
+      context_data: contextData,
+    };
+
+    const res = await reservationStore.makeReservation(formFields.value);
     reservationIdResult.value = res.reservation_id;
     reservationPwdResult.value = res.reservation_pwd
       ? res.reservation_pwd
@@ -221,3 +295,44 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 };
 </script>
+<style scoped lang="scss">
+:deep(.control) {
+  margin-bottom: 0.5rem;
+  input,
+  textarea {
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+    padding: 0.45rem;
+    color: #495057;
+    font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+    font-size: 1rem;
+  }
+  input:hover,
+  input:focus,
+  textarea:hover,
+  textarea:focus {
+    border-color: #2b3f51;
+  }
+  input:focus,
+  textarea:focus {
+    box-shadow: 0 0 0.3rem 0.1rem #87a6c1;
+  }
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: none;
+  }
+  .error {
+    font-weight: 200;
+    color: red;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+  }
+  input.highlight {
+    background: rgb(255, 255, 177);
+  }
+}
+:deep(.vertical-layout-item) {
+  margin: 1.5rem 0 1rem 0;
+}
+</style>
