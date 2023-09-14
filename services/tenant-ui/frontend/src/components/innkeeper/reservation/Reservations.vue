@@ -36,13 +36,13 @@
           <ApproveReservation
             :id="data.reservation_id"
             :email="data.contact_email"
-            :name="data.contact_name"
+            :name="data.tenant_name"
             @success="showApproveModal"
           />
           <DenyReservation
             :id="data.reservation_id"
             :email="data.contact_email"
-            :name="data.contact_name"
+            :name="data.tenant_name"
           />
         </template>
       </Column>
@@ -161,9 +161,6 @@ const formattedReservations = computed(() =>
     reservation_id: msg.reservation_id,
     contact_email: msg.contact_email,
     tenant_name: msg.tenant_name,
-    contact_name: msg.contact_name,
-    contact_phone: msg.contact_phone,
-    tenant_reason: msg.tenant_reason,
     context_data: msg.context_data,
     created_at: msg.created_at,
     created: formatDateLong(msg.created_at),

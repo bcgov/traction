@@ -3096,23 +3096,6 @@ export interface ReservationRecord {
   /** Contact email for this tenant request */
   contact_email: string;
 
-  /******************************************************************/
-  /** The following are no longer collected in this fashion.
-   * They have become part of the general 'context_data' object above
-   * Still present for backward compatibility and may be removed in the future.
-   **/
-
-  /** Contact name for this tenant request */
-  contact_name: string;
-  /** Contact phone number for this tenant request */
-  contact_phone: string;
-  /**
-   * Reason(s) for requesting a tenant
-   * @example "Issue permits to clients"
-   */
-  tenant_reason: string;
-  /******************************************************************/
-
   create_public_did?: string[];
   /**
    * Time of record creation
@@ -3158,20 +3141,11 @@ export interface ReservationRecord {
 export interface ReservationRequest {
   /** Contact email for this tenant request */
   contact_email: string;
-  /** Contact name for this tenant request */
-  contact_name: string;
-  /** Contact phone number for this tenant request */
-  contact_phone: string;
   /**
    * Proposed name of Tenant
    * @example "line of business short name"
    */
   tenant_name: string;
-  /**
-   * Reason(s) for requesting a tenant
-   * @example "Issue permits to clients"
-   */
-  tenant_reason: string;
 }
 
 export interface ReservationResponse {

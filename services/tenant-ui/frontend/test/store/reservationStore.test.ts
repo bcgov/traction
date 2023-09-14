@@ -40,10 +40,7 @@ describe('reservationStore', () => {
       expect(store.loading).toEqual(false);
       const response = await store.makeReservation({
         contact_email: 'test@email.com',
-        contact_name: 'Test',
-        contact_phone: '1234567890',
         tenant_name: 'Test',
-        tenant_reason: 'Testing',
         auto_approve: true,
       });
       expect(store.loading).toEqual(true);
@@ -61,10 +58,7 @@ describe('reservationStore', () => {
       expect(store.loading).toEqual(false);
       const response = await store.makeReservation({
         contact_email: 'test@email.com',
-        contact_name: 'Test',
-        contact_phone: '1234567890',
         tenant_name: 'Test',
-        tenant_reason: 'Testing',
         auto_approve: false,
       });
       await flushPromises();
@@ -110,10 +104,7 @@ describe('reservationStore', () => {
         store,
         store.makeReservation({
           contact_email: 'test@email.com',
-          contact_name: 'Test',
-          contact_phone: '1234567890',
           tenant_name: 'Test',
-          tenant_reason: 'Testing',
         }),
         'loading'
       );
