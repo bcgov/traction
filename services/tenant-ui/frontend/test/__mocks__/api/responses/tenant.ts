@@ -2,7 +2,7 @@ const self = {
   wallet_id: 'ec8fd0b2-d4c7-4579-a213-14b753ef3b53',
   state: 'active',
   updated_at: '2023-06-26T22:27:20.725045Z',
-  connected_to_endorsers: [
+  connect_to_endorser: [
     {
       endorser_alias: 'endorser',
       ledger_id: 'bcovrin-test',
