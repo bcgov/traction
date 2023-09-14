@@ -78,10 +78,7 @@ if __name__ == "__main__":
     print(f"reservation_name = {reservation_name}")
     data = {
         "contact_email": "fake@bad.good",
-        "contact_name": reservation_name,
-        "contact_phone": "555-5555",
         "tenant_name": reservation_name,
-        "tenant_reason": "testing...",
     }
     res = requests.post(f"{PROXY_URL}/multitenancy/reservations", json=data)
     reservation_id = res.json()["reservation_id"]
