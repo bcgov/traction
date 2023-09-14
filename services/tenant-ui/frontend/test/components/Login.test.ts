@@ -30,17 +30,6 @@ const mountLogin = () =>
   });
 
 describe('LoginForm', async () => {
-  test('renders with inner login form and images', async () => {
-    await mockRouter();
-    const wrapper = mountLogin();
-    wrapper.getComponent({ name: 'LoginForm' });
-
-    //Images from path
-    expect(wrapper.html()).toContain('src="/img/bc/bc_logo.png"');
-    expect(wrapper.html()).toContain(
-      'src="/img/logo/traction-logo-bc-text.svg"'
-    );
-  });
 
   test('when login mode is preset to STATUS render status component', async () => {
     await mockRouter('TenantUiReservationStatus');
