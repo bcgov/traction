@@ -434,6 +434,8 @@
   },
   "session": {
     "countdown": "You are going to be logged out in { seconds } seconds... <JA>",
-    "header": "Session timing out <JA>"
+    "countdownHeader": "Session timing out <JA>",
+    "timeoutMessage": "Your session has timed out due to inactivity and you have been logged out. Please re-enter your login information. <JA>",
+    "timeoutHeader": " "
   }
 }

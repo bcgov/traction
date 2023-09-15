@@ -1,7 +1,7 @@
 <template>
   <Dialog
     v-model:visible="displaySessionWarning"
-    :header="$t('session.header')"
+    :header="$t('session.countdownHeader')"
     :style="{ width: '30vw' }"
   >
     <div style="text-align: center">
@@ -79,6 +79,7 @@ const createCountDownIfNecessary = () => {
 
 const logoutOnTimeout = () => {
   if (inactivityCount >= timeoutSeconds) {
+    localStorage.setItem('inactivity-timeout', 'true');
     if (route.path.includes('innkeeper'))
       window.location.href = '/innkeeper/logout';
     else window.location.href = '/logout';
