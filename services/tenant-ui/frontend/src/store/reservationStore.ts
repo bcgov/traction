@@ -91,7 +91,7 @@ export const useReservationStore = defineStore('reservation', () => {
       // If these fail we won't raise any error to the UI
       const emailPayload = {
         contactEmail: payload.contact_email,
-        contactName: payload.contact_name,
+        contactName: payload.tenant_name,
         reservationId: reservation.value.reservation_id,
         serverUrl: trimUrl,
         serverUrlStatusRoute: `${trimUrl}/${RESERVATION_STATUS_ROUTE}`,

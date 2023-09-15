@@ -99,27 +99,16 @@ class ReservationRequestSchema(OpenAPISchema):
         example="line of business short name",
     )
 
-    tenant_reason = fields.Str(
-        required=True,
-        description="Reason(s) for requesting a tenant",
-        example="Issue permits to clients",
-    )
-
-    contact_name = fields.Str(
-        required=True,
-        description="Contact name for this tenant request",
-    )
-
     contact_email = fields.Str(
         required=True,
         description="Contact email for this tenant request",
     )
 
-    contact_phone = fields.Str(
-        required=True,
-        description="Contact phone number for this tenant request",
+    context_data = fields.Dict(
+        required=False,
+        description="Optional context data for this tenant request",
+        example={"contact_phone": "555-555-5555"},
     )
-
 
 class ReservationResponseSchema(OpenAPISchema):
     """Response schema for tenant reservation."""

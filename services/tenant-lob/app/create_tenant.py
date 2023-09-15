@@ -29,10 +29,7 @@ async def create_tenant(tenant_name: str):
     # tenant to create a reservation...
     data = {
         "contact_email": "fake@bad.good",
-        "contact_name": tenant_name,
-        "contact_phone": "555-5555",
         "tenant_name": tenant_name,
-        "tenant_reason": "testing...",
     }
     res = requests.post(f"{PROXY_URL}/multitenancy/reservations", json=data)
     reservation_id = res.json()["reservation_id"]
