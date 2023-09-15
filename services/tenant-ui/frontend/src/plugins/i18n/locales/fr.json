@@ -434,6 +434,8 @@
   },
   "session": {
     "countdown": "Vous allez être déconnecté dans { seconds } secondes...",
-    "header": "Expiration du délai de session"
+    "countdownHeader": "Expiration du délai de session",
+    "timeoutMessage": "Votre session a expiré pour cause d'inactivité et vous avez été déconnecté. Veuillez saisir à nouveau vos informations de connexion.",
+    "timeoutHeader": " "
   }
 }
