@@ -152,6 +152,15 @@ describe('tenantStore', () => {
       expect(store.endorserConnection).not.toBeNull();
     });
 
+    test('connectToEndorser sets endorser connection and loadingIssuance and loading correctly', async () => {
+      await testSuccessResponse(
+        store,
+        store.connectToEndorser(),
+        'loadingIssuance'
+      );
+      expect(store.endorserConnection).not.toBeNull();
+    });
+
     test('getTenantSubWallet sets wallet and loading correctly', async () => {
       await testSuccessResponse(store, store.getTenantSubWallet(), 'loading');
       expect(store.tenantWallet).not.toBeNull();

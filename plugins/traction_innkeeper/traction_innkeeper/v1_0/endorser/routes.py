@@ -2,7 +2,7 @@ import functools
 import logging
 
 from aiohttp import web
-from aiohttp_apispec import docs, response_schema
+from aiohttp_apispec import docs, response_schema, request_schema
 from aries_cloudagent.admin.request_context import AdminRequestContext
 from aries_cloudagent.connections.models.conn_record import ConnRecordSchema
 from aries_cloudagent.messaging.models.base import BaseModelError
@@ -41,6 +41,15 @@ def error_handler(func):
     return wrapper
 
 
+# class EndorserLedgerRequestSchema(OpenAPISchema):
+#     """Request schema for endorser/ledger configuration."""
+
+#     ledger_id = fields.Str(
+#         required=True,
+#         description="Ledger identifier",
+#     )
+
+
 class EndorserInfoResponseSchema(OpenAPISchema):
     """Response schema for endorser information/configuration."""
 
@@ -56,6 +65,7 @@ class EndorserInfoResponseSchema(OpenAPISchema):
 
 
 @docs(tags=[SWAGGER_CATEGORY], summary="Set connection with configured endorser")
+# @request_schema(EndorserLedgerRequestSchema)
 @response_schema(ConnRecordSchema(), 200, description="")
 @error_handler
 async def endorser_connection_set(request: web.BaseRequest):

@@ -47,6 +47,15 @@ class TenantConfigSchema(OpenAPISchema):
         description="True if tenant can make itself issuer, false if only innkeeper can",
         default=False,
     )
+    enable_ledger_switch = fields.Bool(
+        required=False,
+        description="True if tenant can switch endorser/ledger",
+        default=False,
+    )
+    curr_ledger_id = fields.Str(
+        required=False,
+        description="Current ledger identifier",
+    )
 
 
 def generate_reservation_token_data(expiry_minutes: int):

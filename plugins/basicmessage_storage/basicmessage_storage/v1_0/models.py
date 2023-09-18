@@ -83,9 +83,10 @@ class BasicMessageRecordSchema(BaseRecordSchema):
 
     connection_id = fields.Str(required=False)
     message_id = fields.Str(required=False)
-    sent_time = fields.Str(required=False,
+    sent_time = fields.Str(
+        required=False,
         validate=INDY_ISO8601_DATETIME_VALIDATE,
-        example=INDY_ISO8601_DATETIME_EXAMPLE
+        example=INDY_ISO8601_DATETIME_EXAMPLE,
     )
     locale = fields.Str(required=False)
     content = fields.Str(required=False)

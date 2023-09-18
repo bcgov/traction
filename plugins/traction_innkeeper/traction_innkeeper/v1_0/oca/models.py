@@ -6,7 +6,7 @@ from aries_cloudagent.messaging.valid import (
     INDY_SCHEMA_ID_EXAMPLE,
     INDY_CRED_DEF_ID_VALIDATE,
     INDY_CRED_DEF_ID_EXAMPLE,
-    UUIDFour
+    UUIDFour,
 )
 from marshmallow import EXCLUDE, fields
 
@@ -78,13 +78,13 @@ class OcaRecordSchema(BaseRecordSchema):
         required=False,
         description="Schema identifier",
         validate=INDY_SCHEMA_ID_VALIDATE,
-        example=INDY_SCHEMA_ID_EXAMPLE
+        example=INDY_SCHEMA_ID_EXAMPLE,
     )
     cred_def_id = fields.Str(
-        required=False, 
+        required=False,
         description="Cred Def identifier",
         validate=INDY_CRED_DEF_ID_VALIDATE,
-        example=INDY_CRED_DEF_ID_EXAMPLE
+        example=INDY_CRED_DEF_ID_EXAMPLE,
     )
     url = fields.Str(required=False, description="(Public) Url for OCA Bundle")
     bundle = fields.Dict(
