@@ -5,6 +5,11 @@ metadata:
   name: {{ include "acapy.fullname" . }}
   labels:
     {{- include "acapy.labels" . | nindent 4 }}
+  annotations:
+    checksum/config: {{ include (print $.Template.BasePath "/acapy/configmap.yaml") . | sha256sum }}
+    checksum/wallet-secret: {{ include (print $.Template.BasePath "/acapy/wallet_secret.yaml") . | sha256sum }}
+    checksum/api-secret: {{ include (print $.Template.BasePath "/acapy/api_secret.yaml") . | sha256sum }}
+    checksum/innkeeper-secret: {{ include (print $.Template.BasePath "/acapy/plugin_innkeeper_secret.yaml") . | sha256sum }}
 spec:
   {{- if not .Values.acapy.autoscaling.enabled }}
   replicas: {{ .Values.acapy.replicaCount }}
@@ -147,7 +152,7 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: {{ include "acapy.fullname" . }}-config
+            name: {{ include "acapy.configmap.name" . }}
       {{- with .Values.acapy.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

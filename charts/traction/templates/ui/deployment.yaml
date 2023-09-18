@@ -5,6 +5,9 @@ metadata:
   name: {{ include "tenant-ui.fullname" . }}
   labels:
     {{- include "tenant-ui.labels" . | nindent 4 }}
+  annotations:
+    checksum/config: {{ include (print $.Template.BasePath "/ui/configmap.yaml") . | sha256sum }}
+    checksum/innkeeper-secret: {{ include (print $.Template.BasePath "/acapy/plugin_innkeeper_secret.yaml") . | sha256sum }}
 spec:
   {{- if not .Values.ui.autoscaling.enabled }}
   replicas: {{ .Values.ui.replicaCount }}

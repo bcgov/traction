@@ -592,6 +592,8 @@ ui:
   oidc:
     ## @param ui.oidc.showInnkeeperAdminLogin Show Innkeeper Admin Login
     showInnkeeperAdminLogin: true
+    ## @param ui.oidc.showWritableComponents Show writable components
+    showWritableComponents: true
     ## @param ui.oidc.active Enable OIDC authentication
     active: true
     ## @param ui.oidc.authority OIDC authority
@@ -606,6 +608,11 @@ ui:
     realm: "Traction"
     ## @param ui.oidc.roleName OIDC role name
     roleName: "innkeeper"
+    ## @param ui.oidc.session.timeoutSeconds OIDC session timeout seconds
+    ## @param ui.oidc.session.countdownSeconds OIDC session countdown seconds
+    session:
+      timeoutSeconds: 600
+      countdownSeconds: 30
 
   ## SMTP Configuration
   smtp:
