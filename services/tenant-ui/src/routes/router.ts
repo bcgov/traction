@@ -23,20 +23,27 @@ router.use(express.json());
 router.get(
   "/innkeeperLogin",
   secure(jwksService),
-  async (req: any, res: Response) => {
-    // Validate JWT from OIDC login before moving on
-    // The realm access check below is pretty Keycloak specific
-    // It's a TODO later to see how this could be a more generic OIDC claim
-    console.log(req.claims);
-    if (
-      req.claims.realm_access &&
-      req.claims.realm_access.roles &&
-      req.claims.realm_access.roles.includes(config.get("server.oidc.roleName"))
-    ) {
-      const result = await innkeeperComponent.login();
-      res.status(200).send(result);
-    } else {
-      res.status(403).send();
+  async (req: any, res: Response, next: NextFunction) => {
+    try {
+      // Validate JWT from OIDC login before moving on
+      // The realm access check below is pretty Keycloak specific
+      // It's a TODO later to see how this could be a more generic OIDC claim
+      console.log(req.claims);
+      if (
+        req.claims.realm_access &&
+        req.claims.realm_access.roles &&
+        req.claims.realm_access.roles.includes(
+          config.get("server.oidc.roleName")
+        )
+      ) {
+        const result = await innkeeperComponent.login();
+        res.status(200).send(result);
+      } else {
+        res.status(403).send();
+      }
+    } catch (error) {
+      console.error(`Error logging in: ${error}`);
+      next(error);
     }
   }
 );

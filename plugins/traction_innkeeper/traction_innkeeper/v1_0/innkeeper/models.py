@@ -15,6 +15,12 @@ ENDORSER_LEDGER_CONFIG_EXAMPLE = {
     "ledger_id": " ... ",
 }
 
+RESERVATION_CONTEXT_EXAMPLE = {
+    "tenant_reason": " ... ",
+    "contact_name": " ... ",
+    "contact_phone": " ... ",
+}
+
 
 class ReservationRecord(BaseRecord):
     """Innkeeper Tenant Reservation Record."""
@@ -46,6 +52,7 @@ class ReservationRecord(BaseRecord):
         contact_name: str = None,
         contact_email: str = None,
         contact_phone: str = None,
+        context_data: dict = {},
         tenant_id: str = None,
         wallet_id: str = None,
         reservation_token_salt: str = None,
@@ -64,6 +71,7 @@ class ReservationRecord(BaseRecord):
         self.contact_name = contact_name
         self.contact_email = contact_email
         self.contact_phone = contact_phone
+        self.context_data = context_data
 
         self.tenant_id = tenant_id
         self.wallet_id = wallet_id
@@ -135,6 +143,7 @@ class ReservationRecord(BaseRecord):
                 "contact_name",
                 "contact_email",
                 "contact_phone",
+                "context_data",
                 "tenant_id",
                 "wallet_id",
                 "reservation_token_salt",
@@ -187,6 +196,12 @@ class ReservationRecordSchema(BaseRecordSchema):
     contact_phone = fields.Str(
         required=True,
         description="Contact phone number for this tenant request",
+    )
+
+    context_data = fields.Dict(
+        required=False,
+        description="Context data for this tenant request",
+        example=json.dumps(RESERVATION_CONTEXT_EXAMPLE),
     )
 
     state = fields.Str(
