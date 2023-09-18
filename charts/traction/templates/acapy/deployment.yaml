@@ -154,13 +154,10 @@ spec:
         - name: config
           configMap:
             name: {{ include "acapy.configmap.name" . }}
-      {{- if and .Values.acapy.persistence.enabled .Values.acapy.persistence.existingClaim }}
+      {{- if .Values.acapy.persistence.existingClaim }}
         - name: tails
           persistentVolumeClaim:
             claimName: {{ tpl .Values.acapy.persistence.existingClaim $ }}
-      {{- else if not .Values.acapy.persistence.enabled }}
-        - name: tails
-          emptyDir: {}
       {{- else }}
         - name: tails
           persistentVolumeClaim:
