@@ -37,6 +37,7 @@ class InnkeeperWalletConfig(BaseModel):
     print_token: bool = False
     connect_to_endorser: List[EndorserLedgerConfig] = []
     create_public_did: List[str] = []
+    enable_ledger_switch: bool = False
 
     class Config:
         alias_generator = _alias_generator
@@ -51,6 +52,7 @@ class InnkeeperWalletConfig(BaseModel):
             wallet_name="traction_innkeeper_v1_0",
             print_key=False,
             print_token=False,
+            enable_ledger_switch=False,
             connect_to_endorser=[],
             create_public_did=[],
         )

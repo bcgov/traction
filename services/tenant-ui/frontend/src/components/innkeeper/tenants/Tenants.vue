@@ -121,6 +121,7 @@ const formattedTenants = computed(() =>
     created_public_did: ten.created_public_did,
     created: formatDateLong(ten.created_at),
     created_at: ten.created_at,
+    enable_ledger_switch: ten.enable_ledger_switch,
   }))
 );
 

@@ -254,6 +254,7 @@
     "connectTenantToEndorserNotAllowed": "Innkeeper has not approved endorser connections.",
     "createdAt": "Created at",
     "endorserConnection": "Endorser Connection",
+    "connectToEndorserAndRegisterDID": "Connect to Endorser and Register DID corresponding to a Ledger",
     "endorserInfo": "Endorser Info",
     "imageUrl": "Image URL",
     "issuer": "Issuer",
@@ -393,6 +394,8 @@
     "settings": {
       "canConnectEndorser": "Tenant allowed to connect to Endorser",
       "canRegisterDid": "Tenant allowed to register public DID",
+      "enableLedgerSwitch": "Tenant can switch endorser/ledger",
+      "canBecomeIssuer": "Tenant can become issuer, i.e connect to endorser and register DID",
       "editSettings": "Edit Tenant Config",
       "endorserAlias": "Endorser Alias:",
       "ledgerName": "Ledger Name:",

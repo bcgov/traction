@@ -12,6 +12,7 @@ const self = {
   tenant_id: '90a3d1fb-c011-4e23-a0b6-fc37d2368467',
   created_at: '2023-06-23T22:24:38.228607Z',
   created_public_did: ['bcovrin-test'],
+  enable_ledger_switch: false,
 };
 
 const config = {

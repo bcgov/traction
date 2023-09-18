@@ -6,7 +6,7 @@ authors = ["Jason Sherman <tools@usingtechnolo.gy>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-aries-cloudagent = { version = "0.10.1" }
+aries-cloudagent = { version = "0.10.2-rc0" }
 
 [tool.poetry.dev-dependencies]
 flake8 = "^5.0.4"

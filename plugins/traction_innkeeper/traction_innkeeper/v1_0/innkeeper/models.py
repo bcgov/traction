@@ -273,9 +273,11 @@ class TenantRecord(BaseRecord):
         state: str = None,
         tenant_name: str = None,
         wallet_id: str = None,
+        curr_ledger_id: str = None,
         connected_to_endorsers: List = [],
         created_public_did: List = [],
         auto_issuer: bool = False,
+        enable_ledger_switch=False,
         **kwargs,
     ):
         """Construct record."""
@@ -289,6 +291,8 @@ class TenantRecord(BaseRecord):
         self.connected_to_endorsers = connected_to_endorsers
         self.created_public_did = created_public_did
         self.auto_issuer = auto_issuer
+        self.enable_ledger_switch = enable_ledger_switch
+        self.curr_ledger_id = curr_ledger_id
 
     @property
     def tenant_id(self) -> Optional[str]:
@@ -306,6 +310,8 @@ class TenantRecord(BaseRecord):
                 "connected_to_endorsers",
                 "created_public_did",
                 "auto_issuer",
+                "enable_ledger_switch",
+                "curr_ledger_id",
             )
         }
 
@@ -397,6 +403,17 @@ class TenantRecordSchema(BaseRecordSchema):
         default=False,
     )
 
+    enable_ledger_switch = fields.Bool(
+        required=False,
+        description="True if tenant can switch endorser/ledger",
+        default=False,
+    )
+
+    curr_ledger_id = fields.Str(
+        required=False,
+        description="Current ledger identifier",
+    )
+
 
 class TenantAuthenticationApiRecord(BaseRecord):
     """Innkeeper Tenant Authentication - API Record Schema"""
@@ -451,7 +468,7 @@ class TenantAuthenticationApiRecord(BaseRecord):
             session, tenant_authentication_api_id, for_update=for_update
         )
         return record
-    
+
     @classmethod
     async def query_by_tenant_id(
         cls,
