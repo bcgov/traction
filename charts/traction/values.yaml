@@ -253,9 +253,6 @@ acapy:
         auto_issuer: false
   ## @section Acapy tails persistence configuration
   persistence:
-    ## @param acapy.persistence.enabled Enable persistence using PVC
-    ##
-    enabled: true
     ## @param acapy.persistence.existingClaim Name of an existing PVC to use
     ##
     existingClaim: ""

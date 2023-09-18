@@ -168,7 +168,6 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 
 | Name                              | Description                                                                              | Value                            |
 | --------------------------------- | ---------------------------------------------------------------------------------------- | -------------------------------- |
-| `acapy.persistence.enabled`       | Enable persistence using PVC                                                             | `true`                           |
 | `acapy.persistence.existingClaim` | Name of an existing PVC to use                                                           | `""`                             |
 | `acapy.persistence.mountPath`     |                                                                                          | `/home/aries/.indy_client/tails` |
 | `acapy.persistence.storageClass`  | PVC Storage Class                                                                        | `""`                             |

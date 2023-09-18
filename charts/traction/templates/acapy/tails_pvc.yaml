@@ -1,4 +1,4 @@
-{{- if and .Values.acapy.persistence.enabled (not .Values.acapy.persistence.existingClaim) }}
+{{- if not .Values.acapy.persistence.existingClaim }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
