@@ -18,9 +18,9 @@ acapy:
         print_key: true
         print_token: true
         connect_to_endorser:
-          - endorser_alias: endorser-1
+          - endorser_alias: bcovrin-test-endorser
             ledger_id: bcovrin-test
-          - endorser_alias: endorser-2
+          - endorser_alias: bcovrin-dev-endorser
             ledger_id: bcovrin-dev
         create_public_did:
           - bcovrin-test
