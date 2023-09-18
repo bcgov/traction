@@ -162,6 +162,17 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | `acapy.plugin-config.yml.traction_innkeeper.reservation.auto_approve`                   |             | `false`                                                                                |
 | `acapy.plugin-config.yml.traction_innkeeper.reservation.auto_issuer`                    |             | `false`                                                                                |
 
+### Acapy tails persistence configuration
+
+| Name                              | Description                                                                              | Value                            |
+| --------------------------------- | ---------------------------------------------------------------------------------------- | -------------------------------- |
+| `acapy.persistence.enabled`       | Enable persistence using PVC                                                             | `true`                           |
+| `acapy.persistence.existingClaim` | Name of an existing PVC to use                                                           | `""`                             |
+| `acapy.persistence.mountPath`     |                                                                                          | `/home/aries/.indy_client/tails` |
+| `acapy.persistence.storageClass`  | PVC Storage Class                                                                        | `""`                             |
+| `acapy.persistence.accessModes`   | PVC Access Mode. ReadWriteMany is required for each Acapy pod to access the same volume. | `["ReadWriteMany"]`              |
+| `acapy.persistence.size`          | PVC Storage Request for PostgreSQL volume                                                | `1Gi`                            |
+
 ### Acapy common configurations
 
 | Name                              | Description                                   | Value       |
