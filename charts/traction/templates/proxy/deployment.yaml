@@ -4,6 +4,8 @@ metadata:
   name: {{ include "tenant_proxy.fullname" . }}
   labels:
     {{- include "tenant_proxy.labels" . | nindent 4 }}
+  annotations:
+    checksum/api-secret: {{ include (print $.Template.BasePath "/acapy/api_secret.yaml") . | sha256sum }}
 spec:
   {{- if not .Values.tenant_proxy.autoscaling.enabled }}
   replicas: {{ .Values.tenant_proxy.replicaCount }}
