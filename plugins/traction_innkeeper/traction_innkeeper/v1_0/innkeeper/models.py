@@ -48,7 +48,10 @@ class ReservationRecord(BaseRecord):
         reservation_id: str = None,
         state: str = None,
         tenant_name: str = None,
+        tenant_reason: str = None,
+        contact_name: str = None,
         contact_email: str = None,
+        contact_phone: str = None,
         context_data: dict = {},
         tenant_id: str = None,
         wallet_id: str = None,
@@ -63,7 +66,11 @@ class ReservationRecord(BaseRecord):
         """Construct record."""
         super().__init__(reservation_id, state or self.STATE_REQUESTED, **kwargs)
         self.tenant_name = tenant_name
+        self.tenant_reason = tenant_reason
+
+        self.contact_name = contact_name
         self.contact_email = contact_email
+        self.contact_phone = contact_phone
         self.context_data = context_data
 
         self.tenant_id = tenant_id
@@ -132,7 +139,10 @@ class ReservationRecord(BaseRecord):
             prop: getattr(self, prop)
             for prop in (
                 "tenant_name",
+                "tenant_reason",
+                "contact_name",
                 "contact_email",
+                "contact_phone",
                 "context_data",
                 "tenant_id",
                 "wallet_id",
@@ -167,9 +177,25 @@ class ReservationRecordSchema(BaseRecordSchema):
         example="line of business short name",
     )
 
+    tenant_reason = fields.Str(
+        required=True,
+        description="Reason(s) for requesting a tenant",
+        example="Issue permits to clients",
+    )
+
+    contact_name = fields.Str(
+        required=True,
+        description="Contact name for this tenant request",
+    )
+
     contact_email = fields.Str(
         required=True,
         description="Contact email for this tenant request",
+    )
+
+    contact_phone = fields.Str(
+        required=True,
+        description="Contact phone number for this tenant request",
     )
 
     context_data = fields.Dict(
