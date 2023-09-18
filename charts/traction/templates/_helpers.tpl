@@ -130,6 +130,13 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- end -}}
 
 {{/*
+Create a default fully qualified acapy tails pvc name.
+*/}}
+{{- define "acapy.tails.pvc.name" -}}
+{{ template "acapy.fullname" . }}-tails
+{{- end -}}
+
+{{/*
 Create a default fully qualified tenant proxy name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
