@@ -88,7 +88,7 @@ services:
     command: ["-c", "sleep 5; ./ngrok-wait.sh"]
     volumes:
       - "./plugin-config.yml:/home/aries/plugin-config.yml"
-      - "./multi-ledger-config.yml:/home/aries/multi-ledger-config.yml"
+      - "./ledgers.yml:/home/aries/ledgers.yml"
     extra_hosts:
       - host.docker.internal:host-gateway
 

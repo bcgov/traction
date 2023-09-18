@@ -56,29 +56,6 @@ acapy:
   ## @param acapy.labelOverride
   labelOverride: ""
 
-  ## @section Acapy multiledger configuration file
-  ##
-  ## @param acapy.multi-ledger-config.yml.id
-  ## @param acapy.multi-ledger-config.yml.is_production
-  ## @param acapy.multi-ledger-config.yml.is_write
-  ## @param acapy.multi-ledger-config.yml.genesis_url
-  ## @param acapy.multi-ledger-config.yml.endorser_did
-  ## @param acapy.multi-ledger-config.yml.endorser_alias
-  ##
-  multi-ledger-config.yml:
-    - id: bcovrin-test
-      is_production: true
-      is_write: true
-      genesis_url: 'http://test.bcovrin.vonx.io/genesis'
-      endorser_did: 'Ket75eV5UQvVkW2XBjgDH7'
-      endorser_alias: 'bcovrin-test-endorser'
-    - id: bcovrin-dev
-      is_production: true
-      is_write: true
-      genesis_url: 'http://dev.bcovrin.vonx.io/genesis'
-      endorser_did: 'VGA8QzjQaL5xkXRHjAgQcj'
-      endorser_alias: 'bcovrin-dev-endorser'
-
   ## @section Acapy configuration file
   ##
   ## @param acapy.argfile.yml.auto-accept-invites Automatically accept invites without firing a webhook event or waiting for an admin request. Default: false.
@@ -102,6 +79,7 @@ acapy:
   ## @param acapy.argfile.yml.endorser-alias For transaction Authors, specify the alias of the Endorser connection that will be used to endorse transactions.
   ## @param acapy.argfile.yml.endorser-protocol-role Specify the role ('author' or 'endorser') which this agent will participate. Authors will request transaction endorement from an Endorser. Endorsers will endorse transactions from Authors, and may write their own  transactions to the ledger. If no role (or 'none') is specified then the endorsement protocol will not be used and this agent will write transactions to the ledger directly.
   ## @param acapy.argfile.yml.endorser-public-did For transaction Authors, specify the public DID of the Endorser agent who will be endorsing transactions.
+  ## @param acapy.argfile.yml.genesis-transactions-list Path to YAML configuration for connecting to multiple HyperLedger Indy ledgers.
   ## @param acapy.argfile.yml.genesis-url Specifies the url from which to download the genesis transactions. For example, if you are using 'von-network', the URL might be 'http://localhost:9000/genesis'. Genesis transactions URLs are available for the Sovrin test/main networks.
   ## @param acapy.argfile.yml.label Specifies the label for this agent. This label is publicized (self-attested) to other agents as part of forming a connection. Set to release name by default.
   ## @param acapy.argfile.yml.log-level Specifies a custom logging level as one of: ('debug', 'info', 'warning', 'error', 'critical')
@@ -138,10 +116,11 @@ acapy:
     auto-write-transactions: true
     emit-new-didcomm-mime-type: true
     emit-new-didcomm-prefix: true
+    endorser-alias: endorser
     endorser-protocol-role: author
-    # endorser-alias: endorser
-    # endorser-public-did: 'Ket75eV5UQvVkW2XBjgDH7'
-    # genesis-url: http://test.bcovrin.vonx.io/genesis
+    endorser-public-did: 'Ket75eV5UQvVkW2XBjgDH7'
+    genesis-transactions-list: /home/aries/ledgers.yml
+    genesis-url: http://test.bcovrin.vonx.io/genesis
     label: '{{ include "acapy.label" .}}'
     log-level: info
     monitor-ping: true
@@ -157,6 +136,24 @@ acapy:
     wallet-name: askar-wallet
     wallet-storage-type: postgres_storage
     wallet-type: askar
+
+  ## Acapy multiledger configuration file
+  ## @param acapy.ledgers.yml [object]
+  ##
+  ledgers.yml:
+    - id: bcovrin-test
+      is_production: true
+      is_write: true
+      genesis_url: 'http://test.bcovrin.vonx.io/genesis'
+      endorser_did: 'Ket75eV5UQvVkW2XBjgDH7'
+      endorser_alias: 'bcovrin-test-endorser'
+    - id: bcovrin-dev
+      is_production: true
+      is_write: true
+      genesis_url: 'http://dev.bcovrin.vonx.io/genesis'
+      endorser_did: 'VGA8QzjQaL5xkXRHjAgQcj'
+      endorser_alias: 'bcovrin-dev-endorser'
+      
   ## @section Wallet Storage configuration
   ##  Specifies the storage configuration to use for the wallet. 
   ##  This is required if you are for using 'postgres_storage' wallet 'storage type. 

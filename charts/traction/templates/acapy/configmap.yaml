@@ -13,7 +13,7 @@ data:
     {{- if index .Values "acapy" "plugin-config.yml" }}
     {{- include "common.tplvalues.render" ( dict "value" (index .Values "acapy" "plugin-config.yml") "context" $) | nindent 4 }}
     {{- end }}
-  multi-ledger-config.yml: |
-    {{- if index .Values "acapy" "multi-ledger-config.yml" }}
-    {{- include "common.tplvalues.render" ( dict "value" (index .Values "acapy" "multi-ledger-config.yml") "context" $) | nindent 4 }}
+  ledgers.yml: |
+    {{- if index .Values "acapy" "ledgers.yml" }}
+    {{- include "common.tplvalues.render" ( dict "value" (index .Values "acapy" "ledgers.yml") "context" $) | nindent 4 }}
     {{- end }}

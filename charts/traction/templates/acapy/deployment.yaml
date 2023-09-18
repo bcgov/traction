@@ -50,7 +50,6 @@ spec:
            --admin '0.0.0.0' {{ .Values.acapy.service.adminPort }} \
            --endpoint https://{{ include "acapy.host" . }} \
            --arg-file '/home/aries/argfile.yml' \
-           --genesis-transactions-list '/home/aries/multi-ledger-config.yml' \
            --plugin 'aries_cloudagent.messaging.jsonld' \ 
            {{- if .Values.acapy.plugins.tractionInnkeeper }}
            --plugin traction_plugins.traction_innkeeper.v1_0 \
@@ -146,8 +145,8 @@ spec:
           - name: tails
             mountPath: {{ .Values.acapy.persistence.mountPath }}
           - name: config
-            mountPath: "/home/aries/multi-ledger-config.yml"
-            subPath: "multi-ledger-config.yml"
+            mountPath: "/home/aries/ledgers.yml"
+            subPath: "ledgers.yml"
             readOnly: true
           resources:
             {{- toYaml .Values.acapy.resources | nindent 12 }}
