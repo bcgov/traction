@@ -171,7 +171,7 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | `acapy.persistence.mountPath`     |                                                                                          | `/home/aries/.indy_client/tails` |
 | `acapy.persistence.storageClass`  | PVC Storage Class                                                                        | `""`                             |
 | `acapy.persistence.accessModes`   | PVC Access Mode. ReadWriteMany is required for each Acapy pod to access the same volume. | `["ReadWriteMany"]`              |
-| `acapy.persistence.size`          | PVC Storage Request for PostgreSQL volume                                                | `1Gi`                            |
+| `acapy.persistence.size`          | PVC Storage Request for tails volume                                                     | `1Gi`                            |
 
 ### Acapy common configurations
 

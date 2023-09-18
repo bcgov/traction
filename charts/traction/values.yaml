@@ -253,7 +253,7 @@ acapy:
     ##
     accessModes:
       - ReadWriteMany
-    ## @param acapy.persistence.size PVC Storage Request for PostgreSQL volume
+    ## @param acapy.persistence.size PVC Storage Request for tails volume
     ##
     size: 1Gi
   ## @section Acapy common configurations
