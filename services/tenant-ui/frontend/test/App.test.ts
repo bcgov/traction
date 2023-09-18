@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils';
 import PrimeVue from 'primevue/config';
 import { describe, expect, test } from 'vitest';
 
-import { useInnkeeperTokenStore, useTenantStore, useTokenStore } from '@/store';
+import { useTenantStore, useTokenStore } from '@/store';
 import App from '@/App.vue';
 
 const mountApp = () =>

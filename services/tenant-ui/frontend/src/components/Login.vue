@@ -91,6 +91,7 @@
       </span>
     </div>
   </div>
+  <SessionTimeoutModal />
 </template>
 
 <script setup lang="ts">
@@ -107,11 +108,10 @@ import LoginForm from '@/components/LoginForm.vue';
 import OidcUserDisplayVue from './reservation/user/OidcUserDisplay.vue';
 import Reserve from './reservation/Reserve.vue';
 import Status from './reservation/Status.vue';
+import SessionTimeoutModal from './common/SessionTimeoutModal.vue';
 // State
 import { storeToRefs } from 'pinia';
-import { useConfigStore } from '@/store';
-import { useReservationStore } from '@/store';
-import { useOidcStore } from '@/store';
+import { useConfigStore, useReservationStore, useOidcStore } from '@/store';
 
 import { RESERVATION_STATUSES } from '@/helpers/constants';
 
