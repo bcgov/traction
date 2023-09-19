@@ -329,7 +329,7 @@ const handleSubmit = async (event: any) => {
     font-size: 0.9rem;
   }
   input.highlight {
-    background: rgb(255, 255, 177);
+    border-color: red;
   }
 }
 :deep(.vertical-layout-item) {
