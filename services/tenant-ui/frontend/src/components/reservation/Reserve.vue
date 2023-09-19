@@ -253,16 +253,18 @@ const formIsValid = () => {
   if (!('required' in schema) || schema.required?.length < 1) {
     return true;
 
-    // If there are entries in the required array,
-    // then check if they are all in the form.
+    /**
+     * If there are entries in the required array,
+     * then check if they are all in the form.
+     * .... and they're not undefined 💣 ... This one got me good.
+     */
   } else if (
-    schema.required.every((field: string) => {
-      return (
+    schema.required.every(
+      (field: string) =>
         fields.includes(field) &&
         data.value[field] &&
         data.value[field] !== undefined
-      );
-    })
+    )
   ) {
     return true;
 
