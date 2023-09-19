@@ -41,7 +41,7 @@ jobs:
       - name: Add bitnami repository
         run: helm repo add bitnami https://charts.bitnami.com/bitnami
       - name: Release workload charts
-        uses: helm/chart-releaser-action@v1.5.0
+        uses: ./.github/actions/chart_releaser
         with:
           config: .github/cr.yaml
         env:
