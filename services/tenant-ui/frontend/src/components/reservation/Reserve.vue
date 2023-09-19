@@ -79,6 +79,9 @@ const formValidationMode: any = ref('ValidateAndHide');
 // Store additional error messages
 let formErrorMessage: any = '';
 
+// Regex for email address
+const email = /.*@.*\..+/;
+
 /**
  * A separate change handler because jsonforms is being difficult.
  * If this is a required field, then highlight it.
@@ -97,9 +100,9 @@ const myChange = (event: any) => {
   }
 
   // Special use case for email address
-  if (name === 'emailAddress' && !value.match(/^.*@.*\..*$/)) {
+  if (name === 'emailAddress' && !value.match(email)) {
     event.target.classList.add('highlight');
-  } else if (name === 'emailAddress' && value.match(/^.*@.*\..*$/)) {
+  } else if (name === 'emailAddress' && value.match(email)) {
     event.target.classList.remove('highlight');
   }
 };
@@ -232,17 +235,14 @@ const formIsValid = () => {
   const fields = Object.keys(data.value);
 
   // If there is an email address, make sure it is valid.
-  if (
-    data.value.emailAddress &&
-    !data.value.emailAddress.match(/^.*@.*\..*$/)
-  ) {
+  if (data.value.emailAddress && !data.value.emailAddress.match(email)) {
     // Provide a more specific error message
     formErrorMessage = 'Please enter a valid email address.';
     return false;
   } else if (
     // Clear error message if it was set before. Then allow for other checks.
     !data.value.emailAddress ||
-    data.value.emailAddress.match(/^.*@.*\..*$/)
+    data.value.emailAddress.match(email)
   ) {
     formErrorMessage = '';
   }
