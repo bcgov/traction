@@ -78,9 +78,7 @@ acapy:
   ## @param acapy.argfile.yml.emit-new-didcomm-prefix Emit protocol messages with new DIDComm prefix; i.e., 'https://didcomm.org/' instead of (default) prefix 'did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/'.
   ## @param acapy.argfile.yml.endorser-alias For transaction Authors, specify the alias of the Endorser connection that will be used to endorse transactions.
   ## @param acapy.argfile.yml.endorser-protocol-role Specify the role ('author' or 'endorser') which this agent will participate. Authors will request transaction endorement from an Endorser. Endorsers will endorse transactions from Authors, and may write their own  transactions to the ledger. If no role (or 'none') is specified then the endorsement protocol will not be used and this agent will write transactions to the ledger directly.
-  ## @param acapy.argfile.yml.endorser-public-did For transaction Authors, specify the public DID of the Endorser agent who will be endorsing transactions.
-  ## @param acapy.argfile.yml.genesis-transactions-list Path to YAML configuration for connecting to multiple HyperLedger Indy ledgers.
-  ## @param acapy.argfile.yml.genesis-url Specifies the url from which to download the genesis transactions. For example, if you are using 'von-network', the URL might be 'http://localhost:9000/genesis'. Genesis transactions URLs are available for the Sovrin test/main networks.
+  ## @param acapy.argfile.yml.genesis-transactions-list Path to YAML configuration for connecting to multiple HyperLedger Indy ledgers. 
   ## @param acapy.argfile.yml.label Specifies the label for this agent. This label is publicized (self-attested) to other agents as part of forming a connection. Set to release name by default.
   ## @param acapy.argfile.yml.log-level Specifies a custom logging level as one of: ('debug', 'info', 'warning', 'error', 'critical')
   ## @param acapy.argfile.yml.monitor-ping Send a webhook when a ping is sent or received.
@@ -118,9 +116,7 @@ acapy:
     emit-new-didcomm-prefix: true
     endorser-alias: endorser
     endorser-protocol-role: author
-    endorser-public-did: 'Ket75eV5UQvVkW2XBjgDH7'
     genesis-transactions-list: /home/aries/ledgers.yml
-    genesis-url: http://test.bcovrin.vonx.io/genesis
     label: '{{ include "acapy.label" .}}'
     log-level: info
     monitor-ping: true
