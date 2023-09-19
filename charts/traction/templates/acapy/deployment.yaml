@@ -50,7 +50,6 @@ spec:
            --admin '0.0.0.0' {{ .Values.acapy.service.adminPort }} \
            --endpoint https://{{ include "acapy.host" . }} \
            --arg-file '/home/aries/argfile.yml' \
-           --genesis-transactions-list '/home/aries/multi-ledger-config.yml' \
            --plugin 'aries_cloudagent.messaging.jsonld' \ 
            {{- if .Values.acapy.plugins.tractionInnkeeper }}
            --plugin traction_plugins.traction_innkeeper.v1_0 \
@@ -143,9 +142,11 @@ spec:
             mountPath: "/home/aries/plugin-config.yml"
             subPath: "plugin-config.yml"
             readOnly: true
+          - name: tails
+            mountPath: {{ .Values.acapy.persistence.mountPath }}
           - name: config
-            mountPath: "/home/aries/multi-ledger-config.yml"
-            subPath: "multi-ledger-config.yml"
+            mountPath: "/home/aries/ledgers.yml"
+            subPath: "ledgers.yml"
             readOnly: true
           resources:
             {{- toYaml .Values.acapy.resources | nindent 12 }}
@@ -153,6 +154,15 @@ spec:
         - name: config
           configMap:
             name: {{ include "acapy.configmap.name" . }}
+      {{- if .Values.acapy.persistence.existingClaim }}
+        - name: tails
+          persistentVolumeClaim:
+            claimName: {{ tpl .Values.acapy.persistence.existingClaim $ }}
+      {{- else }}
+        - name: tails
+          persistentVolumeClaim:
+            claimName: {{ include "acapy.tails.pvc.name" . }}
+      {{- end }}
       {{- with .Values.acapy.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
