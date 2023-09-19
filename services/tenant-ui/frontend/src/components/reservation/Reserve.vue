@@ -227,12 +227,14 @@ axios
 const renderers = [...vanillaRenderers];
 
 /**
- * Check if the form is valid
- * @returns boolean
+ * Check if the form is valid.
+ * @returns {boolean} True if the form is valid, false otherwise.
  */
 const formIsValid = () => {
   const schema = formDataSchema.value;
   const fields = Object.keys(data.value);
+
+  console.log('data', data.value);
 
   // If there is an email address, make sure it is valid.
   if (data.value.emailAddress && !data.value.emailAddress.match(email)) {
@@ -253,7 +255,15 @@ const formIsValid = () => {
 
     // If there are entries in the required array,
     // then check if they are all in the form.
-  } else if (schema.required.every((field: string) => fields.includes(field))) {
+  } else if (
+    schema.required.every((field: string) => {
+      return (
+        fields.includes(field) &&
+        data.value[field] &&
+        data.value[field] !== undefined
+      );
+    })
+  ) {
     return true;
 
     // Otherwise, the form is not valid.
