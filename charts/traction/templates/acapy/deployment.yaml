@@ -162,7 +162,7 @@ spec:
         - name: tails
           persistentVolumeClaim:
             claimName: {{ include "acapy.tails.pvc.name" . }}
-      {{- end }}}
+      {{- end }}
       {{- with .Values.acapy.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
