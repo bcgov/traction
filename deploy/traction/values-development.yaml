@@ -22,13 +22,12 @@ acapy:
           - bcovrin-dev
       reservation:
         expiry_minutes: 7200
-  resources:
-    limits:
-      cpu: 400m
-      memory: 1600Mi
-    requests:
-      cpu: 200m
-      memory: 820Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
   networkPolicy:
     enabled: true
     ingress:
@@ -64,6 +63,12 @@ ui:
       enabled: true
       namespaceSelector:
         network.openshift.io/policy-group: ingress
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
 ingress:
   annotations:
     route.openshift.io/termination: edge

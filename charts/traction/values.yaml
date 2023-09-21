@@ -134,7 +134,7 @@ acapy:
     wallet-type: askar
 
   ## Acapy multiledger configuration file
-  ## @param acapy.ledgers.yml [object]
+  ## @param acapy.ledgers.yml [object] YAML configuration for connecting to multiple HyperLedger
   ##
   ledgers.yml:
     - id: bcovrin-test
@@ -283,8 +283,8 @@ acapy:
       cpu: 300m
       memory: 512Mi
     requests:
-      cpu: 10m
-      memory: 16Mi
+      cpu: 120m
+      memory: 128Mi
   ## @param acapy.podAnnotations Map of annotations to add to the acapy pods
   ##
   podAnnotations: {}
