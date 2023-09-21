@@ -178,8 +178,8 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | --------------------------------- | --------------------------------------------- | ----------- |
 | `acapy.resources.limits.memory`   | The memory limit for the Acapy containers     | `512Mi`     |
 | `acapy.resources.limits.cpu`      | The cpu limit for the Acapy containers        | `300m`      |
-| `acapy.resources.requests.memory` | The requested memory for the Acapy containers | `16Mi`      |
-| `acapy.resources.requests.cpu`    | The requested cpu for the Acapy containers    | `10m`       |
+| `acapy.resources.requests.memory` | The requested memory for the Acapy containers | `128Mi`     |
+| `acapy.resources.requests.cpu`    | The requested cpu for the Acapy containers    | `120m`      |
 | `acapy.podAnnotations`            | Map of annotations to add to the acapy pods   | `{}`        |
 | `acapy.podSecurityContext`        | Pod Security Context                          | `{}`        |
 | `acapy.containerSecurityContext`  | Container Security Context                    | `{}`        |
