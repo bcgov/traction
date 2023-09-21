@@ -57,6 +57,7 @@
     "emailAddress": "Email Address",
     "encodedJwt": "Encoded JWT",
     "endorser": "Endorser",
+    "errorGettingUrl": "Error fetching {url}",
     "genericError": "An error occurred",
     "invitationUrl": "Invitation URL",
     "json": "JSON",

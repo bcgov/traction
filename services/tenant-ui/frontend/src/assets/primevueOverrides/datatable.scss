@@ -79,3 +79,10 @@
     margin-right: 15px;
   }
 }
+
+// A specific divider used in expanded table rows
+.expand-divider {
+  border: 1px dashed grey;
+  width: 40px;
+  margin-inline-start: 0;
+}
