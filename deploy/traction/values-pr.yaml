@@ -32,10 +32,10 @@ acapy:
   resources:
     limits:
       cpu: 200m
-      memory: 820Mi
+      memory: 512Mi
     requests:
       cpu: 120m
-      memory: 400Mi
+      memory: 128Mi
   networkPolicy:
     enabled: true
     ingress:
