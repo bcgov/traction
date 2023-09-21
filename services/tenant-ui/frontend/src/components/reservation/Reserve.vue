@@ -79,6 +79,9 @@ const formValidationMode: any = ref('ValidateAndHide');
 // Store additional error messages
 let formErrorMessage: any = '';
 
+// Regex for email address
+const email = /.*@.*\..+/;
+
 /**
  * A separate change handler because jsonforms is being difficult.
  * If this is a required field, then highlight it.
@@ -97,9 +100,9 @@ const myChange = (event: any) => {
   }
 
   // Special use case for email address
-  if (name === 'emailAddress' && !value.match(/^.*@.*\..*$/)) {
+  if (name === 'emailAddress' && !value.match(email)) {
     event.target.classList.add('highlight');
-  } else if (name === 'emailAddress' && value.match(/^.*@.*\..*$/)) {
+  } else if (name === 'emailAddress' && value.match(email)) {
     event.target.classList.remove('highlight');
   }
 };
@@ -224,25 +227,24 @@ axios
 const renderers = [...vanillaRenderers];
 
 /**
- * Check if the form is valid
- * @returns boolean
+ * Check if the form is valid.
+ * @returns {boolean} True if the form is valid, false otherwise.
  */
 const formIsValid = () => {
   const schema = formDataSchema.value;
   const fields = Object.keys(data.value);
 
+  console.log('data', data.value);
+
   // If there is an email address, make sure it is valid.
-  if (
-    data.value.emailAddress &&
-    !data.value.emailAddress.match(/^.*@.*\..*$/)
-  ) {
+  if (data.value.emailAddress && !data.value.emailAddress.match(email)) {
     // Provide a more specific error message
     formErrorMessage = 'Please enter a valid email address.';
     return false;
   } else if (
     // Clear error message if it was set before. Then allow for other checks.
     !data.value.emailAddress ||
-    data.value.emailAddress.match(/^.*@.*\..*$/)
+    data.value.emailAddress.match(email)
   ) {
     formErrorMessage = '';
   }
@@ -251,9 +253,19 @@ const formIsValid = () => {
   if (!('required' in schema) || schema.required?.length < 1) {
     return true;
 
-    // If there are entries in the required array,
-    // then check if they are all in the form.
-  } else if (schema.required.every((field: string) => fields.includes(field))) {
+    /**
+     * If there are entries in the required array,
+     * then check if they are all in the form.
+     * .... and they're not undefined 💣 ... This one got me good.
+     */
+  } else if (
+    schema.required.every(
+      (field: string) =>
+        fields.includes(field) &&
+        data.value[field] &&
+        data.value[field] !== undefined
+    )
+  ) {
     return true;
 
     // Otherwise, the form is not valid.
@@ -329,7 +341,7 @@ const handleSubmit = async (event: any) => {
     font-size: 0.9rem;
   }
   input.highlight {
-    background: rgb(255, 255, 177);
+    border-color: red;
   }
 }
 :deep(.vertical-layout-item) {
