@@ -134,7 +134,7 @@ acapy:
     wallet-type: askar
 
   ## Acapy multiledger configuration file
-  ## @param acapy.ledgers.yml [object]
+  ## @param acapy.ledgers.yml [object] YAML configuration for connecting to multiple HyperLedger
   ##
   ledgers.yml:
     - id: bcovrin-test
