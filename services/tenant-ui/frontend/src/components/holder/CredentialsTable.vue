@@ -257,10 +257,4 @@ onMounted(async () => {
 button.accepted {
   color: green !important;
 }
-
-.expand-divider {
-  border: 1px dashed grey;
-  width: 40px;
-  margin-inline-start: 0;
-}
 </style>

@@ -130,6 +130,16 @@
       </Column>
       <template #expansion="{ data }">
         <RowExpandData :id="data.connection_id" :url="API_PATH.CONNECTIONS" />
+        <hr class="expand-divider" />
+        <RowExpandData
+          :url="API_PATH.CONNECTIONS_ENDPOINTS(data.connection_id)"
+          label="View Connection Endpoints"
+        />
+        <hr class="expand-divider" />
+        <RowExpandData
+          :url="API_PATH.CONNECTIONS_METADATA(data.connection_id)"
+          label="View Connection Metadata"
+        />
       </template>
     </DataTable>
   </MainCardContent>

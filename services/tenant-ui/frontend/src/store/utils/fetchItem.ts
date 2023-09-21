@@ -4,7 +4,7 @@ import { Ref } from 'vue';
 
 export async function fetchItem(
   url: string,
-  id: string,
+  id: string | undefined,
   error: Ref<any>,
   loading: Ref<boolean>,
   params: object = {}

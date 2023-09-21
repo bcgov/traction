@@ -27,6 +27,8 @@ export const API_PATH = {
   CONNECTIONS_CREATE_INVITATION: '/connections/create-invitation',
   CONNECTIONS_RECEIVE_INVITATION: '/connections/receive-invitation',
   CONNECTIONS_INVITATION: (id: string) => `/connections/${id}/invitation`,
+  CONNECTIONS_ENDPOINTS: (id: string) => `/connections/${id}/endpoints`,
+  CONNECTIONS_METADATA: (id: string) => `/connections/${id}/metadata`,
 
   CREDENTIAL_MIME_TYPES: (id: string) => `/credential/mime-types/${id}`,
   CREDENTIAL_REVOKED: (id: string) => `/credential/revoked/${id}`,
