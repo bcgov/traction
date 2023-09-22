@@ -20,7 +20,7 @@
     "@jsonforms/vue": "^3.1.0",
     "@jsonforms/vue-vanilla": "^3.1.0",
     "@vuelidate/core": "^2.0.3",
-    "@vuelidate/validators": "^2.0.3",
+    "@vuelidate/validators": "^2.0.4",
     "axios": "^1.4.0",
     "date-fns": "^2.29.3",
     "dompurify": "^3.0.5",
@@ -30,13 +30,13 @@
     "pinia": "^2.1.6",
     "primeflex": "^3.3.1",
     "primeicons": "^6.0.1",
-    "primevue": "^3.32.2",
+    "primevue": "^3.34.1",
     "qrcode.vue": "^3.4.1",
     "vanilla-jsoneditor": "^0.17.10",
     "vue": "^3.3.1",
-    "vue-i18n": "^9.2.2",
+    "vue-i18n": "^9.4.1",
     "vue-json-pretty": "^2.2.4",
-    "vue-router": "^4.2.4",
+    "vue-router": "^4.2.5",
     "vue-toastification": "^2.0.0-rc.5"
   },
   "devDependencies": {
@@ -46,8 +46,8 @@
     "@types/marked": "^5.0.1",
     "@typescript-eslint/eslint-plugin": "^6.4.1",
     "@typescript-eslint/parser": "^6.4.1",
-    "@vitejs/plugin-vue": "^4.3.3",
-    "@vitest/coverage-v8": "^0.34.2",
+    "@vitejs/plugin-vue": "^4.3.4",
+    "@vitest/coverage-v8": "^0.34.5",
     "@vue/eslint-config-prettier": "^8.0.0",
     "@vue/eslint-config-typescript": "^11.0.3",
     "@vue/test-utils": "^2.4.1",
@@ -62,8 +62,8 @@
     "sass": "^1.66.1",
     "typescript": "^5.1.6",
     "vite": "^4.4.9",
-    "vitest": "^0.34.2",
+    "vitest": "^0.34.5",
     "vue-tsc": "^1.8.8",
-    "whatwg-fetch": "^3.6.17"
+    "whatwg-fetch": "^3.6.19"
   }
 }
