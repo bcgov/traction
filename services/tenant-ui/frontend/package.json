@@ -24,7 +24,7 @@
     "axios": "^1.4.0",
     "date-fns": "^2.29.3",
     "dompurify": "^3.0.5",
-    "json-editor-vue": "^0.10.6",
+    "json-editor-vue": "^0.10.16",
     "marked": "^9.0.3",
     "oidc-client-ts": "^2.2.5",
     "pinia": "^2.1.6",
