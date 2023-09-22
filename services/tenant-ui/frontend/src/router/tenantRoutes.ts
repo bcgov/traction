@@ -15,7 +15,6 @@ import Schemas from '@/views/issuance/Schemas.vue';
 import CredentialDefinitions from '@/views/issuance/CredentialDefinitions.vue';
 // // Verifictation
 import MyPresentations from '@/views/verification/MyPresentations.vue';
-import PresentationTemplates from '@/views/verification/PresentationTemplates.vue';
 // // Holder
 import MyHeldCredentials from '@/views/holder/MyHeldCredentials.vue';
 // Messages
@@ -97,11 +96,6 @@ const tenantRoutes = [
         path: 'oca',
         name: 'OCA',
         component: Oca,
-      },
-      {
-        path: 'presentationTemplates',
-        name: 'PresentationTemplates',
-        component: PresentationTemplates,
       },
 
       // Tenant - Issuer

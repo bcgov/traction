@@ -84,10 +84,6 @@ const items = ref([
         icon: 'pi pi-fw pi-compass',
         to: { name: 'OCA' },
       },
-      // {
-      //   label: () => t('configuration.presentationTemplates.templates'),
-      //   to: { name: 'PresentationTemplates' },
-      // },
     ],
   },
 

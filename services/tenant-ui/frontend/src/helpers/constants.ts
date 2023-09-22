@@ -159,14 +159,6 @@ export const API_PATH = {
   ISSUER_CREDENTIAL_REVOKE: (id: string) =>
     `/tenant/v1/issuer/credentials/${id}/revoke-credential`,
 
-  VERIFIER_PRESENTATIONS: '/tenant/v1/verifier/presentations/',
-  VERIFIER_PRESENTATION: (id: string) =>
-    `/tenant/v1/verifier/presentations/${id}`,
-  VERIFIER_PRESENTATION_ADHOC_REQUEST:
-    '/tenant/v1/verifier/presentations/adhoc-request',
-  VERIFIER_PRESENTATION_TEMPLATES:
-    '/tenant/v1/verifier/presentation_templates/',
-
   // Testing
   TEST_TENANT_PROXY: '/test',
 };

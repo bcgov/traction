@@ -1,7 +1,6 @@
 <template>
   <RowExpandData
-    :id="props.row.verifier_presentation_id"
-    :url="API_PATH.VERIFIER_PRESENTATIONS"
+    :url="API_PATH.PRESENT_PROOF_RECORD(props.row.verifier_presentation_id)"
     :params="{ acapy: true }"
   >
     <template #details="presentation">

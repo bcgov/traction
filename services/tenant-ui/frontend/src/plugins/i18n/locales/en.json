@@ -90,9 +90,6 @@
       "storedBundleJson": "Stored Bundle JSON",
       "url": "URL"
     },
-    "presentationTemplates": {
-      "templates": "Presentation Templates"
-    },
     "schemas": {
       "copy": "Copy Schema",
       "create": "Create Schema",
@@ -412,7 +409,6 @@
     "credentialTamperFree ": "Credential is tamper-free ",
     "credentialValid": "Credential is valid",
     "presentationShouldHaveStatus": "This is not the component you are looking for, presentation should have status='verified'",
-    "presentationTemplates": "Presentation Templates",
     "status: ": "Status",
     "updatedAt": "Updated at",
     "verifications": "Verifications"
