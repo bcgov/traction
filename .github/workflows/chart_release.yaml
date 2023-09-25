@@ -5,6 +5,11 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      ref:
+        description: 'ref to checkout:'
+        required: false
+        default: 'main'
 
 jobs:
   # Sometimes chart-releaser might fetch an outdated index.yaml from gh-pages, causing a WAW hazard on the repo
@@ -32,7 +37,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          ref: main
+          ref: ${{ github.event.inputs.ref }}
       - name: Configure Git
         run: |
           git config user.name "$GITHUB_ACTOR"
