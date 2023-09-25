@@ -23,7 +23,7 @@ acapy:
       is_production: true
       is_write: true
       genesis_url: 'http://dev.bcovrin.vonx.io/genesis'
-      endorser_did: 'SVfHGCEEvEFmpBPcxgNqRR'
+      endorser_did: 'N5bxk3jWkpZ2tEaMtjPjPa'
       endorser_alias: 'bcovrin-dev-endorser'
   plugin-config.yml:
     traction_innkeeper:
