@@ -13,7 +13,11 @@ data:
   FRONTEND_INNKEEPER_OIDC_LABEL: {{ .Values.ui.oidc.label | quote }}
   FRONTEND_INNKEEPER_SHOW_ADMIN: {{ .Values.ui.oidc.showInnkeeperAdminLogin | quote }}
   FRONTEND_TENANT_SHOW_WRITABLE_COMPONENTS: {{ .Values.ui.oidc.showWritableComponents | quote }}
+<<<<<<< HEAD
   FRONTEND_SHOW_OIDC_RESERVATION_LOGIN: {{ .Values.ui.showOIDCReservationLogin | quote }}
+=======
+  FRONTEND_TENANT_CUSTOM_RESERVATION_FORM: {{ .Values.ui.oidc.customReservationForm | quote }}
+>>>>>>> Helm stuff
   FRONTEND_SESSION_TIMEOUT_SECONDS: {{ .Values.ui.oidc.session.timeoutSeconds | quote }}
   FRONTEND_SESSION_COUNTDOWN_SECONDS: {{ .Values.ui.oidc.session.countdownSeconds | quote }}
   FRONTEND_TENANT_PROXY_URL: https://{{ include "tenant_proxy.host" . }}
