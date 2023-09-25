@@ -94,12 +94,6 @@ const items = ref([
   },
 
   {
-    label: () => t('apiKey.apiKeys'),
-    icon: 'pi pi-fw pi-key',
-    to: { name: 'ApiKeys' },
-  },
-
-  {
     label: () => t('about.about'),
     icon: 'pi pi-fw pi-question-circle',
     to: { name: 'About' },
