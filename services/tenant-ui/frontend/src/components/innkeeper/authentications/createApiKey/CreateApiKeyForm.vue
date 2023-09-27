@@ -55,14 +55,45 @@
     <p>
       {{
         $t('apiKey.generatedKeyMessageInnkeeper', {
-          key: formFields.selectedTenant.value,
+          key: formFields.selectedTenant.label,
         })
       }}
     </p>
+
+    <div class="field w-8">
+      <label for="">{{ $t('common.tenantId') }}</label>
+      <div class="p-inputgroup">
+        <InputText
+          :value="formFields.selectedTenant.value"
+          type="text"
+          readonly
+          class="w-full"
+        />
+        <Button
+          icon="pi pi-copy"
+          title="Copy to clipboard"
+          class="p-button-secondary"
+          @click="copyTenantId"
+        />
+      </div>
+    </div>
+
     <p>
-      {{ $t('apiKey.generatedKey') }} <br />
-      <strong>{{ createdKey }}</strong>
+      {{ $t('apiKey.generatedKey') }}
     </p>
+
+    <div class="field w-8">
+      <label for="">{{ $t('common.apiKey') }}</label>
+      <div class="p-inputgroup">
+        <InputText :value="createdKey" type="text" readonly class="w-full" />
+        <Button
+          icon="pi pi-copy"
+          title="Copy to clipboard"
+          class="p-button-secondary"
+          @click="copyKey"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -136,5 +167,16 @@ const handleSubmit = async (isFormValid: boolean) => {
   } finally {
     submitted.value = false;
   }
+};
+
+// Copy to clipboard
+const copyTenantId = () => {
+  navigator.clipboard.writeText(formFields.selectedTenant.value);
+  toast.info('Copied Tenant ID to clipboard');
+};
+
+const copyKey = () => {
+  navigator.clipboard.writeText(createdKey.value);
+  toast.info('Copied API Key to clipboard');
 };
 </script>

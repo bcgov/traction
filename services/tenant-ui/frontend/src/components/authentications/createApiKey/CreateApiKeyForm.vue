@@ -28,18 +28,59 @@
     <p>
       {{ $t('apiKey.generatedKeyMessage') }}
     </p>
+
+    <div class="field w-8">
+      <label for="">{{ $t('common.tenantId') }}</label>
+      <div class="p-inputgroup">
+        <InputText
+          :value="tenant.tenant_id"
+          type="text"
+          readonly
+          class="w-full"
+        />
+        <Button
+          icon="pi pi-copy"
+          title="Copy to clipboard"
+          class="p-button-secondary"
+          @click="copyTenantId"
+        />
+      </div>
+    </div>
+
     <p>
-      {{ $t('apiKey.generatedKey') }} <br />
-      <strong>{{ createdKey }}</strong>
+      {{ $t('apiKey.generatedKey') }}
+    </p>
+
+    <div class="field w-8">
+      <label for="">{{ $t('common.apiKey') }}</label>
+      <div class="p-inputgroup">
+        <InputText :value="createdKey" type="text" readonly class="w-full" />
+        <Button
+          icon="pi pi-copy"
+          title="Copy to clipboard"
+          class="p-button-secondary"
+          @click="copyKey"
+        />
+      </div>
+    </div>
+
+    <i class="pi pi-info-circle mt-4" style="font-size: 1.5rem" />
+    <p class="mt-0">
+      {{ $t('apiKey.docs') }} <br />
+      {{ $t('apiKey.docsSwagger') }} <br />
+      <a :href="swaggerUrl" target="_blank">
+        <small> {{ swaggerUrl }}</small>
+        <i class="pi pi-external-link ml-2" />
+      </a>
     </p>
   </div>
 </template>
 
 <script setup lang="ts">
 // Vue
-import { reactive, ref } from 'vue';
+import { computed, reactive, ref } from 'vue';
 // State
-import { useKeyManagementStore } from '@/store';
+import { useConfigStore, useKeyManagementStore, useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // PrimeVue / Validation
 import Button from 'primevue/button';
@@ -54,7 +95,9 @@ const toast = useToast();
 const keyManagementStore = useKeyManagementStore();
 
 // use the loading state from the store to disable the button...
+const { config } = storeToRefs(useConfigStore());
 const { loading } = storeToRefs(useKeyManagementStore());
+const { tenant } = storeToRefs(useTenantStore());
 
 // Validation
 const formFields = reactive({
@@ -87,4 +130,21 @@ const handleSubmit = async (isFormValid: boolean) => {
     submitted.value = false;
   }
 };
+
+// Copy to clipboard
+const copyTenantId = () => {
+  navigator.clipboard.writeText(tenant.value.tenant_id);
+  toast.info('Copied Tenant ID to clipboard');
+};
+
+const copyKey = () => {
+  navigator.clipboard.writeText(createdKey.value);
+  toast.info('Copied API Key to clipboard');
+};
+
+// Swagger link
+const swaggerUrl = computed(
+  () =>
+    `${config.value.frontend.tenantProxyPath}/api/doc#/multitenancy/post_multitenancy_tenant__tenant_id__token`
+);
 </script>
