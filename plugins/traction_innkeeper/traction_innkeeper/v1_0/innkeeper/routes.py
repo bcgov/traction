@@ -91,6 +91,14 @@ def error_handler(func):
 
     return wrapper
 
+# extending the CreateWalletTokenRequestSchema to allow for an API key
+class CustomCreateWalletTokenRequestSchema(CreateWalletTokenRequestSchema):
+    """Request schema for creating a wallet token."""
+    api_key = fields.Str(
+        description="API key for this wallet",
+        required=False,
+        example="3bd14a1e8fb645ddadf9913c0922ff3b",
+    )
 
 class DefaultConfigValuesSchema(OpenAPISchema):
     """Response schema for default config values."""
@@ -413,7 +421,7 @@ async def tenant_checkin(request: web.BaseRequest):
 
 @docs(tags=["multitenancy"], summary="Get auth token for a tenant")
 @match_info_schema(TenantIdMatchInfoSchema())
-@request_schema(CreateWalletTokenRequestSchema)
+@request_schema(CustomCreateWalletTokenRequestSchema)
 @response_schema(CreateWalletTokenResponseSchema(), 200, description="")
 @error_handler
 async def tenant_create_token(request: web.BaseRequest):

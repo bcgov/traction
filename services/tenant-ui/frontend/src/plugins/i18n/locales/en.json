@@ -38,9 +38,11 @@
     "delete": "Delete API Key",
     "deleteConfirmation": "Are you sure you want to delete this API Key?",
     "deleteSuccess": "API Key deleted",
+    "docs": "The Tenant ID and API Key can be used to fetch an access token from the Multitenancy Token endpoint.",
+    "docsSwagger": "The API documentation can be found here:",
     "generatedKey": "The generated API key is shown below. This dialog is the only time this key will be shown and can not be retrieved again.",
     "generatedKeyMessage": "An API Key has been generated for your Tenant",
-    "generatedKeyMessageInnkeeper": "An API Key has been generated for Tenant ID {key}",
+    "generatedKeyMessageInnkeeper": "An API Key has been generated for Tenant {key}",
     "search": "Search API Keys"
   },
   "common": {
@@ -89,9 +91,6 @@
       "oca": "OCA",
       "storedBundleJson": "Stored Bundle JSON",
       "url": "URL"
-    },
-    "presentationTemplates": {
-      "templates": "Presentation Templates"
     },
     "schemas": {
       "copy": "Copy Schema",
@@ -412,7 +411,6 @@
     "credentialTamperFree ": "Credential is tamper-free ",
     "credentialValid": "Credential is valid",
     "presentationShouldHaveStatus": "This is not the component you are looking for, presentation should have status='verified'",
-    "presentationTemplates": "Presentation Templates",
     "status: ": "Status",
     "updatedAt": "Updated at",
     "verifications": "Verifications"

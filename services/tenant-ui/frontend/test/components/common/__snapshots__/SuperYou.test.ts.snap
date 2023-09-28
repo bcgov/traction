@@ -1,8 +1,0 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
-
-exports[`SuperYou > mount matches snapshot with expected values 1`] = `
-"<button class=\\"p-button p-component\\" type=\\"button\\" aria-label=\\"test test\\" data-pc-name=\\"button\\" data-pc-section=\\"root\\" title=\\"Custom API Call\\" data-pd-ripple=\\"true\\"><span class=\\"p-button-icon p-button-icon-left pi pi-user\\" data-pc-section=\\"icon\\"></span><span class=\\"p-button-label\\" data-pc-section=\\"label\\">test test</span>
-  <!---->
-</button>
-<!---->"
-`;

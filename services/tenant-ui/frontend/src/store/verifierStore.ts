@@ -31,17 +31,6 @@ export const useVerifierStore = defineStore('verifier', () => {
     );
   }
 
-  async function getPresentation(id: string, params: any = {}) {
-    const getloading: any = ref(false);
-    return fetchItem(
-      API_PATH.VERIFIER_PRESENTATIONS,
-      id,
-      error,
-      getloading,
-      params
-    );
-  }
-
   async function deleteRecord(id: string) {
     loading.value = true;
     try {
@@ -90,7 +79,6 @@ export const useVerifierStore = defineStore('verifier', () => {
     loading,
     error,
     listPresentations,
-    getPresentation,
     deleteRecord,
     sendPresentationRequest,
   };

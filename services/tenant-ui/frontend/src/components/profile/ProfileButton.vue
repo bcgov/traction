@@ -39,6 +39,10 @@ const items = [
     to: { name: 'Settings' },
   },
   {
+    label: t('apiKey.apiKeys'),
+    to: { name: 'ApiKeys' },
+  },
+  {
     label: t('common.developer'),
     visible: config.value.frontend.showDeveloper,
     to: { name: 'Developer' },

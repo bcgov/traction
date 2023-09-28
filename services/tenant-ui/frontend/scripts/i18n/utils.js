@@ -1,6 +1,4 @@
-import flat from 'flat';
-
-const { flatten, unflatten } = flat;
+import { flatten, unflatten } from 'flat';
 
 // Flatten unflattened locales.
 export const flattenLocales = (unflattened) => {
