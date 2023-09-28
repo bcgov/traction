@@ -611,11 +611,6 @@ ui:
     ## @param ui.ariesDetails.ledgerDescription Ledger description
     ledgerDescription: "bcovrin-test"
 
-  ## The custom reservation form information
-  ## This is in the required JSON string format used by the JSONForms tool
-  ##    https://github.com/eclipsesource/jsonforms
-  customReservationForm: '{"formDataSchema":{"type":"object","properties":{"fullName":{"type":"string"},"phoneNumber":{"type":"string"},"tenantReason":{"type":"string"}},"required":[]},"formUISchema":{"type":"VerticalLayout","elements":[{"type":"Control","scope":"#/properties/phoneNumber","label":"Phone / Mobile"},{"type":"Control","scope":"#/properties/fullName"},{"type":"Control","scope":"#/properties/tenantReason","options":{"multi":true}}]}}'
-
   ##  Backend Configuration
   ##
   oidc:
