@@ -8,4 +8,5 @@ frontend/.env/
 frontend/dist/
 frontend/node_modules/
 config/local.json
+config/reservation.json
 .gitignore
