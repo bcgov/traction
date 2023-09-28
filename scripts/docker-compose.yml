@@ -136,6 +136,8 @@ services:
       - SERVER_SMTP_PORT=1025
     ports:
       - ${TENANT_UI_PORT}:8080
+    # volumes:
+    #   - ../services/tenant-ui/config/reservation.json:
     extra_hosts:
       - host.docker.internal:host-gateway
 
