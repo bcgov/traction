@@ -58,10 +58,6 @@ import ShowWallet from './status/ShowWallet.vue';
 import ReservationConfirmation from './ReservationConfirmation.vue';
 import axios from 'axios';
 
-// State
-import { useConfigStore } from '@/store/configStore';
-const { config } = storeToRefs(useConfigStore());
-
 const toast = useToast();
 
 // State setup
@@ -149,18 +145,6 @@ const manElements = [
 const formDataSchema: any = ref({});
 const formUISchema: any = ref({});
 
-// Grab the custom form configuration if it exists
-let fC: any = null;
-switch (typeof config.value.frontend.customReservationForm) {
-  case 'string':
-    fC = JSON.parse(config.value.frontend.customReservationForm);
-    break;
-  case 'object':
-    fC = config.value.frontend.customReservationForm;
-    break;
-  default:
-    fC = null;
-}
 
 /**
  * ## compileForm
@@ -168,16 +152,16 @@ switch (typeof config.value.frontend.customReservationForm) {
  * and schema above with any customizations from the forms/reservations.json file.
  * @param response Axios response object
  */
-const compileForm = () => {
+const compileForm = (response: any) => {
   /**
    * If there is a custom properties object,
    * then merge it with the mandatory properties.
    */
   let mergedProperties = {};
-  if (fC?.formDataSchema?.properties) {
+  if (response.data?.formDataSchema?.properties) {
     mergedProperties = {
       ...manProperties,
-      ...fC.formDataSchema.properties,
+      ...response.data.formDataSchema.properties,
     };
     /**
      * Otherwise, just use the mandatory properties.
@@ -191,8 +175,8 @@ const compileForm = () => {
    * then merge it with the mandatory required array.
    */
   let mergedRequired = [];
-  if (fC?.formDataSchema?.required) {
-    mergedRequired = [...manRequired, ...fC.formDataSchema.required];
+  if (response.data?.formDataSchema?.required) {
+    mergedRequired = [...manRequired, ...response.data.formDataSchema.required];
     /**
      * Otherwise, just use the mandatory required array.
      */
@@ -211,8 +195,8 @@ const compileForm = () => {
   };
 
   let mergedElements = [];
-  if (fC?.formUISchema?.elements) {
-    mergedElements = [...manElements, ...fC.formUISchema.elements];
+  if (response.data?.formUISchema?.elements) {
+    mergedElements = [...manElements, ...response.data.formUISchema.elements];
   } else {
     mergedElements = manElements;
   }
@@ -223,8 +207,24 @@ const compileForm = () => {
   };
 };
 
-// Compile the form
-compileForm();
+
+axios
+  .get('forms/reservation.json')
+  .then(compileForm)
+  .catch((error) => {
+    console.error('Could not find any custom form configuration. :(', error);
+    console.info('Defaulting to the hard-coded form configuration.');
+
+    formDataSchema.value = {
+      type: 'object',
+      properties: { ...manProperties },
+      required: [...manRequired],
+    };
+    formUISchema.value = {
+      type: 'VerticalLayout',
+      elements: [...manElements],
+    };
+  });
 
 const renderers = [...vanillaRenderers];
 
