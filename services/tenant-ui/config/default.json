@@ -18,44 +18,6 @@
       "client": "innkeeper-frontend",
       "label": "IDIR"
     },
-    "customReservationForm": {
-      "formDataSchema": {
-        "type": "object",
-        "properties": {
-          "fullName": {
-            "type": "string"
-          },
-          "phoneNumber": {
-            "type": "string"
-          },
-          "tenantReason": {
-            "type": "string"
-          }
-        },
-        "required": []
-      },
-      "formUISchema": {
-        "type": "VerticalLayout",
-        "elements": [
-          {
-            "type": "Control",
-            "scope": "#/properties/phoneNumber",
-            "label": "Phone / Mobile"
-          },
-          {
-            "type": "Control",
-            "scope": "#/properties/fullName"
-          },
-          {
-            "type": "Control",
-            "scope": "#/properties/tenantReason",
-            "options": {
-              "multi": true
-            }
-          }
-        ]
-      }
-    },
     "ux": {
       "appTitle": "Traction Tenant Console",
       "appInnkeeperTitle": "Traction Innkeeper Console",
