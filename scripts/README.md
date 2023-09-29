@@ -34,7 +34,7 @@ Currently this setup has dependencies on BCovrin Test Ledger and a registered en
 Also, there are longer term goals for moving the plugins to separate repositories and allowing teams to pull them in and configure their own Aca-Py images as needed. Currently, we are pulling the plugins in as source and building a custom image. For local development, the build of this image is included in the `docker compose build` command. Once the Aca-py + plugin image is built (tagged: `traction:plugins-acapy`), that image is pulled into another that we use to run an [ngrok](https://ngrok.com) script for external access to our agent (see [services/aca-py](../services/aca-py). This is not what we are doing in production, but we are doing it here (for now).
 
 #### traction:plugins-acapy
-This image is based on [ghcr.io/hyperledger/aries-cloudagent-python:py3.9-0.10.2](https://github.com/hyperledger/aries-cloudagent-python/releases/tag/0.10.2) and this is where we pull in the [traction plugins](../plugins) and build out the image see [Dockerfile](../plugins/docker/Dockerfile)
+This image is based on [ghcr.io/hyperledger/aries-cloudagent-python:py3.9-0.10.3](https://github.com/hyperledger/aries-cloudagent-python/releases/tag/0.10.3) and this is where we pull in the [traction plugins](../plugins) and build out the image see [Dockerfile](../plugins/docker/Dockerfile)
 
 The plugins are built using the base plugins [pyproject.toml](../plugins/pyproject.toml) which pulls in each plugin as source. Simply adding new plugin directories to the file system and adding to the dockerfile will not be enough, they must be dependencies in the `plugins/pyproject.toml`.
 
