@@ -41,8 +41,8 @@ services:
       - POSTGRESQL_USER=${POSTGRESQL_USER}
       - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
       - TRACTION_MULTITENANCY_CONFIGURATION_WALLET_TYPE=${TRACTION_MULTITENANCY_CONFIGURATION_WALLET_TYPE}
-      - TRACTION_MULTITENANCY_CONFIGURATION_WALLET_NAME=${TRACTION_MULTITENANCY_CONFIGURATION_WALLET_NAME}  
-      - ACAPY_LOG_LEVEL=${ACAPY_LOG_LEVEL}    
+      - TRACTION_MULTITENANCY_CONFIGURATION_WALLET_NAME=${TRACTION_MULTITENANCY_CONFIGURATION_WALLET_NAME}
+      - ACAPY_LOG_LEVEL=${ACAPY_LOG_LEVEL}
       - ACAPY_AUTO_PROVISION=${ACAPY_AUTO_PROVISION}
       - ACAPY_WALLET_TYPE=${ACAPY_WALLET_TYPE}
       - ACAPY_WALLET_STORAGE_TYPE=${ACAPY_WALLET_STORAGE_TYPE}
@@ -76,7 +76,7 @@ services:
       - ACAPY_MONITOR_REVOCATION_NOTIFICATION=${ACAPY_MONITOR_REVOCATION_NOTIFICATION}
       - ACAPY_ENDORSER_ROLE=${ACAPY_ENDORSER_ROLE}
       - ACAPY_AUTO_REQUEST_ENDORSEMENT=${ACAPY_AUTO_REQUEST_ENDORSEMENT}
-      - ACAPY_AUTO_WRITE_TRANSACTIONS=${ACAPY_AUTO_WRITE_TRANSACTIONS}      
+      - ACAPY_AUTO_WRITE_TRANSACTIONS=${ACAPY_AUTO_WRITE_TRANSACTIONS}
       - ACAPY_AUTO_PROMOTE_AUTHOR_DID=${ACAPY_AUTO_PROMOTE_AUTHOR_DID}
       - ACAPY_CREATE_REVOCATION_TRANSACTIONS=${ACAPY_CREATE_REVOCATION_TRANSACTIONS}
       - ACAPY_PLUGIN_CONFIG=${ACAPY_PLUGIN_CONFIG}
@@ -109,7 +109,7 @@ services:
       retries: 5
     extra_hosts:
       - host.docker.internal:host-gateway
-  
+
   tenant-ui:
     pull_policy: missing
     build:
@@ -136,8 +136,8 @@ services:
       - SERVER_SMTP_PORT=1025
     ports:
       - ${TENANT_UI_PORT}:8080
-    # volumes:
-    #   - ../services/tenant-ui/config/reservation.json:
+    volumes:
+      - ../services/tenant-ui/config/reservation.json:/usr/src/app/frontend/public/forms/reservation.json
     extra_hosts:
       - host.docker.internal:host-gateway
 
@@ -358,7 +358,7 @@ services:
       retries: 5
     extra_hosts:
       - host.docker.internal:host-gateway
-  
+
   maildev:
     image: maildev/maildev
     ports:
