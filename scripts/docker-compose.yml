@@ -137,7 +137,7 @@ services:
     ports:
       - ${TENANT_UI_PORT}:8080
     volumes:
-      - ../services/tenant-ui/config/reservation.json:/usr/src/app/frontend/public/forms/reservation.json
+      - ../services/tenant-ui/config/forms:/usr/src/app/frontend/public/forms
     extra_hosts:
       - host.docker.internal:host-gateway
 
