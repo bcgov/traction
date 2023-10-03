@@ -103,7 +103,11 @@
 
 <script setup lang="ts">
 // Types
-import { AddOcaRecordRequest } from '@/types/acapyApi/acapyInterface';
+import {
+  AddOcaRecordRequest,
+  CredDefStorageRecord,
+  SchemaStorageRecord,
+} from '@/types/acapyApi/acapyInterface';
 
 // Vue
 import { reactive, ref } from 'vue';
@@ -180,11 +184,16 @@ const handleSubmit = async (isFormValid: boolean) => {
   try {
     // Get the specific schema to edit values for
     const schemaId = storedCredDefs.value.find(
-      (cd: any) => cd.cred_def_id === formFields.selectedCred.value
-    ).schema_id;
+      (cd: CredDefStorageRecord) =>
+        cd.cred_def_id === formFields.selectedCred.value
+    )?.schema_id;
+
     const schema = storedSchemas.value.find(
-      (s: any) => s.schema_id === schemaId
+      (s: SchemaStorageRecord) => s.schema_id === schemaId
     );
+
+    if (!schema)
+      throw new Error('Unable to find schema for selected credential');
 
     const payload: AddOcaRecordRequest = {
       cred_def_id: formFields.selectedCred.value,

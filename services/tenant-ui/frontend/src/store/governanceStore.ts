@@ -1,6 +1,10 @@
 import {
   AddOcaRecordRequest,
+  CredDefStorageRecord,
+  CredentialDefinitionSendRequest,
   OcaRecord,
+  SchemaSendRequest,
+  SchemaStorageRecord,
 } from '@/types/acapyApi/acapyInterface';
 
 import { API_PATH } from '@/helpers/constants';
@@ -17,15 +21,16 @@ import {
 
 export const useGovernanceStore = defineStore('governance', () => {
   // state
-  const storedSchemas: Ref<any[]> = ref([]);
-  const selectedSchema: any = ref(null);
+  const storedSchemas: Ref<SchemaStorageRecord[]> = ref([]);
+  const selectedSchema: Ref<SchemaStorageRecord | undefined> = ref();
 
-  const storedCredDefs: any = ref([]);
-  const selectedCredentialDefinition: any = ref(null);
+  const storedCredDefs: Ref<CredDefStorageRecord[]> = ref([]);
+  const selectedCredentialDefinition: Ref<CredDefStorageRecord | undefined> =
+    ref(undefined);
 
   const ocas: Ref<OcaRecord[]> = ref([]);
 
-  const loading: any = ref(false);
+  const loading: Ref<boolean> = ref(false);
   const error: any = ref(null);
 
   // getters
@@ -33,9 +38,10 @@ export const useGovernanceStore = defineStore('governance', () => {
   const schemaList: Ref<any[]> = computed(() => {
     // For the list of schemas in the schema table, add cred defs
     return storedSchemas.value.map((s: any) => {
-      s.credentialDefinition = storedCredDefs.value.find(
+      s.credentialDefinitions = storedCredDefs.value.filter(
         (c: any) => c.schema_id === s.schema_id
       );
+      // console.log(s)
       return s;
     });
   });
@@ -87,14 +93,35 @@ export const useGovernanceStore = defineStore('governance', () => {
   const acapyApi = useAcapyApi();
 
   async function listStoredSchemas() {
-    selectedSchema.value = null;
     storedSchemas.value = [];
     return fetchList(API_PATH.SCHEMA_STORAGE, storedSchemas, error, loading);
   }
 
+  async function getStoredSchemas(): Promise<
+    SchemaStorageRecord[] | undefined
+  > {
+    try {
+      return (await acapyApi.getHttp(API_PATH.SCHEMA_STORAGE)).data.results;
+    } catch (err) {
+      console.error(err);
+    }
+    return;
+  }
+
+  async function getStoredCredDefs(): Promise<
+    CredDefStorageRecord[] | undefined
+  > {
+    try {
+      return (await acapyApi.getHttp(API_PATH.CREDENTIAL_DEFINITION_STORAGE))
+        .data.results;
+    } catch (err) {
+      console.error(err);
+    }
+    return;
+  }
+
   async function listStoredCredentialDefinitions() {
-    selectedCredentialDefinition.value = null;
-    storedCredDefs.value = null;
+    storedCredDefs.value = [];
     return fetchList(
       API_PATH.CREDENTIAL_DEFINITION_STORAGE,
       storedCredDefs,
@@ -108,7 +135,7 @@ export const useGovernanceStore = defineStore('governance', () => {
     return fetchList(API_PATH.OCAS, ocas, error, loading);
   }
 
-  async function createSchema(payload: any = {}) {
+  async function createSchema(payload: SchemaSendRequest) {
     console.log('> governanceStore.createSchema');
     error.value = null;
     loading.value = true;
@@ -126,6 +153,7 @@ export const useGovernanceStore = defineStore('governance', () => {
         listStoredSchemas();
       })
       .catch((err) => {
+        console.log(err);
         error.value = err;
         // console.log(error.value);
       })
@@ -142,7 +170,9 @@ export const useGovernanceStore = defineStore('governance', () => {
     return result;
   }
 
-  async function createCredentialDefinition(payload: any = {}) {
+  async function createCredentialDefinition(
+    payload: CredentialDefinitionSendRequest
+  ) {
     console.log('> governanceStore.createCredentialDefinition');
     error.value = null;
     loading.value = true;
@@ -152,50 +182,20 @@ export const useGovernanceStore = defineStore('governance', () => {
     await acapyApi
       .postHttp(API_PATH.CREDENTIAL_DEFINITIONS, payload)
       .then((res) => {
-        result = res.data.item;
+        result = res.data;
         console.log(result);
+      })
+      .then(() => {
+        // Refresh the schema list
+        listStoredCredentialDefinitions();
       })
       .catch((err) => {
         error.value = err;
-        // console.log(error.value);
       })
       .finally(() => {
         loading.value = false;
       });
     console.log('< governanceStore.createCredentialDefinition');
-
-    if (error.value != null) {
-      // throw error so $onAction.onError listeners can add their own handler
-      throw error.value;
-    }
-    // return data so $onAction.after listeners can add their own handler
-    return result;
-  }
-
-  async function copySchema(payload: any = {}) {
-    console.log('> governanceStore.copySchema');
-    error.value = null;
-    loading.value = true;
-
-    let result = null;
-
-    await acapyApi
-      .postHttp(API_PATH.SCHEMA_STORAGE, payload)
-      .then((res) => {
-        result = res.data;
-        console.log(result);
-      })
-      .then(() => {
-        listStoredSchemas();
-      })
-      .catch((err) => {
-        error.value = err;
-        // console.log(error.value);
-      })
-      .finally(() => {
-        loading.value = false;
-      });
-    console.log('< governanceStore.copySchema');
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
@@ -363,30 +363,38 @@ export const useGovernanceStore = defineStore('governance', () => {
     return result;
   }
 
+  const setSelectedSchemaById = (id: string) => {
+    selectedSchema.value = storedSchemas.value.find(
+      (s: any) => s.schema_id === id
+    );
+  };
+
   return {
-    loading,
-    error,
-    storedSchemas,
-    selectedSchema,
-    schemaList,
-    storedCredDefs,
-    selectedCredentialDefinition,
-    schemaTemplateDropdown,
     credentialDropdown,
+    error,
+    loading,
     ocas,
-    listStoredSchemas,
-    createSchema,
-    copySchema,
-    deleteSchema,
+    schemaList,
+    schemaTemplateDropdown,
+    selectedCredentialDefinition,
+    selectedSchema,
+    storedCredDefs,
+    storedSchemas,
     // getSchemaTemplate,
-    listStoredCredentialDefinitions,
     createCredentialDefinition,
-    getCredentialTemplate,
-    deleteStoredCredentialDefinition,
-    listOcas,
-    getOca,
     createOca,
+    createSchema,
     deleteOca,
+    deleteSchema,
+    deleteStoredCredentialDefinition,
+    getStoredCredDefs,
+    getCredentialTemplate,
+    getOca,
+    getStoredSchemas,
+    listOcas,
+    listStoredCredentialDefinitions,
+    listStoredSchemas,
+    setSelectedSchemaById,
   };
 });
 

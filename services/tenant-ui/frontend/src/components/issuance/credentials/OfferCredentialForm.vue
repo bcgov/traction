@@ -209,7 +209,7 @@ const editCredentialValues = () => {
   // Get the specific schema to edit values for
   const schemaId = storedCredDefs.value.find(
     (cd: any) => cd.cred_def_id === formFields.selectedCred.value
-  ).schema_id;
+  )?.schema_id;
   const schema = storedSchemas.value.find((s: any) => s.schema_id === schemaId);
   schemaForSelectedCred.value = schema;
 

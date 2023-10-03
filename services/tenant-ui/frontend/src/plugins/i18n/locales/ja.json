@@ -79,27 +79,67 @@
     "walletId": "Wallet ID <JA>"
   },
   "configuration": {
+    "search": {
+      "actions": "Actions <JA>",
+      "attributes": "Attributes <JA>",
+      "byAttributes": "Search By Attributes <JA>",
+      "byDate": "Search By Date <JA>",
+      "byId": "Search By ID <JA>",
+      "byName": "Search By Name <JA>",
+      "bySchemaId": "Search By Schema ID <JA>",
+      "byVersion": "Search By Version <JA>",
+      "createdAt": "Created At <JA>",
+      "credDefs": "Search Cred Defs <JA>",
+      "name": "Name <JA>",
+      "schemas": "Search Schemas <JA>",
+      "version": "Version <JA>"
+    },
     "configuration": "Configuration <JA>",
     "credentialDefinitions": {
-      "storage": "Credential Definition Storage <JA>"
+      "title": "Credential Definition(s) <JA>",
+      "alreadyExists": "The credential definition already exists on the ledger. Please use a different tag. <JA>",
+      "copy": "Copy Credential Definition <JA>",
+      "copyInfo1": "This will copy the credential definition <JA>",
+      "copyInfo2": "of the selected schema <JA>",
+      "copyInfo3": "by giving it a new tag. <JA>",
+      "create": "Create Credential Definition <JA>",
+      "delete": "Delete Credential Definition <JA>",
+      "newTag": "New Tag <JA>",
+      "postFinished": "The credential definition is now written to the ledger and can be used for issuing credentials. <JA>",
+      "postStart": "Credential definition posted to the ledger. This may take a few seconds. <JA>",
+      "revokable": "Revokable <JA>",
+      "searchBySchemaId": "Search By Schema ID <JA>",
+      "selectSchema": "Select a schema <JA>",
+      "storage": "Credential Definition Storage <JA>",
+      "stored": "Stored Credential Definitions <JA>",
+      "tagAlreadyUsed": "Tag is already used <JA>",
+      "tagRequired": "Tag is required <JA>"
     },
     "oca": {
       "bundleAssociationType": "OCA Bundle association type <JA>",
       "bundleJson": "OCA Bundle JSON <JA>",
       "bundleUrl": "OCA Bundle URL* <JA>",
-      "disclaimer": "OCA Card View for Credentials is an experimental feature in the Tenant UI. <JA>",
+      "disclaimer": "OCA Card View for Credentials in the Tenant UI is an experimental feature. <JA>",
       "oca": "OCA <JA>",
       "storedBundleJson": "Stored Bundle JSON <JA>",
       "url": "URL <JA>"
     },
     "schemas": {
+      "alreadyExists": "The schema already exists on the ledger. Please use a different name or version. <JA>",
       "copy": "Copy Schema <JA>",
+      "copyMessage": "Copying a schema will copy the same attributes and you will not be able to change them. \n You may want to create a new schema instead. <JA>",
+      "copySent": "Copied schema has been sent to the ledger. This may take a few seconds. <JA>",
       "create": "Create Schema <JA>",
-      "storage": "Schema Storage <JA>"
-    },
-    "schemasCreds": {
-      "credentialDefinitions": "Stored Credential Definitions <JA>",
-      "schemas": "Stored Schemas <JA>"
+      "emptyAttributes": "Please provide at least one attribute for the schema <JA>",
+      "id": "Schema ID <JA>",
+      "invalidCopy": "Can't copy with same {field} value [{value}] <JA>",
+      "newName": "New Schema Name <JA>",
+      "newVersion": "New Schema Version <JA>",
+      "postFinished": "The schema is now written to the ledger and can be used for credential definitions. <JA>",
+      "postStart": "Schema posted to the ledger. This may take a few seconds. <JA>",
+      "schema": "Schema <JA>",
+      "storage": "Schema Storage <JA>",
+      "stored": "Stored Schemas <JA>"
     }
   },
   "connect": {
@@ -401,7 +441,7 @@
       "editSettings": "Edit Tenant Config <JA>",
       "endorserAlias": "Endorser Alias <JA>",
       "ledgerName": "Ledger Name <JA>",
-      "success": "Tenant Config Updated <FR>"
+      "success": "Tenant Config Updated <JA>"
     },
     "tenants": "Tenants <JA>"
   },

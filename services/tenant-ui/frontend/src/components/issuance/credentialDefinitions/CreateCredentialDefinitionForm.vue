@@ -3,15 +3,29 @@
     <!-- Schema -->
     <div class="field">
       <label for="schema">{{ $t('issue.schema') }}</label>
-      <InputText
-        id="schema"
-        :value="schema.schema.name"
-        readonly
-        :disabled="loading"
-        class="w-full"
-      />
-      <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
-      <small>{{ $t('id') }}: {{ schema.schema_id }}</small>
+      <div v-if="schema">
+        <InputText
+          id="schema"
+          :value="schema.schema.name"
+          readonly
+          :disabled="loading"
+          class="w-full"
+        />
+        <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
+        <small>id: {{ schema.schema_id }}</small>
+      </div>
+      <div v-else-if="schemas?.length">
+        <Dropdown
+          id="schema_id"
+          v-model="formFields.schema_id"
+          :options="storedSchemas"
+          option-value="schema_id"
+          option-label="schema_id"
+          :disabled="loading"
+          class="w-full"
+          :placeholder="t('configuration.credentialDefinitions.selectSchema')"
+        />
+      </div>
     </div>
     <!-- Tag -->
     <div class="field">
@@ -29,7 +43,7 @@
       />
       <span v-if="v$.creddef_tag.$error && submitted">
         <span v-for="(error, index) of v$.creddef_tag.$errors" :key="index">
-          <small class="p-error">{{ error.$message }}</small>
+          <small class="p-error"> {{ error.$message }} </small>
         </span>
       </span>
       <small v-else-if="v$.creddef_tag.$invalid && submitted" class="p-error">{{
@@ -84,53 +98,100 @@
       type="submit"
       label="Create"
       class="mt-4 w-full"
-      :disabled="loading"
+      :disabled="loading || (formFields.schema_id === '' && !schema)"
       :loading="loading"
     />
   </form>
 </template>
 <script setup lang="ts">
-import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
-import Checkbox from 'primevue/checkbox';
-import { reactive, ref } from 'vue';
-import { useToast } from 'vue-toastification';
-import { storeToRefs } from 'pinia';
-import { useGovernanceStore } from '../../../store';
-
-import { required, requiredIf, integer, between } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
+import {
+  between,
+  helpers,
+  integer,
+  minLength,
+  required,
+  requiredIf,
+} from '@vuelidate/validators';
+import { storeToRefs } from 'pinia';
+import Button from 'primevue/button';
+import Checkbox from 'primevue/checkbox';
+import Dropdown from 'primevue/dropdown';
+import InputText from 'primevue/inputtext';
+import { PropType, reactive, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useToast } from 'vue-toastification';
 
-const governanceStore = useGovernanceStore();
-const toast = useToast();
+import errorHandler from '@/helpers/errorHandler';
+import { useGovernanceStore } from '@/store';
+import { CredentialDefinitionSendRequest } from '@/types/acapyApi/acapyInterface';
 
 const props = defineProps({
   schema: {
     type: Object,
-    required: true,
+    required: false,
+    default: undefined,
+  },
+  schemas: {
+    type: Array as PropType<any[]>,
+    required: false,
+    default: undefined,
   },
 });
 
+const toast = useToast();
+const { t } = useI18n();
+
+const governanceStore = useGovernanceStore();
+
 // use the loading state from the store to disable the button...
-const { loading } = storeToRefs(useGovernanceStore());
+const { loading, storedSchemas } = storeToRefs(useGovernanceStore());
 
 const emit = defineEmits(['closed', 'success']);
 
 // Validation
 const formFields = reactive({
+  schema_id: '',
   creddef_tag: '',
   creddef_revocation_enabled: false,
   creddef_revocation_registry_size: '4',
 });
 
+const tagNotUsed = (value: string) => {
+  let activeSchema;
+  if (props.schema) activeSchema = props.schema;
+  else if (props.schemas) {
+    activeSchema = props.schemas.find(
+      (schema: any) => schema.schema_id === formFields.schema_id
+    );
+  }
+
+  if (!activeSchema) return true;
+
+  return !activeSchema.credentialDefinitions.some(
+    (credDef: any) => credDef.tag === value
+  );
+};
+
 const rules = {
-  creddef_tag: { required },
+  creddef_tag: {
+    required,
+    minLength: minLength(1),
+    tagNotUsed: helpers.withMessage(
+      t(
+        'configuration.credentialDefinitions.tagAlreadyUsed',
+        formFields.creddef_tag
+      ),
+      tagNotUsed
+    ),
+  },
   creddef_revocation_registry_size: {
     integer,
     betweenValue: between(4, 32768),
     requiredEnabled: requiredIf(formFields.creddef_revocation_registry_size),
   },
 };
+
 const v$ = useVuelidate(rules, formFields);
 
 // Form submission
@@ -142,10 +203,10 @@ const handleSubmit = async (isFormValid: boolean) => {
     return;
   }
 
-  const payload: any = {
+  const payload: CredentialDefinitionSendRequest = {
     tag: formFields.creddef_tag,
     support_revocation: formFields.creddef_revocation_enabled,
-    schema_id: props.schema.schema_id,
+    schema_id: props.schema ? props.schema.schema_id : formFields.schema_id,
   };
   if (formFields.creddef_revocation_enabled) {
     let rrs = 0;
@@ -158,18 +219,13 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 
   try {
-    // call store
     await governanceStore.createCredentialDefinition(payload);
-    // // Give 2 seconds to wait
-    // // TODO: should this be here? Or set it as "pending" or something and come right back...
-    loading.value = true;
-    await new Promise((r) => setTimeout(r, 2000));
-    toast.success('Credential Definition sent to ledger');
+
+    toast.success(t('configuration.credentialDefinitions.postStart'));
     emit('success');
-    // close on success
-    emit('closed');
-  } catch (error) {
-    toast.error(`Failure: ${error}`);
+    emit('closed', payload);
+  } catch (error: any) {
+    errorHandler(error, t('configuration.credentialDefinitions.alredyExists'));
   } finally {
     submitted.value = false;
   }

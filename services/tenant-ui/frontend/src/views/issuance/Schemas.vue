@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Schemas from '../../components/issuance/Schemas.vue';
+import Schemas from '@/components/issuance/schemas/Schemas.vue';
 </script>
 
 <template>

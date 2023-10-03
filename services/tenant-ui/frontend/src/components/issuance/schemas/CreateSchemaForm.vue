@@ -88,31 +88,34 @@
             </button>
           </div>
         </div>
-        <Button type="submit" label="Create Schema" class="mt-5 w-full" />
+        <Button
+          type="submit"
+          :label="t('configuration.schemas.create')"
+          class="mt-5 w-full"
+        />
       </div>
     </form>
   </div>
 </template>
 
 <script setup lang="ts">
-// Vue
-import { reactive, ref } from 'vue';
-// PrimeVue / Validation
+import { useVuelidate } from '@vuelidate/core';
+import { helpers, required } from '@vuelidate/validators';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-import { required, helpers } from '@vuelidate/validators';
-import { useVuelidate } from '@vuelidate/core';
-// State
-import { useGovernanceStore } from '@/store';
-import { storeToRefs } from 'pinia';
-// Other imports
+import { reactive, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
 
+import errorHandler from '@/helpers/errorHandler';
+import { useGovernanceStore } from '@/store';
+import { SchemaSendRequest } from '@/types/acapyApi/acapyInterface';
+
 const toast = useToast();
+const { t } = useI18n();
 
 // Store values
 const governanceStore = useGovernanceStore();
-const { loading } = storeToRefs(useGovernanceStore());
 
 const emit = defineEmits(['closed', 'success']);
 
@@ -165,26 +168,23 @@ const handleSubmit = async (isFormValid: boolean) => {
       .map((attribute) => attribute.name);
 
     if (!justAttributeNames.length) {
-      toast.error('Please provide at least one attribute for the schema');
+      toast.error(t('configuration.schemas.emptyAttributes'));
       return;
     }
 
-    const payload = {
+    const payload: SchemaSendRequest = {
       attributes: justAttributeNames,
       schema_name: formFields.schemaName,
       schema_version: formFields.schemaVersion,
     };
 
-    // call store
     await governanceStore.createSchema(payload);
-    toast.success(
-      'Schema created. If it does not appear yet, refresh the table.'
-    );
+
+    toast.success(t('configuration.schemas.postStart'));
     emit('success');
-    // close up on success
-    emit('closed');
+    emit('closed', payload);
   } catch (error) {
-    toast.error(`Failure: ${error}`);
+    errorHandler(error, t('configuration.schemas.alredyExists'));
   } finally {
     submitted.value = false;
   }

@@ -79,9 +79,41 @@
     "walletId": "Wallet ID"
   },
   "configuration": {
+    "search": {
+      "actions": "Actions",
+      "attributes": "Attributes",
+      "byAttributes": "Search By Attributes",
+      "byDate": "Search By Date",
+      "byId": "Search By ID",
+      "byName": "Search By Name",
+      "bySchemaId": "Search By Schema ID",
+      "byVersion": "Search By Version",
+      "createdAt": "Created At",
+      "credDefs": "Search Cred Defs",
+      "name": "Name",
+      "schemas": "Search Schemas",
+      "version": "Version"
+    },
     "configuration": "Configuration",
     "credentialDefinitions": {
-      "storage": "Credential Definition Storage"
+      "title": "Credential Definition(s)",
+      "alreadyExists": "The credential definition already exists on the ledger. Please use a different tag.",
+      "copy": "Copy Credential Definition",
+      "copyInfo1": "This will copy the credential definition",
+      "copyInfo2": "of the selected schema",
+      "copyInfo3": "by giving it a new tag.",
+      "create": "Create Credential Definition",
+      "delete": "Delete Credential Definition",
+      "newTag": "New Tag",
+      "postFinished": "The credential definition is now written to the ledger and can be used for issuing credentials.",
+      "postStart": "Credential definition posted to the ledger. This may take a few seconds.",
+      "revokable": "Revokable",
+      "searchBySchemaId": "Search By Schema ID",
+      "selectSchema": "Select a schema",
+      "storage": "Credential Definition Storage",
+      "stored": "Stored Credential Definitions",
+      "tagAlreadyUsed": "Tag is already used",
+      "tagRequired": "Tag is required"
     },
     "oca": {
       "bundleAssociationType": "OCA Bundle association type",
@@ -93,13 +125,21 @@
       "url": "URL"
     },
     "schemas": {
+      "alreadyExists": "The schema already exists on the ledger. Please use a different name or version.",
       "copy": "Copy Schema",
+      "copyMessage": "Copying a schema will copy the same attributes and you will not be able to change them. \n You may want to create a new schema instead.",
+      "copySent": "Copied schema has been sent to the ledger. This may take a few seconds.",
       "create": "Create Schema",
-      "storage": "Schema Storage"
-    },
-    "schemasCreds": {
-      "credentialDefinitions": "Stored Credential Definitions",
-      "schemas": "Stored Schemas"
+      "emptyAttributes": "Please provide at least one attribute for the schema",
+      "id": "Schema ID",
+      "invalidCopy": "Can't copy with same {field} value [{value}]",
+      "newName": "New Schema Name",
+      "newVersion": "New Schema Version",
+      "postFinished": "The schema is now written to the ledger and can be used for credential definitions.",
+      "postStart": "Schema posted to the ledger. This may take a few seconds.",
+      "schema": "Schema",
+      "storage": "Schema Storage",
+      "stored": "Stored Schemas"
     }
   },
   "connect": {
@@ -434,5 +474,6 @@
     "countdownHeader": "Session timing out",
     "timeoutMessage": "Your session has timed out due to inactivity and you have been logged out. Please re-enter your login information.",
     "timeoutHeader": " "
-  }
+  },
+  "placeholder": "placeholder"
 }
