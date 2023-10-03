@@ -10,7 +10,7 @@
 !.vscode/settings.json
 .idea
 config/local.json
-config/reservation.json
+config/forms
 
 # Temporary files
 *.log
