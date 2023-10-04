@@ -136,8 +136,11 @@ services:
       - SERVER_SMTP_PORT=1025
     ports:
       - ${TENANT_UI_PORT}:8080
+    ###############################################
+    # Comment the following out if you want to use the default reservation form
     volumes:
-      - ../services/tenant-ui/config/forms:/usr/src/app/frontend/public/forms
+      - ../services/tenant-ui/config/forms:/usr/src/app/frontend/dist/forms
+    ###############################################
     extra_hosts:
       - host.docker.internal:host-gateway
 
@@ -159,6 +162,12 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
 
+<<<<<<< HEAD
+=======
+  ###############################################
+  # XXX: The following is breaking the build
+  ###############################################
+>>>>>>> Docker volume mount is working
   # tenant-lob:
   #   build:
   #     context: ../services/tenant-lob
@@ -178,6 +187,10 @@ services:
   #     - ${LOB_PORT}:8088
   #   extra_hosts:
   #     - host.docker.internal:host-gateway
+<<<<<<< HEAD
+=======
+  ###############################################
+>>>>>>> Docker volume mount is working
 
   endorser-api:
     pull_policy: missing
