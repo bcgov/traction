@@ -260,7 +260,7 @@ Create a default fully qualified app name for the postgres requirement.
 Generate acapy wallet storage config
 */}}
 {{- define "acapy.walletStorageConfig" -}}
-{{- if and .Values.acapy.walletStorageConfig (not .Values.postgresql.enabled) (not index .Values "postgresql-ha" "enabled") -}}
+{{- if and .Values.acapy.walletStorageConfig (not .Values.postgresql.enabled) (not (index .Values "postgresql-ha" "enabled")) -}}
 {{- if .Values.acapy.walletStorageConfig.json -}}
 {{- .Values.acapy.walletStorageConfig.json -}}
 {{- else -}}
@@ -279,7 +279,7 @@ Generate acapy wallet storage config
 Generate acapy wallet storage credentials
 */}}
 {{- define "acapy.walletStorageCredentials" -}}
-{{- if and .Values.acapy.walletStorageCredentials (not .Values.postgresql.enabled) (not index .Values "postgresql-ha" "enabled") -}}
+{{- if and .Values.acapy.walletStorageCredentials (not .Values.postgresql.enabled) (not (index .Values "postgresql-ha" "enabled")) -}}
 {{- if .Values.acapy.walletStorageCredentials.json -}}
 {{- .Values.acapy.walletStorageCredentials.json -}}
 {{- else -}}
