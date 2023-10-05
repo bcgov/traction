@@ -22,12 +22,12 @@ export const formattSchemaList = (
     schema: {
       name: schema.schema.name,
       version: schema.schema.version,
-      attrNames: schema.schema.attrNames,
+      attrNames: schema.schema.attrNames.sort(),
     },
     schema_id: schema.schema_id,
     created: formatDateLong(schema.created_at),
     created_at: schema.created_at,
-    credentialDefinitions: schema.credentialDefinitions,
+    credentialDefinitions: schema.credentialDefinitions.sort(),
   }));
 
 export const formattStoredCredDefs = (

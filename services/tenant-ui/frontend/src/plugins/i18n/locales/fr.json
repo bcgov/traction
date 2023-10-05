@@ -125,14 +125,20 @@
       "url": "URL <FR>"
     },
     "schemas": {
+      "add": "Add Schema <FR>",
+      "addFromLedger": "Add Schema from Ledger <FR>",
+      "addFromLedgerInfo": "This will add any schema from the connected ledger for use in this traction tenant. You must enter the full schema ID. <FR>",
       "alreadyExists": "The schema already exists on the ledger. Please use a different name or version. <FR>",
       "copy": "Copy Schema <FR>",
-      "copyMessage": "Copying a schema will copy the same attributes and you will not be able to change them. \n You may want to create a new schema instead. <FR>",
+      "addedFromLedger": "The schema [{schemaId}] has been added from the ledger. <FR>",
+      "copyMessage": "You can change attributes, but the new schema must have either a different name or version. <FR>",
       "copySent": "Copied schema has been sent to the ledger. This may take a few seconds. <FR>",
       "create": "Create Schema <FR>",
+      "delete": "Delete Schema <FR>",
       "emptyAttributes": "Please provide at least one attribute for the schema <FR>",
       "id": "Schema ID <FR>",
       "invalidCopy": "Can't copy with same {field} value [{value}] <FR>",
+      "mustBeDecimal": "Must be a 2 or 3-part decimal value like x.y or x.y.z <FR>",
       "newName": "New Schema Name <FR>",
       "newVersion": "New Schema Version <FR>",
       "postFinished": "The schema is now written to the ledger and can be used for credential definitions. <FR>",
@@ -261,8 +267,8 @@
     },
     "schema": "Schema <FR>",
     "schemaId": "Schema Id* <FR>",
-    "schemaName": "Schema Name* <FR>",
-    "schemaVersion": "Schema Version* <FR>",
+    "schemaName": "Name* <FR>",
+    "schemaVersion": "Version* <FR>",
     "version": "Version: <FR>"
   },
   "layout": {

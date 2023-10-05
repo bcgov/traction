@@ -26,6 +26,7 @@
             class="flex justify-content-start"
           >
             <CreateSchema :table-reload="loadTable" />
+            <AddSchemaFromLedger />
           </div>
           <div class="flex justify-content-end">
             <span class="p-input-icon-left">
@@ -52,12 +53,7 @@
               class="p-button-rounded p-button-icon-only p-button-text"
               @click="deleteSchema($event, data)"
             />
-            <Button
-              title="t('configuration.schemas.copy')"
-              icon="pi pi-copy"
-              class="p-button-rounded p-button-icon-only p-button-text"
-              @click="openCopyModal(data)"
-            />
+            <CopySchema :stored-schema="data" :table-reload="loadTable" />
           </div>
         </template>
       </Column>
@@ -163,44 +159,33 @@
       </template>
     </DataTable>
   </MainCardContent>
-  <Dialog
-    v-model:visible="displayModal"
-    :header="$t('configuration.schemas.copy')"
-    :modal="true"
-    :style="{ minWidth: '400px' }"
-  >
-    <CopySchemaForm @closed="handleCopyModalClose" />
-  </Dialog>
 </template>
 
 <script setup lang="ts">
+// Libraries
 import { storeToRefs } from 'pinia';
 import { FilterMatchMode } from 'primevue/api';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import { useConfirm } from 'primevue/useconfirm';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
-
+// Source
 import RowExpandData from '@/components/common/RowExpandData.vue';
+import NestedCredentialDefinition from '@/components/issuance/credentialDefinitions/NestedCredentialDefinition.vue';
 import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
 import { stringOrBooleanTruthy } from '@/helpers';
 import { API_PATH, TABLE_OPT } from '@/helpers/constants';
 import { formattSchemaList } from '@/helpers/formatters';
 import { useGovernanceStore } from '@/store';
 import { useConfigStore } from '@/store/configStore';
-import {
-  SchemaSendRequest,
-  SchemaStorageRecord,
-} from '@/types/acapyApi/acapyInterface';
-import NestedCredentialDefinition from '@/components/issuance/credentialDefinitions/NestedCredentialDefinition.vue';
-import CopySchemaForm from './CopySchemaForm.vue';
+import { SchemaStorageRecord } from '@/types/acapyApi/acapyInterface';
+import AddSchemaFromLedger from './AddSchemaFromLedger.vue';
+import CopySchema from './CopySchema.vue';
 import CreateSchema from './CreateSchema.vue';
-import checkSchemaPostedInterval from './checkSchemaPostedInterval';
 
 const { t } = useI18n();
 const confirm = useConfirm();
@@ -245,25 +230,6 @@ const deleteSchema = (event: any, schema: SchemaStorageRecord) => {
         });
     },
   });
-};
-
-// Open close dialog
-const displayModal = ref(false);
-const openCopyModal = async (schema: SchemaStorageRecord) => {
-  // Kick of the loading asyncs (if needed)
-  selectedSchema.value = schema;
-  displayModal.value = true;
-};
-
-const handleCopyModalClose = async (schema: SchemaSendRequest) => {
-  displayModal.value = false;
-  checkSchemaPostedInterval(
-    schema,
-    governanceStore.getStoredSchemas,
-    loadTable,
-    t('configuration.schemas.postFinished'),
-    selectedSchema
-  );
 };
 
 // necessary for expanding rows, we don't do anything with this

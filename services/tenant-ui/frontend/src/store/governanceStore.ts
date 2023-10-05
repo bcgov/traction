@@ -18,6 +18,7 @@ import {
   filterMapSortList,
   sortByLabelAscending,
 } from './utils';
+import { AddSchemaFromLedgerRequest, StoredSchemaWithCredDefs } from '@/types';
 
 export const useGovernanceStore = defineStore('governance', () => {
   // state
@@ -35,13 +36,12 @@ export const useGovernanceStore = defineStore('governance', () => {
 
   // getters
 
-  const schemaList: Ref<any[]> = computed(() => {
+  const schemaList: Ref<StoredSchemaWithCredDefs[]> = computed(() => {
     // For the list of schemas in the schema table, add cred defs
     return storedSchemas.value.map((s: any) => {
       s.credentialDefinitions = storedCredDefs.value.filter(
-        (c: any) => c.schema_id === s.schema_id
+        (c: CredDefStorageRecord) => c.schema_id === s.schema_id
       );
-      // console.log(s)
       return s;
     });
   });
@@ -161,6 +161,41 @@ export const useGovernanceStore = defineStore('governance', () => {
         loading.value = false;
       });
     console.log('< governanceStore.createSchema');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return result;
+  }
+
+  async function addSchemaFromLedgerToStorage(
+    payload: AddSchemaFromLedgerRequest
+  ) {
+    console.log('> governanceStore.copySchema');
+    error.value = null;
+    loading.value = true;
+
+    let result = null;
+
+    await acapyApi
+      .postHttp(API_PATH.SCHEMA_STORAGE, payload)
+      .then((res) => {
+        result = res.data;
+        console.log(result);
+      })
+      .then(() => {
+        listStoredSchemas();
+      })
+      .catch((err) => {
+        error.value = err;
+        // console.log(error.value);
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< governanceStore.copySchema');
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
@@ -363,9 +398,10 @@ export const useGovernanceStore = defineStore('governance', () => {
     return result;
   }
 
-  const setSelectedSchemaById = (id: string) => {
+  const setSelectedSchemaById = async (id: string) => {
+    await getStoredSchemas();
     selectedSchema.value = storedSchemas.value.find(
-      (s: any) => s.schema_id === id
+      (s: SchemaStorageRecord) => s.schema_id === id
     );
   };
 
@@ -381,6 +417,7 @@ export const useGovernanceStore = defineStore('governance', () => {
     storedCredDefs,
     storedSchemas,
     // getSchemaTemplate,
+    addSchemaFromLedgerToStorage,
     createCredentialDefinition,
     createOca,
     createSchema,

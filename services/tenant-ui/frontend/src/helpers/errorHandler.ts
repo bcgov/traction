@@ -3,15 +3,16 @@ import { useToast } from 'vue-toastification';
 
 const toast = useToast();
 
+const isDuplicate = (error: any | AxiosError) =>
+  error.response?.data.includes('already exists') ||
+  error.response?.data.includes('Duplicate row');
+
 const errorHandler = (
   error: any | AxiosError,
   existsMessage: string = 'The resource already exists'
 ) => {
   if (axios.isAxiosError(error))
-    if (
-      error.response?.data &&
-      error.response?.data.includes('already exists')
-    ) {
+    if (error.response?.data && isDuplicate(error)) {
       toast.error(existsMessage);
       return;
     }
