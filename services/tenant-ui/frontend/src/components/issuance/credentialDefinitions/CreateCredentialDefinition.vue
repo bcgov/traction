@@ -68,4 +68,3 @@ const handleClose = (credDef: CredentialDefinitionSendRequest) => {
   );
 };
 </script>
-@/helpers/tableFormatters

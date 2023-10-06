@@ -295,4 +295,3 @@ onUnmounted(() => {
   text-shadow: 0 0 1px black;
 }
 </style>
-@/helpers/tableFormatters

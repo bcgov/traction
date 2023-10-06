@@ -274,5 +274,3 @@ onBeforeUnmount(() => {
   margin: 3rem 1rem 0 0;
 }
 </style>
-./checkSchemaPostedInterval
-@/helpers/tableFormatters
