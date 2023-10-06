@@ -10,7 +10,6 @@
 !.vscode/settings.json
 .idea
 config/local.json
-config/forms
 
 # Temporary files
 *.log

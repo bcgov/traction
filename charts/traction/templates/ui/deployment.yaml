@@ -72,7 +72,13 @@ spec:
                 name: {{ template "tenant-ui.fullname" . }}
           resources:
             {{- toYaml .Values.ui.resources | nindent 12 }}
+          volumeMounts:
+            - name: reservation-json
+              mountPath: /usr/src/app/frontend/dist/forms/reservation.json
       {{- with .Values.ui.nodeSelector }}
+      volumes:
+        - name: reservation-json
+          value: {{ .Values.reservation-json | toJson | quote }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
