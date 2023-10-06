@@ -28,29 +28,13 @@
       </div>
     </div>
     <!-- Tag -->
-    <div class="field">
-      <label
-        for="creddef_tag"
-        :class="{ 'p-error': v$.creddef_tag.$invalid && submitted }"
-        >{{ $t('issue.credentialDefinitionTag') }}</label
-      >
-      <InputText
-        id="creddef_tag"
-        v-model="v$.creddef_tag.$model"
-        :disabled="loading"
-        class="w-full"
-        :class="{ 'p-invalid': v$.creddef_tag.$invalid && submitted }"
-      />
-      <span v-if="v$.creddef_tag.$error && submitted">
-        <span v-for="(error, index) of v$.creddef_tag.$errors" :key="index">
-          <small class="p-error"> {{ error.$message }} </small>
-        </span>
-      </span>
-      <small v-else-if="v$.creddef_tag.$invalid && submitted" class="p-error">{{
-        v$.creddef_tag.required.$message
-      }}</small>
-    </div>
-
+    <ValidatedField
+      :validation="v$"
+      :submitted="submitted"
+      :loading="loading"
+      :field-name="'creddef_tag'"
+      :label="$t('issue.credentialDefinitionTag')"
+    />
     <!-- Revocation -->
     <div class="field">
       <div class="field-checkbox">
@@ -66,34 +50,15 @@
         }}</label>
       </div>
     </div>
-    <div v-if="formFields.creddef_revocation_enabled" class="field">
-      <label
-        for="creddef_revocation_registry_size"
-        :class="{
-          'p-error': v$.creddef_revocation_registry_size.$invalid && submitted,
-        }"
-        >{{ $t('issue.revocationRegistrySize') }}</label
-      >
-      <InputText
-        id="creddef_revocation_registry_size"
-        v-model="v$.creddef_revocation_registry_size.$model"
-        :disabled="loading"
-        class="w-full"
-        :class="{
-          'p-invalid':
-            v$.creddef_revocation_registry_size.$invalid && submitted,
-        }"
+    <div v-if="formFields.creddef_revocation_enabled">
+      <ValidatedField
+        :validation="v$"
+        :submitted="submitted"
+        :loading="loading"
+        :field-name="'creddef_revocation_registry_size'"
+        :label="$t('issue.revocationRegistrySize')"
       />
-      <span v-if="v$.creddef_revocation_registry_size.$error && submitted">
-        <span
-          v-for="(error, index) of v$.creddef_revocation_registry_size.$errors"
-          :key="index"
-        >
-          <small class="p-error mr-2">{{ error.$message }}</small>
-        </span>
-      </span>
     </div>
-
     <Button
       type="submit"
       label="Create"
@@ -122,6 +87,7 @@ import { PropType, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
 
+import ValidatedField from '@/components/common/ValidatedField.vue';
 import errorHandler from '@/helpers/errorHandler';
 import { useGovernanceStore } from '@/store';
 import { CredentialDefinitionSendRequest } from '@/types/acapyApi/acapyInterface';

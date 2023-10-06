@@ -215,14 +215,14 @@ const loadTable = async () => {
 const deleteSchema = (event: any, schema: SchemaStorageRecord) => {
   confirm.require({
     target: event.currentTarget,
-    message: 'Are you sure you want to delete this schema?',
-    header: 'Confirmation',
+    message: t('configuration.schemas.confirmDelete'),
+    header: t('common.confirmation'),
     icon: 'pi pi-exclamation-triangle',
     accept: () => {
       governanceStore
         .deleteSchema(schema.schema_id)
         .then(() => {
-          toast.success(`Schema successfully deleted`);
+          toast.success(t('configuration.schemas.deleteSuccess'));
         })
         .catch((err) => {
           console.error(err);

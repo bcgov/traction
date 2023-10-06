@@ -16,34 +16,19 @@
           </div>
         </div>
         <div class="fields-container">
-          <div class="field mt-5">
-            <label
-              for="tag"
-              :class="{
-                'p-error': v$.tag.$invalid && submitted,
-              }"
-              >{{ $t('configuration.credentialDefinitions.newTag') }}</label
-            >
-            <InputText
-              id="tag"
-              v-model="v$.tag.$model"
-              class="w-full"
-              :class="{
-                'p-invalid': v$.tag.$invalid && submitted,
-              }"
+          <div class="mt-5">
+            <ValidatedField
+              :validation="v$"
+              :submitted="submitted"
+              :loading="loading"
+              :field-name="'tag'"
+              :label="$t('configuration.credentialDefinitions.newTag')"
             />
-            <span v-if="v$.tag.$error && submitted">
-              <span v-for="(error, index) of v$.tag.$errors" :key="index">
-                <small class="p-error">{{ error.$message }}</small>
-              </span>
-            </span>
-            <span v-else style="visibility: hidden">
-              <small class="p-error">{{ $t('placeholder') }}</small>
-            </span>
             <Button
               type="submit"
               :label="t('configuration.credentialDefinitions.copy')"
               class="mt-2 w-full"
+              :loading="loading"
             />
           </div>
         </div>
@@ -57,18 +42,18 @@ import { useVuelidate } from '@vuelidate/core';
 import { helpers, required } from '@vuelidate/validators';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
 import { reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
 
+import ValidatedField from '@/components/common/ValidatedField.vue';
 import errorHandler from '@/helpers/errorHandler';
 import { useGovernanceStore } from '@/store';
 
 const toast = useToast();
 const { t } = useI18n();
 
-const { selectedCredentialDefinition, storedCredDefs } = storeToRefs(
+const { loading, selectedCredentialDefinition, storedCredDefs } = storeToRefs(
   useGovernanceStore()
 );
 const governanceStore = useGovernanceStore();
@@ -140,7 +125,7 @@ const handleSubmit = async (isFormValid: boolean) => {
 
 <style scoped>
 .container {
-  min-width: 400px;
+  min-width: 500px;
   display: inline-block;
   margin: 0 auto;
   text-align: left;

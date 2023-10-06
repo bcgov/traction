@@ -153,7 +153,7 @@
 </template>
 
 <script setup lang="ts">
-// Vue
+// Libraries
 import { storeToRefs } from 'pinia';
 import { FilterMatchMode } from 'primevue/api';
 import Button from 'primevue/button';
@@ -166,7 +166,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
-
+// Source
 import RowExpandData from '@/components/common/RowExpandData.vue';
 import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
 import { stringOrBooleanTruthy } from '@/helpers';
@@ -217,15 +217,14 @@ onMounted(async () => {
 const deleteCredDef = (event: any, id: string) => {
   confirm.require({
     target: event.currentTarget,
-    message:
-      'Are you sure you want to remove this credential definition from storage?',
-    header: 'Confirmation',
+    message: t('configuration.credentialDefinitions.confirmDelete'),
+    header: t('common.confirmation'),
     icon: 'pi pi-exclamation-triangle',
     accept: () => {
       governanceStore
         .deleteStoredCredentialDefinition(id)
         .then(() => {
-          toast.success(`Credential definition removed from storage`);
+          toast.success(t('configuration.credentialDefinitions.deleteSuccess'));
         })
         .catch((err) => {
           console.error(err);

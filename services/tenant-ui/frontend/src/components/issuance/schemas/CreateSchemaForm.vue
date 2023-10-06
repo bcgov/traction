@@ -9,44 +9,25 @@
           <p style="font-weight: bold">{{ selectedSchema?.schema_id }}</p>
         </div>
         <!-- schema name -->
-        <div class="field mt-5">
-          <label for="name" :class="{ 'p-error': isError(v$, 'name') }">{{
-            $t('issue.schemaName')
-          }}</label>
-          <InputText
-            id="name"
-            v-model="v$.name.$model"
-            :placeholder="isCopy ? selectedSchema?.schema?.name : ''"
-            class="w-full"
-            :class="{ 'p-invalid': isError(v$, 'name') }"
-          />
-          <span v-if="isError(v$, 'name')">
-            <span v-for="(error, index) of v$.name.$errors" :key="index">
-              <small class="p-error">{{ error.$message }}</small>
-            </span>
-          </span>
-          <span v-else style="visibility: hidden">
-            <small class="p-error">{{ $t('placeholder') }}</small>
-          </span>
-        </div>
+        <ValidatedField
+          :placeholder="isCopy ? selectedSchema?.schema?.name : ''"
+          :field-name="'name'"
+          :label="$t('issue.schemaName')"
+          :loading="loading"
+          :submitted="submitted"
+          :validation="v$"
+          :advanced-is-error="isError"
+        />
         <!-- schema version -->
-        <div class="field mt-3">
-          <label for="version" :class="{ 'p-error': isError(v$, 'version') }">{{
-            $t('issue.schemaVersion')
-          }}</label>
-          <InputText
-            id="version"
-            v-model="v$.version.$model"
-            :placeholder="isCopy ? selectedSchema?.schema?.version : ''"
-            class="w-full"
-            :class="{ 'p-invalid': isError(v$, 'version') }"
-          />
-          <span v-if="isError(v$, 'version')">
-            <span v-for="(error, index) of v$.version.$errors" :key="index">
-              <small class="p-error">{{ error.$message }}</small>
-            </span>
-          </span>
-        </div>
+        <ValidatedField
+          :placeholder="isCopy ? selectedSchema?.schema?.version : ''"
+          :field-name="'version'"
+          :label="$t('issue.schemaVersion')"
+          :loading="loading"
+          :submitted="submitted"
+          :validation="v$"
+          :advanced-is-error="isError"
+        />
         <!-- attributes -->
         <Attributes ref="attributes" :initial-attributes="initialAttributes" />
         <Button
@@ -54,6 +35,7 @@
           :label="t('configuration.schemas.create')"
           class="mt-5 w-full"
           :disabled="formFields.name === '' && formFields.version === ''"
+          :loading="loading"
         />
       </div>
     </form>
@@ -64,24 +46,24 @@
 // Libraries
 import { useVuelidate } from '@vuelidate/core';
 import { helpers, required } from '@vuelidate/validators';
+import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
 import { reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
-import { storeToRefs } from 'pinia';
 // Source
+import ValidatedField from '@/components/common/ValidatedField.vue';
 import errorHandler from '@/helpers/errorHandler';
 import { useGovernanceStore } from '@/store';
-import { SchemaSendRequest } from '@/types/acapyApi/acapyInterface';
 import { Attribute } from '@/types';
+import { SchemaSendRequest } from '@/types/acapyApi/acapyInterface';
 import Attributes from './Attributes.vue';
 
 const toast = useToast();
 const { t } = useI18n();
 
 const governanceStore = useGovernanceStore();
-const { selectedSchema } = storeToRefs(useGovernanceStore());
+const { loading, selectedSchema } = storeToRefs(useGovernanceStore());
 
 const emit = defineEmits(['closed', 'success']);
 const attributes = ref();
@@ -97,6 +79,7 @@ const props = defineProps({
     required: false,
     default: [],
   },
+  // This can be used if emit won't work from parent component
   onClose: {
     type: Function,
     required: false,

@@ -8,29 +8,20 @@
           </p>
         </div>
       </div>
-      <div class="fields-container">
-        <div class="field mt-5">
-          <InputText
-            id="schemaId"
-            v-model="v$.schemaId.$model"
-            style="text-align: center"
-            class="w-full"
-            :placeholder="t('configuration.schemas.id')"
-            :class="{ 'p-invalid': v$.schemaId.$invalid && submitted }"
-          />
-        </div>
-        <span v-if="v$.schemaId.$error && submitted">
-          <span v-for="(error, index) of v$.schemaId.$errors" :key="index">
-            <small class="p-error">{{ error.$message }}</small>
-          </span>
-        </span>
-        <small v-else-if="v$.schemaId.$invalid && submitted" class="p-error">
-          {{ v$.schemaId.required.$message }}
-        </small>
+      <div class="fields-container mt-5">
+        <ValidatedField
+          :center-placeholder="true"
+          :validation="v$"
+          :submitted="submitted"
+          :loading="loading"
+          :field-name="'schemaId'"
+          :placeholder="t('configuration.schemas.id')"
+        />
         <Button
           type="submit"
           :label="t('configuration.schemas.add')"
           class="mt-2 w-full"
+          :loading="loading"
         />
       </div>
     </div>
@@ -42,14 +33,15 @@
 import { useVuelidate } from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
 import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
 import { reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
 // Source
+import ValidatedField from '@/components/common/ValidatedField.vue';
 import errorHandler from '@/helpers/errorHandler';
 import { useGovernanceStore } from '@/store';
 import { AddSchemaFromLedgerRequest } from '@/types';
+import { storeToRefs } from 'pinia';
 
 const toast = useToast();
 const { t } = useI18n();
@@ -57,6 +49,7 @@ const { t } = useI18n();
 const emit = defineEmits(['closed', 'success']);
 
 const governanceStore = useGovernanceStore();
+const { loading } = storeToRefs(useGovernanceStore());
 
 // Form / Validation setup
 const formFields = reactive({
