@@ -171,7 +171,7 @@ import RowExpandData from '@/components/common/RowExpandData.vue';
 import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
 import { stringOrBooleanTruthy } from '@/helpers';
 import { API_PATH, TABLE_OPT } from '@/helpers/constants';
-import { formattStoredCredDefs } from '@/helpers/formatters';
+import { formatStoredCredDefs } from '@/helpers/tableFormatters';
 import { useGovernanceStore } from '@/store';
 import { useConfigStore } from '@/store/configStore';
 import {
@@ -194,7 +194,7 @@ const { loading, storedCredDefs, selectedCredentialDefinition } = storeToRefs(
 );
 
 const formattedstoredCredDefs = computed(() =>
-  formattStoredCredDefs(storedCredDefs)
+  formatStoredCredDefs(storedCredDefs)
 );
 
 // LOADING the schema list and the stored cred defs
@@ -295,3 +295,4 @@ onUnmounted(() => {
   text-shadow: 0 0 1px black;
 }
 </style>
+@/helpers/tableFormatters

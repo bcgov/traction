@@ -103,22 +103,22 @@
 
 <script setup lang="ts">
 // Types
+import { SchemaStorageRecord } from '@/types';
 import {
   AddOcaRecordRequest,
   CredDefStorageRecord,
-  SchemaStorageRecord,
 } from '@/types/acapyApi/acapyInterface';
 
 // Vue
 import { reactive, ref } from 'vue';
 // PrimeVue / Validation
+import { useVuelidate } from '@vuelidate/core';
+import { required, requiredIf, url } from '@vuelidate/validators';
 import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import ProgressSpinner from 'primevue/progressspinner';
 import RadioButton from 'primevue/radiobutton';
-import { required, requiredIf, url } from '@vuelidate/validators';
-import { useVuelidate } from '@vuelidate/core';
 import { useToast } from 'vue-toastification';
 // State
 import { useGovernanceStore } from '@/store';

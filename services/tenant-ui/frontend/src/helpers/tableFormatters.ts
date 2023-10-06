@@ -1,10 +1,10 @@
+import { SchemaStorageRecord } from '@/types';
 import {
   CredDefStorageRecord,
   CredentialDefinition,
-  SchemaStorageRecord,
 } from '@/types/acapyApi/acapyInterface';
-import { formatDateLong } from '.';
 import { Ref } from 'vue';
+import { formatDateLong } from '.';
 
 export interface FormattedSchema extends SchemaStorageRecord {
   created: string;
@@ -15,7 +15,7 @@ export interface FormattedCredDef extends CredDefStorageRecord {
   created: string;
 }
 
-export const formattSchemaList = (
+export const formatSchemaList = (
   schemaList: Ref<SchemaStorageRecord[]>
 ): FormattedSchema[] =>
   schemaList.value.map((schema: any) => ({
@@ -30,7 +30,7 @@ export const formattSchemaList = (
     credentialDefinitions: schema.credentialDefinitions.sort(),
   }));
 
-export const formattStoredCredDefs = (
+export const formatStoredCredDefs = (
   storedCredDefs: Ref<CredDefStorageRecord[]>
 ): FormattedCredDef[] =>
   storedCredDefs.value.map((credDef: any) => ({

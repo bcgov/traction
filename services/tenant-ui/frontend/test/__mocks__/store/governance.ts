@@ -1,9 +1,7 @@
 import { vi } from 'vitest';
 import { StoredSchemaWithCredDefs } from '@/types';
-import {
-  CredDefStorageRecord,
-  SchemaStorageRecord,
-} from '@/types/acapyApi/acapyInterface';
+import { CredDefStorageRecord } from '@/types/acapyApi/acapyInterface';
+import { SchemaStorageRecord } from '@/types';
 
 const credDefs: CredDefStorageRecord[] = [
   {

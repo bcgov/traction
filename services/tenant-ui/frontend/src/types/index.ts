@@ -7,7 +7,8 @@
 import { Ref } from 'vue';
 import {
   CredDefStorageRecord,
-  SchemaStorageRecord,
+  SchemaStorageRecord as AcapySchemaStorageRecord,
+  Schema,
 } from './acapyApi/acapyInterface';
 
 export interface GetItem {
@@ -27,4 +28,9 @@ export interface Attribute {
 
 export interface AddSchemaFromLedgerRequest {
   schema_id: string;
+}
+
+// override the schema from auto generated acapyInterface.ts with full types
+export interface SchemaStorageRecord extends AcapySchemaStorageRecord {
+  schema: Schema;
 }

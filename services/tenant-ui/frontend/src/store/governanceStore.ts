@@ -4,8 +4,8 @@ import {
   CredentialDefinitionSendRequest,
   OcaRecord,
   SchemaSendRequest,
-  SchemaStorageRecord,
 } from '@/types/acapyApi/acapyInterface';
+import { SchemaStorageRecord } from '@/types';
 
 import { API_PATH } from '@/helpers/constants';
 import { defineStore } from 'pinia';

@@ -179,10 +179,10 @@ import NestedCredentialDefinition from '@/components/issuance/credentialDefiniti
 import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
 import { stringOrBooleanTruthy } from '@/helpers';
 import { API_PATH, TABLE_OPT } from '@/helpers/constants';
-import { formattSchemaList } from '@/helpers/formatters';
+import { formatSchemaList } from '@/helpers/tableFormatters';
 import { useGovernanceStore } from '@/store';
 import { useConfigStore } from '@/store/configStore';
-import { SchemaStorageRecord } from '@/types/acapyApi/acapyInterface';
+import { SchemaStorageRecord } from '@/types';
 import AddSchemaFromLedger from './AddSchemaFromLedger.vue';
 import CopySchema from './CopySchema.vue';
 import CreateSchema from './CreateSchema.vue';
@@ -197,7 +197,7 @@ const { loading, schemaList, selectedSchema } = storeToRefs(
   useGovernanceStore()
 );
 
-const formattedSchemaList = computed(() => formattSchemaList(schemaList));
+const formattedSchemaList = computed(() => formatSchemaList(schemaList));
 
 // Loading the schema list and the stored cred defs
 const loadTable = async () => {
@@ -275,3 +275,4 @@ onBeforeUnmount(() => {
 }
 </style>
 ./checkSchemaPostedInterval
+@/helpers/tableFormatters

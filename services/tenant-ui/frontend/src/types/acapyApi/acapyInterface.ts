@@ -3378,7 +3378,7 @@ export interface SchemaStorageRecord {
   /** Schema identifier */
   ledger_id?: string;
   /** (Indy) schema */
-  schema: Schema;
+  schema?: object;
   /** Serialized schema */
   schema_dict?: object;
   /**

@@ -34,10 +34,8 @@ import { PropType, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 // Source
 import { useGovernanceStore, useTenantStore } from '@/store';
-import {
-  SchemaSendRequest,
-  SchemaStorageRecord,
-} from '@/types/acapyApi/acapyInterface';
+import { SchemaStorageRecord } from '@/types';
+import { SchemaSendRequest } from '@/types/acapyApi/acapyInterface';
 import CreateSchemaForm from './CreateSchemaForm.vue';
 import checkSchemaPostedInterval from './checkSchemaPostedInterval';
 

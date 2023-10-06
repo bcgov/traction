@@ -1,13 +1,13 @@
 <template>
-  <div>
-    <form @submit.prevent="handleSubmit(!v$.$invalid)">
-      <div class="container">
-        <div v-if="isCopy" style="text-align: center">
-          <div class="info-box">
-            {{ $t('configuration.schemas.copyMessage') }}
-          </div>
-          <p style="font-weight: bold">{{ selectedSchema?.schema_id }}</p>
+  <form @submit.prevent="handleSubmit(!v$.$invalid)">
+    <div class="container">
+      <div v-if="isCopy" style="text-align: center">
+        <div class="info-box">
+          {{ $t('configuration.schemas.copyMessage') }}
         </div>
+        <p style="font-weight: bold">{{ selectedSchema?.schema_id }}</p>
+      </div>
+      <div class="mt-2">
         <!-- schema name -->
         <ValidatedField
           :placeholder="isCopy ? selectedSchema?.schema?.name : ''"
@@ -38,8 +38,8 @@
           :loading="loading"
         />
       </div>
-    </form>
-  </div>
+    </div>
+  </form>
 </template>
 
 <script setup lang="ts">
@@ -199,14 +199,9 @@ const handleSubmit = async (isFormValid: boolean) => {
 
 <style scoped>
 .container {
-  min-width: 400px;
+  min-width: 450px;
   display: inline-block;
-  margin: 0 auto;
   text-align: left;
-}
-.fields-container {
-  width: 80%;
-  margin: 0% 10%;
 }
 form {
   display: block;

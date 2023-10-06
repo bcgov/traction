@@ -1,10 +1,8 @@
 import { useToast } from 'vue-toastification';
 import { Ref } from 'vue';
 
-import {
-  SchemaSendRequest,
-  SchemaStorageRecord,
-} from '@/types/acapyApi/acapyInterface';
+import { SchemaSendRequest } from '@/types/acapyApi/acapyInterface';
+import { SchemaStorageRecord } from '@/types';
 
 const toast = useToast();
 

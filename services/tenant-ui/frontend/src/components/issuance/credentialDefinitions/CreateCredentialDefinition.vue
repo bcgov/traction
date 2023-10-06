@@ -28,7 +28,7 @@ import Dialog from 'primevue/dialog';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { formattSchemaList } from '@/helpers/formatters';
+import { formatSchemaList } from '@/helpers/tableFormatters';
 import { useGovernanceStore, useTenantStore } from '@/store';
 import { CredentialDefinitionSendRequest } from '@/types/acapyApi/acapyInterface';
 import CreateCredentialDefinitionForm from './CreateCredentialDefinitionForm.vue';
@@ -52,7 +52,7 @@ const { schemaList, selectedCredentialDefinition } = storeToRefs(
 );
 const governanceStore = useGovernanceStore();
 
-const formattedSchemaList = computed(() => formattSchemaList(schemaList));
+const formattedSchemaList = computed(() => formatSchemaList(schemaList));
 
 // Modal
 const displayModal = ref(false);
@@ -68,3 +68,4 @@ const handleClose = (credDef: CredentialDefinitionSendRequest) => {
   );
 };
 </script>
+@/helpers/tableFormatters
