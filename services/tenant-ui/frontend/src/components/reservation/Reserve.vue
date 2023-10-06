@@ -145,7 +145,6 @@ const manElements = [
 const formDataSchema: any = ref({});
 const formUISchema: any = ref({});
 
-
 /**
  * ## compileForm
  * Compile the JSON Forms object by blending the mandatory properties
@@ -206,7 +205,6 @@ const compileForm = (response: any) => {
     elements: [...mergedElements],
   };
 };
-
 
 axios
   .get('forms/reservation.json')
