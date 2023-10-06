@@ -19,20 +19,20 @@
             :class="{ 'p-invalid': v$.schemaId.$invalid && submitted }"
           />
         </div>
+        <span v-if="v$.schemaId.$error && submitted">
+          <span v-for="(error, index) of v$.schemaId.$errors" :key="index">
+            <small class="p-error">{{ error.$message }}</small>
+          </span>
+        </span>
+        <small v-else-if="v$.schemaId.$invalid && submitted" class="p-error">
+          {{ v$.schemaId.required.$message }}
+        </small>
         <Button
           type="submit"
           :label="t('configuration.schemas.add')"
           class="mt-2 w-full"
         />
       </div>
-      <span v-if="v$.schemaId.$error && submitted">
-        <span v-for="(error, index) of v$.schemaId.$errors" :key="index">
-          <small class="p-error">{{ error.$message }}</small>
-        </span>
-      </span>
-      <small v-else-if="v$.schemaId.$invalid && submitted" class="p-error">{{
-        v$.schemaId.required.$message
-      }}</small>
     </div>
   </form>
 </template>
@@ -93,7 +93,10 @@ const handleSubmit = async (isFormValid: boolean) => {
     // close up on success
     emit('closed');
   } catch (error) {
-    errorHandler(error);
+    errorHandler({
+      error,
+      badRequestMessage: t('configuration.schemas.addNotExists'),
+    });
   } finally {
     submitted.value = false;
   }

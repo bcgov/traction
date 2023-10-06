@@ -126,6 +126,7 @@
     },
     "schemas": {
       "add": "Add Schema",
+      "addNotExists": "The requested schema does not exist on the ledger. Please check the schema ID and try again.",
       "addFromLedger": "Add Schema from Ledger",
       "addFromLedgerInfo": "This will add any schema from the connected ledger for use in this traction tenant. You must enter the full schema ID.",
       "alreadyExists": "The schema already exists on the ledger. Please use a different name or version.",

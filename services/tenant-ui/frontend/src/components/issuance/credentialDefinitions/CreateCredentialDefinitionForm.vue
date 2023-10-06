@@ -225,7 +225,10 @@ const handleSubmit = async (isFormValid: boolean) => {
     emit('success');
     emit('closed', payload);
   } catch (error: any) {
-    errorHandler(error, t('configuration.credentialDefinitions.alredyExists'));
+    errorHandler({
+      error,
+      existsMessage: t('configuration.credentialDefinitions.alreadyExists'),
+    });
   } finally {
     submitted.value = false;
   }

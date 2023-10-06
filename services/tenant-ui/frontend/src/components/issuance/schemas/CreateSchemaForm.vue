@@ -16,6 +16,7 @@
           <InputText
             id="name"
             v-model="v$.name.$model"
+            :placeholder="isCopy ? selectedSchema?.schema?.name : ''"
             class="w-full"
             :class="{ 'p-invalid': isError(v$, 'name') }"
           />
@@ -36,6 +37,7 @@
           <InputText
             id="version"
             v-model="v$.version.$model"
+            :placeholder="isCopy ? selectedSchema?.schema?.version : ''"
             class="w-full"
             :class="{ 'p-invalid': isError(v$, 'version') }"
           />
@@ -202,7 +204,10 @@ const handleSubmit = async (isFormValid: boolean) => {
     emit('closed', payload);
     if (props.onClose) props.onClose(payload);
   } catch (error) {
-    errorHandler(error, t('configuration.schemas.alreadyExists'));
+    errorHandler({
+      error,
+      existsMessage: t('configuration.schemas.alreadyExists'),
+    });
   } finally {
     submitted.value = false;
   }
