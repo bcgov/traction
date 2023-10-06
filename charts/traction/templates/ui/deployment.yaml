@@ -77,7 +77,9 @@ spec:
               mountPath: /usr/src/app/frontend/dist/forms/reservation.json
       {{- with .Values.ui.nodeSelector }}
       volumes:
-        - name: reservation-json
+      - name: reservation-json
+        configMap:
+          name: reservation-json
           value: {{ .Values.reservation-json | toJson | quote }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

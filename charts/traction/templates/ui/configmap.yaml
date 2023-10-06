@@ -35,7 +35,7 @@ data:
   UX_COVERIMAGE_COPYRIGHT: {{ .Values.ui.ux.coverImageCopyright | quote }}
   UX_OWNER: {{ .Values.ui.ux.owner | quote }}
   UX_SIDEBAR_TITLE: {{ .Values.ui.ux.sidebarTitle | quote }}
-  reservation-json:
+  reservation-json: |
     {
     "formDataSchema": {
       "type": "object",
