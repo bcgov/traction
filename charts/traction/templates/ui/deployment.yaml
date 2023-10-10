@@ -73,14 +73,15 @@ spec:
           resources:
             {{- toYaml .Values.ui.resources | nindent 12 }}
           volumeMounts:
-            - name: reservation-json
-              mountPath: /usr/src/app/frontend/dist/forms/reservation.json
+            - name: config
+              mountPath: "/usr/src/app/frontend/dist/forms/reservation.json"
+              subPath: "reservation.json"
+              readOnly: true
       {{- with .Values.ui.nodeSelector }}
       volumes:
-      - name: reservation-json
-        configMap:
-          name: reservation-json
-          value: {{ .Values.reservation-json | toJson | quote }}
+        - name: config
+          configMap:
+            name: {{ include "ui.configmapform.name" . }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}

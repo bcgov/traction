@@ -35,44 +35,4 @@ data:
   UX_COVERIMAGE_COPYRIGHT: {{ .Values.ui.ux.coverImageCopyright | quote }}
   UX_OWNER: {{ .Values.ui.ux.owner | quote }}
   UX_SIDEBAR_TITLE: {{ .Values.ui.ux.sidebarTitle | quote }}
-  reservation-json:
-    {
-    "formDataSchema": {
-      "type": "object",
-      "properties": {
-        "fullName": {
-          "type": "string"
-        },
-        "phoneNumber": {
-          "type": "string"
-        },
-        "tenantReason": {
-          "type": "string"
-        }
-      },
-      "required": []
-    },
-    "formUISchema": {
-      "type": "VerticalLayout",
-      "elements": [
-        {
-          "type": "Control",
-          "scope": "#/properties/phoneNumber",
-          "label": "Phone / Mobile"
-        },
-        {
-          "type": "Control",
-          "scope": "#/properties/fullName"
-        },
-        {
-          "type": "Control",
-          "scope": "#/properties/tenantReason",
-          "options": {
-            "multi": true
-          }
-        }
-      ]
-    }
-  }
-
 {{- end -}}
