@@ -17,9 +17,9 @@ describe('connectionStore', () => {
 
   test("initial values haven't changed from expected", () => {
     expect(store.storedSchemas).toEqual([]);
-    expect(store.selectedSchema).toBeNull();
+    expect(store.selectedSchema).toBeUndefined();
     expect(store.storedCredDefs).toEqual([]);
-    expect(store.selectedCredentialDefinition).toBeNull();
+    expect(store.selectedCredentialDefinition).toBeUndefined();
     expect(store.ocas).toEqual([]);
     expect(store.loading).toEqual(false);
     expect(store.error).toBeNull();
@@ -32,7 +32,7 @@ describe('connectionStore', () => {
     const result = store.schemaList;
 
     expect(result).toHaveLength(1);
-    expect(result[0].credentialDefinition).toBeDefined();
+    expect(result[0].credentialDefinitions).toBeDefined();
   });
 
   // Some interesting behavior here. Needs more testing.
@@ -45,7 +45,6 @@ describe('connectionStore', () => {
       await testSuccessResponse(store, response, 'loading');
       expect(await response).toHaveLength(1);
       expect(store.storedSchemas).toHaveLength(1);
-      expect(store.selectedSchema).toBeNull();
     });
 
     test('createSchema does not throw error and sets loading correctly', async () => {
@@ -58,10 +57,6 @@ describe('connectionStore', () => {
         }),
         'loading'
       );
-    });
-
-    test('copySchema does not throw error and sets loading correctly', async () => {
-      await testSuccessResponse(store, store.copySchema('test'), 'loading');
     });
 
     test('deleteSchema does not throw error and sets loading correctly', async () => {
@@ -77,7 +72,6 @@ describe('connectionStore', () => {
       await testSuccessResponse(store, response, 'loading');
       expect(await response).toHaveLength(1);
       expect(store.storedCredDefs).toHaveLength(1);
-      expect(store.selectedCredentialDefinition).toBeNull();
     });
 
     test('createCredentialDefinition does not throw error and sets loading correctly', async () => {
@@ -145,10 +139,6 @@ describe('connectionStore', () => {
         }),
         'loading'
       );
-    });
-
-    test('copySchema throws error and sets loading correctly', async () => {
-      await testErrorResponse(store, store.copySchema('test'), 'loading');
     });
 
     test('deleteSchema throws error and sets loading correctly', async () => {

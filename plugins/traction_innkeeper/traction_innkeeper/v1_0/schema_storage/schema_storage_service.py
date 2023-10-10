@@ -84,6 +84,7 @@ class SchemaStorageService:
                 schema_id,
                 txn_record_type=GET_SCHEMA,
             )
+            schema = None
             self.logger.debug(f"ledger_id = {ledger_id}")
             async with ledger:
                 try:
@@ -92,6 +93,9 @@ class SchemaStorageService:
                 except LedgerError as err:
                     self.logger.error(err)
 
+            if schema is None:
+                raise StorageNotFoundError(f"Schema not found on ledger: {schema_id}")
+            
             try:
                 data = {"schema_id": schema_id, "schema": schema}
                 if ledger_id:
