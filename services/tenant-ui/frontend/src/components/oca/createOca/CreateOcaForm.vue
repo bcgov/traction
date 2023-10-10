@@ -103,18 +103,22 @@
 
 <script setup lang="ts">
 // Types
-import { AddOcaRecordRequest } from '@/types/acapyApi/acapyInterface';
+import { SchemaStorageRecord } from '@/types';
+import {
+  AddOcaRecordRequest,
+  CredDefStorageRecord,
+} from '@/types/acapyApi/acapyInterface';
 
 // Vue
 import { reactive, ref } from 'vue';
 // PrimeVue / Validation
+import { useVuelidate } from '@vuelidate/core';
+import { required, requiredIf, url } from '@vuelidate/validators';
 import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import ProgressSpinner from 'primevue/progressspinner';
 import RadioButton from 'primevue/radiobutton';
-import { required, requiredIf, url } from '@vuelidate/validators';
-import { useVuelidate } from '@vuelidate/core';
 import { useToast } from 'vue-toastification';
 // State
 import { useGovernanceStore } from '@/store';
@@ -180,11 +184,16 @@ const handleSubmit = async (isFormValid: boolean) => {
   try {
     // Get the specific schema to edit values for
     const schemaId = storedCredDefs.value.find(
-      (cd: any) => cd.cred_def_id === formFields.selectedCred.value
-    ).schema_id;
+      (cd: CredDefStorageRecord) =>
+        cd.cred_def_id === formFields.selectedCred.value
+    )?.schema_id;
+
     const schema = storedSchemas.value.find(
-      (s: any) => s.schema_id === schemaId
+      (s: SchemaStorageRecord) => s.schema_id === schemaId
     );
+
+    if (!schema)
+      throw new Error('Unable to find schema for selected credential');
 
     const payload: AddOcaRecordRequest = {
       cred_def_id: formFields.selectedCred.value,

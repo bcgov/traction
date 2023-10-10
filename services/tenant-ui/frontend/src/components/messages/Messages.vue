@@ -26,8 +26,7 @@
           <div class="flex justify-content-start">
             <CreateMessage
               v-if="
-                config.frontend.showWritableComponents === true ||
-                config.frontend.showWritableComponents === 'true'
+                stringOrBooleanTruthy(config.frontend.showWritableComponents)
               "
               @success="loadTable"
             />
@@ -137,7 +136,7 @@ import { useConnectionStore, useMessageStore } from '@/store';
 import { Message } from '@/store/messageStore';
 import { storeToRefs } from 'pinia';
 // Other components
-import { formatDateLong } from '@/helpers';
+import { formatDateLong, stringOrBooleanTruthy } from '@/helpers';
 import { TABLE_OPT } from '@/helpers/constants';
 import MainCardContent from '../layout/mainCard/MainCardContent.vue';
 import CreateMessage from './createMessage/CreateMessage.vue';

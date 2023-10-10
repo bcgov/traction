@@ -22,8 +22,7 @@
           <div class="flex justify-content-start">
             <CreateOca
               v-if="
-                config.frontend.showWritableComponents === true ||
-                config.frontend.showWritableComponents === 'true'
+                stringOrBooleanTruthy(config.frontend.showWritableComponents)
               "
             />
           </div>
@@ -44,10 +43,7 @@
       <Column :sortable="false" header="Actions">
         <template #body="{ data }">
           <Button
-            v-if="
-              config.frontend.showWritableComponents === true ||
-              config.frontend.showWritableComponents === 'true'
-            "
+            v-if="stringOrBooleanTruthy(config.frontend.showWritableComponents)"
             title="Delete Credential Definition"
             icon="pi pi-trash"
             class="p-button-rounded p-button-icon-only p-button-text"
@@ -138,7 +134,7 @@ import CreateOca from './createOca/CreateOca.vue';
 import MainCardContent from '../layout/mainCard/MainCardContent.vue';
 import RowExpandData from '../common/RowExpandData.vue';
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
-import { formatDateLong } from '@/helpers';
+import { formatDateLong, stringOrBooleanTruthy } from '@/helpers';
 
 const confirm = useConfirm();
 const toast = useToast();

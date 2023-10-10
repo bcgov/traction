@@ -1,9 +1,10 @@
 <template>
   <MainCardContent
-    :title="$t('configuration.schemasCreds.credentialDefinitions')"
+    :title="$t('configuration.credentialDefinitions.stored')"
     :refresh-callback="loadTable"
   >
     <DataTable
+      v-model:selection="selectedCredentialDefinition"
       v-model:expandedRows="expandedRows"
       v-model:filters="filter"
       :loading="loading"
@@ -19,13 +20,22 @@
     >
       <template #header>
         <div class="flex justify-content-between">
-          <div class="flex justify-content-start" />
+          <div class="flex justify-content-start">
+            <div
+              v-if="
+                stringOrBooleanTruthy(config.frontend.showWritableComponents)
+              "
+              class="flex justify-content-start"
+            >
+              <CreateCredentialDefinition :table-reload="loadTable" />
+            </div>
+          </div>
           <div class="flex justify-content-end">
             <span class="p-input-icon-left">
               <i class="pi pi-search" />
               <InputText
                 v-model="filter.global.value"
-                placeholder="Search Cred Defs"
+                :placeholder="t('configuration.search.credDefs')"
               />
             </span>
           </div>
@@ -34,18 +44,24 @@
       <template #empty>{{ $t('common.noRecordsFound') }}</template>
       <template #loading>{{ $t('common.loading') }}</template>
       <Column :expander="true" header-style="width: 3rem" />
-      <Column :sortable="false" header="Actions">
+      <Column :sortable="false" :header="t('configuration.search.actions')">
         <template #body="{ data }">
-          <Button
-            v-if="
-              config.frontend.showWritableComponents === true ||
-              config.frontend.showWritableComponents === 'true'
-            "
-            title="Delete Credential Definition"
-            icon="pi pi-trash"
-            class="p-button-rounded p-button-icon-only p-button-text"
-            @click="deleteCredDef($event, data.cred_def_id)"
-          />
+          <div
+            v-if="stringOrBooleanTruthy(config.frontend.showWritableComponents)"
+          >
+            <Button
+              :title="t('configuration.credentialDefinitions.delete')"
+              icon="pi pi-trash"
+              class="p-button-rounded p-button-icon-only p-button-text"
+              @click="deleteCredDef($event, data.cred_def_id)"
+            />
+            <Button
+              :title="t('configuration.credentialDefinitions.copy')"
+              icon="pi pi-copy"
+              class="p-button-rounded p-button-icon-only p-button-text"
+              @click="openCopyModal(data)"
+            />
+          </div>
         </template>
       </Column>
       <Column
@@ -60,7 +76,7 @@
             v-model="filterModel.value"
             type="text"
             class="p-column-filter"
-            placeholder="Search By ID"
+            :placeholder="t('configuration.search.byId')"
             @input="filterCallback()"
           />
         </template>
@@ -68,21 +84,30 @@
       <Column
         :sortable="true"
         field="schema_id"
-        header="Schema ID"
+        :header="$t('configuration.schemas.id')"
         filter-field="schema_id"
         :show-filter-match-modes="false"
       >
+        <template #body="{ data }">
+          <div class="schema-link" @click="navigateToSchema(data)">
+            {{ data.schema_id }}
+          </div>
+        </template>
         <template #filter="{ filterModel, filterCallback }">
           <InputText
             v-model="filterModel.value"
             type="text"
             class="p-column-filter"
-            placeholder="Search By Schema ID"
+            :placeholder="$t('configuration.search.bySchemaId')"
             @input="filterCallback()"
           />
         </template>
       </Column>
-      <Column :sortable="true" field="support_revocation" header="Revokable">
+      <Column
+        :sortable="true"
+        field="support_revocation"
+        :header="$t('configuration.credentialDefinitions.revokable')"
+      >
         <template #body="{ data }">
           <span v-if="data.support_revocation">
             <i class="pi pi-check-circle"></i>
@@ -92,7 +117,7 @@
       <Column
         :sortable="true"
         field="created"
-        header="Created at"
+        :header="t('configuration.search.createdAt')"
         filter-field="created"
         :show-filter-match-modes="false"
       >
@@ -104,7 +129,7 @@
             v-model="filterModel.value"
             type="text"
             class="p-column-filter"
-            placeholder="Search By Time"
+            :placeholder="t('configuration.search.byDate')"
             @input="filterCallback()"
           />
         </template>
@@ -117,46 +142,61 @@
       </template>
     </DataTable>
   </MainCardContent>
+  <Dialog
+    v-model:visible="displayModal"
+    :header="t('configuration.credentialDefinitions.copy')"
+    :modal="true"
+    :style="{ minWidth: '400px' }"
+  >
+    <CopyCredentialDefinitionForm @closed="handleCopyModalClose" />
+  </Dialog>
 </template>
 
 <script setup lang="ts">
-// Vue
-import { onMounted, ref, Ref, computed } from 'vue';
-// PrimeVue etc
+// Libraries
+import { storeToRefs } from 'pinia';
+import { FilterMatchMode } from 'primevue/api';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
+import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
-import { FilterMatchMode } from 'primevue/api';
 import { useConfirm } from 'primevue/useconfirm';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
-// State
-import { useGovernanceStore } from '../../store';
-import { storeToRefs } from 'pinia';
+// Source
+import RowExpandData from '@/components/common/RowExpandData.vue';
+import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
+import { stringOrBooleanTruthy } from '@/helpers';
+import { API_PATH, TABLE_OPT } from '@/helpers/constants';
+import { formatStoredCredDefs } from '@/helpers/tableFormatters';
+import { useGovernanceStore } from '@/store';
 import { useConfigStore } from '@/store/configStore';
-// Custom components
-import RowExpandData from '../common/RowExpandData.vue';
-import { TABLE_OPT, API_PATH } from '@/helpers/constants';
-import { formatDateLong } from '@/helpers';
-import MainCardContent from '../layout/mainCard/MainCardContent.vue';
+import {
+  CredDefStorageRecord,
+  CredentialDefinitionSendRequest,
+} from '@/types/acapyApi/acapyInterface';
+import CopyCredentialDefinitionForm from './CopyCredentialDefinitionForm.vue';
+import CreateCredentialDefinition from './CreateCredentialDefinition.vue';
+import checkCredDefPostedInterval from './checkCredDefPostedInterval';
 
 const confirm = useConfirm();
 const toast = useToast();
+const router = useRouter();
+const { t } = useI18n();
 
 const { config } = storeToRefs(useConfigStore());
-
 const governanceStore = useGovernanceStore();
-const { loading, storedCredDefs } = storeToRefs(useGovernanceStore());
-
-const formattedstoredCredDefs: Ref<any[]> = computed(() =>
-  storedCredDefs.value.map((credDef: any) => ({
-    cred_def_id: credDef.cred_def_id,
-    schema_id: credDef.schema_id,
-    support_revocation: credDef.support_revocation,
-    created_at: credDef.created_at,
-    created: formatDateLong(credDef.created_at),
-  }))
+const { loading, storedCredDefs, selectedCredentialDefinition } = storeToRefs(
+  useGovernanceStore()
 );
+
+const formattedstoredCredDefs = computed(() =>
+  formatStoredCredDefs(storedCredDefs)
+);
+
 // LOADING the schema list and the stored cred defs
 const loadTable = async () => {
   try {
@@ -177,25 +217,45 @@ onMounted(async () => {
 const deleteCredDef = (event: any, id: string) => {
   confirm.require({
     target: event.currentTarget,
-    message:
-      'Are you sure you want to remove this credential definition from storage?',
-    header: 'Confirmation',
+    message: t('configuration.credentialDefinitions.confirmDelete'),
+    header: t('common.confirmation'),
     icon: 'pi pi-exclamation-triangle',
     accept: () => {
-      doDelete(id);
+      governanceStore
+        .deleteStoredCredentialDefinition(id)
+        .then(() => {
+          toast.success(t('configuration.credentialDefinitions.deleteSuccess'));
+        })
+        .catch((err) => {
+          console.error(err);
+          toast.error(`Failure: ${err}`);
+        });
     },
   });
 };
-const doDelete = (id: string) => {
-  governanceStore
-    .deleteStoredCredentialDefinition(id)
-    .then(() => {
-      toast.success(`Credential definition removed from storage`);
-    })
-    .catch((err) => {
-      console.error(err);
-      toast.error(`Failure: ${err}`);
-    });
+
+// Modal
+const displayModal = ref(false);
+const openCopyModal = async (credDef: CredDefStorageRecord) => {
+  selectedCredentialDefinition.value = credDef;
+  displayModal.value = true;
+};
+const handleCopyModalClose = async (
+  credDef: CredentialDefinitionSendRequest
+) => {
+  displayModal.value = false;
+  checkCredDefPostedInterval(
+    credDef,
+    governanceStore.getStoredCredDefs,
+    loadTable,
+    t('configuration.credentialDefinitions.postFinished'),
+    selectedCredentialDefinition
+  );
+};
+
+const navigateToSchema = (data: any) => {
+  governanceStore.setSelectedSchemaById(data.schema_id);
+  router.push({ name: 'Schemas' });
 };
 
 // necessary for expanding rows, we don't do anything with this
@@ -220,11 +280,18 @@ const filter = ref({
     matchMode: FilterMatchMode.CONTAINS,
   },
 });
+
+onUnmounted(() => {
+  selectedCredentialDefinition.value = undefined;
+});
 </script>
 
 <style scoped>
 .row.buttons {
   float: right;
   margin: 3rem 1rem 0 0;
+}
+.schema-link:hover {
+  text-shadow: 0 0 1px black;
 }
 </style>

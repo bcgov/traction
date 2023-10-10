@@ -1,6 +1,6 @@
 <template>
   <MainCardContent
-    :title="$t('configuration.schemasCreds.schemas')"
+    :title="$t('configuration.schemas.stored')"
     :refresh-callback="loadTable"
   >
     <DataTable
@@ -21,27 +21,19 @@
     >
       <template #header>
         <div class="flex justify-content-between">
-          <div class="flex justify-content-start">
-            <CreateSchema
-              v-if="
-                config.frontend.showWritableComponents === true ||
-                config.frontend.showWritableComponents === 'true'
-              "
-            />
-            <CopySchema
-              v-if="
-                config.frontend.showWritableComponents === true ||
-                config.frontend.showWritableComponents === 'true'
-              "
-              class="ml-4"
-            />
+          <div
+            v-if="stringOrBooleanTruthy(config.frontend.showWritableComponents)"
+            class="flex justify-content-start"
+          >
+            <CreateSchema :table-reload="loadTable" />
+            <AddSchemaFromLedger />
           </div>
           <div class="flex justify-content-end">
             <span class="p-input-icon-left">
               <i class="pi pi-search" />
               <InputText
                 v-model="filter.schema_id.value"
-                placeholder="Search Schemas"
+                :placeholder="t('configuration.search.schemas')"
               />
             </span>
           </div>
@@ -50,24 +42,25 @@
       <template #empty>{{ $t('common.noRecordsFound') }}</template>
       <template #loading>{{ $t('common.loading') }}</template>
       <Column :expander="true" header-style="width: 3rem" />
-      <Column :sortable="false" header="Actions">
+      <Column :sortable="false" :header="t('configuration.search.actions')">
         <template #body="{ data }">
-          <Button
-            v-if="
-              config.frontend.showWritableComponents === true ||
-              config.frontend.showWritableComponents === 'true'
-            "
-            title="Delete Schema"
-            icon="pi pi-trash"
-            class="p-button-rounded p-button-icon-only p-button-text"
-            @click="deleteSchema($event, data)"
-          />
+          <div
+            v-if="stringOrBooleanTruthy(config.frontend.showWritableComponents)"
+          >
+            <Button
+              :title="t('configuration.schemas.delete')"
+              icon="pi pi-trash"
+              class="p-button-rounded p-button-icon-only p-button-text"
+              @click="deleteSchema($event, data)"
+            />
+            <CopySchema :stored-schema="data" :table-reload="loadTable" />
+          </div>
         </template>
       </Column>
       <Column
         :sortable="true"
         field="schema.name"
-        header="Name"
+        :header="t('configuration.search.name')"
         filter-field="schema.name"
         :show-filter-match-modes="false"
       >
@@ -76,7 +69,7 @@
             v-model="filterModel.value"
             type="text"
             class="p-column-filter"
-            placeholder="Search By Name"
+            :placeholder="t('configuration.search.byName')"
             @input="filterCallback()"
           />
         </template>
@@ -93,7 +86,7 @@
             v-model="filterModel.value"
             type="text"
             class="p-column-filter"
-            placeholder="Search By Schema ID"
+            :placeholder="t('configuration.search.bySchemaId')"
             @input="filterCallback()"
           />
         </template>
@@ -101,7 +94,7 @@
       <Column
         :sortable="true"
         field="schema.version"
-        header="Version"
+        :header="t('configuration.search.version')"
         filter-field="schema.version"
         :show-filter-match-modes="false"
       >
@@ -110,7 +103,7 @@
             v-model="filterModel.value"
             type="text"
             class="p-column-filter"
-            placeholder="Search By Version"
+            :placeholder="t('configuration.search.byVersion')"
             @input="filterCallback()"
           />
         </template>
@@ -118,7 +111,7 @@
       <Column
         :sortable="true"
         field="schema.attrNames"
-        header="Attributes"
+        :header="t('configuration.search.attributes')"
         filter-field="schema.attrNames"
         :show-filter-match-modes="false"
       >
@@ -127,7 +120,7 @@
             v-model="filterModel.value"
             type="text"
             class="p-column-filter"
-            placeholder="Search By Attributes"
+            :placeholder="t('configuration.search.byAttributes')"
             @input="filterCallback()"
           />
         </template>
@@ -135,7 +128,7 @@
       <Column
         :sortable="true"
         field="created"
-        header="Created at"
+        :header="t('configuration.search.createdAt')"
         filter-field="created"
         :show-filter-match-modes="false"
       >
@@ -144,7 +137,7 @@
             v-model="filterModel.value"
             type="text"
             class="p-column-filter"
-            placeholder="Search By Time"
+            :placeholder="t('configuration.search.byDate')"
             @input="filterCallback()"
           />
         </template>
@@ -152,10 +145,13 @@
       <Column
         :sortable="true"
         field="credential_templates"
-        header="Credential Definition"
+        :header="t('configuration.credentialDefinitions.title')"
       >
         <template #body="{ data }">
-          <CreateCredentialDefinition :schema="data" @success="loadTable" />
+          <NestedCredentialDefinition
+            :schema="data"
+            :table-reload="loadTable"
+          />
         </template>
       </Column>
       <template #expansion="{ data }">
@@ -166,60 +162,48 @@
 </template>
 
 <script setup lang="ts">
-// Vue
-import { onMounted, ref, computed } from 'vue';
-// PrimeVue etc
+// Libraries
+import { storeToRefs } from 'pinia';
+import { FilterMatchMode } from 'primevue/api';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
-import { FilterMatchMode } from 'primevue/api';
 import { useConfirm } from 'primevue/useconfirm';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
-// State
-import { useGovernanceStore } from '../../store';
-import { storeToRefs } from 'pinia';
-// Custom components
-import CreateSchema from './createSchema/CreateSchema.vue';
-import CopySchema from './copySchema/CopySchema.vue';
-import CreateCredentialDefinition from './createCredentialDefinition/CreateCredentialDefinition.vue';
-import MainCardContent from '../layout/mainCard/MainCardContent.vue';
-import RowExpandData from '../common/RowExpandData.vue';
-import { TABLE_OPT, API_PATH } from '@/helpers/constants';
-import { formatDateLong } from '@/helpers';
-
-// State
+// Source
+import RowExpandData from '@/components/common/RowExpandData.vue';
+import NestedCredentialDefinition from '@/components/issuance/credentialDefinitions/NestedCredentialDefinition.vue';
+import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
+import { stringOrBooleanTruthy } from '@/helpers';
+import { API_PATH, TABLE_OPT } from '@/helpers/constants';
+import { formatSchemaList } from '@/helpers/tableFormatters';
+import { useGovernanceStore } from '@/store';
 import { useConfigStore } from '@/store/configStore';
-const { config } = storeToRefs(useConfigStore());
+import { SchemaStorageRecord } from '@/types';
+import AddSchemaFromLedger from './AddSchemaFromLedger.vue';
+import CopySchema from './CopySchema.vue';
+import CreateSchema from './CreateSchema.vue';
 
-console.log('config', config);
-
+const { t } = useI18n();
 const confirm = useConfirm();
 const toast = useToast();
 
+const { config } = storeToRefs(useConfigStore());
 const governanceStore = useGovernanceStore();
 const { loading, schemaList, selectedSchema } = storeToRefs(
   useGovernanceStore()
 );
 
-const formattedSchemaList = computed(() =>
-  schemaList.value.map((schema) => ({
-    schema: {
-      name: schema.schema.name,
-      version: schema.schema.version,
-      attrNames: schema.schema.attrNames,
-    },
-    schema_id: schema.schema_id,
-    created: formatDateLong(schema.created_at),
-    created_at: schema.created_at,
-    credentialDefinition: schema.credentialDefinition,
-  }))
-);
+const formattedSchemaList = computed(() => formatSchemaList(schemaList));
+
 // Loading the schema list and the stored cred defs
 const loadTable = async () => {
   try {
     await governanceStore.listStoredSchemas();
-    // Wait til schemas are loaded so the getter can map together the schems to creds
+    // Wait til schemas are loaded so the getter can map together the schemas to creds
     await governanceStore.listStoredCredentialDefinitions();
   } catch (err) {
     console.error(err);
@@ -227,32 +211,25 @@ const loadTable = async () => {
   }
 };
 
-onMounted(async () => {
-  loadTable();
-});
-
 // Deleting a stored schema
-const deleteSchema = (event: any, schema: any) => {
+const deleteSchema = (event: any, schema: SchemaStorageRecord) => {
   confirm.require({
     target: event.currentTarget,
-    message: 'Are you sure you want to delete this schema?',
-    header: 'Confirmation',
+    message: t('configuration.schemas.confirmDelete'),
+    header: t('common.confirmation'),
     icon: 'pi pi-exclamation-triangle',
     accept: () => {
-      doDelete(schema);
+      governanceStore
+        .deleteSchema(schema.schema_id)
+        .then(() => {
+          toast.success(t('configuration.schemas.deleteSuccess'));
+        })
+        .catch((err) => {
+          console.error(err);
+          toast.error(`Failure: ${err}`);
+        });
     },
   });
-};
-const doDelete = (schema: any) => {
-  governanceStore
-    .deleteSchema(schema.schema_id)
-    .then(() => {
-      toast.success(`Schema successfully deleted`);
-    })
-    .catch((err) => {
-      console.error(err);
-      toast.error(`Failure: ${err}`);
-    });
 };
 
 // necessary for expanding rows, we don't do anything with this
@@ -279,6 +256,15 @@ const filter = ref({
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   },
+});
+
+// Lifecycle hooks
+onMounted(async () => {
+  loadTable();
+});
+
+onBeforeUnmount(() => {
+  selectedSchema.value = undefined;
 });
 </script>
 
