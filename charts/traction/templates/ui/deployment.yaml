@@ -81,8 +81,7 @@ spec:
       volumes:
         - name: {{ include "tenant-ui.fullname" . }}-form
           configMap:
-            name: {{ include "tenant-ui.fullname" . }}-form
-            # name: {{ include "ui.configmapform.name" . }}
+            name: {{ include "ui.configmap.name" . }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
