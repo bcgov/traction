@@ -637,6 +637,8 @@ ui:
     session:
       timeoutSeconds: 600
       countdownSeconds: 30
+    ## @param ui.oidc.reservationForm
+    reservationForm: {}
 
   ## SMTP Configuration
   smtp:
