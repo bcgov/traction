@@ -52,6 +52,7 @@ tenant_proxy:
       namespaceSelector:
         network.openshift.io/policy-group: ingress
 ui:
+  showWritableComponents: true
   image:
     pullPolicy: Always
   oidc:
