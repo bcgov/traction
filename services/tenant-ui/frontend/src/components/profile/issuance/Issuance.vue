@@ -16,9 +16,6 @@
     </p>
   </div>
   <div v-else>
-    <h5 class="my-0">{{ $t('profile.taa.taaAcceptance') }}</h5>
-    <TaaAcceptance />
-
     <h5 class="mb-0 mt-3">{{ $t('common.endorser') }}</h5>
     <div v-if="endorserInfo">
       <Endorser />
@@ -30,6 +27,9 @@
       <i class="pi pi-exclamation-circle"></i>
       {{ $t('profile.noEndorserInfoFound') }}
     </div>
+
+    <h5 class="mb-0 mt-3">{{ $t('profile.taa.taaAcceptance') }}</h5>
+    <TaaAcceptance />
   </div>
 </template>
 

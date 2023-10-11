@@ -13,19 +13,16 @@
     >
       <template #empty>{{ $t('common.noRecordsFound') }}</template>
       <template #loading>{{ $t('common.loading') }}</template>
-      <Column :sortable="false" header="Status">
+      <Column :sortable="false" header="Register">
         <template #body="{ data }">
           <span v-if="isLedgerSet && data.ledger_id === currWriteLedger">
             <i class="pi pi-check-circle"></i>
           </span>
         </template>
       </Column>
-      <Column
-        :sortable="true"
-        field="ledger_id"
-        header="Ledger Identifier"
-      ></Column>
+      <Column :sortable="true" field="ledger_id" header="Ledger Identifier" />
     </DataTable>
+
     <div v-if="hasPublicDid" class="true-1">
       <div class="field">
         <label for="didField">{{ $t('profile.publicDid') }}</label>
@@ -74,15 +71,11 @@ const tenantStore = useTenantStore();
 const { publicDid, tenantConfig, writeLedger, loading } =
   storeToRefs(tenantStore);
 
-const canBecomeIssuer = computed(() => {
-  if (
+const canBecomeIssuer = computed(
+  () =>
     tenantConfig.value?.connect_to_endorser?.length &&
     tenantConfig.value?.create_public_did?.length
-  ) {
-    return true;
-  }
-  return false;
-});
+);
 const formattedLedgers = computed(() =>
   tenantConfig.value.create_public_did.map((ledger: any) => ({
     ledger_id: ledger,
@@ -100,3 +93,10 @@ const currWriteLedger = computed(() => {
 // Public DID status
 const hasPublicDid = computed(() => !!publicDid.value && !!publicDid.value.did);
 </script>
+
+<style lang="scss" scoped>
+@import '@/assets/variables.scss';
+.p-datatable {
+  border-top: 1px solid $tenant-ui-panel-border-color;
+}
+</style>

@@ -8,7 +8,7 @@
     </div>
     <div v-else-if="tenant">
       <div class="grid">
-        <div class="col-fixed w-30rem">
+        <div class="col-fixed" style="width:50rem">
           <ProfileForm />
           <Issuance />
         </div>

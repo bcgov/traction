@@ -2,7 +2,7 @@
   <div v-if="canBecomeIssuer" class="my-1">
     <DataTable
       v-model:loading="loading"
-      :value="formattedLedgers"
+      :value="endorserList"
       :paginator="false"
       :rows="TABLE_OPT.ROWS_DEFAULT"
       :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
@@ -14,38 +14,61 @@
     >
       <template #empty>{{ $t('common.noRecordsFound') }}</template>
       <template #loading>{{ $t('common.loading') }}</template>
-      <Column :sortable="false" header="Actions">
+      <Column :sortable="false" header="Connect">
         <template #body="{ data }">
-          <span v-if="isLedgerSet && data.ledger_id === currWriteLedger">
-            <i class="pi pi-check-circle p-tag-success"></i>
-          </span>
-          <span
+          <div v-if="isLedgerSet && data.ledger_id === currWriteLedger">
+            <span>
+              <i class="pi pi-check-circle p-tag-success"></i>
+            </span>
+
+            {{ endorserConnection }}
+          </div>
+
+          <Button
+            title="Connect to endorser"
+            icon="pi pi-user-plus"
+            class="p-button-rounded p-button-icon-only p-button-text"
+            @click="connecttoLedger(data.ledger_id)"
+          />
+
+          <!-- <Button
             v-if="
               !isLedgerSet ||
               (isLedgerSet &&
                 enableLedgerSwitch &&
                 data.ledger_id !== currWriteLedger)
             "
-          >
+            :label="$t('profile.connectToEndorserAndRegisterDID')"
+            icon="pi pi-check-square"
+            class="p-button-rounded p-button-icon-only p-button-text"
+            @click="connecttoLedger(data.ledger_id)"
+          /> -->
+
+          <div>
+            <p class="ml-3 mb-0">Status: Active</p>
             <Button
-              :label="$t('profile.connectToEndorserAndRegisterDID')"
-              icon="pi pi-check-square"
+              title="Delete Connection"
+              icon="pi pi-trash"
               class="p-button-rounded p-button-icon-only p-button-text"
-              @click="connecttoLedger(data.ledger_id)"
             />
-          </span>
+
+            <!-- 
+          <Button
+            title="Delete Connection"
+            icon="pi pi-trash"
+            class="p-button-rounded p-button-icon-only p-button-text"
+            :disabled="deleteDisabled(data.alias)"
+            @click="deleteConnection($event, data.connection_id)"
+          /> -->
+          </div>
+
+          <div v-if="endorserConnection">
+            Status: {{ endorserConnection.value?.state }}
+          </div>
         </template>
       </Column>
-      <Column
-        :sortable="true"
-        field="ledger_id"
-        header="Ledger Identifier"
-      ></Column>
-      <Column
-        :sortable="true"
-        field="endorser_alias"
-        header="Endorser Alias"
-      ></Column>
+      <Column :sortable="true" field="ledger_id" header="Ledger" />
+      <Column :sortable="true" field="endorser_alias" header="Alias" />
     </DataTable>
     <div v-if="showNotActiveWarn" class="inactive-endorser">
       <i class="pi pi-exclamation-triangle"></i>
@@ -77,7 +100,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import DataTable from 'primevue/datatable';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -95,24 +118,19 @@ const toast = useToast();
 const tenantStore = useTenantStore();
 const { endorserConnection, endorserInfo, tenantConfig, writeLedger, loading } =
   storeToRefs(tenantStore);
-const endorserArr = tenantConfig.value.connect_to_endorser.map(
+const endorserList = tenantConfig.value.connect_to_endorser.map(
   (config: any) => ({
     ledger_id: config.ledger_id,
     endorser_alias: config.endorser_alias,
   })
 );
-const formattedLedgers = computed(() => endorserArr);
 
 // Allowed to connect to endorser and register DID?
-const canBecomeIssuer = computed(() => {
-  if (
+const canBecomeIssuer = computed(
+  () =>
     tenantConfig.value?.connect_to_endorser?.length &&
     tenantConfig.value?.create_public_did?.length
-  ) {
-    return true;
-  }
-  return false;
-});
+);
 
 const connecttoLedger = async (ledger_id: string) => {
   let prevLedgerId: any = undefined;
@@ -184,7 +202,12 @@ const enableLedgerSwitch = computed(
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/variables.scss';
 .inactive-endorser {
   color: $tenant-ui-text-warning;
+}
+
+.p-datatable {
+  border-top: 1px solid $tenant-ui-panel-border-color;
 }
 </style>
