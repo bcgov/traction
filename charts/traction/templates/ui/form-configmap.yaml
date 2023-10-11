@@ -7,5 +7,5 @@ metadata:
     {{- include "tenant-ui.labels" . | nindent 4 }}
 data:
   reservation.json: |
-    {{ quote .Values.ui.oidc.reservationForm | nindent 4 }}
+    {{ squote .Values.ui.oidc.reservationForm | nindent 4 }}
 {{- end -}}
