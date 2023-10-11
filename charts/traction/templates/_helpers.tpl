@@ -79,14 +79,55 @@ it randomly.
 {{- end }}
 
 {{/*
+Return true if a database secret should be created
+*/}}
+{{- define "acapy.database.createSecret" -}}
+{{- if not .Values.acapy.walletStorageCredentials.existingSecret -}}
+{{- true -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Create a default fully qualified postgresql name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "acapy.database.secret.name" -}}
 {{- if .Values.acapy.walletStorageCredentials.existingSecret -}}
-{{- .Values.acapy.walletStorageCredentials.existingSecret }}
+{{- .Values.acapy.walletStorageCredentials.existingSecret -}}
 {{- else -}}
 {{ template "global.fullname" . }}-postgresql
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get the admin-password key.
+*/}}
+{{- define "acapy.database.adminPasswordKey" -}}
+{{- if .Values.acapy.walletStorageCredentials.existingSecret -}}
+    {{- if .Values.acapy.walletStorageCredentials.secretKeys.adminPasswordKey -}}
+        {{- printf "%s" (tpl .Values.acapy.walletStorageCredentials.secretKeys.adminPasswordKey $) -}}
+    {{- else if .Values.postgresql.auth.secretKeys.adminPasswordKey -}}
+        {{- printf "%s" (tpl .Values.postgresql.auth.secretKeys.adminPasswordKey $) -}}
+    {{- end -}}
+{{- else -}}
+    {{- "admin-password" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get the user-password key.
+*/}}
+{{- define "acapy.database.userPasswordKey" -}}
+{{- if .Values.acapy.walletStorageCredentials.existingSecret -}}
+    {{- if or (empty .Values.acapy.walletStorageCredentials.account) (eq .Values.acapy.walletStorageCredentials.account "postgres") -}}
+        {{- printf "%s" (include "acapy.database.adminPasswordKey" .) -}}
+    {{- else -}}
+        {{- if .Values.acapy.walletStorageCredentials.secretKeys.userPasswordKey -}}
+            {{- printf "%s" (tpl .Values.acapy.walletStorageCredentials.secretKeys.userPasswordKey $) -}}
+        {{- end -}}
+    {{- end -}}
+{{- else -}}
+    {{- "database-password" -}}
 {{- end -}}
 {{- end -}}
 
