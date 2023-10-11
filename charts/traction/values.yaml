@@ -573,6 +573,8 @@ tenant_proxy:
 ui:
   ## @param ui.enabled Deploy tenant-ui
   enabled: true
+  ## @param ui.oidc.showOIDCReservationLogin OIDC reservation login
+  showOIDCReservationLogin: false
   image:
     ## @param ui.image.repository
     repository: ghcr.io/bcgov/traction-tenant-ui
