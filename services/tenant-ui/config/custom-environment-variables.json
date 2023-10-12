@@ -5,7 +5,6 @@
     "showInnkeeperAdminLogin": "FRONTEND_INNKEEPER_SHOW_ADMIN",
     "showWritableComponents": "FRONTEND_TENANT_SHOW_WRITABLE_COMPONENTS",
     "showOIDCReservationLogin": "FRONTEND_SHOW_OIDC_RESERVATION_LOGIN",
-    "customReservationForm": "FRONTEND_TENANT_CUSTOM_RESERVATION_FORM",
     "session": {
       "timeoutSeconds": "FRONTEND_SESSION_TIMEOUT_SECONDS",
       "countdownSeconds": "FRONTEND_SESSION_COUNTDOWN_SECONDS"
