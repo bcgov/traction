@@ -64,13 +64,10 @@ ui:
         "formDataSchema": {
           "type": "object",
           "properties": {
-            "fullName": {
+            "ministry": {
               "type": "string"
             },
-            "phoneNumber": {
-              "type": "string"
-            },
-            "tenantReason": {
+            "contact": {
               "type": "string"
             }
           },
@@ -81,19 +78,12 @@ ui:
           "elements": [
             {
               "type": "Control",
-              "scope": "#/properties/phoneNumber",
-              "label": "Phone / Mobile"
+              "scope": "#/properties/ministry",
+              "label": "Hello this is the ministry"
             },
             {
               "type": "Control",
-              "scope": "#/properties/fullName"
-            },
-            {
-              "type": "Control",
-              "scope": "#/properties/tenantReason",
-              "options": {
-                "multi": true
-              }
+              "scope": "#/properties/contact"
             }
           ]
         }

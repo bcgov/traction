@@ -2,7 +2,10 @@
   "formDataSchema": {
     "type": "object",
     "properties": {
-      "mySillyExtraValue": {
+      "ministry": {
+        "type": "string"
+      },
+      "anotherThing": {
         "type": "string"
       }
     },
@@ -13,7 +16,14 @@
     "elements": [
       {
         "type": "Control",
-        "scope": "#/properties/mySillyExtraValue"
+        "scope": "#/properties/ministry"
+      },
+      {
+        "type": "Control",
+        "scope": "#/properties/anotherThing",
+        "options": {
+          "multi": true
+        }
       }
     ]
   }
