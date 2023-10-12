@@ -860,11 +860,11 @@ postgresql:
     ##
     resources:
       limits:
-        cpu: 600m
-        memory: 2600Mi
+        cpu: 500m
+        memory: 500Mi
       requests:
-        cpu: 300m
-        memory: 1300Mi
+        cpu: 100m
+        memory: 100Mi
     ## @param postgresql.primary.service.ports.postgresql PostgreSQL service port
     ##
     service:
