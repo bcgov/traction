@@ -15,7 +15,9 @@
         <div v-if="loginMode === LOGIN_MODE.SIGNIN" class="pt-6">
           <LoginForm />
           <div
-            v-if="config.frontend.showOIDCReservationLogin"
+            v-if="
+              stringOrBooleanTruthy(config.frontend.showOIDCReservationLogin)
+            "
             class="oidc-login"
           >
             <hr />
@@ -27,8 +29,8 @@
 
           <div
             v-if="
-              (config.frontend.showOIDCReservationLogin && user) ||
-              !config.frontend.showOIDCReservationLogin
+              user ||
+              !stringOrBooleanTruthy(config.frontend.showOIDCReservationLogin)
             "
             class="mt-6"
           >
@@ -77,7 +79,9 @@
         </div>
 
         <!-- Show OIDC user if logged in -->
-        <div v-if="config.frontend.showOIDCReservationLogin">
+        <div
+          v-if="stringOrBooleanTruthy(config.frontend.showOIDCReservationLogin)"
+        >
           <div class="flex justify-content-end mt-4">
             <OidcUserDisplayVue />
           </div>
@@ -109,6 +113,7 @@ import OidcUserDisplayVue from './reservation/user/OidcUserDisplay.vue';
 import Reserve from './reservation/Reserve.vue';
 import Status from './reservation/Status.vue';
 import SessionTimeoutModal from './common/SessionTimeoutModal.vue';
+import { stringOrBooleanTruthy } from '@/helpers';
 // State
 import { storeToRefs } from 'pinia';
 import { useConfigStore, useReservationStore, useOidcStore } from '@/store';
