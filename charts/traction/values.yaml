@@ -281,10 +281,10 @@ acapy:
   resources:
     limits:
       cpu: 300m
-      memory: 512Mi
+      memory: 300Mi
     requests:
       cpu: 120m
-      memory: 128Mi
+      memory: 200Mi
   ## @param acapy.podAnnotations Map of annotations to add to the acapy pods
   ##
   podAnnotations: {}
