@@ -4,6 +4,7 @@
     <div v-if="loading" class="flex flex-column align-items-center">
       <ProgressSpinner />
       <p>{{ $t('reservations.loadingCheckIn') }}</p>
+      <p></p>
     </div>
     <div v-else>
       <!-- If auto-approve on, the confirmation will come right up -->
