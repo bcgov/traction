@@ -48,7 +48,7 @@ acapy:
   autoscaling:
     enabled: false
     minReplicas: 1
-    maxReplicas: 10
+    maxReplicas: 3
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
     stabilizationWindowSeconds: 300
@@ -281,10 +281,10 @@ acapy:
   resources:
     limits:
       cpu: 300m
-      memory: 512Mi
+      memory: 300Mi
     requests:
       cpu: 120m
-      memory: 128Mi
+      memory: 200Mi
   ## @param acapy.podAnnotations Map of annotations to add to the acapy pods
   ##
   podAnnotations: {}
@@ -461,7 +461,7 @@ tenant_proxy:
   autoscaling:
     enabled: false
     minReplicas: 1
-    maxReplicas: 5
+    maxReplicas: 3
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
     stabilizationWindowSeconds: 300
@@ -532,11 +532,11 @@ tenant_proxy:
   ##
   resources:
     limits:
-      cpu: 250m
-      memory: 256Mi
+      cpu: 100m
+      memory: 50Mi
     requests:
-      cpu: 125m
-      memory: 128Mi
+      cpu: 10m
+      memory: 50Mi
 
   ## @section Tenant Proxy NetworkPolicy parameters
 
@@ -706,10 +706,10 @@ ui:
   resources:
     limits:
       cpu: 300m
-      memory: 256Mi
+      memory: 128Mi
     requests:
       cpu: 10m
-      memory: 16Mi
+      memory: 80Mi
   ## @param ui.replicaCount Number of tenant-ui replicas to deploy. Ignored if autoscaling is enabled.
   ##
   replicaCount: 1
@@ -724,7 +724,7 @@ ui:
   autoscaling:
     enabled: false
     minReplicas: 1
-    maxReplicas: 5
+    maxReplicas: 3
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
   ## @param ui.nodeSelector Node labels for tenant-ui pods assignment
@@ -860,11 +860,11 @@ postgresql:
     ##
     resources:
       limits:
-        cpu: 600m
-        memory: 2600Mi
+        cpu: 500m
+        memory: 500Mi
       requests:
-        cpu: 300m
-        memory: 1300Mi
+        cpu: 100m
+        memory: 100Mi
     ## @param postgresql.primary.service.ports.postgresql PostgreSQL service port
     ##
     service:
