@@ -59,35 +59,6 @@ ui:
     active: true
     authority: https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm
     jwksUri: https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm/protocol/openid-connect/certs
-    reservationForm: >-
-      {
-        "formDataSchema": {
-          "type": "object",
-          "properties": {
-            "ministry": {
-              "type": "string"
-            },
-            "contact": {
-              "type": "string"
-            }
-          },
-          "required": []
-        },
-        "formUISchema": {
-          "type": "VerticalLayout",
-          "elements": [
-            {
-              "type": "Control",
-              "scope": "#/properties/ministry",
-              "label": "Hello this is the ministry"
-            },
-            {
-              "type": "Control",
-              "scope": "#/properties/contact"
-            }
-          ]
-        }
-      }
   ariesDetails:
     ledgerDescription: "bcovrin-test"
   smtp:
