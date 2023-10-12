@@ -706,10 +706,10 @@ ui:
   resources:
     limits:
       cpu: 300m
-      memory: 256Mi
+      memory: 128Mi
     requests:
       cpu: 10m
-      memory: 16Mi
+      memory: 80Mi
   ## @param ui.replicaCount Number of tenant-ui replicas to deploy. Ignored if autoscaling is enabled.
   ##
   replicaCount: 1
