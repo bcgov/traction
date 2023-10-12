@@ -10,6 +10,13 @@ acapy:
       generated: false
       walletkey: "change-me"
       tenantid: "innkeeper"
+  ledgers.yml:
+    - id: bcovrin-test
+      is_production: true
+      is_write: true
+      genesis_url: 'http://test.bcovrin.vonx.io/genesis'
+      endorser_did: 'DfQetNSm7gGEHuzfUvpfPn'
+      endorser_alias: 'bcovrin-test-endorser'
   argfile.yml:
     wallet-name: default
   plugin-config.yml:
@@ -20,11 +27,8 @@ acapy:
         connect_to_endorser:
           - endorser_alias: bcovrin-test-endorser
             ledger_id: bcovrin-test
-          - endorser_alias: bcovrin-dev-endorser
-            ledger_id: bcovrin-dev
         create_public_did:
           - bcovrin-test
-          - bcovrin-dev
       reservation:
         expiry_minutes: 2880
         auto_approve: true
