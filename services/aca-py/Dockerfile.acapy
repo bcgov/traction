@@ -1,4 +1,4 @@
-FROM traction:plugins-acapy
+FROM ghcr.io/bcgov/traction-plugins-acapy:sha-10e54d4
 
 USER root
 
