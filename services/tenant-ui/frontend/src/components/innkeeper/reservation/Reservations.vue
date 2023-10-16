@@ -150,6 +150,7 @@ import { TABLE_OPT } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 
 const toast = useToast();
+
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
 const { loading, currentReservations } = storeToRefs(
   useInnkeeperTenantsStore()

@@ -11,10 +11,7 @@
       :connection-name="props.connectionName"
     />
     <div
-      v-if="
-        config.frontend.showWritableComponents === true ||
-        config.frontend.showWritableComponents === 'true'
-      "
+      v-if="stringOrBooleanTruthy(config.frontend.showWritableComponents)"
       class="p-inputgroup flex-1 send-message"
     >
       <InputText
@@ -37,7 +34,8 @@ import Button from 'primevue/button';
 import Sidebar from 'primevue/sidebar';
 import InputText from 'primevue/inputtext';
 
-// Components
+// Other Components
+import { stringOrBooleanTruthy } from '@/helpers';
 import MessageConnectionList from './MessageConnectionList.vue';
 
 // State

@@ -23,8 +23,7 @@
           <div class="flex justify-content-start">
             <OfferCredential
               v-if="
-                config.frontend.showWritableComponents === true ||
-                config.frontend.showWritableComponents === 'true'
+                stringOrBooleanTruthy(config.frontend.showWritableComponents)
               "
             />
           </div>
@@ -45,18 +44,12 @@
       <Column header="Actions">
         <template #body="{ data }">
           <DeleteCredentialExchangeButton
-            v-if="
-              config.frontend.showWritableComponents === true ||
-              config.frontend.showWritableComponents === 'true'
-            "
+            v-if="stringOrBooleanTruthy(config.frontend.showWritableComponents)"
             :cred-exch-id="data.credential_exchange_id"
           />
 
           <RevokeCredentialButton
-            v-if="
-              config.frontend.showWritableComponents === true ||
-              config.frontend.showWritableComponents === 'true'
-            "
+            v-if="stringOrBooleanTruthy(config.frontend.showWritableComponents)"
             :cred-exch-record="data"
             :connection-display="findConnectionName(data.connection_id) ?? ''"
           />
@@ -163,15 +156,15 @@ import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
 import { useToast } from 'vue-toastification';
 // Other Components
-import { formatDateLong } from '@/helpers';
+import { formatDateLong, stringOrBooleanTruthy } from '@/helpers';
 import { API_PATH, TABLE_OPT } from '@/helpers/constants';
-import LoadingLabel from '../common/LoadingLabel.vue';
-import RowExpandData from '../common/RowExpandData.vue';
-import StatusChip from '../common/StatusChip.vue';
-import MainCardContent from '../layout/mainCard/MainCardContent.vue';
-import DeleteCredentialExchangeButton from './deleteCredential/DeleteCredentialExchangeButton.vue';
-import RevokeCredentialButton from './deleteCredential/RevokeCredentialButton.vue';
-import OfferCredential from './offerCredential/OfferCredential.vue';
+import LoadingLabel from '@/components/common/LoadingLabel.vue';
+import RowExpandData from '@/components/common/RowExpandData.vue';
+import StatusChip from '@/components/common/StatusChip.vue';
+import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
+import DeleteCredentialExchangeButton from './DeleteCredentialExchangeButton.vue';
+import RevokeCredentialButton from './RevokeCredentialButton.vue';
+import OfferCredential from './OfferCredential.vue';
 
 const { config } = storeToRefs(useConfigStore());
 

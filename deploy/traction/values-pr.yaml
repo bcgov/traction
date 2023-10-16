@@ -32,7 +32,7 @@ acapy:
   resources:
     limits:
       cpu: 200m
-      memory: 512Mi
+      memory: 300Mi
     requests:
       cpu: 120m
       memory: 128Mi
@@ -52,12 +52,52 @@ tenant_proxy:
       namespaceSelector:
         network.openshift.io/policy-group: ingress
 ui:
+  showOIDCReservationLogin: false
   image:
     pullPolicy: Always
   oidc:
     active: true
     authority: https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm
     jwksUri: https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm/protocol/openid-connect/certs
+    reservationForm: >-
+      {
+        "formDataSchema": {
+          "type": "object",
+          "properties": {
+            "fullName": {
+              "type": "string"
+            },
+            "phoneNumber": {
+              "type": "string"
+            },
+            "tenantReason": {
+              "type": "string"
+            }
+          },
+          "required": []
+        },
+        "formUISchema": {
+          "type": "VerticalLayout",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/phoneNumber",
+              "label": "Phone / Mobile"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/fullName"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/tenantReason",
+              "options": {
+                "multi": true
+              }
+            }
+          ]
+        }
+      }
   ariesDetails:
     ledgerDescription: "bcovrin-test"
   smtp:
@@ -67,11 +107,11 @@ ui:
     innkeeperInbox: lucas.o'neil@gov.bc.ca
   resources:
     limits:
-      cpu: 200m
-      memory: 820Mi
+      cpu: 300m
+      memory: 128Mi
     requests:
-      cpu: 120m
-      memory: 400Mi
+      cpu: 10m
+      memory: 80Mi
   ingress:
     annotations:
       route.openshift.io/termination: edge
@@ -89,7 +129,7 @@ postgresql:
     resources:
       limits:
         cpu: 200m
-        memory: 820Mi
+        memory: 128Mi
       requests:
-        cpu: 120m
-        memory: 400Mi
+        cpu: 100m
+        memory: 50Mi

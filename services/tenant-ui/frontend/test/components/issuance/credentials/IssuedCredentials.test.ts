@@ -4,9 +4,9 @@ import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
 import { describe, expect, test } from 'vitest';
 
-import IssuedCredentials from '@/components/issuance/IssuedCredentials.vue';
+import IssuedCredentials from '@/components/issuance/credentials/IssuedCredentials.vue';
 
-import { configStore } from '../../__mocks__/store';
+import { configStore } from '../../../__mocks__/store';
 
 const mountIssuedCredentials = () =>
   mount(IssuedCredentials, {
@@ -41,12 +41,21 @@ describe('IssuedCredentials', () => {
       'credential_acked',
     ];
 
-    //td is an expected text or valid date
+    // td is an expected text or valid date
     wrapper.findAll('tbody td').forEach((td) => {
       const text = td.text();
       expect(expectedTexts.includes(text) || !isNaN(Date.parse(text))).toBe(
         true
       );
     });
+  });
+
+  test('mount with showWritableComponents false does not have OfferCredential component', async () => {
+    configStore.config.frontend.showWritableComponents = false;
+    const wrapper = mountIssuedCredentials();
+
+    expect(wrapper.findComponent({ name: 'OfferCredential' }).exists()).toBe(
+      false
+    );
   });
 });

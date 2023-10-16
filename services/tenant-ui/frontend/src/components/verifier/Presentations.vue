@@ -26,8 +26,7 @@
           <div class="flex justify-content-start">
             <CreateRequest
               v-if="
-                config.frontend.showWritableComponents === true ||
-                config.frontend.showWritableComponents === 'true'
+                stringOrBooleanTruthy(config.frontend.showWritableComponents)
               "
             />
           </div>
@@ -51,16 +50,14 @@
           <div class="flex">
             <DeleteExchangeRecord
               v-if="
-                config.frontend.showWritableComponents === true ||
-                config.frontend.showWritableComponents === 'true'
+                stringOrBooleanTruthy(config.frontend.showWritableComponents)
               "
               :record-id="data.presentation_exchange_id"
             />
             <CreateRequest
               v-if="
                 data.role === 'verifier' &&
-                (config.frontend.showWritableComponents === true ||
-                  config.frontend.showWritableComponents === 'true')
+                stringOrBooleanTruthy(config.frontend.showWritableComponents)
               "
               :existing-pres-req="data.presentation_request"
               icon-display
@@ -126,11 +123,10 @@ import { useConfigStore } from '@/store/configStore';
 import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
 import CreateRequest from './createPresentationRequest/CreateRequest.vue';
 import DeleteExchangeRecord from './DeleteExchangeRecord.vue';
-// import PresentationRowExpandData from './PresentationRowExpandData.vue';
 import LoadingLabel from '@/components/common/LoadingLabel.vue';
 import RowExpandData from '@/components/common/RowExpandData.vue';
 import StatusChip from '@/components/common/StatusChip.vue';
-import { formatDateLong } from '@/helpers';
+import { formatDateLong, stringOrBooleanTruthy } from '@/helpers';
 import { API_PATH, TABLE_OPT } from '@/helpers/constants';
 
 const toast = useToast();
