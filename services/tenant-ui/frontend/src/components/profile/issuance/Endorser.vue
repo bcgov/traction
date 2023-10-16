@@ -16,55 +16,7 @@
       <template #loading>{{ $t('common.loading') }}</template>
       <Column :sortable="false" header="Connect">
         <template #body="{ data }">
-          <div v-if="isLedgerSet && data.ledger_id === currWriteLedger">
-            <span>
-              <i class="pi pi-check-circle p-tag-success"></i>
-            </span>
-
-            {{ endorserConnection }}
-          </div>
-
-          <Button
-            title="Connect to endorser"
-            icon="pi pi-user-plus"
-            class="p-button-rounded p-button-icon-only p-button-text"
-            @click="connecttoLedger(data.ledger_id)"
-          />
-
-          <!-- <Button
-            v-if="
-              !isLedgerSet ||
-              (isLedgerSet &&
-                enableLedgerSwitch &&
-                data.ledger_id !== currWriteLedger)
-            "
-            :label="$t('profile.connectToEndorserAndRegisterDID')"
-            icon="pi pi-check-square"
-            class="p-button-rounded p-button-icon-only p-button-text"
-            @click="connecttoLedger(data.ledger_id)"
-          /> -->
-
-          <div>
-            <p class="ml-3 mb-0">Status: Active</p>
-            <Button
-              title="Delete Connection"
-              icon="pi pi-trash"
-              class="p-button-rounded p-button-icon-only p-button-text"
-            />
-
-            <!-- 
-          <Button
-            title="Delete Connection"
-            icon="pi pi-trash"
-            class="p-button-rounded p-button-icon-only p-button-text"
-            :disabled="deleteDisabled(data.alias)"
-            @click="deleteConnection($event, data.connection_id)"
-          /> -->
-          </div>
-
-          <div v-if="endorserConnection">
-            Status: {{ endorserConnection.value?.state }}
-          </div>
+          <EndorserConnect :ledgerInfo="data"/>
         </template>
       </Column>
       <Column :sortable="true" field="ledger_id" header="Ledger" />
@@ -100,9 +52,10 @@
 </template>
 
 <script setup lang="ts">
+// Vue
 import { computed } from 'vue';
+// PrimeVue
 import DataTable from 'primevue/datatable';
-import Button from 'primevue/button';
 import Column from 'primevue/column';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
@@ -112,6 +65,8 @@ import { useToast } from 'vue-toastification';
 import { useTenantStore } from '@/store';
 import { TABLE_OPT } from '@/helpers/constants';
 import { storeToRefs } from 'pinia';
+// Other Components
+import EndorserConnect from './EndorserConnect.vue';
 
 const toast = useToast();
 

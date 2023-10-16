@@ -48,7 +48,6 @@
             title="Delete Connection"
             icon="pi pi-trash"
             class="p-button-rounded p-button-icon-only p-button-text"
-            :disabled="deleteDisabled(data.alias)"
             @click="deleteConnection($event, data.connection_id)"
           />
           <EditConnection :connection-id="data.connection_id" />

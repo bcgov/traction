@@ -1,6 +1,6 @@
 <template>
   <!-- Make Issuer -->
-  <h3 class="mt-5 mb-3">
+  <h3 class="mt-5 mb-0">
     {{ $t('profile.issuer') }}
 
     <span v-if="errLoading" class="no-endorser">
@@ -8,6 +8,13 @@
       {{ $t('common.genericError') }}
     </span>
   </h3>
+
+  <div v-if="writeLedger">
+    <p class="my-0">
+      Current Write Ledger:
+      {{ writeLedger.ledger_id }}
+    </p>
+  </div>
 
   <div v-if="loadingIssuance" class="flex flex-column align-items-center">
     <ProgressSpinner />
@@ -51,8 +58,12 @@ const toast = useToast();
 
 // Get the tenant store
 const tenantStore = useTenantStore();
-const { loadingIssuance, endorserInfo, publicDidRegistrationProgress } =
-  storeToRefs(tenantStore);
+const {
+  endorserInfo,
+  loadingIssuance,
+  publicDidRegistrationProgress,
+  writeLedger,
+} = storeToRefs(tenantStore);
 
 // Load all the issuer details
 const errLoading = ref(false);
