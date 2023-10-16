@@ -9,6 +9,12 @@
     "showOIDCReservationLogin": false,
     "showWritableComponents": true,
     "quickConnectEndorserName": "",
+    "infoBanner": {
+      "visible": false,
+      "level": "info",
+      "showEnviornment": true,
+      "message": "Have a wonderful day"
+    },
     "session": {
       "timeoutSeconds": "600",
       "countdownSeconds": "30"
