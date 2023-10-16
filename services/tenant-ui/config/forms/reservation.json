@@ -1,0 +1,20 @@
+{
+  "formDataSchema": {
+    "type": "object",
+    "properties": {
+      "mySillyExtraValue": {
+        "type": "string"
+      }
+    },
+    "required": []
+  },
+  "formUISchema": {
+    "type": "VerticalLayout",
+    "elements": [
+      {
+        "type": "Control",
+        "scope": "#/properties/mySillyExtraValue"
+      }
+    ]
+  }
+}

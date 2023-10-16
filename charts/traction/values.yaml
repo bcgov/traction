@@ -1,4 +1,4 @@
-## @param nameOverride 
+## @param nameOverride
 nameOverride: ""
 ## @param fullnameOverride
 fullnameOverride: ""
@@ -8,7 +8,7 @@ ingressSuffix: -dev.example.com
 ## @section Acapy Configuration
 ##
 acapy:
-  ## @param acapy.image.repository 
+  ## @param acapy.image.repository
   ## @param acapy.image.pullPolicy
   ## @param acapy.image.pullSecrets [array]
   ## @param acapy.image.tag Overrides the image tag which defaults to the chart appVersion.
@@ -17,7 +17,7 @@ acapy:
     repository: ghcr.io/bcgov/traction-plugins-acapy
     pullPolicy: IfNotPresent
     pullSecrets: []
-    tag: ''
+    tag: ""
 
   ## ServiceAccount configuration
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
@@ -78,7 +78,7 @@ acapy:
   ## @param acapy.argfile.yml.emit-new-didcomm-prefix Emit protocol messages with new DIDComm prefix; i.e., 'https://didcomm.org/' instead of (default) prefix 'did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/'.
   ## @param acapy.argfile.yml.endorser-alias For transaction Authors, specify the alias of the Endorser connection that will be used to endorse transactions.
   ## @param acapy.argfile.yml.endorser-protocol-role Specify the role ('author' or 'endorser') which this agent will participate. Authors will request transaction endorement from an Endorser. Endorsers will endorse transactions from Authors, and may write their own  transactions to the ledger. If no role (or 'none') is specified then the endorsement protocol will not be used and this agent will write transactions to the ledger directly.
-  ## @param acapy.argfile.yml.genesis-transactions-list Path to YAML configuration for connecting to multiple HyperLedger Indy ledgers. 
+  ## @param acapy.argfile.yml.genesis-transactions-list Path to YAML configuration for connecting to multiple HyperLedger Indy ledgers.
   ## @param acapy.argfile.yml.label Specifies the label for this agent. This label is publicized (self-attested) to other agents as part of forming a connection. Set to release name by default.
   ## @param acapy.argfile.yml.log-level Specifies a custom logging level as one of: ('debug', 'info', 'warning', 'error', 'critical')
   ## @param acapy.argfile.yml.monitor-ping Send a webhook when a ping is sent or received.
@@ -140,19 +140,19 @@ acapy:
     - id: bcovrin-test
       is_production: true
       is_write: true
-      genesis_url: 'http://test.bcovrin.vonx.io/genesis'
-      endorser_did: 'Ket75eV5UQvVkW2XBjgDH7'
-      endorser_alias: 'bcovrin-test-endorser'
+      genesis_url: "http://test.bcovrin.vonx.io/genesis"
+      endorser_did: "Ket75eV5UQvVkW2XBjgDH7"
+      endorser_alias: "bcovrin-test-endorser"
     - id: bcovrin-dev
       is_production: true
       is_write: true
-      genesis_url: 'http://dev.bcovrin.vonx.io/genesis'
-      endorser_did: 'VGA8QzjQaL5xkXRHjAgQcj'
-      endorser_alias: 'bcovrin-dev-endorser'
-      
+      genesis_url: "http://dev.bcovrin.vonx.io/genesis"
+      endorser_did: "VGA8QzjQaL5xkXRHjAgQcj"
+      endorser_alias: "bcovrin-dev-endorser"
+
   ## @section Wallet Storage configuration
-  ##  Specifies the storage configuration to use for the wallet. 
-  ##  This is required if you are for using 'postgres_storage' wallet 'storage type. 
+  ##  Specifies the storage configuration to use for the wallet.
+  ##  This is required if you are for using 'postgres_storage' wallet 'storage type.
   ##  For example, '{"url":"localhost:5432", "wallet_scheme":"MultiWalletSingleTable"}'.
   ##  This configuration maps to the indy sdk postgres plugin (PostgresConfig).
   ##
@@ -162,8 +162,8 @@ acapy:
   ## @param acapy.walletStorageConfig.wallet_scheme Wallet scheme.
   ##
   walletStorageConfig:
-    json: ''
-    url: ''
+    json: ""
+    url: ""
     max_connections: 10
     wallet_scheme: DatabasePerWallet
   ## @section Wallet Storage Credentials
@@ -248,7 +248,7 @@ acapy:
           - bcovrin-dev
       reservation:
         expiry_minutes: 2880
-        auto_approve:  false
+        auto_approve: false
         auto_issuer: false
   ## @section Acapy tails persistence configuration
   persistence:
@@ -294,12 +294,14 @@ acapy:
   ## @param acapy.podSecurityContext Pod Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   ##
-  podSecurityContext: {}
+  podSecurityContext:
+    {}
     # fsGroup: 2000
   ## @param acapy.containerSecurityContext Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   ##
-  containerSecurityContext: {}
+  containerSecurityContext:
+    {}
     # capabilities:
     #   drop:
     #   - ALL
@@ -330,7 +332,7 @@ acapy:
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
   tolerations: []
-  
+
   ## @section Acapy NetworkPolicy parameters
   ##
   networkPolicy:
@@ -342,7 +344,8 @@ acapy:
     ## @param acapy.networkPolicy.ingress.podSelector [object] Pod selector label that is allowed to access the Tenant proxy pods.
     ingress:
       enabled: false
-      namespaceSelector: {}
+      namespaceSelector:
+        {}
         # network.openshift.io/policy-group: ingress
       podSelector: {}
 
@@ -427,7 +430,7 @@ acapy:
 ## @section Tenant Proxy configuration
 ##
 tenant_proxy:
-  ## @param tenant_proxy.image.repository 
+  ## @param tenant_proxy.image.repository
   ## @param tenant_proxy.image.pullPolicy
   ## @param tenant_proxy.image.pullSecrets [array]
   ## @param tenant_proxy.image.tag Overrides the image tag which defaults to the chart appVersion.
@@ -436,7 +439,7 @@ tenant_proxy:
     repository: ghcr.io/bcgov/traction-tenant-proxy
     pullPolicy: IfNotPresent
     pullSecrets: []
-    tag: ''
+    tag: ""
   ## ServiceAccount configuration
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
   ## @param tenant_proxy.serviceAccount.create Specifies whether a ServiceAccount should be created
@@ -475,12 +478,14 @@ tenant_proxy:
   ## @param tenant_proxy.podSecurityContext Pod Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   ##
-  podSecurityContext: {}
+  podSecurityContext:
+    {}
     # fsGroup: 2000
   ## @param tenant_proxy.containerSecurityContext Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   ##
-  containerSecurityContext: {}
+  containerSecurityContext:
+    {}
     # capabilities:
     #   drop:
     #   - ALL
@@ -554,7 +559,8 @@ tenant_proxy:
     ## @param tenant_proxy.networkPolicy.ingress.podSelector [object] Pod selector label that is allowed to access the Tenant proxy pods.
     ingress:
       enabled: true
-      namespaceSelector: {}
+      namespaceSelector:
+        {}
         # network.openshift.io/policy-group: ingress
       podSelector: {}
 
@@ -586,7 +592,7 @@ ui:
     ## @param ui.image.pullSecrets [array]
     pullSecrets: []
     ## @param ui.image.tag Overrides the image tag which defaults to the chart appVersion.
-    tag: ''
+    tag: ""
 
   ##  Frontend Configuration
   ##
@@ -634,6 +640,9 @@ ui:
     session:
       timeoutSeconds: 600
       countdownSeconds: 30
+    ## @param ui.oidc.reservationForm
+    reservationForm: >-
+      {}
 
   ## SMTP Configuration
   smtp:
@@ -645,7 +654,7 @@ ui:
     senderAddress: ""
     ## @param ui.smtp.innkeeperInbox innkeeper notification inbox
     innkeeperInbox: ""
-  
+
   ## ServiceAccount configuration
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
   ##
@@ -653,7 +662,8 @@ ui:
     ## @param ui.serviceAccount.create Specifies whether a ServiceAccount should be created
     create: false
     ## @param ui.serviceAccount.annotations Annotations for service account. Evaluated as a template. Only used if `create` is `true`.
-    annotations: {}
+    annotations:
+      {}
       # network.openshift.io/policy-group: ingress
     ## @param ui.serviceAccount.automountServiceAccountToken Automount service account token for the server service account
     automountServiceAccountToken: true
@@ -665,12 +675,14 @@ ui:
   ## @param ui.podSecurityContext Pod Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   ##
-  podSecurityContext: {}
+  podSecurityContext:
+    {}
     # fsGroup: 2000
   ## @param ui.containerSecurityContext Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   ##
-  containerSecurityContext: {}
+  containerSecurityContext:
+    {}
     # capabilities:
     #   drop:
     #   - ALL

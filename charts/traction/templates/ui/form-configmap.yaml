@@ -1,0 +1,12 @@
+{{- if .Values.ui.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "tenant-ui.fullname" . }}-form
+  labels:
+    {{- include "tenant-ui.labels" . | nindent 4 }}
+data:
+  # TODO: Strip out newline characters
+  reservation.json: |
+    {{ .Values.ui.oidc.reservationForm | replace "\n" "" | nindent 4 }}
+{{- end -}}
