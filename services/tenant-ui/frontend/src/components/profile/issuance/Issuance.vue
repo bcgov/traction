@@ -11,8 +11,7 @@
 
   <div v-if="writeLedger">
     <p class="my-0">
-      Current Write Ledger:
-      {{ writeLedger.ledger_id }}
+      {{ $t('profile.writeLedger', writeLedger.ledger_id) }}
     </p>
   </div>
 

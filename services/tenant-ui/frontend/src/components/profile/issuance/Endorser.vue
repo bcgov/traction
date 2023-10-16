@@ -16,18 +16,25 @@
       <template #loading>{{ $t('common.loading') }}</template>
       <Column :sortable="false" header="Connect">
         <template #body="{ data }">
-          <EndorserConnect :ledgerInfo="data"/>
+          <EndorserConnect :ledger-info="data" />
         </template>
       </Column>
-      <Column :sortable="true" field="ledger_id" header="Ledger" />
+      <Column :sortable="true" field="ledger_id" header="Ledger">
+        <template #body="{ data }">
+          {{ data.ledger_id }}
+          <span>
+            <i
+              v-if="data.ledger_id === currWriteLedger"
+              class="pi pi-check-circle ml-1"
+            ></i>
+          </span>
+        </template>
+      </Column>
       <Column :sortable="true" field="endorser_alias" header="Alias" />
     </DataTable>
     <div v-if="showNotActiveWarn" class="inactive-endorser">
       <i class="pi pi-exclamation-triangle"></i>
       {{ $t('profile.connectionNotActiveYet') }}
-      <p class="mt-0 pl-4">
-        {{ $t('profile.state', [endorserConnection.state]) }}
-      </p>
     </div>
 
     <div class="mt-3">

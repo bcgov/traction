@@ -76,6 +76,7 @@ export const useTenantStore = defineStore('tenant', () => {
     loadingIssuance.value = true;
     // Find out issuer status when logging in
     const result = await Promise.allSettled([
+      getWriteLedger(),
       getTaa(),
       getEndorserInfo(),
       getEndorserConnection(),

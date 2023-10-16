@@ -300,7 +300,7 @@
   },
   "profile": {
     "config": "Config:",
-    "connectionNotActiveYet": "Connection not Active yet, refresh or come back later.",
+    "connectionNotActiveYet": "Connection not Active yet, refresh or come back once Endorser accepts request.",
     "connectTenantToEndorser": "Connect Tenant To Endorser",
     "connectTenantToEndorserNotAllowed": "Innkeeper has not approved endorser connections.",
     "createdAt": "Created at",
@@ -334,7 +334,8 @@
     "walletLabel": "Wallet Label",
     "webHookKey": "WebHook Key",
     "webhooks": "Webhooks",
-    "webHookUrl": "WebHook URL"
+    "webHookUrl": "WebHook URL",
+    "writeLedger": "Current Write Ledger: {0}"
   },
   "qrCode": {
     "noContentFound": "No content found"

@@ -8,7 +8,7 @@
     </div>
     <div v-else-if="tenant">
       <div class="grid">
-        <div class="col-fixed" style="width:50rem">
+        <div class="col-fixed" style="width: 50rem">
           <ProfileForm />
           <Issuance />
         </div>
@@ -41,6 +41,7 @@ const reloadProfileDetails = async () => {
   try {
     await Promise.allSettled([
       tenantStore.getTenantConfig(),
+      tenantStore.getWriteLedger(),
       tenantStore.getIssuanceStatus(),
     ]);
   } catch (error) {
