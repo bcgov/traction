@@ -11,9 +11,11 @@
     "quickConnectEndorserName": "",
     "infoBanner": {
       "visible": false,
-      "level": "info",
-      "showEnviornment": true,
-      "message": "Have a wonderful day"
+      "showMessage": true,
+      "message": "Have a wonderful day",
+      "messageLevel": "info",
+      "showEnvironment": true,
+      "showLoginStatus": false
     },
     "session": {
       "timeoutSeconds": "600",
