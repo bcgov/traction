@@ -79,14 +79,55 @@ it randomly.
 {{- end }}
 
 {{/*
+Return true if a database secret should be created
+*/}}
+{{- define "acapy.database.createSecret" -}}
+{{- if not .Values.acapy.walletStorageCredentials.existingSecret -}}
+{{- true -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Create a default fully qualified postgresql name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "acapy.database.secret.name" -}}
 {{- if .Values.acapy.walletStorageCredentials.existingSecret -}}
-{{- .Values.acapy.walletStorageCredentials.existingSecret }}
+{{- .Values.acapy.walletStorageCredentials.existingSecret -}}
 {{- else -}}
 {{ template "global.fullname" . }}-postgresql
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get the admin-password key.
+*/}}
+{{- define "acapy.database.adminPasswordKey" -}}
+{{- if .Values.acapy.walletStorageCredentials.existingSecret -}}
+    {{- if .Values.acapy.walletStorageCredentials.secretKeys.adminPasswordKey -}}
+        {{- printf "%s" (tpl .Values.acapy.walletStorageCredentials.secretKeys.adminPasswordKey $) -}}
+    {{- else if .Values.postgresql.auth.secretKeys.adminPasswordKey -}}
+        {{- printf "%s" (tpl .Values.postgresql.auth.secretKeys.adminPasswordKey $) -}}
+    {{- end -}}
+{{- else -}}
+    {{- "admin-password" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get the user-password key.
+*/}}
+{{- define "acapy.database.userPasswordKey" -}}
+{{- if .Values.acapy.walletStorageCredentials.existingSecret -}}
+    {{- if or (empty .Values.acapy.walletStorageCredentials.account) (eq .Values.acapy.walletStorageCredentials.account "postgres") -}}
+        {{- printf "%s" (include "acapy.database.adminPasswordKey" .) -}}
+    {{- else -}}
+        {{- if .Values.acapy.walletStorageCredentials.secretKeys.userPasswordKey -}}
+            {{- printf "%s" (tpl .Values.acapy.walletStorageCredentials.secretKeys.userPasswordKey $) -}}
+        {{- end -}}
+    {{- end -}}
+{{- else -}}
+    {{- "database-password" -}}
 {{- end -}}
 {{- end -}}
 
@@ -260,11 +301,11 @@ Create a default fully qualified app name for the postgres requirement.
 Generate acapy wallet storage config
 */}}
 {{- define "acapy.walletStorageConfig" -}}
-{{- if and .Values.acapy.walletStorageConfig (not .Values.postgresql.enabled) (not index .Values "postgresql-ha" "enabled") -}}
+{{- if and .Values.acapy.walletStorageConfig (not .Values.postgresql.enabled) (not (index .Values "postgresql-ha" "enabled")) -}}
 {{- if .Values.acapy.walletStorageConfig.json -}}
 {{- .Values.acapy.walletStorageConfig.json -}}
 {{- else -}}
-'{"url":"{{ .Values.acapy.walletStorageConfig.url }}","max_connections":"{{ .Values.acapy.walletStorageConfig.max_connection | default 10 }}"", "wallet_scheme":"{{ .Values.acapy.walletStorageConfig.wallet_scheme }}"}'
+'{"url":"{{ .Values.acapy.walletStorageConfig.url }}","max_connections":"{{ .Values.acapy.walletStorageConfig.max_connection | default 10 }}", "wallet_scheme":"{{ .Values.acapy.walletStorageConfig.wallet_scheme }}"}'
 {{- end -}}
 {{- else if and .Values.postgresql.enabled ( not ( index .Values "postgresql-ha" "enabled") ) -}}
 '{"url":"{{ include "global.postgresql.fullname" . }}:{{ .Values.postgresql.primary.service.ports.postgresql }}","max_connections":"{{ .Values.acapy.walletStorageConfig.max_connections }}", "wallet_scheme":"{{ .Values.acapy.walletStorageConfig.wallet_scheme }}"}'
@@ -279,11 +320,11 @@ Generate acapy wallet storage config
 Generate acapy wallet storage credentials
 */}}
 {{- define "acapy.walletStorageCredentials" -}}
-{{- if and .Values.acapy.walletStorageCredentials (not .Values.postgresql.enabled) (not index .Values "postgresql-ha" "enabled") -}}
+{{- if and .Values.acapy.walletStorageCredentials (not .Values.postgresql.enabled) (not (index .Values "postgresql-ha" "enabled")) -}}
 {{- if .Values.acapy.walletStorageCredentials.json -}}
 {{- .Values.acapy.walletStorageCredentials.json -}}
 {{- else -}}
-'{"account":"{{ .Values.acapy.walletStorageCredentials.account | default "acapy" }}","password":"{{ .Values.acapy.walletStorageCredentials.password }}", "admin_account":"{{ .Values.acapy.walletStorageCredentials.admin_account }}", "admin_password":"{{ .Values.acapy.walletStorageCredentials.admin_password }}"}'
+'{"account":"{{ .Values.acapy.walletStorageCredentials.account | default "acapy" }}","password":"$(POSTGRES_PASSWORD)", "admin_account":"{{ .Values.acapy.walletStorageCredentials.admin_account }}", "admin_password":"$(POSTGRES_POSTGRES_PASSWORD)"}'
 {{- end -}}
 {{- else if and .Values.postgresql.enabled ( not ( index .Values "postgresql-ha" "enabled") ) -}}
 '{"account":"{{ .Values.postgresql.auth.username }}","password":"$(POSTGRES_PASSWORD)", "admin_account":"{{ .Values.acapy.walletStorageCredentials.admin_account }}", "admin_password":"$(POSTGRES_POSTGRES_PASSWORD)"}'
