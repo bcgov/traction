@@ -132,6 +132,7 @@ acapy:
     wallet-name: askar-wallet
     wallet-storage-type: postgres_storage
     wallet-type: askar
+    log-file: traction-agent.log
 
   ## Acapy multiledger configuration file
   ## @param acapy.ledgers.yml [object] YAML configuration for connecting to multiple HyperLedger
