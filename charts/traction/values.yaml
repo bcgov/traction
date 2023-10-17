@@ -179,15 +179,18 @@ acapy:
   ## @param acapy.walletStorageCredentials.password Database password.
   ## @param acapy.walletStorageCredentials.admin_account Database account with CREATEDB role used to create additional databases per wallet.
   ## @param acapy.walletStorageCredentials.admin_password Database password for admin account.
-  ## @param acapy.walletStorageCredentials.existingSecret Name of an existing secret containing 'database-user', 'database-password', 'admin-password' keys.
+  ## @param acapy.walletStorageCredentials.existingSecret Name of an existing secret containing database user, password, and admin password.
+  ## @param acapy.walletStorageCredentials.secretKeys.adminPasswordKey Key in existing secret containing admin password.
+  ## @param acapy.walletStorageCredentials.secretKeys.userPasswordKey Key in existing secret containing password .
   ##
   walletStorageCredentials:
-    json: ""
-    account: ""
-    password: ""
+    json: ''
+    account: acapy
     admin_account: postgres
-    admin_password: ""
     existingSecret: ""
+    secretKeys:
+      adminPasswordKey: admin-password
+      userPasswordKey: database-password
   ## @section Acapy Plugins
   ##
   ## Specify the plugins to enable.

@@ -6,10 +6,10 @@ metadata:
   labels:
     {{- include "acapy.labels" . | nindent 4 }}
   annotations:
-    checksum/config: {{ include (print $.Template.BasePath "/acapy/configmap.yaml") . | sha256sum }}
-    checksum/wallet-secret: {{ include (print $.Template.BasePath "/acapy/wallet_secret.yaml") . | sha256sum }}
     checksum/api-secret: {{ include (print $.Template.BasePath "/acapy/api_secret.yaml") . | sha256sum }}
+    checksum/config: {{ include (print $.Template.BasePath "/acapy/configmap.yaml") . | sha256sum }}
     checksum/innkeeper-secret: {{ include (print $.Template.BasePath "/acapy/plugin_innkeeper_secret.yaml") . | sha256sum }}
+    checksum/wallet-secret: {{ include (print $.Template.BasePath "/acapy/wallet_secret.yaml") . | sha256sum }}
 spec:
   {{- if not .Values.acapy.autoscaling.enabled }}
   replicas: {{ .Values.acapy.replicaCount }}
@@ -79,12 +79,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ template "acapy.database.secret.name" . }}
-                  key: {{ .Values.postgresql.auth.secretKeys.userPasswordKey }}
+                  key: {{ include "acapy.database.userPasswordKey" . }}
             - name: POSTGRES_POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ template "acapy.database.secret.name" . }}
-                  key: {{ .Values.postgresql.auth.secretKeys.adminPasswordKey }}
+                  key: {{ include "acapy.database.adminPasswordKey" . }}
             - name: WEBHOOK_API_KEY
               valueFrom:
                 secretKeyRef:
