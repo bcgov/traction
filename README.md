@@ -84,7 +84,7 @@ Out of the box, the above will use the following ports:
 - Tenant UI backend server: 8080
 - Tenant UI frontend server: 5173
 
-Note that Tenant Proxy and Traction DB are startec via docker compose when starting ACA-Py/Traction Plugins
+Note that Tenant Proxy and Traction DB are started via docker compose when starting ACA-Py/Traction Plugins
 
 ### Repository workflow
 Currently authorized users can create a branch and run a pull request to merge in changes. Unauthorized can always create a fork.
