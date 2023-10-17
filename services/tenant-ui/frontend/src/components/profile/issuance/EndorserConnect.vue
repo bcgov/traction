@@ -4,7 +4,12 @@
       title="Connect to endorser"
       icon="pi pi-user-plus"
       class="p-button-rounded p-button-icon-only p-button-text"
-      @click="connectToLedger(props.ledgerInfo.endorser_alias, props.ledgerInfo.ledger_id)"
+      @click="
+        connectToLedger(
+          props.ledgerInfo.endorser_alias,
+          props.ledgerInfo.ledger_id
+        )
+      "
     />
   </div>
 
@@ -64,7 +69,8 @@ const connectToLedger = async (
   // Track the current connected to ledger (or undefined if none)
   const prevLedgerId = writeLedger?.value?.ledger_id;
   try {
-    const quickConnect = config.value.frontend.quickConnectEndorserName === endorser_alias;
+    const quickConnect =
+      config.value.frontend.quickConnectEndorserName === endorser_alias;
     await tenantStore.setWriteLedger(ledger_id);
     await connectToEndorser(quickConnect);
     if (quickConnect) {

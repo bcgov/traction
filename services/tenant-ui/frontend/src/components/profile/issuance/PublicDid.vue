@@ -66,8 +66,7 @@ import PublicDidRegister from './PublicDidRegister.vue';
 
 // Stores
 const tenantStore = useTenantStore();
-const { publicDid, tenantConfig, loading } =
-  storeToRefs(tenantStore);
+const { publicDid, tenantConfig, loading } = storeToRefs(tenantStore);
 
 const canBecomeIssuer = computed(
   () =>
