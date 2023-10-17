@@ -8,16 +8,14 @@
       :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
       selection-mode="single"
       data-key="ledger_id"
-      filter-display="menu"
+      sort-field="ledger_id"
       :sort-order="1"
     >
       <template #empty>{{ $t('common.noRecordsFound') }}</template>
       <template #loading>{{ $t('common.loading') }}</template>
       <Column :sortable="false" header="Register">
         <template #body="{ data }">
-          <span v-if="isLedgerSet && data.ledger_id === currWriteLedger">
-            <i class="pi pi-check-circle"></i>
-          </span>
+          <PublicDidRegister :ledger-info="data" />
         </template>
       </Column>
       <Column :sortable="true" field="ledger_id" header="Ledger Identifier" />
@@ -51,24 +49,24 @@
 </template>
 
 <script setup lang="ts">
+// Vue/Primevue/etc
 import { computed } from 'vue';
-import DataTable from 'primevue/datatable';
-import InputText from 'primevue/inputtext';
-import Column from 'primevue/column';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
+import Column from 'primevue/column';
+import DataTable from 'primevue/datatable';
+import InputText from 'primevue/inputtext';
 import VueJsonPretty from 'vue-json-pretty';
-import { useToast } from 'vue-toastification';
 // State
 import { useTenantStore } from '@/store';
 import { TABLE_OPT } from '@/helpers/constants';
 import { storeToRefs } from 'pinia';
-
-const toast = useToast();
+// Other Components
+import PublicDidRegister from './PublicDidRegister.vue';
 
 // Stores
 const tenantStore = useTenantStore();
-const { publicDid, tenantConfig, writeLedger, loading } =
+const { publicDid, tenantConfig, loading } =
   storeToRefs(tenantStore);
 
 const canBecomeIssuer = computed(
@@ -81,15 +79,6 @@ const formattedLedgers = computed(() =>
     ledger_id: ledger,
   }))
 );
-const isLedgerSet = computed(
-  () => !!writeLedger.value && !!writeLedger.value.ledger_id
-);
-const currWriteLedger = computed(() => {
-  if (!!writeLedger.value && !!writeLedger.value.ledger_id) {
-    return writeLedger.value.ledger_id;
-  }
-  return null;
-});
 // Public DID status
 const hasPublicDid = computed(() => !!publicDid.value && !!publicDid.value.did);
 </script>

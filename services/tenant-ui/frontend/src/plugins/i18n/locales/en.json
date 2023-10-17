@@ -335,7 +335,7 @@
     "webHookKey": "WebHook Key",
     "webhooks": "Webhooks",
     "webHookUrl": "WebHook URL",
-    "writeLedger": "Current Write Ledger: {0}"
+    "writeLedger": "Current Ledger: {0}"
   },
   "qrCode": {
     "noContentFound": "No content found"

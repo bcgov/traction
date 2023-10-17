@@ -8,6 +8,7 @@
     "showInnkeeperAdminLogin": true,
     "showOIDCReservationLogin": false,
     "showWritableComponents": true,
+    "quickConnectEndorserName": "bcovrin-test-endorser",
     "session": {
       "timeoutSeconds": "600",
       "countdownSeconds": "30"

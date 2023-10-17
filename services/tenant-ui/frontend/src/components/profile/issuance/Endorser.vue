@@ -9,7 +9,6 @@
       selection-mode="single"
       data-key="ledger_id"
       sort-field="ledger_id"
-      filter-display="menu"
       :sort-order="1"
     >
       <template #empty>{{ $t('common.noRecordsFound') }}</template>
@@ -19,18 +18,26 @@
           <EndorserConnect :ledger-info="data" />
         </template>
       </Column>
-      <Column :sortable="true" field="ledger_id" header="Ledger">
+      <Column :sortable="true" field="ledger_id" header="Ledger" />
+      <Column :sortable="true" field="endorser_alias" header="Alias">
         <template #body="{ data }">
-          {{ data.ledger_id }}
-          <span>
+          {{ data.endorser_alias }}
+          <span
+            v-if="
+              config.frontend.quickConnectEndorserName === data.endorser_alias
+            "
+            class="ml-1"
+          >
             <i
-              v-if="data.ledger_id === currWriteLedger"
-              class="pi pi-check-circle ml-1"
+              v-tooltip="
+                'This Endorser is marked as Quick-Connect (auto accept/endorse)'
+              "
+              class="pi pi-bolt"
+              style="font-size: 0.8rem"
             ></i>
           </span>
         </template>
       </Column>
-      <Column :sortable="true" field="endorser_alias" header="Alias" />
     </DataTable>
     <div v-if="showNotActiveWarn" class="inactive-endorser">
       <i class="pi pi-exclamation-triangle"></i>
@@ -69,7 +76,7 @@ import AccordionTab from 'primevue/accordiontab';
 import VueJsonPretty from 'vue-json-pretty';
 import { useToast } from 'vue-toastification';
 // State
-import { useTenantStore } from '@/store';
+import { useConfigStore, useTenantStore } from '@/store';
 import { TABLE_OPT } from '@/helpers/constants';
 import { storeToRefs } from 'pinia';
 // Other Components
@@ -77,9 +84,12 @@ import EndorserConnect from './EndorserConnect.vue';
 
 const toast = useToast();
 
+const configStore = useConfigStore();
 const tenantStore = useTenantStore();
+const { config } = storeToRefs(configStore);
 const { endorserConnection, endorserInfo, tenantConfig, writeLedger, loading } =
   storeToRefs(tenantStore);
+
 const endorserList = tenantConfig.value.connect_to_endorser.map(
   (config: any) => ({
     ledger_id: config.ledger_id,
