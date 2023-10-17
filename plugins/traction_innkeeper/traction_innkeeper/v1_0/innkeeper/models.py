@@ -238,7 +238,7 @@ class ReservationRecordSchema(BaseRecordSchema):
         fields.Dict(description="Endorser and ledger config", required=False),
         example=json.dumps(ENDORSER_LEDGER_CONFIG_EXAMPLE),
         required=False,
-        attribute="connect_to_endorsers"
+        attribute="connect_to_endorsers",
     )
 
     create_public_did = fields.List(

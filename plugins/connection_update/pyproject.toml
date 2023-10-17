@@ -9,7 +9,7 @@ packages = [{include = "connection_update"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-aries-cloudagent = { version = "0.10.3" }
+aries-cloudagent = { git = "https://github.com/shaangill025/aries-cloudagent-python.git", branch = "feat_per_tenant_logging" }
 
 [tool.poetry.dev-dependencies]
 flake8 = "^5.0.4"

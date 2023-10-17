@@ -91,14 +91,17 @@ def error_handler(func):
 
     return wrapper
 
+
 # extending the CreateWalletTokenRequestSchema to allow for an API key
 class CustomCreateWalletTokenRequestSchema(CreateWalletTokenRequestSchema):
     """Request schema for creating a wallet token."""
+
     api_key = fields.Str(
         description="API key for this wallet",
         required=False,
         example="3bd14a1e8fb645ddadf9913c0922ff3b",
     )
+
 
 class DefaultConfigValuesSchema(OpenAPISchema):
     """Response schema for default config values."""
@@ -135,6 +138,7 @@ class ReservationRequestSchema(OpenAPISchema):
         description="Optional context data for this tenant request",
         example={"contact_phone": "555-555-5555"},
     )
+
 
 class ReservationResponseSchema(OpenAPISchema):
     """Response schema for tenant reservation."""

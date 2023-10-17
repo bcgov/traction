@@ -9,9 +9,9 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-aries-cloudagent = { version = "0.10.3" }
+aries-cloudagent = { git = "https://github.com/shaangill025/aries-cloudagent-python.git", branch = "feat_per_tenant_logging" }
 python-dateutil = "^2.8.2"
-typing-extensions = "4.5.0"
+typing-extensions = "4.0.0"
 basicmessage_storage = {path = "./basicmessage_storage", develop = true}
 connection_update = {path = "./connection_update", develop = true}
 multitenant-provider = {path = "./multitenant_provider", develop = true}

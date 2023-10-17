@@ -95,7 +95,7 @@ class SchemaStorageService:
 
             if schema is None:
                 raise StorageNotFoundError(f"Schema not found on ledger: {schema_id}")
-            
+
             try:
                 data = {"schema_id": schema_id, "schema": schema}
                 if ledger_id:
