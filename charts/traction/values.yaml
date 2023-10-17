@@ -585,7 +585,7 @@ ui:
   ## @param ui.oidc.showOIDCReservationLogin OIDC reservation login
   showOIDCReservationLogin: false
   ## @param ui.oidc.quickConnectEndorserName A ledger that has endorser auto-accept/transact enabled
-  quickConnectEndorserName: false
+  quickConnectEndorserName: ""
   image:
     ## @param ui.image.repository
     repository: ghcr.io/bcgov/traction-tenant-ui
