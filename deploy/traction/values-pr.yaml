@@ -2,6 +2,13 @@ ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
 acapy:
   image:
     pullPolicy: Always
+  ledgers.yml:
+    - id: bcovrin-test
+      is_production: true
+      is_write: true
+      genesis_url: 'http://test.bcovrin.vonx.io/genesis'
+      endorser_did: '4pgFAjnSVKCr7CMfpqDjhu'
+      endorser_alias: 'bcovrin-test-endorser'
   secret:
     adminApiKey:
       generated: false
