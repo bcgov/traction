@@ -74,15 +74,12 @@ import Column from 'primevue/column';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import VueJsonPretty from 'vue-json-pretty';
-import { useToast } from 'vue-toastification';
 // State
 import { useConfigStore, useTenantStore } from '@/store';
 import { TABLE_OPT } from '@/helpers/constants';
 import { storeToRefs } from 'pinia';
 // Other Components
 import EndorserConnect from './EndorserConnect.vue';
-
-const toast = useToast();
 
 const configStore = useConfigStore();
 const tenantStore = useTenantStore();
@@ -104,72 +101,9 @@ const canBecomeIssuer = computed(
     tenantConfig.value?.create_public_did?.length
 );
 
-const connecttoLedger = async (ledger_id: string) => {
-  let prevLedgerId: any = undefined;
-  if (!!writeLedger.value && !!writeLedger.value.ledger_id) {
-    prevLedgerId = writeLedger.value.ledger_id;
-  }
-  try {
-    await tenantStore.setWriteLedger(ledger_id);
-    await connectToEndorser();
-    await registerPublicDid();
-  } catch (error) {
-    if (prevLedgerId) {
-      try {
-        await tenantStore.setWriteLedger(prevLedgerId);
-        await connectToEndorser();
-      } catch (endorserError) {
-        toast.error(`${endorserError}`);
-      }
-      toast.error(
-        `${error}, reverting to previously set ledger ${prevLedgerId}`
-      );
-    } else {
-      toast.error(`${error}`);
-    }
-  }
-};
-
-// Connect to endorser
-const connectToEndorser = async () => {
-  try {
-    await tenantStore.connectToEndorser();
-    // Give a couple seconds to wait for active. If not done by then
-    // a message appears to the user saying to refresh themselves
-    await tenantStore.waitForActiveEndorserConnection();
-    await tenantStore.getEndorserConnection();
-    toast.success('Endorser connection request sent');
-  } catch (error) {
-    throw Error(`Failure while connecting: ${error}`);
-  }
-};
-
-// Register DID
-const registerPublicDid = async () => {
-  try {
-    await tenantStore.registerPublicDid();
-    toast.success('Public DID registration sent');
-  } catch (error) {
-    throw Error(`Failure while registering: ${error}`);
-  }
-};
-
 // Details about endorser connection
 const showNotActiveWarn = computed(
   () => endorserConnection.value && endorserConnection.value.state !== 'active'
-);
-const isLedgerSet = computed(
-  () => !!writeLedger.value && !!writeLedger.value.ledger_id
-);
-// Handler failure logic
-const currWriteLedger = computed(() => {
-  if (!!writeLedger.value && !!writeLedger.value.ledger_id) {
-    return writeLedger.value.ledger_id;
-  }
-  return null;
-});
-const enableLedgerSwitch = computed(
-  () => tenantConfig.value.enable_ledger_switch
 );
 </script>
 

@@ -4,13 +4,28 @@
       title="Connect to endorser"
       icon="pi pi-user-plus"
       class="p-button-rounded p-button-icon-only p-button-text"
+      @click="connectToLedger()"
+    />
+  </div>
+
+  <div v-if="showLedgerSwitch">
+    <Button
+      label="Switch Ledger"
+      icon="pi pi-arrow-right-arrow-left"
+      text
+      @click="switchLedger($event)"
+    />
+    <!-- <Button
+      title="Connect to endorser"
+      icon="pi pi-user-plus"
+      class="p-button-rounded p-button-icon-only p-button-text"
       @click="
         connectToLedger(
           props.ledgerInfo.endorser_alias,
           props.ledgerInfo.ledger_id
         )
       "
-    />
+    /> -->
   </div>
 
   <div
@@ -61,17 +76,14 @@ const { endorserConnection, publicDid, tenantConfig, writeLedger } =
   storeToRefs(tenantStore);
 
 // Set the write ledger and then connect to the relevant endorser
-const connectToLedger = async (
-  endorser_alias: string,
-  ledger_id: string,
-  switchLeger = false
-) => {
+const connectToLedger = async (switchLeger = false) => {
   // Track the current connected to ledger (or undefined if none)
   const prevLedgerId = writeLedger?.value?.ledger_id;
   try {
     const quickConnect =
-      config.value.frontend.quickConnectEndorserName === endorser_alias;
-    await tenantStore.setWriteLedger(ledger_id);
+      config.value.frontend.quickConnectEndorserName ===
+      props.ledgerInfo.endorser_alias;
+    await tenantStore.setWriteLedger(props.ledgerInfo.ledger_id);
     await connectToEndorser(quickConnect);
     if (quickConnect) {
       await registerPublicDid();
@@ -130,16 +142,38 @@ const showEndorserConnect = computed(() => {
   ) {
     return true;
   }
-  //... you're allowed to Switch ledgers
+  //... otherwise don't
+  return false;
+});
+
+// Show the ledger switch button when...
+const showLedgerSwitch = computed(() => {
+  // There is an active endorser connection
+  // and we're looking at the row that's not the current ledger
+  // and the DID is set (IE the issuer process is complete)
+  // and the innkeeper has allowed you to swtich ledger
   if (
     tenantConfig.value.enable_ledger_switch &&
     props.ledgerInfo.ledger_id !== currWriteLedger.value
   ) {
     return true;
   }
-  //... otherwise don't
   return false;
 });
+
+// Switch ledger confirmation
+const switchLedger = (event: any) => {
+  confirm.require({
+    target: event.currentTarget,
+    message:
+      'Switching may have consequences if you have previous issuance. \r\n At this time it will only work if the Endorser switching to is set to auto-accept and auto-endorse.',
+    header: 'Confirmation',
+    icon: 'pi pi-exclamation-triangle',
+    accept: () => {
+      connectToLedger(true);
+    },
+  });
+};
 
 // Can delete connection
 const hasPublicDid = computed(() => !!publicDid.value && !!publicDid.value.did);
