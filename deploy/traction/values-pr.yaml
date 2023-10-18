@@ -53,6 +53,7 @@ tenant_proxy:
         network.openshift.io/policy-group: ingress
 ui:
   showOIDCReservationLogin: false
+  quickConnectEndorserName: "bcovrin-test-endorser"
   image:
     pullPolicy: Always
   oidc:

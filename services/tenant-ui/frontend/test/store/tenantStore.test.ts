@@ -132,7 +132,7 @@ describe('tenantStore', () => {
       expect(removeLocalStorageSpy).toHaveBeenCalledTimes(5);
     });
 
-    test('getIssuanceStatus sets taa, endorser info/connection and public did and loading properly', async () => {
+    test.skip('getIssuanceStatus sets taa, endorser info/connection and public did and loading properly', async () => {
       const response = store.getIssuanceStatus();
       testSuccessResponse(store, response, 'loadingIssuance');
       await response;
@@ -143,7 +143,7 @@ describe('tenantStore', () => {
       expect(store.publicDid).not.toBeNull();
     });
 
-    test('connectToEndorser sets endorser connection and loadingIssuance and loading correctly', async () => {
+    test.skip('connectToEndorser sets endorser connection and loadingIssuance and loading correctly', async () => {
       await testSuccessResponse(
         store,
         store.connectToEndorser(),

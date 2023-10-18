@@ -1,6 +1,6 @@
 <template>
   <!-- Make Issuer -->
-  <h3 class="mt-5 mb-3">
+  <h3 class="mt-5 mb-0">
     {{ $t('profile.issuer') }}
 
     <span v-if="errLoading" class="no-endorser">
@@ -9,6 +9,12 @@
     </span>
   </h3>
 
+  <div v-if="writeLedger">
+    <p class="my-0">
+      {{ $t('profile.writeLedger', [writeLedger.ledger_id]) }}
+    </p>
+  </div>
+
   <div v-if="loadingIssuance" class="flex flex-column align-items-center">
     <ProgressSpinner />
     <p v-if="publicDidRegistrationProgress">
@@ -16,9 +22,6 @@
     </p>
   </div>
   <div v-else>
-    <h5 class="my-0">{{ $t('profile.taa.taaAcceptance') }}</h5>
-    <TaaAcceptance />
-
     <h5 class="mb-0 mt-3">{{ $t('common.endorser') }}</h5>
     <div v-if="endorserInfo">
       <Endorser />
@@ -30,6 +33,9 @@
       <i class="pi pi-exclamation-circle"></i>
       {{ $t('profile.noEndorserInfoFound') }}
     </div>
+
+    <h5 class="mb-0 mt-3">{{ $t('profile.taa.taaAcceptance') }}</h5>
+    <TaaAcceptance />
   </div>
 </template>
 
@@ -51,8 +57,12 @@ const toast = useToast();
 
 // Get the tenant store
 const tenantStore = useTenantStore();
-const { loadingIssuance, endorserInfo, publicDidRegistrationProgress } =
-  storeToRefs(tenantStore);
+const {
+  endorserInfo,
+  loadingIssuance,
+  publicDidRegistrationProgress,
+  writeLedger,
+} = storeToRefs(tenantStore);
 
 // Load all the issuer details
 const errLoading = ref(false);

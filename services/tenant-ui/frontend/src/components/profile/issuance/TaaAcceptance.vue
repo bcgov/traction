@@ -21,7 +21,7 @@
     <i class="pi pi-info-circle"></i> {{ $t('profile.taa.requiredNo') }}
   </p>
 
-  <div>
+  <div v-if="taaRequired">
     <Accordion>
       <AccordionTab :header="$t('profile.taa.taaDetails')">
         <h5 class="my-0">{{ $t('profile.taa.taaDetails') }}</h5>

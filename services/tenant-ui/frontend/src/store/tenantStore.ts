@@ -76,6 +76,7 @@ export const useTenantStore = defineStore('tenant', () => {
     loadingIssuance.value = true;
     // Find out issuer status when logging in
     const result = await Promise.allSettled([
+      getWriteLedger(),
       getTaa(),
       getEndorserInfo(),
       getEndorserConnection(),
@@ -164,45 +165,28 @@ export const useTenantStore = defineStore('tenant', () => {
     return endorserInfo.value;
   }
 
-  async function getEndorserConnectionState(connId: string) {
-    console.log('> tenantStore.getEndorserConnectionState');
-    error.value = null;
-    loadingIssuance.value = true;
-    let status: any = null;
-    await acapyApi
-      .getHttp(API_PATH.CONNECTION(connId), {})
-      .then((res) => {
-        status = res.data.state;
-      })
-      .catch((err) => {
-        error.value = err;
-      })
-      .finally(() => {
-        loadingIssuance.value = false;
-        getEndorserInfo();
-      });
-    console.log('< tenantStore.getEndorserConnectionState');
-    return status;
-  }
-
-  async function connectToEndorser() {
+  async function connectToEndorser(quickConnect = false) {
     console.log('> tenantStore.connectToEndorser');
     error.value = null;
     loadingIssuance.value = true;
 
-    await acapyApi
-      .postHttp(API_PATH.TENANT_ENDORSER_CONNECTION, {})
-      .then((res) => {
-        console.log(res);
-        endorserConnection.value = res.data;
-      })
-      .catch((err) => {
-        error.value = err;
-      })
-      .finally(() => {
-        loadingIssuance.value = false;
-      });
-    console.log('< tenantStore.connectToEndorser');
+    try {
+      publicDidRegistrationProgress.value = 'Connecting to Endorser';
+      const res = await acapyApi.postHttp(
+        API_PATH.TENANT_ENDORSER_CONNECTION,
+        {}
+      );
+      endorserConnection.value = res.data;
+      if (quickConnect) {
+        // If you've marked this endorser as 'quick connect' (no intervention)
+        // then wait for it to automatically become active
+        await waitForActiveEndorserConnection();
+      }
+    } catch (err) {
+      error.value = err;
+    } finally {
+      loadingIssuance.value = false;
+    }
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
@@ -265,27 +249,27 @@ export const useTenantStore = defineStore('tenant', () => {
     throw Error(`Transaction ${txnId} has not been completed`);
   }
 
-  async function waitForActiveEndorserConnection() {
+  async function waitForActiveEndorserConnection(maxRetries = 10) {
     const connId = endorserConnection.value.connection_id;
     let retries = 0;
     publicDidRegistrationProgress.value =
       'Waiting for Endorser connection to become active';
     loadingIssuance.value = true;
     for (;;) {
-      const connState = await getEndorserConnectionState(connId);
-      if (connState === 'active') {
+      const res = await acapyApi.getHttp(API_PATH.CONNECTION(connId), {});
+      endorserConnection.value = res.data;
+      if (endorserConnection.value.state === 'active') {
         console.log(`Endorser connection ${connId} state is active`);
         publicDidRegistrationProgress.value = '';
         loadingIssuance.value = false;
         return;
       }
-      if (retries > 10) {
+      if (retries > maxRetries) {
         break;
       }
       retries = retries + 1;
-      await new Promise((r) => setTimeout(r, retries * 1000));
+      await new Promise((r) => setTimeout(r, 1000));
     }
-    throw Error(`Endorser connection ${connId} has not been set as active`);
   }
 
   async function registerPublicDid() {
@@ -536,7 +520,6 @@ export const useTenantStore = defineStore('tenant', () => {
     getEndorserConnection,
     getEndorserInfo,
     getTenantDefaultSettings,
-    getEndorserConnectionState,
     connectToEndorser,
     getPublicDid,
     getWriteLedger,
