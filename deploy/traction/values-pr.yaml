@@ -12,6 +12,13 @@ acapy:
       tenantid: "innkeeper"
   argfile.yml:
     wallet-name: default
+  ledgers.yml:
+    - id: bcovrin-test
+      is_production: true
+      is_write: true
+      genesis_url: 'http://test.bcovrin.vonx.io/genesis'
+      endorser_did: '4pgFAjnSVKCr7CMfpqDjhu'
+      endorser_alias: 'bcovrin-test-endorser'
   plugin-config.yml:
     traction_innkeeper:
       innkeeper_wallet:
