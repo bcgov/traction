@@ -617,7 +617,7 @@ ui:
     infoBanner:
       ## @param ui.ux.infoBanner.message
       message: ""
-      ## @param ui.ux.infoBanner.messageLevel <info|warning|error>
+      ## @param ui.ux.infoBanner.messageLevel <info|warn|error|success>
       messageLevel: info
       ## @param ui.ux.infoBanner.showMessage Show the info banner <boolean>
       showMessage: false

@@ -1,7 +1,10 @@
 <template>
-  <div>Testing 1 2 3</div>
+  <!--TODO: This should eventually go somewhere else-->
   <div class="traction-login grid w-screen h-screen">
     <div class="col-12 md:col-6 xl:col-4">
+      <div class="notification">
+        <Alert />
+      </div>
       <div class="px-8">
         <div class="pt-4 pb-6">
           <img src="/img/bc/bc_logo.png" class="logo-bc" />
@@ -115,6 +118,7 @@ import Reserve from './reservation/Reserve.vue';
 import Status from './reservation/Status.vue';
 import SessionTimeoutModal from './common/SessionTimeoutModal.vue';
 import { stringOrBooleanTruthy } from '@/helpers';
+import Alert from './notifications/Alert.vue';
 // State
 import { storeToRefs } from 'pinia';
 import { useConfigStore, useReservationStore, useOidcStore } from '@/store';
@@ -170,5 +174,8 @@ const doGoBack = () => {
 // Set the image specific to this component here though
 .cover-image {
   background-image: url('/img/default-login-image.jpg');
+}
+.notification {
+  margin: 2rem;
 }
 </style>
