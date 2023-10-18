@@ -21,8 +21,7 @@
       <template #header>
         <div class="flex justify-content-between">
           <div class="flex justify-content-start">
-            <CreateConnection :multi="false" class="mr-3" />
-            <CreateConnection :multi="true" />
+            <CreateConnection />
           </div>
           <div class="flex justify-content-end">
             <span class="p-input-icon-left">

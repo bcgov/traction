@@ -20,7 +20,7 @@ describe('Invitations', () => {
     wrapper.getComponent({ name: 'DataTable' });
     expect(
       wrapper.findAllComponents({ name: 'CreateConnection' })
-    ).toHaveLength(2);
+    ).toHaveLength(1);
   });
 
   test('table body is rendered with expected values', async () => {

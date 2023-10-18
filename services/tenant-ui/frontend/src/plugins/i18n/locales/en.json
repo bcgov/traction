@@ -178,7 +178,17 @@
     "invitation": {
       "alias": "Connection Alias",
       "close": "Close",
-      "submit": "Submit"
+      "submit": "Submit",
+      "type": "Type",
+      "typeConnections": "Connections",
+      "typeOob": "Out-of-Band",
+      "typeSingleMulti": "Single/Multi",
+      "typeSingleUse": "Single Use Invitation",
+      "typeMultiUse": "Multi Use Invitation",
+      "oobSettings": "Out-of-Band Optional Settings",
+      "goal": "Goal",
+      "goalCode": "Goal Code",
+      "myLabel": "My Label"
     },
     "invitations": {
       "create": "Create Invitation",
@@ -194,8 +204,8 @@
       "multiCreate": "Create Multi Use Invitation"
     },
     "singleUseInvitation": {
-      "single": "Single Use Invitation",
-      "singleCreate": "Create Single Use Invitation"
+      "single": "Create Invitation",
+      "singleCreate": "Create Invitation"
     },
     "table": {
       "createdAt": "Created At",

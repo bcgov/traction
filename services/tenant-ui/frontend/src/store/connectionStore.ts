@@ -98,6 +98,41 @@ export const useConnectionStore = defineStore('connection', () => {
     return invitationData;
   }
 
+  async function createOobInvitation(multiUse: boolean, payload = {}) {
+    console.log('> connectionStore.createOobInvitation');
+    error.value = null;
+    loading.value = true;
+
+    let invitationData = null;
+    // need the await here since the returned invitationData is not one of our stored refs...
+    await acapyApi
+      .postHttp(API_PATH.OUT_OF_BAND_CREATE, payload, {
+        multi_use: multiUse,
+      })
+      .then((res) => {
+        console.log(res);
+        invitationData = res.data;
+      })
+      .then(() => {
+        listConnections();
+      })
+      .catch((err) => {
+        error.value = err;
+        // console.log(error.value);
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< connectionStore.createOobInvitation');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return invitationData;
+  }
+
   async function receiveInvitation(invite: string, alias: string) {
     console.log('> connectionStore.receiveInvitation');
     error.value = null;
@@ -286,6 +321,7 @@ export const useConnectionStore = defineStore('connection', () => {
     findConnectionName,
     listConnections,
     createInvitation,
+    createOobInvitation,
     receiveInvitation,
     deleteConnection,
     getConnection,
