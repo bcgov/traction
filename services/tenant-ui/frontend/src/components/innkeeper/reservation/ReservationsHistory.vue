@@ -40,6 +40,12 @@
       >
         <template #body="{ data }">
           <StatusChip :status="data.state" />
+          <RefreshReservation
+            v-if="data.state === 'approved'"
+            :id="data.id"
+            :email="data.contact_email"
+          />
+          />
         </template>
         <template #filter="{ filterModel, filterCallback }">
           <InputText
@@ -152,6 +158,7 @@ import { storeToRefs } from 'pinia';
 // Other components
 import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
 import StatusChip from '@/components/common/StatusChip.vue';
+import RefreshReservation from './RefreshReservation.vue';
 import { TABLE_OPT } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 

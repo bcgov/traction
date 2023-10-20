@@ -360,6 +360,7 @@
       "toast": "Reservation Denied for {email}"
     },
     "denyRequest": "Deny Request",
+    "refreshRequest": "Refresh Password",
     "emailSentTo": "An email has also been sent to {0} with the reservation number below.",
     "enterPassword": "Please enter the reservation password below to validate your account.",
     "history": "History",
