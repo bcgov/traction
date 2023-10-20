@@ -11,6 +11,7 @@ describe('Header', async () => {
       global: {
         plugins: [PrimeVue, createTestingPinia()],
         stubs: [
+          'Alert',
           'router-link',
           'ProfileButton',
           'LocaleSwitcher',
