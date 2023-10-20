@@ -22,6 +22,7 @@ import {
 import { RESERVATION_STATUS_ROUTE } from '@/helpers/constants';
 import { API_PATH, RESERVATION_STATUSES } from '@/helpers/constants';
 import { useConfigStore } from '../configStore';
+import test from 'node:test';
 
 export interface TenantResponseData {
   tenant_id?: string;
@@ -169,6 +170,54 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
 
     // return the reservation password
     return approveResponse;
+  }
+
+  async function refreshCheckInPassword(
+    id: string,
+    email: string,
+    payload: any = {}
+  ) {
+    console.log('> reservationStore.refreshCheckInPassword');
+    // error.value = null;
+    // loading.value = true;
+
+    // // Don't keep this as state, make sure the password doesn't hang around in memory
+    // let approveResponse: ApproveResponse = {};
+    // await acapyApi
+    //   .putHttp(API_PATH.INNKEEPER_RESERVATIONS_APPROVE(id), payload)
+    //   .then((res) => {
+    //     approveResponse = res.data;
+    //   })
+    //   .catch((err) => {
+    //     error.value = err;
+    //     console.log(error.value);
+    //   })
+    //   .finally(() => {
+    //     loading.value = false;
+    //   });
+    // console.log('< reservationStore.approveReservation');
+
+    // if (error.value != null) {
+    //   // throw error so $onAction.onError listeners can add their own handler
+    //   throw error.value;
+    // }
+
+    // const trimUrl = window.location.origin;
+
+    // _sendStatusEmail({
+    //   state: RESERVATION_STATUSES.APPROVED,
+    //   contactEmail: email,
+    //   reservationId: id,
+    //   reservationPassword: approveResponse.reservation_pwd,
+    //   serverUrl: trimUrl,
+    //   serverUrlStatusRoute: `${trimUrl}/${RESERVATION_STATUS_ROUTE}`,
+    //   contactName: name,
+    // });
+
+    // return the reservation password
+    let test: { [key: string]: any } = {};
+    test.reservation_pwd = 'testing password';
+    return test;
   }
 
   async function denyReservation(
@@ -323,6 +372,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     currentReservations,
     reservationHistory,
     approveReservation,
+    refreshCheckInPassword,
     createApiKey,
     deleteApiKey,
     denyReservation,
