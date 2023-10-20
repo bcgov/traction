@@ -1,13 +1,13 @@
 <template>
   <div>
     <Button
-      :label="$t('connect.singleUseInvitation.single')"
+      :label="$t('connect.invitation.create')"
       icon="pi pi-user-edit"
       @click="openModal"
     />
     <Dialog
       v-model:visible="displayModal"
-      :header="$t('connect.singleUseInvitation.singleCreate')"
+      :header="$t('connect.invitation.create')"
       :modal="true"
       :style="{ minWidth: '400px' }"
       @update:visible="handleClose"

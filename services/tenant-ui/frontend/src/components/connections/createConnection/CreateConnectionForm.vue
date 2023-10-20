@@ -53,7 +53,7 @@
     </div>
 
     <!-- Alias -->
-    <div class="field w-full">
+    <div class="field w-full mt-3">
       <label for="alias" :class="{ 'p-error': v$.alias.$invalid && submitted }">
         {{ $t('connect.invitation.alias') }}
       </label>

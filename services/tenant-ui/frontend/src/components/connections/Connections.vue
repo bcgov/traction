@@ -230,7 +230,6 @@ const formattedConnections: Ref<any[]> = computed(() =>
   filteredConnections.value.map((conn) => ({
     connection_id: conn.connection_id,
     alias: conn.alias,
-    protocol: conn.connection_protocol,
     their_label: conn.their_label,
     state: conn.state,
     created: formatDateLong(conn.created_at as string),
