@@ -14,6 +14,7 @@
         :email="formFields.contact_email"
         :pwd="reservationPwdResult"
       />
+      <p></p>
     </div>
   </div>
 
