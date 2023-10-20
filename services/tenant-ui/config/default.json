@@ -8,18 +8,7 @@
     "showInnkeeperAdminLogin": true,
     "showOIDCReservationLogin": false,
     "showWritableComponents": true,
-<<<<<<< HEAD
     "quickConnectEndorserName": "",
-    "infoBanner": {
-      "visible": false,
-      "showMessage": true,
-      "message": "Have a wonderful day",
-      "messageLevel": "info",
-      "showEnvironment": true,
-      "showLoginStatus": false
-    },
-=======
->>>>>>> This should do it for the back end
     "session": {
       "timeoutSeconds": "600",
       "countdownSeconds": "30"
