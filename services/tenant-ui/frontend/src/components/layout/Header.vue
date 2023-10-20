@@ -24,7 +24,7 @@ import Toolbar from 'primevue/toolbar';
 import ProfileButton from '@/components/profile/ProfileButton.vue';
 import LocaleSwitcher from '../common/LocaleSwitcher.vue';
 import SessionTimer from '../common/SessionTimer.vue';
-import Alert from '@/components/notifications/Alert.vue'
+import Alert from '@/components/notifications/Alert.vue';
 
 // State
 import { storeToRefs } from 'pinia';
