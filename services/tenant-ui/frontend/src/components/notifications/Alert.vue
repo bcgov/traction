@@ -12,6 +12,4 @@ import { storeToRefs } from 'pinia';
 import { useConfigStore } from '@/store/configStore';
 import Message from 'primevue/message';
 const { config } = storeToRefs(useConfigStore());
-
-console.log('config', config);
 </script>
