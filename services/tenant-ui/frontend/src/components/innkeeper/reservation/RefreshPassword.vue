@@ -1,6 +1,6 @@
 <template>
   <Button
-    :label="$t('reservations.refreshRequest')"
+    :label="$t('reservations.refreshPassword')"
     class="p-button-rounded p-button-text"
     icon="pi pi-refresh"
     @click="refresh"
@@ -36,7 +36,7 @@ const props = defineProps({
     required: true,
   },
 });
-const emit = defineEmits(['success']); // Deny reservation
+const emit = defineEmits(['success']);
 const displayModal = ref(false);
 const reason = ref('');
 

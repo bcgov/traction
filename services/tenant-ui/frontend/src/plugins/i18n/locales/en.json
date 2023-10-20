@@ -348,6 +348,11 @@
       "title": "Reservation Approved",
       "toast": "Reservation Approved for {email}"
     },
+    "refreshed": {
+      "text": "The Check-In password has been re-sent to {email}",
+      "title": "Password Refreshed",
+      "toast": "Password Refreshed for {email}"
+    },
     "approveRequest": "Approve Request",
     "checkJunkFolder": "(Please check your junk/spam folder before contacting us, as it is very common to have the email delivery problems because of automated filters.)",
     "contactEmail": "Contact Email",
@@ -360,7 +365,7 @@
       "toast": "Reservation Denied for {email}"
     },
     "denyRequest": "Deny Request",
-    "refreshRequest": "Refresh Password",
+    "refreshPassword": "Refresh Password",
     "emailSentTo": "An email has also been sent to {0} with the reservation number below.",
     "enterPassword": "Please enter the reservation password below to validate your account.",
     "history": "History",
