@@ -64,6 +64,8 @@ export const API_PATH = {
   INNKEEPER_RESERVATIONS: '/innkeeper/reservations/',
   INNKEEPER_RESERVATIONS_APPROVE: (id: string) =>
     `/innkeeper/reservations/${id}/approve`,
+  INNKEEPER_RESERVATIONS_REFRESH_PASSWORD: (id: string) =>
+    `/innkeeper/reservations/${id}/refresh-password`,
   INNKEEPER_RESERVATIONS_CONFIG: (id: string) =>
     `/innkeeper/reservations/${id}/config`,
   INNKEEPER_RESERVATIONS_DENY: (id: string) =>
