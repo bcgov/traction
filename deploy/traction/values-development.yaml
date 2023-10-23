@@ -22,6 +22,14 @@ acapy:
           - bcovrin-dev
       reservation:
         expiry_minutes: 7200
+  walletStorageConfig:
+    url: traction-database-primary:5432
+  walletStorageCredentials:
+    admin_account: walletman
+    existingSecret: traction-database-acapy
+    secretKeys:
+      adminPasswordKey: walletman-password
+      userPasswordKey: acapy-password
   autoscaling:
     enabled: true
     minReplicas: 2
@@ -74,10 +82,4 @@ ingress:
   annotations:
     route.openshift.io/termination: edge
 postgresql:
-  resources:
-    limits:
-      cpu: 500m
-      memory: 500Mi
-    requests:
-      cpu: 100m
-      memory: 100Mi
+  enabled: false
