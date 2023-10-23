@@ -42,7 +42,7 @@
           <StatusChip :status="data.state" />
           <RefreshPassword
             v-if="data.state === 'approved'"
-            :id="data.id"
+            :id="data.reservation_id"
             :email="data.contact_email"
             @success="showModal"
           />

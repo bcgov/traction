@@ -178,46 +178,42 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     payload: any = {}
   ) {
     console.log('> reservationStore.refreshCheckInPassword');
-    // error.value = null;
-    // loading.value = true;
+    error.value = null;
+    loading.value = true;
 
-    // // Don't keep this as state, make sure the password doesn't hang around in memory
-    // let approveResponse: ApproveResponse = {};
-    // await acapyApi
-    //   .putHttp(API_PATH.INNKEEPER_RESERVATIONS_APPROVE(id), payload)
-    //   .then((res) => {
-    //     approveResponse = res.data;
-    //   })
-    //   .catch((err) => {
-    //     error.value = err;
-    //     console.log(error.value);
-    //   })
-    //   .finally(() => {
-    //     loading.value = false;
-    //   });
-    // console.log('< reservationStore.approveReservation');
+    // Don't keep this as state, make sure the password doesn't hang around in memory
+    let refreshResponse: ApproveResponse = {};
+    await acapyApi
+      .putHttp(API_PATH.INNKEEPER_RESERVATIONS_REFRESH_PASSWORD(id), payload)
+      .then((res) => {
+        refreshResponse = res.data;
+      })
+      .catch((err) => {
+        error.value = err;
+        console.log(error.value);
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< reservationStore.refreshPassword');
 
-    // if (error.value != null) {
-    //   // throw error so $onAction.onError listeners can add their own handler
-    //   throw error.value;
-    // }
+    if (error.value != null) {
+      throw error.value;
+    }
 
-    // const trimUrl = window.location.origin;
+    const trimUrl = window.location.origin;
 
-    // _sendStatusEmail({
-    //   state: RESERVATION_STATUSES.APPROVED,
-    //   contactEmail: email,
-    //   reservationId: id,
-    //   reservationPassword: approveResponse.reservation_pwd,
-    //   serverUrl: trimUrl,
-    //   serverUrlStatusRoute: `${trimUrl}/${RESERVATION_STATUS_ROUTE}`,
-    //   contactName: name,
-    // });
+    _sendStatusEmail({
+      state: RESERVATION_STATUSES.APPROVED,
+      contactEmail: email,
+      reservationId: id,
+      reservationPassword: refreshResponse.reservation_pwd,
+      serverUrl: trimUrl,
+      serverUrlStatusRoute: `${trimUrl}/${RESERVATION_STATUS_ROUTE}`,
+      contactName: name,
+    });
 
-    // return the reservation password
-    let test: { [key: string]: any } = {};
-    test.reservation_pwd = 'testing password';
-    return test;
+    return refreshResponse;
   }
 
   async function denyReservation(

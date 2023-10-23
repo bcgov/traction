@@ -102,6 +102,46 @@ async def approve_reservation(
     return _pwd
 
 
+async def refresh_registration_token(reservation_id: str, manager: TenantManager):
+    """
+    Invalidate the old token, generate a new token, and update the reservation record.
+    :return: new_token: the new refreshed token
+    """
+    async with manager.profile.session() as session:
+        try:
+            reservation = await ReservationRecord.retrieve_by_reservation_id(
+                session, reservation_id, for_update=True
+            )
+        except Exception as err:
+            LOGGER.error("Failed to retrieve reservation: %s", err)
+            raise ReservationException("Could not retrieve reservation record.") from err
+
+        if reservation.state != ReservationRecord.STATE_APPROVED:
+            raise ReservationException("Only approved reservations can refresh tokens.")
+
+        # Generate new token data
+        _pwd = str(uuid.uuid4().hex)  # This generates a new token
+        _salt = bcrypt.gensalt()
+        _hash = bcrypt.hashpw(_pwd.encode("utf-8"), _salt)
+
+        minutes = manager._config.reservation.expiry_minutes
+        _expiry = datetime.utcnow() + timedelta(minutes=minutes)
+
+        # Update the reservation record with the new token and related info
+        reservation.reservation_token_salt = _salt.decode("utf-8")
+        reservation.reservation_token_hash = _hash.decode("utf-8")
+        reservation.reservation_token_expiry = _expiry
+
+        try:
+            await reservation.save(session)
+        except Exception as err:
+            LOGGER.error("Failed to update reservation record: %s", err)
+            raise ReservationException("Could not update reservation record.") from err
+
+        LOGGER.info("Refreshed token for reservation %s", reservation_id)
+
+        return _pwd 
+
 def generate_api_key_data():
     _key = str(uuid.uuid4().hex)
     LOGGER.info(f"_key = {_key}")
