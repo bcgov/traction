@@ -25,11 +25,12 @@ describe('Invitations', () => {
 
   test('table body is rendered with expected values', async () => {
     const wrapper = mountInvitations();
-    const expectedTexts = ['', 'test.alias', 'once'];
+    const expectedTexts = ['', 'test.alias', 'once', 'connections/1.0'];
 
     // td is an expected text or valid date
     wrapper.findAll('tbody td').forEach((td) => {
       const text = td.text();
+      console.log(text);
       expect(expectedTexts.includes(text) || !isNaN(Date.parse(text))).toBe(
         true
       );

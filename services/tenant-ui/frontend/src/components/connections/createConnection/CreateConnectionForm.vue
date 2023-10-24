@@ -90,7 +90,7 @@
         <Dropdown
           v-model="goal_code"
           show-clear
-          :options="cities"
+          :options="codes"
           option-label="name"
           class="w-full"
         />
@@ -152,13 +152,13 @@ const emit = defineEmits(['closed', 'success']);
 
 // To store local data
 const goal = ref('');
-const goal_code = ref('');
+const goal_code: any = ref('');
 const my_label = ref('');
 const multi = ref(false);
 const invitation_url = ref('');
 const isOob = ref(false);
 
-const cities = ref([
+const codes = ref([
   { name: 'Issue a credential (issue-vc)', code: 'issue-vc' },
   { name: 'Request a proof (request-proof)', code: 'request-proof' },
   {
@@ -189,12 +189,13 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
   try {
     // call store
+    const code = goal_code.value ? goal_code.value.code : '';
     const result = isOob.value
       ? await await connectionStore.createOobInvitation(multi.value, {
           accept: ['didcomm/aip1', 'didcomm/aip2;env=rfc19'],
           alias: formFields.alias,
           goal: goal.value,
-          goal_code: goal_code.value,
+          goal_code: code,
           handshake_protocols: [
             'https://didcomm.org/didexchange/1.0',
             'https://didcomm.org/connections/1.0',
