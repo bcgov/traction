@@ -1,6 +1,6 @@
 <template>
   <Message
-    v-if="config.frontend.ux.infoBanner.showMessage"
+    v-if="stringOrBooleanTruthy(config.frontend.ux.infoBanner?.showMessage)"
     :severity="config.frontend.ux.infoBanner.messageLevel"
     :closable="false"
   >
@@ -8,8 +8,9 @@
   </Message>
 </template>
 <script setup lang="ts">
+import Message from 'primevue/message';
 import { storeToRefs } from 'pinia';
 import { useConfigStore } from '@/store/configStore';
-import Message from 'primevue/message';
 const { config } = storeToRefs(useConfigStore());
+import { stringOrBooleanTruthy } from '@/helpers';
 </script>

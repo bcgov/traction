@@ -1,13 +1,15 @@
 <template>
-  <Alert v-if="tenantReady" />
-  <AppLayout v-if="tenantReady" />
-  <Login v-else />
+  <div class="alert-container">
+    <Alert class="z-2" />
+    <AppLayout v-if="tenantReady" />
+    <Login v-else />
+  </div>
 </template>
 
 <script setup lang="ts">
+import Alert from '@/components/notifications/Alert.vue';
 import AppLayout from '@/components/layout/AppLayout.vue';
 import Login from '@/components/Login.vue';
-import Alert from '@/components/notifications/Alert.vue';
 import { storeToRefs } from 'pinia';
 import { useTenantStore } from '@/store';
 
@@ -15,8 +17,7 @@ const { tenantReady } = storeToRefs(useTenantStore());
 </script>
 
 <style scoped lang="scss">
-/* This is a header notificaiton that is shown on all pages */
-.notification,
+// This is the info banner alert that is shown on all pages
 .p-message {
   margin: 0;
   border-radius: 0;
