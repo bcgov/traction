@@ -35,6 +35,4 @@ data:
   UX_INFO_BANNER_MESSAGE: {{ .Values.ui.ux.infoBanner.message | quote }}
   UX_INFO_BANNER_MESSAGE_LEVEL: {{ .Values.ui.ux.infoBanner.messageLevel | quote }}
   UX_INFO_BANNER_SHOW_MESSAGE: {{ .Values.ui.ux.infoBanner.showMessage | quote }}
-  UX_INFO_BANNER_ENVIRONMENT_NAME: {{ .Values.ui.ux.infoBanner.environmentName | quote }}
-  UX_INFO_BANNER_SHOW_ENVIRONMENT_NAME: {{ .Values.ui.ux.infoBanner.showEnvironmentName | quote }}
 {{- end -}}

@@ -33,9 +33,7 @@
       "infoBanner": {
         "message": "UX_INFO_BANNER_MESSAGE",
         "messageLevel": "UX_INFO_BANNER_MESSAGE_LEVEL",
-        "showMessage": "UX_INFO_BANNER_SHOW_MESSAGE",
-        "environmentName": "UX_INFO_BANNER_ENVIRONMENT_NAME",
-        "showEnvironmentName": "UX_INFO_BANNER_SHOW_ENVIRONMENT_NAME"
+        "showMessage": "UX_INFO_BANNER_SHOW_MESSAGE"
       }
     },
     "ariesDetails": {
