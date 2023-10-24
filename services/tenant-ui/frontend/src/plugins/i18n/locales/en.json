@@ -67,6 +67,7 @@
     "logout": "Logout",
     "noRecordsFound": "No Records Found",
     "profile": "Profile",
+    "protocol": "Protocol",
     "refreshTable": "Refresh Table",
     "request": "Request",
     "settings": "Settings",
@@ -79,24 +80,8 @@
     "walletId": "Wallet ID"
   },
   "configuration": {
-    "search": {
-      "actions": "Actions",
-      "attributes": "Attributes",
-      "byAttributes": "Search By Attributes",
-      "byDate": "Search By Date",
-      "byId": "Search By ID",
-      "byName": "Search By Name",
-      "bySchemaId": "Search By Schema ID",
-      "byVersion": "Search By Version",
-      "createdAt": "Created At",
-      "credDefs": "Search Cred Defs",
-      "name": "Name",
-      "schemas": "Search Schemas",
-      "version": "Version"
-    },
     "configuration": "Configuration",
     "credentialDefinitions": {
-      "title": "Credential Definition(s)",
       "alreadyExists": "The credential definition already exists on the ledger. Please use a different tag.",
       "confirmDelete": "Are you sure you want to remove this credential definition from storage?",
       "copy": "Copy Credential Definition",
@@ -115,7 +100,8 @@
       "storage": "Credential Definition Storage",
       "stored": "Stored Credential Definitions",
       "tagAlreadyUsed": "Tag is already used",
-      "tagRequired": "Tag is required"
+      "tagRequired": "Tag is required",
+      "title": "Credential Definition(s)"
     },
     "oca": {
       "bundleAssociationType": "OCA Bundle association type",
@@ -128,13 +114,13 @@
     },
     "schemas": {
       "add": "Add Schema",
-      "addNotExists": "The requested schema does not exist on the ledger. Please check the schema ID and try again.",
+      "addedFromLedger": "The schema [{schemaId}] has been added from the ledger.",
       "addFromLedger": "Add Schema from Ledger",
       "addFromLedgerInfo": "This will add any schema from the connected ledger for use in this traction tenant. You must enter the full schema ID.",
+      "addNotExists": "The requested schema does not exist on the ledger. Please check the schema ID and try again.",
       "alreadyExists": "The schema already exists on the ledger. Please use a different name or version.",
-      "copy": "Copy Schema",
-      "addedFromLedger": "The schema [{schemaId}] has been added from the ledger.",
       "confirmDelete": "Are you sure you want to delete this schema?",
+      "copy": "Copy Schema",
       "copyMessage": "You can change attributes, but the new schema must have either a different name or version.",
       "copySent": "Copied schema has been sent to the ledger. This may take a few seconds.",
       "create": "Create Schema",
@@ -151,6 +137,21 @@
       "schema": "Schema",
       "storage": "Schema Storage",
       "stored": "Stored Schemas"
+    },
+    "search": {
+      "actions": "Actions",
+      "attributes": "Attributes",
+      "byAttributes": "Search By Attributes",
+      "byDate": "Search By Date",
+      "byId": "Search By ID",
+      "byName": "Search By Name",
+      "bySchemaId": "Search By Schema ID",
+      "byVersion": "Search By Version",
+      "createdAt": "Created At",
+      "credDefs": "Search Cred Defs",
+      "name": "Name",
+      "schemas": "Search Schemas",
+      "version": "Version"
     }
   },
   "connect": {
@@ -178,7 +179,18 @@
     "invitation": {
       "alias": "Connection Alias",
       "close": "Close",
-      "submit": "Submit"
+      "create": "Create Invitation",
+      "goal": "Goal",
+      "goalCode": "Goal Code",
+      "myLabel": "My Label",
+      "oobSettings": "Out-of-Band Optional Settings",
+      "submit": "Submit",
+      "type": "Type",
+      "typeConnections": "Connections",
+      "typeMultiUse": "Multi Use Invitation",
+      "typeOob": "Out-of-Band",
+      "typeSingleMulti": "Single/Multi",
+      "typeSingleUse": "Single Use Invitation"
     },
     "invitations": {
       "create": "Create Invitation",
@@ -188,14 +200,6 @@
     },
     "message": {
       "messageConnection": "Chat with {0}"
-    },
-    "multiUseInvitation": {
-      "multi": "Multi Use Invitation",
-      "multiCreate": "Create Multi Use Invitation"
-    },
-    "singleUseInvitation": {
-      "single": "Single Use Invitation",
-      "singleCreate": "Create Single Use Invitation"
     },
     "table": {
       "createdAt": "Created At",
@@ -303,9 +307,9 @@
     "connectionNotActiveYet": "Connection not Active yet, refresh or come back once Endorser accepts request.",
     "connectTenantToEndorser": "Connect Tenant To Endorser",
     "connectTenantToEndorserNotAllowed": "Innkeeper has not approved endorser connections.",
+    "connectToEndorserAndRegisterDID": "Connect to Endorser and Register DID corresponding to a Ledger",
     "createdAt": "Created at",
     "endorserConnection": "Endorser Connection",
-    "connectToEndorserAndRegisterDID": "Connect to Endorser and Register DID corresponding to a Ledger",
     "endorserInfo": "Endorser Info",
     "imageUrl": "Image URL",
     "issuer": "Issuer",
@@ -400,6 +404,12 @@
     "fullName": "Full Name",
     "phone": "Phone / Mobile"
   },
+  "session": {
+    "countdown": "You are going to be logged out in { seconds } seconds...",
+    "countdownHeader": "Session timing out",
+    "timeoutHeader": " ",
+    "timeoutMessage": "Your session has timed out due to inactivity and you have been logged out. Please re-enter your login information."
+  },
   "status": {
     "email": "Enter your Email Address of request",
     "reservationId": "Enter your Reservation ID",
@@ -450,11 +460,11 @@
   "tenants": {
     "checkIn": "Check-In Tenant",
     "settings": {
+      "canBecomeIssuer": "Tenant can become issuer, i.e connect to endorser and register DID",
       "canConnectEndorser": "Tenant allowed to connect to Endorser",
       "canRegisterDid": "Tenant allowed to register public DID",
-      "enableLedgerSwitch": "Tenant can switch endorser/ledger",
-      "canBecomeIssuer": "Tenant can become issuer, i.e connect to endorser and register DID",
       "editSettings": "Edit Tenant Config",
+      "enableLedgerSwitch": "Tenant can switch endorser/ledger",
       "endorserAlias": "Endorser Alias:",
       "ledgerName": "Ledger Name:",
       "success": "Tenant Config Updated"
@@ -486,12 +496,5 @@
     "presentationRequestBody": "Proof Request",
     "verification": "Verification",
     "verifications": "Verifications"
-  },
-  "session": {
-    "countdown": "You are going to be logged out in { seconds } seconds...",
-    "countdownHeader": "Session timing out",
-    "timeoutMessage": "Your session has timed out due to inactivity and you have been logged out. Please re-enter your login information.",
-    "timeoutHeader": " "
-  },
-  "placeholder": "placeholder"
+  }
 }

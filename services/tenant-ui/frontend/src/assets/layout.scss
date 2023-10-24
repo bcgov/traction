@@ -7,14 +7,16 @@ body {
 }
 
 // The app layout
-.layout-container {
+.alert-container {
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
+  flex-direction: column;
   min-height: 100vh;
+}
+.layout-container {
+  flex-grow: 1;
+  display: flex;
   width: 100%;
   .layout-sidebar {
-    align-self: stretch;
     background-color: $tenant-ui-primary-color;
     color: $tenant-ui-text-on-primary;
     min-width: 20em;
@@ -27,13 +29,11 @@ body {
 
   .layout-page {
     width: 100%;
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
   }
 
   .layout-header {
-    flex: 0;
     background-color: white;
   }
 

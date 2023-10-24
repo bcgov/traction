@@ -21,8 +21,7 @@
       <template #header>
         <div class="flex justify-content-between">
           <div class="flex justify-content-start">
-            <CreateConnection :multi="false" class="mr-3" />
-            <CreateConnection :multi="true" />
+            <CreateConnection />
           </div>
           <div class="flex justify-content-end">
             <span class="p-input-icon-left">
@@ -74,6 +73,23 @@
             type="text"
             class="p-column-filter"
             placeholder="Search By Invitation Mode"
+            @input="filterCallback()"
+          />
+        </template>
+      </Column>
+      <Column
+        :sortable="true"
+        field="protocol"
+        :header="$t('common.protocol')"
+        filter-field="protocol"
+        :show-filter-match-modes="false"
+      >
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            placeholder="Search By Protocol"
             @input="filterCallback()"
           />
         </template>
@@ -137,6 +153,7 @@ const formattedInvitations = computed(() =>
     connection_id: inv.connection_id,
     alias: inv.alias,
     invitation_mode: inv.invitation_mode,
+    protocol: inv.connection_protocol,
     created: formatDateLong(inv.created_at as string),
     created_at: inv.created_at,
   }))
@@ -161,6 +178,10 @@ const filter = ref({
     matchMode: FilterMatchMode.CONTAINS,
   },
   invitation_mode: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  },
+  protocol: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   },
