@@ -30,7 +30,6 @@ describe('Invitations', () => {
     // td is an expected text or valid date
     wrapper.findAll('tbody td').forEach((td) => {
       const text = td.text();
-      console.log(text);
       expect(expectedTexts.includes(text) || !isNaN(Date.parse(text))).toBe(
         true
       );
