@@ -32,4 +32,7 @@ data:
   UX_COVERIMAGE_COPYRIGHT: {{ .Values.ui.ux.coverImageCopyright | quote }}
   UX_OWNER: {{ .Values.ui.ux.owner | quote }}
   UX_SIDEBAR_TITLE: {{ .Values.ui.ux.sidebarTitle | quote }}
+  UX_INFO_BANNER_MESSAGE: {{ .Values.ui.ux.infoBanner.message | quote }}
+  UX_INFO_BANNER_MESSAGE_LEVEL: {{ .Values.ui.ux.infoBanner.messageLevel | quote }}
+  UX_INFO_BANNER_SHOW_MESSAGE: {{ .Values.ui.ux.infoBanner.showMessage | quote }}
 {{- end -}}

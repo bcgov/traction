@@ -1,5 +1,5 @@
 <template>
-  <div class="traction-login grid w-screen h-screen">
+  <div class="traction-login grid w-screen h-full">
     <div class="col-12 md:col-6 xl:col-4">
       <div class="px-8">
         <div class="pt-4 pb-6">

@@ -612,6 +612,20 @@ ui:
     ## @param ui.ux.coverImageCopyright
     coverImageCopyright: "Photo by Kristoffer Fredriksson on StockSnap"
 
+    ## Information banner settings
+    ##
+    infoBanner:
+      ## @param ui.ux.infoBanner.message
+      message: ""
+      ## @param ui.ux.infoBanner.messageLevel <info|warn|error|success>
+      messageLevel: info
+      ## @param ui.ux.infoBanner.showMessage Show the info banner <boolean>
+      showMessage: false
+      ## @param ui.ux.infoBanner.environmentName Environment name to be displayed eg. "Development"
+      environmentName: ""
+      ## @param ui.ux.infoBanner.showEnvironmentName Show the environment name <boolean>
+      showEnvironmentName: false
+
   ariesDetails:
     ## @param ui.ariesDetails.ledgerDescription Ledger description
     ledgerDescription: "bcovrin-test"
