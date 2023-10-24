@@ -15,7 +15,7 @@ import Button from 'primevue/button';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';
 // State
-import { useInnkeeperTenantsStore } from '@/store';
+import { useKeyManagementStore } from '@/store';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -23,7 +23,7 @@ const { t } = useI18n();
 const confirm = useConfirm();
 const toast = useToast();
 
-const innkeeperTenantsStore = useInnkeeperTenantsStore();
+const keyManagementStore = useKeyManagementStore();
 
 // Props
 const props = defineProps({
@@ -46,7 +46,7 @@ const deleteRecord = (event: any) => {
   });
 };
 const doDelete = () => {
-  innkeeperTenantsStore
+  keyManagementStore
     .deleteApiKey(props.recordId)
     .then(() => {
       toast.success(t('apiKey.deleteSuccess'));
