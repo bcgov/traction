@@ -86,6 +86,11 @@ ui:
   showOIDCReservationLogin: true
   image:
     pullPolicy: Always
+  ux:
+    infoBanner:
+      message: "Traction DEV Environment"
+      messageLevel: info
+      showMessage: true
   oidc:
     active: true
     authority: https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm
