@@ -1,6 +1,6 @@
 # Traction
 
-![version: 0.2.5](https://img.shields.io/badge/Version-0.2.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.3.4](https://img.shields.io/badge/AppVersion-0.3.4-informational?style=flat-square)
+![version: 0.2.6](https://img.shields.io/badge/Version-0.2.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.3.5](https://img.shields.io/badge/AppVersion-0.3.5-informational?style=flat-square)
 
 The Traction service allows organizations to verify, hold, and issue verifiable credentials.
 
@@ -290,6 +290,7 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
 | `ui.enabled`                                       | Deploy tenant-ui                                                                                                    | `true`                                         |
 | `ui.showOIDCReservationLogin`                      | Use OIDC to make reservations                                                                                       | `false`                                        |
+| `ui.quickConnectEndorserName`                      | Flag a ledger as auto-accept/endorse so the Tenant UI can quick connect                                             | `""`                                           |
 | `ui.image.repository`                              |                                                                                                                     | `ghcr.io/bcgov/traction-tenant-ui`             |
 | `ui.image.pullPolicy`                              |                                                                                                                     | `IfNotPresent`                                 |
 | `ui.image.pullSecrets`                             |                                                                                                                     | `[]`                                           |

@@ -23,6 +23,7 @@ from . import TenantManager
 from .config import InnkeeperWalletConfig
 from .utils import (
     approve_reservation,
+    refresh_registration_token,
     create_api_key,
     EndorserLedgerConfigSchema,
     ReservationException,
@@ -191,6 +192,10 @@ class ReservationIdMatchInfoSchema(OpenAPISchema):
 
 
 class ReservationApproveSchema(OpenAPISchema):
+    """Request schema for tenant reservation approval."""
+
+
+class ReservationRefreshSchema(OpenAPISchema):
     """Request schema for tenant reservation approval."""
 
 
@@ -647,6 +652,25 @@ async def innkeeper_reservations_approve(request: web.BaseRequest):
     tags=[SWAGGER_CATEGORY],
 )
 @match_info_schema(ReservationIdMatchInfoSchema())
+@request_schema(ReservationRefreshSchema())
+@response_schema(ReservationApproveResponseSchema(), 200, description="")
+@innkeeper_only
+@error_handler
+async def innkeeper_reservations_refresh_password(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    reservation_id = request.match_info["reservation_id"]
+    mgr = context.inject(TenantManager)
+    try:
+        _pwd = await refresh_registration_token(reservation_id, mgr)
+    except ReservationException as err:
+        raise web.HTTPConflict(reason=str(err))
+    return web.json_response({"reservation_pwd": _pwd})
+
+
+@docs(
+    tags=[SWAGGER_CATEGORY],
+)
+@match_info_schema(ReservationIdMatchInfoSchema())
 @request_schema(ReservationDenyRequestSchema)
 @response_schema(ReservationResponseSchema(), 200, description="")
 @innkeeper_only
@@ -881,6 +905,10 @@ async def register(app: web.Application):
             web.put(
                 "/innkeeper/reservations/{reservation_id}/deny",
                 innkeeper_reservations_deny,
+            ),
+            web.put(
+                "/innkeeper/reservations/{reservation_id}/refresh-password",
+                innkeeper_reservations_refresh_password,
             ),
             web.get("/innkeeper/tenants/", innkeeper_tenants_list, allow_head=False),
             web.get(

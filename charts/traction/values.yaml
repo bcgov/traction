@@ -148,7 +148,7 @@ acapy:
       is_production: true
       is_write: true
       genesis_url: "http://dev.bcovrin.vonx.io/genesis"
-      endorser_did: "VGA8QzjQaL5xkXRHjAgQcj"
+      endorser_did: "N5bxk3jWkpZ2tEaMtjPjPa"
       endorser_alias: "bcovrin-dev-endorser"
 
   ## @section Wallet Storage configuration
@@ -585,6 +585,8 @@ ui:
   enabled: true
   ## @param ui.oidc.showOIDCReservationLogin OIDC reservation login
   showOIDCReservationLogin: false
+  ## @param ui.oidc.quickConnectEndorserName A ledger that has endorser auto-accept/transact enabled
+  quickConnectEndorserName: ""
   image:
     ## @param ui.image.repository
     repository: ghcr.io/bcgov/traction-tenant-ui
@@ -610,6 +612,20 @@ ui:
     owner: ""
     ## @param ui.ux.coverImageCopyright
     coverImageCopyright: "Photo by Kristoffer Fredriksson on StockSnap"
+
+    ## Information banner settings
+    ##
+    infoBanner:
+      ## @param ui.ux.infoBanner.message
+      message: ""
+      ## @param ui.ux.infoBanner.messageLevel <info|warn|error|success>
+      messageLevel: info
+      ## @param ui.ux.infoBanner.showMessage Show the info banner <boolean>
+      showMessage: false
+      ## @param ui.ux.infoBanner.environmentName Environment name to be displayed eg. "Development"
+      environmentName: ""
+      ## @param ui.ux.infoBanner.showEnvironmentName Show the environment name <boolean>
+      showEnvironmentName: false
 
   ariesDetails:
     ## @param ui.ariesDetails.ledgerDescription Ledger description

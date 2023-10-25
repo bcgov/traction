@@ -39,7 +39,15 @@
         :show-filter-match-modes="false"
       >
         <template #body="{ data }">
-          <StatusChip :status="data.state" />
+          <div class="state-container">
+            <StatusChip :status="data.state" />
+            <RefreshPassword
+              v-if="data.state === 'approved'"
+              :id="data.reservation_id"
+              :email="data.contact_email"
+              @success="showModal"
+            />
+          </div>
         </template>
         <template #filter="{ filterModel, filterCallback }">
           <InputText
@@ -131,35 +139,66 @@
       </template>
     </DataTable>
   </MainCardContent>
+
+  <Dialog
+    v-model:visible="displayModal"
+    :header="$t('reservations.refreshed.title')"
+    :modal="true"
+  >
+    <p>
+      {{ $t('reservations.approved.text', { email: approvedEmail }) }}
+    </p>
+    <p>
+      {{ $t('reservations.otp') }} <br />
+      <strong>{{ approvedPassword }}</strong>
+    </p>
+  </Dialog>
 </template>
 
 <script setup lang="ts">
 // Vue
 import { onMounted, ref, computed } from 'vue';
+
 // PrimeVue
+import Accordion from 'primevue/accordion';
+import AccordionTab from 'primevue/accordiontab';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable, { DataTableFilterMetaData } from 'primevue/datatable';
+import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import { FilterMatchMode } from 'primevue/api';
-import { useToast } from 'vue-toastification';
-import Accordion from 'primevue/accordion';
-import AccordionTab from 'primevue/accordiontab';
+
+// external
 import VueJsonPretty from 'vue-json-pretty';
-// State
+import { useToast } from 'vue-toastification';
+
+// store
 import { useInnkeeperTenantsStore } from '@/store';
 import { storeToRefs } from 'pinia';
-// Other components
+
+// Importing internal and helpers
 import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
+import RefreshPassword from './RefreshPassword.vue';
 import StatusChip from '@/components/common/StatusChip.vue';
-import { TABLE_OPT } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
+import { TABLE_OPT } from '@/helpers/constants';
 
 const toast = useToast();
 
-const innkeeperTenantsStore = useInnkeeperTenantsStore();
+// modal
+const displayModal = ref(false);
+const approvedPassword = ref('');
+const approvedEmail = ref('');
 
+const innkeeperTenantsStore = useInnkeeperTenantsStore();
 const { loading, reservationHistory } = storeToRefs(useInnkeeperTenantsStore());
+
+const showModal = (password: string, email: string) => {
+  approvedPassword.value = password;
+  approvedEmail.value = email;
+  displayModal.value = true;
+};
 
 // Loading table contents
 const loadTable = async () => {
@@ -214,3 +253,8 @@ const filter = ref({
 // necessary for expanding rows, we don't do anything with this
 const expandedRows = ref([]);
 </script>
+<style scoped>
+.state-container {
+  display: flex;
+}
+</style>

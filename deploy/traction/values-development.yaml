@@ -7,6 +7,25 @@ acapy:
       generated: true
     pluginInnkeeper:
       generated: true
+  ledgers.yml:
+    - id: bcovrin-test
+      is_production: true
+      is_write: true
+      genesis_url: "http://test.bcovrin.vonx.io/genesis"
+      endorser_did: "Ket75eV5UQvVkW2XBjgDH7"
+      endorser_alias: "bcovrin-test-endorser"
+    - id: bcovrin-dev
+      is_production: true
+      is_write: true
+      genesis_url: "http://dev.bcovrin.vonx.io/genesis"
+      endorser_did: "N5bxk3jWkpZ2tEaMtjPjPa"
+      endorser_alias: "bcovrin-dev-endorser"
+    - id: sovrin-testnet
+      is_production: true
+      is_write: true
+      genesis_url: "https://raw.githubusercontent.com/sovrin-foundation/sovrin/stable/sovrin/pool_transactions_sandbox_genesis"
+      endorser_did: "EZpKx6nT56Hv83JmNz7ik8"
+      endorser_alias: "sovrin-testnet-endorser"
   plugin-config.yml:
     traction_innkeeper:
       innkeeper_wallet:
@@ -17,11 +36,22 @@ acapy:
             ledger_id: bcovrin-test
           - endorser_alias: bcovrin-dev-endorser
             ledger_id: bcovrin-dev
+          - endorser_alias: sovrin-testnet-endorser
+            ledger_id: sovrin-testnet
         create_public_did:
           - bcovrin-test
           - bcovrin-dev
+          - sovrin-testnet
       reservation:
         expiry_minutes: 7200
+  walletStorageConfig:
+    url: traction-database-primary:5432
+  walletStorageCredentials:
+    admin_account: walletman
+    existingSecret: traction-database-acapy
+    secretKeys:
+      adminPasswordKey: walletman-password
+      userPasswordKey: acapy-password
   autoscaling:
     enabled: true
     minReplicas: 2
@@ -74,10 +104,4 @@ ingress:
   annotations:
     route.openshift.io/termination: edge
 postgresql:
-  resources:
-    limits:
-      cpu: 500m
-      memory: 500Mi
-    requests:
-      cpu: 100m
-      memory: 100Mi
+  enabled: false

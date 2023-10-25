@@ -27,6 +27,7 @@ const { cardExpanded } = storeToRefs(useCommonStore());
   height: calc(100% - 20px);
   width: calc(100% - 20px);
   overflow: auto;
+  z-index: 3;
 
   border: 1px solid lightgray;
 }

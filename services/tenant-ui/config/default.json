@@ -8,6 +8,7 @@
     "showInnkeeperAdminLogin": true,
     "showOIDCReservationLogin": false,
     "showWritableComponents": true,
+    "quickConnectEndorserName": "",
     "session": {
       "timeoutSeconds": "600",
       "countdownSeconds": "30"
@@ -30,6 +31,13 @@
         "linkTitle": "BC Digital Trust Service Agreement",
         "link": "https://github.com/bcgov/bc-vcpedia/blob/main/agents/bc-gov-agent-service.md",
         "imageUrl": "/img/bc/bc_logo.png"
+      },
+      "infoBanner": {
+        "message": "",
+        "messageLevel": "info",
+        "showMessage": false,
+        "environmentName": "",
+        "showEnvironmentName": false
       }
     },
     "ariesDetails": {

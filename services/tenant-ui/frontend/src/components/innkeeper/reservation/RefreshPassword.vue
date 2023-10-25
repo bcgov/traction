@@ -1,28 +1,28 @@
 <template>
   <Button
-    :label="t('reservations.approveRequest')"
-    icon="pi pi-check"
-    class="p-button-rounded p-button-icon-only p-button-text"
-    @click="confirmApprove($event)"
+    :label="$t('reservations.refreshPassword')"
+    class="p-button-rounded p-button-text"
+    icon="pi pi-refresh"
+    @click="refresh"
   />
 </template>
 
 <script setup lang="ts">
-// PrimeVue / etc
-import Button from 'primevue/button';
-import { useConfirm } from 'primevue/useconfirm';
-import { useToast } from 'vue-toastification';
+import { ref } from 'vue';
+
 import { useI18n } from 'vue-i18n';
-// State
-import { storeToRefs } from 'pinia';
-import { useConfigStore } from '@/store';
+import Button from 'primevue/button';
+import { useToast } from 'vue-toastification';
+
 import { useInnkeeperTenantsStore } from '@/store';
+import { useConfigStore } from '@/store';
+import { storeToRefs } from 'pinia';
+
 const { config } = storeToRefs(useConfigStore());
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
 
-const confirm = useConfirm();
-const { t } = useI18n();
 const toast = useToast();
+const { t } = useI18n();
 
 const props = defineProps({
   id: {
@@ -33,33 +33,19 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  name: {
-    type: String,
-    required: true,
-  },
 });
-
 const emit = defineEmits(['success']);
+const displayModal = ref(false);
+const reason = ref('');
 
-// Approve reservation
-const confirmApprove = (event: any) => {
-  confirm.require({
-    target: event.currentTarget,
-    message: `Approve reservation for ${props.email}?`,
-    header: 'Confirmation',
-    icon: 'pi pi-question-circle',
-    accept: () => {
-      approve();
-    },
-  });
-};
-
-const approve = async () => {
+const refresh = async () => {
   try {
-    const res = await innkeeperTenantsStore.approveReservation(
+    const res = await innkeeperTenantsStore.refreshCheckInPassword(
       props.id,
       props.email,
-      props.name
+      {
+        state_notes: reason.value,
+      }
     );
     if (config.value.frontend.showInnkeeperReservationPassword) {
       // Have to handle the dialog up a level or it deletes when the rows re-draw after reload
