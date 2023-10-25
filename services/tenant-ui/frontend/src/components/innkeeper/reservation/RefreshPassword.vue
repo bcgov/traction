@@ -8,21 +8,19 @@
 </template>
 
 <script setup lang="ts">
-// Vue
 import { ref } from 'vue';
-// PrimeVue / etc
-import Button from 'primevue/button';
-import Dialog from 'primevue/dialog';
-import { useToast } from 'vue-toastification';
-// State
-import { useInnkeeperTenantsStore } from '@/store';
-import { storeToRefs } from 'pinia';
-import InputText from 'primevue/inputtext';
-const innkeeperTenantsStore = useInnkeeperTenantsStore();
-const { loading } = storeToRefs(useInnkeeperTenantsStore());
-import { useConfigStore } from '@/store';
+
 import { useI18n } from 'vue-i18n';
+import Button from 'primevue/button';
+import { useToast } from 'vue-toastification';
+
+import { useInnkeeperTenantsStore } from '@/store';
+import { useConfigStore } from '@/store';
+import { storeToRefs } from 'pinia';
+
 const { config } = storeToRefs(useConfigStore());
+const innkeeperTenantsStore = useInnkeeperTenantsStore();
+
 const toast = useToast();
 const { t } = useI18n();
 
