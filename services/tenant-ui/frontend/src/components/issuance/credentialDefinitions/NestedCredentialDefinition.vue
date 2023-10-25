@@ -86,7 +86,7 @@ const handleClose = async (credDef: CredentialDefinitionSendRequest) => {
 };
 </script>
 
-<style>
+<style scoped>
 .container {
   max-width: 300px;
 }
