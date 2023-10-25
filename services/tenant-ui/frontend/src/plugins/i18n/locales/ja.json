@@ -160,6 +160,7 @@
       "skipUrl": "Skip URL and use JSON <JA>",
       "submit": "Accept <JA>",
       "supportedUrl": "Supported URL format is <JA>",
+      "supportedUrlEx": "http://<acapy_url>?{0}=<base64 encode>",
       "url": "Invitation URL <JA>"
     },
     "connections": {

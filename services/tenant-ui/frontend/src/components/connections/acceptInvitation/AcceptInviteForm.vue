@@ -1,5 +1,32 @@
 <template>
   <form v-if="urlEntryStep" @submit.prevent="handleSubmit(!v$.$invalid)">
+    <!-- Invitation type -->
+    <div class="mb-3">
+      <span>{{ $t('connect.invitation.type') }}</span>
+      <div class="my-2">
+        <RadioButton
+          v-model="isOob"
+          input-id="type1"
+          name="type"
+          :value="false"
+        />
+        <label for="type1" class="ml-2">{{
+          $t('connect.invitation.typeConnections')
+        }}</label>
+      </div>
+      <div>
+        <RadioButton
+          v-model="isOob"
+          input-id="type2"
+          name="type"
+          :value="true"
+        />
+        <label for="type2" class="ml-2">{{
+          $t('connect.invitation.typeOob')
+        }}</label>
+      </div>
+    </div>
+
     <div class="field">
       <div class="flex justify-content-between">
         <label
@@ -38,8 +65,13 @@
       <i class="pi pi-info-circle"></i>
       {{ $t('connect.acceptInvitation.supportedUrl') }}
       <strong>
-        <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
-        <code>http://&lt;acapy_url&gt;?c_i=&lt;base64 encode&gt;</code>
+        <code>
+          {{
+            $t('connect.acceptInvitation.supportedUrlEx', [
+              isOob ? 'oob' : 'c_i',
+            ])
+          }}
+        </code>
       </strong>
     </div>
   </form>
@@ -47,6 +79,7 @@
   <AcceptInviteSubmission
     v-else
     :invitation-string="invitationString"
+    :is-oob="isOob"
     @closed="$emit('closed')"
   />
 </template>
@@ -57,6 +90,7 @@ import { reactive, ref } from 'vue';
 // PrimeVue / Validation
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
+import RadioButton from 'primevue/radiobutton';
 import { required, url } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
 import { useToast } from 'vue-toastification';
@@ -70,6 +104,7 @@ defineEmits(['closed']);
 
 const urlEntryStep = ref(true);
 const invitationString = ref('{}');
+const isOob = ref(false);
 
 // Skip URL enter
 const skipUrl = () => {
@@ -97,7 +132,7 @@ const handleSubmit = async (isFormValid: boolean) => {
   try {
     const inviteParam = paramFromUrlString(
       formFields.inviteUrl,
-      'c_i'
+      isOob.value ? 'oob' : 'c_i'
     ) as string;
     if (!inviteParam) {
       throw Error('Invalid format for invitation URL');
