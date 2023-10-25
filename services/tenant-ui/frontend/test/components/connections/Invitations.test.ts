@@ -20,12 +20,12 @@ describe('Invitations', () => {
     wrapper.getComponent({ name: 'DataTable' });
     expect(
       wrapper.findAllComponents({ name: 'CreateConnection' })
-    ).toHaveLength(2);
+    ).toHaveLength(1);
   });
 
   test('table body is rendered with expected values', async () => {
     const wrapper = mountInvitations();
-    const expectedTexts = ['', 'test.alias', 'once'];
+    const expectedTexts = ['', 'test.alias', 'once', 'connections/1.0'];
 
     // td is an expected text or valid date
     wrapper.findAll('tbody td').forEach((td) => {

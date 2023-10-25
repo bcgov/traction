@@ -79,24 +79,8 @@
     "walletId": "Wallet ID <FR>"
   },
   "configuration": {
-    "search": {
-      "actions": "Actions <FR>",
-      "attributes": "Attributes <FR>",
-      "byAttributes": "Search By Attributes <FR>",
-      "byDate": "Search By Date <FR>",
-      "byId": "Search By ID <FR>",
-      "byName": "Search By Name <FR>",
-      "bySchemaId": "Search By Schema ID <FR>",
-      "byVersion": "Search By Version <FR>",
-      "createdAt": "Created At <FR>",
-      "credDefs": "Search Cred Defs <FR>",
-      "name": "Name <FR>",
-      "schemas": "Search Schemas <FR>",
-      "version": "Version <FR>"
-    },
     "configuration": "Configuration <FR>",
     "credentialDefinitions": {
-      "title": "Credential Definition(s) <FR>",
       "alreadyExists": "The credential definition already exists on the ledger. Please use a different tag. <FR>",
       "confirmDelete": "Are you sure you want to remove this credential definition from storage? <FR>",
       "copy": "Copy Credential Definition <FR>",
@@ -115,7 +99,8 @@
       "storage": "Credential Definition Storage <FR>",
       "stored": "Stored Credential Definitions <FR>",
       "tagAlreadyUsed": "Tag is already used <FR>",
-      "tagRequired": "Tag is required <FR>"
+      "tagRequired": "Tag is required <FR>",
+      "title": "Credential Definition(s) <FR>"
     },
     "oca": {
       "bundleAssociationType": "OCA Bundle association type <FR>",
@@ -128,13 +113,13 @@
     },
     "schemas": {
       "add": "Add Schema <FR>",
-      "addNotExists": "The requested schema does not exist on the ledger. Please check the schema ID and try again. <FR>",
+      "addedFromLedger": "The schema [{schemaId}] has been added from the ledger. <FR>",
       "addFromLedger": "Add Schema from Ledger <FR>",
       "addFromLedgerInfo": "This will add any schema from the connected ledger for use in this traction tenant. You must enter the full schema ID. <FR>",
+      "addNotExists": "The requested schema does not exist on the ledger. Please check the schema ID and try again. <FR>",
       "alreadyExists": "The schema already exists on the ledger. Please use a different name or version. <FR>",
-      "copy": "Copy Schema <FR>",
-      "addedFromLedger": "The schema [{schemaId}] has been added from the ledger. <FR>",
       "confirmDelete": "Are you sure you want to delete this schema? <FR>",
+      "copy": "Copy Schema <FR>",
       "copyMessage": "You can change attributes, but the new schema must have either a different name or version. <FR>",
       "copySent": "Copied schema has been sent to the ledger. This may take a few seconds. <FR>",
       "create": "Create Schema <FR>",
@@ -151,6 +136,21 @@
       "schema": "Schema <FR>",
       "storage": "Schema Storage <FR>",
       "stored": "Stored Schemas <FR>"
+    },
+    "search": {
+      "actions": "Actions <FR>",
+      "attributes": "Attributes <FR>",
+      "byAttributes": "Search By Attributes <FR>",
+      "byDate": "Search By Date <FR>",
+      "byId": "Search By ID <FR>",
+      "byName": "Search By Name <FR>",
+      "bySchemaId": "Search By Schema ID <FR>",
+      "byVersion": "Search By Version <FR>",
+      "createdAt": "Created At <FR>",
+      "credDefs": "Search Cred Defs <FR>",
+      "name": "Name <FR>",
+      "schemas": "Search Schemas <FR>",
+      "version": "Version <FR>"
     }
   },
   "connect": {
@@ -178,7 +178,17 @@
     "invitation": {
       "alias": "Connection Alias <FR>",
       "close": "Close <FR>",
-      "submit": "Submit <FR>"
+      "goal": "Goal <FR>",
+      "goalCode": "Goal Code <FR>",
+      "myLabel": "My Label <FR>",
+      "oobSettings": "Out-of-Band Optional Settings <FR>",
+      "submit": "Submit <FR>",
+      "type": "Type <FR>",
+      "typeConnections": "Connections <FR>",
+      "typeMultiUse": "Multi Use Invitation <FR>",
+      "typeOob": "Out-of-Band <FR>",
+      "typeSingleMulti": "Single/Multi <FR>",
+      "typeSingleUse": "Single Use Invitation <FR>"
     },
     "invitations": {
       "create": "Create Invitation <FR>",
@@ -188,14 +198,6 @@
     },
     "message": {
       "messageConnection": "Chat with {0} <FR>"
-    },
-    "multiUseInvitation": {
-      "multi": "Multi Use Invitation <FR>",
-      "multiCreate": "Create Multi Use Invitation <FR>"
-    },
-    "singleUseInvitation": {
-      "single": "Single Use Invitation <FR>",
-      "singleCreate": "Create Single Use Invitation <FR>"
     },
     "table": {
       "createdAt": "Created At <FR>",
@@ -303,6 +305,7 @@
     "connectionNotActiveYet": "Connection not Active yet, refresh or come back later. <FR>",
     "connectTenantToEndorser": "Connect Tenant To Endorser <FR>",
     "connectTenantToEndorserNotAllowed": "Innkeeper has not approved endorser connections for your tenant <FR>",
+    "connectToEndorserAndRegisterDID": "Connect to Endorser and Register DID corresponding to a Ledger <FR>",
     "createdAt": "Created at <FR>",
     "endorserConnection": "Endorser Connection <FR>",
     "endorserInfo": "Endorser Info <FR>",
@@ -333,7 +336,8 @@
     "walletLabel": "Wallet Label <FR>",
     "webHookKey": "WebHook Key <FR>",
     "webhooks": "Webhooks <FR>",
-    "webHookUrl": "WebHook URL <FR>"
+    "webHookUrl": "WebHook URL <FR>",
+    "writeLedger": "Current Ledger: {0} <FR>"
   },
   "qrCode": {
     "noContentFound": "No content found <FR>"
@@ -403,6 +407,12 @@
     "fullName": "Full Name <FR>",
     "phone": "Phone / Mobile <FR>"
   },
+  "session": {
+    "countdown": "Vous allez être déconnecté dans { seconds } secondes...",
+    "countdownHeader": "Expiration du délai de session",
+    "timeoutHeader": " ",
+    "timeoutMessage": "Votre session a expiré pour cause d'inactivité et vous avez été déconnecté. Veuillez saisir à nouveau vos informations de connexion."
+  },
   "status": {
     "email": "Enter your Email Address of request <FR>",
     "reservationId": "Enter your Reservation ID <FR>",
@@ -453,9 +463,11 @@
   "tenants": {
     "checkIn": "Check-In Tenant <FR>",
     "settings": {
+      "canBecomeIssuer": "Tenant can become issuer, i.e connect to endorser and register DID <FR>",
       "canConnectEndorser": "Tenant allowed to connect to Endorser <FR>",
       "canRegisterDid": "Tenant allowed to register public DID <FR>",
       "editSettings": "Edit Tenant Config <FR>",
+      "enableLedgerSwitch": "Tenant can switch endorser/ledger <FR>",
       "endorserAlias": "Endorser Alias <FR>",
       "ledgerName": "Ledger Name <FR>",
       "success": "Tenant Config Updated <FR>"
@@ -487,11 +499,5 @@
     "presentationRequestBody": "Proof Request <FR>",
     "verification": "Verification <FR>",
     "verifications": "Verifications <FR>"
-  },
-  "session": {
-    "countdown": "Vous allez être déconnecté dans { seconds } secondes...",
-    "countdownHeader": "Expiration du délai de session",
-    "timeoutMessage": "Votre session a expiré pour cause d'inactivité et vous avez été déconnecté. Veuillez saisir à nouveau vos informations de connexion.",
-    "timeoutHeader": " "
   }
 }
