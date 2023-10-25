@@ -49,7 +49,7 @@ acapy:
           - sovrin-testnet
       reservation:
         expiry_minutes: 2880
-        auto_approve: false
+        auto_approve: true
         auto_issuer: true
   resources:
     limits:
