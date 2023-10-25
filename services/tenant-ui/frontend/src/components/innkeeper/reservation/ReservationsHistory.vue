@@ -39,13 +39,15 @@
         :show-filter-match-modes="false"
       >
         <template #body="{ data }">
-          <StatusChip :status="data.state" />
-          <RefreshPassword
-            v-if="data.state === 'approved'"
-            :id="data.reservation_id"
-            :email="data.contact_email"
-            @success="showModal"
-          />
+          <div class="state-container">
+            <StatusChip :status="data.state" />
+            <RefreshPassword
+              v-if="data.state === 'approved'"
+              :id="data.reservation_id"
+              :email="data.contact_email"
+              @success="showModal"
+            />
+          </div>
         </template>
         <template #filter="{ filterModel, filterCallback }">
           <InputText
@@ -251,3 +253,8 @@ const filter = ref({
 // necessary for expanding rows, we don't do anything with this
 const expandedRows = ref([]);
 </script>
+<style scoped>
+.state-container {
+  display: flex;
+}
+</style>
