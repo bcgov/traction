@@ -77,12 +77,16 @@ const { loading } = storeToRefs(useConnectionStore());
 
 const emit = defineEmits(['closed', 'success']);
 
-const props = defineProps({
-  invitationString: {
-    type: String,
-    default: '{}',
-  },
-});
+const props = withDefaults(
+  defineProps<{
+    invitationString?: string;
+    isOob?: boolean;
+  }>(),
+  {
+    invitationString: '{}',
+    isOob: false,
+  }
+);
 
 // Validation
 const formFields = reactive({
@@ -111,7 +115,8 @@ const handleSubmit = async (isFormValid: boolean) => {
   try {
     await connectionStore.receiveInvitation(
       formFields.invitationJson,
-      formFields.alias
+      formFields.alias,
+      props.isOob
     );
     emit('success');
     // close up on success

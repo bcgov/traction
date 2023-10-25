@@ -133,7 +133,11 @@ export const useConnectionStore = defineStore('connection', () => {
     return invitationData;
   }
 
-  async function receiveInvitation(invite: string, alias: string) {
+  async function receiveInvitation(
+    invite: string,
+    alias: string,
+    oob: boolean
+  ) {
     console.log('> connectionStore.receiveInvitation');
     error.value = null;
     loading.value = true;
@@ -141,8 +145,11 @@ export const useConnectionStore = defineStore('connection', () => {
     let acceptedData = null;
     const payload = JSON.parse(invite);
 
+    const url = oob
+      ? API_PATH.OUT_OF_BAND_RECIEVE
+      : API_PATH.CONNECTIONS_RECEIVE_INVITATION;
     await acapyApi
-      .postHttp(API_PATH.CONNECTIONS_RECEIVE_INVITATION, payload, {
+      .postHttp(url, payload, {
         params: { alias, auto_accept: true },
       })
       .then((res) => {
