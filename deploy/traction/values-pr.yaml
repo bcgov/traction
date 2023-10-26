@@ -78,6 +78,11 @@ ui:
   quickConnectEndorserName: "bcovrin-test-endorser"
   image:
     pullPolicy: Always
+  ux:
+    infoBanner:
+      message: "Traction Pull Request Environment"
+      messageLevel: info
+      showMessage: true
   oidc:
     active: true
     authority: https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm
