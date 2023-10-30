@@ -468,7 +468,8 @@
       "enableLedgerSwitch": "Tenant can switch endorser/ledger",
       "endorserAlias": "Endorser Alias:",
       "ledgerName": "Ledger Name:",
-      "success": "Tenant Config Updated"
+      "success": "Tenant Config Updated",
+      "confirmDeletion": "To confirm, type \"{tenantName}\" in the box below"
     },
     "tenants": "Tenants"
   },

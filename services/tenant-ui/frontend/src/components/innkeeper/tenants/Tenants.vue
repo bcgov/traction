@@ -33,7 +33,10 @@
       <Column :expander="true" header-style="width: 3rem" />
       <Column :sortable="false" :header="$t('common.actions')">
         <template #body="{ data }">
-          <EditConfig :tenant="data" />
+          <div class="container">
+            <EditConfig :tenant="data" />
+            <DeleteTenant :tenant="data" />
+          </div>
         </template>
       </Column>
       <Column
@@ -96,6 +99,7 @@ import { storeToRefs } from 'pinia';
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatDateLong } from '@/helpers';
 import EditConfig from './editConfig/editConfig.vue';
+import DeleteTenant from './deleteTenant/DeleteTenant.vue';
 import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
 import RowExpandData from '@/components/common/RowExpandData.vue';
 
@@ -148,3 +152,8 @@ const filter = ref({
 // necessary for expanding rows, we don't do anything with this
 const expandedRows = ref([]);
 </script>
+<style scoped>
+.container {
+  display: flex;
+}
+</style>
