@@ -68,7 +68,6 @@ async function handleDelete() {
     });
 
   emit('success');
-
   emit('closed');
 }
 </script>

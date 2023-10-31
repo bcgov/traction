@@ -1,7 +1,7 @@
 <template>
   <div>
     <Button
-      :title="$t('tenants.settings.editSettings')"
+      :title="$t('tenants.settings.deleteTenant')"
       icon="pi pi-trash"
       class="p-button-rounded p-button-icon-only p-button-text"
       @click="openModal"

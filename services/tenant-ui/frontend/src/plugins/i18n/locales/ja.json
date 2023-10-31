@@ -473,7 +473,8 @@
       "endorserAlias": "Endorser Alias <JA>",
       "ledgerName": "Ledger Name <JA>",
       "success": "Tenant Config Updated <JA>",
-      "confirmDeletion": "To confirm, type \"{tenantName}\" in the box below <JA>"
+      "confirmDeletion": "To confirm, type \"{tenantName}\" in the box below <JA>",
+      "deleteTenant": "Delete Tenant <JA>"
     },
     "tenants": "Tenants <JA>"
   },
