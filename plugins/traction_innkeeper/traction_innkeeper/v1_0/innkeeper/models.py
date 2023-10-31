@@ -238,7 +238,7 @@ class ReservationRecordSchema(BaseRecordSchema):
         fields.Dict(description="Endorser and ledger config", required=False),
         example=json.dumps(ENDORSER_LEDGER_CONFIG_EXAMPLE),
         required=False,
-        attribute="connect_to_endorsers"
+        attribute="connect_to_endorsers",
     )
 
     create_public_did = fields.List(
@@ -278,6 +278,7 @@ class TenantRecord(BaseRecord):
         created_public_did: List = [],
         auto_issuer: bool = False,
         enable_ledger_switch=False,
+        deleted_at: str = None,
         **kwargs,
     ):
         """Construct record."""
@@ -293,6 +294,7 @@ class TenantRecord(BaseRecord):
         self.auto_issuer = auto_issuer
         self.enable_ledger_switch = enable_ledger_switch
         self.curr_ledger_id = curr_ledger_id
+        self.deleted_at = deleted_at
 
     @property
     def tenant_id(self) -> Optional[str]:
@@ -312,6 +314,7 @@ class TenantRecord(BaseRecord):
                 "auto_issuer",
                 "enable_ledger_switch",
                 "curr_ledger_id",
+                "deleted_at",
             )
         }
 
@@ -344,6 +347,16 @@ class TenantRecord(BaseRecord):
         if not result:
             raise StorageNotFoundError("No TenantRecord found for the given wallet_id")
         return result[0]
+
+    async def soft_delete(self, session: ProfileSession):
+        """
+        Soft delete the tenant record by setting its state to 'deleted'.
+        Note: This method should be called on an instance of the TenantRecord.
+        """
+        if self.state != self.STATE_DELETED:
+            self.state = self.STATE_DELETED
+            self.deleted_at = datetime_to_str(datetime.utcnow())
+            await self.save(session, reason="Soft delete")
 
 
 class TenantRecordSchema(BaseRecordSchema):
@@ -412,6 +425,11 @@ class TenantRecordSchema(BaseRecordSchema):
     curr_ledger_id = fields.Str(
         required=False,
         description="Current ledger identifier",
+    )
+    deleted_at = fields.Str(
+        required=False,
+        description="Timestamp of the deletion",
+        example="2023-10-30T01:01:01Z",
     )
 
 

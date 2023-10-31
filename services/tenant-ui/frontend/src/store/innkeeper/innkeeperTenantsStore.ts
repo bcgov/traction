@@ -277,6 +277,22 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     }
   }
 
+  // Delete a Tenant
+  async function deleteTenant(id: string) {
+    loading.value = true;
+    try {
+      await acapyApi.deleteHttp(API_PATH.INNKEEPER_TENANT(id));
+      await listTenants();
+    } catch (err: any) {
+      error.value = err;
+    } finally {
+      loading.value = false;
+    }
+    if (error.value != null) {
+      throw error.value;
+    }
+  }
+
   // Create an API key for a tenant
   async function createApiKey(payload: TenantAuthenticationsApiRequest) {
     error.value = null;
@@ -376,6 +392,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     listReservations,
     updateTenantConfig,
     getDefaultConfigValues,
+    deleteTenant,
   };
 });
 

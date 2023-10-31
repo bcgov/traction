@@ -3,7 +3,13 @@ import logging
 import uuid
 
 from aiohttp import ClientSession, web
-from aiohttp_apispec import docs, match_info_schema, request_schema, response_schema
+from aiohttp_apispec import (
+    docs,
+    match_info_schema,
+    request_schema,
+    response_schema,
+    use_kwargs,
+)
 from aries_cloudagent.admin.request_context import AdminRequestContext
 from aries_cloudagent.messaging.models.base import BaseModelError
 from aries_cloudagent.messaging.models.openapi import OpenAPISchema
@@ -17,7 +23,7 @@ from aries_cloudagent.multitenant.error import WalletKeyMissingError
 from aries_cloudagent.storage.error import StorageError, StorageNotFoundError
 from aries_cloudagent.wallet.error import WalletSettingsError
 from aries_cloudagent.wallet.models.wallet_record import WalletRecord
-from marshmallow import fields
+from marshmallow import fields, validate
 
 from . import TenantManager
 from .config import InnkeeperWalletConfig
@@ -272,6 +278,19 @@ class TenantListSchema(OpenAPISchema):
     results = fields.List(
         fields.Nested(TenantRecordSchema()),
         description="List of tenants",
+    )
+
+
+class TenantListQuerySchema(OpenAPISchema):
+    """Query parameters schema for tenants list."""
+
+    state = fields.Str(
+        required=False,
+        description="The state of the tenants to filter by.",
+        example=TenantRecord.STATE_ACTIVE,
+        validate=validate.OneOf(
+            [TenantRecord.STATE_ACTIVE, TenantRecord.STATE_DELETED, "all"]
+        ),
     )
 
 
@@ -709,6 +728,7 @@ async def innkeeper_reservations_deny(request: web.BaseRequest):
     tags=[SWAGGER_CATEGORY],
 )
 @response_schema(TenantListSchema(), 200, description="")
+@use_kwargs(TenantListQuerySchema(), location="query")
 @innkeeper_only
 @error_handler
 async def innkeeper_tenants_list(request: web.BaseRequest):
@@ -718,7 +738,14 @@ async def innkeeper_tenants_list(request: web.BaseRequest):
     mgr = context.inject(TenantManager)
     profile = mgr.profile
 
+    # Get the state from query parameters, default to 'active'
+    state = request.query.get("state", TenantRecord.STATE_ACTIVE)
     tag_filter = {}
+
+    # If the state is not 'all', apply the filter
+    if state != "all":
+        tag_filter["state"] = state
+
     post_filter = {}
 
     async with profile.session() as session:
@@ -755,6 +782,30 @@ async def innkeeper_tenant_get(request: web.BaseRequest):
         LOGGER.info(rec)
 
     return web.json_response(rec.serialize())
+
+
+@docs(
+    tags=[SWAGGER_CATEGORY],
+)
+@match_info_schema(TenantIdMatchInfoSchema())
+@response_schema(TenantRecordSchema(), 200, description="")
+@innkeeper_only
+@error_handler
+async def innkeeper_tenant_delete(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    tenant_id = request.match_info["tenant_id"]
+
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+
+    async with profile.session() as session:
+        rec = await TenantRecord.retrieve_by_id(session, tenant_id)
+        if rec:
+            await rec.soft_delete(session)
+            LOGGER.info("Tenant %s soft deleted.", tenant_id)
+            return web.json_response({"success": f"Tenant {tenant_id} soft deleted."})
+        else:
+            raise web.HTTPNotFound(reason=f"Tenant {tenant_id} not found.")
 
 
 @docs(tags=[SWAGGER_CATEGORY], summary="Create API Key Record")
@@ -915,6 +966,7 @@ async def register(app: web.Application):
                 "/innkeeper/tenants/{tenant_id}", innkeeper_tenant_get, allow_head=False
             ),
             web.put("/innkeeper/tenants/{tenant_id}/config", tenant_config_update),
+            web.delete("/innkeeper/tenants/{tenant_id}", innkeeper_tenant_delete),
             web.get(
                 "/innkeeper/default-config",
                 tenant_default_config_settings,
