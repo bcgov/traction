@@ -238,7 +238,7 @@ class ReservationRecordSchema(BaseRecordSchema):
         fields.Dict(description="Endorser and ledger config", required=False),
         example=json.dumps(ENDORSER_LEDGER_CONFIG_EXAMPLE),
         required=False,
-        attribute="connect_to_endorsers"
+        attribute="connect_to_endorsers",
     )
 
     create_public_did = fields.List(
@@ -344,6 +344,15 @@ class TenantRecord(BaseRecord):
         if not result:
             raise StorageNotFoundError("No TenantRecord found for the given wallet_id")
         return result[0]
+
+    async def soft_delete(self, session: ProfileSession):
+        """
+        Soft delete the tenant record by setting its state to 'deleted'.
+        Note: This method should be called on an instance of the TenantRecord.
+        """
+        if self.state != self.STATE_DELETED:
+            self.state = self.STATE_DELETED
+            await self.save(session, reason="Soft delete")
 
 
 class TenantRecordSchema(BaseRecordSchema):
