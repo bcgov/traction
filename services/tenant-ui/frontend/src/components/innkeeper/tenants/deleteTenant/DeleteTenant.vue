@@ -4,6 +4,7 @@
       :title="$t('tenants.settings.deleteTenant')"
       icon="pi pi-trash"
       class="p-button-rounded p-button-icon-only p-button-text"
+      :disabled="props.tenant.tenant_name === 'traction_innkeeper'"
       @click="openModal"
     />
     <Dialog
