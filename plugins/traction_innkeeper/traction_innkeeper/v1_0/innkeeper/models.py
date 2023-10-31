@@ -278,6 +278,7 @@ class TenantRecord(BaseRecord):
         created_public_did: List = [],
         auto_issuer: bool = False,
         enable_ledger_switch=False,
+        deleted_at: str = None,
         **kwargs,
     ):
         """Construct record."""
@@ -293,6 +294,7 @@ class TenantRecord(BaseRecord):
         self.auto_issuer = auto_issuer
         self.enable_ledger_switch = enable_ledger_switch
         self.curr_ledger_id = curr_ledger_id
+        self.deleted_at = deleted_at
 
     @property
     def tenant_id(self) -> Optional[str]:
@@ -312,6 +314,7 @@ class TenantRecord(BaseRecord):
                 "auto_issuer",
                 "enable_ledger_switch",
                 "curr_ledger_id",
+                "deleted_at",
             )
         }
 
@@ -352,6 +355,7 @@ class TenantRecord(BaseRecord):
         """
         if self.state != self.STATE_DELETED:
             self.state = self.STATE_DELETED
+            self.deleted_at = datetime_to_str(datetime.utcnow())
             await self.save(session, reason="Soft delete")
 
 
@@ -421,6 +425,11 @@ class TenantRecordSchema(BaseRecordSchema):
     curr_ledger_id = fields.Str(
         required=False,
         description="Current ledger identifier",
+    )
+    deleted_at = fields.Str(
+        required=False,
+        description="Timestamp of the deletion",
+        example="2023-10-30T01:01:01Z",
     )
 
 
