@@ -128,8 +128,11 @@ ui:
             {
               "type": "Control",
               "scope": "#/properties/tenantReason",
-              "label": "Purpose of Tenant"
-            },
+              "label": "Purpose of Tenant",
+              "options": {
+                "multi": true
+              }
+            }
           ]
         }
       }
