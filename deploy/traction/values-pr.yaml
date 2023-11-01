@@ -92,10 +92,10 @@ ui:
         "formDataSchema": {
           "type": "object",
           "properties": {
-            "fullName": {
+            "ministry": {
               "type": "string"
             },
-            "phoneNumber": {
+            "contactName": {
               "type": "string"
             },
             "tenantReason": {
@@ -109,20 +109,19 @@ ui:
           "elements": [
             {
               "type": "Control",
-              "scope": "#/properties/phoneNumber",
-              "label": "Phone / Mobile"
+              "scope": "#/properties/ministry",
+              "label": "Ministry"
             },
             {
               "type": "Control",
-              "scope": "#/properties/fullName"
+              "scope": "#/properties/contactName",
+              "label": "Contact Name"
             },
             {
               "type": "Control",
               "scope": "#/properties/tenantReason",
-              "options": {
-                "multi": true
-              }
-            }
+              "label": "Purpose of Tenant"
+            },
           ]
         }
       }
