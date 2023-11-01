@@ -121,7 +121,7 @@ ui:
               "type": "Control",
               "scope": "#/properties/tenantReason",
               "label": "Purpose of Tenant"
-            },
+            }
           ]
         }
       }
