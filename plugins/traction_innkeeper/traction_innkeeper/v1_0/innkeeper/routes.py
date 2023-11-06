@@ -11,6 +11,7 @@ from aiohttp_apispec import (
     use_kwargs,
 )
 from aries_cloudagent.admin.request_context import AdminRequestContext
+from aries_cloudagent.admin.server import AdminConfigSchema
 from aries_cloudagent.messaging.models.base import BaseModelError
 from aries_cloudagent.messaging.models.openapi import OpenAPISchema
 from aries_cloudagent.messaging.valid import JSONWebToken, UUIDFour
@@ -21,6 +22,7 @@ from aries_cloudagent.multitenant.admin.routes import (
 from aries_cloudagent.multitenant.base import BaseMultitenantManager
 from aries_cloudagent.multitenant.error import WalletKeyMissingError
 from aries_cloudagent.storage.error import StorageError, StorageNotFoundError
+from aries_cloudagent.version import __version__
 from aries_cloudagent.wallet.error import WalletSettingsError
 from aries_cloudagent.wallet.models.wallet_record import WalletRecord
 from marshmallow import fields, validate
@@ -917,6 +919,41 @@ async def innkeeper_authentications_api_delete(request: web.BaseRequest):
     return web.json_response({"success": result})
 
 
+@docs(tags=[SWAGGER_CATEGORY], summary="Fetch the server configuration")
+@response_schema(AdminConfigSchema(), 200, description="")
+@innkeeper_only
+@error_handler
+async def innkeeper_config_handler(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    # use base/root profile for server config, use Tenant Manager profile
+    # this is to not get the Innkeeper tenant's config, but the server cfg
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+
+    config = {
+        k: (
+           profile.context.settings[k]
+        )
+        for k in profile.context.settings
+        if k
+        not in [
+            "admin.admin_api_key",
+            "multitenant.jwt_secret",
+            "wallet.key",
+            "wallet.rekey",
+            "wallet.seed",
+            "wallet.storage_creds",
+        ]
+    }
+    try:
+      del config["plugin_config"]["traction_innkeeper"]["innkeeper_wallet"]["wallet_key"]
+    except KeyError as e:
+      LOGGER.warn(f"The key to be removed: '{e.args[0]}' is missing from the dictionary.")
+    config["version"] = __version__
+
+    return web.json_response({"config": config})
+
+
 async def register(app: web.Application):
     """Register routes."""
     LOGGER.info("> registering routes")
@@ -986,6 +1023,11 @@ async def register(app: web.Application):
             web.delete(
                 "/innkeeper/authentications/api/{tenant_authentication_api_id}",
                 innkeeper_authentications_api_delete,
+            ),
+            web.get(
+                "/innkeeper/server/status/config",
+                innkeeper_config_handler,
+                allow_head=False,
             ),
         ]
     )
