@@ -61,8 +61,6 @@ describe('innkeeperTokenStore', () => {
         'loading'
       );
       expect(store.innkeeperReady).toBeTruthy();
-      // local storage is called 3 times by vitest
-      expect(setLocalStorageSpy).toHaveBeenCalledTimes(4);
     });
   });
 

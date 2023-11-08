@@ -5,7 +5,7 @@ const makeReservationAutoApprove = {
 
 const makeReservationVerify = {
   reservation_id: 'reservation_id',
-  reservation_pwd: null,
+  reservation_pwd: '',
 };
 
 const checkIn = {

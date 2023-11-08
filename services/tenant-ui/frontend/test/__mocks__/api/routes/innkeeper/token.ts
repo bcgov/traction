@@ -1,23 +1,19 @@
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 import { API_PATH } from '@/helpers/constants';
 import { innkeeperTokenResponse } from '../../responses';
 import { fullPathWithProxyTenant } from '../utils/utils';
 
 export const successHandlers = [
-  rest.post(
+  http.post(
     fullPathWithProxyTenant(API_PATH.MULTITENANCY_TENANT_TOKEN('admin')),
-    (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(innkeeperTokenResponse.login));
-    }
+    () => HttpResponse.json(innkeeperTokenResponse.login)
   ),
 ];
 
 export const unknownErrorHandlers = [
-  rest.post(
+  http.post(
     fullPathWithProxyTenant(API_PATH.MULTITENANCY_TENANT_TOKEN('admin')),
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
-    }
+    () => HttpResponse.json({}, { status: 500 })
   ),
 ];

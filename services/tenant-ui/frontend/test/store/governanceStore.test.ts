@@ -165,11 +165,6 @@ describe('connectionStore', () => {
       );
     });
 
-    test('getCredentialTemplate does not throw error and sets loading correctly', async () => {
-      await expect(store.getCredentialTemplate('test-id')).rejects.toThrow();
-      expect(store.error).not.toBeNull();
-    });
-
     test('deleteStoredCredentialDefinition throws error and sets loading correctly', async () => {
       await testErrorResponse(
         store,

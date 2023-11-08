@@ -1,52 +1,30 @@
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { API_PATH } from '@/helpers/constants';
 import { verifierResponse } from '../responses';
 import { fullPathWithProxyTenant } from './utils/utils';
 
 export const successHandlers = [
-  rest.get(
-    fullPathWithProxyTenant(API_PATH.PRESENT_PROOF_RECORDS),
-    (req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.json(verifierResponse.presentProofRecords)
-      );
-    }
+  http.get(fullPathWithProxyTenant(API_PATH.PRESENT_PROOF_RECORDS), () =>
+    HttpResponse.json(verifierResponse.presentProofRecords)
   ),
-  rest.post(
-    fullPathWithProxyTenant(API_PATH.PRESENT_PROOF_SEND_REQUEST),
-    (req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.json(verifierResponse.presentProofSendRequest)
-      );
-    }
+  http.post(fullPathWithProxyTenant(API_PATH.PRESENT_PROOF_SEND_REQUEST), () =>
+    HttpResponse.json(verifierResponse.presentProofSendRequest)
   ),
-  rest.delete(
+  http.delete(
     fullPathWithProxyTenant(API_PATH.PRESENT_PROOF_RECORD('test-uuid')),
-    (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json({}));
-    }
+    () => HttpResponse.json({})
   ),
 ];
 
 export const unknownErrorHandlers = [
-  rest.get(
-    fullPathWithProxyTenant(API_PATH.PRESENT_PROOF_RECORDS),
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
-    }
+  http.get(fullPathWithProxyTenant(API_PATH.PRESENT_PROOF_RECORDS), () =>
+    HttpResponse.json({}, { status: 500 })
   ),
-  rest.post(
-    fullPathWithProxyTenant(API_PATH.PRESENT_PROOF_SEND_REQUEST),
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
-    }
+  http.post(fullPathWithProxyTenant(API_PATH.PRESENT_PROOF_SEND_REQUEST), () =>
+    HttpResponse.json({}, { status: 500 })
   ),
-  rest.delete(
+  http.delete(
     fullPathWithProxyTenant(API_PATH.PRESENT_PROOF_RECORD('test-uuid')),
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
-    }
+    () => HttpResponse.json({}, { status: 500 })
   ),
 ];
