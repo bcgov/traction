@@ -405,6 +405,10 @@
     "fullName": "Full Name",
     "phone": "Phone / Mobile"
   },
+  "serverConfig": {
+    "expand": "Show full server status config",
+    "serverConfig": "Server Configuration"
+  },
   "session": {
     "countdown": "You are going to be logged out in { seconds } seconds...",
     "countdownHeader": "Session timing out",

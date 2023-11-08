@@ -1,5 +1,6 @@
 // Types
 import {
+  AdminConfig,
   ReservationRecord,
   TenantAuthenticationApiRecord,
   TenantAuthenticationsApiRequest,
@@ -40,6 +41,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
   const reservations: Ref<ReservationRecord[]> = ref([]);
   const tenants: Ref<TenantRecord[]> = ref([]);
   const defaultConfigValues: any = ref(null);
+  const serverConfig: any = ref(null);
 
   // getters
   const currentReservations = computed(() =>
@@ -95,6 +97,16 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
       '',
       error,
       ref(false)
+    );
+  }
+
+  async function getServerConfig() {
+    loading.value = true;
+    serverConfig.value = await fetchItem<AdminConfig>(
+      API_PATH.INNKEEPER_SERVER_CONFIG,
+      '',
+      error,
+      loading
     );
   }
 
@@ -372,27 +384,29 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
   };
 
   return {
-    loading,
-    error,
     apiKeys,
+    currentReservations,
+    defaultConfigValues,
+    error,
     findTenantName,
+    loading,
+    reservationHistory,
+    reservations,
+    serverConfig,
     tenants,
     tenantsDropdown,
-    defaultConfigValues,
-    reservations,
-    currentReservations,
-    reservationHistory,
     approveReservation,
-    refreshCheckInPassword,
     createApiKey,
     deleteApiKey,
+    deleteTenant,
     denyReservation,
+    getDefaultConfigValues,
+    getServerConfig,
     listApiKeys,
     listTenants,
     listReservations,
+    refreshCheckInPassword,
     updateTenantConfig,
-    getDefaultConfigValues,
-    deleteTenant,
   };
 });
 
