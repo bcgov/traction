@@ -285,6 +285,11 @@ export interface ClearPendingRevocationsRequest {
   purge?: Record<string, string[]>;
 }
 
+export interface ConfigurableWriteLedgers {
+  /** List of configurable write ledgers identifiers */
+  write_ledgers?: string[];
+}
+
 export interface ConnRecord {
   /**
    * Connection acceptance: manual or auto
@@ -587,7 +592,7 @@ export interface CreateWalletResponse {
 
 export interface CreateWalletTokenRequest {
   /**
-   * Master key used for key derivation. Only required for             unamanged wallets.
+   * Master key used for key derivation. Only required for         unamanged wallets.
    * @example "MySecretKey123"
    */
   wallet_key?: string;
@@ -946,6 +951,19 @@ export interface CredentialStatusOptions {
   type: string;
 }
 
+export interface CustomCreateWalletTokenRequest {
+  /**
+   * API key for this wallet
+   * @example "3bd14a1e8fb645ddadf9913c0922ff3b"
+   */
+  api_key?: string;
+  /**
+   * Master key used for key derivation. Only required for         unamanged wallets.
+   * @example "MySecretKey123"
+   */
+  wallet_key?: string;
+}
+
 export interface CustomUpdateWalletRequest {
   /** Agent config key-value pairs */
   extra_settings?: object;
@@ -955,12 +973,12 @@ export interface CustomUpdateWalletRequest {
    */
   image_url?: string;
   /**
-   * Label for this wallet. This label is publicized            (self-attested) to other agents as part of forming a connection.
+   * Label for this wallet. This label is publicized        (self-attested) to other agents as part of forming a connection.
    * @example "Alice"
    */
   label?: string;
   /**
-   * Webhook target dispatch type for this wallet.             default - Dispatch only to webhooks associated with this wallet.             base - Dispatch only to webhooks associated with the base wallet.             both - Dispatch to both webhook targets.
+   * Webhook target dispatch type for this wallet.         default - Dispatch only to webhooks associated with this wallet.         base - Dispatch only to webhooks associated with the base wallet.         both - Dispatch to both webhook targets.
    * @example "default"
    */
   wallet_dispatch_type?: 'default' | 'both' | 'base';
@@ -1071,6 +1089,14 @@ export interface DIDResult {
   result?: DID;
 }
 
+export interface DIDXRejectRequest {
+  /**
+   * Reason for rejecting the DID Exchange
+   * @example "Request rejected"
+   */
+  reason?: string;
+}
+
 export interface DIDXRequest {
   /**
    * Message identifier
@@ -1084,8 +1110,8 @@ export interface DIDXRequest {
   '@type'?: string;
   /**
    * DID of exchange
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
-   * @example "WgWxqztrNooG92RXvxSTWv"
+   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$|^did:([a-zA-Z0-9_]+):([a-zA-Z0-9_.%-]+(:[a-zA-Z0-9_.%-]+)*)((;[a-zA-Z0-9_.:%-]+=[a-zA-Z0-9_.:%-]*)*)(\/[^#?]*)?([?][^#]*)?(\#.*)?$$
+   * @example "did:peer:WgWxqztrNooG92RXvxSTWv"
    */
   did?: string;
   /** As signed attachment, DID Doc associated with DID */
@@ -1171,6 +1197,13 @@ export interface Date {
    * @example "2021-03-29T05:22:19Z"
    */
   expires_time: string;
+}
+
+export interface DefaultConfigValues {
+  /** Endorser config */
+  connected_to_endorsers?: EndorserLedgerConfig[];
+  /** Public DID config */
+  created_public_did?: string[];
 }
 
 export interface Disclose {
@@ -2858,7 +2891,7 @@ export interface PluginCreateWalletRequest {
   /** Agent config key-value pairs */
   extra_settings?: object;
   /**
-   * Image url for this wallet. This image url is publicized            (self-attested) to other agents as part of forming a connection.
+   * Image url for this wallet. This image url is publicized        (self-attested) to other agents as part of forming a connection.
    * @example "https://aries.ca/images/sample.png"
    */
   image_url?: string;
@@ -2868,12 +2901,12 @@ export interface PluginCreateWalletRequest {
    */
   key_management_mode?: 'managed';
   /**
-   * Label for this wallet. This label is publicized            (self-attested) to other agents as part of forming a connection.
+   * Label for this wallet. This label is publicized        (self-attested) to other agents as part of forming a connection.
    * @example "Alice"
    */
   label?: string;
   /**
-   * Webhook target dispatch type for this wallet.             default - Dispatch only to webhooks associated with this wallet.             base - Dispatch only to webhooks associated with the base wallet.             both - Dispatch to both webhook targets.
+   * Webhook target dispatch type for this wallet.         default - Dispatch only to webhooks associated with this wallet.         base - Dispatch only to webhooks associated with the base wallet.         both - Dispatch to both webhook targets.
    * @example "default"
    */
   wallet_dispatch_type?: 'default' | 'both' | 'base';
@@ -3056,7 +3089,7 @@ export interface ReceiveInvitationRequest {
 
 export interface RemoveWalletRequest {
   /**
-   * Master key used for key derivation. Only required for             unmanaged wallets.
+   * Master key used for key derivation. Only required for         unmanaged wallets.
    * @example "MySecretKey123"
    */
   wallet_key?: string;
@@ -3090,12 +3123,18 @@ export interface ReservationList {
 
 export interface ReservationRecord {
   /** @example "{"endorser_alias": " ... ", "ledger_id": " ... "}" */
-  connect_to_endorsers?: object[];
-  /** Object for storing text data */
-  context_data: object;
+  connect_to_endorser?: object[];
   /** Contact email for this tenant request */
   contact_email: string;
-
+  /** Contact name for this tenant request */
+  contact_name: string;
+  /** Contact phone number for this tenant request */
+  contact_phone: string;
+  /**
+   * Context data for this tenant request
+   * @example "{"tenant_reason": " ... ", "contact_name": " ... ", "contact_phone": " ... "}"
+   */
+  context_data?: object;
   create_public_did?: string[];
   /**
    * Time of record creation
@@ -3126,6 +3165,11 @@ export interface ReservationRecord {
    */
   tenant_name: string;
   /**
+   * Reason(s) for requesting a tenant
+   * @example "Issue permits to clients"
+   */
+  tenant_reason: string;
+  /**
    * Time of last record update
    * @pattern ^\d{4}-\d\d-\d\d[T ]\d\d:\d\d(?:\:(?:\d\d(?:\.\d{1,6})?))?(?:[+-]\d\d:?\d\d|Z|)$
    * @example "2021-12-31T23:59:59Z"
@@ -3138,9 +3182,16 @@ export interface ReservationRecord {
   wallet_id?: string;
 }
 
+export type ReservationRefresh = object;
+
 export interface ReservationRequest {
   /** Contact email for this tenant request */
   contact_email: string;
+  /**
+   * Optional context data for this tenant request
+   * @example {"contact_phone":"555-555-5555"}
+   */
+  context_data?: object;
   /**
    * Proposed name of Tenant
    * @example "line of business short name"
@@ -3612,10 +3663,15 @@ export interface TenantConfig {
   connect_to_endorser?: EndorserLedgerConfig[];
   /** Public DID config */
   create_public_did?: string[];
-  /** Enable ledger switch config */
-  enable_ledger_switch?: boolean;
-  /** Current set ledger ident */
+  /** Current ledger identifier */
   curr_ledger_id?: string;
+  /** True if tenant can switch endorser/ledger */
+  enable_ledger_switch?: boolean;
+}
+
+export interface TenantLedgerIdConfig {
+  /** Ledger identifier */
+  ledger_id: string;
 }
 
 export interface TenantList {
@@ -3634,8 +3690,16 @@ export interface TenantRecord {
    * @example "2021-12-31T23:59:59Z"
    */
   created_at?: string;
-  enable_ledger_switch?: boolean;
   created_public_did?: string[];
+  /** Current ledger identifier */
+  curr_ledger_id?: string;
+  /**
+   * Timestamp of the deletion
+   * @example "2023-10-30T01:01:01Z"
+   */
+  deleted_at?: string;
+  /** True if tenant can switch endorser/ledger */
+  enable_ledger_switch?: boolean;
   /**
    * The state of the tenant.
    * @example "active"
@@ -3789,17 +3853,17 @@ export interface UpdateWalletRequest {
   /** Agent config key-value pairs */
   extra_settings?: object;
   /**
-   * Image url for this wallet. This image url is publicized            (self-attested) to other agents as part of forming a connection.
+   * Image url for this wallet. This image url is publicized        (self-attested) to other agents as part of forming a connection.
    * @example "https://aries.ca/images/sample.png"
    */
   image_url?: string;
   /**
-   * Label for this wallet. This label is publicized            (self-attested) to other agents as part of forming a connection.
+   * Label for this wallet. This label is publicized        (self-attested) to other agents as part of forming a connection.
    * @example "Alice"
    */
   label?: string;
   /**
-   * Webhook target dispatch type for this wallet.             default - Dispatch only to webhooks associated with this wallet.             base - Dispatch only to webhooks associated with the base wallet.             both - Dispatch to both webhook targets.
+   * Webhook target dispatch type for this wallet.         default - Dispatch only to webhooks associated with this wallet.         base - Dispatch only to webhooks associated with the base wallet.         both - Dispatch to both webhook targets.
    * @example "default"
    */
   wallet_dispatch_type?: 'default' | 'both' | 'base';
@@ -3980,6 +4044,11 @@ export interface V10CredentialExchange {
    * @example "2021-12-31T23:59:59Z"
    */
   updated_at?: string;
+}
+
+export interface V10CredentialExchangeAutoRemoveRequest {
+  /** Whether to remove the credential exchange record on completion (overrides --preserve-exchange-records configuration setting) */
+  auto_remove?: boolean;
 }
 
 export interface V10CredentialExchangeListResult {
@@ -4174,6 +4243,8 @@ export interface V10DiscoveryRecord {
 export type V10PresentProofModuleResponse = object;
 
 export interface V10PresentationCreateRequestRequest {
+  /** Whether to remove the presentation exchange record on completion (overrides --preserve-exchange-records configuration setting) */
+  auto_remove?: boolean;
   /**
    * Verifier choice to auto-verify proof presentation
    * @example false
@@ -4194,6 +4265,11 @@ export interface V10PresentationExchange {
    * @example false
    */
   auto_present?: boolean;
+  /**
+   * Verifier choice to remove this presentation exchange record when complete
+   * @example false
+   */
+  auto_remove?: boolean;
   /** Verifier choice to auto-verify proof presentation */
   auto_verify?: boolean;
   /**
@@ -4273,6 +4349,8 @@ export interface V10PresentationProblemReportRequest {
 export interface V10PresentationProposalRequest {
   /** Whether to respond automatically to presentation requests, building and presenting requested proof */
   auto_present?: boolean;
+  /** Whether to remove the presentation exchange record on completion (overrides --preserve-exchange-records configuration setting) */
+  auto_remove?: boolean;
   /** Human-readable comment */
   comment?: string | null;
   /**
@@ -4289,7 +4367,25 @@ export interface V10PresentationProposalRequest {
   trace?: boolean;
 }
 
+export interface V10PresentationSendRequest {
+  /** Whether to remove the presentation exchange record on completion (overrides --preserve-exchange-records configuration setting) */
+  auto_remove?: boolean;
+  /** Nested object mapping proof request attribute referents to requested-attribute specifiers */
+  requested_attributes: Record<string, IndyRequestedCredsRequestedAttr>;
+  /** Nested object mapping proof request predicate referents to requested-predicate specifiers */
+  requested_predicates: Record<string, IndyRequestedCredsRequestedPred>;
+  /** Self-attested attributes to build into proof */
+  self_attested_attributes: Record<string, string>;
+  /**
+   * Whether to trace event (default false)
+   * @example false
+   */
+  trace?: boolean;
+}
+
 export interface V10PresentationSendRequestRequest {
+  /** Whether to remove the presentation exchange record on completion (overrides --preserve-exchange-records configuration setting) */
+  auto_remove?: boolean;
   /**
    * Verifier choice to auto-verify proof presentation
    * @example false
@@ -4311,6 +4407,8 @@ export interface V10PresentationSendRequestRequest {
 }
 
 export interface V10PresentationSendRequestToProposal {
+  /** Whether to remove the presentation exchange record on completion (overrides --preserve-exchange-records configuration setting) */
+  auto_remove?: boolean;
   /**
    * Verifier choice to auto-verify proof presentation
    * @example false
@@ -4812,6 +4910,8 @@ export interface V20CredRequestFree {
 }
 
 export interface V20CredRequestRequest {
+  /** Whether to remove the credential exchange record on completion (overrides --preserve-exchange-records configuration setting) */
+  auto_remove?: boolean;
   /**
    * Holder DID to substitute for the credentialSubject.id
    * @example "did:key:ahsdkjahsdkjhaskjdhakjshdkajhsdkjahs"
@@ -4911,6 +5011,8 @@ export interface V20Pres {
 }
 
 export interface V20PresCreateRequestRequest {
+  /** Whether to remove the presentation exchange record on completion (overrides --preserve-exchange-records configuration setting) */
+  auto_remove?: boolean;
   /**
    * Verifier choice to auto-verify proof presentation
    * @example false
@@ -4931,6 +5033,11 @@ export interface V20PresExRecord {
    * @example false
    */
   auto_present?: boolean;
+  /**
+   * Verifier choice to remove this presentation exchange record when complete
+   * @example false
+   */
+  auto_remove?: boolean;
   /** Verifier choice to auto-verify proof presentation */
   auto_verify?: boolean;
   /** Attachment content by format for proposal, request, and presentation */
@@ -5060,6 +5167,8 @@ export interface V20PresProposalByFormat {
 export interface V20PresProposalRequest {
   /** Whether to respond automatically to presentation requests, building and presenting requested proof */
   auto_present?: boolean;
+  /** Whether to remove the presentation exchange record on completion (overrides --preserve-exchange-records configuration setting) */
+  auto_remove?: boolean;
   /** Human-readable comment */
   comment?: string | null;
   /**
@@ -5104,6 +5213,8 @@ export interface V20PresRequestByFormat {
 }
 
 export interface V20PresSendRequestRequest {
+  /** Whether to remove the presentation exchange record on completion (overrides --preserve-exchange-records configuration setting) */
+  auto_remove?: boolean;
   /**
    * Verifier choice to auto-verify proof presentation
    * @example false
@@ -5125,6 +5236,8 @@ export interface V20PresSendRequestRequest {
 }
 
 export interface V20PresSpecByFormatRequest {
+  /** Whether to remove the presentation exchange record on completion (overrides --preserve-exchange-records configuration setting) */
+  auto_remove?: boolean;
   /** Optional Presentation specification for DIF, overrides the PresentionExchange record's PresRequest */
   dif?: DIFPresSpec;
   /** Presentation specification for indy */
@@ -5136,6 +5249,8 @@ export interface V20PresSpecByFormatRequest {
 export type V20PresentProofModuleResponse = object;
 
 export interface V20PresentationSendRequestToProposal {
+  /** Whether to remove the presentation exchange record on completion (overrides --preserve-exchange-records configuration setting) */
+  auto_remove?: boolean;
   /**
    * Verifier choice to auto-verify proof presentation
    * @example false
@@ -5248,6 +5363,6 @@ export interface WalletRecord {
   wallet_id: string;
 }
 
-export interface WriteLedgerRequest {
+export interface WriteLedger {
   ledger_id?: string;
 }
