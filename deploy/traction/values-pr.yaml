@@ -17,7 +17,7 @@ acapy:
       is_production: true
       is_write: true
       genesis_url: "http://test.bcovrin.vonx.io/genesis"
-      endorser_did: "Ket75eV5UQvVkW2XBjgDH7"
+      endorser_did: "DfQetNSm7gGEHuzfUvpfPn"
       endorser_alias: "bcovrin-test-endorser"
     - id: bcovrin-dev
       is_production: true
