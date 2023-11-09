@@ -56,7 +56,9 @@ def error_handler(func):
 
 class OcaRecordListQueryStringSchema(OpenAPISchema):
     cred_def_id = fields.Str(
-        required=False, description="Cred Def identifier", **INDY_CRED_DEF_ID
+        required=False, description="Cred Def identifier", 
+        example=INDY_CRED_DEF_ID_EXAMPLE, 
+        validate=INDY_CRED_DEF_ID_VALIDATE
     )
 
 
