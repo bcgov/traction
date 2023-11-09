@@ -6,19 +6,40 @@
     <ProgressSpinner v-if="loading" />
     <div v-else>
       <p>
-        <strong>ACA-Py Version:</strong> {{ serverConfig?.config?.version }}
+        <strong>{{ $t('serverConfig.acapyVersion') }}</strong>
+        {{ serverConfig?.config?.version }}
+      </p>
+      <p>
+        <strong>{{ $t('serverConfig.tractionProxy') }}</strong>
+        {{ config.frontend.tenantProxyPath }}
+        <a :href="swaggerUrl" target="_blank"> <i class="pi pi-external-link ml-2" /> </a>
       </p>
 
       <div class="grid mt-3">
         <div class="col">
-          <Fieldset legend="Ledger Details" :toggleable="true">
-            <p class="mt-0">Ledger List</p>
+          <Fieldset
+            :legend="$t('serverConfig.ledger.ledgerDetails')"
+            :toggleable="true"
+          >
+            <p class="mt-0">
+              <strong>{{ $t('serverConfig.ledger.ledgerList') }}</strong>
+            </p>
             <DataTable :value="ledgerConfigList" size="small" striped-rows>
               <Column field="id" header="id"></Column>
               <Column field="endorser_alias" header="endorser_alias"></Column>
               <Column field="endorser_did" header="endorser_did"></Column>
             </DataTable>
+            <p>
+              <strong>{{ $t('serverConfig.ledger.quickConnect') }}</strong>
+              {{ config.frontend.quickConnectEndorserName }}
+            </p>
+            <p>
+              <strong>{{ $t('serverConfig.ledger.default') }}</strong>
+              {{ serverConfig?.config?.['ledger.write_ledger'] }}
+            </p>
           </Fieldset>
+
+          <PluginList class="mt-4" />
 
           <Accordion class="mt-4">
             <AccordionTab :header="$t('serverConfig.expand')">
@@ -31,22 +52,16 @@
         </div>
 
         <div class="col">
-          <Fieldset legend="Header" :toggleable="true">
-            <p class="m-0">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-              reprehenderit in voluptate velit esse cillum dolore eu fugiat
-              nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-              sunt in culpa qui officia deserunt mollit anim id est laborum.
-            </p>
+          <Fieldset
+            :legend="$t('serverConfig.tenantUi.tenantUi')"
+            :toggleable="true"
+          >
+            <p class="m-0"></p>
           </Fieldset>
-
-          <PluginList class="mt-4" />
         </div>
       </div>
     </div>
+    <vue-json-pretty :data="config" />
   </MainCardContent>
 </template>
 
@@ -63,12 +78,13 @@ import { computed, onMounted } from 'vue';
 import VueJsonPretty from 'vue-json-pretty';
 import { useToast } from 'vue-toastification';
 // Components
-import { useInnkeeperTenantsStore } from '@/store';
+import { useConfigStore, useInnkeeperTenantsStore } from '@/store';
 import MainCardContent from '../../layout/mainCard/MainCardContent.vue';
 import PluginList from '@/components/about/PluginList.vue';
 
 const toast = useToast();
 
+const { config } = storeToRefs(useConfigStore());
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
 const { loading, serverConfig } = storeToRefs(useInnkeeperTenantsStore());
 
@@ -83,13 +99,16 @@ const loadConfig = async () => {
   });
 };
 
-// computed list of the "ledger.ledger_config_list" array in serverConfig
 const ledgerConfigList = computed(() => {
   if (serverConfig.value?.config) {
     return serverConfig.value.config['ledger.ledger_config_list'];
   }
   return [];
 });
+
+const swaggerUrl = computed(
+  () => `${config.value.frontend.tenantProxyPath}/api/doc`
+);
 </script>
 
 <style scoped></style>
