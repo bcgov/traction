@@ -84,7 +84,7 @@ import EndorserConnect from './EndorserConnect.vue';
 const configStore = useConfigStore();
 const tenantStore = useTenantStore();
 const { config } = storeToRefs(configStore);
-const { endorserConnection, endorserInfo, tenantConfig, writeLedger, loading } =
+const { endorserConnection, endorserInfo, tenantConfig, loading } =
   storeToRefs(tenantStore);
 
 const endorserList = tenantConfig.value.connect_to_endorser.map(
