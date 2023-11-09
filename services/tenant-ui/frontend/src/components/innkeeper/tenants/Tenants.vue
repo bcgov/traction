@@ -71,6 +71,23 @@
       </Column>
       <Column
         :sortable="true"
+        field="curr_ledger_id"
+        header="Write Ledger"
+        filter-field="curr_ledger_id"
+        :show-filter-match-modes="false"
+      >
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            placeholder="Search By Write Ledger"
+            @input="filterCallback()"
+          />
+        </template>
+      </Column>
+      <Column
+        :sortable="true"
         field="created"
         :header="$t('common.createdAt')"
         filter-field="created"
@@ -118,7 +135,6 @@
 </template>
 
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
 import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
@@ -127,14 +143,15 @@ import ToggleButton from 'primevue/togglebutton';
 import { computed, onMounted, ref } from 'vue';
 import { useToast } from 'vue-toastification';
 
-import RowExpandData from '@/components/common/RowExpandData.vue';
-import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
-import { formatDateLong } from '@/helpers';
-import { API_PATH, TABLE_OPT } from '@/helpers/constants';
+// State
 import { useInnkeeperTenantsStore } from '@/store';
-import DeleteTenant from './deleteTenant/DeleteTenant.vue';
+import { storeToRefs } from 'pinia';
+// Other components
+import { TABLE_OPT, API_PATH } from '@/helpers/constants';
+import { formatTenants } from '@/helpers/tableFormatters';
 import EditConfig from './editConfig/editConfig.vue';
-
+import DeleteTenant from './deleteTenant/DeleteTenant.vue';
+import RowExpandData from '@/components/common/RowExpandData.vue';
 const toast = useToast();
 
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
@@ -152,20 +169,7 @@ const loadTable = () => {
 };
 
 // Formatting the Tenant table row
-const formattedTenants = computed(() =>
-  tenants.value.map((ten: any) => ({
-    tenant_id: ten.tenant_id,
-    tenant_name: ten.tenant_name,
-    connect_to_endorser: ten.connect_to_endorser,
-    created_public_did: ten.created_public_did,
-    created: formatDateLong(ten.created_at),
-    created_at: ten.created_at,
-    enable_ledger_switch: ten.enable_ledger_switch,
-    state: ten.state,
-    deleted: formatDateLong(ten.deleted_at),
-    deleted_at: ten.deleted_at,
-  }))
-);
+const formattedTenants = computed(() => formatTenants(tenants));
 
 onMounted(() => {
   loadTable();
@@ -186,6 +190,10 @@ const filter = ref({
     matchMode: FilterMatchMode.CONTAINS,
   },
   deleted: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  },
+  curr_ledger_id: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   },
