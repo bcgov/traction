@@ -1,48 +1,37 @@
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 import { API_PATH } from '@/helpers/constants';
 import { holderResponse } from '../responses';
 import { fullPathWithProxyTenant } from './utils/utils';
 
 export const successHandlers = [
-  rest.get(fullPathWithProxyTenant(API_PATH.CREDENTIALS), (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(holderResponse.credentials));
-  }),
-  rest.post(
+  http.get(fullPathWithProxyTenant(API_PATH.CREDENTIALS), () =>
+    HttpResponse.json(holderResponse.credentials)
+  ),
+  http.post(
     fullPathWithProxyTenant(
       API_PATH.ISSUE_CREDENTIAL_RECORDS_SEND_REQUEST('test-id')
     ),
-    (req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.json(holderResponse.issueCredentialSendRequest)
-      );
-    }
+    () => HttpResponse.json(holderResponse.issueCredentialSendRequest)
   ),
-  rest.delete(
+  http.delete(
     fullPathWithProxyTenant(API_PATH.ISSUE_CREDENTIAL_RECORD('test-id')),
-    (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json({}));
-    }
+    () => HttpResponse.json({})
   ),
 ];
 
 export const unknownErrorHandlers = [
-  rest.get(fullPathWithProxyTenant(API_PATH.CREDENTIALS), (req, res, ctx) => {
-    return res(ctx.status(500), ctx.json({}));
-  }),
-  rest.post(
+  http.get(fullPathWithProxyTenant(API_PATH.CREDENTIALS), () =>
+    HttpResponse.json({}, { status: 500 })
+  ),
+  http.post(
     fullPathWithProxyTenant(
       API_PATH.ISSUE_CREDENTIAL_RECORDS_SEND_REQUEST('test-id')
     ),
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
-    }
+    () => HttpResponse.json({}, { status: 500 })
   ),
-  rest.delete(
+  http.delete(
     fullPathWithProxyTenant(API_PATH.ISSUE_CREDENTIAL_RECORD('test-id')),
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
-    }
+    () => HttpResponse.json({}, { status: 500 })
   ),
 ];

@@ -1,89 +1,65 @@
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 import { API_PATH } from '@/helpers/constants';
 import { tenantResponse } from '../responses';
 import { fullPathWithProxyTenant } from './utils/utils';
 
 export const successHandlers = [
-  rest.get(fullPathWithProxyTenant(API_PATH.TENANT_SELF), (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(tenantResponse.self));
-  }),
-  rest.get(fullPathWithProxyTenant(API_PATH.TENANT_CONFIG), (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(tenantResponse.config));
-  }),
-  rest.get(fullPathWithProxyTenant(API_PATH.LEDGER_TAA), (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(tenantResponse.taa));
-  }),
-  rest.get(
-    fullPathWithProxyTenant(API_PATH.TENANT_ENDORSER_INFO),
-    (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(tenantResponse.endorserInfo));
-    }
+  http.get(fullPathWithProxyTenant(API_PATH.TENANT_SELF), () =>
+    HttpResponse.json(tenantResponse.self)
   ),
-  rest.get(
-    fullPathWithProxyTenant(API_PATH.TENANT_ENDORSER_CONNECTION),
-    (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(tenantResponse.endorserConnection));
-    }
+  http.get(fullPathWithProxyTenant(API_PATH.TENANT_CONFIG), () =>
+    HttpResponse.json(tenantResponse.config)
   ),
-  rest.get(
-    fullPathWithProxyTenant(API_PATH.WALLET_DID_PUBLIC),
-    (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(tenantResponse.publicDid));
-    }
+  http.get(fullPathWithProxyTenant(API_PATH.LEDGER_TAA), () =>
+    HttpResponse.json(tenantResponse.taa)
   ),
-  rest.get(fullPathWithProxyTenant(API_PATH.TENANT_WALLET), (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(tenantResponse.getTenantSubWallet));
-  }),
-  rest.post(
-    fullPathWithProxyTenant(API_PATH.TENANT_ENDORSER_CONNECTION),
-    (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(tenantResponse.connectToEndorser));
-    }
+  http.get(fullPathWithProxyTenant(API_PATH.TENANT_ENDORSER_INFO), () =>
+    HttpResponse.json(tenantResponse.endorserInfo)
   ),
-  rest.put(fullPathWithProxyTenant(API_PATH.TENANT_WALLET), (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(tenantResponse.updateWallet));
-  }),
+  http.get(fullPathWithProxyTenant(API_PATH.TENANT_ENDORSER_CONNECTION), () =>
+    HttpResponse.json(tenantResponse.endorserConnection)
+  ),
+  http.get(fullPathWithProxyTenant(API_PATH.WALLET_DID_PUBLIC), () =>
+    HttpResponse.json(tenantResponse.publicDid)
+  ),
+  http.get(fullPathWithProxyTenant(API_PATH.TENANT_WALLET), () =>
+    HttpResponse.json(tenantResponse.getTenantSubWallet)
+  ),
+  http.post(fullPathWithProxyTenant(API_PATH.TENANT_ENDORSER_CONNECTION), () =>
+    HttpResponse.json(tenantResponse.connectToEndorser)
+  ),
+  http.put(fullPathWithProxyTenant(API_PATH.TENANT_WALLET), () =>
+    HttpResponse.json(tenantResponse.updateWallet)
+  ),
 ];
 
 export const unknownErrorHandlers = [
-  rest.get(fullPathWithProxyTenant(API_PATH.TENANT_SELF), (req, res, ctx) => {
-    return res(ctx.status(500), ctx.json({}));
-  }),
-  rest.get(fullPathWithProxyTenant(API_PATH.TENANT_CONFIG), (req, res, ctx) => {
-    return res(ctx.status(500), ctx.json({}));
-  }),
-  rest.get(fullPathWithProxyTenant(API_PATH.LEDGER_TAA), (req, res, ctx) => {
-    return res(ctx.status(500), ctx.json({}));
-  }),
-  rest.get(
-    fullPathWithProxyTenant(API_PATH.TENANT_ENDORSER_INFO),
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
-    }
+  http.get(fullPathWithProxyTenant(API_PATH.TENANT_SELF), () =>
+    HttpResponse.json({}, { status: 500 })
   ),
-  rest.get(
-    fullPathWithProxyTenant(API_PATH.TENANT_ENDORSER_CONNECTION),
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
-    }
+  http.get(fullPathWithProxyTenant(API_PATH.TENANT_CONFIG), () =>
+    HttpResponse.json({}, { status: 500 })
   ),
-  rest.get(
-    fullPathWithProxyTenant(API_PATH.WALLET_DID_PUBLIC),
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
-    }
+  http.get(fullPathWithProxyTenant(API_PATH.LEDGER_TAA), () =>
+    HttpResponse.json({}, { status: 500 })
   ),
-  rest.get(fullPathWithProxyTenant(API_PATH.TENANT_WALLET), (req, res, ctx) => {
-    return res(ctx.status(500), ctx.json({}));
-  }),
-  rest.post(
-    fullPathWithProxyTenant(API_PATH.TENANT_ENDORSER_CONNECTION),
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
-    }
+  http.get(fullPathWithProxyTenant(API_PATH.TENANT_ENDORSER_INFO), () =>
+    HttpResponse.json({}, { status: 500 })
   ),
-  rest.put(fullPathWithProxyTenant(API_PATH.TENANT_WALLET), (req, res, ctx) => {
-    return res(ctx.status(500), ctx.json({}));
-  }),
+  http.get(fullPathWithProxyTenant(API_PATH.TENANT_ENDORSER_CONNECTION), () =>
+    HttpResponse.json({}, { status: 500 })
+  ),
+  http.get(fullPathWithProxyTenant(API_PATH.WALLET_DID_PUBLIC), () =>
+    HttpResponse.json({}, { status: 500 })
+  ),
+  http.get(fullPathWithProxyTenant(API_PATH.TENANT_WALLET), () =>
+    HttpResponse.json({}, { status: 500 })
+  ),
+  http.post(fullPathWithProxyTenant(API_PATH.TENANT_ENDORSER_CONNECTION), () =>
+    HttpResponse.json({}, { status: 500 })
+  ),
+  http.put(fullPathWithProxyTenant(API_PATH.TENANT_WALLET), () =>
+    HttpResponse.json({}, { status: 500 })
+  ),
 ];

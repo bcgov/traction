@@ -1,65 +1,46 @@
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 import { API_PATH } from '@/helpers/constants';
 import { reservationResponse } from '../responses';
 import { fullPathWithProxyTenant } from './utils/utils';
 
 export const successHandlers = [
-  rest.get(
+  http.get(
     fullPathWithProxyTenant(API_PATH.MULTITENANCY_RESERVATION('test-id')),
-    (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(reservationResponse.reservation));
-    }
+    () => HttpResponse.json(reservationResponse.reservation)
   ),
-  rest.post(
+  http.post(
     fullPathWithProxyTenant(API_PATH.MULTITENANCY_RESERVATIONS),
-    async (req, res, ctx) => {
-      const body = await req.json();
-      if (body.auto_approve) {
-        return res(
-          ctx.status(200),
-          ctx.json(reservationResponse.makeReservationAutoApprove)
+    async ({ request }) => {
+      const body: any = await request.json();
+      if (body.auto_approve)
+        return HttpResponse.json(
+          reservationResponse.makeReservationAutoApprove
         );
-      } else {
-        return res(
-          ctx.status(200),
-          ctx.json(reservationResponse.makeReservationVerify)
-        );
-      }
+      else return HttpResponse.json(reservationResponse.makeReservationVerify);
     }
   ),
-  rest.post(
+  http.post(
     fullPathWithProxyTenant(
       API_PATH.MULTITENANCY_RESERVATION_CHECK_IN('reservation_id')
     ),
-    (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(reservationResponse.checkIn));
-    }
+    () => HttpResponse.json(reservationResponse.checkIn)
   ),
-  rest.post(API_PATH.EMAIL_CONFIRMATION, (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json({}));
-  }),
+  http.post(API_PATH.EMAIL_CONFIRMATION, () => HttpResponse.json({})),
 ];
 
 export const unknownErrorHandlers = [
-  rest.get(
+  http.get(
     fullPathWithProxyTenant(API_PATH.MULTITENANCY_RESERVATION('test-id')),
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
-    }
+    () => HttpResponse.json({}, { status: 500 })
   ),
-  rest.post(
+  http.post(
     fullPathWithProxyTenant(
       API_PATH.MULTITENANCY_RESERVATION_CHECK_IN('reservation_id')
     ),
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
-    }
+    () => HttpResponse.json({}, { status: 500 })
   ),
-  rest.post(
-    fullPathWithProxyTenant(API_PATH.MULTITENANCY_RESERVATIONS),
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
-    }
+  http.post(fullPathWithProxyTenant(API_PATH.MULTITENANCY_RESERVATIONS), () =>
+    HttpResponse.json({}, { status: 500 })
   ),
 ];

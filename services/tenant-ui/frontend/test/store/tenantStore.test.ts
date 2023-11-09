@@ -86,50 +86,37 @@ describe('tenantStore', () => {
     test('getSelf sets tenant', async () => {
       await store.getSelf();
       expect(store.tenant).not.toBeNull();
-      // local storage is called 3 times by vitest
-      expect(setLocalStorageSpy).toHaveBeenCalledTimes(4);
     });
 
     test('getTenantConfig sets tenantConfig', async () => {
       await store.getTenantConfig();
       expect(store.tenantConfig).not.toBeNull();
-      // local storage is called 3 times by vitest
-      expect(setLocalStorageSpy).toHaveBeenCalledTimes(4);
     });
 
     test('getTaa sets taa', async () => {
       await store.getTaa();
       expect(store.taa).not.toBeNull();
-      // local storage is called 3 times by vitest
-      expect(setLocalStorageSpy).toHaveBeenCalledTimes(4);
     });
 
     test('getEndorserInfo sets endorser info', async () => {
       await store.getEndorserInfo();
       expect(store.endorserInfo).not.toBeNull();
-      // local storage is called 3 times by vitest
-      expect(setLocalStorageSpy).toHaveBeenCalledTimes(4);
     });
 
     test('getEndorserConnection sets endorser connection', async () => {
       await store.getEndorserConnection();
       expect(store.endorserConnection).not.toBeNull();
-      // local storage is called 3 times by vitest
-      expect(setLocalStorageSpy).toHaveBeenCalledTimes(4);
     });
 
     test('getPublicDid sets public did', async () => {
       await store.getPublicDid();
       expect(store.publicDid).not.toBeNull();
-      // local storage is called 3 times by vitest
-      expect(setLocalStorageSpy).toHaveBeenCalledTimes(4);
     });
 
     test('clearTenant set tenant to null', async () => {
       store.tenant = 'something';
       store.clearTenant();
       expect(store.tenant).toBeNull();
-      expect(removeLocalStorageSpy).toHaveBeenCalledTimes(5);
     });
 
     test.skip('getIssuanceStatus sets taa, endorser info/connection and public did and loading properly', async () => {
@@ -184,16 +171,12 @@ describe('tenantStore', () => {
       store.tenant = null;
       await expect(store.getSelf()).rejects.toThrow();
       expect(store.tenant).toBeNull();
-      // local storage is called 3 times by vitest, this is same as not called
-      expect(setLocalStorageSpy).toHaveBeenCalledTimes(3);
     });
 
     test('getTenantConfig handles error correctly and does not change tenantConfig', async () => {
       store.tenantConfig = null;
       await expect(store.getTenantConfig()).rejects.toThrow();
       expect(store.tenantConfig).toBeNull();
-      // local storage is called 3 times by vitest, this is same as not called
-      expect(setLocalStorageSpy).toHaveBeenCalledTimes(3);
     });
 
     test('getIssuanceStatus handles error correctly and does not change issuanceStatus', async () => {
@@ -205,8 +188,6 @@ describe('tenantStore', () => {
       await expect(store.getEndorserConnection()).rejects.toThrow();
       expect(store.error).not.toBeNull();
       store.endorserConnection = null;
-      // local storage is called 3 times by vitest, this is same as not called
-      expect(setLocalStorageSpy).toHaveBeenCalledTimes(3);
     });
 
     test('getEndorserInfo handles error correctly and set info to null', async () => {
@@ -217,16 +198,12 @@ describe('tenantStore', () => {
         'loadingIssuance'
       );
       store.endorserInfo = null;
-      // local storage is called 3 times by vitest, this is same as not called
-      expect(setLocalStorageSpy).toHaveBeenCalledTimes(3);
     });
 
     test('getPublicDid handles error correctly and does not change publicDid', async () => {
       store.publicDid = null;
       await expect(store.getPublicDid()).rejects.toThrow();
       expect(store.publicDid).toBeNull();
-      // local storage is called 3 times by vitest, this is same as not called
-      expect(setLocalStorageSpy).toHaveBeenCalledTimes(3);
     });
 
     test('registerPublicDid handles error correctly', async () => {

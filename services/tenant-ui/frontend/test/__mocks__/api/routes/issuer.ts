@@ -1,71 +1,47 @@
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 import { API_PATH } from '@/helpers/constants';
 import { issuerResponse } from '../responses';
 import { fullPathWithProxyTenant } from './utils/utils';
 
 export const successHandlers = [
-  rest.get(
-    fullPathWithProxyTenant(API_PATH.ISSUE_CREDENTIAL_RECORDS),
-    (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(issuerResponse.credentials));
-    }
+  http.get(fullPathWithProxyTenant(API_PATH.ISSUE_CREDENTIAL_RECORDS), () =>
+    HttpResponse.json(issuerResponse.credentials)
   ),
-  rest.get(
+  http.get(
     fullPathWithProxyTenant(API_PATH.ISSUE_CREDENTIAL_RECORDS) + '/:id',
-    (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(issuerResponse.credential));
-    }
+    () => HttpResponse.json(issuerResponse.credential)
   ),
-  rest.post(
+  http.post(
     fullPathWithProxyTenant(API_PATH.ISSUE_CREDENTIALS_SEND_OFFER),
-    (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(issuerResponse.sendOffer));
-    }
+    () => HttpResponse.json(issuerResponse.sendOffer)
   ),
-  rest.post(
-    fullPathWithProxyTenant(API_PATH.REVOCATION_REVOKE),
-    (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json({}));
-    }
+  http.post(fullPathWithProxyTenant(API_PATH.REVOCATION_REVOKE), () =>
+    HttpResponse.json({})
   ),
-  rest.delete(
+  http.delete(
     fullPathWithProxyTenant(API_PATH.ISSUE_CREDENTIAL_RECORD('test-id')),
-    (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json({}));
-    }
+    () => HttpResponse.json({})
   ),
 ];
 
 export const unknownErrorHandlers = [
-  rest.get(
-    fullPathWithProxyTenant(API_PATH.ISSUE_CREDENTIAL_RECORDS),
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
-    }
+  http.get(fullPathWithProxyTenant(API_PATH.ISSUE_CREDENTIAL_RECORDS), () =>
+    HttpResponse.json({}, { status: 500 })
   ),
-  rest.get(
+  http.get(
     fullPathWithProxyTenant(API_PATH.ISSUE_CREDENTIAL_RECORDS) + '/:id',
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
-    }
+    () => HttpResponse.json({}, { status: 500 })
   ),
-  rest.post(
+  http.post(
     fullPathWithProxyTenant(API_PATH.ISSUE_CREDENTIALS_SEND_OFFER),
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
-    }
+    () => HttpResponse.json({}, { status: 500 })
   ),
-  rest.post(
-    fullPathWithProxyTenant(API_PATH.REVOCATION_REVOKE),
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
-    }
+  http.post(fullPathWithProxyTenant(API_PATH.REVOCATION_REVOKE), () =>
+    HttpResponse.json({}, { status: 500 })
   ),
-  rest.delete(
+  http.delete(
     fullPathWithProxyTenant(API_PATH.ISSUE_CREDENTIAL_RECORD('test-id')),
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
-    }
+    () => HttpResponse.json({}, { status: 500 })
   ),
 ];

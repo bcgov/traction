@@ -1,23 +1,16 @@
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 import { API_PATH } from '@/helpers/constants';
 import { configResponse } from '../responses';
 import { fullPathWithProxyTenant } from './utils/utils';
 
 export const successHandlers = [
-  rest.get(API_PATH.CONFIG, (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(configResponse.config));
-  }),
-  rest.get(
-    fullPathWithProxyTenant(API_PATH.SERVER_PLUGINS),
-    (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(configResponse.plugins));
-    }
+  http.get(API_PATH.CONFIG, () => HttpResponse.json(configResponse.config)),
+  http.get(fullPathWithProxyTenant(API_PATH.SERVER_PLUGINS), () =>
+    HttpResponse.json(configResponse.plugins)
   ),
 ];
 
 export const unknownErrorHandlers = [
-  rest.get(API_PATH.CONFIG, (req, res, ctx) => {
-    return res(ctx.status(500), ctx.json({}));
-  }),
+  http.get(API_PATH.CONFIG, () => HttpResponse.json({}, { status: 500 })),
 ];

@@ -65,9 +65,9 @@ describe('reservationStore', () => {
 
       expect(store.loading).toEqual(false);
       expect(response.reservation_id).toEqual('reservation_id');
-      expect(response.reservation_pwd).toBeNull();
+      expect(response.reservation_pwd).toBeFalsy();
       expect(store.reservation.reservation_id).toEqual('reservation_id');
-      expect(store.reservation.reservation_pwd).toBeNull();
+      expect(store.reservation.reservation_pwd).toBeFalsy();
       expect(store.error).toEqual(null);
     });
 

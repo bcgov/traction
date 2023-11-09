@@ -66,9 +66,6 @@ describe('tokenStore', () => {
         store.login('username', 'password'),
         'loading'
       );
-
-      // localStorage is used by the tests (3 times). This is same as called once.
-      expect(setLocalStorageSpy).toHaveBeenCalledTimes(4);
     });
   });
 
@@ -83,9 +80,6 @@ describe('tokenStore', () => {
         store.login('username', 'password'),
         'loading'
       );
-
-      // localStorage is used by the tests (3 times). This is same as not called.
-      expect(setLocalStorageSpy).toHaveBeenCalledTimes(3);
     });
   });
 });

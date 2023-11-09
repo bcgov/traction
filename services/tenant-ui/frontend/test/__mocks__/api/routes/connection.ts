@@ -1,83 +1,69 @@
-import { rest } from 'msw';
+import { HttpResponse, http } from 'msw';
 
 import { API_PATH } from '@/helpers/constants';
 import { connectionResponse } from '../responses';
 import { fullPathWithProxyTenant } from './utils/utils';
 
 export const successHandlers = [
-  rest.get(fullPathWithProxyTenant(API_PATH.CONNECTIONS), (req, res, ctx) =>
-    res(ctx.status(200), ctx.json(connectionResponse.listConnections))
+  http.get(fullPathWithProxyTenant(API_PATH.CONNECTIONS), () =>
+    HttpResponse.json(connectionResponse.listConnections)
   ),
-  rest.get(
-    fullPathWithProxyTenant(API_PATH.CONNECTIONS) + '/:id',
-    (req, res, ctx) =>
-      res(ctx.status(200), ctx.json(connectionResponse.getConnection))
+  http.get(fullPathWithProxyTenant(API_PATH.CONNECTIONS) + '/:id', () =>
+    HttpResponse.json(connectionResponse.getConnection)
   ),
-  rest.get(
+  http.get(
     fullPathWithProxyTenant(API_PATH.CONNECTIONS_INVITATION('test-uuid')),
-    (req, res, ctx) =>
-      res(ctx.status(200), ctx.json(connectionResponse.getConnectionInvitation))
+    () => HttpResponse.json(connectionResponse.getConnectionInvitation)
   ),
-  rest.post(
+  http.post(
     fullPathWithProxyTenant(API_PATH.CONNECTIONS_CREATE_INVITATION),
-    (req, res, ctx) =>
-      res(ctx.status(200), ctx.json(connectionResponse.createConnection))
+    () => HttpResponse.json(connectionResponse.createConnection)
   ),
-  rest.post(
+  http.post(
     fullPathWithProxyTenant(API_PATH.CONNECTIONS_RECEIVE_INVITATION),
-    (req, res, ctx) =>
-      res(ctx.status(200), ctx.json(connectionResponse.receiveInvitation))
+    () => HttpResponse.json(connectionResponse.receiveInvitation)
   ),
-  rest.post(
-    fullPathWithProxyTenant(API_PATH.DID_EXCHANGE_CREATE_REQUEST),
-    (req, res, ctx) =>
-      res(ctx.status(200), ctx.json(connectionResponse.didExchange))
+  http.post(fullPathWithProxyTenant(API_PATH.DID_EXCHANGE_CREATE_REQUEST), () =>
+    HttpResponse.json(connectionResponse.didExchange)
   ),
-  rest.put(
-    fullPathWithProxyTenant(API_PATH.CONNECTION('test-uuid')),
-    (req, res, ctx) =>
-      res(ctx.status(200), ctx.json(connectionResponse.getConnection))
+  http.put(fullPathWithProxyTenant(API_PATH.CONNECTION('test-uuid')), () =>
+    HttpResponse.json(connectionResponse.getConnection)
   ),
-  rest.delete(
-    fullPathWithProxyTenant(API_PATH.CONNECTION('test-uuid')),
-    (req, res, ctx) => res(ctx.status(200), ctx.json({}))
+  http.delete(fullPathWithProxyTenant(API_PATH.CONNECTION('test-uuid')), () =>
+    HttpResponse.json({})
   ),
 ];
 
 export const unknownErrorHandlers = [
-  rest.get(fullPathWithProxyTenant(API_PATH.CONNECTIONS), (req, res, ctx) => {
-    return res(ctx.status(500), ctx.json({}));
-  }),
-  rest.get(
-    fullPathWithProxyTenant(API_PATH.CONNECTIONS) + '/:id',
-    (req, res, ctx) => res(ctx.status(500), ctx.json({}))
+  http.get(fullPathWithProxyTenant(API_PATH.CONNECTIONS), () =>
+    HttpResponse.json({}, { status: 500 })
   ),
-  rest.get(
+  http.get(fullPathWithProxyTenant(API_PATH.CONNECTIONS) + '/:id', () =>
+    HttpResponse.json({}, { status: 500 })
+  ),
+  http.get(
     fullPathWithProxyTenant(API_PATH.CONNECTIONS_INVITATION('test-uuid')),
-    (req, res, ctx) => res(ctx.status(500), ctx.json({}))
+    () => HttpResponse.json({}, { status: 500 })
   ),
-  rest.post(
+  http.post(
     fullPathWithProxyTenant(API_PATH.CONNECTIONS_CREATE_INVITATION),
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
+    () => {
+      return HttpResponse.json({}, { status: 500 });
     }
   ),
-  rest.post(
+  http.post(
     fullPathWithProxyTenant(API_PATH.CONNECTIONS_RECEIVE_INVITATION),
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
+    () => {
+      return HttpResponse.json({}, { status: 500 });
     }
   ),
-  rest.post(
-    fullPathWithProxyTenant(API_PATH.DID_EXCHANGE_CREATE_REQUEST),
-    (req, res, ctx) => res(ctx.status(500), ctx.json({}))
+  http.post(fullPathWithProxyTenant(API_PATH.DID_EXCHANGE_CREATE_REQUEST), () =>
+    HttpResponse.json({}, { status: 500 })
   ),
-  rest.put(
-    fullPathWithProxyTenant(API_PATH.CONNECTION('test-uuid')),
-    (req, res, ctx) => res(ctx.status(500), ctx.json({}))
+  http.put(fullPathWithProxyTenant(API_PATH.CONNECTION('test-uuid')), () =>
+    HttpResponse.json({}, { status: 500 })
   ),
-  rest.delete(
-    fullPathWithProxyTenant(API_PATH.CONNECTION('test-uuid')),
-    (req, res, ctx) => res(ctx.status(500), ctx.json({}))
+  http.delete(fullPathWithProxyTenant(API_PATH.CONNECTION('test-uuid')), () =>
+    HttpResponse.json({}, { status: 500 })
   ),
 ];

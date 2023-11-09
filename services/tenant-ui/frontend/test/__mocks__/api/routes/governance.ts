@@ -1,144 +1,97 @@
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 import { API_PATH } from '@/helpers/constants';
 import { governanceResponse } from '../responses';
 import { fullPathWithProxyTenant } from './utils/utils';
 
 export const successHandlers = [
-  rest.get(
-    fullPathWithProxyTenant(API_PATH.SCHEMA_STORAGE),
-    (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(governanceResponse.schemas));
-    }
+  http.get(fullPathWithProxyTenant(API_PATH.SCHEMA_STORAGE), () =>
+    HttpResponse.json(governanceResponse.schemas)
   ),
-  rest.get(
+  http.get(
     fullPathWithProxyTenant(API_PATH.CREDENTIAL_DEFINITION_STORAGE),
-    (req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.json(governanceResponse.credentialDefinitions)
-      );
-    }
+    () => HttpResponse.json(governanceResponse.credentialDefinitions)
   ),
-  rest.get(
+  http.get(
     fullPathWithProxyTenant(API_PATH.CREDENTIAL_DEFINITIONS) + '/:id',
-    (req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.json(governanceResponse.createCredentialDefinition)
-      );
-    }
+    () => HttpResponse.json(governanceResponse.createCredentialDefinition)
   ),
-  rest.get(fullPathWithProxyTenant(API_PATH.OCAS), (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(governanceResponse.ocas));
-  }),
-  rest.get(fullPathWithProxyTenant(API_PATH.OCAS) + '/:id', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(governanceResponse.oca));
-  }),
-  rest.post(fullPathWithProxyTenant(API_PATH.SCHEMAS), (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(governanceResponse.createSchema));
-  }),
-  rest.post(
-    fullPathWithProxyTenant(API_PATH.SCHEMA_STORAGE),
-    (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(governanceResponse.copySchema));
-    }
+  http.get(fullPathWithProxyTenant(API_PATH.OCAS), () =>
+    HttpResponse.json(governanceResponse.ocas)
   ),
-  rest.post(
-    fullPathWithProxyTenant(API_PATH.CREDENTIAL_DEFINITIONS),
-    (req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.json(governanceResponse.createCredentialDefinition)
-      );
-    }
+  http.get(fullPathWithProxyTenant(API_PATH.OCAS) + '/:id', () =>
+    HttpResponse.json(governanceResponse.oca)
   ),
-  rest.post(fullPathWithProxyTenant(API_PATH.OCAS), (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(governanceResponse.createOca));
-  }),
-  rest.delete(
+  http.post(fullPathWithProxyTenant(API_PATH.SCHEMAS), () =>
+    HttpResponse.json(governanceResponse.createSchema)
+  ),
+  http.post(fullPathWithProxyTenant(API_PATH.SCHEMA_STORAGE), () =>
+    HttpResponse.json(governanceResponse.copySchema)
+  ),
+  http.post(fullPathWithProxyTenant(API_PATH.CREDENTIAL_DEFINITIONS), () =>
+    HttpResponse.json(governanceResponse.createCredentialDefinition)
+  ),
+  http.post(fullPathWithProxyTenant(API_PATH.OCAS), () =>
+    HttpResponse.json(governanceResponse.createOca)
+  ),
+  http.delete(
     fullPathWithProxyTenant(API_PATH.SCHEMA_STORAGE_ITEM('test-uuid')),
-    (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(governanceResponse.deleteResponse));
-    }
+    () => HttpResponse.json(governanceResponse.deleteResponse)
   ),
-  rest.delete(
+  http.delete(
     fullPathWithProxyTenant(
       API_PATH.CREDENTIAL_DEFINITION_STORAGE_ITEM('test-uuid')
     ),
-    (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(governanceResponse.deleteResponse));
-    }
+    () => HttpResponse.json(governanceResponse.deleteResponse)
   ),
-  rest.delete(
-    fullPathWithProxyTenant(API_PATH.OCA('test-uuid')),
-    (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(governanceResponse.deleteResponse));
-    }
+  http.delete(fullPathWithProxyTenant(API_PATH.OCA('test-uuid')), () =>
+    HttpResponse.json(governanceResponse.deleteResponse)
   ),
 ];
 
 export const unknownErrorHandlers = [
-  rest.get(
-    fullPathWithProxyTenant(API_PATH.SCHEMA_STORAGE),
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
-    }
+  http.get(fullPathWithProxyTenant(API_PATH.SCHEMA_STORAGE), () =>
+    HttpResponse.json({}, { status: 500 })
   ),
-  rest.get(
+  http.get(
     fullPathWithProxyTenant(API_PATH.CREDENTIAL_DEFINITION_STORAGE),
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
-    }
+    () => HttpResponse.json({}, { status: 500 })
   ),
-  rest.get(
+  http.get(
     fullPathWithProxyTenant(API_PATH.CREDENTIAL_DEFINITIONS) + '/:id',
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
+    () => {
+      HttpResponse.json({}, { status: 500 });
     }
   ),
-  rest.get(fullPathWithProxyTenant(API_PATH.OCAS), (req, res, ctx) => {
-    return res(ctx.status(500), ctx.json({}));
-  }),
-  rest.get(fullPathWithProxyTenant(API_PATH.OCAS) + '/:id', (req, res, ctx) => {
-    return res(ctx.status(500), ctx.json({}));
-  }),
-  rest.post(fullPathWithProxyTenant(API_PATH.SCHEMAS), (req, res, ctx) => {
-    return res(ctx.status(500), ctx.json({}));
-  }),
-  rest.post(
-    fullPathWithProxyTenant(API_PATH.SCHEMA_STORAGE),
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
-    }
+  http.get(fullPathWithProxyTenant(API_PATH.OCAS), () =>
+    HttpResponse.json({}, { status: 500 })
   ),
-  rest.post(
-    fullPathWithProxyTenant(API_PATH.CREDENTIAL_DEFINITIONS),
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
-    }
+  http.get(fullPathWithProxyTenant(API_PATH.OCAS) + '/:id', () =>
+    HttpResponse.json({}, { status: 500 })
   ),
-  rest.post(fullPathWithProxyTenant(API_PATH.OCAS), (req, res, ctx) => {
-    return res(ctx.status(500), ctx.json({}));
-  }),
-  rest.delete(
+  http.post(fullPathWithProxyTenant(API_PATH.SCHEMAS), () =>
+    HttpResponse.json({}, { status: 500 })
+  ),
+  http.post(fullPathWithProxyTenant(API_PATH.SCHEMA_STORAGE), () =>
+    HttpResponse.json({}, { status: 500 })
+  ),
+  http.post(fullPathWithProxyTenant(API_PATH.CREDENTIAL_DEFINITIONS), () =>
+    HttpResponse.json({}, { status: 500 })
+  ),
+  http.post(fullPathWithProxyTenant(API_PATH.OCAS), () =>
+    HttpResponse.json({}, { status: 500 })
+  ),
+  http.delete(
     fullPathWithProxyTenant(API_PATH.SCHEMA_STORAGE_ITEM('test-uuid')),
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
-    }
+    () => HttpResponse.json({}, { status: 500 })
   ),
-  rest.delete(
+  http.delete(
     fullPathWithProxyTenant(
       API_PATH.CREDENTIAL_DEFINITION_STORAGE_ITEM('test-uuid')
     ),
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
-    }
+    () => HttpResponse.json({}, { status: 500 })
   ),
-  rest.delete(
-    fullPathWithProxyTenant(API_PATH.OCA('test-uuid')),
-    (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({}));
-    }
+  http.delete(fullPathWithProxyTenant(API_PATH.OCA('test-uuid')), () =>
+    HttpResponse.json({}, { status: 500 })
   ),
 ];
