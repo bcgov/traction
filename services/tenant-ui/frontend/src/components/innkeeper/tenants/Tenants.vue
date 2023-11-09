@@ -58,6 +58,23 @@
       </Column>
       <Column
         :sortable="true"
+        field="curr_ledger_id"
+        header="Write Ledger"
+        filter-field="curr_ledger_id"
+        :show-filter-match-modes="false"
+      >
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            placeholder="Search By Write Ledger"
+            @input="filterCallback()"
+          />
+        </template>
+      </Column>
+      <Column
+        :sortable="true"
         field="created"
         header="Created at"
         filter-field="created"
@@ -97,7 +114,7 @@ import { useInnkeeperTenantsStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other components
 import { TABLE_OPT, API_PATH } from '@/helpers/constants';
-import { formatDateLong } from '@/helpers';
+import { formatTenants } from '@/helpers/tableFormatters';
 import EditConfig from './editConfig/editConfig.vue';
 import DeleteTenant from './deleteTenant/DeleteTenant.vue';
 import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
@@ -117,17 +134,7 @@ const loadTable = async () => {
 };
 
 // Formatting the Tenant table row
-const formattedTenants = computed(() =>
-  tenants.value.map((ten: any) => ({
-    tenant_id: ten.tenant_id,
-    tenant_name: ten.tenant_name,
-    connect_to_endorser: ten.connect_to_endorser,
-    created_public_did: ten.created_public_did,
-    created: formatDateLong(ten.created_at),
-    created_at: ten.created_at,
-    enable_ledger_switch: ten.enable_ledger_switch,
-  }))
-);
+const formattedTenants = computed(() => formatTenants(tenants));
 
 onMounted(async () => {
   loadTable();
@@ -144,6 +151,10 @@ const filter = ref({
     matchMode: FilterMatchMode.CONTAINS,
   },
   created: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  },
+  curr_ledger_id: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   },
