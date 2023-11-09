@@ -406,8 +406,19 @@
     "phone": "Phone / Mobile"
   },
   "serverConfig": {
-    "expand": "Show full server status config",
-    "serverConfig": "Server Configuration"
+    "acapyVersion": "ACA-Py Version:",
+    "expand": "Show full ACA-Py server config",
+    "ledger": {
+      "default": "Default base ledger:",
+      "ledgerDetails": "Ledger Details",
+      "ledgerList": "Ledger List",
+      "quickConnect": "Tenant UI quick-connect endorser:"
+    },
+    "tractionProxy": "Traction Proxy URL:",
+    "serverConfig": "Server Configuration",
+    "tenantUi": {
+      "tenantUi": "Tenant UI"
+    }
   },
   "session": {
     "countdown": "You are going to be logged out in { seconds } seconds...",
