@@ -18,13 +18,23 @@
         <div class="flex justify-content-between">
           <div class="flex justify-content-start"></div>
           <div class="flex justify-content-end">
-            <span class="p-input-icon-left">
-              <i class="pi pi-search ml-0" />
-              <InputText
-                v-model="filter.global.value"
-                placeholder="Search Tenants"
+            <div class="container">
+              <ToggleButton
+                v-model="showDeleted"
+                :on-label="$t('common.hideDeleted')"
+                :off-label="$t('common.showDeleted')"
+                class="mr-2 container-item"
+                style="width: 10rem"
+                @change="loadTable"
               />
-            </span>
+              <span class="p-input-icon-left container-item">
+                <i class="pi pi-search ml-0" />
+                <InputText
+                  v-model="filter.global.value"
+                  :placeholder="$t('tenants.search')"
+                />
+              </span>
+            </div>
           </div>
         </div>
       </template>
@@ -33,16 +43,19 @@
       <Column :expander="true" header-style="width: 3rem" />
       <Column :sortable="false" :header="$t('common.actions')">
         <template #body="{ data }">
-          <div class="container">
+          <div v-if="data.state == 'active'" class="container">
             <EditConfig :tenant="data" />
             <DeleteTenant :tenant="data" />
+          </div>
+          <div v-else class="container-item deleted-btn">
+            {{ $t('common.deleted') }}
           </div>
         </template>
       </Column>
       <Column
         :sortable="true"
         field="tenant_name"
-        header="Name"
+        :header="$t('common.name')"
         filter-field="tenant_name"
         :show-filter-match-modes="false"
       >
@@ -51,7 +64,7 @@
             v-model="filterModel.value"
             type="text"
             class="p-column-filter"
-            placeholder="Search By Contact"
+            :placeholder="$t('common.searchByName')"
             @input="filterCallback()"
           />
         </template>
@@ -59,7 +72,7 @@
       <Column
         :sortable="true"
         field="created"
-        header="Created at"
+        :header="$t('common.createdAt')"
         filter-field="created"
         :show-filter-match-modes="false"
       >
@@ -71,7 +84,28 @@
             v-model="filterModel.value"
             type="text"
             class="p-column-filter"
-            placeholder="Search By Contact"
+            :placeholder="$t('common.searchByCreated')"
+            @input="filterCallback()"
+          />
+        </template>
+      </Column>
+      <Column
+        :sortable="true"
+        field="deleted"
+        :header="$t('common.deletedAt')"
+        filter-field="deleted"
+        :show-filter-match-modes="false"
+        :hidden="!showDeleted"
+      >
+        <template #body="{ data }">
+          {{ data.deleted }}
+        </template>
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            :placeholder="$t('common.searchByDeleted')"
             @input="filterCallback()"
           />
         </template>
@@ -84,36 +118,37 @@
 </template>
 
 <script setup lang="ts">
-// Vue
-import { onMounted, ref, computed } from 'vue';
-// PrimeVue
+import { storeToRefs } from 'pinia';
+import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
-import { FilterMatchMode } from 'primevue/api';
+import ToggleButton from 'primevue/togglebutton';
+import { computed, onMounted, ref } from 'vue';
 import { useToast } from 'vue-toastification';
-// State
-import { useInnkeeperTenantsStore } from '@/store';
-import { storeToRefs } from 'pinia';
-// Other components
-import { TABLE_OPT, API_PATH } from '@/helpers/constants';
-import { formatDateLong } from '@/helpers';
-import EditConfig from './editConfig/editConfig.vue';
-import DeleteTenant from './deleteTenant/DeleteTenant.vue';
-import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
+
 import RowExpandData from '@/components/common/RowExpandData.vue';
+import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
+import { formatDateLong } from '@/helpers';
+import { API_PATH, TABLE_OPT } from '@/helpers/constants';
+import { useInnkeeperTenantsStore } from '@/store';
+import DeleteTenant from './deleteTenant/DeleteTenant.vue';
+import EditConfig from './editConfig/editConfig.vue';
 
 const toast = useToast();
 
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
+const showDeleted = ref(false);
 
 // Populating the Table
 const { loading, tenants } = storeToRefs(useInnkeeperTenantsStore());
-const loadTable = async () => {
-  innkeeperTenantsStore.listTenants().catch((err: string) => {
-    console.error(err);
-    toast.error(`Failure: ${err}`);
-  });
+const loadTable = () => {
+  innkeeperTenantsStore
+    .listTenants(showDeleted.value ? 'all' : 'active')
+    .catch((err: string) => {
+      console.error(err);
+      toast.error(`Failure: ${err}`);
+    });
 };
 
 // Formatting the Tenant table row
@@ -126,10 +161,13 @@ const formattedTenants = computed(() =>
     created: formatDateLong(ten.created_at),
     created_at: ten.created_at,
     enable_ledger_switch: ten.enable_ledger_switch,
+    state: ten.state,
+    deleted: formatDateLong(ten.deleted_at),
+    deleted_at: ten.deleted_at,
   }))
 );
 
-onMounted(async () => {
+onMounted(() => {
   loadTable();
 });
 
@@ -147,6 +185,10 @@ const filter = ref({
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   },
+  deleted: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  },
 });
 
 // necessary for expanding rows, we don't do anything with this
@@ -155,5 +197,20 @@ const expandedRows = ref([]);
 <style scoped>
 .container {
   display: flex;
+}
+.container-item {
+  height: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.deleted-btn {
+  height: 2.625rem;
+  background-color: #ef4444;
+  border: 1px solid #ef4444;
+  color: white;
+  border-radius: 10px;
+  width: 50%;
+  font-weight: 600;
 }
 </style>
