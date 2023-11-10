@@ -63,8 +63,8 @@ acapy:
       userPasswordKey: acapy-password
   autoscaling:
     enabled: true
-    minReplicas: 2
-    maxReplicas: 3
+    minReplicas: 1
+    maxReplicas: 2
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
   networkPolicy:
@@ -152,8 +152,8 @@ ui:
         network.openshift.io/policy-group: ingress
   autoscaling:
     enabled: true
-    minReplicas: 2
-    maxReplicas: 3
+    minReplicas: 1
+    maxReplicas: 2
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
 ingress:
