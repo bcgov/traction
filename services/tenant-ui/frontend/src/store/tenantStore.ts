@@ -461,7 +461,7 @@ export const useTenantStore = defineStore('tenant', () => {
   }
 
   function setTenantLoginDataFromLocalStorage() {
-    console.log('> setTenantFromLocalStorage');
+    console.log('> setTenantLoginDataFromLocalStorage');
     try {
       const savedTenant = localStorage.getItem('tenant');
       tenant.value = savedTenant ? JSON.parse(savedTenant) : null;
@@ -493,7 +493,7 @@ export const useTenantStore = defineStore('tenant', () => {
       console.error(err);
     }
 
-    console.log('< setTenantFromLocalStorage');
+    console.log('< setTenantLoginDataFromLocalStorage');
   }
 
   return {
