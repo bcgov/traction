@@ -98,14 +98,14 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     );
   }
 
-  async function listTenants() {
+  async function listTenants(state: string = 'active') {
     return fetchListFromAPI(
       acapyApi,
       API_PATH.INNKEEPER_TENANTS,
       tenants,
       error,
       loading,
-      {}
+      { state }
     );
   }
 
