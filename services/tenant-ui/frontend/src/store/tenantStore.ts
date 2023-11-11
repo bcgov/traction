@@ -1,4 +1,4 @@
-import { EndorserInfo, TAAInfo } from '@/types/acapyApi/acapyInterface';
+import { AdminConfig, EndorserInfo } from '@/types/acapyApi/acapyInterface';
 
 import { API_PATH } from '@/helpers/constants';
 import { defineStore, storeToRefs } from 'pinia';
@@ -18,6 +18,7 @@ export const useTenantStore = defineStore('tenant', () => {
   const publicDid: any = ref(null);
   const writeLedger: any = ref(null);
   const publicDidRegistrationProgress: Ref<string> = ref('');
+  const serverConfig: any = ref(null);
   const taa: Ref<any> = ref(null);
   const tenantConfig: any = ref(null);
   const tenantWallet: any = ref(null);
@@ -69,6 +70,16 @@ export const useTenantStore = defineStore('tenant', () => {
         ledger_id: tenantConfig.value.curr_ledger_id,
       };
     }
+  }
+
+  async function getServerConfig() {
+    loading.value = true;
+    serverConfig.value = await fetchItem<AdminConfig>(
+      API_PATH.TENANT_SERVER_CONFIG,
+      '',
+      error,
+      ref(false)
+    );
   }
 
   async function getIssuanceStatus() {
@@ -497,39 +508,41 @@ export const useTenantStore = defineStore('tenant', () => {
   }
 
   return {
-    loading,
-    loadingIssuance,
-    error,
-    tenant,
     endorserConnection,
     endorserInfo,
-    publicDid,
-    writeLedger,
-    taa,
-    tenantReady,
+    error,
     isIssuer,
+    loading,
+    loadingIssuance,
+    publicDid,
     publicDidRegistrationProgress,
+    serverConfig,
+    taa,
+    tenant,
     tenantConfig,
-    tenantWallet,
     tenantDefaultSettings,
-    getSelf,
-    getTenantConfig,
-    getIssuanceStatus,
+    tenantReady,
+    tenantWallet,
+    writeLedger,
+    acceptTaa,
     clearTenant,
-    setTenantLoginDataFromLocalStorage,
+    connectToEndorser,
     getEndorserConnection,
     getEndorserInfo,
-    getTenantDefaultSettings,
-    connectToEndorser,
+    getIssuanceStatus,
     getPublicDid,
-    getWriteLedger,
-    setWriteLedger,
-    registerPublicDid,
-    waitForActiveEndorserConnection,
-    getTenantSubWallet,
-    updateTenantSubWallet,
+    getSelf,
+    getServerConfig,
     getTaa,
-    acceptTaa,
+    getTenantConfig,
+    getTenantDefaultSettings,
+    getTenantSubWallet,
+    getWriteLedger,
+    registerPublicDid,
+    setTenantLoginDataFromLocalStorage,
+    setWriteLedger,
+    updateTenantSubWallet,
+    waitForActiveEndorserConnection,
   };
 });
 

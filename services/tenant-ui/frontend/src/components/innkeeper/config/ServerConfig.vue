@@ -65,18 +65,6 @@
               <strong>{{ $t('serverConfig.storage.walletType') }}</strong>
               {{ serverConfig?.config?.['wallet.type'] }}
             </p>
-            <p>
-              <strong>{{
-                $t('serverConfig.storage.multitenantWalletName')
-              }}</strong>
-              {{ serverConfig?.config?.['multitenant.wallet_name'] }}
-            </p>
-            <p>
-              <strong>{{
-                $t('serverConfig.storage.multitenantWalletType')
-              }}</strong>
-              {{ serverConfig?.config?.['multitenant.wallet_type'] }}
-            </p>
           </Fieldset>
 
           <!-- Plugins from API call to get them -->
