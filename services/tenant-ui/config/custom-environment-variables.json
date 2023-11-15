@@ -35,12 +35,6 @@
         "messageLevel": "UX_INFO_BANNER_MESSAGE_LEVEL",
         "showMessage": "UX_INFO_BANNER_SHOW_MESSAGE"
       }
-    },
-    "ariesDetails": {
-      "acapyVersion": "FRONTEND_ACAPY_VERSION_DISPLAY",
-      "ledgerName": "FRONTEND_ARIES_LEDGER_DESCRIPTION",
-      "ledgerBrowser": "ACAPY_LEDGER_BROWSER_URL",
-      "tailsServer": "ACAPY_TAILS_BASE_URL"
     }
   },
   "image": {

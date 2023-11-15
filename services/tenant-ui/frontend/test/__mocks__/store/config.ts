@@ -13,13 +13,6 @@ const store: { [key: string]: any } = {
           imageUrl: 'http://image.com',
         },
       },
-      ariesDetails: {
-        acapyVersion: '1.0',
-        ledger: 'ledger',
-        ledgerName: 'ledgerName',
-        ledgerBrowser: 'ledgerBrowser',
-        tailsServer: 'tailsServer',
-      },
       oidc: {
         active: false,
       },
@@ -47,13 +40,6 @@ const store: { [key: string]: any } = {
             link: 'http://link.com',
             imageUrl: 'http://image.com',
           },
-        },
-        ariesDetails: {
-          acapyVersion: '1.0',
-          ledger: 'ledger',
-          ledgerName: 'ledgerName',
-          ledgerBrowser: 'ledgerBrowser',
-          tailsServer: 'tailsServer',
         },
         oidc: {
           authority: 'authority',

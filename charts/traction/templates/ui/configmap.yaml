@@ -6,7 +6,6 @@ metadata:
   labels:
     {{- include "tenant-ui.labels" . | nindent 4 }}
 data:
-  FRONTEND_ARIES_LEDGER_DESCRIPTION: {{ .Values.ui.ariesDetails.ledgerDescription | quote }}
   FRONTEND_INNKEEPER_OIDC_ACTIVE: {{ .Values.ui.oidc.active | quote }}
   FRONTEND_INNKEEPER_OIDC_AUTHORITY: {{ .Values.ui.oidc.authority | quote }}
   FRONTEND_INNKEEPER_OIDC_CLIENT: {{ .Values.ui.oidc.client | quote }}
