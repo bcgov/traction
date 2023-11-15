@@ -49,7 +49,7 @@ export const formatTenants = (
   tenants: Ref<TenantRecord[]>
 ): FormattedTenantRecord[] =>
   tenants.value.map((tenant: any) => ({
-    deleted_at: tenant.deleted_at,
+    deleted_at: formatDateLong(tenant.deleted_at),
     tenant_id: tenant.tenant_id,
     tenant_name: tenant.tenant_name,
     connect_to_endorser: tenant.connect_to_endorser,

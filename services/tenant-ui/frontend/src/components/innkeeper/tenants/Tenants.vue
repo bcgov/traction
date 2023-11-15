@@ -115,7 +115,7 @@
         :hidden="!showDeleted"
       >
         <template #body="{ data }">
-          {{ data.deleted }}
+          {{ data.deleted_at }}
         </template>
         <template #filter="{ filterModel, filterCallback }">
           <InputText
