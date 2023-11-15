@@ -931,11 +931,11 @@ async def innkeeper_config_handler(request: web.BaseRequest):
     profile = mgr.profile
 
     config = {
-        k: (
-           profile.context.settings[k]
+        key: (
+           profile.context.settings[key]
         )
-        for k in profile.context.settings
-        if k
+        for key in profile.context.settings
+        if key
         not in [
             "admin.admin_api_key",
             "multitenant.jwt_secret",
