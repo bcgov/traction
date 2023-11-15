@@ -5,7 +5,7 @@
       <p class="mt-0">
         {{
           $t('about.acaPy.acapyVersion', {
-            version: config.frontend.ariesDetails.acapyVersion,
+            version: acapyVersion,
           })
         }}
       </p>
@@ -23,12 +23,36 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
-import { useConfigStore } from '@/store/configStore';
+import { useInnkeeperTenantsStore, useTenantStore } from '@/store';
 // PrimeVue
 import PluginList from './PluginList.vue';
 
-const { config } = storeToRefs(useConfigStore());
+const route = useRoute();
+const innTenantsStore = useInnkeeperTenantsStore();
+const tenantsStore = useTenantStore();
+const { serverConfig: innServerConfig } = storeToRefs(
+  useInnkeeperTenantsStore()
+);
+const { serverConfig } = storeToRefs(useTenantStore());
+
+const acapyVersion = ref('');
+const currentRouteName = computed(() => {
+  return route.name;
+});
+
+onMounted(async () => {
+  // Depending on if you're the innkeeper these setttings are different
+  if (currentRouteName.value === 'InnkeeperAbout') {
+    await innTenantsStore.getServerConfig();
+    acapyVersion.value = innServerConfig.value?.config?.version;
+  } else {
+    await tenantsStore.getServerConfig();
+    acapyVersion.value = serverConfig.value?.config?.version;
+  }
+});
 </script>
 
 <style scoped>

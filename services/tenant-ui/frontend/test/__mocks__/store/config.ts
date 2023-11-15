@@ -1,3 +1,5 @@
+import { vi } from 'vitest';
+
 import { API_PATH } from '@/helpers/constants';
 
 const store: { [key: string]: any } = {
@@ -64,6 +66,9 @@ const store: { [key: string]: any } = {
       },
     },
   },
+  getPluginList: vi
+    .fn()
+    .mockResolvedValue(['aries_cloudagent.holder', 'aries_cloudagent.ledger']),
 };
 
 export { store };
