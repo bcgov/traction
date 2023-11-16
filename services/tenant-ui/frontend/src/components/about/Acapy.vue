@@ -5,7 +5,7 @@
       <p class="mt-0">
         {{
           $t('about.acaPy.acapyVersion', {
-            version: config.frontend.ariesDetails.acapyVersion,
+            version: acapyVersion,
           })
         }}
       </p>
@@ -16,55 +16,43 @@
   </div>
 
   <div class="grid">
-    <div class="col-2">
-      {{ $t('about.acaPy.ledger') }}
-    </div>
-    <div class="col-10">
-      {{ config.frontend.ariesDetails.ledgerName }}
-    </div>
-
-    <div class="col-2">
-      {{ $t('about.acaPy.ledgerBrowser') }}
-    </div>
-    <div class="col-10">
-      {{ config.frontend.ariesDetails.ledgerBrowser }}
-    </div>
-
-    <div class="col-2">
-      {{ $t('about.acaPy.tailsServer') }}
-    </div>
-    <div class="col-10">
-      {{ config.frontend.ariesDetails.tailsServer }}
-    </div>
-  </div>
-
-  <div class="grid mt-4">
     <div class="col-12 md:col-6 lg:col-4">
-      <Accordion>
-        <AccordionTab :header="$t('about.acaPy.plugins')">
-          <div v-if="loading" class="flex justify-content-center">
-            <ProgressSpinner />
-          </div>
-          <vue-json-pretty v-else :data="acapyPlugins" />
-        </AccordionTab>
-      </Accordion>
+      <PluginList />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
-import { useConfigStore } from '@/store/configStore';
+import { useInnkeeperTenantsStore, useTenantStore } from '@/store';
 // PrimeVue
-import Accordion from 'primevue/accordion';
-import AccordionTab from 'primevue/accordiontab';
-import ProgressSpinner from 'primevue/progressspinner';
-import VueJsonPretty from 'vue-json-pretty';
+import PluginList from './PluginList.vue';
 
-const { acapyPlugins, config, loading } = storeToRefs(useConfigStore());
-const configStore = useConfigStore();
+const route = useRoute();
+const innTenantsStore = useInnkeeperTenantsStore();
+const tenantsStore = useTenantStore();
+const { serverConfig: innServerConfig } = storeToRefs(
+  useInnkeeperTenantsStore()
+);
+const { serverConfig } = storeToRefs(useTenantStore());
 
-configStore.getPluginList();
+const acapyVersion = ref('');
+const currentRouteName = computed(() => {
+  return route.name;
+});
+
+onMounted(async () => {
+  // Depending on if you're the innkeeper these setttings are different
+  if (currentRouteName.value === 'InnkeeperAbout') {
+    await innTenantsStore.getServerConfig();
+    acapyVersion.value = innServerConfig.value?.config?.version;
+  } else {
+    await tenantsStore.getServerConfig();
+    acapyVersion.value = serverConfig.value?.config?.version;
+  }
+});
 </script>
 
 <style scoped>

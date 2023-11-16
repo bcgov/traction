@@ -9,7 +9,7 @@
 import VueJsonPretty from 'vue-json-pretty';
 import 'vue-json-pretty/lib/styles.css';
 import { storeToRefs } from 'pinia';
-import { useConfigStore, useTokenStore } from '@/store';
+import { useConfigStore } from '@/store';
 import JWT from './JWT.vue';
 import 'primeicons/primeicons.css';
 

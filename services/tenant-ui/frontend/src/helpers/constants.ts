@@ -56,6 +56,7 @@ export const API_PATH = {
   INNKEEPER_AUTHENTICATIONS_API_RECORD: (id: string) =>
     `/innkeeper/authentications/api/${id}`,
   INNKEEPER_AUTHENTICATIONS_API_POST: '/innkeeper/authentications/api',
+  INNKEEPER_SERVER_CONFIG: '/innkeeper/server/status/config',
   INNKEEPER_TOKEN: '/innkeeper/token',
   INNKEEPER_TENANTS: '/innkeeper/tenants/',
   INNKEEPER_TENANT: (id: string) => `/innkeeper/tenants/${id}`,
@@ -136,6 +137,7 @@ export const API_PATH = {
   TENANT_TOKEN: '/tenant/token',
   TENANT_WALLET: '/tenant/wallet',
   TENANT_CONFIG: '/tenant/config',
+  TENANT_SERVER_CONFIG: '/tenant/server/status/config',
 
   TENANT_AUTHENTICATIONS_API: '/tenant/authentications/api/',
   TENANT_AUTHENTICATIONS_API_RECORD: (id: string) =>

@@ -50,6 +50,7 @@
     "alias": "Alias <FR>",
     "apiKey": "API Key <FR>",
     "byName": "Search By Name <FR>",
+    "configDelim": ": ",
     "confirmation": "Confirmation <FR>",
     "connectionName": "Connection Name <FR>",
     "contactName": "Contact Name <FR>",
@@ -200,7 +201,8 @@
       "typeMultiUse": "Multi Use Invitation <FR>",
       "typeOob": "Out-of-Band <FR>",
       "typeSingleMulti": "Single/Multi <FR>",
-      "typeSingleUse": "Single Use Invitation <FR>"
+      "typeSingleUse": "Single Use Invitation <FR>",
+      "create": "Create Invitation <FR>"
     },
     "invitations": {
       "create": "Create Invitation <FR>",
@@ -362,11 +364,6 @@
       "title": "Reservation Approved <FR>",
       "toast": "Reservation Approved for {email} <FR>"
     },
-    "refreshed": {
-      "text": "The Check-In password has been re-sent to {email} <FR>",
-      "title": "Password Refreshed <FR>",
-      "toast": "Password Refreshed for {email} <FR>"
-    },
     "approveRequest": "Approve Request <FR>",
     "checkJunkFolder": "(Please check your junk/spam folder before contacting us, as it is very common to have the email delivery problems because of automated filters.) <FR>",
     "contactEmail": "Contact Email <FR>",
@@ -379,7 +376,6 @@
       "toast": "Reservation Denied for {email} <FR>"
     },
     "denyRequest": "Deny Request <FR>",
-    "refreshPassword": "Refresh Password <FR>",
     "emailAddress": "Email Address <FR>",
     "emailSentTo": "An email has also been sent to {0} with the reservation number below. <FR>",
     "enterPassword": "Please enter the reservation password below to validate your account. <FR>",
@@ -390,6 +386,12 @@
     "passwordAvailable": "The reservation password is visible below, please use it to complete your check-in. <FR>",
     "passwordValid48Hours": "The reservation password is only valid for 48 hours from the time it was sent to your email address. <FR>",
     "pending!": "PENDING! <FR>",
+    "refreshed": {
+      "text": "The Check-In password has been re-sent to {email} <FR>",
+      "title": "Password Refreshed <FR>",
+      "toast": "Password Refreshed for {email} <FR>"
+    },
+    "refreshPassword": "Refresh Password <FR>",
     "requestDeclined": "We regret to inform you that your request has been declined. <FR>",
     "requestProcessingTime": "It ususally takes 3-4 business days to process a request. Thanks for your patience. <FR>",
     "requestReservedOn": "Your request has been received on {0} <FR>",
@@ -478,15 +480,16 @@
       "canBecomeIssuer": "Tenant can become issuer, i.e connect to endorser and register DID <FR>",
       "canConnectEndorser": "Tenant allowed to connect to Endorser <FR>",
       "canRegisterDid": "Tenant allowed to register public DID <FR>",
+      "confirmDeletion": "To confirm, type \"{tenantName}\" in the box below <FR>",
+      "deleteTenant": "Delete Tenant <FR>",
       "editSettings": "Edit Tenant Config <FR>",
       "enableLedgerSwitch": "Tenant can switch endorser/ledger <FR>",
       "endorserAlias": "Endorser Alias <FR>",
       "ledgerName": "Ledger Name <FR>",
-      "success": "Tenant Config Updated <FR>",
-      "confirmDeletion": "To confirm, type \"{tenantName}\" in the box below <FR>",
-      "deleteTenant": "Delete Tenant <FR>"
+      "success": "Tenant Config Updated <FR>"
     },
-    "tenants": "Tenants <FR>"
+    "tenants": "Tenants <FR>",
+    "search": "Search Tenants <FR>"
   },
   "verifier": {
     "attributeRestrictionsSatisfied": "All attribute restrictions were satisfied <FR>",
@@ -513,5 +516,43 @@
     "presentationRequestBody": "Proof Request <FR>",
     "verification": "Verification <FR>",
     "verifications": "Verifications <FR>"
+  },
+  "serverConfig": {
+    "acapyVersion": "ACA-Py Version: <FR>",
+    "expand": "Show full ACA-Py server config <FR>",
+    "ledger": {
+      "default": "Default base ledger: <FR>",
+      "ledgerDetails": "Ledger Details <FR>",
+      "ledgerList": "Ledger List <FR>",
+      "quickConnect": "Tenant UI quick-connect endorser: <FR>"
+    },
+    "serverConfig": "Server Configuration <FR>",
+    "storage": {
+      "multitenantWalletName": "Multitenant Wallet Name: <FR>",
+      "multitenantWalletType": "Multitenant Wallet Type: <FR>",
+      "title": "Storage <FR>",
+      "walletStorageConfig": "Wallet Storage Config: <FR>",
+      "walletStorageType": "Wallet Storage Type: <FR>",
+      "walletType": "Wallet Type: <FR>"
+    },
+    "tenants": {
+      "reservation": "Reservation <FR>",
+      "reservationAutoApprove": "Auto approve reservations: <FR>",
+      "reservationAutoIssuer": "Auto issuance approval: <FR>",
+      "reservationExpiry": "Reservation expiry (minutes): <FR>",
+      "reservationForm": "Reservation Form <FR>",
+      "reservationOidc": "OIDC login requried for reservation: <FR>",
+      "title": "Tenants/Reservations <FR>",
+      "token": "Token Expiry: <FR>"
+    },
+    "tenantUi": {
+      "expand": "Show Full Tenant UI Frontend Config <FR>",
+      "oidc": "OIDC Endpoint: <FR>",
+      "sessionExpiry": "Frontend session expiry: <FR>",
+      "sessionExpiryVal": "{0} seconds (Countdown: {1} seconds) <FR>",
+      "showWrite": "Show 'Write' Components: <FR>",
+      "tenantUi": "Tenant UI <FR>"
+    },
+    "tractionProxy": "Traction Proxy URL: <FR>"
   }
 }

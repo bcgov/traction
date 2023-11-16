@@ -50,10 +50,6 @@ describe('configStore', () => {
       expect(config.frontend.ux.appInnkeeperTitle).not.toBeNull();
       expect(config.frontend.ux.sidebarTitle).not.toBeNull();
       expect(config.frontend.ux.aboutBusiness).not.toBeNull();
-      expect(config.frontend.ariesDetails.acapyVersion).not.toBeNull();
-      expect(config.frontend.ariesDetails.ledgerName).not.toBeNull();
-      expect(config.frontend.ariesDetails.ledgerBrowser).not.toBeNull();
-      expect(config.frontend.ariesDetails.tailsServer).not.toBeNull();
       expect(config.image).not.toBeNull();
       expect(config.server.tractionUrl).not.toBeNull();
     });

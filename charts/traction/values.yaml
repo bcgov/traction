@@ -622,10 +622,6 @@ ui:
       ## @param ui.ux.infoBanner.showMessage Show the info banner <boolean>
       showMessage: false
 
-  ariesDetails:
-    ## @param ui.ariesDetails.ledgerDescription Ledger description
-    ledgerDescription: "bcovrin-test"
-
   ##  Backend Configuration
   ##
   oidc:
