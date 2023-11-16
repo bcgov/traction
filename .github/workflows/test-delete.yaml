@@ -8,6 +8,7 @@ on:
 
 jobs:
   uninstall:
+    if: (github.repository == 'bcgov/traction') || (github.event_name == 'workflow_dispatch')
     name: Uninstall PR
     runs-on: ubuntu-20.04
     if: github.repository_owner == 'bcgov'
