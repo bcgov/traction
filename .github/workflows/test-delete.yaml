@@ -25,7 +25,9 @@ jobs:
 
       - name: Uninstall Traction PR Helm
         run: |
-          helm uninstall -n ${{ secrets.OPENSHIFT_NAMESPACE }} echo pr-${{ github.event.number }}-traction 
+          echo "Namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}"
+          echo "Release Name: pr-${{ github.event.number }}-traction"
+# helm uninstall -n ${{ secrets.OPENSHIFT_NAMESPACE }} echo pr-${{ github.event.number }}-traction 
         
       - name: Remove Traction Openshift Objects
         continue-on-error: true 
