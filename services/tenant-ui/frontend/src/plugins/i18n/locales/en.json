@@ -50,6 +50,7 @@
     "alias": "Alias",
     "apiKey": "API Key",
     "byName": "Search By Name",
+    "configDelim": ": ",
     "confirmation": "Confirmation",
     "connectionName": "Connection Name",
     "contactName": "Contact Name",
@@ -416,42 +417,42 @@
     "phone": "Phone / Mobile"
   },
   "serverConfig": {
-    "acapyVersion": "ACA-Py Version:",
+    "acapyVersion": "ACA-Py Version",
     "expand": "Show full ACA-Py server config",
     "ledger": {
-      "default": "Default base ledger:",
+      "default": "Default base ledger",
       "ledgerDetails": "Ledger Details",
       "ledgerList": "Ledger List",
-      "quickConnect": "Tenant UI quick-connect endorser:"
+      "quickConnect": "Tenant UI quick-connect endorser"
     },
     "serverConfig": "Server Configuration",
     "storage": {
-      "multitenantWalletName": "Multitenant Wallet Name:",
-      "multitenantWalletType": "Multitenant Wallet Type:",
+      "multitenantWalletName": "Multitenant Wallet Name",
+      "multitenantWalletType": "Multitenant Wallet Type",
       "title": "Storage",
-      "walletStorageConfig": "Wallet Storage Config:",
-      "walletStorageType": "Wallet Storage Type:",
-      "walletType": "Wallet Type:"
+      "walletStorageConfig": "Wallet Storage Config",
+      "walletStorageType": "Wallet Storage Type",
+      "walletType": "Wallet Type"
     },
     "tenants": {
       "reservation": "Reservation",
-      "reservationAutoApprove": "Auto approve reservations:",
-      "reservationAutoIssuer": "Auto issuance approval:",
-      "reservationExpiry": "Reservation expiry (minutes):",
+      "reservationAutoApprove": "Auto approve reservations",
+      "reservationAutoIssuer": "Auto issuance approval",
+      "reservationExpiry": "Reservation expiry (minutes)",
       "reservationForm": "Reservation Form",
-      "reservationOidc": "OIDC login requried for reservation:",
+      "reservationOidc": "OIDC login requried for reservation",
       "title": "Tenants/Reservations",
-      "token": "Token Expiry:"
+      "token": "Token Expiry"
     },
     "tenantUi": {
       "expand": "Show Full Tenant UI Frontend Config",
-      "oidc": "OIDC Endpoint:",
-      "sessionExpiry": "Frontend session expiry:",
+      "oidc": "OIDC Endpoint",
+      "sessionExpiry": "Frontend session expiry",
       "sessionExpiryVal": "{0} seconds (Countdown: {1} seconds)",
-      "showWrite": "Show 'Write' Components:",
+      "showWrite": "Show 'Write' Components",
       "tenantUi": "Tenant UI"
     },
-    "tractionProxy": "Traction Proxy URL:"
+    "tractionProxy": "Traction Proxy URL"
   },
   "session": {
     "countdown": "You are going to be logged out in { seconds } seconds...",

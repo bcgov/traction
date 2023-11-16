@@ -50,6 +50,7 @@
     "alias": "Alias <FR>",
     "apiKey": "API Key <FR>",
     "byName": "Search By Name <FR>",
+    "configDelim": ": ",
     "confirmation": "Confirmation <FR>",
     "connectionName": "Connection Name <FR>",
     "contactName": "Contact Name <FR>",

@@ -6,17 +6,19 @@
     <ProgressSpinner v-if="loading" />
     <div v-else>
       <!-- Topline version info -->
-      <p>
-        <strong>{{ $t('serverConfig.acapyVersion') }}</strong>
-        {{ serverConfig?.config?.version }}
-      </p>
-      <p>
-        <strong>{{ $t('serverConfig.tractionProxy') }}</strong>
-        {{ config.frontend.tenantProxyPath }}
-        <a :href="swaggerUrl" target="_blank">
-          <i class="pi pi-external-link ml-2" />
-        </a>
-      </p>
+      <ConfigItem
+        :title="$t('serverConfig.acapyVersion')"
+        :content="serverConfig?.config.version"
+      />
+
+      <ConfigItem :title="$t('serverConfig.tractionProxy')">
+        <template #content>
+          {{ config.frontend.tenantProxyPath }}
+          <a :href="swaggerUrl" target="_blank">
+            <i class="pi pi-external-link ml-2" />
+          </a>
+        </template>
+      </ConfigItem>
 
       <div class="grid mt-3">
         <div class="col">
@@ -25,22 +27,22 @@
             :legend="$t('serverConfig.ledger.ledgerDetails')"
             :toggleable="true"
           >
-            <p class="mt-0">
+            <p>
               <strong>{{ $t('serverConfig.ledger.ledgerList') }}</strong>
             </p>
             <DataTable :value="ledgerConfigList" size="small" striped-rows>
-              <Column field="id" header="id"></Column>
-              <Column field="endorser_alias" header="endorser_alias"></Column>
-              <Column field="endorser_did" header="endorser_did"></Column>
+              <Column field="id" header="id" />
+              <Column field="endorser_alias" header="endorser_alias" />
+              <Column field="endorser_did" header="endorser_did" />
             </DataTable>
-            <p>
-              <strong>{{ $t('serverConfig.ledger.quickConnect') }}</strong>
-              {{ config.frontend.quickConnectEndorserName }}
-            </p>
-            <p>
-              <strong>{{ $t('serverConfig.ledger.default') }}</strong>
-              {{ serverConfig?.config?.['ledger.write_ledger'] }}
-            </p>
+            <ConfigItem
+              :title="$t('serverConfig.ledger.quickConnect')"
+              :content="config.frontend.quickConnectEndorserName"
+            />
+            <ConfigItem
+              :title="$t('serverConfig.ledger.default')"
+              :content="serverConfig?.config['ledger.write_ledger']"
+            />
           </Fieldset>
 
           <!-- Traction cfg - storage -->
@@ -49,22 +51,18 @@
             :legend="$t('serverConfig.storage.title')"
             :toggleable="true"
           >
-            <p class="mt-0">
-              <strong>{{
-                $t('serverConfig.storage.walletStorageConfig')
-              }}</strong>
-              {{ serverConfig?.config?.['wallet.storage_config'] }}
-            </p>
-            <p>
-              <strong>{{
-                $t('serverConfig.storage.walletStorageType')
-              }}</strong>
-              {{ serverConfig?.config?.['wallet.storage_type'] }}
-            </p>
-            <p>
-              <strong>{{ $t('serverConfig.storage.walletType') }}</strong>
-              {{ serverConfig?.config?.['wallet.type'] }}
-            </p>
+            <ConfigItem
+              :title="$t('serverConfig.storage.walletStorageConfig')"
+              :content="serverConfig?.config['wallet.storage_config']"
+            />
+            <ConfigItem
+              :title="$t('serverConfig.storage.walletStorageType')"
+              :content="serverConfig?.config['wallet.storage_type']"
+            />
+            <ConfigItem
+              :title="$t('serverConfig.storage.walletType')"
+              :content="serverConfig?.config['wallet.type']"
+            />
           </Fieldset>
 
           <!-- Plugins from API call to get them -->
@@ -87,49 +85,42 @@
             :legend="$t('serverConfig.tenants.title')"
             :toggleable="true"
           >
-            <p class="mt-0">
-              <strong>{{ $t('serverConfig.tenants.token') }}</strong>
-              {{
+            <ConfigItem
+              :title="$t('serverConfig.tenants.token')"
+              :content="
                 serverConfig?.config?.plugin_config?.multitenant_provider
-                  ?.token_expiry?.amount
-              }}
-              {{
+                  ?.token_expiry?.amount +
+                ' ' +
                 serverConfig?.config?.plugin_config?.multitenant_provider
                   ?.token_expiry?.units
-              }}
-            </p>
+              "
+            />
             <h3>{{ $t('serverConfig.tenants.reservation') }}</h3>
-            <p>
-              <strong>{{
-                $t('serverConfig.tenants.reservationExpiry')
-              }}</strong>
-              {{
+            <ConfigItem
+              :title="$t('serverConfig.tenants.reservationExpiry')"
+              :content="
                 serverConfig?.config?.plugin_config?.traction_innkeeper
                   ?.reservation?.expiry_minutes
-              }}
-            </p>
-            <p>
-              <strong>{{
-                $t('serverConfig.tenants.reservationAutoApprove')
-              }}</strong>
-              {{
+              "
+            />
+            <ConfigItem
+              :title="$t('serverConfig.tenants.reservationAutoApprove')"
+              :content="
                 serverConfig?.config?.plugin_config?.traction_innkeeper
                   ?.reservation?.auto_approve
-              }}
-            </p>
-            <p>
-              <strong>{{
-                $t('serverConfig.tenants.reservationAutoIssuer')
-              }}</strong>
-              {{
+              "
+            />
+            <ConfigItem
+              :title="$t('serverConfig.tenants.reservationAutoIssuer')"
+              :content="
                 serverConfig?.config?.plugin_config?.traction_innkeeper
                   ?.reservation?.auto_issuer
-              }}
-            </p>
-            <p class="">
-              <strong>{{ $t('serverConfig.tenants.reservationOidc') }}</strong>
-              {{ config.frontend.showOIDCReservationLogin }}
-            </p>
+              "
+            />
+            <ConfigItem
+              :title="$t('serverConfig.tenants.reservationOidc')"
+              :content="config.frontend.showOIDCReservationLogin"
+            />
             <div class="grid mt-0">
               <div class="col xl:col-8">
                 <Accordion>
@@ -152,23 +143,23 @@
             :legend="$t('serverConfig.tenantUi.tenantUi')"
             :toggleable="true"
           >
-            <p class="mt-0">
-              <strong>{{ $t('serverConfig.tenantUi.showWrite') }}</strong>
-              {{ config.frontend.showWritableComponents }}
-            </p>
-            <p>
-              <strong>{{ $t('serverConfig.tenantUi.sessionExpiry') }}</strong>
-              {{
+            <ConfigItem
+              :title="$t('serverConfig.tenantUi.showWrite')"
+              :content="config.frontend.showWritableComponents"
+            />
+            <ConfigItem
+              :title="$t('serverConfig.tenantUi.sessionExpiry')"
+              :content="
                 $t('serverConfig.tenantUi.sessionExpiryVal', [
                   config.frontend.session?.timeoutSeconds,
                   config.frontend.session?.countdownSeconds,
                 ])
-              }}
-            </p>
-            <p>
-              <strong>{{ $t('serverConfig.tenantUi.oidc') }}</strong>
-              {{ config.frontend.oidc?.authority }}
-            </p>
+              "
+            />
+            <ConfigItem
+              :title="$t('serverConfig.tenantUi.oidc')"
+              :content="config.frontend.oidc?.authority"
+            />
           </Fieldset>
 
           <!-- Tenant UI config endpoint raw json -->
@@ -201,6 +192,7 @@ import VueJsonPretty from 'vue-json-pretty';
 import { useToast } from 'vue-toastification';
 // Components
 import { useConfigStore, useInnkeeperTenantsStore } from '@/store';
+import ConfigItem from '@/components/common/ConfigItem.vue';
 import MainCardContent from '../../layout/mainCard/MainCardContent.vue';
 import PluginList from '@/components/about/PluginList.vue';
 
