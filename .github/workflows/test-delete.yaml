@@ -34,16 +34,31 @@ jobs:
         run: |
             oc delete -n ${{ secrets.OPENSHIFT_NAMESPACE }} all,secret,pod,networkpolicy,configmap,pvc --selector "app.kubernetes.io/instance"=pr-${{ github.event.number }}-traction
 
-  clean-ghcr:
-    runs-on: ubuntu-20.04
-    name: Delete closed or stale pr images
-    steps:
+      - name: Debug Information
+        run: |
+          echo "Bearer Token: ${{ secrets.PAT }}"
+          echo "GitHub Event Number: ${{ github.event.number }}"
+  
       - name: Delete containers 
         uses: snok/container-retention-policy@v2
         with:
-          image-names:  traction-plugins-acapy,traction-tenant-proxy,traction-tenant-ui
+          image-names: traction-plugins-acapy,traction-tenant-proxy,traction-tenant-ui
           cut-off: One month ago UTC
           account-type: org
           org-name: ${{ github.repository_owner}}
           filter-tags: ${{ github.event.number }}
           token: ${{ secrets.PAT }}
+
+  # clean-ghcr:
+  #   runs-on: ubuntu-20.04
+  #   name: Delete closed or stale pr images
+  #   steps:
+  #     - name: Delete containers 
+  #       uses: snok/container-retention-policy@v2
+  #       with:
+  #         image-names:  traction-plugins-acapy,traction-tenant-proxy,traction-tenant-ui
+  #         cut-off: One month ago UTC
+  #         account-type: org
+  #         org-name: ${{ github.repository_owner}}
+  #         filter-tags: ${{ github.event.number }}
+  #         token: ${{ secrets.PAT }}
