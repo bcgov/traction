@@ -23,14 +23,14 @@ jobs:
           certificate_authority_data: ${{ secrets.OPENSHIFT_CA_CRT }}
           namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
 
-      - name: Unistall Traction PR Helm
+      - name: Uninstall Traction PR Helm
         run: |
-          helm uninstall pr-${{ github.event.number }}-traction 
+          helm uninstall -n ${{ secrets.OPENSHIFT_NAMESPACE }} pr-${{ github.event.number }}-traction 
         
       - name: Remove Traction Openshift Objects
         continue-on-error: true 
         run: |
-            oc delete all,secret,pod,networkpolicy,configmap,pvc --selector "app.kubernetes.io/instance"=pr-${{ github.event.number }}-traction
+            oc delete -n ${{ secrets.OPENSHIFT_NAMESPACE }} all,secret,pod,networkpolicy,configmap,pvc --selector "app.kubernetes.io/instance"=pr-${{ github.event.number }}-traction
 
   clean-ghcr:
     runs-on: ubuntu-20.04
