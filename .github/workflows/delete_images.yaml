@@ -8,7 +8,7 @@ on:
 jobs:
   clean-ghcr:
     name: Delete old unused container images
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Delete containers older than a Month
         uses: snok/container-retention-policy@v2
@@ -19,15 +19,4 @@ jobs:
           org-name: ${{ github.repository_owner}}
           skip-tags: pr-* , *.*.*
           untagged-only: true
-          token: ${{ secrets.PAT }}
-
-      - name: Delete all test containers older than a month, using a wildcard
-        uses: snok/container-retention-policy@v2
-        with:
-          image-names: python-test*, js-test*
-          cut-off: One month ago UTC
-          account-type: org
-          org-name: my-org
-          keep-at-least: 1
-          skip-tags: latest
           token: ${{ secrets.PAT }}
