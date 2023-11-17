@@ -26,12 +26,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineProps, defineEmits } from 'vue';
+import { ref, computed } from 'vue';
 
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 
-import { useInnkeeperTenantsStore, useTenantStore } from '@/store';
+import { useInnkeeperTenantsStore } from '@/store';
 import { TenantRecord } from '@/types/acapyApi/acapyInterface';
 
 import { useToast } from 'vue-toastification';
@@ -44,7 +44,6 @@ const emit = defineEmits(['closed', 'success']);
 
 // Using stores
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
-const tenantStore = useTenantStore();
 
 const confirmationTenantName = ref('');
 const isTenantNameCorrect = computed(
