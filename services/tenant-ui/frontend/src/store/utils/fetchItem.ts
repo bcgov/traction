@@ -2,13 +2,13 @@ import { useAcapyApi } from '../acapyApi';
 import { AxiosRequestConfig } from 'axios';
 import { Ref } from 'vue';
 
-export async function fetchItem(
+export async function fetchItem<T>(
   url: string,
   id: string | undefined,
   error: Ref<any>,
   loading: Ref<boolean>,
   params: object = {}
-): Promise<object | null | undefined> {
+): Promise<T | object | null> {
   const acapyApi = useAcapyApi();
   let dataUrl = url;
   if (id) {

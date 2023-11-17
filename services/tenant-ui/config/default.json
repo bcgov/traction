@@ -37,12 +37,6 @@
         "messageLevel": "info",
         "showMessage": false
       }
-    },
-    "ariesDetails": {
-      "acapyVersion": "0.10.3",
-      "ledgerName": "bcovrin-test",
-      "ledgerBrowser": "http://test.bcovrin.vonx.io",
-      "tailsServer": "https://tails-test.vonx.io"
     }
   },
   "image": {

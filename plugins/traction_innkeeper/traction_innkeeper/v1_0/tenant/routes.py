@@ -8,6 +8,7 @@ from aiohttp_apispec import (
     request_schema,
 )
 from aries_cloudagent.admin.request_context import AdminRequestContext
+from aries_cloudagent.admin.server import AdminConfigSchema
 from aries_cloudagent.messaging.models.openapi import OpenAPISchema
 from aries_cloudagent.multitenant.admin.routes import (
     format_wallet_record,
@@ -16,6 +17,7 @@ from aries_cloudagent.multitenant.admin.routes import (
 )
 from aries_cloudagent.multitenant.base import BaseMultitenantManager
 from aries_cloudagent.storage.error import StorageNotFoundError
+from aries_cloudagent.version import __version__
 from aries_cloudagent.wallet.models.wallet_record import (
     WalletRecordSchema,
     WalletRecord,
@@ -352,6 +354,55 @@ async def tenant_api_key_delete(request: web.BaseRequest):
     return web.json_response({"success": result})
 
 
+@docs(tags=[SWAGGER_CATEGORY], summary="Fetch the server configuration")
+@response_schema(AdminConfigSchema(), 200, description="")
+@error_handler
+async def tenant_server_config_handler(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    # use base/root profile for server config, use Tenant Manager profile
+    # this is to not get the Innkeeper tenant's config, but the server cfg
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+
+    config = {
+        k: (
+           profile.context.settings[k]
+        )
+        for k in profile.context.settings
+        if k
+        not in [
+            "default_label",
+            "admin.admin_api_key",
+            "admin.admin_insecure_mode",
+            "admin.enabled",
+            "admin.host",
+            "admin.port",
+            "admin.webhook_urls",
+            "admin.admin_client_max_request_size",
+            "multitenant.jwt_secret",
+            "wallet.key",
+            "wallet.name",
+            "multitenant.wallet_name",
+            "wallet.storage_type",
+            "wallet.storage_config",
+            "wallet.rekey",
+            "wallet.seed",
+            "wallet.storage_creds",
+        ]
+    }
+    try:
+      del config["plugin_config"]["traction_innkeeper"]["innkeeper_wallet"]
+      config["config"]["ledger.ledger_config_list"] = [
+        {k: v for k, v in d.items() if k != "genesis_transactions"}
+        for d in config["config"]["ledger.ledger_config_list"]
+      ]
+    except KeyError as e:
+      LOGGER.warn(f"The key to be removed: '{e.args[0]}' is missing from the dictionary.")
+    config["version"] = __version__
+
+    return web.json_response({"config": config})
+
+
 async def register(app: web.Application):
     """Register routes."""
     LOGGER.info("> registering routes")
@@ -375,6 +426,11 @@ async def register(app: web.Application):
             web.delete(
                 "/tenant/authentications/api/{tenant_authentication_api_id}",
                 tenant_api_key_delete,
+            ),
+            web.get(
+                "/tenant/server/status/config", 
+                tenant_server_config_handler, 
+                allow_head=False
             ),
         ]
     )

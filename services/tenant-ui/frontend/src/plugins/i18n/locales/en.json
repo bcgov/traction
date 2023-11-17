@@ -50,6 +50,7 @@
     "alias": "Alias",
     "apiKey": "API Key",
     "byName": "Search By Name",
+    "configDelim": ": ",
     "confirmation": "Confirmation",
     "connectionName": "Connection Name",
     "contactName": "Contact Name",
@@ -363,11 +364,6 @@
       "title": "Reservation Approved",
       "toast": "Reservation Approved for {email}"
     },
-    "refreshed": {
-      "text": "The Check-In password has been re-sent to {email}",
-      "title": "Password Refreshed",
-      "toast": "Password Refreshed for {email}"
-    },
     "approveRequest": "Approve Request",
     "checkJunkFolder": "(Please check your junk/spam folder before contacting us, as it is very common to have the email delivery problems because of automated filters.)",
     "contactEmail": "Contact Email",
@@ -380,7 +376,6 @@
       "toast": "Reservation Denied for {email}"
     },
     "denyRequest": "Deny Request",
-    "refreshPassword": "Refresh Password",
     "emailSentTo": "An email has also been sent to {0} with the reservation number below.",
     "enterPassword": "Please enter the reservation password below to validate your account.",
     "history": "History",
@@ -390,6 +385,12 @@
     "passwordAvailable": "The reservation password is visible below, please use it to complete your check-in.",
     "passwordValid48Hours": "The reservation password is only valid for 48 hours from the time it was sent to your email address.",
     "pending!": "PENDING!",
+    "refreshed": {
+      "text": "The Check-In password has been re-sent to {email}",
+      "title": "Password Refreshed",
+      "toast": "Password Refreshed for {email}"
+    },
+    "refreshPassword": "Refresh Password",
     "requestDeclined": "We regret to inform you that your request has been declined.",
     "requestProcessingTime": "It ususally takes 3-4 business days to process a request. Thanks for your patience.",
     "requestReservedOn": "Your request has been received on {0}",
@@ -414,6 +415,44 @@
   "reserve": {
     "fullName": "Full Name",
     "phone": "Phone / Mobile"
+  },
+  "serverConfig": {
+    "acapyVersion": "ACA-Py Version",
+    "expand": "Show full ACA-Py server config",
+    "ledger": {
+      "default": "Default base ledger",
+      "ledgerDetails": "Ledger Details",
+      "ledgerList": "Ledger List",
+      "quickConnect": "Tenant UI quick-connect endorser"
+    },
+    "serverConfig": "Server Configuration",
+    "storage": {
+      "multitenantWalletName": "Multitenant Wallet Name",
+      "multitenantWalletType": "Multitenant Wallet Type",
+      "title": "Storage",
+      "walletStorageConfig": "Wallet Storage Config",
+      "walletStorageType": "Wallet Storage Type",
+      "walletType": "Wallet Type"
+    },
+    "tenants": {
+      "reservation": "Reservation",
+      "reservationAutoApprove": "Auto approve reservations",
+      "reservationAutoIssuer": "Auto issuance approval",
+      "reservationExpiry": "Reservation expiry (minutes)",
+      "reservationForm": "Reservation Form",
+      "reservationOidc": "OIDC login requried for reservation",
+      "title": "Tenants/Reservations",
+      "token": "Token Expiry"
+    },
+    "tenantUi": {
+      "expand": "Show Full Tenant UI Frontend Config",
+      "oidc": "OIDC Endpoint",
+      "sessionExpiry": "Frontend session expiry",
+      "sessionExpiryVal": "{0} seconds (Countdown: {1} seconds)",
+      "showWrite": "Show 'Write' Components",
+      "tenantUi": "Tenant UI"
+    },
+    "tractionProxy": "Traction Proxy URL"
   },
   "session": {
     "countdown": "You are going to be logged out in { seconds } seconds...",
@@ -475,13 +514,13 @@
       "canBecomeIssuer": "Tenant can become issuer, i.e connect to endorser and register DID",
       "canConnectEndorser": "Tenant allowed to connect to Endorser",
       "canRegisterDid": "Tenant allowed to register public DID",
+      "confirmDeletion": "To confirm, type \"{tenantName}\" in the box below",
+      "deleteTenant": "Delete Tenant",
       "editSettings": "Edit Tenant Config",
       "enableLedgerSwitch": "Tenant can switch endorser/ledger",
       "endorserAlias": "Endorser Alias:",
       "ledgerName": "Ledger Name:",
-      "success": "Tenant Config Updated",
-      "confirmDeletion": "To confirm, type \"{tenantName}\" in the box below",
-      "deleteTenant": "Delete Tenant"
+      "success": "Tenant Config Updated"
     },
     "tenants": "Tenants"
   },

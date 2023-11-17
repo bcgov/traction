@@ -321,6 +321,16 @@
               v-model="v$.ACAPY_AUTO_VERIFY_PRESENTATION.$model"
             />
           </div>
+
+          <!-- Traction cfg - raw json -->
+          <Accordion class="mt-4">
+            <AccordionTab :header="$t('serverConfig.expand')">
+              <div v-if="loading" class="flex justify-content-center">
+                <ProgressSpinner />
+              </div>
+              <vue-json-pretty v-else :data="formattedServerCfg" />
+            </AccordionTab>
+          </Accordion>
         </Panel>
 
         <div>
@@ -344,7 +354,7 @@
 
 <script setup lang="ts">
 // Vue
-import { onMounted, reactive, ref, TransitionGroup } from 'vue';
+import { computed, onMounted, reactive, ref, TransitionGroup } from 'vue';
 // PrimeVue/Validation
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
@@ -370,9 +380,8 @@ const toast = useToast();
 
 // State setup
 const tenantStore = useTenantStore();
-const { tenantWallet, loading, tenantDefaultSettings } = storeToRefs(
-  useTenantStore()
-);
+const { loading, serverConfig, tenantDefaultSettings, tenantWallet } =
+  storeToRefs(useTenantStore());
 const tenantWalletwithExtraSettings: any = ref(null);
 
 // Get Tenant Configuration
@@ -380,6 +389,7 @@ const loadTenantSettings = async () => {
   Promise.all([
     tenantStore.getTenantSubWallet(),
     tenantStore.getTenantDefaultSettings(),
+    tenantStore.getServerConfig(),
   ])
     .then(() => {
       // set the local form settings (don't bind controls directly to state for this)
@@ -532,17 +542,13 @@ const rules = {
 };
 const v$ = useVuelidate(rules, formFields);
 
-/**
- * Add a blank webhook entry
- */
+// Add a blank webhook entry
 const addWebhook = () => {
   formFields.webhooks.push({ webhookUrl: '', webhookKey: '' });
 };
 
-/**
- * Remove a webhook but don't allow the last one to be removed.
- * Just blank it out.
- */
+// Remove a webhook but don't allow the last one to be removed.
+// Just blank it out.
 const removeWebhook = (index: number) => {
   console.log('delete webhook', formFields.webhooks[index]);
   formFields.webhooks.splice(index, 1);
@@ -616,6 +622,18 @@ const handleSubmit = async (isFormValid: boolean) => {
     submitted.value = false;
   }
 };
+
+// Don't need to see genesis transactions in the server config
+const formattedServerCfg = computed(() => {
+  const cfg = JSON.parse(JSON.stringify(serverConfig.value));
+  const ledgerList = cfg.config?.['ledger.ledger_config_list'];
+  if (ledgerList) {
+    ledgerList.forEach((ledger: any) => {
+      delete ledger.genesis_transactions;
+    });
+  }
+  return cfg;
+});
 </script>
 
 <style scoped lang="scss">

@@ -44,6 +44,11 @@ const items = ref([
     to: { name: 'InnkeeperApiKeys' },
   },
   {
+    label: () => t('serverConfig.serverConfig'),
+    icon: 'pi pi-fw pi-wrench',
+    to: { name: 'InnkeeperServerConfig' },
+  },
+  {
     label: () => t('about.about'),
     icon: 'pi pi-fw pi-question-circle',
     to: { name: 'InnkeeperAbout' },

@@ -20,7 +20,15 @@ const store: { [key: string]: any } = {
   tenants: {
     value: [tenant],
   },
+  serverConfig: {
+    value: {
+      config: {
+        version: '1.0.0',
+      },
+    },
+  },
   listTenants: vi.fn().mockResolvedValue([tenant]).mockRejectedValue('fail'),
+  getServerConfig: vi.fn().mockResolvedValue('success'),
 };
 
 export { store };

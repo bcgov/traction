@@ -27,12 +27,6 @@ const config = {
         imageUrl: '/img/bc/bc_logo.png',
       },
     },
-    ariesDetails: {
-      acapyVersion: '0.8.1',
-      ledgerName: 'bcovrin-test',
-      ledgerBrowser: 'http://test.bcovrin.vonx.io',
-      tailsServer: 'https://tails-test.vonx.io',
-    },
   },
   image: {
     buildtime: '',

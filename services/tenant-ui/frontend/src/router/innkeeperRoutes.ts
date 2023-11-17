@@ -4,6 +4,7 @@ import InnkeeperUi from '@/views/InnkeeperUi.vue';
 import InnkeeperApiKeys from '@/views/innkeeper/InnkeeperApiKeys.vue';
 import InnkeeperReservations from '@/views/innkeeper/InnkeeperReservations.vue';
 import InnkeeperReservationsHistory from '@/views/innkeeper/InnkeeperReservationsHistory.vue';
+import InnkeeperServerConfig from '@/views/innkeeper/InnkeeperServerConfig.vue';
 import InnkeeperTenants from '@/views/innkeeper/InnkeeperTenants.vue';
 
 const innkeeperRoutes = [
@@ -36,6 +37,13 @@ const innkeeperRoutes = [
         path: 'authentications/keys',
         name: 'InnkeeperApiKeys',
         component: InnkeeperApiKeys,
+      },
+
+      // Authentications
+      {
+        path: 'server',
+        name: 'InnkeeperServerConfig',
+        component: InnkeeperServerConfig,
       },
 
       // About
