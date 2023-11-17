@@ -1,0 +1,47 @@
+name: Clean up 
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+  workflow_dispatch:
+
+jobs:
+  uninstall:
+    if: (github.repository == 'bcgov/traction') || (github.event_name == 'workflow_dispatch')
+    name: Uninstall PR
+    runs-on: ubuntu-20.04
+    steps:  
+      - uses: actions/checkout@v3
+
+      - name: Authenticate and set context
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          certificate_authority_data: ${{ secrets.OPENSHIFT_CA_CRT }}
+          namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
+
+      - name: Uninstall Traction PR Helm
+        run: | 
+            helm uninstall -n ${{ secrets.OPENSHIFT_NAMESPACE }} pr-${{ github.event.number }}-traction 
+        
+      - name: Remove Traction Openshift Objects
+        continue-on-error: true 
+        run: |
+            oc delete -n ${{ secrets.OPENSHIFT_NAMESPACE }} all,secret,pod,networkpolicy,configmap,pvc --selector "app.kubernetes.io/instance"=pr-${{ github.event.number }}-traction
+
+  clean-ghcr:
+    runs-on: ubuntu-20.04
+    name: Delete closed or stale pr images
+    steps:
+      - name: Delete containers 
+        uses: snok/container-retention-policy@v2
+        with:
+          image-names:  traction-plugins-acapy, traction-tenant-proxy, traction-tenant-ui
+          cut-off: One month ago UTC
+          account-type: org
+          org-name: ${{ github.repository_owner}}
+          filter-tags: ${{ github.event.number }}
+          token: ${{ secrets.PAT }}
