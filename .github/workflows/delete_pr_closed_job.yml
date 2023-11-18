@@ -1,29 +1,16 @@
-name: Uninstall PR instance
+name: Clean up 
 on:
   pull_request:
-    branches:
-      - main
-    paths:
-      - 'plugins/**'
-      - 'services/tenant-ui/**'
-      - 'charts/traction/**'
-      - 'charts/tenant-ui/**'
     types:
       - closed
+
 jobs:
   uninstall:
     name: Uninstall PR
-    environment: development
     runs-on: ubuntu-20.04
     if: github.repository_owner == 'bcgov'
     steps:  
-      - uses: actions/checkout@v2  
-      - name: Check out manifest repo
-        uses: actions/checkout@v2
-        with:
-          ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
-          repository: ${{ secrets.MANIFEST_REPO }}
-          path: charts-repo
+      - uses: actions/checkout@v3
 
       - name: Authenticate and set context
         uses: redhat-actions/oc-login@v1
@@ -32,17 +19,15 @@ jobs:
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           certificate_authority_data: ${{ secrets.OPENSHIFT_CA_CRT }}
           namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
-      
-      - name: Uninstall Traction via Helm
-        continue-on-error: true
+
+      - name: Unistall Traction PR Helm
         run: |
-          helm uninstall pr-${{ github.event.number }}-traction
-      
+          helm uninstall pr-${{ github.event.number }}-traction 
+        
       - name: Remove Traction Openshift Objects
         continue-on-error: true 
         run: |
-          oc delete secret,pvc --selector "app.kubernetes.io/instance"=pr-${{ github.event.number }}-traction
-
+          oc delete all,secret,pod,networkpolicy,configmap,pvc --selector "app.kubernetes.io/instance"=pr-${{ github.event.number }}-traction
 
   clean-ghcr:
     runs-on: ubuntu-20.04
