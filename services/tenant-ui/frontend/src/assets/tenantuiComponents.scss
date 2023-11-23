@@ -94,10 +94,10 @@
 }
 
 // Logout button in the menu
-.logout-menu-item .p-menuitem-link {
+.logout-menu-item .p-menuitem-content {
   &,
   &:hover {
-    .p-menuitem-text {
+    .p-menuitem-link {
       color: $tenant-ui-text-danger !important;
     }
   }
