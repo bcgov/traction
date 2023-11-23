@@ -129,7 +129,7 @@ BCovrin (pronounced “Be Sovereign”) Test network. For those new to AnonCreds
 
 Completed all the steps? Great! Feel free to create a second Schema and Cred
 Def, ideally one related to your first. That way you can try out a presentation
-request that pulls data from both credentials! When you create a the second
+request that pulls data from both credentials! When you create the second
 schema, use the "Create Schema" button, and add the claims you want to have in
 your new type of credential.
 
