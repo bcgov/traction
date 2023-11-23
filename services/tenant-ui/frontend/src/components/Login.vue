@@ -1,5 +1,4 @@
 <template>
-  <!--TODO: This should eventually go somewhere else-->
   <div class="traction-login grid w-screen flex-grow-1 mt-0">
     <div class="col-12 md:col-6 xl:col-4">
       <div class="px-8">
