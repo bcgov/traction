@@ -10,6 +10,7 @@ on:
       - 'charts/tenant-ui/**'
     types:
       - closed
+      
 jobs:
   uninstall:
     name: Uninstall PR
@@ -42,3 +43,17 @@ jobs:
         continue-on-error: true 
         run: |
           oc delete secret,pvc --selector "app.kubernetes.io/instance"=pr-${{ github.event.number }}-traction
+
+  clean-ghcr:
+    runs-on: ubuntu-20.04
+    name: Delete closed or stale pr images
+    steps:
+      - name: Delete containers 
+        uses: snok/container-retention-policy@v2
+        with:
+          image-names: traction-plugins-acapy, traction-tenant-proxy, traction-tenant-ui
+          cut-off: One month ago UTC
+          account-type: org
+          org-name: ${{ github.repository_owner}}
+          filter-tags: ${{ github.event.number }}
+          token: ${{ secrets.PACKAGE_DELETE_TOKEN }}
