@@ -1,8 +1,8 @@
-FROM ghcr.io/hyperledger/aries-cloudagent-python:py3.9-0.10.3 as base
+FROM ghcr.io/hyperledger/aries-cloudagent-python:py3.9-0.11.0rc2 as base
 
 # Install and Configure Poetry
 USER root
-ENV POETRY_VERSION=1.4.2
+ENV POETRY_VERSION=1.6.1
 ENV POETRY_HOME=/opt/poetry
 RUN apt-get update && apt-get install -y curl && apt-get clean
 RUN curl -sSL https://install.python-poetry.org | python -
@@ -27,7 +27,7 @@ RUN poetry install --no-dev
 RUN ln -s $(poetry env info -p)/lib/python3.6/site-packages site-packages
 
 
-FROM ghcr.io/hyperledger/aries-cloudagent-python:py3.9-0.10.3
+FROM ghcr.io/hyperledger/aries-cloudagent-python:py3.9-0.11.0rc2
 COPY --from=base --chown=aries:aries /home/aries/.venv /home/aries/.venv
 ENV PATH="/home/aries/.venv/bin:$PATH"
 
