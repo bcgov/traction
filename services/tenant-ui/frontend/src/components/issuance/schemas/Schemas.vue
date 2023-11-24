@@ -193,9 +193,8 @@ const toast = useToast();
 
 const { config } = storeToRefs(useConfigStore());
 const governanceStore = useGovernanceStore();
-const { loading, schemaList, selectedSchema } = storeToRefs(
-  useGovernanceStore()
-);
+const { loading, schemaList, selectedSchema } =
+  storeToRefs(useGovernanceStore());
 
 const formattedSchemaList = computed(() => formatSchemaList(schemaList));
 

@@ -53,9 +53,8 @@ import { useGovernanceStore } from '@/store';
 const toast = useToast();
 const { t } = useI18n();
 
-const { loading, selectedCredentialDefinition, storedCredDefs } = storeToRefs(
-  useGovernanceStore()
-);
+const { loading, selectedCredentialDefinition, storedCredDefs } =
+  storeToRefs(useGovernanceStore());
 const governanceStore = useGovernanceStore();
 
 const emit = defineEmits(['closed', 'success']);

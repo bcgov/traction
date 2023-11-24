@@ -6,7 +6,11 @@
     </h1>
     <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
     <h1 class="sidebar-app-title small">T</h1>
-    <PanelMenu :model="items" class="mt-5" />
+    <PanelMenu :model="items" class="mt-5">
+      <template #item="{ item }">
+        <PanelMenuItemLink :item="item" />
+      </template>
+    </PanelMenu>
   </div>
 </template>
 
@@ -17,6 +21,7 @@ import ProgressSpinner from 'primevue/progressspinner';
 import { storeToRefs } from 'pinia';
 import { useTenantStore } from '../../store';
 import { useI18n } from 'vue-i18n';
+import PanelMenuItemLink from '../common/PanelMenuItemLink.vue';
 
 const { t } = useI18n();
 
@@ -25,78 +30,78 @@ const { tenant, loading } = storeToRefs(useTenantStore());
 
 const items = ref([
   {
-    label: () => t('dashboard.dashboard'),
+    label: t('dashboard.dashboard'),
     icon: 'pi pi-fw pi-chart-bar',
-    to: { name: 'Dashboard' },
+    route: '/dashboard',
   },
   {
-    label: () => t('connect.connections.connections'),
+    label: t('connect.connections.connections'),
     icon: 'pi pi-fw pi-users',
     items: [
       {
         // Icons are manadatory for mobile layout
-        label: () => t('connect.connections.connections'),
+        label: t('connect.connections.connections'),
         icon: 'pi pi-fw pi-users',
-        to: { name: 'MyConnections' },
+        route: '/connections',
       },
       {
-        label: () => t('connect.invitations.invitations'),
+        label: t('connect.invitations.invitations'),
         icon: 'pi pi-fw pi-send',
-        to: { name: 'MyInvitations' },
+        route: '/connections/invitations',
       },
     ],
   },
 
   {
-    label: () => t('issue.issuance'),
+    label: t('issue.issuance'),
     icon: 'pi pi-fw pi-credit-card',
-    to: { name: 'MyIssuedCredentials' },
+    route: '/issuance/credentials',
   },
 
   {
-    label: () => t('verify.verification'),
+    label: t('verify.verification'),
     icon: 'pi pi-fw pi-check-square',
-    to: { name: 'MyPresentations' },
+    route: '/verification/verifications',
   },
 
   {
-    label: () => t('common.credentials'),
+    label: t('common.credentials'),
     icon: 'pi pi-fw pi-wallet',
-    to: { name: 'MyHeldCredentials' },
+    route: '/holder/credentials',
   },
 
   {
-    label: () => t('configuration.configuration'),
+    label: t('configuration.configuration'),
     icon: 'pi pi-fw pi-file',
     items: [
       {
-        label: () => t('configuration.schemas.storage'),
+        label: t('configuration.schemas.storage'),
         icon: 'pi pi-fw pi-book',
-        to: { name: 'Schemas' },
+        route: '/schemas',
       },
       {
-        label: () => t('configuration.credentialDefinitions.storage'),
+        label: t('configuration.credentialDefinitions.storage'),
         icon: 'pi pi-fw pi-id-card',
-        to: { name: 'CredentialDefinitions' },
+        route: '/credentialDefinitions',
       },
       {
-        label: () => t('configuration.oca.oca'),
+        label: t('configuration.oca.oca'),
         icon: 'pi pi-fw pi-compass',
-        to: { name: 'OCA' },
+        route: '/oca',
       },
     ],
   },
 
   {
-    label: () => t('messages.messages'),
+    label: t('messages.messages'),
     icon: 'pi pi-fw pi-envelope',
-    to: { name: 'MyMessages' },
+    route: '/messages/recent',
   },
 
   {
-    label: () => t('about.about'),
+    label: t('about.about'),
     icon: 'pi pi-fw pi-question-circle',
-    to: { name: 'About' },
+    route: '/about',
   },
 ]);
 </script>
