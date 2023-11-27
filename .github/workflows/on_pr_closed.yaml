@@ -2,7 +2,7 @@ name: Uninstall PR instance
 on:
   pull_request:
     branches:
-      - main
+      - ghcr-clean
     paths:
       - 'plugins/**'
       - 'services/tenant-ui/**'
