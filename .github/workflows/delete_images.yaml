@@ -4,9 +4,6 @@ on:
   schedule:
     - cron: '0 0 * * 2' # This job runs every Tuesday
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 jobs:
   clean-ghcr:
