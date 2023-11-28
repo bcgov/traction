@@ -174,9 +174,8 @@ const { listConnections, findConnectionName } = useConnectionStore();
 const { connections } = storeToRefs(useConnectionStore());
 const issuerStore = useIssuerStore();
 // use the loading state from the store to disable the button...
-const { loading, credentials, selectedCredential } = storeToRefs(
-  useIssuerStore()
-);
+const { loading, credentials, selectedCredential } =
+  storeToRefs(useIssuerStore());
 
 const formattedCredentials: Ref<any[]> = computed(() =>
   credentials.value.map((cred: any) => ({

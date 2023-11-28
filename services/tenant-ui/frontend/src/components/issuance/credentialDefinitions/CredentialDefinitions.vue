@@ -189,9 +189,8 @@ const { t } = useI18n();
 
 const { config } = storeToRefs(useConfigStore());
 const governanceStore = useGovernanceStore();
-const { loading, storedCredDefs, selectedCredentialDefinition } = storeToRefs(
-  useGovernanceStore()
-);
+const { loading, storedCredDefs, selectedCredentialDefinition } =
+  storeToRefs(useGovernanceStore());
 
 const formattedstoredCredDefs = computed(() =>
   formatStoredCredDefs(storedCredDefs)
