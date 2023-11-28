@@ -52,7 +52,7 @@ jobs:
         uses: snok/container-retention-policy@v2
         with:
           image-names: traction-plugins-acapy, traction-tenant-proxy, traction-tenant-ui
-          cut-off: now
+          cut-off: now UTC
           account-type: org
           org-name: ${{ github.repository_owner}}
           filter-tags: pr-${{ github.event.number }}
