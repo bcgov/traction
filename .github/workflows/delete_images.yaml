@@ -2,13 +2,13 @@ name: Delete old container images
 
 on:
   schedule:
-    - cron: "0 0 * * 2"  # every Tuesday
-
+    - cron: '0 2 * * 2' # This job runs every Tuesday
+  workflow_dispatch:
 
 jobs:
   clean-ghcr:
     name: Delete old unused container images
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Delete containers older than a Month
         uses: snok/container-retention-policy@v2
@@ -18,5 +18,4 @@ jobs:
           account-type: org
           org-name: ${{ github.repository_owner}}
           skip-tags: pr-* , *.*.*
-          untagged-only: true
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.PACKAGE_DELETE_TOKEN }}
