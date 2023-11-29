@@ -141,9 +141,8 @@ import EnterCredentialValues from './EnterCredentialValues.vue';
 const toast = useToast();
 
 // Store values
-const { loading: connectionLoading, connectionsDropdown } = storeToRefs(
-  useConnectionStore()
-);
+const { loading: connectionLoading, connectionsDropdown } =
+  storeToRefs(useConnectionStore());
 const {
   loading: credsLoading,
   credentialDropdown,

@@ -84,9 +84,8 @@ const toast = useToast();
 
 // Store values
 const { loading } = storeToRefs(useMessageStore());
-const { loading: connectionsLoading, connectionsDropdown } = storeToRefs(
-  useConnectionStore()
-);
+const { loading: connectionsLoading, connectionsDropdown } =
+  storeToRefs(useConnectionStore());
 const messageStore = useMessageStore();
 
 const emit = defineEmits(['closed', 'success']);

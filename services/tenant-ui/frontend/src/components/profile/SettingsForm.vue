@@ -323,7 +323,7 @@
           </div>
 
           <!-- Traction cfg - raw json -->
-          <Accordion class="mt-4">
+          <Accordion v-if="formattedServerCfg" class="mt-4">
             <AccordionTab :header="$t('serverConfig.expand')">
               <div v-if="loading" class="flex justify-content-center">
                 <ProgressSpinner />
@@ -625,14 +625,18 @@ const handleSubmit = async (isFormValid: boolean) => {
 
 // Don't need to see genesis transactions in the server config
 const formattedServerCfg = computed(() => {
-  const cfg = JSON.parse(JSON.stringify(serverConfig.value));
-  const ledgerList = cfg.config?.['ledger.ledger_config_list'];
-  if (ledgerList) {
-    ledgerList.forEach((ledger: any) => {
-      delete ledger.genesis_transactions;
-    });
+  if (serverConfig.value) {
+    const cfg = JSON.parse(JSON.stringify(serverConfig.value));
+    const ledgerList = cfg.config?.['ledger.ledger_config_list'];
+    if (ledgerList) {
+      ledgerList.forEach((ledger: any) => {
+        delete ledger.genesis_transactions;
+      });
+    }
+    return cfg;
+  } else {
+    return null;
   }
-  return cfg;
 });
 </script>
 

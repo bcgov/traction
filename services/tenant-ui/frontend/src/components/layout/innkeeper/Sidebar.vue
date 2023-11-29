@@ -4,7 +4,11 @@
     <h1 class="sidebar-app-title">Innkeeper</h1>
     <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
     <h1 class="sidebar-app-title small">I</h1>
-    <PanelMenu :model="items" class="mt-5" />
+    <PanelMenu :model="items" class="mt-5">
+      <template #item="{ item }">
+        <PanelMenuItemLink :item="item" />
+      </template>
+    </PanelMenu>
   </div>
 </template>
 
@@ -12,46 +16,48 @@
 import { ref } from 'vue';
 import PanelMenu from 'primevue/panelmenu';
 import { useI18n } from 'vue-i18n';
+import PanelMenuItemLink from '@/components/common/PanelMenuItemLink.vue';
 
 const { t } = useI18n();
 
+const ROOT = '/innkeeper/';
 const items = ref([
   {
-    label: () => t('reservations.reservations'),
+    label: t('reservations.reservations'),
     icon: 'pi pi-fw pi-book',
     items: [
       {
         // Icons are manadatory for mobile layout
-        label: () => t('reservations.current'),
+        label: t('reservations.current'),
         icon: 'pi pi-fw pi-calendar',
-        to: { name: 'InnkeeperReservations' },
+        route: ROOT + 'reservations',
       },
       {
-        label: () => t('reservations.history'),
+        label: t('reservations.history'),
         icon: 'pi pi-fw pi-history',
-        to: { name: 'InnkeeperReservationsHistory' },
+        route: ROOT + 'reservations/history',
       },
     ],
   },
   {
-    label: () => t('tenants.tenants'),
+    label: t('tenants.tenants'),
     icon: 'pi pi-fw pi-users',
-    to: { name: 'InnkeeperTenants' },
+    route: ROOT + 'tenants',
   },
   {
-    label: () => t('apiKey.apiKeys'),
+    label: t('apiKey.apiKeys'),
     icon: 'pi pi-fw pi-key',
-    to: { name: 'InnkeeperApiKeys' },
+    route: ROOT + 'authentications/keys',
   },
   {
-    label: () => t('serverConfig.serverConfig'),
+    label: t('serverConfig.serverConfig'),
     icon: 'pi pi-fw pi-wrench',
-    to: { name: 'InnkeeperServerConfig' },
+    route: ROOT + 'server',
   },
   {
-    label: () => t('about.about'),
+    label: t('about.about'),
     icon: 'pi pi-fw pi-question-circle',
-    to: { name: 'InnkeeperAbout' },
+    route: ROOT + 'about',
   },
 ]);
 </script>

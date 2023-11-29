@@ -5,7 +5,11 @@
     </Button>
     <div v-if="isIssuer" class="issuer-badge" />
   </div>
-  <Menu ref="menu" :model="items" :popup="true" />
+  <Menu ref="menu" :model="items" :popup="true">
+    <template #item="{ item, props }">
+      <MenuItemLink :item="item" :menu-bind-props="props" />
+    </template>
+  </Menu>
 </template>
 
 <script setup lang="ts">
@@ -19,6 +23,8 @@ import { useConfigStore } from '@/store';
 import { useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
+// Components
+import MenuItemLink from '@/components/common/MenuItemLink.vue';
 
 const { t } = useI18n();
 const { config } = storeToRefs(useConfigStore());
@@ -32,20 +38,20 @@ const toggleProfile = (event: any) => {
 const items = [
   {
     label: t('common.profile'),
-    to: { name: 'Profile' },
+    route: '/tenant/profile',
   },
   {
     label: t('common.settings'),
-    to: { name: 'Settings' },
+    route: '/tenant/settings',
   },
   {
     label: t('apiKey.apiKeys'),
-    to: { name: 'ApiKeys' },
+    route: '/authentications/keys',
   },
   {
     label: t('common.developer'),
     visible: config.value.frontend.showDeveloper,
-    to: { name: 'Developer' },
+    route: '/tenant/developer',
   },
   {
     separator: true,

@@ -47,9 +47,8 @@ defineEmits(['success']);
 const { t } = useI18n();
 
 const { isIssuer } = storeToRefs(useTenantStore());
-const { schemaList, selectedCredentialDefinition } = storeToRefs(
-  useGovernanceStore()
-);
+const { schemaList, selectedCredentialDefinition } =
+  storeToRefs(useGovernanceStore());
 const governanceStore = useGovernanceStore();
 
 const formattedSchemaList = computed(() => formatSchemaList(schemaList));

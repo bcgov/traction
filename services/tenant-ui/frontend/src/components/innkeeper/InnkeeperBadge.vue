@@ -4,7 +4,11 @@
       <div class="badge-img" />
     </Button>
   </div>
-  <Menu ref="menu" :model="items" :popup="true" />
+  <Menu ref="menu" :model="items" :popup="true">
+    <template #item="{ item, props }">
+      <MenuItemLink :item="item" :menu-bind-props="props" />
+    </template>
+  </Menu>
 </template>
 
 <script setup lang="ts">
@@ -13,7 +17,8 @@ import { ref } from 'vue';
 // PrimeVue
 import Button from 'primevue/button';
 import Menu from 'primevue/menu';
-// State
+// Components
+import MenuItemLink from '@/components/common/MenuItemLink.vue';
 
 const menu = ref();
 /**
