@@ -1,0 +1,21 @@
+name: Delete old container images
+
+on:
+  schedule:
+    - cron: '0 2 * * 2' # This job runs every Tuesday
+  workflow_dispatch:
+
+jobs:
+  clean-ghcr:
+    name: Delete old unused container images
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Delete containers older than a Month
+        uses: snok/container-retention-policy@v2
+        with:
+          image-names: traction-plugins-acapy, traction-tenant-proxy, traction-tenant-ui
+          cut-off: One month ago UTC
+          account-type: org
+          org-name: ${{ github.repository_owner}}
+          skip-tags: pr-* , *.*.*
+          token: ${{ secrets.PACKAGE_DELETE_TOKEN }}
