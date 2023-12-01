@@ -8,35 +8,37 @@
         <p style="font-weight: bold">{{ selectedSchema?.schema_id }}</p>
       </div>
       <div class="mt-2">
-        <!-- schema name -->
-        <ValidatedField
-          :placeholder="isCopy ? selectedSchema?.schema?.name : ''"
-          :field-name="'name'"
-          :label="$t('issue.schemaName')"
-          :loading="loading"
-          :submitted="submitted"
-          :validation="v$"
-          :advanced-is-error="isError"
-        />
-        <!-- schema version -->
-        <ValidatedField
-          :placeholder="isCopy ? selectedSchema?.schema?.version : ''"
-          :field-name="'version'"
-          :label="$t('issue.schemaVersion')"
-          :loading="loading"
-          :submitted="submitted"
-          :validation="v$"
-          :advanced-is-error="isError"
-        />
-        <!-- attributes -->
-        <Attributes ref="attributes" :initial-attributes="initialAttributes" />
-        <Button
-          type="submit"
-          :label="t('configuration.schemas.create')"
-          class="mt-5 w-full"
-          :disabled="formFields.name === '' && formFields.version === ''"
-          :loading="loading"
-        />
+        <ToggleJson ref="jsonVal" :toJson="schemaToJson" :fromJson="jsonToSchema">
+          <!-- schema name -->
+          <ValidatedField
+            :placeholder="isCopy ? selectedSchema?.schema?.name : ''"
+            :field-name="'name'"
+            :label="$t('issue.schemaName')"
+            :loading="loading"
+            :submitted="submitted"
+            :validation="v$"
+            :advanced-is-error="isError"
+          />
+          <!-- schema version -->
+          <ValidatedField
+            :placeholder="isCopy ? selectedSchema?.schema?.version : ''"
+            :field-name="'version'"
+            :label="$t('issue.schemaVersion')"
+            :loading="loading"
+            :submitted="submitted"
+            :validation="v$"
+            :advanced-is-error="isError"
+          />
+          <!-- attributes -->
+          <Attributes ref="attributes" :initial-attributes="initialAttributes" />
+        </ToggleJson>
+          <Button
+            type="submit"
+            :label="t('configuration.schemas.create')"
+            class="mt-5 w-full"
+            :disabled="formFields.name === '' && formFields.version === ''"
+            :loading="loading"
+          />
       </div>
     </div>
   </form>
@@ -48,16 +50,20 @@ import { useVuelidate } from '@vuelidate/core';
 import { helpers, required } from '@vuelidate/validators';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
+import InputSwitch from 'primevue/inputswitch';
+import Textarea from 'primevue/textarea';
 import { reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
 // Source
 import ValidatedField from '@/components/common/ValidatedField.vue';
 import errorHandler from '@/helpers/errorHandler';
+import { tryParseJson } from '@/helpers/jsonParsing';
 import { useGovernanceStore } from '@/store';
 import { Attribute } from '@/types';
 import { SchemaSendRequest } from '@/types/acapyApi/acapyInterface';
 import Attributes from './Attributes.vue';
+import ToggleJson from '@/components/common/ToggleJson.vue';
 
 const toast = useToast();
 const { t } = useI18n();
@@ -66,8 +72,8 @@ const governanceStore = useGovernanceStore();
 const { loading, selectedSchema } = storeToRefs(useGovernanceStore());
 
 const emit = defineEmits(['closed', 'success']);
-const attributes = ref();
-
+const attributes = ref<{attributes: Array<Attributes>}>({attributes: []});
+const jsonVal = ref<{showRawJson: boolean, valuesJson: string}>({showRawJson: false, valuesJson: ""})
 const props = defineProps({
   isCopy: {
     type: Boolean,
@@ -155,6 +161,43 @@ if (props.isCopy) {
 
 const v$ = useVuelidate(rules, formFields);
 
+const schemaValuesJson = ref<string>('');
+const showRawJson = ref<boolean>(false);
+
+function convertToJson(): SchemaSendRequest | undefined {
+  const attributeNames = attributes.value?.attributes
+    .filter((x: Attribute) => x.name !== '')
+    .map((attribute: Attribute) => attribute.name);
+  return  {
+    attributes: attributeNames ?? [],
+    schema_name: formFields.name || selectedSchema.value?.schema?.name || '',
+    schema_version:
+        formFields.version || selectedSchema.value?.schema?.version || '',
+  };
+}
+
+const schemaToJson = () => {
+  const rawJson : SchemaSendRequest | undefined = convertToJson()
+  if (rawJson){
+    return JSON.stringify( rawJson, undefined, 2 );
+  } else {
+    toast.error('Failed to convert Schema to Json');
+    throw new Error("Failed to convert to Json");
+  }
+}
+
+function jsonToSchema(jsonString: string) {
+  const parsed = tryParseJson<SchemaSendRequest>(jsonString);
+  if (parsed) {
+    const newAt: Array<Attribute> = [{name: ""},  ...parsed.attributes.map(a => ({name: a}))]
+    attributes.value.attributes = newAt
+    formFields.name = parsed.schema_name
+    formFields.version = parsed.schema_version
+  } else {
+    toast.error('The JSON you inputted has invalid syntax');
+    throw new Error("Failed to parse Schema");
+  }
+}
 // Form submission
 const submitted = ref(false);
 const handleSubmit = async (isFormValid: boolean) => {
@@ -164,24 +207,22 @@ const handleSubmit = async (isFormValid: boolean) => {
     return;
   }
   try {
-    const attributeNames = attributes.value?.attributes
-      .filter((x: Attribute) => x.name !== '')
-      .map((attribute: Attribute) => attribute.name);
+    const payload: SchemaSendRequest | undefined =
+      jsonVal.value.showRawJson
+        ? tryParseJson<SchemaSendRequest>(jsonVal.value.valuesJson ?? "")
+        : convertToJson();
 
-    if (!attributeNames.length) {
+    if (!payload?.attributes.length) {
       toast.error(t('configuration.schemas.emptyAttributes'));
-      return;
+      return undefined;
     }
 
-    const payload: SchemaSendRequest = {
-      attributes: attributeNames,
-      schema_name: formFields.name || selectedSchema.value?.schema?.name || '',
-      schema_version:
-        formFields.version || selectedSchema.value?.schema?.version || '',
-    };
-
-    await governanceStore.createSchema(payload);
-
+    if (payload) {
+      await governanceStore.createSchema(payload);
+    }
+    else {
+      return;
+    }
     toast.success(t('configuration.schemas.postStart'));
     emit('success');
     emit('closed', payload);
