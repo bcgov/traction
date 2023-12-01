@@ -8,7 +8,11 @@
         <p style="font-weight: bold">{{ selectedSchema?.schema_id }}</p>
       </div>
       <div class="mt-2">
-        <ToggleJson ref="jsonVal" :toJson="schemaToJson" :fromJson="jsonToSchema">
+        <ToggleJson
+          ref="jsonVal"
+          :to-json="schemaToJson"
+          :from-json="jsonToSchema"
+        >
           <!-- schema name -->
           <ValidatedField
             :placeholder="isCopy ? selectedSchema?.schema?.name : ''"
@@ -30,15 +34,18 @@
             :advanced-is-error="isError"
           />
           <!-- attributes -->
-          <Attributes ref="attributes" :initial-attributes="initialAttributes" />
-        </ToggleJson>
-          <Button
-            type="submit"
-            :label="t('configuration.schemas.create')"
-            class="mt-5 w-full"
-            :disabled="formFields.name === '' && formFields.version === ''"
-            :loading="loading"
+          <Attributes
+            ref="attributes"
+            :initial-attributes="initialAttributes"
           />
+        </ToggleJson>
+        <Button
+          type="submit"
+          :label="t('configuration.schemas.create')"
+          class="mt-5 w-full"
+          :disabled="formFields.name === '' && formFields.version === ''"
+          :loading="loading"
+        />
       </div>
     </div>
   </form>
@@ -72,8 +79,11 @@ const governanceStore = useGovernanceStore();
 const { loading, selectedSchema } = storeToRefs(useGovernanceStore());
 
 const emit = defineEmits(['closed', 'success']);
-const attributes = ref<{attributes: Array<Attributes>}>({attributes: []});
-const jsonVal = ref<{showRawJson: boolean, valuesJson: string}>({showRawJson: false, valuesJson: ""})
+const attributes = ref<{ attributes: Array<Attributes> }>({ attributes: [] });
+const jsonVal = ref<{ showRawJson: boolean; valuesJson: string }>({
+  showRawJson: false,
+  valuesJson: '',
+});
 const props = defineProps({
   isCopy: {
     type: Boolean,
@@ -168,34 +178,37 @@ function convertToJson(): SchemaSendRequest | undefined {
   const attributeNames = attributes.value?.attributes
     .filter((x: Attribute) => x.name !== '')
     .map((attribute: Attribute) => attribute.name);
-  return  {
+  return {
     attributes: attributeNames ?? [],
     schema_name: formFields.name || selectedSchema.value?.schema?.name || '',
     schema_version:
-        formFields.version || selectedSchema.value?.schema?.version || '',
+      formFields.version || selectedSchema.value?.schema?.version || '',
   };
 }
 
 const schemaToJson = () => {
-  const rawJson : SchemaSendRequest | undefined = convertToJson()
-  if (rawJson){
-    return JSON.stringify( rawJson, undefined, 2 );
+  const rawJson: SchemaSendRequest | undefined = convertToJson();
+  if (rawJson) {
+    return JSON.stringify(rawJson, undefined, 2);
   } else {
     toast.error('Failed to convert Schema to Json');
-    throw new Error("Failed to convert to Json");
+    throw new Error('Failed to convert to Json');
   }
-}
+};
 
 function jsonToSchema(jsonString: string) {
   const parsed = tryParseJson<SchemaSendRequest>(jsonString);
   if (parsed) {
-    const newAt: Array<Attribute> = [{name: ""},  ...parsed.attributes.map(a => ({name: a}))]
-    attributes.value.attributes = newAt
-    formFields.name = parsed.schema_name
-    formFields.version = parsed.schema_version
+    const newAt: Array<Attribute> = [
+      { name: '' },
+      ...parsed.attributes.map((a) => ({ name: a })),
+    ];
+    attributes.value.attributes = newAt;
+    formFields.name = parsed.schema_name;
+    formFields.version = parsed.schema_version;
   } else {
     toast.error('The JSON you inputted has invalid syntax');
-    throw new Error("Failed to parse Schema");
+    throw new Error('Failed to parse Schema');
   }
 }
 // Form submission
@@ -207,10 +220,9 @@ const handleSubmit = async (isFormValid: boolean) => {
     return;
   }
   try {
-    const payload: SchemaSendRequest | undefined =
-      jsonVal.value.showRawJson
-        ? tryParseJson<SchemaSendRequest>(jsonVal.value.valuesJson ?? "")
-        : convertToJson();
+    const payload: SchemaSendRequest | undefined = jsonVal.value.showRawJson
+      ? tryParseJson<SchemaSendRequest>(jsonVal.value.valuesJson ?? '')
+      : convertToJson();
 
     if (!payload?.attributes.length) {
       toast.error(t('configuration.schemas.emptyAttributes'));
@@ -219,8 +231,7 @@ const handleSubmit = async (isFormValid: boolean) => {
 
     if (payload) {
       await governanceStore.createSchema(payload);
-    }
-    else {
+    } else {
       return;
     }
     toast.success(t('configuration.schemas.postStart'));

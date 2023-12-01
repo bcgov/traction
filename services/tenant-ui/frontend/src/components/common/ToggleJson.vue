@@ -1,11 +1,11 @@
 <template>
-	<div class="mt-2">
-	  <div class="flex justify-content-end">
+  <div class="mt-2">
+    <div class="flex justify-content-end">
       {{ $t('common.json') }}
       <InputSwitch v-model="showRawJson" class="ml-1" @input="toggleJson" />
     </div>
     <div v-show="!showRawJson">
-		  <slot></slot>
+      <slot></slot>
     </div>
     <div v-show="showRawJson">
       <Textarea
@@ -35,25 +35,24 @@ const valuesJson = ref<Object>({});
 // TODO expose a way to get the final results as the object
 // representation for submitting schemas and issuing credentials
 const props = defineProps<{
-        toJson: () => string
-        fromJson: (jsonRepresentation: Object) => undefined
+  toJson: () => string;
+  fromJson: (jsonRepresentation: Object) => undefined;
 }>();
 
 defineExpose({
   showRawJson,
-  valuesJson
-})
+  valuesJson,
+});
 
 const toggleJson = () => {
   try {
     if (showRawJson.value) {
-       valuesJson.value = props.toJson()
+      valuesJson.value = props.toJson();
     } else {
       props.fromJson(valuesJson.value);
     }
   } catch (e) {
-    showRawJson.value = !showRawJson.value
+    showRawJson.value = !showRawJson.value;
   }
-}
-
+};
 </script>

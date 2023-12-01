@@ -11,7 +11,11 @@
   </div>
 
   <div class="field mt-5">
-    <ToggleJson ref="jsonVal" :toJson="credentialValueToJson" :fromJson="jsonToCredentialValue">
+    <ToggleJson
+      ref="jsonVal"
+      :to-json="credentialValueToJson"
+      :from-json="jsonToCredentialValue"
+    >
       <!-- Dynamic Attribute field list -->
       <div
         v-for="(item, index) in credentialValuesRaw"
@@ -55,8 +59,8 @@ const toast = useToast();
 
 // Props
 interface CredentialValue {
-  name: string
-  value: string
+  name: string;
+  value: string;
 }
 interface Props {
   existingCredentialValues?: CredentialValue[];
@@ -72,7 +76,10 @@ const credentialValuesRaw = ref<CredentialValue[]>([]);
 
 const showRawJson = ref(false);
 
-const jsonVal = ref<{showRawJson: boolean, valuesJson: string}>({showRawJson: false, valuesJson: ""})
+const jsonVal = ref<{ showRawJson: boolean; valuesJson: string }>({
+  showRawJson: false,
+  valuesJson: '',
+});
 
 function jsonToCredentialValue(jsonString: string) {
   const parsed = tryParseJson<CredentialValue[]>(jsonString);
@@ -84,18 +91,14 @@ function jsonToCredentialValue(jsonString: string) {
 }
 
 const credentialValueToJson = () => {
-    // Convert over to the json from what was entered on the fields
-  const j = JSON.stringify(
-    credentialValuesRaw.value,
-    undefined,
-    2
-  )
+  // Convert over to the json from what was entered on the fields
+  const j = JSON.stringify(credentialValuesRaw.value, undefined, 2);
   return j;
-}
+};
 
 const saveCredValues = () => {
   if (jsonVal.value.showRawJson) {
-       jsonToCredentialValue(jsonVal.value.valuesJson)
+    jsonToCredentialValue(jsonVal.value.valuesJson);
   }
   emit('save', credentialValuesRaw.value);
 };
