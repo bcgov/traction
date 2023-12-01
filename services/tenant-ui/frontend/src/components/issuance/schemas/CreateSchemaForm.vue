@@ -79,7 +79,7 @@ const governanceStore = useGovernanceStore();
 const { loading, selectedSchema } = storeToRefs(useGovernanceStore());
 
 const emit = defineEmits(['closed', 'success']);
-const attributes = ref<{ attributes: Array<Attributes> }>({ attributes: [] });
+const attributes = ref<{ attributes: Array<Attribute> }>({ attributes: [] });
 const jsonVal = ref<{ showRawJson: boolean; valuesJson: string }>({
   showRawJson: false,
   valuesJson: '',

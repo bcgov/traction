@@ -30,13 +30,13 @@ import Textarea from 'primevue/textarea';
 import { useI18n } from 'vue-i18n';
 
 const showRawJson = ref<boolean>(false);
-const valuesJson = ref<Object>({});
+const valuesJson = ref<string>('');
 
 // TODO expose a way to get the final results as the object
 // representation for submitting schemas and issuing credentials
 const props = defineProps<{
   toJson: () => string;
-  fromJson: (jsonRepresentation: Object) => undefined;
+  fromJson: (jsonRepresentation: string) => void;
 }>();
 
 defineExpose({
