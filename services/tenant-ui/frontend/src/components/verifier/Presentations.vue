@@ -135,9 +135,8 @@ const toast = useToast();
 const { listConnections, findConnectionName } = useConnectionStore();
 const verifierStore = useVerifierStore();
 const { connections } = storeToRefs(useConnectionStore());
-const { loading, presentations, selectedPresentation } = storeToRefs(
-  useVerifierStore()
-);
+const { loading, presentations, selectedPresentation } =
+  storeToRefs(useVerifierStore());
 const { config } = storeToRefs(useConfigStore());
 
 const loadTable = async () => {

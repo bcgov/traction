@@ -31,8 +31,5 @@
       "path": "./tsconfig.node.json"
     }
   ],
-  "paths": {
-    "@/*": ["./src/*", "./dist/*"]
-  },
   "exclude": ["node_modules"]
 }

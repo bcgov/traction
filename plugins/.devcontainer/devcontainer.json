@@ -5,7 +5,7 @@
         "context": "..",
         "args": {
           "VARIANT": "3.9-bullseye",
-          "POETRY_VERSION": "1.4.2"
+          "POETRY_VERSION": "1.6.1"
         }
     },
     "customizations": {

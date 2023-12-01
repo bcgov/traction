@@ -1,7 +1,23 @@
-# Basic Architecture Overview
+# Traction Documentation and Resources
+
+## A Traction Sandbox Hyperledger Aries/AnonCreds Workshop
+
+This workshop contains a sequence of labs demonstrating issuing, receiving,
+holding, requesting, presenting, and verifying AnonCreds Verifiable
+Credentials--no technical experience required! The labs take about 20 minutes
+for complete. New developers expecting to build an Issuer or Verifier with
+[Traction] or [Aries Cloud Agent Python] will find this a great place to
+start--with developer-oriented "Next Steps" suggested at the end of the
+Workshop.
+
+[Traction]: https://digital.gov.bc.ca/digital-trust/technical-resources/traction/
+[Aries Cloud Agent Python]: https://aca-py.org
+
+## Basic Architecture Overview
 See [traction flow chart](assets/traction-flow-chart-1600x900-12162022.pdf)
 
-# Use Cases
+## Use Cases
+
 * [Tenant Onboarding](USE-CASE-ONBOARD.md)
 * [API Keys](USE-CASE-API-KEY.md)
 

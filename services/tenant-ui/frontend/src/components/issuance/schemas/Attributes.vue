@@ -32,18 +32,19 @@
 
 <script setup lang="ts">
 // Libraries
-import { ref, defineExpose } from 'vue';
+import { ref } from 'vue';
 import InputText from 'primevue/inputtext';
 // Source
 import { Attribute } from '@/types';
 
-const props = defineProps({
-  initialAttributes: {
-    type: Array<Attribute>,
-    required: false,
-    default: [],
-  },
-});
+const props = withDefaults(
+  defineProps<{
+    initialAttributes?: Array<Attribute>;
+  }>(),
+  {
+    initialAttributes: () => [],
+  }
+);
 
 const addAttribute = () => {
   attributes.value = [{ name: '' }, ...attributes.value];
