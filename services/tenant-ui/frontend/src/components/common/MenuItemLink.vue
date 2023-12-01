@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { MenuItem } from 'primevue/menuitem';
+import type { MenuItem } from 'primevue/menuitem';
 import { MenuRouterBindProps } from 'primevue/menu';
 
 defineProps<{

@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 // See https://primevue.org/panelmenu/#router
-import { MenuItem } from 'primevue/menuitem';
+import type { MenuItem } from 'primevue/menuitem';
 
 const props = defineProps<{
   item: MenuItem;
