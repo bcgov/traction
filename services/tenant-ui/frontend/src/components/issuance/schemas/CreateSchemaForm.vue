@@ -12,6 +12,7 @@
           ref="jsonVal"
           :to-json="schemaToJson"
           :from-json="jsonToSchema"
+          generic="SchemaSendRequest"
         >
           <!-- schema name -->
           <ValidatedField
@@ -57,8 +58,6 @@ import { useVuelidate } from '@vuelidate/core';
 import { helpers, required } from '@vuelidate/validators';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
-import InputSwitch from 'primevue/inputswitch';
-import Textarea from 'primevue/textarea';
 import { reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
@@ -171,9 +170,6 @@ if (props.isCopy) {
 
 const v$ = useVuelidate(rules, formFields);
 
-const schemaValuesJson = ref<string>('');
-const showRawJson = ref<boolean>(false);
-
 function convertToJson(): SchemaSendRequest | undefined {
   const attributeNames = attributes.value?.attributes
     .filter((x: Attribute) => x.name !== '')
@@ -186,17 +182,17 @@ function convertToJson(): SchemaSendRequest | undefined {
   };
 }
 
-const schemaToJson = () => {
+function schemaToJson(): string | undefined {
   const rawJson: SchemaSendRequest | undefined = convertToJson();
   if (rawJson) {
     return JSON.stringify(rawJson, undefined, 2);
   } else {
-    toast.error('Failed to convert Schema to Json');
-    throw new Error('Failed to convert to Json');
+    toast.error('Failed to convert to Json');
+    return undefined;
   }
-};
+}
 
-function jsonToSchema(jsonString: string) {
+function jsonToSchema(jsonString: string): SchemaSendRequest | undefined {
   const parsed = tryParseJson<SchemaSendRequest>(jsonString);
   if (parsed) {
     const newAt: Array<Attribute> = [
@@ -206,9 +202,10 @@ function jsonToSchema(jsonString: string) {
     attributes.value.attributes = newAt;
     formFields.name = parsed.schema_name;
     formFields.version = parsed.schema_version;
+    return parsed;
   } else {
     toast.error('The JSON you inputted has invalid syntax');
-    throw new Error('Failed to parse Schema');
+    return undefined;
   }
 }
 // Form submission
@@ -216,17 +213,18 @@ const submitted = ref(false);
 const handleSubmit = async (isFormValid: boolean) => {
   submitted.value = true;
 
-  if (!isFormValid) {
-    return;
-  }
   try {
+    if (!isFormValid) return;
+
     const payload: SchemaSendRequest | undefined = jsonVal.value.showRawJson
-      ? tryParseJson<SchemaSendRequest>(jsonVal.value.valuesJson ?? '')
+      ? jsonToSchema(jsonVal.value.valuesJson)
       : convertToJson();
 
-    if (!payload?.attributes.length) {
+    if (!payload) return;
+
+    if (!payload.attributes.length) {
       toast.error(t('configuration.schemas.emptyAttributes'));
-      return undefined;
+      return;
     }
 
     if (payload) {

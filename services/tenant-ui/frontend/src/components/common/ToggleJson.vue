@@ -20,23 +20,22 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" generic="T">
 // Libraries
 import { ref, defineExpose } from 'vue';
-import InputText from 'primevue/inputtext';
 // Source
 import InputSwitch from 'primevue/inputswitch';
 import Textarea from 'primevue/textarea';
-import { useI18n } from 'vue-i18n';
 
 const showRawJson = ref<boolean>(false);
 const valuesJson = ref<string>('');
 
-// TODO expose a way to get the final results as the object
-// representation for submitting schemas and issuing credentials
+// Undefined indicates that the conversion was a failure
+// note that indication of the error should be handled in the
+// toJson and fromJson using libraries like vue-toastification
 const props = defineProps<{
-  toJson: () => string;
-  fromJson: (jsonRepresentation: string) => void;
+  toJson: () => string | undefined;
+  fromJson: (jsonRepresentation: string) => T | undefined;
 }>();
 
 defineExpose({
@@ -45,14 +44,17 @@ defineExpose({
 });
 
 const toggleJson = () => {
-  try {
-    if (showRawJson.value) {
-      valuesJson.value = props.toJson();
+  if (showRawJson.value) {
+    const res = props.toJson();
+    if (res) {
+      valuesJson.value = res;
     } else {
-      props.fromJson(valuesJson.value);
+      showRawJson.value = !showRawJson.value;
     }
-  } catch (e) {
-    showRawJson.value = !showRawJson.value;
+  } else {
+    if (!props.fromJson(valuesJson.value)) {
+      showRawJson.value = !showRawJson.value;
+    }
   }
 };
 </script>
