@@ -14,6 +14,7 @@ from aries_cloudagent.admin.request_context import AdminRequestContext
 from aries_cloudagent.messaging.models.base import BaseModelError
 from aries_cloudagent.messaging.models.openapi import OpenAPISchema
 from aries_cloudagent.messaging.util import time_now, str_to_epoch
+from aries_cloudagent.messaging.valid import UUID4_EXAMPLE
 from aries_cloudagent.multitenant.error import WalletKeyMissingError
 from aries_cloudagent.protocols.basicmessage.v1_0.message_types import SPEC_URI
 from aries_cloudagent.protocols.basicmessage.v1_0.routes import (
@@ -54,6 +55,19 @@ class BasicMessageListSchema(OpenAPISchema):
         fields.Nested(BasicMessageRecordSchema()),
         description="List of basic message records",
     )
+
+class BasicMessageIdMatchInfoSchema(OpenAPISchema):
+    """Path parameters and validators for request taking connection id."""
+
+    message_id = fields.Str(
+        required=True,
+        metadata={"description": "Message identifier", "example": UUID4_EXAMPLE},
+    )
+
+
+class DeleteResponseSchema(OpenAPISchema):
+    """Response schema for DELETE endpoint."""
+
 
 
 class BasicMessageListQueryStringSchema(OpenAPISchema):
@@ -162,6 +176,40 @@ async def all_messages_list(request: web.BaseRequest):
     return web.json_response({"results": results})
 
 
+@docs(
+    tags=["basicmessage"],
+    summary="delete stored message by message_id",
+)
+@match_info_schema(BasicMessageIdMatchInfoSchema())
+@response_schema(DeleteResponseSchema(), 200, description="")
+@error_handler
+async def delete_message(request: web.BaseRequest):
+    """
+    Request handler for searching basic message records from All agents/connections.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The message list response
+
+    """
+    context: AdminRequestContext = request["context"]
+    profile = context.profile
+    message_id = request.match_info["message_id"]
+    try:
+        async with profile.session() as session:
+            record = await BasicMessageRecord.retrieve_by_message_id(session, message_id)
+        await record.delete_record(session)
+        
+    except StorageNotFoundError as err:
+        raise web.HTTPNotFound(reason=err.roll_up) from err
+    except (StorageError, BaseModelError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+    return web.json_response({})
+
+
+
 async def register(app: web.Application):
     """Register routes."""
     # we want to save messages when sent, so replace the default send message endpoint
@@ -195,6 +243,7 @@ async def register(app: web.Application):
 
     # add in the message list(s) route
     app.add_routes([web.get("/basicmessages", all_messages_list, allow_head=False)])
+    app.add_routes([web.delete("/basicmessages/{message_id}", delete_message)])
 
 
 def post_process_routes(app: web.Application):

@@ -5,6 +5,7 @@ from aries_cloudagent.messaging.valid import (
     INDY_ISO8601_DATETIME_VALIDATE,
 )
 from marshmallow import fields
+from aries_cloudagent.storage.base import BaseStorage
 
 
 class BasicMessageRecord(BaseRecord):
@@ -60,6 +61,25 @@ class BasicMessageRecord(BaseRecord):
     def record_tags(self) -> dict:
         """Get tags for record."""
         return {"connection_id": self.connection_id, "message_id": self.message_id}
+
+
+    async def delete_record(self, session: ProfileSession):
+        """Perform connection record deletion actions.
+
+        Args:
+            session (ProfileSession): session
+
+        """
+        await super().delete_record(session)
+
+        # Delete metadata
+        if self.message_id:
+            storage = session.inject(BaseStorage)
+            await storage.delete_all_records(
+                self.RECORD_TYPE,
+                {"message_id": self.message_id},
+            )
+
 
     @classmethod
     async def retrieve_by_message_id(
