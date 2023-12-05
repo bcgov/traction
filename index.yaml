@@ -35,6 +35,45 @@ entries:
     version: 0.1.1
   traction:
   - apiVersion: v2
+    appVersion: 0.3.6
+    created: "2023-12-05T17:31:57.666182855Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami/
+      version: 11.9.13
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 2.x.x
+    description: The Traction service allows organizations to verify, hold, and issue
+      verifiable credentials. The Traction Tenant UI allows tenants to manage their
+      agent.
+    digest: 8cc99f050c8d3b0e812320f6818e6317ffedb78effd6362103776a85548d5a79
+    home: https://github.com/bcgov/traction
+    icon: https://github.com/bcgov/traction/raw/main/docs/assets/readme-logo.png
+    maintainers:
+    - email: ivan.polchenko@quartech.com
+      name: i5okie
+      url: https://github.com/i5okie
+    - email: tools@usingtechnolo.gy
+      name: usingtechnology
+      url: https://github.com/usingtechnology
+    - email: jason.syrotuck@nttdata.com
+      name: Jsyro
+      url: https://github.com/Jsyro
+    - email: emiliano.sune@quartech.com
+      name: esune
+      url: https://github.com/esune
+    name: traction
+    sources:
+    - https://github.com/bcgov/traction
+    type: application
+    urls:
+    - https://github.com/bcgov/traction/releases/download/traction-0.2.7/traction-0.2.7.tgz
+    version: 0.2.7
+  - apiVersion: v2
     appVersion: 0.3.5
     created: "2023-10-20T20:21:37.087462799Z"
     dependencies:
@@ -228,4 +267,4 @@ entries:
     urls:
     - https://github.com/bcgov/traction/releases/download/traction-0.1.1/traction-0.1.1.tgz
     version: 0.1.1
-generated: "2023-10-20T20:21:37.087486599Z"
+generated: "2023-12-05T17:31:57.666204546Z"
