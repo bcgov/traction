@@ -26,6 +26,12 @@ Its open-source foundation makes it easy to integrate digital trust technology i
 
 ![Arch Diagram](./docs/assets/traction-flow-chart-1600x900-12162022-01.jpg)
 
+## Play in the Traction Sandbox
+
+Establish your own Traction tenant in a B.C. Government sandbox to issue, hold, present, and verify digital credentials using these [setup instructions](./docs/traction-anoncreds-workshop.md). 
+
+**Disclaimer**: On the 1st and 15th of each month, the entire sandbox gets reset and all your work will be gone. 
+
 ## Start using Traction 
 
 **Running Traction**: to run a local instance of traction, see the documentation in [scripts](./scripts/README.md). 
