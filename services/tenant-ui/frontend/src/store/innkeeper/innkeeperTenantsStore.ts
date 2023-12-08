@@ -305,6 +305,22 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     }
   }
 
+  // Restore a Tenant
+  async function restoreTenant(id: string, data: any) {
+    loading.value = true;
+    try {
+      await acapyApi.patchHttp(API_PATH.INNKEEPER_TENANT(id), data);
+      await listTenants();
+    } catch (err: any) {
+      error.value = err;
+    } finally {
+      loading.value = false;
+    }
+    if (error.value != null) {
+      throw error.value;
+    }
+  }
+
   // Create an API key for a tenant
   async function createApiKey(payload: TenantAuthenticationsApiRequest) {
     error.value = null;

@@ -482,6 +482,7 @@
       "canRegisterDid": "Tenant allowed to register public DID <JA>",
       "confirmDeletion": "To confirm, type \"{tenantName}\" in the box below <JA>",
       "deleteTenant": "Delete Tenant <JA>",
+      "restoreTenant": "Restore Tenant <JA>",
       "editSettings": "Edit Tenant Config <JA>",
       "enableLedgerSwitch": "Tenant can switch endorser/ledger <JA>",
       "endorserAlias": "Endorser Alias <JA>",

@@ -46,7 +46,10 @@
           <div v-if="data.state == 'active'" class="container">
             <EditConfig :tenant="data" />
             <DeleteTenant :tenant="data" />
+            <!-- TODO: Move this to somewhere that makes more sense -->
+            <RestoreTenant :tenant="data" />
           </div>
+          <!-- TODO: Turn this into a button to restore deleted tractions -->
           <div v-else class="container-item deleted-btn">
             {{ $t('common.deleted') }}
           </div>
@@ -106,6 +109,7 @@
           />
         </template>
       </Column>
+      <!-- TODO: Create another button to restore deleted tenants -->
       <Column
         :sortable="true"
         field="deleted"
@@ -151,6 +155,7 @@ import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatTenants } from '@/helpers/tableFormatters';
 import EditConfig from './editConfig/editConfig.vue';
 import DeleteTenant from './deleteTenant/DeleteTenant.vue';
+import RestoreTenant from './restoreTenant/RestoreTenant.vue';
 import RowExpandData from '@/components/common/RowExpandData.vue';
 const toast = useToast();
 
@@ -220,5 +225,6 @@ const expandedRows = ref([]);
   border-radius: 10px;
   width: 50%;
   font-weight: 600;
+  min-width: 6rem;
 }
 </style>
