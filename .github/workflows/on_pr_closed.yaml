@@ -56,4 +56,5 @@ jobs:
           account-type: org
           org-name: ${{ github.repository_owner}}
           filter-tags: pr-${{ github.event.number }}
-          token: ${{ secrets.PACKAGE_DELETE_TOKEN }}
+          token: ${{ secrets.PAT }}
+          token-type: 'pat'

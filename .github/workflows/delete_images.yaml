@@ -18,4 +18,5 @@ jobs:
           account-type: org
           org-name: ${{ github.repository_owner}}
           skip-tags: pr-* , *.*.*
-          token: ${{ secrets.PACKAGE_DELETE_TOKEN }}
+          token: ${{ secrets.PAT }}
+          token-type: 'pat'
