@@ -31,12 +31,11 @@ export const useTenantStore = defineStore('tenant', () => {
   const tenantReady = computed(() => {
     return token.value != null;
   });
-  const isIssuer = computed(() => {
+  const isIssuer: Ref<boolean> = computed(() => {
     return (
-      endorserConnection.value &&
-      endorserConnection.value.state === 'active' &&
-      publicDid.value &&
-      publicDid.value.did
+      endorserConnection.value?.state === 'active' &&
+      publicDid.value?.did &&
+      (!taa.value?.taa_required || taa.value?.taa_accepted)
     );
   });
 

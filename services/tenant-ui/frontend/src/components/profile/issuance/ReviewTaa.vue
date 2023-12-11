@@ -90,9 +90,8 @@ const { taa } = storeToRefs(useTenantStore());
 
 // Render the markdown/html for the TAA text
 const taaText = computed(() => {
-  return taa.value?.taa_record?.text
-    ? DOMPurify.sanitize(marked(taa.value?.taa_record?.text))
-    : '';
+  const markdown = marked.parse(taa.value?.taa_record?.text) as string;
+  return taa.value?.taa_record?.text ? DOMPurify.sanitize(markdown) : '';
 });
 
 // Mechanism dropdown

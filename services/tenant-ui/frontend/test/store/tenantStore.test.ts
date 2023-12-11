@@ -53,16 +53,60 @@ describe('tenantStore', () => {
     expect(store.tenantReady).toEqual(true);
   });
 
-  // Should this function return a boolean?
-  test('isIssuer is truthy when endorderConnection active and has did', () => {
+  test('isIssuer is true when endorderConnection active and has did and TAA not required', () => {
     store.endorserConnection = {
       state: 'active',
     };
     store.publicDid = {
       did: 'did',
     };
+    store.taa = {
+      taa_required: false,
+    };
     expect(store.isIssuer).toBeTruthy();
-    expect(store.isIssuer).toEqual('did');
+    expect(store.isIssuer).toEqual(true);
+  });
+
+  test('isIssuer is true when endorderConnection active and has did and TAA accepted', () => {
+    store.endorserConnection = {
+      state: 'active',
+    };
+    store.publicDid = {
+      did: 'did',
+    };
+    store.taa = {
+      taa_required: true,
+      taa_accepted: true,
+    };
+    expect(store.isIssuer).toBeTruthy();
+    expect(store.isIssuer).toEqual(true);
+  });
+
+  test('isIssuer is false when the TAA is not accepted ', () => {
+    store.endorserConnection = {
+      state: 'active',
+    };
+    store.publicDid = {
+      did: 'did',
+    };
+    store.taa = {
+      taa_required: true,
+      taa_accepted: false,
+    };
+    expect(store.isIssuer).toBeFalsy();
+  });
+
+  test('isIssuer is false when the taa_accepted is not there ', () => {
+    store.endorserConnection = {
+      state: 'active',
+    };
+    store.publicDid = {
+      did: 'did',
+    };
+    store.taa = {
+      taa_required: true,
+    };
+    expect(store.isIssuer).toBeFalsy();
   });
 
   test('isIssuer is falsy when endorserConnection is not-active', () => {
