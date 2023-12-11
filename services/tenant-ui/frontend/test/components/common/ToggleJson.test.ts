@@ -33,7 +33,7 @@ describe('Properly Toggle Json Input', () => {
   });
   test('text area is only shown after input is toggled', async () => {
     const wrapper = mountToggleJson();
-    const wrapperVm = wrapper.vm as unknown as typeof ToggleJson;
+    const wrapperVm = wrapper.vm as any;
     const toJson = vi.spyOn(wrapperVm.props, 'toJson');
     const fromJson = vi.spyOn(wrapperVm.props, 'fromJson');
 
