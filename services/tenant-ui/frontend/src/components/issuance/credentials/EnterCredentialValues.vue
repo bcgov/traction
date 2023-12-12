@@ -11,43 +11,13 @@
   </div>
 
   <div class="field mt-5">
-    <!-- Label/toggle -->
-    <div class="flex justify-content-between">
-      <div class="flex justify-content-start">
-        <label for="credentialValuesEdit">
-          <strong>{{ $t('issue.credentialFieldValues') }}</strong>
-        </label>
-      </div>
-      <div class="flex justify-content-end">
-        {{ $t('common.json') }}
-        <InputSwitch v-model="showRawJson" class="ml-1" @input="toggleJson" />
-      </div>
-    </div>
-
-    <!-- Raw JSON input mode -->
-    <div v-show="showRawJson">
-      <Textarea
-        id="credentialValuesEdit"
-        v-model="credentialValuesJson"
-        :auto-resize="true"
-        rows="20"
-        cols="60"
-        class="w-full mt-1"
-      />
-
-      <div class="flex justify-content-end">
-        <small>
-          <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
-          {{ $t('issue.schema') }}: {{ schemaForSelectedCred.schema.name }}
-          <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
-          {{ $t('issue.version') }}:
-          {{ schemaForSelectedCred.schema.version }}
-        </small>
-      </div>
-    </div>
-
-    <!-- Dynamic Attribute field list -->
-    <div v-show="!showRawJson">
+    <ToggleJson
+      ref="jsonVal"
+      :to-json="credentialValueToJson"
+      :from-json="jsonToCredentialValue"
+      generic="CredentialValue[]"
+    >
+      <!-- Dynamic Attribute field list -->
       <div
         v-for="(item, index) in credentialValuesRaw"
         :key="item.name"
@@ -62,8 +32,16 @@
           class="w-full"
         />
       </div>
+    </ToggleJson>
+    <div class="flex justify-content-end">
+      <small>
+        <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
+        {{ $t('issue.schema') }}: {{ schemaForSelectedCred.schema.name }}
+        <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
+        {{ $t('issue.version') }}:
+        {{ schemaForSelectedCred.schema.version }}
+      </small>
     </div>
-
     <Button label="Save" class="mt-5 w-full" @click="saveCredValues" />
   </div>
 </template>
@@ -73,16 +51,20 @@
 import { onMounted, ref } from 'vue';
 // PrimeVue / Validation
 import Button from 'primevue/button';
-import InputSwitch from 'primevue/inputswitch';
 import InputText from 'primevue/inputtext';
-import Textarea from 'primevue/textarea';
 import { useToast } from 'vue-toastification';
+import { tryParseJson } from '@/helpers/jsonParsing';
+import ToggleJson from '@/components/common/ToggleJson.vue';
 
 const toast = useToast();
 
 // Props
+interface CredentialValue {
+  name: string;
+  value: string;
+}
 interface Props {
-  existingCredentialValues?: { name: string; value: string }[];
+  existingCredentialValues?: CredentialValue[];
   header: String;
   schemaForSelectedCred: any;
 }
@@ -91,58 +73,43 @@ const props = defineProps<Props>();
 const emit = defineEmits(['back', 'save']);
 
 // Fields
-const credentialValuesJson = ref('');
-const credentialValuesRaw = ref([] as { name: string; value: string }[]);
+const credentialValuesRaw = ref<CredentialValue[]>([]);
 
-const showRawJson = ref(false);
+const jsonVal = ref<{ showRawJson: boolean; valuesJson: string }>({
+  showRawJson: false,
+  valuesJson: '',
+});
 
-// TODO: util function file
-function _tryParseJson(jsonString: string) {
-  try {
-    const o = JSON.parse(jsonString);
-    if (o && typeof o === 'object') {
-      return o;
-    }
-    return false;
-  } catch (e) {
-    return false;
-  }
-}
-
-function _jsonToCredRaw() {
-  const parsed = _tryParseJson(credentialValuesJson.value);
+function jsonToCredentialValue(
+  jsonString: string
+): CredentialValue[] | undefined {
+  const parsed = tryParseJson<CredentialValue[]>(jsonString);
   if (parsed) {
-    credentialValuesRaw.value = JSON.parse(credentialValuesJson.value);
+    credentialValuesRaw.value = parsed;
+    return parsed;
   } else {
     toast.warning('The JSON you inputted has invalid syntax');
+    return undefined;
   }
 }
 
-const toggleJson = () => {
-  if (showRawJson.value) {
-    // Convert over to the json from what was entered on the fields
-    credentialValuesJson.value = JSON.stringify(
-      credentialValuesRaw.value,
-      undefined,
-      2
-    );
-  } else {
-    // Parse the entered JSON into fields, or ignore and warn if invalid syntax
-    _jsonToCredRaw();
-  }
-};
+function credentialValueToJson(): string | undefined {
+  // Convert over to the json from what was entered on the fields
+  const j = JSON.stringify(credentialValuesRaw.value, undefined, 2);
+  return j;
+}
 
 const saveCredValues = () => {
-  if (showRawJson.value) {
-    _jsonToCredRaw();
+  if (jsonVal.value.showRawJson) {
+    jsonToCredentialValue(jsonVal.value.valuesJson);
   }
   emit('save', credentialValuesRaw.value);
 };
 
-// Whnen the component is intialized set up the fields and raw JSON based
+// When the component is initialized set up the fields and raw JSON based
 // on the supplied schema and if there is existing values already
 onMounted(() => {
-  // Popuplate cred editor if it's not already been edited
+  // Populate cred editor if it's not already been edited
   if (!props.existingCredentialValues?.length) {
     const schemaFillIn = props.schemaForSelectedCred.schema.attrNames.map(
       (a: string) => {
@@ -158,10 +125,5 @@ onMounted(() => {
   } else {
     credentialValuesRaw.value = props.existingCredentialValues;
   }
-  credentialValuesJson.value = JSON.stringify(
-    credentialValuesRaw.value,
-    undefined,
-    2
-  );
 });
 </script>
