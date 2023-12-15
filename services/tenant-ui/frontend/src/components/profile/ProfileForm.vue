@@ -30,6 +30,17 @@
         :value="tenant.tenant_name"
       />
     </div>
+    <!-- Email -->
+    <div class="field">
+      <label for="contactfield">{{ $t('profile.contact') }}</label>
+      <InputText
+        id="contactfield"
+        class="w-full"
+        readonly
+        :value="tenant.contact_email"
+      />
+    </div>
+
   </div>
 </template>
 

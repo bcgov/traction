@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from typing import Optional, Union, List
 
 from aries_cloudagent.core.profile import ProfileSession
+from aries_cloudagent.ledger.base import LOGGER
 from aries_cloudagent.messaging.models.base_record import BaseRecord, BaseRecordSchema
 from aries_cloudagent.messaging.util import datetime_to_str, str_to_datetime
 from aries_cloudagent.messaging.valid import UUIDFour
@@ -279,6 +280,7 @@ class TenantRecord(BaseRecord):
         auto_issuer: bool = False,
         enable_ledger_switch=False,
         deleted_at: str = None,
+        contact_email: str = None,
         **kwargs,
     ):
         """Construct record."""
@@ -295,6 +297,10 @@ class TenantRecord(BaseRecord):
         self.enable_ledger_switch = enable_ledger_switch
         self.curr_ledger_id = curr_ledger_id
         self.deleted_at = deleted_at
+        self.contact_email = contact_email
+        LOGGER.info(
+            f"in TenantRecord the email of tenant {tenant_name} is {contact_email}"
+        )
 
     @property
     def tenant_id(self) -> Optional[str]:
@@ -315,6 +321,7 @@ class TenantRecord(BaseRecord):
                 "enable_ledger_switch",
                 "curr_ledger_id",
                 "deleted_at",
+                "contact_email",
             )
         }
 
@@ -378,6 +385,12 @@ class TenantRecordSchema(BaseRecordSchema):
         required=True,
         description="Proposed name of Tenant",
         example="line of business short name",
+    )
+
+    contact_email = fields.Str(
+        required=True,
+        description="Email used to contact this Tenant",
+        example="tmp@emailserver.com",
     )
 
     state = fields.Str(
