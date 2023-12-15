@@ -15,7 +15,7 @@
     },
     "oidc": {
       "active": false,
-      "authority": "https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm",
+      "authority": "https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-citz",
       "client": "innkeeper-frontend",
       "label": "IDIR"
     },
@@ -53,8 +53,8 @@
     "staticFiles": "../../frontend/dist",
     "tractionUrl": "http://localhost:5100",
     "oidc": {
-      "jwksUri": "https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm/protocol/openid-connect/certs",
-      "realm": "digitaltrust-nrm",
+      "jwksUri": "https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-citz/protocol/openid-connect/certs",
+      "realm": "digitaltrust-citz",
       "roleName": "innkeeper"
     },
     "innkeeper": {
