@@ -439,6 +439,29 @@ export const useTenantStore = defineStore('tenant', () => {
       throw error.value;
     }
   }
+  async function updateTenantContact(payload: { contact_email: string }) {
+    console.log('> tenantStore.updateTenantContact');
+    error.value = null;
+    loading.value = true;
+
+    await acapyApi
+      .putHttp(API_PATH.TENANT_CONTACT_EMAIL, payload)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        error.value = err;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< tenantStore.updateTenantContact');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+  }
 
   async function getTaa() {
     taa.value = await fetchItem(
@@ -541,6 +564,7 @@ export const useTenantStore = defineStore('tenant', () => {
     setTenantLoginDataFromLocalStorage,
     setWriteLedger,
     updateTenantSubWallet,
+    updateTenantContact,
     waitForActiveEndorserConnection,
   };
 });

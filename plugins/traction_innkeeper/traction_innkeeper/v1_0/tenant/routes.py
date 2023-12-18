@@ -54,6 +54,14 @@ class CustomUpdateWalletRequestSchema(UpdateWalletRequestSchema):
     )
 
 
+class UpdateContactRequestSchema(OpenAPISchema):
+    contact_email = fields.Str(
+        description="The new email to associate with this tenant.",
+        example="example@exampleserver.com",
+        validate=validate.Email(),
+    )
+
+
 class TenantApiKeyRequestSchema(OpenAPISchema):
     """Request schema for api auth record."""
 
@@ -222,6 +230,36 @@ async def tenant_wallet_update(request: web.BaseRequest):
     result = format_wallet_record(wallet_record)
 
     return web.json_response(result)
+
+
+@docs(tags=[SWAGGER_CATEGORY], summary="Update tenant email")
+@request_schema(UpdateContactRequestSchema)
+@response_schema(UpdateContactRequestSchema, 200, description="")
+@error_handler
+async def tenant_email_update(request: web.BaseRequest):
+    LOGGER.info(
+        f"tenant_email_update has been hit with the request {await request.json()}"
+    )
+    context: AdminRequestContext = request["context"]
+    # we need the caller's wallet id
+    wallet_id = context.profile.settings.get("wallet.id")
+
+    # this is from multitenant / admin / routes.py -> wallet_update
+    # (mostly) duplicate code.
+    body: dict = await request.json()
+    contact_email = body.get("contact_email")
+
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+
+    async with profile.session() as session:
+        rec = await TenantRecord.query_by_wallet_id(session, wallet_id)
+        rec.contact_email = contact_email
+        await rec.save(session, reason="updated email")
+
+    LOGGER.info(f"tenant_email_update should be returning {body}")
+
+    return web.json_response(body)
 
 
 @docs(tags=[SWAGGER_CATEGORY], summary="Create API Key Record")
@@ -414,6 +452,7 @@ async def register(app: web.Application):
             web.get("/tenant", tenant_self, allow_head=False),
             web.get("/tenant/wallet", tenant_wallet_get, allow_head=False),
             web.put("/tenant/wallet", tenant_wallet_update),
+            web.put("/tenant/contact_email", tenant_email_update),
             web.get("/tenant/config", tenant_config_get, allow_head=False),
             web.put("/tenant/config/set-ledger-id", tenant_config_ledger_id_set),
             web.post("/tenant/authentications/api", tenant_api_key),
