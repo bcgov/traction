@@ -88,26 +88,6 @@
       </Column>
       <Column
         :sortable="true"
-        field="created"
-        :header="$t('common.createdAt')"
-        filter-field="created"
-        :show-filter-match-modes="false"
-      >
-        <template #body="{ data }">
-          {{ data.created }}
-        </template>
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            type="text"
-            class="p-column-filter"
-            :placeholder="$t('common.searchByCreated')"
-            @input="filterCallback()"
-          />
-        </template>
-      </Column>
-      <Column
-        :sortable="true"
         field="contact_email"
         header="Contact Email"
         filter-field="contact_email"
@@ -126,6 +106,26 @@
             type="text"
             class="p-column-filter"
             placeholder="Search By Contact Email"
+            @input="filterCallback()"
+          />
+        </template>
+      </Column>
+      <Column
+        :sortable="true"
+        field="created"
+        :header="$t('common.createdAt')"
+        filter-field="created"
+        :show-filter-match-modes="false"
+      >
+        <template #body="{ data }">
+          {{ data.created }}
+        </template>
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            :placeholder="$t('common.searchByCreated')"
             @input="filterCallback()"
           />
         </template>
