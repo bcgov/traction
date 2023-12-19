@@ -298,9 +298,6 @@ class TenantRecord(BaseRecord):
         self.curr_ledger_id = curr_ledger_id
         self.deleted_at = deleted_at
         self.contact_email = contact_email
-        LOGGER.info(
-            f"in TenantRecord the email of tenant {tenant_name} is {contact_email}"
-        )
 
     @property
     def tenant_id(self) -> Optional[str]:

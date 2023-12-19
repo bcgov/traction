@@ -237,9 +237,6 @@ async def tenant_wallet_update(request: web.BaseRequest):
 @response_schema(UpdateContactRequestSchema, 200, description="")
 @error_handler
 async def tenant_email_update(request: web.BaseRequest):
-    LOGGER.info(
-        f"tenant_email_update has been hit with the request {await request.json()}"
-    )
     context: AdminRequestContext = request["context"]
     # we need the caller's wallet id
     wallet_id = context.profile.settings.get("wallet.id")
@@ -247,7 +244,7 @@ async def tenant_email_update(request: web.BaseRequest):
     # this is from multitenant / admin / routes.py -> wallet_update
     # (mostly) duplicate code.
     body: dict = await request.json()
-    contact_email = body.get("contact_email")
+    contact_email = body["contact_email"]
 
     mgr = context.inject(TenantManager)
     profile = mgr.profile
@@ -256,8 +253,6 @@ async def tenant_email_update(request: web.BaseRequest):
         rec = await TenantRecord.query_by_wallet_id(session, wallet_id)
         rec.contact_email = contact_email
         await rec.save(session, reason="updated email")
-
-    LOGGER.info(f"tenant_email_update should be returning {body}")
 
     return web.json_response(body)
 

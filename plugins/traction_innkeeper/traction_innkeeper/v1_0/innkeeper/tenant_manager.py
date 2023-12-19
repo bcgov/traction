@@ -157,9 +157,6 @@ class TenantManager:
                     if wallet_record.settings.get("default_label")
                     else wallet_record.wallet_name
                 )
-                self._logger.info(
-                    f"in create_tenant the email of tenant {tenant_name} is {email}"
-                )
                 tenant: TenantRecord = TenantRecord(
                     tenant_id=tenant_id,
                     tenant_name=tenant_name,

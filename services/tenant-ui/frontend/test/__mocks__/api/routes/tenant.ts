@@ -32,6 +32,9 @@ export const successHandlers = [
   http.put(fullPathWithProxyTenant(API_PATH.TENANT_WALLET), () =>
     HttpResponse.json(tenantResponse.updateWallet)
   ),
+  http.put(fullPathWithProxyTenant(API_PATH.TENANT_CONTACT_EMAIL), () =>
+    HttpResponse.json(tenantResponse.updateContact)
+  ),
 ];
 
 export const unknownErrorHandlers = [
@@ -60,6 +63,9 @@ export const unknownErrorHandlers = [
     HttpResponse.json({}, { status: 500 })
   ),
   http.put(fullPathWithProxyTenant(API_PATH.TENANT_WALLET), () =>
+    HttpResponse.json({}, { status: 500 })
+  ),
+  http.put(fullPathWithProxyTenant(API_PATH.TENANT_CONTACT_EMAIL), () =>
     HttpResponse.json({}, { status: 500 })
   ),
 ];
