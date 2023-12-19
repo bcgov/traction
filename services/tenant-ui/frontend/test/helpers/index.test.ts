@@ -4,10 +4,17 @@ import {
   formatGuid,
   stringOrBooleanTruthy,
   isJsonString,
+  formatUnixDate
 } from '@/helpers';
 import { expect, test, describe } from 'vitest';
 
 describe('helpers/index.ts', () => {
+  describe('formatUnixDate', () => {
+    test('formats correctly with formatUnixDate', async () => {
+      expect(formatUnixDate(1703027241)).toEqual('December 19 2023');
+    });
+  });
+
   describe('toKebabCase', () => {
     test('formats correctly with toKebabCase', async () => {
       expect(toKebabCase('abc')).toEqual('abc');
