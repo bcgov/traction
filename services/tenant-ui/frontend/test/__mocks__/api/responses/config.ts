@@ -9,7 +9,7 @@ const config = {
     oidc: {
       active: false,
       authority:
-        'https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-nrm',
+        'https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-citz',
       client: 'innkeeper-frontend',
       label: 'IDIR',
     },
