@@ -96,9 +96,7 @@ async def tenant_self(request: web.BaseRequest):
     async with profile.session() as session:
         # tenant's must always fetch by their wallet id.
         rec = await TenantRecord.query_by_wallet_id(session, wallet_id)
-        LOGGER.info(
-            f"for debugging this is the value of rec when getting the tenant {rec}"
-        )
+        LOGGER.info(rec)
 
     return web.json_response(rec.serialize())
 
