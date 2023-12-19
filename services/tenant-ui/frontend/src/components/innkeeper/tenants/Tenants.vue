@@ -108,6 +108,30 @@
       </Column>
       <Column
         :sortable="true"
+        field="contact_email"
+        header="Contact Email"
+        filter-field="contact_email"
+        :show-filter-match-modes="false"
+      >
+        <template #body="{ data }">
+          <div v-if="data.contact_email" class="flex align-items-center gap-2">
+            <a :href="'mailto:' + data.contact_email">
+              {{ data.contact_email }}
+            </a>
+          </div>
+        </template>
+        <template #filter="{ filterModel, filterCallback }">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            placeholder="Search By Contact Email"
+            @input="filterCallback()"
+          />
+        </template>
+      </Column>
+      <Column
+        :sortable="true"
         field="deleted"
         :header="$t('common.deletedAt')"
         filter-field="deleted"
@@ -194,6 +218,10 @@ const filter = ref({
     matchMode: FilterMatchMode.CONTAINS,
   },
   curr_ledger_id: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  },
+  contact_email: {
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   },

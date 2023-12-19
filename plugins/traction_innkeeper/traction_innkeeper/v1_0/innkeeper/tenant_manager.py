@@ -172,9 +172,8 @@ class TenantManager:
                     auto_issuer=auto_issuer,
                 )
                 await tenant.save(session, reason="New tenant")
-                new_tenants = await tenant.query(session)
-                self._logger.error(f"The current list of tenants is {new_tenants}")
-                # self._logger.info(tenant)
+                await tenant.query(session)
+                self._logger.info(tenant)
         except Exception as err:
             self._logger.error(err)
             raise err
