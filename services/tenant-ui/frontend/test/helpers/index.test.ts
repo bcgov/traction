@@ -11,14 +11,14 @@ describe('helpers/index.ts', () => {
 
     test('returns a blank object for non parsed strings', async () => {
       expect(configStringToObject('testz')).toEqual({});
-      // @ts-expect-error
+      // @ts-expect-error unit test other types
       expect(configStringToObject(undefined)).toEqual({});
     });
 
     test('returns back objects if object type is supplied', async () => {
-      // @ts-expect-error
+      // @ts-expect-error unit test other types
       expect(configStringToObject({ abc: '123' })).toEqual({ abc: '123' });
-      // @ts-expect-error
+      // @ts-expect-error unit test other types
       expect(configStringToObject(null)).toEqual(null);
     });
   });
