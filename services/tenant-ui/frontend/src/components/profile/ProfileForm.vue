@@ -40,7 +40,6 @@
         :value="tenant.contact_email"
       />
     </div>
-
   </div>
 </template>
 

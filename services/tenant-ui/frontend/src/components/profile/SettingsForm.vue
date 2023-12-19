@@ -31,7 +31,10 @@
             :class="{ 'p-invalid': v$.contact_email.$invalid && submitted }"
           />
           <span v-if="v$.contact_email.$error && submitted">
-            <span v-for="(error, index) of v$.contact_email.$errors" :key="index">
+            <span
+              v-for="(error, index) of v$.contact_email.$errors"
+              :key="index"
+            >
               <small class="p-error">{{ error.$message }}</small>
             </span>
           </span>
@@ -631,8 +634,8 @@ const handleSubmit = async (isFormValid: boolean) => {
       extra_settings: extraSettings,
     };
     const new_email = {
-      contact_email: formFields.contact_email
-    }
+      contact_email: formFields.contact_email,
+    };
     await tenantStore.updateTenantSubWallet(payload);
     await tenantStore.updateTenantContact(new_email);
 
