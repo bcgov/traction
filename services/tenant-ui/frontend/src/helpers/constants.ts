@@ -136,6 +136,7 @@ export const API_PATH = {
   TENANT_CONFIG_SET_LEDGER_ID: '/tenant/config/set-ledger-id',
   TENANT_TOKEN: '/tenant/token',
   TENANT_WALLET: '/tenant/wallet',
+  TENANT_CONTACT_EMAIL: '/tenant/contact_email',
   TENANT_CONFIG: '/tenant/config',
   TENANT_SERVER_CONFIG: '/tenant/server/status/config',
 

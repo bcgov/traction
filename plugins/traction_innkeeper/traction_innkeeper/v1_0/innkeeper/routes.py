@@ -423,6 +423,7 @@ async def tenant_checkin(request: web.BaseRequest):
             tenant, wallet_record, token = await mgr.create_wallet(
                 wallet_name=res_rec.tenant_name,
                 wallet_key=wallet_key,
+                tenant_email=res_rec.contact_email,
                 extra_settings=settings_dict,
             )
 

@@ -21,7 +21,24 @@
             </span>
           </span>
         </div>
-
+        <!-- Email -->
+        <div class="field">
+          <label for="contactfield">{{ $t('profile.contact') }}</label>
+          <InputText
+            id="contactfield"
+            v-model="v$.contact_email.$model"
+            class="w-full"
+            :class="{ 'p-invalid': v$.contact_email.$invalid && submitted }"
+          />
+          <span v-if="v$.contact_email.$error && submitted">
+            <span
+              v-for="(error, index) of v$.contact_email.$errors"
+              :key="index"
+            >
+              <small class="p-error">{{ error.$message }}</small>
+            </span>
+          </span>
+        </div>
         <!-- Webhooks -->
         <div class="webhooks">
           <TransitionGroup appear name="wh">
@@ -368,7 +385,7 @@ import Password from 'primevue/password';
 import ProgressSpinner from 'primevue/progressspinner';
 import VueJsonPretty from 'vue-json-pretty';
 import { useToast } from 'vue-toastification';
-import { required, url } from '@vuelidate/validators';
+import { required, email, url } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
 // State/etc
 import { storeToRefs } from 'pinia';
@@ -380,13 +397,14 @@ const toast = useToast();
 
 // State setup
 const tenantStore = useTenantStore();
-const { loading, serverConfig, tenantDefaultSettings, tenantWallet } =
+const { tenant, loading, serverConfig, tenantDefaultSettings, tenantWallet } =
   storeToRefs(useTenantStore());
 const tenantWalletwithExtraSettings: any = ref(null);
 
 // Get Tenant Configuration
 const loadTenantSettings = async () => {
   Promise.all([
+    tenantStore.getSelf(),
     tenantStore.getTenantSubWallet(),
     tenantStore.getTenantDefaultSettings(),
     tenantStore.getServerConfig(),
@@ -442,6 +460,7 @@ const loadTenantSettings = async () => {
       formFields.ACAPY_CREATE_REVOCATION_TRANSACTIONS =
         settingMap['endorser.auto_create_rev_reg'];
       formFields.walletLabel = tenantWallet.value.settings.default_label;
+      formFields.contact_email = tenant.value.contact_email;
       formFields.imageUrl = tenantWallet.value.settings.image_url;
       const webHookUrls = tenantWallet.value.settings['wallet.webhook_urls'];
 
@@ -496,6 +515,7 @@ loadTenantSettings();
 const formFields = reactive({
   webhooks: [{ webhookUrl: '', webhookKey: '' }],
   walletLabel: '',
+  contact_email: '',
   imageUrl: '',
   ACAPY_AUTO_ACCEPT_INVITES: false,
   ACAPY_AUTO_ACCEPT_REQUESTS: false,
@@ -538,6 +558,7 @@ const rules = {
   ACAPY_NOTIFY_REVOCATION: {},
   ACAPY_PUBLIC_INVITES: {},
   walletLabel: { required },
+  contact_email: { email },
   imageUrl: { url },
 };
 const v$ = useVuelidate(rules, formFields);
@@ -612,8 +633,12 @@ const handleSubmit = async (isFormValid: boolean) => {
       wallet_webhook_urls: webhooks,
       extra_settings: extraSettings,
     };
-
+    const new_email = {
+      contact_email: formFields.contact_email,
+    };
     await tenantStore.updateTenantSubWallet(payload);
+    await tenantStore.updateTenantContact(new_email);
+
     loadTenantSettings();
     toast.success('Your Settings have been Updated');
   } catch (error) {

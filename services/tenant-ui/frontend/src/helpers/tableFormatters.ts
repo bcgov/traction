@@ -52,6 +52,7 @@ export const formatTenants = (
     deleted_at: formatDateLong(tenant.deleted_at),
     tenant_id: tenant.tenant_id,
     tenant_name: tenant.tenant_name,
+    contact_email: tenant.contact_email,
     connect_to_endorser: tenant.connect_to_endorser,
     created_public_did: tenant.created_public_did,
     created: formatDateLong(tenant.created_at),

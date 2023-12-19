@@ -204,6 +204,9 @@ describe('tenantStore', () => {
         'loading'
       );
     });
+    test('updateTenantContact sets wallet and loading correctly', async () => {
+      await testSuccessResponse(store, store.updateTenantContact(), 'loading');
+    });
   });
 
   describe('Failed API calls', () => {
@@ -275,6 +278,9 @@ describe('tenantStore', () => {
 
     test('updateTenantSubWallet handles error correctly', async () => {
       await testErrorResponse(store, store.updateTenantSubWallet(), 'loading');
+    });
+    test('updateTenantContact handles error correctly', async () => {
+      await testErrorResponse(store, store.updateTenantContact(), 'loading');
     });
   });
 });

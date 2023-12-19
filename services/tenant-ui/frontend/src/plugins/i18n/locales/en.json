@@ -326,6 +326,7 @@
     "imageUrl": "Image URL",
     "issuer": "Issuer",
     "name": "Name",
+    "contact": "Contact Email",
     "noEndorserInfoFound": "No Endorser info found, issuance disabled",
     "publicDid": "Public DID",
     "registerPublicDid": "Register a public DID",

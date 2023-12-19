@@ -1,7 +1,7 @@
 import bcrypt
 from datetime import datetime, timedelta
 import logging
-from typing import List
+from typing import List, Optional
 
 from aries_cloudagent.core.error import BaseError
 from aries_cloudagent.core.profile import Profile
@@ -47,6 +47,7 @@ class TenantManager:
         self,
         wallet_name: str,
         wallet_key: str,
+        tenant_email: Optional[str],
         extra_settings: dict = {},
         tenant_id: str = None,
     ):
@@ -117,6 +118,7 @@ class TenantManager:
         # ok, all is good, then create a tenant record
         tenant = await self.create_tenant(
             wallet_id=wallet_record.wallet_id,
+            email=tenant_email,
             tenant_id=tenant_id,
             connected_to_endorsers=connect_to_endorsers,
             created_public_did=created_public_did,
@@ -140,6 +142,7 @@ class TenantManager:
     async def create_tenant(
         self,
         wallet_id: str,
+        email: str,
         connected_to_endorsers: List = [],
         created_public_did: List = [],
         auto_issuer: bool = False,
@@ -157,6 +160,7 @@ class TenantManager:
                 tenant: TenantRecord = TenantRecord(
                     tenant_id=tenant_id,
                     tenant_name=tenant_name,
+                    contact_email=email,
                     wallet_id=wallet_record.wallet_id,
                     new_with_id=tenant_id is not None,
                     connected_to_endorsers=list(
@@ -168,7 +172,8 @@ class TenantManager:
                     auto_issuer=auto_issuer,
                 )
                 await tenant.save(session, reason="New tenant")
-                # self._logger.info(tenant)
+                await tenant.query(session)
+                self._logger.info(tenant)
         except Exception as err:
             self._logger.error(err)
             raise err
@@ -202,6 +207,7 @@ class TenantManager:
             tenant_record, wallet_record, token = await self.create_wallet(
                 wallet_name,
                 wallet_key,
+                None,
                 {
                     "wallet.innkeeper": True,
                     "tenant.endorser_config": config.connect_to_endorser,
