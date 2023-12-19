@@ -4,7 +4,7 @@ import {
   formatGuid,
   stringOrBooleanTruthy,
   isJsonString,
-  formatUnixDate
+  formatUnixDate,
 } from '@/helpers';
 import { expect, test, describe } from 'vitest';
 
