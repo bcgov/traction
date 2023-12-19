@@ -106,3 +106,18 @@ export function formatGuid(guid: string): string {
 export function stringOrBooleanTruthy(value: string | boolean) {
   return value === 'true' || value === true;
 }
+
+export function configStringToObject(value: string) {
+  // As config values come into the FE as strings, we need to convert them to objects
+  try {
+    // if an object IS supplied, return that
+    if (typeof value === 'object') return value;
+    return JSON.parse(value);
+  } catch (e) {
+    // If the value from config is not a stringified JSON object, return an empty object
+    console.warn(
+      `configStringToObject: non-string config value passed ${value}`
+    );
+    return {};
+  }
+}

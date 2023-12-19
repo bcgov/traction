@@ -5,6 +5,7 @@ import { useConfigStore } from '../configStore';
 import { UserManager } from 'oidc-client-ts';
 import { API_PATH } from '@/helpers/constants';
 import { useTokenStore } from '../tokenStore';
+import { configStringToObject } from '@/helpers';
 
 export const useInnkeeperOidcStore = defineStore('innkeeperOidcStore', () => {
   // other stores
@@ -20,6 +21,9 @@ export const useInnkeeperOidcStore = defineStore('innkeeperOidcStore', () => {
     automaticSilentRenew: false, // don't need to renew for our needs at this point
     post_logout_redirect_uri: `${window.location.origin}/innkeeper`,
     loadUserInfo: true,
+    extraQueryParams: configStringToObject(
+      config.value.frontend.oidc.extraQueryParams || ''
+    ),
   };
   const _userManager: UserManager = new UserManager(_settings);
 
