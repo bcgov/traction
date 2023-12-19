@@ -96,8 +96,10 @@ ui:
     active: true
     authority: https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-citz
     jwksUri: https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-citz/protocol/openid-connect/certs
-    extraQueryParams:
-      kc_idp_hint: "IDIR"
+    extraQueryParams: >-
+      { 
+        "kc_idp_hint": "IDIR"
+      }
     reservationForm: >-
       {
         "formDataSchema": {

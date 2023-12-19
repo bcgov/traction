@@ -652,7 +652,8 @@ ui:
     reservationForm: >-
       {}
     ## @param ui.oidc.extraQueryParams
-    extraQueryParams: {}
+    extraQueryParams: >-
+      {}
 
   ## SMTP Configuration
   smtp:
