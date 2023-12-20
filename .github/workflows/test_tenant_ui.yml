@@ -8,6 +8,8 @@ on:
     branches: ["main"]
   pull_request:
     branches: ["main"]
+    paths:
+      - 'services/tenant-ui/**'
 
 jobs:
   backend:
