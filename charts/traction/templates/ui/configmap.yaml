@@ -10,6 +10,7 @@ data:
   FRONTEND_INNKEEPER_OIDC_AUTHORITY: {{ .Values.ui.oidc.authority | quote }}
   FRONTEND_INNKEEPER_OIDC_CLIENT: {{ .Values.ui.oidc.client | quote }}
   FRONTEND_INNKEEPER_OIDC_LABEL: {{ .Values.ui.oidc.label | quote }}
+  FRONTEND_INNKEEPER_OIDC_EXTRA_PARAMS: {{ .Values.ui.oidc.extraQueryParams | quote }}
   FRONTEND_INNKEEPER_SHOW_ADMIN: {{ .Values.ui.oidc.showInnkeeperAdminLogin | quote }}
   FRONTEND_TENANT_SHOW_WRITABLE_COMPONENTS: {{ .Values.ui.oidc.showWritableComponents | quote }}
   FRONTEND_SHOW_OIDC_RESERVATION_LOGIN: {{ .Values.ui.showOIDCReservationLogin | quote }}

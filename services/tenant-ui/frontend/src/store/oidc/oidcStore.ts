@@ -2,6 +2,7 @@ import { defineStore, storeToRefs } from 'pinia';
 import { ref } from 'vue';
 import { useConfigStore } from '../configStore';
 import { UserManager } from 'oidc-client-ts';
+import { configStringToObject } from '@/helpers';
 
 export const useOidcStore = defineStore('oidcStore', () => {
   // Stores
@@ -15,6 +16,9 @@ export const useOidcStore = defineStore('oidcStore', () => {
     automaticSilentRenew: false,
     post_logout_redirect_uri: `${window.location.origin}`,
     loadUserInfo: true,
+    extraQueryParams: configStringToObject(
+      config.value.frontend.oidc.extraQueryParams || ''
+    ),
   };
 
   const userManager: UserManager = new UserManager(settings);

@@ -15,7 +15,8 @@
       "active": "FRONTEND_INNKEEPER_OIDC_ACTIVE",
       "authority": "FRONTEND_INNKEEPER_OIDC_AUTHORITY",
       "client": "FRONTEND_INNKEEPER_OIDC_CLIENT",
-      "label": "FRONTEND_INNKEEPER_OIDC_LABEL"
+      "label": "FRONTEND_INNKEEPER_OIDC_LABEL",
+      "extraQueryParams": "FRONTEND_INNKEEPER_OIDC_EXTRA_PARAMS"
     },
     "ux": {
       "appTitle": "UX_APP_TITLE",
