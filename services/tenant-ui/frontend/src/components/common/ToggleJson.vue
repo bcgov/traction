@@ -22,7 +22,7 @@
 
 <script setup lang="ts" generic="T">
 // Libraries
-import { ref, defineExpose } from 'vue';
+import { ref } from 'vue';
 // Source
 import InputSwitch from 'primevue/inputswitch';
 import Textarea from 'primevue/textarea';
