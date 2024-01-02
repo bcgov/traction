@@ -363,6 +363,16 @@ class TenantRecord(BaseRecord):
             await self.save(session, reason="Soft delete")
 
 
+    async def restore_deleted(self, session: ProfileSession):
+        """
+        Un-soft-delete the tenant record by setting its state to 'active'.
+        """
+        if self.state == self.STATE_DELETED:
+            self.state = self.STATE_ACTIVE
+            self.deleted_at = None
+            await self.save(session, reason="Restore deleted")
+
+
 class TenantRecordSchema(BaseRecordSchema):
     """Innkeeper Tenant Record Schema."""
 
