@@ -191,6 +191,7 @@
     "invitation": {
       "alias": "Connection Alias <FR>",
       "close": "Close <FR>",
+      "create": "Create Invitation <FR>",
       "goal": "Goal <FR>",
       "goalCode": "Goal Code <FR>",
       "myLabel": "My Label <FR>",
@@ -201,8 +202,7 @@
       "typeMultiUse": "Multi Use Invitation <FR>",
       "typeOob": "Out-of-Band <FR>",
       "typeSingleMulti": "Single/Multi <FR>",
-      "typeSingleUse": "Single Use Invitation <FR>",
-      "create": "Create Invitation <FR>"
+      "typeSingleUse": "Single Use Invitation <FR>"
     },
     "invitations": {
       "create": "Create Invitation <FR>",
@@ -320,6 +320,7 @@
     "connectTenantToEndorser": "Connect Tenant To Endorser <FR>",
     "connectTenantToEndorserNotAllowed": "Innkeeper has not approved endorser connections for your tenant <FR>",
     "connectToEndorserAndRegisterDID": "Connect to Endorser and Register DID corresponding to a Ledger <FR>",
+    "contact": "Contact Email <FR>",
     "createdAt": "Created at <FR>",
     "endorserConnection": "Endorser Connection <FR>",
     "endorserInfo": "Endorser Info <FR>",
@@ -421,6 +422,44 @@
     "fullName": "Full Name <FR>",
     "phone": "Phone / Mobile <FR>"
   },
+  "serverConfig": {
+    "acapyVersion": "ACA-Py Version: <FR>",
+    "expand": "Show full ACA-Py server config <FR>",
+    "ledger": {
+      "default": "Default base ledger: <FR>",
+      "ledgerDetails": "Ledger Details <FR>",
+      "ledgerList": "Ledger List <FR>",
+      "quickConnect": "Tenant UI quick-connect endorser: <FR>"
+    },
+    "serverConfig": "Server Configuration <FR>",
+    "storage": {
+      "multitenantWalletName": "Multitenant Wallet Name: <FR>",
+      "multitenantWalletType": "Multitenant Wallet Type: <FR>",
+      "title": "Storage <FR>",
+      "walletStorageConfig": "Wallet Storage Config: <FR>",
+      "walletStorageType": "Wallet Storage Type: <FR>",
+      "walletType": "Wallet Type: <FR>"
+    },
+    "tenants": {
+      "reservation": "Reservation <FR>",
+      "reservationAutoApprove": "Auto approve reservations: <FR>",
+      "reservationAutoIssuer": "Auto issuance approval: <FR>",
+      "reservationExpiry": "Reservation expiry (minutes): <FR>",
+      "reservationForm": "Reservation Form <FR>",
+      "reservationOidc": "OIDC login requried for reservation: <FR>",
+      "title": "Tenants/Reservations <FR>",
+      "token": "Token Expiry: <FR>"
+    },
+    "tenantUi": {
+      "expand": "Show Full Tenant UI Frontend Config <FR>",
+      "oidc": "OIDC Endpoint: <FR>",
+      "sessionExpiry": "Frontend session expiry: <FR>",
+      "sessionExpiryVal": "{0} seconds (Countdown: {1} seconds) <FR>",
+      "showWrite": "Show 'Write' Components: <FR>",
+      "tenantUi": "Tenant UI <FR>"
+    },
+    "tractionProxy": "Traction Proxy URL: <FR>"
+  },
   "session": {
     "countdown": "Vous allez être déconnecté dans { seconds } secondes...",
     "countdownHeader": "Expiration du délai de session",
@@ -476,20 +515,25 @@
   },
   "tenants": {
     "checkIn": "Check-In Tenant <FR>",
+    "search": "Search Tenants <FR>",
     "settings": {
       "canBecomeIssuer": "Tenant can become issuer, i.e connect to endorser and register DID <FR>",
       "canConnectEndorser": "Tenant allowed to connect to Endorser <FR>",
       "canRegisterDid": "Tenant allowed to register public DID <FR>",
       "confirmDeletion": "To confirm, type \"{tenantName}\" in the box below <FR>",
+      "confirmDeletionSuccess": "Tenant {0} successfully marked as deleted <FR>",
       "deleteTenant": "Delete Tenant <FR>",
       "editSettings": "Edit Tenant Config <FR>",
       "enableLedgerSwitch": "Tenant can switch endorser/ledger <FR>",
       "endorserAlias": "Endorser Alias <FR>",
       "ledgerName": "Ledger Name <FR>",
-      "success": "Tenant Config Updated <FR>"
+      "restoreConfirm": "Restore tenant {0} <FR>",
+      "restoreSuccess": "Tenant {0} successfully restored <FR>",
+      "restoreTenant": "Restore Tenant <FR>",
+      "success": "Tenant Config Updated <FR>",
+      "confirmDeletionIncorrect": "Incorrect tenant name. Please confirm the correct name before deletion. <FR>"
     },
-    "tenants": "Tenants <FR>",
-    "search": "Search Tenants <FR>"
+    "tenants": "Tenants <FR>"
   },
   "verifier": {
     "attributeRestrictionsSatisfied": "All attribute restrictions were satisfied <FR>",
@@ -516,43 +560,5 @@
     "presentationRequestBody": "Proof Request <FR>",
     "verification": "Verification <FR>",
     "verifications": "Verifications <FR>"
-  },
-  "serverConfig": {
-    "acapyVersion": "ACA-Py Version: <FR>",
-    "expand": "Show full ACA-Py server config <FR>",
-    "ledger": {
-      "default": "Default base ledger: <FR>",
-      "ledgerDetails": "Ledger Details <FR>",
-      "ledgerList": "Ledger List <FR>",
-      "quickConnect": "Tenant UI quick-connect endorser: <FR>"
-    },
-    "serverConfig": "Server Configuration <FR>",
-    "storage": {
-      "multitenantWalletName": "Multitenant Wallet Name: <FR>",
-      "multitenantWalletType": "Multitenant Wallet Type: <FR>",
-      "title": "Storage <FR>",
-      "walletStorageConfig": "Wallet Storage Config: <FR>",
-      "walletStorageType": "Wallet Storage Type: <FR>",
-      "walletType": "Wallet Type: <FR>"
-    },
-    "tenants": {
-      "reservation": "Reservation <FR>",
-      "reservationAutoApprove": "Auto approve reservations: <FR>",
-      "reservationAutoIssuer": "Auto issuance approval: <FR>",
-      "reservationExpiry": "Reservation expiry (minutes): <FR>",
-      "reservationForm": "Reservation Form <FR>",
-      "reservationOidc": "OIDC login requried for reservation: <FR>",
-      "title": "Tenants/Reservations <FR>",
-      "token": "Token Expiry: <FR>"
-    },
-    "tenantUi": {
-      "expand": "Show Full Tenant UI Frontend Config <FR>",
-      "oidc": "OIDC Endpoint: <FR>",
-      "sessionExpiry": "Frontend session expiry: <FR>",
-      "sessionExpiryVal": "{0} seconds (Countdown: {1} seconds) <FR>",
-      "showWrite": "Show 'Write' Components: <FR>",
-      "tenantUi": "Tenant UI <FR>"
-    },
-    "tractionProxy": "Traction Proxy URL: <FR>"
   }
 }
