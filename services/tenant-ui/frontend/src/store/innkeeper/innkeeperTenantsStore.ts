@@ -305,6 +305,22 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     }
   }
 
+  // Restore a deleted Tenant
+  async function restoreTenant(id: string) {
+    loading.value = true;
+    try {
+      await acapyApi.putHttp(API_PATH.INNKEEPER_TENANT_RESTORE(id));
+      await listTenants();
+    } catch (err: any) {
+      error.value = err;
+    } finally {
+      loading.value = false;
+    }
+    if (error.value != null) {
+      throw error.value;
+    }
+  }
+
   // Create an API key for a tenant
   async function createApiKey(payload: TenantAuthenticationsApiRequest) {
     error.value = null;
@@ -403,9 +419,10 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
     getDefaultConfigValues,
     getServerConfig,
     listApiKeys,
-    listTenants,
     listReservations,
+    listTenants,
     refreshCheckInPassword,
+    restoreTenant,
     updateTenantConfig,
   };
 });

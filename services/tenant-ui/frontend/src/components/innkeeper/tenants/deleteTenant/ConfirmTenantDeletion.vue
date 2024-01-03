@@ -35,6 +35,8 @@ import { useInnkeeperTenantsStore } from '@/store';
 import { TenantRecord } from '@/types/acapyApi/acapyInterface';
 
 import { useToast } from 'vue-toastification';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 const props = defineProps<{
   tenant: TenantRecord;
@@ -54,19 +56,19 @@ const toast = useToast();
 
 async function handleDelete() {
   if (!isTenantNameCorrect.value) {
-    toast.error(
-      'Incorrect tenant name. Please confirm the correct name before deletion.'
-    );
+    toast.error(t('tenants.settings.confirmDeletionIncorrect'));
     return;
   }
-  innkeeperTenantsStore
-    .deleteTenant(props.tenant.tenant_id)
-    .catch((err: string) => {
-      console.log(err);
-      toast.error('Failure: ${err}');
-    });
-
-  emit('success');
-  emit('closed');
+  try {
+    await innkeeperTenantsStore.deleteTenant(props.tenant.tenant_id);
+    toast.success(
+      t('tenants.settings.confirmDeletionSuccess', [props.tenant.tenant_name])
+    );
+    emit('success');
+    emit('closed');
+  } catch (err: any) {
+    console.log(err);
+    toast.error('Failure: ${err}');
+  }
 }
 </script>

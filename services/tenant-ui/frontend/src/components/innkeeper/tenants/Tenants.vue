@@ -47,8 +47,11 @@
             <EditConfig :tenant="data" />
             <DeleteTenant :tenant="data" />
           </div>
-          <div v-else class="container-item deleted-btn">
-            {{ $t('common.deleted') }}
+          <div v-else class="container">
+            <span class="container-item deleted-btn">
+              {{ $t('common.deleted') }}
+            </span>
+            <RestoreTenant :id="data.tenant_id" :name="data.tenant_name" />
           </div>
         </template>
       </Column>
@@ -175,6 +178,7 @@ import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { formatTenants } from '@/helpers/tableFormatters';
 import EditConfig from './editConfig/editConfig.vue';
 import DeleteTenant from './deleteTenant/DeleteTenant.vue';
+import RestoreTenant from './deleteTenant/RestoreTenant.vue';
 import RowExpandData from '@/components/common/RowExpandData.vue';
 const toast = useToast();
 

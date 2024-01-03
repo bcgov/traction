@@ -191,6 +191,7 @@
     "invitation": {
       "alias": "Connection Alias <JA>",
       "close": "Close <JA>",
+      "create": "Create Invitation <JA>",
       "goal": "Goal <JA>",
       "goalCode": "Goal Code <JA>",
       "myLabel": "My Label <JA>",
@@ -201,8 +202,7 @@
       "typeMultiUse": "Multi Use Invitation <JA>",
       "typeOob": "Out-of-Band <JA>",
       "typeSingleMulti": "Single/Multi <JA>",
-      "typeSingleUse": "Single Use Invitation <JA>",
-      "create": "Create Invitation <JA>"
+      "typeSingleUse": "Single Use Invitation <JA>"
     },
     "invitations": {
       "create": "Create Invitation <JA>",
@@ -320,6 +320,7 @@
     "connectTenantToEndorser": "Connect Tenant To Endorser <JA>",
     "connectTenantToEndorserNotAllowed": "Innkeeper has not approved endorser connections for your tenant <JA>",
     "connectToEndorserAndRegisterDID": "Connect to Endorser and Register DID corresponding to a Ledger <JA>",
+    "contact": "Contact Email <JA>",
     "createdAt": "Created at <JA>",
     "endorserConnection": "Endorser Connection <JA>",
     "endorserInfo": "Endorser Info <JA>",
@@ -421,6 +422,44 @@
     "fullName": "Full Name <JA>",
     "phone": "Phone / Mobile <JA>"
   },
+  "serverConfig": {
+    "acapyVersion": "ACA-Py Version: <JA>",
+    "expand": "Show full ACA-Py server config <JA>",
+    "ledger": {
+      "default": "Default base ledger: <JA>",
+      "ledgerDetails": "Ledger Details <JA>",
+      "ledgerList": "Ledger List <JA>",
+      "quickConnect": "Tenant UI quick-connect endorser: <JA>"
+    },
+    "serverConfig": "Server Configuration <JA>",
+    "storage": {
+      "multitenantWalletName": "Multitenant Wallet Name: <JA>",
+      "multitenantWalletType": "Multitenant Wallet Type: <JA>",
+      "title": "Storage <JA>",
+      "walletStorageConfig": "Wallet Storage Config: <JA>",
+      "walletStorageType": "Wallet Storage Type: <JA>",
+      "walletType": "Wallet Type: <JA>"
+    },
+    "tenants": {
+      "reservation": "Reservation <JA>",
+      "reservationAutoApprove": "Auto approve reservations: <JA>",
+      "reservationAutoIssuer": "Auto issuance approval: <JA>",
+      "reservationExpiry": "Reservation expiry (minutes): <JA>",
+      "reservationForm": "Reservation Form <JA>",
+      "reservationOidc": "OIDC login requried for reservation: <JA>",
+      "title": "Tenants/Reservations <JA>",
+      "token": "Token Expiry: <JA>"
+    },
+    "tenantUi": {
+      "expand": "Show Full Tenant UI Frontend Config <JA>",
+      "oidc": "OIDC Endpoint: <JA>",
+      "sessionExpiry": "Frontend session expiry: <JA>",
+      "sessionExpiryVal": "{0} seconds (Countdown: {1} seconds) <JA>",
+      "showWrite": "Show 'Write' Components: <JA>",
+      "tenantUi": "Tenant UI <JA>"
+    },
+    "tractionProxy": "Traction Proxy URL: <JA>"
+  },
   "session": {
     "countdown": "You are going to be logged out in { seconds } seconds... <JA>",
     "countdownHeader": "Session timing out <JA>",
@@ -476,20 +515,25 @@
   },
   "tenants": {
     "checkIn": "Check-In Tenant <JA>",
+    "search": "Search Tenants <JA>",
     "settings": {
       "canBecomeIssuer": "Tenant can become issuer, i.e connect to endorser and register DID <JA>",
       "canConnectEndorser": "Tenant allowed to connect to Endorser <JA>",
       "canRegisterDid": "Tenant allowed to register public DID <JA>",
       "confirmDeletion": "To confirm, type \"{tenantName}\" in the box below <JA>",
+      "confirmDeletionSuccess": "Tenant {0} successfully marked as deleted <JA>",
       "deleteTenant": "Delete Tenant <JA>",
       "editSettings": "Edit Tenant Config <JA>",
       "enableLedgerSwitch": "Tenant can switch endorser/ledger <JA>",
       "endorserAlias": "Endorser Alias <JA>",
       "ledgerName": "Ledger Name <JA>",
-      "success": "Tenant Config Updated <JA>"
+      "restoreConfirm": "Restore tenant {0} <JA>",
+      "restoreSuccess": "Tenant {0} successfully restored <JA>",
+      "restoreTenant": "Restore Tenant <JA>",
+      "success": "Tenant Config Updated <JA>",
+      "confirmDeletionIncorrect": "Incorrect tenant name. Please confirm the correct name before deletion. <JA>"
     },
-    "tenants": "Tenants <JA>",
-    "search": "Search Tenants <JA>"
+    "tenants": "Tenants <JA>"
   },
   "verifier": {
     "attributeRestrictionsSatisfied": "All attribute restrictions were satisfied <JA>",
@@ -516,43 +560,5 @@
     "presentationRequestBody": "Proof Request <JA>",
     "verification": "Verification <JA>",
     "verifications": "Verifications <JA>"
-  },
-  "serverConfig": {
-    "acapyVersion": "ACA-Py Version: <JA>",
-    "expand": "Show full ACA-Py server config <JA>",
-    "ledger": {
-      "default": "Default base ledger: <JA>",
-      "ledgerDetails": "Ledger Details <JA>",
-      "ledgerList": "Ledger List <JA>",
-      "quickConnect": "Tenant UI quick-connect endorser: <JA>"
-    },
-    "serverConfig": "Server Configuration <JA>",
-    "storage": {
-      "multitenantWalletName": "Multitenant Wallet Name: <JA>",
-      "multitenantWalletType": "Multitenant Wallet Type: <JA>",
-      "title": "Storage <JA>",
-      "walletStorageConfig": "Wallet Storage Config: <JA>",
-      "walletStorageType": "Wallet Storage Type: <JA>",
-      "walletType": "Wallet Type: <JA>"
-    },
-    "tenants": {
-      "reservation": "Reservation <JA>",
-      "reservationAutoApprove": "Auto approve reservations: <JA>",
-      "reservationAutoIssuer": "Auto issuance approval: <JA>",
-      "reservationExpiry": "Reservation expiry (minutes): <JA>",
-      "reservationForm": "Reservation Form <JA>",
-      "reservationOidc": "OIDC login requried for reservation: <JA>",
-      "title": "Tenants/Reservations <JA>",
-      "token": "Token Expiry: <JA>"
-    },
-    "tenantUi": {
-      "expand": "Show Full Tenant UI Frontend Config <JA>",
-      "oidc": "OIDC Endpoint: <JA>",
-      "sessionExpiry": "Frontend session expiry: <JA>",
-      "sessionExpiryVal": "{0} seconds (Countdown: {1} seconds) <JA>",
-      "showWrite": "Show 'Write' Components: <JA>",
-      "tenantUi": "Tenant UI <JA>"
-    },
-    "tractionProxy": "Traction Proxy URL: <JA>"
   }
 }
