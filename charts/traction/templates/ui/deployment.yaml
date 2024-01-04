@@ -70,6 +70,10 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ template "tenant-ui.fullname" . }}
+            {{- if .Values.ui.existingSecret }}
+            - secretRef:
+                name: {{ .Values.ui.existingSecret | quote }}
+            {{- end }}
           resources:
             {{- toYaml .Values.ui.resources | nindent 12 }}
           volumeMounts:
