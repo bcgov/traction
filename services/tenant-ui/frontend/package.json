@@ -16,7 +16,7 @@
     "coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@intlify/unplugin-vue-i18n": "^1.5.0",
+    "@intlify/unplugin-vue-i18n": "^2.0.0",
     "@jsonforms/vue": "^3.1.0",
     "@jsonforms/vue-vanilla": "^3.1.0",
     "@vuelidate/core": "^2.0.3",
@@ -24,7 +24,7 @@
     "axios": "^1.6.4",
     "date-fns": "^3.0.6",
     "dompurify": "^3.0.7",
-    "json-editor-vue": "^0.11.1",
+    "json-editor-vue": "^0.11.2",
     "marked": "^11.1.1",
     "oidc-client-ts": "^2.4.0",
     "pinia": "^2.1.7",
