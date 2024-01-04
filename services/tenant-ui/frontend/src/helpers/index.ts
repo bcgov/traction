@@ -1,4 +1,4 @@
-import { format, fromUnixTime, parseJSON } from 'date-fns';
+import { Locale, format, fromUnixTime, parseJSON } from 'date-fns';
 import { enCA, fr, ja } from 'date-fns/locale';
 import { useI18n } from 'vue-i18n';
 
