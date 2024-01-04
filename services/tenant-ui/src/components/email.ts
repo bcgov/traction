@@ -13,6 +13,9 @@ import { RESERVATION_STATUSES } from "../helpers/constants";
 const SERVER: string = config.get("server.smtp.server");
 const PORT: number = config.get("server.smtp.port");
 const FROM: string = config.get("server.smtp.senderAddress");
+const SECURE: boolean = config.get("server.smtp.secure");
+const USER: string = config.get("server.smtp.user");
+const PASSWORD: string = config.get("server.smtp.password");
 const INNKEEPER: string = config.get("server.smtp.innkeeperInbox");
 
 const eta = new Eta();
@@ -27,7 +30,11 @@ export const sendConfirmationEmail = async (req: Request) => {
     const transporter = nodemailer.createTransport({
       host: SERVER,
       port: PORT,
-      secure: false,
+      secure: SECURE,
+      auth: {
+        user: USER,
+        pass: PASSWORD,
+      },
     });
 
     req.body.serverUrlStatusRouteAutofill = buildStatusAutofill(req.body);
@@ -69,7 +76,11 @@ export const sendStatusEmail = async (req: Request) => {
     const transporter = nodemailer.createTransport({
       host: SERVER,
       port: PORT,
-      secure: false,
+      secure: SECURE,
+      auth: {
+        user: USER,
+        pass: PASSWORD,
+      },
     });
 
     let template;
