@@ -21,7 +21,7 @@ function i18n2DateLocale(i18nLocale: I18nLocale): Locale {
 }
 
 function _dateFnsFormat(value: string, formatter: string) {
-  const locale: any = i18n.global.locale;
+  const locale: any = i18n.global?.locale || '';
   const formatted = '';
   try {
     if (value) {
