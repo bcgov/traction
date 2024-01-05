@@ -98,7 +98,7 @@ export const useTenantStore = defineStore('tenant', () => {
         (res): res is PromiseRejectedResult => res.status === 'rejected'
       );
       if (errors?.length) {
-        console.log(errors);
+        console.error(errors);
         throw Error(errors[0]?.reason);
       }
     }
