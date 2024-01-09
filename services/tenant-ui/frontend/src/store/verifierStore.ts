@@ -61,7 +61,7 @@ export const useVerifierStore = defineStore('verifier', () => {
       );
       listPresentations();
     } catch (err) {
-      console.log(err);
+      console.error(err);
       error.value = err;
     } finally {
       loading.value = false;

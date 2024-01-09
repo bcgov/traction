@@ -63,7 +63,7 @@ export const useReservationStore = defineStore('reservation', () => {
       })
       .catch((err) => {
         error.value = err;
-        console.log(error.value);
+        console.error(error.value);
       })
       .finally(() => {
         if (!reservation.value?.reservation_pwd) {
@@ -139,7 +139,7 @@ export const useReservationStore = defineStore('reservation', () => {
           status.value = RESERVATION_STATUSES.NOT_FOUND;
         } else {
           error.value = err;
-          console.log(error.value);
+          console.error(error.value);
         }
       })
       .finally(() => {
@@ -171,7 +171,7 @@ export const useReservationStore = defineStore('reservation', () => {
       })
       .catch((err) => {
         error.value = err;
-        console.log(error.value);
+        console.error(error.value);
       })
       .finally(() => {
         loading.value = false;

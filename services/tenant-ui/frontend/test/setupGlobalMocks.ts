@@ -76,6 +76,7 @@ vi.mock('@/store', () => ({
 }));
 
 vi.mock('vue-i18n', () => ({
+  createI18n: vi.fn(() => ({})),
   useI18n: vi.fn(() => ({
     locale: vi.fn(() => 'en'),
     t: vi.fn((key: string) => key),

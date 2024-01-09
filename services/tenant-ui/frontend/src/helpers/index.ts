@@ -1,6 +1,6 @@
-import { format, fromUnixTime, parseJSON } from 'date-fns';
+import { Locale, format, fromUnixTime, parseJSON } from 'date-fns';
 import { enCA, fr, ja } from 'date-fns/locale';
-import { useI18n } from 'vue-i18n';
+import i18n from '@/plugins/i18n/i18n';
 
 export type I18nLocale = 'en' | 'fr' | 'ja';
 
@@ -21,7 +21,7 @@ function i18n2DateLocale(i18nLocale: I18nLocale): Locale {
 }
 
 function _dateFnsFormat(value: string, formatter: string) {
-  const { locale } = useI18n();
+  const locale: any = i18n.global?.locale || '';
   const formatted = '';
   try {
     if (value) {

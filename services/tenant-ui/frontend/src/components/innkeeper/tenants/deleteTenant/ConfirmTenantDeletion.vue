@@ -67,7 +67,7 @@ async function handleDelete() {
     emit('success');
     emit('closed');
   } catch (err: any) {
-    console.log(err);
+    console.error(err);
     toast.error('Failure: ${err}');
   }
 }

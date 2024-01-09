@@ -155,7 +155,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
       })
       .catch((err) => {
         error.value = err;
-        console.log(error.value);
+        console.error(error.value);
       })
       .finally(() => {
         loading.value = false;
@@ -201,7 +201,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
       })
       .catch((err) => {
         error.value = err;
-        console.log(error.value);
+        console.error(error.value);
       })
       .finally(() => {
         loading.value = false;
@@ -244,7 +244,7 @@ export const useInnkeeperTenantsStore = defineStore('innkeeperTenants', () => {
       })
       .catch((err) => {
         error.value = err;
-        console.log(error.value);
+        console.error(error.value);
       })
       .finally(() => {
         loading.value = false;
