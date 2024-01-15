@@ -558,7 +558,7 @@ const rules = {
   ACAPY_NOTIFY_REVOCATION: {},
   ACAPY_PUBLIC_INVITES: {},
   walletLabel: { required },
-  contact_email: { email },
+  contact_email: { required, email },
   imageUrl: { url },
 };
 const v$ = useVuelidate(rules, formFields);
