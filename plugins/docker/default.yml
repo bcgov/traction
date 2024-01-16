@@ -33,6 +33,7 @@ plugin-config-value:
   - traction_innkeeper.innkeeper_wallet.print_key=true
   - traction_innkeeper.innkeeper_wallet.print_token=true
   - traction_innkeeper.reservation.expiry_minutes=2880
+  - basicmessage_storage.wallet_enabled=true
 
 
 #config 

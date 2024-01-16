@@ -55,6 +55,7 @@ spec:
            --plugin traction_plugins.traction_innkeeper.v1_0 \
            --plugin-config-value traction_innkeeper.innkeeper_wallet.tenant_id=\"$(INNKEEPER_WALLET_TENANT_ID)\" \
            --plugin-config-value traction_innkeeper.innkeeper_wallet.wallet_key=\"$(INNKEEPER_WALLET_WALLET_KEY)\" \
+           --plugin-config-value basicmessage_storage.wallet_enabled=true \
            {{- end }}
            {{- if .Values.acapy.plugins.basicmessageStorage }}
            --plugin basicmessage_storage.v1_0 \
