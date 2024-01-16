@@ -161,6 +161,7 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | `acapy.plugin-config.yml.traction_innkeeper.reservation.expiry_minutes`                 |             | `2880`                                                                                 |
 | `acapy.plugin-config.yml.traction_innkeeper.reservation.auto_approve`                   |             | `false`                                                                                |
 | `acapy.plugin-config.yml.traction_innkeeper.reservation.auto_issuer`                    |             | `false`                                                                                |
+| `acapy.plugin-config.yml.basicmessage_storage.wallet_enabled`                           |             | `true`                                                                                 |
 
 ### Acapy tails persistence configuration
 
