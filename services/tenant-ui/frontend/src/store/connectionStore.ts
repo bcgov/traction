@@ -107,7 +107,9 @@ export const useConnectionStore = defineStore('connection', () => {
     // need the await here since the returned invitationData is not one of our stored refs...
     await acapyApi
       .postHttp(API_PATH.OUT_OF_BAND_CREATE, payload, {
-        multi_use: multiUse,
+        params: {
+          multi_use: multiUse,
+        },
       })
       .then((res) => {
         console.log(res);
