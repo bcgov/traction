@@ -15,16 +15,14 @@ endpoint:
 
 # plugins
 plugin:
-  - traction_plugins.basicmessage_storage.v1_0
-  - traction_plugins.connection_update.v1_0
-  - traction_plugins.multitenant_provider.v1_0
+  - basicmessage_storage.v1_0
+  - connection_update.v1_0
+  - multitenant_provider.v1_0
   - traction_plugins.traction_innkeeper.v1_0
-
-# block-plugin:
 
  
 plugin-config-value:
-  - multitenant_provider.manager.class_name="traction_plugins.multitenant_provider.v1_0.manager.AskarMultitokenMultitenantManager"
+  - multitenant_provider.manager.class_name="multitenant_provider.v1_0.manager.AskarMultitokenMultitenantManager"
   - multitenant_provider.manager.always_check_provided_wallet_key=true
   - multitenant_provider.errors.on_unneeded_wallet_key=false
   - multitenant_provider.token_expiry.units=days
@@ -35,6 +33,7 @@ plugin-config-value:
   - traction_innkeeper.innkeeper_wallet.print_key=true
   - traction_innkeeper.innkeeper_wallet.print_token=true
   - traction_innkeeper.reservation.expiry_minutes=2880
+  - basicmessage_storage.wallet_enabled=true
 
 
 #config 
@@ -49,12 +48,8 @@ multitenant-admin: true
 # wallet-name: default
 wallet-type: askar
 # wallet-key: "insecure, for use in demo only"
-# auto-provision: true
 
 log-level: info
-
-multitenant: true
-multitenant-admin: true
 
 emit-new-didcomm-prefix: true
 
