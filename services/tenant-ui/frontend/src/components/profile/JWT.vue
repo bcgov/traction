@@ -43,12 +43,12 @@ import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import Button from 'primevue/button';
 import 'primeicons/primeicons.css';
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { useToast } from 'vue-toastification';
 
 const toast = useToast();
 const { token } = storeToRefs(useTokenStore());
-const decodedToken: Ref<unknown> = computed(() => jwtDecode(token.value ?? ''));
+const decodedToken: Ref<string> = computed(() => jwtDecode(token.value ?? ''));
 
 const copyToClipboard = (text: string) => {
   navigator.clipboard.writeText(text);
