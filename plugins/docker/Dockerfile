@@ -25,14 +25,14 @@ RUN ln -s $(poetry env info -p)/lib/python3.6/site-packages site-packages
 
 
 FROM ghcr.io/hyperledger/aries-cloudagent-python:py3.9-0.12.0rc0
-COPY --from=base --chown=aries:aries /home/aries/.venv /home/aries/.venv
+COPY --from=base --chown=aries:aries /home/aries/.venv /home/aries/.venv`
 ENV PATH="/home/aries/.venv/bin:$PATH"
 
 COPY --chown=aries:aries docker/default.yml ./
 COPY --chown=aries:aries traction_innkeeper/traction_innkeeper traction_plugins/traction_innkeeper
-RUN pip install git+https://github.com/hyperledger/aries-acapy-plugins@main#subdirectory=basicmessage_storage
-RUN pip install git+https://github.com/hyperledger/aries-acapy-plugins@main#subdirectory=connection_update
-RUN pip install git+https://github.com/hyperledger/aries-acapy-plugins@main#subdirectory=multitenant_provider
+RUN pip install git+https://github.com/loneil/aries-acapy-plugins@junk/acapy12Rc#subdirectory=basicmessage_storage
+RUN pip install git+https://github.com/loneil/aries-acapy-plugins@junk/acapy12Rc#subdirectory=connection_update
+RUN pip install git+https://github.com/loneil/aries-acapy-plugins@junk/acapy12Rc#subdirectory=multitenant_provider
 RUN pip install git+https://github.com/hyperledger/aries-acapy-plugins@main#subdirectory=rpc
 
 ENTRYPOINT ["/bin/bash", "-c", "aca-py \"$@\"", "--"]
