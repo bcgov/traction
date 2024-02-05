@@ -21,6 +21,15 @@ const INNKEEPER: string = config.get("server.smtp.innkeeperInbox");
 const eta = new Eta();
 
 /**
+ * @function stringOrBooleanTruthy
+ * Returns true if the value is a string "true" or a boolean true, returns false otherwise
+ * @returns {boolean}
+ */
+export function stringOrBooleanTruthy(value: string | boolean) {
+  return value === 'true' || value === true;
+}
+
+/**
  * @function sendConfirmationEmail
  * Send the preconfigured emails when a reservation is created
  * @returns {string} The inkeeper token
@@ -30,7 +39,7 @@ export const sendConfirmationEmail = async (req: Request) => {
     const transporter = nodemailer.createTransport({
       host: SERVER,
       port: PORT,
-      secure: SECURE,
+      secure: stringOrBooleanTruthy(SECURE),
       auth: {
         user: USER,
         pass: PASSWORD,
@@ -76,7 +85,7 @@ export const sendStatusEmail = async (req: Request) => {
     const transporter = nodemailer.createTransport({
       host: SERVER,
       port: PORT,
-      secure: SECURE,
+      secure: stringOrBooleanTruthy(SECURE),
       auth: {
         user: USER,
         pass: PASSWORD,
