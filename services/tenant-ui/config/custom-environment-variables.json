@@ -57,6 +57,9 @@
     "smtp": {
       "server": "SERVER_SMTP_SERVER",
       "port": "SERVER_SMTP_PORT",
+      "secure": "SERVER_SMTP_SECURE",
+      "user": "SERVER_SMTP_USER",
+      "password": "SERVER_SMTP_PASSWORD",
       "senderAddress": "SERVER_SMTP_SENDER_ADDRESS",
       "innkeeperInbox": "SERVER_SMTP_INNKEEPER_INBOX"
     }

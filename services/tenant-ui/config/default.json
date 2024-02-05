@@ -65,6 +65,9 @@
     "smtp": {
       "server": "apps.smtp.gov.bc.ca",
       "port": 25,
+      "secure": false,
+      "user": "",
+      "password": "",
       "senderAddress": "DoNotReplyTraction@gov.bc.ca",
       "innkeeperInbox": "lucas.o'neil@gov.bc.ca"
     }
