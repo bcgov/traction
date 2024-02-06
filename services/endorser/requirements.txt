@@ -6,7 +6,7 @@ asyncpg==0.24.0
 certifi==2023.7.22
 charset-normalizer==2.0.10
 click==8.0.3
-fastapi==0.72.0
+fastapi==0.109.1
 greenlet==1.1.2
 gunicorn==20.1.0
 h11==0.13.0
@@ -29,9 +29,9 @@ sniffio==1.2.0
 SQLAlchemy==1.4.27
 sqlalchemy2-stubs==0.0.2a19
 sqlmodel==0.0.6
-starlette==0.17.1
+starlette==0.35.1
 starlette-context==0.3.3
-typing_extensions==4.0.1
+typing_extensions==4.8.0
 urllib3==1.26.18
 uvicorn==0.17.0
 uvloop==0.16.0
