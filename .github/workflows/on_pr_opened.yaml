@@ -115,7 +115,7 @@ jobs:
 
       - name: Run Traction PR Helm
         run: |
-          helm upgrade --install pr-${{ github.event.number }}-traction -f ./deploy/traction/values-pr.yaml --set acapy.image.tag=pr-${{ github.event.number }} --set traction_proxy.image.tag=pr-${{ github.event.number }} --set ui.image.tag=pr-${{ github.event.number }} ./charts/traction --wait
+          helm upgrade --install pr-${{ github.event.number }}-traction -f ./deploy/traction/values-pr.yaml --set acapy.image.tag=pr-${{ github.event.number }} --set tenant_proxy.image.tag=pr-${{ github.event.number }} --set ui.image.tag=pr-${{ github.event.number }} ./charts/traction --wait
 
       - name: Restart Traction PR Pods
         run: |
