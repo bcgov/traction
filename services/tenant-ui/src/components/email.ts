@@ -13,9 +13,21 @@ import { RESERVATION_STATUSES } from "../helpers/constants";
 const SERVER: string = config.get("server.smtp.server");
 const PORT: number = config.get("server.smtp.port");
 const FROM: string = config.get("server.smtp.senderAddress");
+const SECURE: boolean = config.get("server.smtp.secure");
+const USER: string = config.get("server.smtp.user");
+const PASSWORD: string = config.get("server.smtp.password");
 const INNKEEPER: string = config.get("server.smtp.innkeeperInbox");
 
 const eta = new Eta();
+
+/**
+ * @function stringOrBooleanTruthy
+ * Returns true if the value is a string "true" or a boolean true, returns false otherwise
+ * @returns {boolean}
+ */
+export function stringOrBooleanTruthy(value: string | boolean) {
+  return value === 'true' || value === true;
+}
 
 /**
  * @function sendConfirmationEmail
@@ -27,7 +39,11 @@ export const sendConfirmationEmail = async (req: Request) => {
     const transporter = nodemailer.createTransport({
       host: SERVER,
       port: PORT,
-      secure: false,
+      secure: stringOrBooleanTruthy(SECURE),
+      auth: {
+        user: USER,
+        pass: PASSWORD,
+      },
     });
 
     req.body.serverUrlStatusRouteAutofill = buildStatusAutofill(req.body);
@@ -69,7 +85,11 @@ export const sendStatusEmail = async (req: Request) => {
     const transporter = nodemailer.createTransport({
       host: SERVER,
       port: PORT,
-      secure: false,
+      secure: stringOrBooleanTruthy(SECURE),
+      auth: {
+        user: USER,
+        pass: PASSWORD,
+      },
     });
 
     let template;

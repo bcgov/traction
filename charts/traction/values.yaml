@@ -599,6 +599,10 @@ ui:
     ## @param ui.image.tag Overrides the image tag which defaults to the chart appVersion.
     tag: ""
 
+  ## @param ui.existingSecret Name of an existing secret to be mounted as environment variables
+  ## For example, when setting smpt.secure to true, a secret is required with the key SERVER_SMTP_PASSWORD
+  existingSecret: ""
+
   ##  Frontend Configuration
   ##
   ux:
@@ -663,6 +667,10 @@ ui:
     server: ""
     ## @param ui.smtp.port SMTP port
     port: 25
+    ## @param ui.smtp.secure if true the connection will use TLS when connecting to server. If false (the default) then TLS is used if server supports the STARTTLS extension. In most cases set this value to true if you are connecting to port 465. For port 587 or 25 keep it false
+    secure: false
+    ## @param ui.smtp.user SMTP user (use ui.existingSecret to provide SERVER_SMTP_PASSWORD)
+    user: ""
     ## @param ui.smtp.senderAddress SMTP sender address
     senderAddress: ""
     ## @param ui.smtp.innkeeperInbox innkeeper notification inbox
