@@ -1,19 +1,19 @@
 # Overview
-These scripts allow a developer (or similiarly interested party), to build and spin up a local environment of Traction (multitenant acapy + plugins + tenant ui). 
+These scripts allow a developer (or similarly interested party), to build and spin up a local environment of Traction (multitenant ACA-Py + plugins + tenant ui).
 
-Traction is a multi-tenanted Aca-Py that is intended to aid tenants with a self-service model. To support this, there are two "roles": innkeeper and tenant. 
+Traction is a multi-tenanted Aca-Py that is intended to aid tenants with a self-service model. To support this, there are two "roles": innkeeper and tenant.
 
 ### Innkeeper
 Innkeeper is used by the administrator of the multi-tenanted Aca-Py instance and is used to onboard tenants. There will be additional administrative functions added but currently their role is basically approval (or denial) of requests to become tenants.
 
 ### Tenants
-Tenants are analogous to wallets when Aca-Py is in multitenant mode. Traction plugins add enhanced functionality to the current Aca-Py API.  Note that the "innkeeper" is also a tenant (one with some administrative abilities and responsibilites).
+Tenants are analogous to wallets when Aca-Py is in multitenant mode. Traction plugins add enhanced functionality to the current Aca-Py API. Note that the "innkeeper" is also a tenant (one with some administrative abilities and responsibilities).
 
 ### Reservations
 Tenants onboard to the system by making a reservation. The innkeeper will approve (or deny) the reservation. Tenants that have been given approval will then check-in and be given their keys (`wallet_id`, `wallet_key`, ability to get tokens...).
 
 ### Tenant UI
-The Tenant UI is for the innkeeper AND tenants. (Prospective) Tenants can make a reservation, check the status of their reservation, check-in when approved and then login and perform necessary start up tasks for their wallet/agent (public did, connect with endorser, create schemas and credential defintions, etc).  The Innkeeper can review reservations and approve/deny, and then manage tenants.
+The Tenant UI is for the innkeeper AND tenants. (Prospective) Tenants can make a reservation, check the status of their reservation, check-in when approved and then login and perform necessary start up tasks for their wallet/agent (public did, connect with endorser, create schemas and credential definitions, etc). The Innkeeper can review reservations and approve/deny, and then manage tenants.
 
 New functionality is being added daily, so stay tuned as the Tenant UI grows. Keep in mind, the Tenant UI is *NOT* intended to support all possible functions allowed by Aca-Py, nor is it intended to act as your line of business application. The vision is to support the most necessary start up procedures and functions that are not done regularly (i.e. create a schema).
 
@@ -28,7 +28,7 @@ See [services/tenant-lob](../services/tenant-lob).
 ## Caveats and Cautions
 
 ### Endorser
-Currently this setup has dependencies on BCovrin Test Ledger and a registered endorser DID. These constraints will be removed, they are just short term requirements that the BC Gov developers needed to communicate with phone/wallets and other DIDs on the same ledger for demonstration purposes. This is not a vision for Traction, as it should be up to the administrator/installer/devops team (and their business contraints) for endorsement. Feel free to alter the default configuration for your purposes, but understand their may be some unintended consequences and it may not work correctly.
+Currently this setup has dependencies on BCovrin Test Ledger and a registered endorser DID. These constraints will be removed, they are just short term requirements that the BC Gov developers needed to communicate with phone/wallets and other DIDs on the same ledger for demonstration purposes. This is not a vision for Traction, as it should be up to the administrator/installer/devops team (and their business constraints) for endorsement. Feel free to alter the default configuration for your purposes, but understand their may be some unintended consequences and it may not work correctly.
 
 ### Plugin Image
 Also, there are longer term goals for moving the plugins to separate repositories and allowing teams to pull them in and configure their own Aca-Py images as needed. Currently, we are pulling the plugins in as source and building a custom image. For local development, the build of this image is included in the `docker compose build` command. Once the Aca-py + plugin image is built (tagged: `traction:plugins-acapy`), that image is pulled into another that we use to run an [ngrok](https://ngrok.com) script for external access to our agent (see [services/aca-py](../services/aca-py). This is not what we are doing in production, but we are doing it here (for now).
@@ -45,11 +45,11 @@ Stay tuned for updates to make this process simpler and more generic. It is curr
 
 The default configuration will stand up the following environment:
 
-- NGROK Traction Agent. An ngrok public endpoint for acapy agent... see `ACAPY_HTTP_PORT` environment variable (8030).
+- NGROK Traction Agent. An ngrok public endpoint for ACA-Py agent... see `ACAPY_HTTP_PORT` environment variable (8030).
 - Traction Agent. Multitenanted Aca-Py with Traction Plugins
-- Tenant Proxy. NGINX proxy for tenant API... see `TENANT_PROXY_PORT` environment variable  (8032).
+- Tenant Proxy. NGINX proxy for tenant API... see `TENANT_PROXY_PORT` environment variable (8032).
 - Traction DB. Postgresql database for Traction Agent Aca-Py
-- Tenant UI. Vue 3 application for innkeeper (tenant onboarding) and tenants... see `TENANT_UI_PORT` environment variable  (5101).
+- Tenant UI. Vue 3 application for innkeeper (tenant onboarding) and tenants... see `TENANT_UI_PORT` environment variable (5101).
 - Endorser API. Controller for endorser running locally.
 - Endorser Agent. Aca-Py configured for endorser role.
 - Endorser DB. Postgresql database for Endorser Agent Aca-Py
@@ -64,7 +64,6 @@ The default configuration will stand up the following environment:
 
 - innkeeper / change-me
 
-
 ### External dependencies
 - BCovrin Test ledger... see `ACAPY_GENESIS_URL` environment variable ([http://test.bcovrin.vonx.io/genesis](http://test.bcovrin.vonx.io/genesis)).
 - previously registered Endorser DID... see `ACAPY_ENDORSER_PUBLIC_DID` environment variable.
@@ -76,7 +75,7 @@ The default configuration will stand up the following environment:
 
 #### check docker compose version
 
-There are two commands that may act differently depending on your configuration: `docker compose` and `docker-compose`. 
+There are two commands that may act differently depending on your configuration: `docker compose` and `docker-compose`.
 
 In the following example, you can see that the two commands use two different docker compose versions. (This is a Mac with Docker Docker Desktop 4.16.2 with V2 disabled in the settings).
 
@@ -97,7 +96,6 @@ CountryMac:scripts jason$ docker compose version
 CountryMac:scripts jason$ docker-compose version
 > Docker Compose version v2.15.1
 ```
-
 
 ### start
 
@@ -134,7 +132,7 @@ Assume starting in `/scripts`...
 cd ../plugins/docker
 docker build -f ./Dockerfile --tag traction:plugins-acapy ..
 cd ../../services/aca-py
-docker build -f ./Dockerfile.acapy --tag traction:traction-agent  .
+docker build -f ./Dockerfile.acapy --tag traction:traction-agent .
 cd ../../scripts
 docker compose up
 ```
@@ -154,7 +152,7 @@ This will leave the volume (data) intact and available on restart.
 docker compose down
 ```
 
-*IMPORTANT* when envionments are torn down and then brought up, a new ngrok endpoint is created. This could cause issues reusing tenants/wallets as they will be registered with defunct ngrok endpoints.
+*IMPORTANT* when environments are torn down and then brought up, a new ngrok endpoint is created. This could cause issues reusing tenants/wallets as they will be registered with defunct ngrok endpoints.
 
 ### teardown
 This will remove the volume, so next start/up will re-recreate a new environment.
@@ -164,9 +162,9 @@ docker compose down -v --remove-orphans
 ```
 
 ## Simple Flow
-The following guide, we will perform a simple onboarding process where you will play both the innkeeper and a tenant.  
+The following guide, we will perform a simple onboarding process where you will play both the innkeeper and a tenant.
 
-This assumes a clean environment built and started as documented above.  
+This assumes a clean environment built and started as documented above.
 You may find it easier to just leave tabs open instead of copying and saving the IDs, passwords and keys.
 
 1. (Tenant) Make a reservation
@@ -178,7 +176,7 @@ You may find it easier to just leave tabs open instead of copying and saving the
 2. (Innkeeper) Approve the Reservation
 	1. open a new tab in a browser to perform innkeeper duties.
 	2. navigate to [http://localhost:5101/innkeeper](http://localhost:5101/innkeeper)
-	3. Sign-in with: 
+	3. Sign-in with:
 		- Admin Name = `innkeeper`
 		- Admin Key = `change-me`
 	4. Go to the Reservations tab and refresh if needed.
