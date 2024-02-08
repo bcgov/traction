@@ -25,7 +25,7 @@ RUN ln -s $(poetry env info -p)/lib/python3.6/site-packages site-packages
 
 
 FROM ghcr.io/hyperledger/aries-cloudagent-python:py3.9-0.12.0rc0
-COPY --from=base --chown=aries:aries /home/aries/.venv /home/aries/.venv`
+COPY --from=base --chown=aries:aries /home/aries/.venv /home/aries/.venv
 ENV PATH="/home/aries/.venv/bin:$PATH"
 
 COPY --chown=aries:aries docker/default.yml ./
