@@ -33,7 +33,7 @@ COPY --chown=aries:aries traction_innkeeper/traction_innkeeper traction_plugins/
 RUN pip install git+https://github.com/hyperledger/aries-acapy-plugins@main#subdirectory=basicmessage_storage
 RUN pip install git+https://github.com/hyperledger/aries-acapy-plugins@main#subdirectory=connection_update
 RUN pip install git+https://github.com/hyperledger/aries-acapy-plugins@main#subdirectory=multitenant_provider
-RUN pip install git+https://github.com/petridishdev/aries-acapy-plugins@feature/rpc#subdirectory=rpc
+RUN pip install git+https://github.com/hyperledger/aries-acapy-plugins@main#subdirectory=rpc
 
 ENTRYPOINT ["/bin/bash", "-c", "aca-py \"$@\"", "--"]
 CMD ["start", "--arg-file", "default.yml"]
