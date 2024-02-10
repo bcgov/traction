@@ -86,7 +86,7 @@ services:
       - ${TRACTION_ACAPY_ADMIN_PORT}:${TRACTION_ACAPY_ADMIN_PORT}
       - ${TRACTION_ACAPY_HTTP_PORT}:${TRACTION_ACAPY_HTTP_PORT}
     entrypoint: /bin/bash
-    command: [ "-c", "sleep 5; ./ngrok-wait.sh" ]
+    command: ["-c", "sleep 5; ./ngrok-wait.sh"]
     volumes:
       - "./plugin-config.yml:/home/aries/plugin-config.yml"
       - "./ledgers.yml:/home/aries/ledgers.yml"
@@ -104,7 +104,7 @@ services:
     volumes:
       - traction-wallet:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -227,10 +227,31 @@ services:
       - ${ACAPY_ENDORSER_ADMIN_PORT}:${ACAPY_ENDORSER_ADMIN_PORT}
       - ${ACAPY_ENDORSER_HTTP_PORT}:${ACAPY_ENDORSER_HTTP_PORT}
     entrypoint: /bin/bash
-    command:
-      [
+    command: [
         "-c",
-        "sleep 5; aca-py start --auto-provision --arg-file endorser-acapy-args.yml --inbound-transport http '0.0.0.0' ${ACAPY_ENDORSER_HTTP_PORT} --webhook-url '${ENDORSER_WEBHOOK_URL}' --genesis-url '${ACAPY_GENESIS_URL}' --endpoint ${ACAPY_ENDORSER_ENDPOINT} --wallet-name '${ENDORSER_ACAPY_WALLET_DATABASE}' --wallet-key '${ENDORSER_ACAPY_WALLET_ENCRYPTION_KEY}' --wallet-type '${ENDORSER_ACAPY_WALLET_TYPE}' --wallet-storage-type '${ENDORSER_ACAPY_WALLET_STORAGE_TYPE}' --wallet-storage-config '{\"url\":\"${ENDORSER_POSTGRESQL_HOST}:5432\",\"max_connections\":5}' --wallet-storage-creds '{\"account\":\"${POSTGRESQL_USER}\",\"password\":\"${POSTGRESQL_PASSWORD}\",\"admin_account\":\"${POSTGRESQL_USER}\",\"admin_password\":\"${POSTGRESQL_PASSWORD}\"}' --wallet-name endorser-wallet  --seed '${ACAPY_ENDORSER_SEED}' --admin '0.0.0.0' ${ACAPY_ENDORSER_ADMIN_PORT} --label '${ENDORSER_AGENT_NAME}' ${ENDORSER_ACAPY_ADMIN_CONFIG} ${ENDORSER_ACAPY_READ_ONLY_MODE} --endorser-protocol-role endorser --auto-endorse-transactions "
+        "sleep 5;
+        aca-py start \
+        --auto-provision
+        --arg-file endorser-acapy-args.yml \
+        --inbound-transport http '0.0.0.0' ${ACAPY_ENDORSER_HTTP_PORT} \
+        --webhook-url '${ENDORSER_WEBHOOK_URL}' \
+        --genesis-url '${ACAPY_GENESIS_URL}' \
+        --endpoint ${ACAPY_ENDORSER_ENDPOINT} \
+        --wallet-name '${ENDORSER_ACAPY_WALLET_DATABASE}' \
+        --wallet-key '${ENDORSER_ACAPY_WALLET_ENCRYPTION_KEY}' \
+        --wallet-type '${ENDORSER_ACAPY_WALLET_TYPE}' \
+        --wallet-storage-type '${ENDORSER_ACAPY_WALLET_STORAGE_TYPE}' \
+        --wallet-storage-config '{\"url\":\"${ENDORSER_POSTGRESQL_HOST}:5432\",\"max_connections\":5}' \
+        --wallet-storage-creds '{\"account\":\"${POSTGRESQL_USER}\",\"password\":\"${POSTGRESQL_PASSWORD}\",\"admin_account\":\"${POSTGRESQL_USER}\",\"admin_password\":\"${POSTGRESQL_PASSWORD}\"}' \
+        --wallet-name endorser-wallet  \
+        --seed '${ACAPY_ENDORSER_SEED}' \
+        --admin '0.0.0.0' ${ACAPY_ENDORSER_ADMIN_PORT} \
+        --label '${ENDORSER_AGENT_NAME}' \
+        ${ENDORSER_ACAPY_ADMIN_CONFIG} \
+        ${ENDORSER_ACAPY_READ_ONLY_MODE} \
+        --endorser-protocol-role endorser \
+        --auto-endorse-transactions \
+        ",
       ]
     environment:
       - RUST_LOG=error
@@ -250,7 +271,7 @@ services:
     volumes:
       - endorser-wallet:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -296,10 +317,31 @@ services:
       - ${ACAPY_ENDORSER_1_ADMIN_PORT}:${ACAPY_ENDORSER_1_ADMIN_PORT}
       - ${ACAPY_ENDORSER_1_HTTP_PORT}:${ACAPY_ENDORSER_1_HTTP_PORT}
     entrypoint: /bin/bash
-    command:
-      [
+    command: [
         "-c",
-        "sleep 5; aca-py start --auto-provision --arg-file endorser-acapy-args.yml --inbound-transport http '0.0.0.0' ${ACAPY_ENDORSER_1_HTTP_PORT} --webhook-url '${ENDORSER_1_WEBHOOK_URL}' --genesis-url '${ACAPY_GENESIS_URL_1}' --endpoint ${ACAPY_ENDORSER_1_ENDPOINT} --wallet-name '${ENDORSER_1_ACAPY_WALLET_DATABASE}' --wallet-key '${ENDORSER_ACAPY_WALLET_ENCRYPTION_KEY}' --wallet-type '${ENDORSER_ACAPY_WALLET_TYPE}' --wallet-storage-type '${ENDORSER_ACAPY_WALLET_STORAGE_TYPE}' --wallet-storage-config '{\"url\":\"${ENDORSER_1_POSTGRESQL_HOST}:5432\",\"max_connections\":5}' --wallet-storage-creds '{\"account\":\"${POSTGRESQL_USER}\",\"password\":\"${POSTGRESQL_PASSWORD}\",\"admin_account\":\"${POSTGRESQL_USER}\",\"admin_password\":\"${POSTGRESQL_PASSWORD}\"}' --wallet-name endorser-wallet-1  --seed '${ACAPY_ENDORSER_SEED_1}' --admin '0.0.0.0' ${ACAPY_ENDORSER_1_ADMIN_PORT} --label '${ENDORSER_AGENT_NAME}' ${ENDORSER_ACAPY_ADMIN_CONFIG} ${ENDORSER_ACAPY_READ_ONLY_MODE} --endorser-protocol-role endorser --auto-endorse-transactions "
+        "sleep 5;
+        aca-py start \
+        --auto-provision
+        --arg-file endorser-acapy-args.yml \
+        --inbound-transport http '0.0.0.0' ${ACAPY_ENDORSER_1_HTTP_PORT} \
+        --webhook-url '${ENDORSER_1_WEBHOOK_URL}' \
+        --genesis-url '${ACAPY_GENESIS_URL_1}' \
+        --endpoint ${ACAPY_ENDORSER_1_ENDPOINT} \
+        --wallet-name '${ENDORSER_1_ACAPY_WALLET_DATABASE}' \
+        --wallet-key '${ENDORSER_ACAPY_WALLET_ENCRYPTION_KEY}' \
+        --wallet-type '${ENDORSER_ACAPY_WALLET_TYPE}' \
+        --wallet-storage-type '${ENDORSER_ACAPY_WALLET_STORAGE_TYPE}' \
+        --wallet-storage-config '{\"url\":\"${ENDORSER_1_POSTGRESQL_HOST}:5432\",\"max_connections\":5}' \
+        --wallet-storage-creds '{\"account\":\"${POSTGRESQL_USER}\",\"password\":\"${POSTGRESQL_PASSWORD}\",\"admin_account\":\"${POSTGRESQL_USER}\",\"admin_password\":\"${POSTGRESQL_PASSWORD}\"}' \
+        --wallet-name endorser-wallet-1  \
+        --seed '${ACAPY_ENDORSER_SEED_1}' \
+        --admin '0.0.0.0' ${ACAPY_ENDORSER_1_ADMIN_PORT} \
+        --label '${ENDORSER_AGENT_NAME}' \
+        ${ENDORSER_ACAPY_ADMIN_CONFIG} \
+        ${ENDORSER_ACAPY_READ_ONLY_MODE} \
+        --endorser-protocol-role endorser \
+        --auto-endorse-transactions \
+        ",
       ]
     environment:
       - RUST_LOG=error
@@ -319,7 +361,7 @@ services:
     volumes:
       - endorser-wallet-1:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
