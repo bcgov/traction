@@ -456,6 +456,19 @@ files = [
 ]
 
 [[package]]
+name = "randomwords"
+version = "0.4.0"
+description = "A useful module for a random text, e-mails and lorem ipsum."
+optional = false
+python-versions = "*"
+files = [
+    {file = "RandomWords-0.4.0.tar.gz", hash = "sha256:0bb64dc14f7f5d96597e9a08e185b874a3ea20955a1acce632b87122d66d3d6b"},
+]
+
+[package.extras]
+testing = ["pytest"]
+
+[[package]]
 name = "requests"
 version = "2.31.0"
 description = "Python HTTP for Humans."
@@ -774,4 +787,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9.2"
-content-hash = "70fd77758d77f69780957d6f2d10617f41d90134402aa3f0ff568efe90e1f0db"
+content-hash = "d09d5fc9f3975aecb8805a169baea5499d4fa90945f7f9f2dd7ceb17dac8053f"

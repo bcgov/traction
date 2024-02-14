@@ -16,23 +16,23 @@
 </template>
 
 <script setup lang="ts">
-import Navigator from '@/components/Navigator.vue';
-import Console from '@/components/Console.vue';
-import AgentService from '@/services/agent';
-import { useAppStore } from '@/stores/app';
-import { inject, onBeforeMount } from 'vue';
+import Navigator from '@/components/Navigator.vue'
+import Console from '@/components/Console.vue'
+import AgentService from '@/services/agent'
+import { useAppStore } from '@/stores/app'
+import { inject, onBeforeMount } from 'vue'
 
 // Inject the agent service using the composition API
-const agentService: AgentService | undefined = inject('agentService');
+const agentService: AgentService | undefined = inject('agentService')
 
 const appStore = useAppStore()
 
-onBeforeMount(async() => {
-  const tenant = await agentService?.fetchTenant();
+onBeforeMount(async () => {
+  const tenant = await agentService?.fetchTenant()
   if (tenant) {
-    appStore.setTenant(tenant);
+    appStore.setTenant(tenant)
   }
-});
+})
 </script>
 
 <style scoped></style>

@@ -1,17 +1,23 @@
-import type { TenantData } from "@/types/tenant.data";
+import type { TenantData } from '@/types/tenant.data'
 
 export default class Tenant {
-    #tenant_name: string;
-    
-    token: string;
+  private tenant_name: string
+  private wallet_id: string
 
-    constructor(data: TenantData) {
-        this.#tenant_name = data.tenant_name;
+  token: string
 
-        this.token = data.token;
-    }
+  constructor(data: TenantData) {
+    this.tenant_name = data.tenant_name
+    this.wallet_id = data.wallet_id
 
-    get tenantName() {
-        return this.#tenant_name;
-    }
+    this.token = data.token
+  }
+
+  get tenantName() {
+    return this.tenant_name
+  }
+
+  get walletId() {
+    return this.wallet_id
+  }
 }

@@ -1,6 +1,10 @@
 import requests
 
+from random_words import RandomWords
+
 from . import config
+
+r = RandomWords()
 
 
 def get_tenant_auth_headers(token):
@@ -45,12 +49,25 @@ async def create_tenant(tenant_name: str):
         json={"reservation_pwd": reservation_pwd},
     )
     json_res = res.json()
+    token = json_res.get("token")
+
+    # Tenant can now register a webhook
+    res = requests.put(
+        f"{config.PROXY_URL}/tenant/wallet",
+        json={
+            "wallet_webhook_urls": [
+                f"http://host.docker.internal:8000/webhook#{r.random_word().lower()}"
+            ]
+        },
+        headers=get_tenant_auth_headers(token),
+    )
 
     return {
         "tenant_name": tenant_name,
-        "token": json_res.get("token"),
+        "token": token,
         "wallet_id": json_res.get("wallet_id"),
         "wallet_key": json_res.get("wallet_key"),
+        "wallet_webhook_urls": json_res.get("wallet_webhook_urls"),
     }
 
 
@@ -68,6 +85,7 @@ async def create_invitation(headers):
 
     return res.json()
 
+
 async def create_connection(headers, invitation):
     """Create a connection with the invitation."""
 
@@ -75,6 +93,35 @@ async def create_connection(headers, invitation):
         f"{config.PROXY_URL}/out-of-band/receive-invitation",
         headers=headers,
         json=invitation,
+    )
+
+    return res.json()
+
+async def send_drpc_request(headers, connection_id, rpc_request):
+    """Send a request to the agent for the tenant."""
+
+    res = requests.post(
+        f"{config.PROXY_URL}/drpc/request",
+        headers=headers,
+        json={
+            "connection_id": connection_id,
+            "request": rpc_request,
+        },
+    )
+
+    return res.json()
+
+async def send_drpc_response(headers, connection_id, rpc_request_id, rpc_response):
+    """Send a response to the agent for the tenant."""
+
+    res = requests.post(
+        f"{config.PROXY_URL}/drpc/response",
+        headers=headers,
+        json={
+            "connection_id": connection_id,
+            "thread_id": rpc_request_id,
+            "response": rpc_response,
+        },
     )
 
     return res.json()

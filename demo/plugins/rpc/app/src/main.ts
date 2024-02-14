@@ -17,17 +17,19 @@ import App from '@/App.vue'
 const app = createApp(App)
 
 app.use(createPinia())
-app.use(createVuetify({
+app.use(
+  createVuetify({
     components,
     directives,
     icons: {
-        defaultSet: 'mdi',
-        aliases,
-        sets: {
-            mdi,
-        },
-    },
-}))
+      defaultSet: 'mdi',
+      aliases,
+      sets: {
+        mdi
+      }
+    }
+  })
+)
 
 // Provide services here
 app.provide('agentService', new AgentService())
