@@ -6,7 +6,7 @@ authors = ["Akiff Manji <amanji@petridish.dev>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.9.2"
 requests = "^2.31.0"
 fastapi = "^0.109.2"
 uvicorn = {extras = ["standard"], version = "^0.27.1"}
