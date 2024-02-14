@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-20.04
     if: github.repository_owner == 'bcgov'
     steps:      
-      - uses: actions/checkout@v2    
+      - uses: actions/checkout@v4    
         with:
           ref: ${{ github.event.inputs.ref }}    
       
@@ -55,7 +55,7 @@ jobs:
     if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) && (github.repository_owner == 'bcgov') }}
     
     steps:  
-      - uses: actions/checkout@v2  
+      - uses: actions/checkout@v4  
 
       - name: Authenticate and set context
         uses: redhat-actions/oc-login@v1

@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository_owner == 'bcgov'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build service
         uses: ./.github/actions/build_ui
         id: builder
@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository_owner == 'bcgov'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build Aca-Py Image
         uses: ./.github/actions/build_acapy
         id: builder
@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository_owner == 'bcgov'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build Aca-Py Image
         uses: ./.github/actions/build_acapy
         id: builder
@@ -80,7 +80,7 @@ jobs:
     if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) && (github.repository_owner == 'bcgov') }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Authenticate and set context
         uses: redhat-actions/oc-login@v1
