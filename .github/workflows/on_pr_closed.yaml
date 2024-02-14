@@ -18,9 +18,9 @@ jobs:
     runs-on: ubuntu-22.04
     if: github.repository_owner == 'bcgov'
     steps:  
-      - uses: actions/checkout@v2  
+      - uses: actions/checkout@v4  
       - name: Check out manifest repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
           repository: ${{ secrets.MANIFEST_REPO }}

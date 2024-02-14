@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository_owner == 'bcgov'
     steps:
-      - uses: actions/checkout@v3    
+      - uses: actions/checkout@v4    
       - name: Build Aca-Py Image
         uses: ./.github/actions/build_acapy
         id: builder
@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository_owner == 'bcgov'
     steps:      
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build UI
         uses: ./.github/actions/build_ui
         id: builder
@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository_owner == 'bcgov'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build Tenant Proxy Image
         uses: ./.github/actions/build_acapy
         id: builder
