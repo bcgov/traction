@@ -64,6 +64,9 @@ spec:
            {{- end }}
            {{- if .Values.acapy.plugins.multitenantProvider }}
            --plugin multitenant_provider.v1_0 \
+           {{- end }}  
+           {{- if .Values.acapy.plugins.rpc }}
+           --plugin rpc.v1_0 \
            {{- end }}           
            "
           ]

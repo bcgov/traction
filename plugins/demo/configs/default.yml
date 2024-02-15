@@ -26,6 +26,7 @@ plugin:
   - basicmessage_storage.v1_0
   - connection_update.v1_0
   - multitenant_provider.v1_0
+  - rpc.v1_0
 
 # block-plugin:
 

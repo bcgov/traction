@@ -143,6 +143,7 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | `acapy.plugins.connectionUpdate`    | Enable the connection update plugin.    | `true` |
 | `acapy.plugins.multitenantProvider` | Enable the multitenant provider plugin. | `true` |
 | `acapy.plugins.tractionInnkeeper`   | Enable the traction innkeeper plugin.   | `true` |
+| `acapy.plugins.rpc`                 | Enable the RPC plugin.                  | `true` |
 
 ### Acapy Plugin Configuration
 
