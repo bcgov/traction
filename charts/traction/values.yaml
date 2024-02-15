@@ -198,12 +198,14 @@ acapy:
   ## @param acapy.plugins.connectionUpdate Enable the connection update plugin.
   ## @param acapy.plugins.multitenantProvider Enable the multitenant provider plugin.
   ## @param acapy.plugins.tractionInnkeeper Enable the traction innkeeper plugin.
+  ## @param acapy.plugins.rpc Enable the RPC plugin.
   ##
   plugins:
     basicmessageStorage: true
     connectionUpdate: true
     multitenantProvider: true
     tractionInnkeeper: true
+    rpc: true
 
   ## @section Acapy Plugin Configuration
   ## Specify configuration values for each plugin.
