@@ -25,10 +25,14 @@
 </template>
 
 <script setup lang="ts">
+import ConnectionService from '@/services/connection'
+import DrpcService from '@/services/drpc'
 import { useAppStore } from '@/stores/app'
-import { watch } from 'vue'
-// import { onMounted } from 'vue';
+import { inject, watch } from 'vue'
 import { useGoTo } from 'vuetify'
+
+const drpcService: DrpcService | undefined = inject('drpcService')
+const connectionService: ConnectionService | undefined = inject('connectionService')
 
 const goTo = useGoTo()
 const appStore = useAppStore()
@@ -37,24 +41,24 @@ watch(
   () => appStore.tenant,
   () => {
     if (appStore.tenant) {
-      const ws = new WebSocket(`ws://localhost:8000/ws/${appStore.tenant?.walletId}`)
+      const ws = new WebSocket(`ws://localhost:${import.meta.env.VITE_AGENT_PORT}/ws/${appStore.tenant?.walletId}`)
       ws.onopen = () => {
-        appStore.addMessage('Connected to WS')
+        appStore.addMessage(`Hello ${appStore.tenant?.tenantName}, you have an active websocket and will receive messages here.`)
       }
-      ws.onmessage = (wsMessage) => {
+      ws.onmessage = async (wsMessage) => {
         const { message, topic } = JSON.parse(wsMessage.data)
-        if (topic === 'rpc' || (topic === 'connections' && message.state === 'active')) {
+        if (['drpc_request', 'drpc_response', 'connections'].includes(topic)) {
           switch (topic) {
-            case 'rpc':
-              // TODO: handle rpc messages
+            case 'drpc_request':
+            case 'drpc_response':
+              await drpcService?.handleDrpcMessage(topic, message)
               break
             case 'connections':
-              appStore.addConnection(message)
+              connectionService?.handleConnectionMessage(message)
               break
             default:
               break
           }
-          appStore.addMessage(message)
         }
         goTo('#prompt', {
           container: '#shell',

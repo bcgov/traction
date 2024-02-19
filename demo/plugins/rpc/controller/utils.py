@@ -1,5 +1,6 @@
 import requests
 
+from fastapi import Response
 from random_words import RandomWords
 
 from . import config
@@ -11,25 +12,6 @@ def get_tenant_auth_headers(token):
     """Get the auth headers for the tenant."""
 
     return {"Authorization": f"Bearer {token}"}
-
-
-async def get_innkeeper_auth_headers():
-    """Get the auth headers for the innkeeper."""
-
-    return {"Authorization": f"Bearer {await get_inkeeper_token()}"}
-
-
-async def get_inkeeper_token():
-    """Get the token for the innkeeper."""
-
-    data = {"wallet_key": config.INNKEEPER_WALLET_KEY}
-
-    res = requests.post(
-        f"{config.PROXY_URL}/multitenancy/tenant/{config.INNKEEPER_TENANT_ID}/token",
-        json=data,
-    )
-
-    return res.json().get("token")
 
 
 async def create_tenant(tenant_name: str):
@@ -56,7 +38,7 @@ async def create_tenant(tenant_name: str):
         f"{config.PROXY_URL}/tenant/wallet",
         json={
             "wallet_webhook_urls": [
-                f"http://host.docker.internal:8000/webhook#{r.random_word().lower()}"
+                f"http://host.docker.internal:{config.AGENT_PORT}/webhook#{r.random_word().lower()}"
             ]
         },
         headers=get_tenant_auth_headers(token),
@@ -71,7 +53,7 @@ async def create_tenant(tenant_name: str):
     }
 
 
-async def create_invitation(headers):
+async def create_invitation(headers) -> Response:
     """Create an out-of-band invitation for the tenant."""
 
     res = requests.post(
@@ -83,7 +65,7 @@ async def create_invitation(headers):
         },
     )
 
-    return res.json()
+    return Response(res.content, res.status_code, res.headers, "application/json")
 
 
 async def create_connection(headers, invitation):
@@ -95,33 +77,31 @@ async def create_connection(headers, invitation):
         json=invitation,
     )
 
-    return res.json()
+    return Response(res.content, res.status_code, res.headers, "application/json")
+
 
 async def send_drpc_request(headers, connection_id, rpc_request):
     """Send a request to the agent for the tenant."""
 
     res = requests.post(
-        f"{config.PROXY_URL}/drpc/request",
+        f"{config.PROXY_URL}/drpc/{connection_id}/request",
         headers=headers,
-        json={
-            "connection_id": connection_id,
-            "request": rpc_request,
-        },
+        json={"request": rpc_request},
     )
 
-    return res.json()
+    return Response(res.content, res.status_code, res.headers, "application/json")
+
 
 async def send_drpc_response(headers, connection_id, rpc_request_id, rpc_response):
     """Send a response to the agent for the tenant."""
 
     res = requests.post(
-        f"{config.PROXY_URL}/drpc/response",
+        f"{config.PROXY_URL}/drpc/{connection_id}/response",
         headers=headers,
         json={
-            "connection_id": connection_id,
             "thread_id": rpc_request_id,
             "response": rpc_response,
         },
     )
 
-    return res.json()
+    return Response(res.content, res.status_code, res.headers, "application/json")

@@ -11,6 +11,8 @@ import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 
 import AgentService from '@/services/agent'
+import ConnectionService from '@/services/connection'
+import DrpcService from '@/services/drpc'
 
 import App from '@/App.vue'
 
@@ -31,7 +33,13 @@ app.use(
   })
 )
 
+const agentService = new AgentService()
+const connectionService = new ConnectionService(agentService)
+const drpcService = new DrpcService(agentService)
+
 // Provide services here
-app.provide('agentService', new AgentService())
+app.provide('agentService', agentService)
+app.provide('connectionService', connectionService)
+app.provide('drpcService', drpcService)
 
 app.mount('#app')

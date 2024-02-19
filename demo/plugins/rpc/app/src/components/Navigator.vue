@@ -3,7 +3,11 @@
   <v-timeline direction="vertical" side="end">
     <v-timeline-item width="100%">
       <div>
-        <v-btn prepend-icon="mdi-email" :disabled="isCreateInviteDisabled" @click="getInvitation">
+        <v-btn
+          prepend-icon="mdi-email"
+          :disabled="isCreateInviteDisabled"
+          @click="createInvitation"
+        >
           Create invite
         </v-btn>
         <div v-if="appStore.invitation">
@@ -74,6 +78,7 @@
             :items="[
               { type: 'valid', label: 'A valid reqeust' },
               { type: 'invalid', label: 'An invalid request' },
+              { type: 'unknown', label: 'An uknown method' },
               { type: 'notification', label: 'A notification' }
             ]"
             item-title="label"
@@ -93,25 +98,17 @@
         </div>
       </div>
     </v-timeline-item>
-    <v-timeline-item>
-      <div>
-        <v-btn prepend-icon="mdi-send" :disabled="isSendRpcResponseDisabled">
-          Send RPC Response
-        </v-btn>
-        <div v-if="drpcResponsesDisplayed">
-          <v-btn variant="text" prepend-icon="mdi-send" @click="null">Send</v-btn>
-        </div>
-      </div>
-    </v-timeline-item>
   </v-timeline>
 </template>
 
 <script setup lang="ts">
-import type AgentService from '@/services/agent'
+import type ConnectionService from '@/services/connection'
+import type DrpcService from '@/services/drpc'
 import { useAppStore } from '@/stores/app'
 import { computed, inject } from 'vue'
 
-const agentService: AgentService | undefined = inject('agentService')
+const connectionService: ConnectionService | undefined = inject('connectionService')
+const drpcService: DrpcService | undefined = inject('drpcService')
 
 const appStore = useAppStore()
 
@@ -120,7 +117,6 @@ const invitation = defineModel('invitation', { default: '' })
 const drpcRequestsDisplayed = defineModel('drpcRequestsDisplayed', { default: false })
 const drpcRequestType = defineModel('drpcRequestType', { default: '' })
 const drpcRequestConnection = defineModel('drpcRequestConnection', { default: '' })
-const drpcResponsesDisplayed = defineModel('drpcResponsesDisplayed', { default: false })
 
 const isCreateInviteDisabled = computed(() => {
   return !appStore.tenant
@@ -134,12 +130,8 @@ const isSendRpcRequestDisabled = computed(() => {
   return !appStore.connections.length
 })
 
-const isSendRpcResponseDisabled = computed(() => {
-  return !Object.keys(appStore.drpcRequests).length
-})
-
-const getInvitation = async () => {
-  const oob = await agentService?.fetchInvitation()
+const createInvitation = async () => {
+  const oob = await connectionService?.createInvitation()
   appStore.setInvitation(oob.invitation)
 }
 
@@ -151,7 +143,7 @@ const acceptInvitation = async () => {
   if (!invitation.value) {
     return
   }
-  await agentService?.createConnection(invitation.value)
+  await connectionService?.acceptInvitation(invitation.value)
   clearInvitation()
 }
 
@@ -169,26 +161,39 @@ const sendDrpcRequest = async () => {
     case 'valid':
       rpcRequest = [
         {
-          id: '1',
+          id: 1,
           jsonrpc: '2.0',
-          method: 'add',
-          params: [1, 2]
+          method: 'sum',
+          params: [1, 2, 4]
         },
         {
-          id: '2',
+          id: 2,
           jsonrpc: '2.0',
           method: 'subtract',
-          params: [2, 1]
+          params: [42, 23]
         }
       ]
+      for (const request of rpcRequest) {
+        appStore.addMessage(`${request.method}(${request.params.join(', ')}) =`)
+      }
       break
     case 'invalid':
       rpcRequest = {
-        id: '3',
+        id: 3,
         jsonrpc: '2.0',
         method: 'rpc.method',
         params: {}
       }
+      appStore.addMessage(`${rpcRequest.method}(${JSON.stringify(rpcRequest.params)}) =`)
+      break
+    case 'unknown':
+      rpcRequest = {
+        id: 4,
+        jsonrpc: '2.0',
+        method: 'unknown',
+        params: {}
+      }
+      appStore.addMessage(`${rpcRequest.method}(${JSON.stringify(rpcRequest.params)}) =`)
       break
     case 'notification':
       rpcRequest = {
@@ -198,7 +203,7 @@ const sendDrpcRequest = async () => {
       }
       break
   }
-  await agentService?.sendDrpcRequest(drpcRequestConnection.value, rpcRequest)
+  await drpcService?.sendRequest(drpcRequestConnection.value, rpcRequest)
   clearDrpcRequest()
 }
 

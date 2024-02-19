@@ -42,7 +42,7 @@ async def before_startup(app: FastAPI):
     """Create a new tenant before starting up the app."""
 
     try:
-        tenant = await utils.create_tenant("tenant_name")
+        tenant = await utils.create_tenant(f"{utils.r.random_word().capitalize()}")
         state["tenant"] = tenant
         yield
     except:
@@ -67,8 +67,10 @@ async def get_tenant():
                 status_code=404, detail="Token or tenant name or wallet id not found"
             )
 
-        return {"tenant": tenant_name, "token": token, "wallet_id": wallet_id}
-    except:
+        return {"tenant_name": tenant_name, "token": token, "wallet_id": wallet_id}
+    except HTTPException as exc:
+        if exc:
+            raise exc
         raise HTTPException(status_code=500, detail="Server error")
 
 
@@ -82,7 +84,9 @@ async def get_invitation(request: Request):
 
         headers = utils.get_tenant_auth_headers(token)
         return await utils.create_invitation(headers)
-    except:
+    except HTTPException as exc:
+        if exc:
+            raise exc
         raise HTTPException(status_code=500, detail="Server error")
 
 
@@ -102,7 +106,9 @@ async def create_connection(request: Request):
 
         headers = utils.get_tenant_auth_headers(token)
         return await utils.create_connection(headers, invitation)
-    except:
+    except HTTPException as exc:
+        if exc:
+            raise exc
         raise HTTPException(status_code=500, detail="Server error")
 
 
@@ -124,7 +130,9 @@ async def send_drpc_request(request: Request):
             )
         headers = utils.get_tenant_auth_headers(token)
         return await utils.send_drpc_request(headers, connection_id, rpc_request)
-    except:
+    except HTTPException as exc:
+        if exc:
+            raise exc
         raise HTTPException(status_code=500, detail="Server error")
 
 
@@ -137,10 +145,10 @@ async def send_drpc_response(request: Request):
 
         body = await request.json()
 
-        if not (
-            (connection_id := body.get("connection_id"))
-            and (rpc_request_id := body.get("rpc_request_id"))
-            and (rpc_response := body.get("rpc_response"))
+        if (
+            not (connection_id := body.get("connection_id"))
+            or not (rpc_request_id := body.get("rpc_request_id"))
+            or ((rpc_response := body.get("rpc_response")) == None)
         ):
             raise HTTPException(
                 status_code=400,
@@ -150,7 +158,9 @@ async def send_drpc_response(request: Request):
         return await utils.send_drpc_response(
             headers, connection_id, rpc_request_id, rpc_response
         )
-    except:
+    except HTTPException as exc:
+        if exc:
+            raise exc
         raise HTTPException(status_code=500, detail="Server error")
 
 
@@ -159,7 +169,7 @@ async def recieve_webhook(topic: str, request: Request):
     """Recieve a webhook for the tenant."""
     try:
         message = None
-        if topic in ("connections", "rpc"):
+        if topic in ("connections", "drpc_request", "drpc_response"):
             message = await request.json()
 
         if wallet_id := state["tenant"]["wallet_id"]:
@@ -169,8 +179,8 @@ async def recieve_webhook(topic: str, request: Request):
             await manager.send(
                 json.dumps({"topic": topic, "message": message}), websocket
             )
-    except Exception as e:
-        print(e)
+    except Exception as exc:
+        print(exc)
         raise HTTPException(status_code=500, detail="Server error")
 
 

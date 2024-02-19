@@ -8,7 +8,6 @@ export const useAppStore = defineStore('app', () => {
   const invitation: Ref<any> = ref()
   const messages: Ref<string[]> = ref([])
   const connections: Ref<any[]> = ref([])
-  const drpcRequests: Ref<any> = ref({})
 
   function setTenant(t: Tenant) {
     tenant.value = t
@@ -26,25 +25,14 @@ export const useAppStore = defineStore('app', () => {
     connections.value.push(connection)
   }
 
-  function addDrpcRequest(id: string, request: any) {
-    drpcRequests.value[id] = request
-  }
-
-  function removeDrpcRequest(id: string) {
-    delete drpcRequests.value[id]
-  }
-
   return {
     tenant,
     invitation,
     messages,
     connections,
-    drpcRequests,
     setTenant,
     setInvitation,
     addMessage,
-    addConnection,
-    addDrpcRequest,
-    removeDrpcRequest
+    addConnection
   }
 })
