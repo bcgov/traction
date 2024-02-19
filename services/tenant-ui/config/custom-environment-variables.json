@@ -6,6 +6,7 @@
     "showWritableComponents": "FRONTEND_TENANT_SHOW_WRITABLE_COMPONENTS",
     "showOIDCReservationLogin": "FRONTEND_SHOW_OIDC_RESERVATION_LOGIN",
     "quickConnectEndorserName": "FRONTEND_QUICK_CONNECT_ENDORSER_NAME",
+    "requireEmailForReservation": "FRONTEND_REQUIRE_EMAIL_FOR_RESERVATION",
     "session": {
       "timeoutSeconds": "FRONTEND_SESSION_TIMEOUT_SECONDS",
       "countdownSeconds": "FRONTEND_SESSION_COUNTDOWN_SECONDS"

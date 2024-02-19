@@ -2,18 +2,18 @@
   "formDataSchema": {
     "type": "object",
     "properties": {
-      "mySillyExtraValue": {
+      "organization": {
         "type": "string"
       }
-    },
-    "required": []
+    }
   },
   "formUISchema": {
     "type": "VerticalLayout",
     "elements": [
       {
         "type": "Control",
-        "scope": "#/properties/mySillyExtraValue"
+        "scope": "#/properties/organization",
+        "label": "Company/organization "
       }
     ]
   }
