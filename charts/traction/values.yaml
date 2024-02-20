@@ -591,6 +591,9 @@ ui:
   showOIDCReservationLogin: false
   ## @param ui.oidc.quickConnectEndorserName A ledger that has endorser auto-accept/transact enabled
   quickConnectEndorserName: ""
+  ## @param ui.requireEmailForReservation Whether the Email field is needed for a tenant reservation
+  ## If false will default not.applicable@example.com to API 
+  requireEmailForReservation: true
   image:
     ## @param ui.image.repository
     repository: ghcr.io/bcgov/traction-tenant-ui

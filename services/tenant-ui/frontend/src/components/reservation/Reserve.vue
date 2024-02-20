@@ -50,17 +50,20 @@ import { useToast } from 'vue-toastification';
 import { JsonForms, JsonFormsChangeEvent } from '@jsonforms/vue';
 import { vanillaRenderers } from '@jsonforms/vue-vanilla';
 // State
-import { useReservationStore } from '@/store';
+import { useConfigStore, useReservationStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Components
 import { RESERVATION_STATUSES } from '@/helpers/constants';
 import ShowWallet from './status/ShowWallet.vue';
 import ReservationConfirmation from './ReservationConfirmation.vue';
 import axios from 'axios';
+import { stringOrBooleanTruthy } from '@/helpers';
 
 const toast = useToast();
 
 // State setup
+const configStore = useConfigStore();
+const { config } = storeToRefs(useConfigStore());
 const reservationStore = useReservationStore();
 const { loading, status } = storeToRefs(useReservationStore());
 
@@ -129,8 +132,11 @@ const manProperties = {
     type: 'string',
   },
 };
+const manRequired = ['tenantName'];
+if (stringOrBooleanTruthy(config.value?.frontend?.requireEmailForReservation)) {
+  manRequired.push('emailAddress');
+}
 
-const manRequired = ['emailAddress', 'tenantName'];
 const manElements = [
   {
     type: 'Control',
@@ -295,6 +301,13 @@ const handleSubmit = async (event: any) => {
       tenant_name: tenantName,
       context_data: contextData,
     };
+    // If the email address is blank and not required, put a dummy value in.
+    if (
+      !emailAddress &&
+      !stringOrBooleanTruthy(config.value?.frontend?.requireEmailForReservation)
+    ) {
+      formFields.value.contact_email = 'not.applicable@example.com';
+    }
 
     const res = await reservationStore.makeReservation(formFields.value);
     reservationIdResult.value = res.reservation_id;
