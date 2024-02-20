@@ -9,6 +9,7 @@
     "showOIDCReservationLogin": false,
     "showWritableComponents": true,
     "quickConnectEndorserName": "",
+    "requireEmailForReservation": true,
     "session": {
       "timeoutSeconds": "600",
       "countdownSeconds": "30"
