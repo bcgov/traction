@@ -9,11 +9,12 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-aries-cloudagent = { version = "0.11.0" }
+aries-cloudagent = { version = "0.12.0rc1", optional = true }
 python-dateutil = "^2.8.2"
 typing-extensions = "4.8.0"
 traction-innkeeper = {path = "./traction_innkeeper", develop = true}
 
+anoncreds= { version = "0.2.0.dev11", allow-prereleases = true }
 aries-askar = { version = "~0.3.0" }
 indy-credx = { version = "~1.0.0" }
 indy-vdr = { version = "~0.3.3" }
