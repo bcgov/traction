@@ -29,7 +29,7 @@
       "aboutBusiness": {
         "title": "UX_ABOUT_TITLE",
         "linkTitle": "UX_ABOUT_LINK_TITLE",
-        "linkText": "UX_ABOUT_LINK_TEXT",
+        "link": "UX_ABOUT_LINK",
         "imageUrl": "UX_ABOUT_IMAGE_URL"
       },
       "infoBanner": {

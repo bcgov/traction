@@ -624,6 +624,18 @@ ui:
     ## @param ui.ux.coverImageCopyright
     coverImageCopyright: "Photo by Kristoffer Fredriksson on StockSnap"
 
+    ## About Business page settings
+    ##
+    aboutBusiness:
+      ## @param ui.ux.aboutBusiness.title
+      title: "Government of British Columbia"
+      ## @param ui.ux.aboutBusiness.linkTitle
+      linkTitle: "BC Digital Trust Service Agreement"
+      ## @param ui.ux.aboutBusiness.link
+      link: "https://github.com/bcgov/bc-vcpedia/blob/main/agents/bc-gov-agent-service.md"
+      ## @param ui.ux.aboutBusiness.imageUrl
+      imageUrl: "/img/bc/bc_logo.png"
+
     ## Information banner settings
     ##
     infoBanner:

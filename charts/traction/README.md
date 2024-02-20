@@ -149,7 +149,7 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 
 | Name                                                                                    | Description | Value                                                                                  |
 | --------------------------------------------------------------------------------------- | ----------- | -------------------------------------------------------------------------------------- |
-| `acapy.plugin-config.yml.multitenant_provider.manager.class_name`                       |             | `multitenant_provider.v1_0.manager.AskarMultitokenMultitenantManager` |
+| `acapy.plugin-config.yml.multitenant_provider.manager.class_name`                       |             | `multitenant_provider.v1_0.manager.AskarMultitokenMultitenantManager`                  |
 | `acapy.plugin-config.yml.multitenant_provider.manager.always_check_provided_wallet_key` |             | `true`                                                                                 |
 | `acapy.plugin-config.yml.multitenant_provider.errors.on_unneeded_wallet_key`            |             | `false`                                                                                |
 | `acapy.plugin-config.yml.multitenant_provider.token_expiry.units`                       |             | `days`                                                                                 |
@@ -305,6 +305,10 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | `ui.ux.copyright`                                  |                                                                                                                     | `""`                                           |
 | `ui.ux.owner`                                      |                                                                                                                     | `""`                                           |
 | `ui.ux.coverImageCopyright`                        |                                                                                                                     | `Photo by Kristoffer Fredriksson on StockSnap` |
+| `ui.ux.aboutBusiness.title`                        | The title for the About page business section                                                                       | `Government of British Columbia`               |
+| `ui.ux.aboutBusiness.linkTitle`                    | The description for the About page business section link                                                            | `BC Digital Trust Service Agreement`           |
+| `ui.ux.aboutBusiness.link`                         | The URL for the About page business section link                                                                    | `https://github.com/bcgov/bc-vcpedia/`         |
+| `ui.ux.aboutBusiness.imageUrl`                     | The image in the About page business section                                                                        | `/img/bc/bc_logo.png`                          |
 | `ui.oidc.showInnkeeperAdminLogin`                  | Show Innkeeper Admin Login                                                                                          | `true`                                         |
 | `ui.oidc.showWritableComponents`                   | Show ledger-write UI components                                                                                     | `true`                                         |
 | `ui.oidc.active`                                   | Enable OIDC authentication                                                                                          | `true`                                         |
