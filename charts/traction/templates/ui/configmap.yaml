@@ -37,4 +37,8 @@ data:
   UX_INFO_BANNER_MESSAGE: {{ .Values.ui.ux.infoBanner.message | quote }}
   UX_INFO_BANNER_MESSAGE_LEVEL: {{ .Values.ui.ux.infoBanner.messageLevel | quote }}
   UX_INFO_BANNER_SHOW_MESSAGE: {{ .Values.ui.ux.infoBanner.showMessage | quote }}
+  UX_ABOUT_TITLE: {{ .Values.ui.ux.aboutBusiness.title | quote }}
+  UX_ABOUT_LINK_TITLE: {{ .Values.ui.ux.aboutBusiness.linkTitle | quote }}
+  UX_ABOUT_LINK: {{ .Values.ui.ux.aboutBusiness.link | quote }}
+  UX_ABOUT_IMAGE_URL: {{ .Values.ui.ux.aboutBusiness.imageUrl | quote }}
 {{- end -}}
