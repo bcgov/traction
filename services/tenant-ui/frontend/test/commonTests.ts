@@ -8,13 +8,17 @@ import { expect } from 'vitest';
 const testSuccessResponse = async (
   store: any,
   func: () => void,
-  loadingKey: string
+  loadingKey: string | undefined
 ) => {
-  expect(store[loadingKey]).toEqual(true);
+  if (loadingKey) {
+    expect(store[loadingKey]).toEqual(true);
+  }
   const response = await func;
 
   expect(response).not.toBeNull();
-  expect(store[loadingKey]).toEqual(false);
+  if (loadingKey) {
+    expect(store[loadingKey]).toEqual(false);
+  }
   expect(store.error).toBeNull();
 };
 

@@ -80,6 +80,8 @@ export const API_PATH = {
   ISSUE_CREDENTIALS_SEND_OFFER: '/issue-credential/send-offer',
   ISSUE_CREDENTIAL_RECORDS_SEND_REQUEST: (id: string) =>
     `/issue-credential/records/${id}/send-request`,
+  ISSUE_CREDENTIAL_RECORDS_PROBLEM_REPORT: (id: string) =>
+    `/issue-credential/records/${id}/problem-report`,
 
   LEDGER_TAA: '/ledger/taa',
   LEDGER_TAA_ACCEPT: '/ledger/taa/accept',
@@ -159,8 +161,6 @@ export const API_PATH = {
   HOLDER_CREDENTIALS: '/tenant/v1/holder/credentials/',
   HOLDER_CREDENTIALS_ACCEPT_OFFER: (id: string) =>
     `/tenant/v1/holder/credentials/${id}/accept-offer`,
-  HOLDER_CREDENTIALS_REJECT_OFFER: (id: string) =>
-    `/tenant/v1/holder/credentials/${id}/reject-offer`,
   HOLDER_CREDENTIAL: (id: string) => `/tenant/v1/holder/credentials/${id}`,
   HOLDER_PRESENTATIONS: '/tenant/v1/holder/presentations/',
   HOLDER_PRESENTATION: (id: string) => `/tenant/v1/holder/presentations/${id}`,

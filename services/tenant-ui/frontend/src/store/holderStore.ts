@@ -114,39 +114,6 @@ export const useHolderStore = defineStore('holder', () => {
     return result;
   }
 
-  async function rejectCredentialOffer(credId: string) {
-    console.log('> holderStore.rejectCredentialOffer');
-
-    error.value = null;
-    loading.value = true;
-
-    const result = null;
-
-    // await acapyApi
-    //   .postHttp(API_PATH.HOLDER_CREDENTIALS_REJECT_OFFER(credId), {
-    //     holder_credential_id: credId,
-    //   })
-    //   .then((res) => {
-    //     result = res.data.item;
-    //   })
-    //   .then(() => {
-    //     console.log('credential offer rejected.');
-    //     listCredentials(); // Refresh table
-    //   })
-    //   .catch((err) => {
-    //     error.value = err;
-    //   })
-    //   .finally(() => {
-    //     loading.value = false;
-    //   });
-    // if (error.value != null) {
-    //   // throw error so $onAction.onError listeners can add their own handler
-    //   throw error.value;
-    // }
-    // return data so $onAction.after listeners can add their own handler
-    return result;
-  }
-
   async function deleteCredentialExchange(credExId: string) {
     console.log('> holderStore.deleteCredentialExchange');
 
@@ -178,6 +145,18 @@ export const useHolderStore = defineStore('holder', () => {
     return result;
   }
 
+  async function sendProblemReport(credExId: string) {
+    console.log('> holderStore.sendProblemReport');
+
+    await acapyApi
+      .postHttp(API_PATH.ISSUE_CREDENTIAL_RECORDS_PROBLEM_REPORT(credExId), {
+        description: 'Tenant rejected credential offer through Tenant UI.',
+      })
+      .then(() => {
+        console.log('Problem report sent.');
+      });
+  }
+
   return {
     credentialExchanges,
     credentials,
@@ -197,7 +176,7 @@ export const useHolderStore = defineStore('holder', () => {
     listHolderCredentialExchanges,
     listOcas,
     listPresentations,
-    rejectCredentialOffer,
+    sendProblemReport,
   };
 });
 
