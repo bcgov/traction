@@ -81,8 +81,15 @@ const rejectOffer = (event: any, data: V10CredentialExchange) => {
     message: 'Are you sure you want to reject this credential offer?',
     header: 'Confirmation',
     icon: 'pi pi-exclamation-triangle',
-    accept: () => {
+    accept: async () => {
       if (data.credential_exchange_id) {
+        // Send a problem report then delete the cred exchange record
+        await holderStore
+          .sendProblemReport(data.credential_exchange_id)
+          .catch((err: any) => {
+            console.error(`Problem report failed: ${err}`);
+            toast.error('Failure sending Problem Report');
+          });
         holderStore
           .deleteCredentialExchange(data.credential_exchange_id)
           .then(() => {
