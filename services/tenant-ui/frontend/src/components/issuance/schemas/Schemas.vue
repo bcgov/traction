@@ -29,13 +29,13 @@
             <AddSchemaFromLedger />
           </div>
           <div class="flex justify-content-end">
-            <span class="p-input-icon-left">
-              <i class="pi pi-search" />
+            <IconField icon-position="left">
+              <InputIcon><i class="pi pi-search" /></InputIcon>
               <InputText
                 v-model="filter.schema_id.value"
                 :placeholder="t('configuration.search.schemas')"
               />
-            </span>
+            </IconField>
           </div>
         </div>
       </template>
@@ -169,6 +169,8 @@ import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
+import InputIcon from 'primevue/inputicon';
+import IconField from 'primevue/iconfield';
 import { useConfirm } from 'primevue/useconfirm';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
