@@ -24,13 +24,13 @@
             <CreateConnection />
           </div>
           <div class="flex justify-content-end">
-            <span class="p-input-icon-left">
-              <i class="pi pi-search ml-0" />
+            <IconField icon-position="left">
+              <InputIcon><i class="pi pi-search" /></InputIcon>
               <InputText
                 v-model="filter.alias.value"
                 :placeholder="$t('connect.invitations.search')"
               />
-            </span>
+            </IconField>
           </div>
         </div>
       </template>
@@ -128,6 +128,9 @@ import { onMounted, ref, computed } from 'vue';
 import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
 import DataTable from 'primevue/datatable';
+import InputIcon from 'primevue/inputicon';
+import IconField from 'primevue/iconfield';
+
 import { useToast } from 'vue-toastification';
 import { FilterMatchMode } from 'primevue/api';
 // State

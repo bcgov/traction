@@ -19,13 +19,13 @@
     >
       <template #header>
         <div class="flex justify-content-end">
-          <span class="p-input-icon-left mr-3">
-            <i class="pi pi-search ml-0" />
+          <IconField icon-position="left">
+            <InputIcon><i class="pi pi-search" /></InputIcon>
             <InputText
               v-model="filter.global.value"
               placeholder="Search History"
             />
-          </span>
+          </IconField>
         </div>
       </template>
       <template #empty>{{ $t('common.noRecordsFound') }}</template>
@@ -162,11 +162,12 @@ import { onMounted, ref, computed } from 'vue';
 // PrimeVue
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
-import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable, { DataTableFilterMetaData } from 'primevue/datatable';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
+import InputIcon from 'primevue/inputicon';
+import IconField from 'primevue/iconfield';
 import { FilterMatchMode } from 'primevue/api';
 
 // external

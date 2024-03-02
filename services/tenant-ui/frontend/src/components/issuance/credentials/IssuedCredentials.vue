@@ -28,13 +28,13 @@
             />
           </div>
           <div class="flex justify-content-end">
-            <span class="p-input-icon-left">
-              <i class="pi pi-search" />
+            <IconField icon-position="left">
+              <InputIcon><i class="pi pi-search" /></InputIcon>
               <InputText
                 v-model="filter.global.value"
                 placeholder="Search Credentials"
               />
-            </span>
+            </IconField>
           </div>
         </div>
       </template>
@@ -154,6 +154,8 @@ import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
+import InputIcon from 'primevue/inputicon';
+import IconField from 'primevue/iconfield';
 import { useToast } from 'vue-toastification';
 // Other Components
 import { formatDateLong, stringOrBooleanTruthy } from '@/helpers';

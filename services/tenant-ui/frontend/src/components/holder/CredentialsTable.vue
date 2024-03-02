@@ -18,13 +18,13 @@
       <div class="flex justify-content-between">
         <div class="flex justify-content-start"></div>
         <div class="flex justify-content-end">
-          <span class="p-input-icon-left">
-            <i class="pi pi-search" />
+          <IconField icon-position="left">
+            <InputIcon><i class="pi pi-search" /></InputIcon>
             <InputText
               v-model="filter.cred_def_id.value"
               placeholder="Search Credentials"
             />
-          </span>
+          </IconField>
         </div>
       </div>
     </template>
@@ -160,6 +160,8 @@ import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable, { DataTableFilterMetaData } from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
+import InputIcon from 'primevue/inputicon';
+import IconField from 'primevue/iconfield';
 import { useToast } from 'vue-toastification';
 // State
 import { useConnectionStore, useHolderStore } from '@/store';

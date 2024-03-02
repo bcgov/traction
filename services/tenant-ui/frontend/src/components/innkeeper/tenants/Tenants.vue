@@ -27,13 +27,13 @@
                 style="width: 10rem"
                 @change="loadTable"
               />
-              <span class="p-input-icon-left container-item">
-                <i class="pi pi-search ml-0" />
+              <IconField class="container-item" icon-position="left">
+                <InputIcon><i class="pi pi-search" /></InputIcon>
                 <InputText
                   v-model="filter.global.value"
                   :placeholder="$t('tenants.search')"
                 />
-              </span>
+              </IconField>
             </div>
           </div>
         </div>
@@ -166,6 +166,8 @@ import { FilterMatchMode } from 'primevue/api';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
+import InputIcon from 'primevue/inputicon';
+import IconField from 'primevue/iconfield';
 import ToggleButton from 'primevue/togglebutton';
 import { computed, onMounted, ref } from 'vue';
 import { useToast } from 'vue-toastification';
