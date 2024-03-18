@@ -1,18 +1,18 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`SkeletonCard > mount matches snapshot with expected values 1`] = `
-"<div class=\\"border-round border-1 surface-border p-4 surface-card\\">
-  <div class=\\"flex mb-3\\">
-    <div class=\\"p-skeleton p-component p-skeleton-circle mr-2\\" style=\\"position: relative; width: 4rem; height: 4rem;\\" aria-hidden=\\"true\\" data-pc-name=\\"skeleton\\" data-pc-section=\\"root\\"></div>
+"<div class="border-round border-1 surface-border p-4 surface-card">
+  <div class="flex mb-3">
+    <div class="p-skeleton p-component p-skeleton-circle mr-2" style="position: relative; width: 4rem; height: 4rem;" aria-hidden="true" data-pc-name="skeleton" data-pc-section="root"></div>
     <div>
-      <div class=\\"p-skeleton p-component mb-2\\" style=\\"position: relative; width: 10rem; height: 1rem;\\" aria-hidden=\\"true\\" data-pc-name=\\"skeleton\\" data-pc-section=\\"root\\"></div>
-      <div class=\\"p-skeleton p-component mb-2\\" style=\\"position: relative; width: 5rem; height: 1rem;\\" aria-hidden=\\"true\\" data-pc-name=\\"skeleton\\" data-pc-section=\\"root\\"></div>
+      <div class="p-skeleton p-component mb-2" style="position: relative; width: 10rem; height: 1rem;" aria-hidden="true" data-pc-name="skeleton" data-pc-section="root"></div>
+      <div class="p-skeleton p-component mb-2" style="position: relative; width: 5rem; height: 1rem;" aria-hidden="true" data-pc-name="skeleton" data-pc-section="root"></div>
     </div>
   </div>
-  <div class=\\"p-skeleton p-component\\" style=\\"position: relative; width: 100%; height: 150px;\\" aria-hidden=\\"true\\" data-pc-name=\\"skeleton\\" data-pc-section=\\"root\\"></div>
-  <div class=\\"flex justify-content-end mt-3\\">
-    <div class=\\"p-skeleton p-component mr-3\\" style=\\"position: relative; width: 8rem; height: 2rem;\\" aria-hidden=\\"true\\" data-pc-name=\\"skeleton\\" data-pc-section=\\"root\\"></div>
-    <div class=\\"p-skeleton p-component\\" style=\\"position: relative; width: 8rem; height: 2rem;\\" aria-hidden=\\"true\\" data-pc-name=\\"skeleton\\" data-pc-section=\\"root\\"></div>
+  <div class="p-skeleton p-component" style="position: relative; width: 100%; height: 150px;" aria-hidden="true" data-pc-name="skeleton" data-pc-section="root"></div>
+  <div class="flex justify-content-end mt-3">
+    <div class="p-skeleton p-component mr-3" style="position: relative; width: 8rem; height: 2rem;" aria-hidden="true" data-pc-name="skeleton" data-pc-section="root"></div>
+    <div class="p-skeleton p-component" style="position: relative; width: 8rem; height: 2rem;" aria-hidden="true" data-pc-name="skeleton" data-pc-section="root"></div>
   </div>
 </div>"
 `;

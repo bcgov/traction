@@ -58,7 +58,7 @@ describe('AcceptInviteForm', async () => {
     expect(wrapper.html()).toContain('Url is required');
   });
 
-  test.skip('sucessful form calls toast info and external function', async () => {
+  test('sucessful form calls toast info and external function', async () => {
     await mockVuelidate();
     const wrapper = mountAcceptInviteForm();
     const wrapperVm = wrapper.vm as unknown as typeof AcceptInviteForm;

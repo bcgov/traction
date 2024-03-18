@@ -120,7 +120,7 @@ describe('connectionStore', () => {
     });
   });
 
-  describe.skip('Unsuccessful API calls', async () => {
+  describe('Unsuccessful API calls', async () => {
     beforeEach(() => {
       server.use(...restHandlersUnknownError);
     });
