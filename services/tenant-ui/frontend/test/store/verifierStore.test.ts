@@ -44,7 +44,7 @@ describe('verifierStore', () => {
     });
   });
 
-  describe.skip('Unsuccessful API calls', () => {
+  describe('Unsuccessful API calls', () => {
     beforeEach(() => {
       server.use(...restHandlersUnknownError);
     });
