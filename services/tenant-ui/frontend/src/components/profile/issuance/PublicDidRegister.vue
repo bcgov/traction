@@ -1,9 +1,12 @@
 <template>
   <div v-if="showDidRegister">
     <Button
-      title="Register Public DID"
+      :title="
+        hasPublicDid ? 'Tenant already has a Public DID' : 'Register Public DID'
+      "
       icon="pi pi-file-export"
       class="p-button-rounded p-button-icon-only p-button-text"
+      :disabled="hasPublicDid"
       @click="registerPublicDid()"
     />
   </div>
