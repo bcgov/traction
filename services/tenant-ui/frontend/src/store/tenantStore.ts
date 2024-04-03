@@ -333,7 +333,7 @@ export const useTenantStore = defineStore('tenant', () => {
         }
 
         // Use the did and verkey
-        const did = aRes.data.result.did;
+        did = aRes.data.result.did;
         const verkey = aRes.data.result.verkey;
         const alias = tenant.value.tenant_name || tenant.value.wallet_id;
         // Register the DID
