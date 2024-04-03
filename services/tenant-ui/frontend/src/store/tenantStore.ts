@@ -1,4 +1,9 @@
-import { AdminConfig, EndorserInfo } from '@/types/acapyApi/acapyInterface';
+import {
+  AdminConfig,
+  DID,
+  EndorserInfo,
+  TransactionRecord,
+} from '@/types/acapyApi/acapyInterface';
 
 import { API_PATH } from '@/helpers/constants';
 import { defineStore, storeToRefs } from 'pinia';
@@ -6,6 +11,7 @@ import { computed, ref, Ref } from 'vue';
 import { useAcapyApi } from './acapyApi';
 import { useTokenStore } from './tokenStore';
 import { fetchItem } from './utils/fetchItem';
+import { fetchList } from './utils';
 
 export const useTenantStore = defineStore('tenant', () => {
   // state
@@ -23,6 +29,8 @@ export const useTenantStore = defineStore('tenant', () => {
   const tenantConfig: any = ref(null);
   const tenantWallet: any = ref(null);
   const tenantDefaultSettings: any = ref(null);
+  const transactions: Ref<TransactionRecord[]> = ref([]);
+  const walletDids: Ref<DID[]> = ref([]);
 
   const { token } = storeToRefs(useTokenStore());
   const acapyApi = useAcapyApi();
@@ -216,6 +224,28 @@ export const useTenantStore = defineStore('tenant', () => {
     console.log('< tenantStore.getPublicDid');
   }
 
+  async function getWalletcDids() {
+    console.log('> tenantStore.getWalletDids');
+    await fetchList(
+      API_PATH.WALLET_DID,
+      walletDids,
+      error,
+      !loadingIssuance.value ? loadingIssuance : ref(false)
+    );
+    console.log('< tenantStore.getWalletDids');
+  }
+
+  async function getTransactions() {
+    console.log('> tenantStore.getTransactions');
+    await fetchList(
+      API_PATH.TRANSACTIONS,
+      transactions,
+      error,
+      !loadingIssuance.value ? loadingIssuance : ref(false)
+    );
+    console.log('< tenantStore.getTransactions');
+  }
+
   async function getWriteLedger() {
     console.log('> tenantStore.getWriteLedger');
     writeLedger.value = await fetchItem(
@@ -241,7 +271,7 @@ export const useTenantStore = defineStore('tenant', () => {
     console.log('< tenantStore.setWriteLedger');
   }
 
-  async function waitForTxnCompletion(txnId: string) {
+  async function waitForTxnCompletion(txnId: string, maxRetries = 10) {
     let retries = 0;
     publicDidRegistrationProgress.value = 'Waiting for transaction to complete';
     for (;;) {
@@ -250,11 +280,11 @@ export const useTenantStore = defineStore('tenant', () => {
         publicDidRegistrationProgress.value = '';
         return;
       }
-      if (retries > 10) {
+      if (retries > maxRetries) {
         break;
       }
       retries = retries + 1;
-      await new Promise((r) => setTimeout(r, retries * 1000));
+      await new Promise((r) => setTimeout(r, 1000));
     }
     throw Error(`Transaction ${txnId} has not been completed`);
   }
@@ -282,40 +312,44 @@ export const useTenantStore = defineStore('tenant', () => {
     }
   }
 
-  async function registerPublicDid() {
+  async function registerPublicDid(ackedTxDid = undefined) {
     console.log('> connectionStore.registerPublicDid');
     error.value = null;
     loadingIssuance.value = true;
     publicDidRegistrationProgress.value = '';
     let postedDID: any = null;
     try {
-      // Create a DID
-      publicDidRegistrationProgress.value = 'Creating DID';
-      const aRes = await acapyApi.postHttp(API_PATH.WALLET_DID_CREATE, {
-        method: 'sov',
-        options: { key_type: 'ed25519' },
-      });
-      if (!aRes.data.result) {
-        throw Error('No result in create DID response');
+      let did = ackedTxDid;
+      // Can jump in with a previously acked transaction DID if done previously
+      if (!did) {
+        // Create a DID
+        publicDidRegistrationProgress.value = 'Creating DID';
+        const aRes = await acapyApi.postHttp(API_PATH.WALLET_DID_CREATE, {
+          method: 'sov',
+          options: { key_type: 'ed25519' },
+        });
+        if (!aRes.data.result) {
+          throw Error('No result in create DID response');
+        }
+
+        // Use the did and verkey
+        const did = aRes.data.result.did;
+        const verkey = aRes.data.result.verkey;
+        const alias = tenant.value.tenant_name || tenant.value.wallet_id;
+        // Register the DID
+        publicDidRegistrationProgress.value = 'Registering the DID';
+        const bRes = await acapyApi.postHttp(
+          `${API_PATH.TENANT_REGISTER_PUBLIC_DID}?did=${did}&verkey=${verkey}&alias=${alias}`,
+          {}
+        );
+        console.log(bRes);
+        console.log(`posted ${did} on ledger ${writeLedger.value.ledger_id}`);
+
+        // Wait for endorse transaction completion
+        const txnId = bRes.data.txn.transaction_id;
+        await waitForTxnCompletion(txnId);
       }
 
-      // Use the did and verkey
-      const did = aRes.data.result.did;
-      const verkey = aRes.data.result.verkey;
-      const alias = tenant.value.tenant_name || tenant.value.wallet_id;
-      // Register the DID
-      publicDidRegistrationProgress.value = 'Registering the DID';
-      const bRes = await acapyApi.postHttp(
-        `${API_PATH.TENANT_REGISTER_PUBLIC_DID}?did=${did}&verkey=${verkey}&alias=${alias}`,
-        {}
-      );
-      console.log(bRes);
-      console.log(`posted ${did} on ledger ${writeLedger.value.ledger_id}`);
-
-      // TODO: should this be here? Or register and assign as 2 different buttons...?
-      // Wait for endorse transaction completion
-      const txnId = bRes.data.txn.transaction_id;
-      waitForTxnCompletion(txnId);
       // Verify DID is posted on correct ledger
       const cRes = await acapyApi.getHttp(
         `${API_PATH.TENANT_GET_VERKEY_POSTED_DID}?did=${did}`,
@@ -354,11 +388,13 @@ export const useTenantStore = defineStore('tenant', () => {
         API_PATH.TENANT_CONFIG_SET_LEDGER_ID,
         payload
       );
-      getWriteLedger();
-      getPublicDid();
     } catch (err) {
       error.value = err;
     } finally {
+      getWriteLedger();
+      getPublicDid();
+      getTransactions();
+      getWalletcDids();
       publicDidRegistrationProgress.value = '';
       loadingIssuance.value = false;
     }
@@ -545,6 +581,8 @@ export const useTenantStore = defineStore('tenant', () => {
     tenantDefaultSettings,
     tenantReady,
     tenantWallet,
+    transactions,
+    walletDids,
     writeLedger,
     acceptTaa,
     clearTenant,
@@ -559,6 +597,8 @@ export const useTenantStore = defineStore('tenant', () => {
     getTenantConfig,
     getTenantDefaultSettings,
     getTenantSubWallet,
+    getTransactions,
+    getWalletcDids,
     getWriteLedger,
     registerPublicDid,
     setTenantLoginDataFromLocalStorage,

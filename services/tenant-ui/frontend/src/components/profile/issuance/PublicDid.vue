@@ -21,25 +21,21 @@
       <Column :sortable="true" field="ledger_id" header="Ledger Identifier" />
     </DataTable>
 
-    <div v-if="hasPublicDid" class="true-1">
-      <div class="field">
-        <label for="didField">{{ $t('profile.publicDid') }}</label>
-        <InputText
-          id="didField"
-          class="w-full"
-          readonly
-          :value="publicDid.did"
-        />
-      </div>
+    <div v-if="hasPublicDid" class="field">
+      <label for="didField">{{ $t('profile.publicDid') }}</label>
+      <InputText id="didField" class="w-full" readonly :value="publicDid.did" />
+    </div>
 
-      <div class="mt-3">
-        <Accordion>
-          <AccordionTab header="Public DID Details">
-            <h5 class="my-0">{{ $t('profile.publicDid') }}</h5>
-            <vue-json-pretty :data="publicDid" />
-          </AccordionTab>
-        </Accordion>
-      </div>
+    <div class="mt-3">
+      <Accordion>
+        <AccordionTab header="DID Details">
+          <h5 class="my-0">{{ $t('profile.publicDid') }}</h5>
+          <vue-json-pretty :data="publicDid" />
+
+          <h5 class="mt-4 mb-0">{{ $t('profile.walletDids') }}</h5>
+          <vue-json-pretty :data="walletDids" />
+        </AccordionTab>
+      </Accordion>
     </div>
   </div>
   <p v-else class="my-1">
@@ -66,7 +62,8 @@ import PublicDidRegister from './PublicDidRegister.vue';
 
 // Stores
 const tenantStore = useTenantStore();
-const { publicDid, tenantConfig, loading } = storeToRefs(tenantStore);
+const { publicDid, tenantConfig, loading, walletDids } =
+  storeToRefs(tenantStore);
 
 const canBecomeIssuer = computed(
   () =>

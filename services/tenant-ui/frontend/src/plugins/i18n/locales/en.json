@@ -348,6 +348,7 @@
     "tenantNotConnectedToEndorserYet": "Tenant not connected to Endorser yet",
     "token": "JWT Token",
     "updatedAt": "Updated at",
+    "walletDids": "Wallet DIDs",
     "walletLabel": "Wallet Label",
     "webHookKey": "WebHook Key",
     "webhooks": "Webhooks",
