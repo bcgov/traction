@@ -89,6 +89,33 @@ Return true if a database secret should be created
 {{- end -}}
 
 {{/*
+Return true if a api secret should be created
+*/}}
+{{- define "acapy.api.createSecret" -}}
+{{- if not .Values.acapy.secret.adminApiKey.existingSecret -}}
+{{- true -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return true if a api secret should be created
+*/}}
+{{- define "acapy.walletKey.createSecret" -}}
+{{- if not .Values.acapy.secret.walletKey.existingSecret -}}
+{{- true -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return true if a pluginInnkeeper secret should be created
+*/}}
+{{- define "acapy.pluginInnkeeper.createSecret" -}}
+{{- if not .Values.acapy.secret.pluginInnkeeper.existingSecret -}}
+{{- true -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Create a default fully qualified postgresql name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
@@ -152,7 +179,11 @@ Create a default fully qualified acapy name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "acapy.api.secret.name" -}}
-{{ template "acapy.fullname" . }}-api
+{{- if .Values.acapy.secret.adminApiKey.existingSecret -}}
+    {{ .Values.acapy.secret.adminApiKey.existingSecret }}
+{{- else -}}
+    {{ template "acapy.fullname" . }}-api
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -160,7 +191,11 @@ Create a default fully qualified acapy name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "acapy.walletkey.secret.name" -}}
-{{ template "acapy.fullname" . }}-walletkey
+{{- if .Values.acapy.secret.walletKey.existingSecret -}}
+  {{ .Values.acapy.secret.walletKey.existingSecret }}
+{{- else -}}
+  {{ template "acapy.fullname" . }}-walletkey
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -168,7 +203,11 @@ Create a default fully qualified acapy innkeeper plugin name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "acapy.plugin.innkeeper.name" -}}
-{{ template "acapy.fullname" . }}-plugin-innkeeper
+{{- if .Values.acapy.secret.pluginInnkeeper.existingSecret -}}
+    {{ .Values.acapy.secret.pluginInnkeeper.existingSecret }}
+{{- else -}}
+    {{ template "acapy.fullname" . }}-plugin-innkeeper
+{{- end -}}
 {{- end -}}
 
 {{/*
