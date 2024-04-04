@@ -226,8 +226,11 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 
 | Name                                     | Description                             | Value  |
 | ---------------------------------------- | --------------------------------------- | ------ |
+| `acapy.secret.adminApiKey.existingSecret` | Name of an existing secret to use. Must contain `jwt`, `adminApiKey`, and `webhookapi` keys.                  | `""` |
 | `acapy.secret.adminApiKey.generated`     | Generate admin api key                  | `true` |
 | `acapy.secret.adminApiKey.value`         | Override admin api key                  | `""`   |
+| `acapy.secret.walletKey.existingSecret`  | Name of an existing secret to use. Must contain `walletKey` key. | `""` |
+| `acapy.secret.pluginInnkeeper.existingSecret` | Name of an existing secret to use. Must contain `tenantid`, and `walletkey` keys. | `""` |
 | `acapy.secret.pluginInnkeeper.generated` | Generate plugin innkeeper secret values | `true` |
 | `acapy.secret.pluginInnkeeper.walletkey` | Override plugin innkeeper wallet key    | `""`   |
 | `acapy.secret.pluginInnkeeper.tenantid`  | Override plugin innkeeper tenant id     | `""`   |

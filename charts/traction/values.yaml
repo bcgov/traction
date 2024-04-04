@@ -415,13 +415,20 @@ acapy:
   ##
   secret:
     adminApiKey:
+      ## @param acapy.secret.adminApiKey.existingSecret Name of an existing secret to use. Must contain `jwt`, `adminApiKey`, and `webhookapi` keys.
+      existingSecret: ""
       ## @param acapy.secret.adminApiKey.generated Generate admin api key
       ##
       generated: true
       ## @param acapy.secret.adminApiKey.value Override admin api key
       ##
       value: ""
+    walletKey:
+      ## @param acapy.secret.walletKey.existingSecret Name of an existing secret to use. Must contain `walletKey` key.
+      existingSecret: ""
     pluginInnkeeper:
+      ## @param acapy.secret.pluginInnkeeper.existingSecret Name of an existing secret to use. Must contain `tenantid`, and `walletkey` keys.
+      existingSecret: ""
       ## @param acapy.secret.pluginInnkeeper.generated Generate plugin innkeeper secret values
       ##
       generated: true
