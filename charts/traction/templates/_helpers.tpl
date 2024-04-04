@@ -40,6 +40,7 @@ helm.sh/chart: {{ include "global.chart" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
@@ -365,11 +366,6 @@ Common tenant proxy labels
 */}}
 {{- define "tenant_proxy.labels" -}}
 {{ include "common.labels" . }}
-{{ include "tenant_proxy.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
