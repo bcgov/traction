@@ -38,22 +38,28 @@ describe('Properly Toggle Json Input', () => {
     const fromJson = vi.spyOn(wrapperVm.props, 'fromJson');
 
     expect(wrapper.findComponent({ name: 'Textarea' }).isVisible()).toBe(false);
-    // showRawJson;
+    // displayAsForm;
     expect(wrapper.findComponent({ name: 'InputSwitch' }).exists()).toBe(true);
 
     expect(wrapper.findComponent({ name: 'CreateSchema' }).exists()).toBe(true);
-    wrapperVm.showRawJson = true;
+    wrapperVm.displayAsForm = true;
+    // wrapperVm.displayAsForm = false;
     await wrapperVm.toggleJson();
 
     await flushPromises();
 
-    wrapperVm.showRawJson = false;
-    await wrapperVm.toggleJson();
+    wrapperVm.displayAsForm = false;
 
     await flushPromises();
 
-    expect(wrapper.findComponent({ name: 'Textarea' }).isVisible()).toBe(true);
     expect(toJson).toHaveBeenCalled();
+    // expect(fromJson).toHaveBeenCalled();
+    expect(wrapper.findComponent({ name: 'Textarea' }).isVisible()).toBe(true);
+
+    await wrapperVm.toggleJson();
+
+    await flushPromises();
+
     expect(fromJson).toHaveBeenCalled();
   });
 });
