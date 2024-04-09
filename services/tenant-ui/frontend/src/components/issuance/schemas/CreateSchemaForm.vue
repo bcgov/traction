@@ -54,7 +54,6 @@
 
 <script setup lang="ts">
 // Libraries
-import Tester from '@/components/common/./Tester.vue';
 import { useVuelidate } from '@vuelidate/core';
 import { helpers, required } from '@vuelidate/validators';
 import { storeToRefs } from 'pinia';
@@ -214,11 +213,8 @@ function jsonToSchema(jsonString: string): SchemaSendRequest | undefined {
 const submitted = ref(false);
 const handleSubmit = async (isFormValid: boolean) => {
   submitted.value = true;
-  console.log('trying to validate');
   try {
-    console.log('is valid?');
     if (!isFormValid) return;
-    console.log('valid');
 
     const payload: SchemaSendRequest | undefined = jsonVal.value.showRawJson
       ? jsonToSchema(jsonVal.value.valuesJson)
