@@ -98,7 +98,7 @@ Return true if a api secret should be created
 {{- end -}}
 
 {{/*
-Return true if a api secret should be created
+Return true if a walletKey secret should be created
 */}}
 {{- define "acapy.walletKey.createSecret" -}}
 {{- if not .Values.acapy.secret.walletKey.existingSecret -}}
