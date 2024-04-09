@@ -51,6 +51,7 @@
   &.request,
   &.request-sent,
   &.request-received,
+  &.transaction-acked,
   &.offer-sent,
   &.offer-received {
     background-color: $tenant-ui-status-blue-background;

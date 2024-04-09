@@ -37,9 +37,6 @@
 </template>
 
 <script setup lang="ts">
-//Types
-import { TransactionRecord } from '@/types/acapyApi/acapyInterface';
-
 // Vue/Primevue
 import { computed } from 'vue';
 import Button from 'primevue/button';
@@ -58,19 +55,18 @@ const toast = useToast();
 
 // State
 const tenantStore = useTenantStore();
-const { endorserConnection, publicDid, walletDids, transactions, writeLedger } =
+const { endorserConnection, publicDid, pendingPublicDidTx, writeLedger } =
   storeToRefs(tenantStore);
 
 // Register DID
 const registerPublicDid = async (useTxDid = false) => {
   try {
     await tenantStore.registerPublicDid(
-      // @ts-expect-error ACApy swagger generation only has meta_data as object
       useTxDid ? pendingPublicDidTx.value?.meta_data?.did : undefined
     );
     toast.success('Public DID registration sent');
   } catch (error) {
-    throw Error(`Failure while registering: ${error}`);
+    toast.error(`Failure while registering DID: ${error}`);
   }
 };
 
@@ -93,21 +89,4 @@ const showRegistered = computed(
   () =>
     props.ledgerInfo.ledger_id === currWriteLedger.value && hasPublicDid.value
 );
-const pendingPublicDidTx = computed<TransactionRecord | null>(() => {
-  // If they have a wallet DID but no public, check transactions for a status
-  let pending = null;
-  if (!hasPublicDid.value && walletDids.value.length > 0) {
-    walletDids.value.forEach((wDid) => {
-      const pendingTx = transactions.value.find(
-        (tx: TransactionRecord) =>
-          // @ts-expect-error ACApy swagger generation only has meta_data as object
-          tx?.meta_data?.did == wDid.did && tx?.state != 'transaction_accepted'
-      );
-      if (pendingTx) {
-        pending = pendingTx;
-      }
-    });
-  }
-  return pending;
-});
 </script>

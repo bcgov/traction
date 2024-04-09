@@ -4,6 +4,20 @@ import {
   EndorserInfo,
   TransactionRecord,
 } from '@/types/acapyApi/acapyInterface';
+interface TransactionRecordEx extends TransactionRecord {
+  meta_data?: {
+    [key: string]: any;
+  };
+  signature_request?: Array<{
+    [key: string]: any;
+  }>;
+}
+
+class TxTimeoutErr extends Error {
+  constructor(public message: string) {
+    super(message);
+  }
+}
 
 import { API_PATH } from '@/helpers/constants';
 import { defineStore, storeToRefs } from 'pinia';
@@ -45,6 +59,27 @@ export const useTenantStore = defineStore('tenant', () => {
       publicDid.value?.did &&
       (!taa.value?.taa_required || taa.value?.taa_accepted)
     );
+  });
+  const pendingPublicDidTx = computed<TransactionRecordEx | null>(() => {
+    // If they have a wallet DID but no public, check transactions to the endorser for a status
+    let pending = null;
+    const hasPublicDid = !!publicDid.value?.did;
+    if (!hasPublicDid && walletDids.value.length > 0) {
+      walletDids.value.forEach((wDid) => {
+        const pendingTx = transactions.value.find(
+          (tx: TransactionRecordEx) =>
+            tx.signature_request?.[0]?.author_goal_code?.includes(
+              'register_public_did'
+            ) &&
+            tx.meta_data?.did == wDid.did &&
+            tx.connection_id === endorserConnection?.value?.connection_id
+        );
+        if (pendingTx) {
+          pending = pendingTx;
+        }
+      });
+    }
+    return pending;
   });
 
   // actions
@@ -286,7 +321,7 @@ export const useTenantStore = defineStore('tenant', () => {
       retries = retries + 1;
       await new Promise((r) => setTimeout(r, 1000));
     }
-    throw Error(`Transaction ${txnId} has not been completed`);
+    throw new TxTimeoutErr(`Transaction ${txnId} has not been completed`);
   }
 
   async function waitForActiveEndorserConnection(maxRetries = 10) {
@@ -314,7 +349,7 @@ export const useTenantStore = defineStore('tenant', () => {
 
   async function registerPublicDid(ackedTxDid = undefined) {
     console.log('> connectionStore.registerPublicDid');
-    error.value = null;
+    let registrationError: any = null;
     loadingIssuance.value = true;
     publicDidRegistrationProgress.value = '';
     let postedDID: any = null;
@@ -389,7 +424,7 @@ export const useTenantStore = defineStore('tenant', () => {
         payload
       );
     } catch (err) {
-      error.value = err;
+      registrationError = err;
     } finally {
       getWriteLedger();
       getPublicDid();
@@ -400,9 +435,12 @@ export const useTenantStore = defineStore('tenant', () => {
     }
     console.log('< connectionStore.registerPublicDid');
 
-    if (error.value != null) {
-      // throw error so $onAction.onError listeners can add their own handler
-      throw error.value;
+    if (registrationError != null) {
+      if (registrationError instanceof TxTimeoutErr) {
+        console.log(registrationError.message);
+      } else {
+        throw registrationError.response?.data || registrationError;
+      }
     }
   }
 
@@ -572,6 +610,7 @@ export const useTenantStore = defineStore('tenant', () => {
     isIssuer,
     loading,
     loadingIssuance,
+    pendingPublicDidTx,
     publicDid,
     publicDidRegistrationProgress,
     serverConfig,
