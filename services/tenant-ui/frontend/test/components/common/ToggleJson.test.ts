@@ -42,24 +42,23 @@ describe('Properly Toggle Json Input', () => {
     expect(wrapper.findComponent({ name: 'InputSwitch' }).exists()).toBe(true);
 
     expect(wrapper.findComponent({ name: 'CreateSchema' }).exists()).toBe(true);
-    wrapperVm.displayAsForm = true;
-    // wrapperVm.displayAsForm = false;
+
+    wrapperVm.showRawJson = false;
+
+    // Ensure that toggling to works
     await wrapperVm.toggleJson();
-
     await flushPromises();
-
-    wrapperVm.displayAsForm = false;
-
-    await flushPromises();
-
     expect(toJson).toHaveBeenCalled();
-    // expect(fromJson).toHaveBeenCalled();
+
+    // Ensure text Textarea is properly displayed
+    wrapperVm.showRawJson = true;
+    await flushPromises();
+
     expect(wrapper.findComponent({ name: 'Textarea' }).isVisible()).toBe(true);
 
+    // Ensure toggling from json works
     await wrapperVm.toggleJson();
-
     await flushPromises();
-
     expect(fromJson).toHaveBeenCalled();
   });
 });

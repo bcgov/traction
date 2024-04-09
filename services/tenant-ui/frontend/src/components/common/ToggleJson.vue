@@ -2,12 +2,12 @@
   <div class="mt-2">
     <div class="flex justify-content-end">
       {{ $t('common.json') }}
-      <InputSwitch v-model="displayAsForm" class="ml-1" @input="toggleJson" />
+      <InputSwitch v-model="showRawJson" class="ml-1" @input="toggleJson" />
     </div>
-    <div v-show="displayAsForm">
+    <div v-show="!showRawJson">
       <slot></slot>
     </div>
-    <div v-show="!displayAsForm">
+    <div v-show="showRawJson">
       <Textarea
         id="credentialValuesEdit"
         v-model="valuesJson"
@@ -27,7 +27,7 @@ import { ref } from 'vue';
 import InputSwitch from 'primevue/inputswitch';
 import Textarea from 'primevue/textarea';
 
-const displayAsForm = ref<boolean>(true);
+const showRawJson = ref<boolean>(false);
 const valuesJson = ref<string>('');
 
 // Undefined indicates that the conversion was a failure
@@ -39,21 +39,21 @@ const props = defineProps<{
 }>();
 
 defineExpose({
-  displayAsForm,
+  showRawJson,
   valuesJson,
 });
 
 const toggleJson = () => {
-  if (displayAsForm.value) {
+  if (!showRawJson.value) {
     const res = props.toJson();
     if (res) {
       valuesJson.value = res;
     } else {
-      displayAsForm.value = !displayAsForm.value;
+      showRawJson.value = !showRawJson.value;
     }
   } else {
     if (!props.fromJson(valuesJson.value)) {
-      displayAsForm.value = !displayAsForm.value;
+      showRawJson.value = !showRawJson.value;
     }
   }
 };
