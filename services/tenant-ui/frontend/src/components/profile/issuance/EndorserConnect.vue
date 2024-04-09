@@ -89,7 +89,7 @@ const connectToLedger = async (switchLeger = false) => {
       await registerPublicDid();
     }
   } catch (error) {
-        // If we're switching ledgers, and it fails, revert to the old one
+    // If we're switching ledgers, and it fails, revert to the old one
     if (prevLedgerId && switchLeger) {
       try {
         await tenantStore.setWriteLedger(prevLedgerId);
