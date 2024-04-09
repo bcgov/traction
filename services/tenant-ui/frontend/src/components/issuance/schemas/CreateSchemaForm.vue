@@ -74,7 +74,6 @@ import ToggleJson from '@/components/common/ToggleJson.vue';
 const toast = useToast();
 const { t } = useI18n();
 
-const other = ref(false);
 const governanceStore = useGovernanceStore();
 const { loading, selectedSchema } = storeToRefs(useGovernanceStore());
 
