@@ -88,11 +88,6 @@ spec:
                 secretKeyRef:
                   name: {{ template "acapy.database.secret.name" . }}
                   key: {{ include "acapy.database.adminPasswordKey" . }}
-            - name: WEBHOOK_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "acapy.api.secret.name" . }}
-                  key: webhookapi
             - name: INNKEEPER_WALLET_TENANT_ID
               valueFrom:
                 secretKeyRef:
@@ -118,6 +113,11 @@ spec:
                 secretKeyRef:
                   name: {{ template "acapy.api.secret.name" . }}
                   key: adminApiKey
+            - name: WEBHOOK_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "acapy.api.secret.name" . }}
+                  key: webhookapi
             - name: ACAPY_PLUGIN_CONFIG
               value: 'plugin-config.yml'
             - name: ACAPY_WALLET_STORAGE_CONFIG
