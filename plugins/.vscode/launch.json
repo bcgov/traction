@@ -17,7 +17,7 @@
             "-m",
             "aries_cloudagent",
             "start",
-            "--arg-file=${workspaceRoot}/demo/configs/devcontainer.yml"
+            "--arg-file=${workspaceRoot}/.devcontainer/configs/devcontainer.yml"
         ]
     }]
 }
