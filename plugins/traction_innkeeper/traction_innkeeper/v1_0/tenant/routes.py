@@ -1,3 +1,4 @@
+from contextvars import ContextVar
 import logging
 
 from aiohttp import web
@@ -79,6 +80,37 @@ class TenantLedgerIdConfigSchema(OpenAPISchema):
     )
 
 
+context_tenant_id: ContextVar[str] = ContextVar("context_tenant_id")
+
+
+@web.middleware
+async def setup_tenant_context(request: web.Request, handler):
+    """Middle ware to extract tenant_id and provide it to log formatter
+
+    This middleware is appended to the app middlewares and therefore runs
+    last. At this point the wallet_id has been extracted from a previous
+    middleware function (see setup_context in ACA-Py) and is set as a ContextVar
+    which we can simply access.
+    """
+    context: AdminRequestContext = request["context"]
+    wallet_id, tenant_id = context.profile.settings.get("wallet.id"), None
+
+    if wallet_id:
+        mgr = context.inject(TenantManager)
+        profile = mgr.profile
+
+        async with profile.session() as session:
+            # Tenants must always be fetch by their wallet id.
+            rec = await TenantRecord.query_by_wallet_id(session, wallet_id)
+            LOGGER.debug(rec)
+            tenant_id = rec.tenant_id
+
+    if tenant_id:
+        context_tenant_id.set(tenant_id)
+
+    return await handler(request)
+
+
 @docs(
     tags=[SWAGGER_CATEGORY],
 )
@@ -94,9 +126,9 @@ async def tenant_self(request: web.BaseRequest):
     profile = mgr.profile
 
     async with profile.session() as session:
-        # tenant's must always fetch by their wallet id.
+        # Tenants must always be fetch by their wallet id.
         rec = await TenantRecord.query_by_wallet_id(session, wallet_id)
-        LOGGER.info(rec)
+        LOGGER.debug(rec)
 
     return web.json_response(rec.serialize())
 
@@ -311,7 +343,7 @@ async def tenant_api_key_get(request: web.BaseRequest):
         rec = await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(
             session, tenant_authentication_api_id
         )
-        LOGGER.info(rec)
+        LOGGER.debug(rec)
 
         # if rec tenant_id does not match the tenant_id from the wallet, raise 404
         if rec.tenant_id != tenant_id:
@@ -398,9 +430,7 @@ async def tenant_server_config_handler(request: web.BaseRequest):
     profile = mgr.profile
 
     config = {
-        k: (
-           profile.context.settings[k]
-        )
+        k: (profile.context.settings[k])
         for k in profile.context.settings
         if k
         not in [
@@ -424,13 +454,15 @@ async def tenant_server_config_handler(request: web.BaseRequest):
         ]
     }
     try:
-      del config["plugin_config"]["traction_innkeeper"]["innkeeper_wallet"]
-      config["config"]["ledger.ledger_config_list"] = [
-        {k: v for k, v in d.items() if k != "genesis_transactions"}
-        for d in config["config"]["ledger.ledger_config_list"]
-      ]
+        del config["plugin_config"]["traction_innkeeper"]["innkeeper_wallet"]
+        config["config"]["ledger.ledger_config_list"] = [
+            {k: v for k, v in d.items() if k != "genesis_transactions"}
+            for d in config["config"]["ledger.ledger_config_list"]
+        ]
     except KeyError as e:
-      LOGGER.warn(f"The key to be removed: '{e.args[0]}' is missing from the dictionary.")
+        LOGGER.warn(
+            f"The key to be removed: '{e.args[0]}' is missing from the dictionary."
+        )
     config["version"] = __version__
 
     return web.json_response({"config": config})
@@ -439,6 +471,10 @@ async def tenant_server_config_handler(request: web.BaseRequest):
 async def register(app: web.Application):
     """Register routes."""
     LOGGER.info("> registering routes")
+
+    # register tenant specific middleware
+    app.middlewares.append(setup_tenant_context)
+
     # routes that require a tenant token.
     app.add_routes(
         [
@@ -462,9 +498,9 @@ async def register(app: web.Application):
                 tenant_api_key_delete,
             ),
             web.get(
-                "/tenant/server/status/config", 
-                tenant_server_config_handler, 
-                allow_head=False
+                "/tenant/server/status/config",
+                tenant_server_config_handler,
+                allow_head=False,
             ),
         ]
     )
