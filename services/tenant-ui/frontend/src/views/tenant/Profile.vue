@@ -43,6 +43,8 @@ const reloadProfileDetails = async () => {
       tenantStore.getTenantConfig(),
       tenantStore.getWriteLedger(),
       tenantStore.getIssuanceStatus(),
+      tenantStore.getWalletcDids(),
+      tenantStore.getTransactions(),
     ]);
   } catch (error) {
     toast.error(`Failure getting Issuer info: ${error}`);

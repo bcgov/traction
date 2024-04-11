@@ -1,6 +1,26 @@
 <template>
   <div v-if="showDidRegister">
+    <div v-if="pendingPublicDidTx" class="flex">
+      <div class="flex align-items-center mr-2">
+        {{ $t('common.status') }}
+      </div>
+      <div class="flex align-items-center mr-1">
+        <StatusChip :status="pendingPublicDidTx.state || ''" />
+      </div>
+      <div
+        v-if="pendingPublicDidTx.state === 'transaction_acked'"
+        class="flex align-items-center"
+      >
+        <Button
+          title="Continue Registering Public DID"
+          icon="pi pi-file-export"
+          class="p-button-rounded p-button-icon-only p-button-text"
+          @click="registerPublicDid(true)"
+        />
+      </div>
+    </div>
     <Button
+      v-else
       title="Register Public DID"
       icon="pi pi-file-export"
       class="p-button-rounded p-button-icon-only p-button-text"
@@ -20,6 +40,7 @@
 // Vue/Primevue
 import { computed } from 'vue';
 import Button from 'primevue/button';
+import StatusChip from '@/components/common/StatusChip.vue';
 import { useToast } from 'vue-toastification';
 // State
 import { useTenantStore } from '@/store';
@@ -34,15 +55,18 @@ const toast = useToast();
 
 // State
 const tenantStore = useTenantStore();
-const { endorserConnection, publicDid, writeLedger } = storeToRefs(tenantStore);
+const { endorserConnection, publicDid, pendingPublicDidTx, writeLedger } =
+  storeToRefs(tenantStore);
 
 // Register DID
-const registerPublicDid = async () => {
+const registerPublicDid = async (useTxDid = false) => {
   try {
-    await tenantStore.registerPublicDid();
+    await tenantStore.registerPublicDid(
+      useTxDid ? pendingPublicDidTx.value?.meta_data?.did : undefined
+    );
     toast.success('Public DID registration sent');
   } catch (error) {
-    throw Error(`Failure while registering: ${error}`);
+    toast.error(`Failure while registering DID: ${error}`);
   }
 };
 

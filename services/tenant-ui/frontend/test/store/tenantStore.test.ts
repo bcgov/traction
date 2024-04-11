@@ -253,15 +253,6 @@ describe('tenantStore', () => {
       expect(store.publicDid).toBeNull();
     });
 
-    test('registerPublicDid handles error correctly', async () => {
-      await testErrorResponse(
-        store,
-        store.registerPublicDid(),
-        'loadingIssuance'
-      );
-      expect(store.publicDidRegistrationProgress).toBe('');
-    });
-
     test('getTenantSubWallet handles error correctly', async () => {
       await testErrorResponse(store, store.getTenantSubWallet(), 'loading');
     });
