@@ -1,0 +1,51 @@
+version: "3.9"
+services:
+  traction-agent:
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile
+    depends_on:
+      traction-db:
+        condition: service_healthy
+    ports:
+      - 3001:3001
+      - 3000:3000
+      - 3002:3002
+    volumes:
+      - ./configs:/home/aries/configs:ro,z
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    entrypoint: >
+      /bin/bash -c 'aca-py "$$@"' --
+    command: >
+      start --arg-file configs/default.yml
+
+  traction-db:
+    image: "postgres:12"
+    environment:
+      - POSTGRES_PASSWORD=postgresPass
+    ports:
+      - 5432:5432
+    volumes:
+      - traction-wallet:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  tenant-proxy:
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile.tenant-proxy
+    restart: unless-stopped
+    environment:
+      - ACAPY_ADMIN_URL=http://traction-agent:3001
+      - ACAPY_ADMIN_URL_API_KEY=change-me
+    ports:
+      - 8032:8080
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+volumes:
+  traction-wallet:

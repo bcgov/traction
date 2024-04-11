@@ -6,7 +6,7 @@
         {
             "label": "docker-compose-start",
             "type": "shell",
-            "command": "docker compose -f ${workspaceRoot}/demo/docker-compose.devcontainer.yml up --build -d",
+            "command": "docker compose -f ${workspaceRoot}/.devcontainer/docker-compose.devcontainer.yml up --build -d",
             "isBackground": true,
             "problemMatcher": [
                 {

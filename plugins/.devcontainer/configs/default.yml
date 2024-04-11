@@ -1,0 +1,85 @@
+label: acapy-traction-plugins
+
+# Admin
+admin: [0.0.0.0, 3001]
+admin-insecure-mode: false
+admin-api-key: change-me
+jwt-secret: change-me
+
+
+# Transport
+inbound-transport:
+  - [http, 0.0.0.0, 3000]
+  - [ws, 0.0.0.0, 3002]
+outbound-transport: http
+endpoint:
+  - http://host.docker.internal:3000
+
+# webhook: http://host.docker.internal:3000
+
+# enable-undelivered-queue: true
+
+# plugins
+plugin:
+  - aries_cloudagent.messaging.jsonld
+  - traction_plugins.traction_innkeeper.v1_0
+  - basicmessage_storage.v1_0
+  - connection_update.v1_0
+  - multitenant_provider.v1_0
+  - rpc.v1_0
+
+# block-plugin:
+
+
+plugin-config-value:
+  # - multitenant_provider.manager.class_name="multitenant_provider.v1_0.manager.BasicMultitokenMultitenantManager"
+  - multitenant_provider.manager.class_name="multitenant_provider.v1_0.manager.AskarMultitokenMultitenantManager"
+  - multitenant_provider.manager.always_check_provided_wallet_key=true
+  - multitenant_provider.errors.on_unneeded_wallet_key=false
+  - multitenant_provider.token_expiry.units=days
+  - multitenant_provider.token_expiry.amount=1
+  - traction_innkeeper.innkeeper_wallet.tenant_id=innkeeper
+  - traction_innkeeper.innkeeper_wallet.wallet_name=traction_innkeeper
+  - traction_innkeeper.innkeeper_wallet.wallet_key=change-me
+  - traction_innkeeper.innkeeper_wallet.print_key=true
+  - traction_innkeeper.innkeeper_wallet.print_token=true
+  - traction_innkeeper.reservation.expiry_minutes=2880
+  - basicmessage_storage.wallet_enabled=true
+
+# invite: true
+# invite-label: ACA-Py (Traction Plugins)
+
+#config 
+genesis-url: http://test.bcovrin.vonx.io/genesis
+
+# wallet-type: indy
+wallet-type: askar
+wallet-name: traction-wallet
+wallet-key: 'insecure-change-me'
+wallet-storage-type: postgres_storage
+wallet-storage-config: '{"url":"host.docker.internal:5432","max_connections":5,"wallet_scheme":"DatabasePerWallet"}'
+wallet-storage-creds: '{"account":"postgres","password":"postgresPass","admin_account":"postgres","admin_password":"postgresPass"}'
+multitenancy-config: '{"wallet-type":"askar-profile","wallet-name":"askar-wallet"}'
+
+log-level: info
+
+multitenant: true
+multitenant-admin: true
+
+emit-new-didcomm-prefix: true
+emit-new-didcomm-mime-type: true
+
+auto-accept-invites: true
+auto-accept-requests: true
+auto-respond-messages: false
+auto-respond-credential-proposal: true
+auto-respond-credential-offer: true
+auto-respond-credential-request: true
+auto-respond-presentation-proposal: true
+auto-respond-presentation-request: true
+auto-store-credential: true
+auto-verify-presentation: true
+auto-ping-connection: true
+auto-provision: true
+monitor-ping: true
+public-invites: true
