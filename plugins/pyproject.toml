@@ -20,6 +20,7 @@ indy-credx = { version = "~1.1.1" }
 indy-vdr = { version = "~0.4.0" }
 ursa-bbs-signatures = { version = "~1.0.1" }
 python3-indy = { version = "^1.11.1" }
+anoncreds = "^0.2.0"
 
 [tool.poetry.dev-dependencies]
 black = "^24.4.2"
