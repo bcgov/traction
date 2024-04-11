@@ -204,7 +204,7 @@ function jsonToSchema(jsonString: string): SchemaSendRequest | undefined {
     formFields.version = parsed.schema_version;
     return parsed;
   } else {
-    toast.error('The JSON you inputted has invalid syntax');
+    toast.error('Invalid JSON detected');
     return undefined;
   }
 }
@@ -212,7 +212,6 @@ function jsonToSchema(jsonString: string): SchemaSendRequest | undefined {
 const submitted = ref(false);
 const handleSubmit = async (isFormValid: boolean) => {
   submitted.value = true;
-
   try {
     if (!isFormValid) return;
 
