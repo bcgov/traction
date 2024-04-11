@@ -100,7 +100,7 @@ async def setup_tenant_context(request: web.Request, handler):
         profile = mgr.profile
 
         async with profile.session() as session:
-            # Tenants must always be fetch by their wallet id.
+            # Tenant records must always be fetched by their wallet id.
             rec = await TenantRecord.query_by_wallet_id(session, wallet_id)
             LOGGER.debug(rec)
             tenant_id = rec.tenant_id
