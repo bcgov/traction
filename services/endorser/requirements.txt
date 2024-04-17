@@ -8,7 +8,7 @@ charset-normalizer==2.0.10
 click==8.0.3
 fastapi==0.110.0
 greenlet==1.1.2
-gunicorn==20.1.0
+gunicorn==22.0.0
 h11==0.13.0
 httptools==0.3.0
 idna==3.7
