@@ -1,0 +1,19 @@
+ tenant-lob:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: traction:tenant-lob
+    depends_on:
+      tenant-proxy:
+        condition: service_started
+    restart: unless-stopped
+    environment:
+      - SERVER_TRACTION_URL=${LOB_SERVER_TRACTION_URL}
+      - TRACTION_INNKEEPER_TENANT_ID=${TRACTION_INNKEEPER_TENANT_ID}
+      - TRACTION_INNKEEPER_WALLET_NAME=${TRACTION_INNKEEPER_WALLET_NAME}
+      - TRACTION_INNKEEPER_WALLET_KEY=${TRACTION_INNKEEPER_WALLET_KEY}
+      - WEBHOOK_URL=${LOB_WEBHOOK_URL}
+    ports:
+      - ${LOB_PORT}:8088
+    extra_hosts:
+      - host.docker.internal:host-gateway

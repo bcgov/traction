@@ -17,8 +17,15 @@ The endpoints in this demo use `GET` for creates instead of `POST` to simplify t
 
 All data in this demo is completely ephemeral, it only exists in memory.
 
+### Starting the demo with Docker Compose
+
+Ensure you have Traction running locally. Please see the Traction [documentation](https://github.com/bcgov/traction/tree/main/scripts#run-local-traction) for instructions on how to run Traction locally with Docker.
+
+```sh
+docker compose up
+```
+
 ## Simple Demo Flow
-Assumes this is being run in a local environment stood up according to [scripts](../../scripts) documentation with default configuration.
 
 1. Create set of demo tenants
     1. Open browser at [http://localhost:9876/tasks/create-alice-faber-acme](http://localhost:9876/tasks/create-alice-faber-acme)
@@ -42,11 +49,3 @@ Assumes this is being run in a local environment stood up according to [scripts]
     5. Note that there is a new topic: `endorse_transaction`. This is faber asking the endorser to do work (write public did to ledger) on their behalf.
 
 When creating your own tenants in the [tenant-ui](http://localhost:5101), you can update their webhook url to `http://host.docker.internal:9876/webhook` and do not add an api key. You can see notifications for you webhook in the `tenant-lob` docker console.
-
-
-### Docker Build image
-
-```shell
-docker build -f Dockerfile -t tenant-lob .
-```
-

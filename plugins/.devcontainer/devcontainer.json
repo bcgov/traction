@@ -37,7 +37,7 @@
             },
             "python.formatting.provider": "black",
             "python.formatting.blackArgs": [],
-            "python.venvFolders": ["~.cache/virtualenvs"]      
+            "python.venvFolders": ["~.cache/virtualenvs"]
           },
           "extensions": [
               "ms-python.python",
