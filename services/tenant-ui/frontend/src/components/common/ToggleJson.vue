@@ -44,7 +44,7 @@ defineExpose({
 });
 
 const toggleJson = () => {
-  if (showRawJson.value) {
+  if (!showRawJson.value) {
     const res = props.toJson();
     if (res) {
       valuesJson.value = res;

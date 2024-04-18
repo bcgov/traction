@@ -122,7 +122,7 @@ const registerPublicDid = async () => {
     await tenantStore.registerPublicDid();
     toast.success('Public DID registration sent');
   } catch (error) {
-    throw Error(`Failure while registering: ${error}`);
+    toast.error(`Failure while registering: ${error}`);
   }
 };
 

@@ -68,7 +68,11 @@ const {
 const errLoading = ref(false);
 const loadIssuer = async () => {
   try {
-    await tenantStore.getIssuanceStatus();
+    await Promise.all([
+      tenantStore.getIssuanceStatus(),
+      tenantStore.getWalletcDids(),
+      tenantStore.getTransactions(),
+    ]);
   } catch (error) {
     errLoading.value = true;
     toast.error(`Failure getting Issuer info: ${error}`);

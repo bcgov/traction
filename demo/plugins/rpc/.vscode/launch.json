@@ -1,0 +1,60 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "command": "yarn --cwd app dev",
+            "name": "Run yarn dev - DRPC Requestor",
+            "request": "launch",
+            "type": "node-terminal",
+            "env": {
+                "VITE_AGENT_PORT": "8000"
+            }
+        },
+        {
+            "command": "yarn --cwd app dev",
+            "name": "Run yarn dev - DRPC Responder",
+            "request": "launch",
+            "type": "node-terminal",
+            "env": {
+                "VITE_AGENT_PORT": "8001"
+            }
+        },
+        {
+            "name": "Python Debugger: FastAPI - DRPC Requestor",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "controller.main:app",
+                "--port",
+                "8000",
+                "--reload"
+            ],
+            "jinja": true,
+            "envFile": "${workspaceFolder}/controller/.env",
+            "env": {
+                "AGENT_PORT": "8000"
+            }
+        },
+        {
+            "name": "Python Debugger: FastAPI - DRPC Responder",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "controller.main:app",
+                "--port",
+                "8001",
+                "--reload"
+            ],
+            "jinja": true,
+            "envFile": "${workspaceFolder}/controller/.env",
+            "env": {
+                "AGENT_PORT": "8001"
+            }
+        }
+    ]
+}

@@ -7,7 +7,7 @@ import { restHandlersUnknownError, server } from '../setupApi';
 
 let store: any;
 
-describe('connectionStore', () => {
+describe('holderStore', () => {
   beforeEach(async () => {
     setActivePinia(createPinia());
     store = useHolderStore();
@@ -42,6 +42,14 @@ describe('connectionStore', () => {
       );
     });
 
+    test('sendProblemReport does not throw exception', async () => {
+      await testSuccessResponse(
+        store,
+        store.sendProblemReport('test-id'),
+        undefined
+      );
+    });
+
     // TODO: This doesn't seem to be used anywhere
     test.todo('getCredential');
     // TODO: This doesn't seem to be used anywhere
@@ -57,7 +65,6 @@ describe('connectionStore', () => {
     test.todo('listHolderCredentialExchanges');
     test.todo('listOcas');
     test.todo('listPresentations');
-    test.todo('rejectCredentialOffer');
   });
 
   describe('Unsuccessful API calls', async () => {
@@ -85,9 +92,12 @@ describe('connectionStore', () => {
       await expect(store.listCredentials()).rejects.toThrow();
     });
 
+    test('sendProblemReport throws an error', async () => {
+      await expect(store.sendProblemReport('test-id')).rejects.toThrow();
+    });
+
     test.todo('listHolderCredentialExchanges');
     test.todo('listOcas');
     test.todo('listPresentations');
-    test.todo('rejectCredentialOffer');
   });
 });

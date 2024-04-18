@@ -143,12 +143,6 @@ acapy:
       genesis_url: "http://test.bcovrin.vonx.io/genesis"
       endorser_did: "Ket75eV5UQvVkW2XBjgDH7"
       endorser_alias: "bcovrin-test-endorser"
-    - id: bcovrin-dev
-      is_production: true
-      is_write: true
-      genesis_url: "http://dev.bcovrin.vonx.io/genesis"
-      endorser_did: "N5bxk3jWkpZ2tEaMtjPjPa"
-      endorser_alias: "bcovrin-dev-endorser"
 
   ## @section Wallet Storage configuration
   ##  Specifies the storage configuration to use for the wallet.
@@ -198,12 +192,14 @@ acapy:
   ## @param acapy.plugins.connectionUpdate Enable the connection update plugin.
   ## @param acapy.plugins.multitenantProvider Enable the multitenant provider plugin.
   ## @param acapy.plugins.tractionInnkeeper Enable the traction innkeeper plugin.
+  ## @param acapy.plugins.rpc Enable the RPC plugin.
   ##
   plugins:
     basicmessageStorage: true
     connectionUpdate: true
     multitenantProvider: true
     tractionInnkeeper: true
+    rpc: true
 
   ## @section Acapy Plugin Configuration
   ## Specify configuration values for each plugin.
@@ -242,11 +238,8 @@ acapy:
         connect_to_endorser:
           - endorser_alias: bcovrin-test-endorser
             ledger_id: bcovrin-test
-          - endorser_alias: bcovrin-dev-endorser
-            ledger_id: bcovrin-dev
         create_public_did:
           - bcovrin-test
-          - bcovrin-dev
       reservation:
         expiry_minutes: 2880
         auto_approve: false
@@ -413,13 +406,20 @@ acapy:
   ##
   secret:
     adminApiKey:
+      ## @param acapy.secret.adminApiKey.existingSecret Name of an existing secret to use. Must contain `jwt`, `adminApiKey`, and `webhookapi` keys.
+      existingSecret: ""
       ## @param acapy.secret.adminApiKey.generated Generate admin api key
       ##
       generated: true
       ## @param acapy.secret.adminApiKey.value Override admin api key
       ##
       value: ""
+    walletKey:
+      ## @param acapy.secret.walletKey.existingSecret Name of an existing secret to use. Must contain `walletKey` key.
+      existingSecret: ""
     pluginInnkeeper:
+      ## @param acapy.secret.pluginInnkeeper.existingSecret Name of an existing secret to use. Must contain `tenantid`, and `walletkey` keys.
+      existingSecret: ""
       ## @param acapy.secret.pluginInnkeeper.generated Generate plugin innkeeper secret values
       ##
       generated: true
@@ -589,6 +589,9 @@ ui:
   showOIDCReservationLogin: false
   ## @param ui.oidc.quickConnectEndorserName A ledger that has endorser auto-accept/transact enabled
   quickConnectEndorserName: ""
+  ## @param ui.requireEmailForReservation Whether the Email field is needed for a tenant reservation
+  ## If false will default not.applicable@example.com to API 
+  requireEmailForReservation: true
   image:
     ## @param ui.image.repository
     repository: ghcr.io/bcgov/traction-tenant-ui
@@ -618,6 +621,18 @@ ui:
     owner: ""
     ## @param ui.ux.coverImageCopyright
     coverImageCopyright: "Photo by Kristoffer Fredriksson on StockSnap"
+
+    ## About Business page settings
+    ##
+    aboutBusiness:
+      ## @param ui.ux.aboutBusiness.title
+      title: "Government of British Columbia"
+      ## @param ui.ux.aboutBusiness.linkTitle
+      linkTitle: "BC Digital Trust Service Agreement"
+      ## @param ui.ux.aboutBusiness.link
+      link: "https://github.com/bcgov/bc-vcpedia/blob/main/agents/bc-gov-agent-service.md"
+      ## @param ui.ux.aboutBusiness.imageUrl
+      imageUrl: "/img/bc/bc_logo.png"
 
     ## Information banner settings
     ##

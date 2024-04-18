@@ -18,6 +18,12 @@ export const successHandlers = [
     fullPathWithProxyTenant(API_PATH.ISSUE_CREDENTIAL_RECORD('test-id')),
     () => HttpResponse.json({})
   ),
+  http.post(
+    fullPathWithProxyTenant(
+      API_PATH.ISSUE_CREDENTIAL_RECORDS_PROBLEM_REPORT('test-id')
+    ),
+    () => HttpResponse.json({})
+  ),
 ];
 
 export const unknownErrorHandlers = [
@@ -32,6 +38,12 @@ export const unknownErrorHandlers = [
   ),
   http.delete(
     fullPathWithProxyTenant(API_PATH.ISSUE_CREDENTIAL_RECORD('test-id')),
+    () => HttpResponse.json({}, { status: 500 })
+  ),
+  http.post(
+    fullPathWithProxyTenant(
+      API_PATH.ISSUE_CREDENTIAL_RECORDS_PROBLEM_REPORT('test-id')
+    ),
     () => HttpResponse.json({}, { status: 500 })
   ),
 ];

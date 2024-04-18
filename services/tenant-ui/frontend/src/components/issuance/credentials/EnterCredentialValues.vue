@@ -88,7 +88,7 @@ function jsonToCredentialValue(
     credentialValuesRaw.value = parsed;
     return parsed;
   } else {
-    toast.warning('The JSON you inputted has invalid syntax');
+    toast.warning('This JSON is invalid syntax');
     return undefined;
   }
 }

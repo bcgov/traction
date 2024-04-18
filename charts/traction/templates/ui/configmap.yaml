@@ -15,6 +15,7 @@ data:
   FRONTEND_TENANT_SHOW_WRITABLE_COMPONENTS: {{ .Values.ui.oidc.showWritableComponents | quote }}
   FRONTEND_SHOW_OIDC_RESERVATION_LOGIN: {{ .Values.ui.showOIDCReservationLogin | quote }}
   FRONTEND_QUICK_CONNECT_ENDORSER_NAME: {{ .Values.ui.quickConnectEndorserName | quote }}
+  FRONTEND_REQUIRE_EMAIL_FOR_RESERVATION: {{ .Values.ui.requireEmailForReservation | quote }}
   FRONTEND_SESSION_TIMEOUT_SECONDS: {{ .Values.ui.oidc.session.timeoutSeconds | quote }}
   FRONTEND_SESSION_COUNTDOWN_SECONDS: {{ .Values.ui.oidc.session.countdownSeconds | quote }}
   FRONTEND_TENANT_PROXY_URL: https://{{ include "tenant_proxy.host" . }}
@@ -37,4 +38,8 @@ data:
   UX_INFO_BANNER_MESSAGE: {{ .Values.ui.ux.infoBanner.message | quote }}
   UX_INFO_BANNER_MESSAGE_LEVEL: {{ .Values.ui.ux.infoBanner.messageLevel | quote }}
   UX_INFO_BANNER_SHOW_MESSAGE: {{ .Values.ui.ux.infoBanner.showMessage | quote }}
+  UX_ABOUT_TITLE: {{ .Values.ui.ux.aboutBusiness.title | quote }}
+  UX_ABOUT_LINK_TITLE: {{ .Values.ui.ux.aboutBusiness.linkTitle | quote }}
+  UX_ABOUT_LINK: {{ .Values.ui.ux.aboutBusiness.link | quote }}
+  UX_ABOUT_IMAGE_URL: {{ .Values.ui.ux.aboutBusiness.imageUrl | quote }}
 {{- end -}}

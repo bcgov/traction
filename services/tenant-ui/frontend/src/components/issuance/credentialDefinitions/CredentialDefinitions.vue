@@ -31,13 +31,13 @@
             </div>
           </div>
           <div class="flex justify-content-end">
-            <span class="p-input-icon-left">
-              <i class="pi pi-search" />
+            <IconField icon-position="left">
+              <InputIcon><i class="pi pi-search" /></InputIcon>
               <InputText
                 v-model="filter.global.value"
                 :placeholder="t('configuration.search.credDefs')"
               />
-            </span>
+            </IconField>
           </div>
         </div>
       </template>
@@ -161,6 +161,8 @@ import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
+import InputIcon from 'primevue/inputicon';
+import IconField from 'primevue/iconfield';
 import { useConfirm } from 'primevue/useconfirm';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
