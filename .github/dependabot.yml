@@ -1,14 +1,217 @@
- # For details on how this file works refer to:
- #   - https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+# For details on how this file works refer to:
+#  - https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 version: 2
 updates:
   # Maintain dependencies for GitHub Actions
   #  - Check for updates once a week
   #  - Group all updates into a single PR
-  - package-ecosystem: github-actions
-    directory: /
+  - package-ecosystem: "github-actions"
+    directory: "/"
     schedule:
-      interval: weekly
+      interval: "weekly"
     groups:
       all-actions:
         patterns: [ "*" ]
+
+  # Maintain dependencies for Python Packages
+  - package-ecosystem: "pip"
+    directory: "/services/endorser"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Canada/Pacific"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  # Maintain dependencies for Python Packages
+  - package-ecosystem: "pip"
+    directory: "/demo/lob"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Canada/Pacific"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  # Maintain dependencies for Python Packages
+  - package-ecosystem: "pip"
+    directory: "/demo/plugins/rpc/controller"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Canada/Pacific"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  # Maintain dependencies for Python Packages
+  - package-ecosystem: "pip"
+    directory: "/plugins"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Canada/Pacific"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  # Maintain dependencies for Python Packages
+  - package-ecosystem: "pip"
+    directory: "/plugins/traction_innkeeper"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Canada/Pacific"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  # Maintain dependencies for TypeScript and JavaScript
+  - package-ecosystem: "npm"
+    directory: "/services/tenant-ui"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Canada/Pacific"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major", "version-update:semver-patch"]
+
+  # Maintain dependencies for TypeScript and JavaScript
+  - package-ecosystem: "npm"
+    directory: "/services/tenant-ui/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Canada/Pacific"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major", "version-update:semver-patch"]
+
+  # Maintain dependencies for TypeScript and JavaScript
+  - package-ecosystem: "npm"
+    directory: "/demo/plugins/rpc/app"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Canada/Pacific"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major", "version-update:semver-patch"]
+
+  # Maintain dependencies for dev Container
+  - package-ecosystem: "devcontainers"
+    directory: "/demo/plugins/rpc/.devcontainer"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Canada/Pacific"
+
+  # Maintain dependencies for dev Container
+  - package-ecosystem: "devcontainers"
+    directory: "/plugins/.devcontainer"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Canada/Pacific"
+
+  # Maintain dependencies for dev Container
+  - package-ecosystem: "devcontainers"
+    directory: "/services/tenant-ui/.devcontainer"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Canada/Pacific"
+
+  # Maintain dependencies for docker
+  - package-ecosystem: "docker"
+    directory: "/demo/lob"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Canada/Pacific"
+
+  # Maintain dependencies for docker
+  - package-ecosystem: "docker"
+    directory: "/plugins/.devcontainer"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Canada/Pacific"
+
+  # Maintain dependencies for docker
+  - package-ecosystem: "docker"
+    directory: "/plugins/docker"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Canada/Pacific"
+
+  # Maintain dependencies for docker
+  - package-ecosystem: "docker"
+    directory: "/plugins/traction_innkeeper/docker"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Canada/Pacific"
+
+  # Maintain dependencies for docker
+  - package-ecosystem: "docker"
+    directory: "/services/aca-py"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Canada/Pacific"
+    
+  # Maintain dependencies for docker
+  - package-ecosystem: "docker"
+    directory: "/services/endorser"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Canada/Pacific"
+
+  # Maintain dependencies for docker
+  - package-ecosystem: "docker"
+    directory: "/services/tenant-ui"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Canada/Pacific"
+
+  # Maintain dependencies for docker images inside manifests
+  - package-ecosystem: "docker"
+    directory: "/charts/traction"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Canada/Pacific"
+
+  - package-ecosystem: "docker"
+    directory: "/deploy/traction"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Canada/Pacific"
