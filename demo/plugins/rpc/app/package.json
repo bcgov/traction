@@ -15,8 +15,8 @@
   },
   "dependencies": {
     "pinia": "^2.1.7",
-    "vue": "^3.4.15",
-    "vuetify": "^3.5.3"
+    "vue": "^3.4.24",
+    "vuetify": "^3.5.17"
   },
   "devDependencies": {
     "@mdi/font": "^7.4.47",
@@ -32,7 +32,7 @@
     "npm-run-all2": "^6.1.1",
     "prettier": "^3.2.5",
     "typescript": "^5.4.5",
-    "vite": "^5.1.7",
-    "vue-tsc": "^2.0.13"
+    "vite": "^5.2.10",
+    "vue-tsc": "^2.0.14"
   }
 }
