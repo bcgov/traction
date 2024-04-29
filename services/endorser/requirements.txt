@@ -1,4 +1,4 @@
-aiohttp~=3.7.4
+aiohttp~=3.9.5
 alembic==1.7.5
 anyio==3.5.0
 asgiref==3.4.1
