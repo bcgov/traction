@@ -19,5 +19,7 @@ jobs:
           days-before-pr-stale: 45
           days-before-issue-close: 5
           days-before-pr-close: 10
-          exempt-issue-labels: pinned, bug
-        
+          stale-issue-label: 'stale'
+          exempt-issue-labels: 'pinned,bug,security,dependencies,epic'
+          stale-pr-label: 'stale'
+          exempt-pr-labels: 'awaiting-approval,work-in-progress,dependencies'
