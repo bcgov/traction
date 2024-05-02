@@ -64,6 +64,9 @@ acapy:
       enabled: true
       namespaceSelector:
         network.openshift.io/policy-group: ingress
+  resources:
+    limits:
+      cpu: 500m
 tenant_proxy:
   image:
     pullPolicy: Always
