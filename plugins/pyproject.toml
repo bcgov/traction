@@ -9,7 +9,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-aries-cloudagent = { version = "0.12.0" }
+aries-cloudagent = { version = "0.12.1" }
 python-dateutil = "^2.8.2"
 typing-extensions = "4.8.0"
 traction-innkeeper = {path = "./traction_innkeeper", develop = true}
@@ -22,8 +22,8 @@ ursa-bbs-signatures = { version = "~1.0.1" }
 python3-indy = { version = "^1.11.1" }
 
 [tool.poetry.dev-dependencies]
-black = "^24.4.1"
-flake8 = "^5.0.4"
+black = "^24.4.2"
+flake8 = "^7.0.0"
 
 [build-system]
 requires = ["setuptools", "poetry-core>=1.2"]
