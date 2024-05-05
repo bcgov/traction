@@ -1,16 +1,15 @@
 <template>
   <div class="container">
-    <span
+    <div
       v-for="cred in props.schema.credentialDefinitions"
       :key="cred.cred_def_id"
       v-tooltip="{
-        value: `<h5>${cred.cred_def_id}</h5>`,
+        value: `${cred.cred_def_id}`,
         escape: true,
       }"
-      class="pi pi-id-card"
-      style="font-size: 1.5rem"
+      class="pi pi-id-card text-3xl ml-2"
       @click="navigateToCredDef(cred)"
-    ></span>
+    ></div>
     <Button
       v-tooltip.top="$t('configuration.credentialDefinitions.create')"
       :disabled="!isIssuer"
@@ -88,10 +87,11 @@ const handleClose = async (credDef: CredentialDefinitionSendRequest) => {
 <style scoped>
 .container {
   max-width: 300px;
+  display: flex;
 }
-.pi-id-card {
-  margin-right: 0.5rem;
-  font-size: 2rem;
+.pi.pi-id-card {
+  display: flex;
+  align-items: center;
 }
 .pi-id-card:hover {
   color: black;
