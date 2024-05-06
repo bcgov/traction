@@ -20,6 +20,10 @@ acapy:
       genesis_url: "https://raw.githubusercontent.com/ICCS-ISAC/dtrust-reconu/main/CANdy/dev/pool_transactions_genesis"
       endorser_did: "85DZerr49BLCuG5wWyDviy"
       endorser_alias: "candy-dev-endorser"
+    - id: candy-prod
+      is_production: true
+      is_write: false
+      genesis_url: "https://raw.githubusercontent.com/ICCS-ISAC/dtrust-reconu/main/CANdy/prod/pool_transactions_genesis"
     - id: sovrin-testnet
       is_production: true
       is_write: true
