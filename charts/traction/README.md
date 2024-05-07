@@ -1,6 +1,6 @@
 # Traction
 
-![version: 0.2.9](https://img.shields.io/badge/Version-0.2.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.4.1](https://img.shields.io/badge/AppVersion-0.4.1-informational?style=flat-square)
+![version: 0.3.1](https://img.shields.io/badge/Version-0.3.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.4.2](https://img.shields.io/badge/AppVersion-0.4.2-informational?style=flat-square)
 
 The Traction service allows organizations to verify, hold, and issue verifiable credentials.
 
@@ -224,16 +224,16 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 
 ### Acapy Secrets Configuration
 
-| Name                                     | Description                             | Value  |
-| ---------------------------------------- | --------------------------------------- | ------ |
-| `acapy.secret.adminApiKey.existingSecret` | Name of an existing secret to use. Must contain `jwt`, `adminApiKey`, and `webhookapi` keys.                  | `""` |
-| `acapy.secret.adminApiKey.generated`     | Generate admin api key                  | `true` |
-| `acapy.secret.adminApiKey.value`         | Override admin api key                  | `""`   |
-| `acapy.secret.walletKey.existingSecret`  | Name of an existing secret to use. Must contain `walletKey` key. | `""` |
-| `acapy.secret.pluginInnkeeper.existingSecret` | Name of an existing secret to use. Must contain `tenantid`, and `walletkey` keys. | `""` |
-| `acapy.secret.pluginInnkeeper.generated` | Generate plugin innkeeper secret values | `true` |
-| `acapy.secret.pluginInnkeeper.walletkey` | Override plugin innkeeper wallet key    | `""`   |
-| `acapy.secret.pluginInnkeeper.tenantid`  | Override plugin innkeeper tenant id     | `""`   |
+| Name                                          | Description                                                                                  | Value  |
+| --------------------------------------------- | -------------------------------------------------------------------------------------------- | ------ |
+| `acapy.secret.adminApiKey.existingSecret`     | Name of an existing secret to use. Must contain `jwt`, `adminApiKey`, and `webhookapi` keys. | `""`   |
+| `acapy.secret.adminApiKey.generated`          | Generate admin api key                                                                       | `true` |
+| `acapy.secret.adminApiKey.value`              | Override admin api key                                                                       | `""`   |
+| `acapy.secret.walletKey.existingSecret`       | Name of an existing secret to use. Must contain `walletKey` key.                             | `""`   |
+| `acapy.secret.pluginInnkeeper.existingSecret` | Name of an existing secret to use. Must contain `tenantid`, and `walletkey` keys.            | `""`   |
+| `acapy.secret.pluginInnkeeper.generated`      | Generate plugin innkeeper secret values                                                      | `true` |
+| `acapy.secret.pluginInnkeeper.walletkey`      | Override plugin innkeeper wallet key                                                         | `""`   |
+| `acapy.secret.pluginInnkeeper.tenantid`       | Override plugin innkeeper tenant id                                                          | `""`   |
 
 ### Tenant Proxy configuration
 
