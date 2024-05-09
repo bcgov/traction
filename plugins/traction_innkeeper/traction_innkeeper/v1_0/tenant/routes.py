@@ -104,7 +104,7 @@ async def setup_tenant_context(request: web.Request, handler):
             tenant_id = rec.tenant_id
 
     if tenant_id:
-        return log_records_inject(tenant_id)
+        log_records_inject(tenant_id)
 
 
     return await handler(request)
