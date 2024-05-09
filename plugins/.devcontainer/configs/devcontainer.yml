@@ -56,9 +56,9 @@ genesis-url: http://test.bcovrin.vonx.io/genesis
 wallet-type: askar
 wallet-name: traction-wallet
 wallet-key: 'insecure-change-me'
-wallet-storage-type: postgres_storage
-wallet-storage-config: '{"url":"host.docker.internal:5432","max_connections":5,"wallet_scheme":"DatabasePerWallet"}'
-wallet-storage-creds: '{"account":"postgres","password":"postgresPass","admin_account":"postgres","admin_password":"postgresPass"}'
+# wallet-storage-type: postgres_storage
+# wallet-storage-config: '{"url":"host.docker.internal:5432","max_connections":5,"wallet_scheme":"DatabasePerWallet"}'
+# wallet-storage-creds: '{"account":"postgres","password":"postgresPass","admin_account":"postgres","admin_password":"postgresPass"}'
 multitenancy-config: '{"wallet-type":"askar-profile","wallet-name":"askar-wallet"}'
 
 log-level: info

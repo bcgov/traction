@@ -1,3 +1,4 @@
+from contextvars import ContextVar
 import logging
 
 from aries_cloudagent.config.injection_context import InjectionContext
@@ -9,12 +10,11 @@ from aries_cloudagent.config.logging import TimedRotatingFileMultiProcessHandler
 from pythonjsonlogger import jsonlogger
 
 from .holder_revocation_service import subscribe, HolderRevocationService
-from .routes import context_tenant_id
 
 LOGGER = logging.getLogger(__name__)
 
-LOG_FORMAT_FILE_ALIAS_PATTERN = (
-    "%(asctime)s %(tenant_id)s %(levelname)s %(pathname)s:%(lineno)d %(message)s"
+LOG_FORMAT_PATTERN = (
+    "%(asctime)s  TENANT: %(tenant_id)s %(levelname)s %(pathname)s:%(lineno)d %(message)s"
 )
 
 
@@ -23,30 +23,37 @@ class ContextFilter(logging.Filter):
 
     def __init__(self):
         """Initialize an instance of logging filter."""
+
         super(ContextFilter, self).__init__()
 
     def filter(self, record):
         """Filter log records and add tenant id to them."""
-        try:
-            tenant_id = context_tenant_id.get()
-            record.tenant_id = tenant_id
-        except LookupError:
-            record.tenant_id = None
 
+        if not hasattr(record, 'tenant_id') or not record.tenant_id:
+            record.tenant_id = None
         return True
 
 
 def setup_multitenant_logging():
     """Setup method for multitenant logging"""
 
-    log_filter = ContextFilter()
-    for handler in logging.root.handlers:
-        if isinstance(handler, TimedRotatingFileMultiProcessHandler):
-            # Set log formatter to inject tenant id
-            handler.setFormatter(
-                jsonlogger.JsonFormatter(LOG_FORMAT_FILE_ALIAS_PATTERN)
-            )
-        handler.addFilter(log_filter)
+    root_logger = logging.getLogger()
+    for handler in root_logger.handlers:
+        handler.setFormatter(
+            logging.Formatter(LOG_FORMAT_PATTERN)
+        )
+        handler.addFilter(ContextFilter())
+
+
+def log_records_inject(tenant_id: str):
+    """Injects tenant_id into log records"""
+
+    prev_log_record_factory = logging.getLogRecordFactory()
+    def new_log_record_factory(*args, **kwargs):
+        record = prev_log_record_factory(*args, **kwargs)
+        record.tenant_id = tenant_id
+        return record
+    logging.setLogRecordFactory(new_log_record_factory)
 
 
 async def setup(context: InjectionContext):

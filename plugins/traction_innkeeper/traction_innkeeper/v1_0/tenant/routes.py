@@ -1,4 +1,3 @@
-from contextvars import ContextVar
 import logging
 
 from aiohttp import web
@@ -41,6 +40,8 @@ from ..innkeeper.models import (
 )
 from ..innkeeper.utils import create_api_key, TenantConfigSchema, TenantApiKeyException
 
+from ..tenant import log_records_inject
+
 LOGGER = logging.getLogger(__name__)
 
 SWAGGER_CATEGORY = "traction-tenant"
@@ -79,18 +80,15 @@ class TenantLedgerIdConfigSchema(OpenAPISchema):
         required=True,
     )
 
-
-context_tenant_id: ContextVar[str] = ContextVar("context_tenant_id")
-
-
 @web.middleware
 async def setup_tenant_context(request: web.Request, handler):
     """Middle ware to extract tenant_id and provide it to log formatter
 
     This middleware is appended to the app middlewares and therefore runs
     last. At this point the wallet_id has been extracted from a previous
-    middleware function (see setup_context in ACA-Py) and is set as a ContextVar
-    which we can simply access.
+    middleware function and is used to query the tenant record.
+
+    Note: this function is very similar to tenant_self. Can we combine this logic?
     """
     context: AdminRequestContext = request["context"]
     wallet_id, tenant_id = context.profile.settings.get("wallet.id"), None
@@ -106,7 +104,8 @@ async def setup_tenant_context(request: web.Request, handler):
             tenant_id = rec.tenant_id
 
     if tenant_id:
-        context_tenant_id.set(tenant_id)
+        return log_records_inject(tenant_id)
+
 
     return await handler(request)
 
