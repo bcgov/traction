@@ -257,6 +257,12 @@ class TenantAuthenticationsApiRequestSchema(OpenAPISchema):
         example="API key for sample line of business",
     )
 
+    is_admin = fields.Bool(
+        required=False,
+        description="API Key has Admin privileges",
+        example=False,
+    )
+
 
 class TenantAuthenticationsApiResponseSchema(OpenAPISchema):
     """Response schema for api auth record."""
@@ -301,7 +307,7 @@ class TenantAuthenticationApiListSchema(OpenAPISchema):
 
     results = fields.List(
         fields.Nested(TenantAuthenticationApiRecordSchema()),
-        description="List of reservations",
+        description="List of Api Keys for tenants",
     )
 
 
@@ -848,7 +854,14 @@ async def innkeeper_authentications_api(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
 
     body = await request.json()
+    # log the body
+    LOGGER.info("body")
+    LOGGER.info(body)
     rec: TenantAuthenticationApiRecord = TenantAuthenticationApiRecord(**body)
+    LOGGER.info('rec')
+    LOGGER.info(rec)
+    # log the rec serialized
+    LOGGER.info(rec.serialize())
 
     # keys are under base/root profile, use Tenant Manager profile
     mgr = context.inject(TenantManager)

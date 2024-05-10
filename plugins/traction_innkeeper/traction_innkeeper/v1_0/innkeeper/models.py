@@ -475,6 +475,7 @@ class TenantAuthenticationApiRecord(BaseRecord):
         api_key_token_salt: str = None,
         api_key_token_hash: str = None,
         alias: str = None,
+        is_admin: bool = False,
         **kwargs,
     ):
         """Construct record."""
@@ -483,11 +484,12 @@ class TenantAuthenticationApiRecord(BaseRecord):
         self.api_key_token_salt = api_key_token_salt
         self.api_key_token_hash = api_key_token_hash
         self.alias = alias
+        self.is_admin = is_admin
 
     @property
     def tenant_authentication_api_id(self) -> Optional[str]:
         """Return record id."""
-        return uuid.UUID(self._id).hex
+        return self._id
 
     @classmethod
     async def retrieve_by_auth_api_id(
@@ -535,6 +537,7 @@ class TenantAuthenticationApiRecord(BaseRecord):
                 "api_key_token_salt",
                 "api_key_token_hash",
                 "alias",
+                "is_admin",
             )
         }
 
@@ -563,4 +566,9 @@ class TenantAuthenticationApiRecordSchema(BaseRecordSchema):
     alias = fields.Str(
         required=True,
         description="Alias description for this API key",
+    )
+
+    is_admin = fields.Bool(
+        required=False,
+        description="If this API key has administrative API Key privileges",
     )
