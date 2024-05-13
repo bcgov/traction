@@ -9,6 +9,7 @@ jobs:
   clean-ghcr:
     name: Delete old unused container images
     runs-on: ubuntu-22.04
+    if: github.repository_owner == 'bcgov'
     steps:
       - name: Delete containers older than a Month
         uses: snok/container-retention-policy@v2

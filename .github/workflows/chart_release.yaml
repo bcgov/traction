@@ -11,6 +11,7 @@ jobs:
   # This job checks the remote file is up to date with the local one on release
   validate-gh-pages-index:
     runs-on: ubuntu-latest
+    if: github.repository_owner == 'bcgov'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,6 +28,7 @@ jobs:
   chart-release:
     name: Create chart release
     runs-on: ubuntu-latest
+    if: github.repository_owner == 'bcgov'
     needs: [ validate-gh-pages-index ]
     steps:
       - uses: actions/checkout@v4

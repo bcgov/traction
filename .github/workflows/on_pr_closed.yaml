@@ -46,6 +46,7 @@ jobs:
 
   clean-ghcr:
     runs-on: ubuntu-22.04
+    if: github.repository_owner == 'bcgov'
     name: Delete closed or stale pr images
     steps:
       - name: Delete containers 
