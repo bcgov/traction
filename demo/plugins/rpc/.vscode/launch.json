@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "command": "yarn --cwd app dev",
+            "command": "yarn --cwd app dev --host",
             "name": "Run yarn dev - DRPC Requestor",
             "request": "launch",
             "type": "node-terminal",
@@ -14,7 +14,7 @@
             }
         },
         {
-            "command": "yarn --cwd app dev",
+            "command": "yarn --cwd app dev --host",
             "name": "Run yarn dev - DRPC Responder",
             "request": "launch",
             "type": "node-terminal",

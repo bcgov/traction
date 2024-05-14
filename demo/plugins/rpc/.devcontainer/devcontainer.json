@@ -19,8 +19,7 @@
         "vscode": {
             "settings": {
                 "python.venvPath": "${workspaceFolder}/controller/.venv",
-                "python.defaultInterpreterPath": "${workspaceFolder}/controller/.venv/bin/python3",
-                "python.terminal.activateEnvironment": true
+                "python.defaultInterpreterPath": "${workspaceFolder}/controller/.venv/bin/python3"
             },
             "extensions": [
                 "ms-python.python",
@@ -28,7 +27,8 @@
                 "ms-python.vscode-Pylance"
             ]
         }
-    }
+    },
+    "postCreateCommand": "python3 -m venv controller/.venv"
     // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
     // "remoteUser": "root"
 }
