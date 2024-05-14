@@ -49,13 +49,15 @@ def setup_multitenant_logging():
 def log_records_inject(tenant_id: str):
     """Injects tenant_id into log records"""
 
-    def modded_log_record_factory(*args, **kwargs):
-        record = base_log_record_factory(*args, **kwargs)
-        record.tenant_id = tenant_id
-        return record
+    try:
+        def modded_log_record_factory(*args, **kwargs):
+            record = base_log_record_factory(*args, **kwargs)
+            record.tenant_id = tenant_id
+            return record
 
-    logging.setLogRecordFactory(modded_log_record_factory)
-
+        logging.setLogRecordFactory(modded_log_record_factory)
+    except Exception as e: # pylint: disable=broad-except
+        LOGGER.error("There was a problem injecting tenant_id into the logs: %s", e)
 
 async def setup(context: InjectionContext):
     LOGGER.info("> plugin setup...")
