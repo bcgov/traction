@@ -17,6 +17,7 @@ LOG_FORMAT_PATTERN = (
     "%(asctime)s  TENANT: %(tenant_id)s %(levelname)s %(pathname)s:%(lineno)d %(message)s"
 )
 
+base_log_record_factory = logging.getLogRecordFactory()
 
 class ContextFilter(logging.Filter):
     """Custom logging filter to adapt logs with contextual tenant_id."""
@@ -48,12 +49,12 @@ def setup_multitenant_logging():
 def log_records_inject(tenant_id: str):
     """Injects tenant_id into log records"""
 
-    prev_log_record_factory = logging.getLogRecordFactory()
-    def new_log_record_factory(*args, **kwargs):
-        record = prev_log_record_factory(*args, **kwargs)
+    def modded_log_record_factory(*args, **kwargs):
+        record = base_log_record_factory(*args, **kwargs)
         record.tenant_id = tenant_id
         return record
-    logging.setLogRecordFactory(new_log_record_factory)
+
+    logging.setLogRecordFactory(modded_log_record_factory)
 
 
 async def setup(context: InjectionContext):
