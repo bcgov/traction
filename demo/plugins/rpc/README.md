@@ -14,9 +14,11 @@ To initialize the Controller, run the following commands from the root of this d
 
 ```sh
 cd controller/
-source .venv/bin/activate
 poetry install --no-root --all-extras
+cp .env.example .env
 ```
+
+If you are running Traction in a devcontainer (or generally in a Windows WSL environment) you should adjust the `PROXY_URL` in the `.env` to point to `host.docker.internal` instead of `localhost`.
 
 Once the dependencies are installed you should be able to launch debug sessions for a Requestor and Responder controller.
 
