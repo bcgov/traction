@@ -41,9 +41,13 @@ watch(
   () => appStore.tenant,
   () => {
     if (appStore.tenant) {
-      const ws = new WebSocket(`ws://localhost:${import.meta.env.VITE_AGENT_PORT}/ws/${appStore.tenant?.walletId}`)
+      const ws = new WebSocket(
+        `ws://localhost:${import.meta.env.VITE_AGENT_PORT}/ws/${appStore.tenant?.walletId}`
+      )
       ws.onopen = () => {
-        appStore.addMessage(`Hello ${appStore.tenant?.tenantName}, you have an active websocket and will receive messages here.`)
+        appStore.addMessage(
+          `Hello ${appStore.tenant?.tenantName}, you have an active websocket and will receive messages here.`
+        )
       }
       ws.onmessage = async (wsMessage) => {
         const { message, topic } = JSON.parse(wsMessage.data)
