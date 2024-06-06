@@ -590,12 +590,12 @@ const handleSubmit = async (isFormValid: boolean) => {
   try {
     const webhooks: Array<string> = [];
     if (formFields.webhooks && formFields.webhooks.length) {
-      formFields.webhooks.forEach((whItem: any) => {
-        let url = whItem.webhookUrl;
+      formFields.webhooks.forEach((whItem) => {
+        let url = whItem.webhookUrl.trim();
 
-        // If there is a token, add it to the url
-        if (whItem.webhookKey) {
-          url += `#${whItem.webhookKey}`;
+        // If there is a webhook key, add it to the url
+        if (whItem.webhookKey.trim()) {
+          url += `#${whItem.webhookKey.trim()}`;
         }
 
         // Don't add blank webhooks
