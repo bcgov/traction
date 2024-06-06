@@ -37,7 +37,7 @@
             },
             "python.formatting.provider": "black",
             "python.formatting.blackArgs": [],
-            "python.venvFolders": ["~.cache/virtualenvs"]
+            "python.venvFolders": ["${localWorkspaceFolder}/plugins/.venv"]
           },
           "extensions": [
               "ms-python.python",
