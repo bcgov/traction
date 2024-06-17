@@ -18,7 +18,7 @@ anoncreds = "^0.2.0"
 
 [tool.poetry.dev-dependencies]
 black = "^24.4.2"
-flake8 = "^7.0.0"
+flake8 = "^7.1.0"
 
 [build-system]
 requires = ["setuptools", "poetry-core>=1.2"]
