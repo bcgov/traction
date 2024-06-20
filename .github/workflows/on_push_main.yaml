@@ -121,10 +121,10 @@ jobs:
           IMAGE_TAG: ${{ needs.build_acapy.outputs.image_version }}
         run: |
           cd ministry-gitops-ditp
-          yq e -i '.version = env(CHART_VERSION)' services/traction/charts/dev/values.yaml
-          yq e -i '.traction.acapy.image.tag = env(IMAGE_TAG)' services/traction/charts/dev/values.yaml
-          yq e -i '.traction.tenant_proxy.image.tag = env(IMAGE_TAG)' services/traction/charts/dev/values.yaml
-          yq e -i '.traction.ui.image.tag = env(IMAGE_TAG)' services/traction/charts/dev/values.yaml
+          yq e -i '.version = $CHART_VERSION' services/traction/charts/dev/values.yaml
+          yq e -i '.traction.acapy.image.tag = $IMAGE_TAG' services/traction/charts/dev/values.yaml
+          yq e -i '.traction.tenant_proxy.image.tag = $IMAGE_TAG' services/traction/charts/dev/values.yaml
+          yq e -i '.traction.ui.image.tag = $IMAGE_TAG' services/traction/charts/dev/values.yaml
       - name: Commit and push changes
         run: |
           cd ministry-gitops-ditp
