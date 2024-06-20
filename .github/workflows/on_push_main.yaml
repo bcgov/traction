@@ -90,7 +90,7 @@ jobs:
       - build_acapy
       - build_proxy
       - changed_files
-    if: needs.changed_files.outputs.any_changed == 'true'
+    if: needs.changed_files.outputs.any_changed != 'true'
     steps:
       - uses: actions/checkout@v4
       - name: Set up Git
@@ -141,7 +141,7 @@ jobs:
       - build_acapy
       - build_proxy
       - changed_files
-    if: ${{ needs.changed_files.outputs.any_changed != 'true' && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) && (github.repository_owner == 'bcgov') }}
+    if: ${{ needs.changed_files.outputs.any_changed == 'true' && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) && (github.repository_owner == 'bcgov') }}
     steps:
       - uses: actions/checkout@v4
 
