@@ -80,7 +80,7 @@ jobs:
         id: chart-changes
         uses: tj-actions/changed-files@v44
         with:
-          files: charts/*.*
+          files: charts/traction/*.*
 
   argo_sync:
     runs-on: ubuntu-latest
@@ -115,13 +115,17 @@ jobs:
         id: chart_version
         run: |
           helm repo add traction https://bcgov.github.io/traction
+          helm repo update
+          echo "::set output name=APP_VERSION::$(helm search repo vc-authn-oidc --version ^0.3 -ojson | jq '.[0].app_version')"
           echo "::set output name=CHART_VERSION::$(helm search repo traction --version ^0.3 -ojson | jq '.[0].version')"
       - name: Update values
         env:
+          APP_VERSION: ${{ steps.chart_version.outputs.APP_VERSION }}
           CHART_VERSION: ${{ steps.chart_version.outputs.CHART_VERSION }}
           IMAGE_TAG: ${{ needs.build_acapy.outputs.image_version }}
         run: |
           cd ministry-gitops-ditp
+          yq e -i '.appVersion = $APP_VERSION' services/vc-authn-oidc/charts/dev/Chart.yaml
           yq e -i '.version = $CHART_VERSION' services/traction/charts/dev/Chart.yaml
           yq e -i '.traction.acapy.image.tag = $IMAGE_TAG' services/traction/charts/dev/values.yaml
           yq e -i '.traction.tenant_proxy.image.tag = $IMAGE_TAG' services/traction/charts/dev/values.yaml
