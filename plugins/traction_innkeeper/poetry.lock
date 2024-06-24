@@ -141,6 +141,19 @@ files = [
 frozenlist = ">=1.1.0"
 
 [[package]]
+name = "anoncreds"
+version = "0.2.0"
+description = ""
+optional = false
+python-versions = ">=3.6.3"
+files = [
+    {file = "anoncreds-0.2.0-py3-none-macosx_10_9_universal2.whl", hash = "sha256:ec57e224d5f1b8749c3d6ff75bb61229a4f9c31df1ee863835f025c78ec10cd0"},
+    {file = "anoncreds-0.2.0-py3-none-manylinux2014_aarch64.whl", hash = "sha256:55dd0ad8c8611d2f6af158485dbd2f3c9524694ee4eaf1c5558973f1e436f943"},
+    {file = "anoncreds-0.2.0-py3-none-manylinux2014_x86_64.whl", hash = "sha256:6fb3b28e1f7c283ba27cb5d65ce3dd5303162e17c4311d69cb93402bfd2e3317"},
+    {file = "anoncreds-0.2.0-py3-none-win_amd64.whl", hash = "sha256:6c19d86117589ca5cc8f85637d62ebe077c52c34a5de9d1915f5e551458202b1"},
+]
+
+[[package]]
 name = "apispec"
 version = "3.3.2"
 description = "A pluggable API specification generator. Currently supports the OpenAPI Specification (f.k.a. the Swagger specification)."
