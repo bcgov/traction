@@ -101,5 +101,5 @@ jobs:
         run: |
           cd ministry-gitops-ditp
           git add services/traction/charts/test/Chart.yaml services/traction/charts/prod/Chart.yaml
-          git commit -m "Update chart version and image tags"
+          git commit -m "Update chart version"
           git push origin main
