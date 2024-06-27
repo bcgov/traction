@@ -79,8 +79,8 @@ jobs:
         run: |
           helm repo add traction https://bcgov.github.io/traction
           helm repo update
-          echo "::set output name=APP_VERSION::$(helm search repo vc-authn-oidc --version ^0.3 -ojson | jq '.[0].app_version')"
-          echo "::set output name=CHART_VERSION::$(helm search repo traction --version ^0.3 -ojson | jq '.[0].version')"
+          echo "::set output name=APP_VERSION::$(helm search repo vc-authn-oidc -ojson | jq '.[0].app_version')"
+          echo "::set output name=CHART_VERSION::$(helm search repo traction -ojson | jq '.[0].version')"
       - name: Update test
         env:
           APP_VERSION: ${{ steps.chart_version.outputs.APP_VERSION }}
