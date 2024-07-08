@@ -105,3 +105,10 @@ jobs:
           git add services/traction/charts/test/Chart.yaml services/traction/charts/prod/Chart.yaml
           git commit -m "Update chart version"
           git push origin main
+      - name: Sync Traction Test
+        uses: OpsVerseIO/argocd-sync@0.2.0
+        with:
+          address: https://gitops-shared.apps.silver.devops.gov.bc.ca
+          token: ${{ secrets.DITP_GITOPS_ARGO_SECRET}}
+          action: sync
+          appName: "bc0192-test-traction"

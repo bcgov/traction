@@ -82,9 +82,9 @@ jobs:
         with:
           files: charts/traction/*.*
 
-  argo_sync:
+  gitops_update:
     runs-on: ubuntu-latest
-    name: Update GitOps Repo to trigger ArgoCD Sync
+    name: Update GitOps Repo
     needs:
       - build_ui
       - build_acapy
@@ -137,6 +137,13 @@ jobs:
           git add services/traction/charts/dev/values.yaml services/traction/charts/dev/Chart.yaml
           git commit -m "Update chart version and image tags"
           git push origin main
+      - name: Sync Traction Dev
+        uses: OpsVerseIO/argocd-sync@0.2.0
+        with:
+          address: https://gitops-shared.apps.silver.devops.gov.bc.ca
+          token: ${{ secrets.DITP_GITOPS_ARGO_SECRET}}
+          action: sync
+          appName: "bc0192-dev-traction"
 
   deploy:
     name: Deploy Dev
