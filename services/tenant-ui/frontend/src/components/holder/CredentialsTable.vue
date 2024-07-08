@@ -35,7 +35,7 @@
       <hr class="expand-divider" />
       <RowExpandData
         :id="data.credential_exchange_id"
-        :url="API_PATH.ISSUE_CREDENTIAL_RECORDS"
+        :url="API_PATH.ISSUE_CREDENTIAL_20_RECORDS"
       />
     </template>
     <Column :expander="true" header-style="width: 3rem" />
@@ -147,9 +147,10 @@
 
 <script setup lang="ts">
 // Types
+import { ExtendedV20CredExRecordByFormat } from '@/types';
 import {
   CredAttrSpec,
-  V10CredentialExchange,
+  V20CredExRecordDetail,
 } from '@/types/acapyApi/acapyInterface';
 
 // Vue
@@ -188,21 +189,23 @@ const holderStore = useHolderStore();
 // The data table row format
 const formattedcredentialExchanges = computed(() =>
   credentialExchanges.value.map((ce) => ({
-    credential_exchange_id: ce.credential_exchange_id,
+    credential_exchange_id: ce.cred_ex_record?.cred_ex_id,
     credential_attributes: getAttributes(ce),
-    connection: findConnectionName(ce.connection_id ?? ''),
-    credential_definition_id: ce.credential_definition_id,
-    state: ce.state,
-    updated: formatDateLong(ce.updated_at ?? ''),
-    updated_at: ce.updated_at,
-    created: formatDateLong(ce.created_at ?? ''),
-    created_at: ce.created_at,
+    connection: findConnectionName(ce.cred_ex_record?.connection_id ?? ''),
+    credential_definition_id: (
+      ce.cred_ex_record?.by_format as ExtendedV20CredExRecordByFormat
+    )?.cred_offer?.indy?.cred_def_id,
+    state: ce.cred_ex_record?.state,
+    updated: formatDateLong(ce.cred_ex_record?.updated_at ?? ''),
+    updated_at: ce.cred_ex_record?.updated_at,
+    created: formatDateLong(ce.cred_ex_record?.created_at ?? ''),
+    created_at: ce.cred_ex_record?.created_at,
   }))
 );
 
 // Cred attributes
-const getAttributes = (data: V10CredentialExchange): CredAttrSpec[] => {
-  return data.credential_offer_dict?.credential_preview?.attributes ?? [];
+const getAttributes = (data: V20CredExRecordDetail): CredAttrSpec[] => {
+  return data.cred_ex_record?.cred_offer?.credential_preview?.attributes ?? [];
 };
 
 const expandedRows = ref([]);

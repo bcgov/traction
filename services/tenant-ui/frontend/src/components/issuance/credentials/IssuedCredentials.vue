@@ -8,7 +8,7 @@
       v-model:filters="filter"
       v-model:expandedRows="expandedRows"
       :loading="loading"
-      :value="formattedCredentials"
+      :value="formattedCredentials20"
       :paginator="true"
       :rows="TABLE_OPT.ROWS_DEFAULT"
       :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
@@ -135,7 +135,7 @@
       <template #expansion="{ data }">
         <RowExpandData
           :id="data.credential_exchange_id"
-          :url="API_PATH.ISSUE_CREDENTIAL_RECORDS"
+          :url="API_PATH.ISSUE_CREDENTIAL_20_RECORDS"
         />
       </template>
     </DataTable>
@@ -179,17 +179,17 @@ const issuerStore = useIssuerStore();
 const { loading, credentials, selectedCredential } =
   storeToRefs(useIssuerStore());
 
-const formattedCredentials: Ref<any[]> = computed(() =>
+const formattedCredentials20: Ref<any[]> = computed(() =>
   credentials.value.map((cred: any) => ({
-    connection_id: cred.connection_id,
-    state: cred.state,
-    revocation_id: cred.revocation_id,
-    revoc_reg_id: cred.revoc_reg_id,
-    connection: findConnectionName(cred.connection_id),
-    credential_definition_id: cred.credential_definition_id,
-    credential_exchange_id: cred.credential_exchange_id,
-    sent_time: cred.sent_time,
-    created: formatDateLong(cred.created_at),
+    connection_id: cred.cred_ex_record.connection_id,
+    state: cred.cred_ex_record.state,
+    cred_rev_id: cred.indy.cred_rev_id,
+    rev_reg_id: cred.indy.rev_reg_id,
+    connection: findConnectionName(cred.cred_ex_record.connection_id),
+    credential_definition_id:
+      cred.cred_ex_record.by_format?.cred_offer?.indy?.cred_def_id,
+    credential_exchange_id: cred.cred_ex_record.cred_ex_id,
+    created: formatDateLong(cred.cred_ex_record.created_at),
     created_at: cred.created_at,
   }))
 );

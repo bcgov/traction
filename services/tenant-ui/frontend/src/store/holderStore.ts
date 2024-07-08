@@ -2,6 +2,7 @@ import {
   IndyCredInfo,
   OcaRecord,
   V10CredentialExchange,
+  V20CredExRecordDetail,
 } from '@/types/acapyApi/acapyInterface';
 
 import { defineStore } from 'pinia';
@@ -16,7 +17,7 @@ export const useHolderStore = defineStore('holder', () => {
 
   // state
   const credentials: Ref<IndyCredInfo[]> = ref([]);
-  const credentialExchanges: Ref<V10CredentialExchange[]> = ref([]);
+  const credentialExchanges: Ref<V20CredExRecordDetail[]> = ref([]);
   const selectedCredential: any = ref(null);
 
   const ocas: Ref<OcaRecord[]> = ref([]);
@@ -44,7 +45,7 @@ export const useHolderStore = defineStore('holder', () => {
 
   async function listHolderCredentialExchanges() {
     return fetchList(
-      API_PATH.ISSUE_CREDENTIAL_RECORDS,
+      API_PATH.ISSUE_CREDENTIAL_20_RECORDS,
       credentialExchanges,
       error,
       loading,

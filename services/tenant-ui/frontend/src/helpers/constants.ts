@@ -77,11 +77,16 @@ export const API_PATH = {
   ISSUE_CREDENTIAL_RECORD: (id: string) => `/issue-credential/records/${id}`,
   ISSUE_CREDENTIAL_RECORDS_SEND_OFFER: (id: string) =>
     `/issue-credential/records/${id}/send-offer`,
-  ISSUE_CREDENTIALS_SEND_OFFER: '/issue-credential/send-offer',
+  ISSUE_CREDENTIALS_SEND_OFFER: '/issue-credential-2.0/send-offer',
   ISSUE_CREDENTIAL_RECORDS_SEND_REQUEST: (id: string) =>
     `/issue-credential/records/${id}/send-request`,
   ISSUE_CREDENTIAL_RECORDS_PROBLEM_REPORT: (id: string) =>
     `/issue-credential/records/${id}/problem-report`,
+
+  ISSUE_CREDENTIAL_20_RECORDS: '/issue-credential-2.0/records',
+  ISSUE_CREDENTIAL_20_RECORD: (id: string) =>
+    `/issue-credential-2.0/records/${id}`,
+  ISSUE_CREDENTIALS_20_SEND_OFFER: '/issue-credential-2.0/send-offer',
 
   LEDGER_TAA: '/ledger/taa',
   LEDGER_TAA_ACCEPT: '/ledger/taa/accept',
@@ -117,6 +122,10 @@ export const API_PATH = {
     `/present-proof/records/${id}/verify-presentation`,
   PRESENT_PROOF_SEND_PROPOSAL: '/present-proof/send-proposal',
   PRESENT_PROOF_SEND_REQUEST: '/present-proof/send-request',
+
+  PRESENT_PROOF_20_RECORDS: '/present-proof-2.0/records',
+  PRESENT_PROOF_20_RECORD: (id: string) => `/present-proof-2.0/records/${id}`,
+  PRESENT_PROOF_20_SEND_REQUEST: '/present-proof-2.0/send-request',
 
   REVOCATION_REVOKE: '/revocation/revoke',
 

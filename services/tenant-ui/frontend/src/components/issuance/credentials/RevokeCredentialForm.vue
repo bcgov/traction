@@ -37,14 +37,14 @@
         <small>
           <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
           {{ t('issue.revocationId') }}:
-          {{ props.credExchRecord.revocation_id }}
+          {{ props.credExchRecord?.indy?.cred_rev_id }}
         </small>
       </p>
       <p>
         <small>
           <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
           {{ t('issue.revocationRegistry') }}:
-          {{ props.credExchRecord.revoc_reg_id }}
+          {{ props.credExchRecord?.indy?.rev_reg_id }}
         </small>
       </p>
     </div>
@@ -62,7 +62,7 @@
 // Types
 import {
   RevokeRequest,
-  V10CredentialExchange,
+  V20CredExRecordDetail,
 } from '@/types/acapyApi/acapyInterface';
 
 // Vue/State
@@ -86,7 +86,7 @@ const emit = defineEmits(['closed', 'success']);
 
 // Props
 const props = defineProps<{
-  credExchRecord: V10CredentialExchange;
+  credExchRecord: V20CredExRecordDetail;
   connectionDisplay: string;
 }>();
 
@@ -110,9 +110,9 @@ const handleSubmit = async (isFormValid: boolean) => {
   try {
     const payload: RevokeRequest = {
       comment: formFields.comment,
-      connection_id: props.credExchRecord.connection_id,
-      rev_reg_id: props.credExchRecord.revoc_reg_id,
-      cred_rev_id: props.credExchRecord.revocation_id,
+      connection_id: props.credExchRecord.cred_ex_record?.connection_id,
+      rev_reg_id: props.credExchRecord.indy?.rev_reg_id,
+      cred_rev_id: props.credExchRecord.indy?.cred_rev_id,
       publish: true,
       notify: true,
     };

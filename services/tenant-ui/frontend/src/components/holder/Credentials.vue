@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 // Types
-import { V10CredentialExchange } from '@/types/acapyApi/acapyInterface';
+import { V20CredExRecordDetail } from '@/types/acapyApi/acapyInterface';
 
 // Vue
 import { ref } from 'vue';
@@ -68,30 +68,32 @@ const holderStore = useHolderStore();
 const cardView = ref(false);
 
 // Actions for a cred row/card
-const acceptOffer = (event: any, data: V10CredentialExchange) => {
-  if (data.credential_exchange_id) {
-    holderStore.acceptCredentialOffer(data.credential_exchange_id).then(() => {
-      toast.success(`Credential successfully added to your wallet`);
-    });
+const acceptOffer = (event: any, data: V20CredExRecordDetail) => {
+  if (data.cred_ex_record?.cred_ex_id) {
+    holderStore
+      .acceptCredentialOffer(data.cred_ex_record?.cred_ex_id)
+      .then(() => {
+        toast.success(`Credential successfully added to your wallet`);
+      });
   }
 };
-const rejectOffer = (event: any, data: V10CredentialExchange) => {
+const rejectOffer = (event: any, data: V20CredExRecordDetail) => {
   confirm.require({
     target: event.currentTarget,
     message: 'Are you sure you want to reject this credential offer?',
     header: 'Confirmation',
     icon: 'pi pi-exclamation-triangle',
     accept: async () => {
-      if (data.credential_exchange_id) {
+      if (data.cred_ex_record?.cred_ex_id) {
         // Send a problem report then delete the cred exchange record
         await holderStore
-          .sendProblemReport(data.credential_exchange_id)
+          .sendProblemReport(data.cred_ex_record?.cred_ex_id)
           .catch((err: any) => {
             console.error(`Problem report failed: ${err}`);
             toast.error('Failure sending Problem Report');
           });
         holderStore
-          .deleteCredentialExchange(data.credential_exchange_id)
+          .deleteCredentialExchange(data.cred_ex_record?.cred_ex_id)
           .then(() => {
             loadCredentials();
             toast.success(`Credential offer rejected`);
@@ -100,16 +102,16 @@ const rejectOffer = (event: any, data: V10CredentialExchange) => {
     },
   });
 };
-const deleteCredential = (event: any, data: V10CredentialExchange) => {
+const deleteCredential = (event: any, data: V20CredExRecordDetail) => {
   confirm.require({
     target: event.currentTarget,
     message: 'Are you sure you want to delete this credential exchange record?',
     header: 'Confirmation',
     icon: 'pi pi-exclamation-triangle',
     accept: () => {
-      if (data.credential_exchange_id) {
+      if (data.cred_ex_record?.cred_ex_id) {
         holderStore
-          .deleteCredentialExchange(data.credential_exchange_id)
+          .deleteCredentialExchange(data.cred_ex_record?.cred_ex_id)
           .then(() => {
             loadCredentials();
             toast.info(`Credential exchange deleted`);
