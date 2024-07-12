@@ -149,7 +149,7 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 
 | Name                                                                                    | Description | Value                                                                 |
 | --------------------------------------------------------------------------------------- | ----------- | --------------------------------------------------------------------- |
-| `acapy.plugin-config.yml.multitenant_provider.manager.class_name`                       |             | `multitenant_provider.v1_0.manager.AskarMultitokenMultitenantManager` |
+| `acapy.plugin-config.yml.multitenant_provider.manager.class_name`                       |             | `multitenant_provider.v1_0.manager.BasicMultitokenMultitenantManager` |
 | `acapy.plugin-config.yml.multitenant_provider.manager.always_check_provided_wallet_key` |             | `true`                                                                |
 | `acapy.plugin-config.yml.multitenant_provider.errors.on_unneeded_wallet_key`            |             | `false`                                                               |
 | `acapy.plugin-config.yml.multitenant_provider.token_expiry.units`                       |             | `days`                                                                |
