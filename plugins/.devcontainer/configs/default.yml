@@ -32,8 +32,8 @@ plugin:
 
 
 plugin-config-value:
-  # - multitenant_provider.manager.class_name="multitenant_provider.v1_0.manager.BasicMultitokenMultitenantManager"
-  - multitenant_provider.manager.class_name="multitenant_provider.v1_0.manager.AskarMultitokenMultitenantManager"
+  - multitenant_provider.manager.class_name="multitenant_provider.v1_0.manager.BasicMultitokenMultitenantManager"
+  # - multitenant_provider.manager.class_name="multitenant_provider.v1_0.manager.AskarMultitokenMultitenantManager"
   - multitenant_provider.manager.always_check_provided_wallet_key=true
   - multitenant_provider.errors.on_unneeded_wallet_key=false
   - multitenant_provider.token_expiry.units=days
