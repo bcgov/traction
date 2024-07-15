@@ -25,7 +25,9 @@ from aries_cloudagent.storage.error import StorageError, StorageNotFoundError
 from aries_cloudagent.version import __version__
 from aries_cloudagent.wallet.error import WalletSettingsError
 from aries_cloudagent.wallet.models.wallet_record import WalletRecord
+from aries_cloudagent.admin.decorators.auth import admin_authentication, tenant_authentication
 from marshmallow import fields, validate
+
 
 from . import TenantManager
 from .config import InnkeeperWalletConfig
@@ -329,6 +331,7 @@ class TenantAuthenticationApiOperationResponseSchema(OpenAPISchema):
 )
 @request_schema(ReservationRequestSchema())
 @response_schema(ReservationResponseSchema(), 200, description="")
+@tenant_authentication
 @error_handler
 async def tenant_reservation(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
@@ -362,6 +365,7 @@ async def tenant_reservation(request: web.BaseRequest):
 )
 @match_info_schema(ReservationIdMatchInfoSchema())
 @response_schema(ReservationRecordSchema(), 200, description="")
+@tenant_authentication
 @error_handler
 async def tenant_reservation_get(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
@@ -387,6 +391,7 @@ async def tenant_reservation_get(request: web.BaseRequest):
 @match_info_schema(ReservationIdMatchInfoSchema())
 @request_schema(CheckinSchema())
 @response_schema(CheckinResponseSchema(), 200, description="")
+@tenant_authentication
 @error_handler
 async def tenant_checkin(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
@@ -454,6 +459,7 @@ async def tenant_checkin(request: web.BaseRequest):
 @match_info_schema(TenantIdMatchInfoSchema())
 @request_schema(CustomCreateWalletTokenRequestSchema)
 @response_schema(CreateWalletTokenResponseSchema(), 200, description="")
+@tenant_authentication
 @error_handler
 async def tenant_create_token(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
@@ -529,6 +535,7 @@ async def tenant_create_token(request: web.BaseRequest):
 @response_schema(ReservationResponseSchema(), 200, description="")
 @innkeeper_only
 @error_handler
+@admin_authentication
 async def innkeeper_tenant_reservation(request: web.BaseRequest):
     res = await tenant_reservation(request)
     return res
@@ -539,6 +546,7 @@ async def innkeeper_tenant_reservation(request: web.BaseRequest):
 )
 @response_schema(DefaultConfigValuesSchema(), 200, description="")
 @innkeeper_only
+@admin_authentication
 @error_handler
 async def tenant_default_config_settings(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
@@ -563,6 +571,7 @@ async def tenant_default_config_settings(request: web.BaseRequest):
 @response_schema(TenantRecordSchema(), 200, description="")
 @innkeeper_only
 @error_handler
+@admin_authentication
 async def tenant_config_update(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     body = await request.json()
@@ -594,6 +603,7 @@ async def tenant_config_update(request: web.BaseRequest):
 @response_schema(ReservationRecordSchema(), 200, description="")
 @innkeeper_only
 @error_handler
+@admin_authentication
 async def innkeeper_tenant_res_update(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
 
@@ -621,6 +631,7 @@ async def innkeeper_tenant_res_update(request: web.BaseRequest):
 @response_schema(ReservationListSchema(), 200, description="")
 @innkeeper_only
 @error_handler
+@admin_authentication
 async def innkeeper_reservations_list(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
 
@@ -651,6 +662,7 @@ async def innkeeper_reservations_list(request: web.BaseRequest):
 @response_schema(ReservationApproveResponseSchema(), 200, description="")
 @innkeeper_only
 @error_handler
+@admin_authentication
 async def innkeeper_reservations_approve(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
 
@@ -678,6 +690,7 @@ async def innkeeper_reservations_approve(request: web.BaseRequest):
 @response_schema(ReservationApproveResponseSchema(), 200, description="")
 @innkeeper_only
 @error_handler
+@admin_authentication
 async def innkeeper_reservations_refresh_password(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     reservation_id = request.match_info["reservation_id"]
@@ -697,6 +710,7 @@ async def innkeeper_reservations_refresh_password(request: web.BaseRequest):
 @response_schema(ReservationResponseSchema(), 200, description="")
 @innkeeper_only
 @error_handler
+@admin_authentication
 async def innkeeper_reservations_deny(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
 
@@ -734,6 +748,7 @@ async def innkeeper_reservations_deny(request: web.BaseRequest):
 @use_kwargs(TenantListQuerySchema(), location="query")
 @innkeeper_only
 @error_handler
+@admin_authentication
 async def innkeeper_tenants_list(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
 
@@ -771,6 +786,7 @@ async def innkeeper_tenants_list(request: web.BaseRequest):
 @response_schema(TenantRecordSchema(), 200, description="")
 @innkeeper_only
 @error_handler
+@admin_authentication
 async def innkeeper_tenant_get(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     tenant_id = request.match_info["tenant_id"]
@@ -794,6 +810,7 @@ async def innkeeper_tenant_get(request: web.BaseRequest):
 @response_schema(TenantRecordSchema(), 200, description="")
 @innkeeper_only
 @error_handler
+@admin_authentication
 async def innkeeper_tenant_delete(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     tenant_id = request.match_info["tenant_id"]
@@ -819,6 +836,7 @@ async def innkeeper_tenant_delete(request: web.BaseRequest):
 @response_schema(TenantRecordSchema(), 200, description="")
 @innkeeper_only
 @error_handler
+@admin_authentication
 async def innkeeper_tenant_restore(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     tenant_id = request.match_info["tenant_id"]
@@ -844,6 +862,7 @@ async def innkeeper_tenant_restore(request: web.BaseRequest):
 @response_schema(TenantAuthenticationsApiResponseSchema(), 200, description="")
 @innkeeper_only
 @error_handler
+@admin_authentication
 async def innkeeper_authentications_api(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
 
@@ -871,6 +890,7 @@ async def innkeeper_authentications_api(request: web.BaseRequest):
 @response_schema(TenantAuthenticationApiListSchema(), 200, description="")
 @innkeeper_only
 @error_handler
+@admin_authentication
 async def innkeeper_authentications_api_list(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
 
@@ -898,6 +918,7 @@ async def innkeeper_authentications_api_list(request: web.BaseRequest):
 @response_schema(TenantAuthenticationApiRecordSchema(), 200, description="")
 @innkeeper_only
 @error_handler
+@admin_authentication
 async def innkeeper_authentications_api_get(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     tenant_authentication_api_id = request.match_info["tenant_authentication_api_id"]
@@ -921,6 +942,7 @@ async def innkeeper_authentications_api_get(request: web.BaseRequest):
 @response_schema(TenantAuthenticationApiOperationResponseSchema, 200, description="")
 @innkeeper_only
 @error_handler
+@admin_authentication
 async def innkeeper_authentications_api_delete(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     tenant_authentication_api_id = request.match_info["tenant_authentication_api_id"]
@@ -952,6 +974,7 @@ async def innkeeper_authentications_api_delete(request: web.BaseRequest):
 @response_schema(AdminConfigSchema(), 200, description="")
 @innkeeper_only
 @error_handler
+@admin_authentication
 async def innkeeper_config_handler(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     # use base/root profile for server config, use Tenant Manager profile
