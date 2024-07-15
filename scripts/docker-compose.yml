@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3.12"
 services:
   ngrok-traction-agent:
     image: ngrok/ngrok
@@ -163,7 +163,7 @@ services:
       - host.docker.internal:host-gateway
 
   endorser-agent:
-    image: ghcr.io/hyperledger/aries-cloudagent-python:py3.9-0.12.2
+    image: ghcr.io/hyperledger/aries-cloudagent-python:py3.12-1.0.0rc4
     depends_on:
       endorser-db:
         condition: service_healthy
@@ -205,7 +205,7 @@ services:
       - host.docker.internal:host-gateway
 
   endorser-agent-1:
-    image: ghcr.io/hyperledger/aries-cloudagent-python:py3.9-0.12.2
+    image: ghcr.io/hyperledger/aries-cloudagent-python:py3.12-1.0.0rc4
     depends_on:
       endorser-db:
         condition: service_healthy

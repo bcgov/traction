@@ -184,6 +184,17 @@ acapy:
     secretKeys:
       adminPasswordKey: admin-password
       userPasswordKey: database-password
+  ## @section ACA-Py Multitenancy Configuration
+  ##  Specifies the multitenancy config.
+  ##  Possible values: wallet_type, wallet_name, wallet_key, cache_size, 'key_derivation_method. 
+  ##  "wallet_name" is only used when "wallet_type" is "askar-profile"
+  ##
+  ## @param acapy.multitenancyConfiguration.json Raw json with config. Overrides all other values including subchart values. e.g.: '{"wallet_type":"single-wallet-askar", "wallet_name":"askar-wallet"}'
+  ## @param acapy.multitenancyConfiguration.wallet_type Database account name.
+  ##     
+  multitenancyConfiguration:
+    json: ''
+    wallet_type: single-wallet-askar
   ## @section Acapy Plugins
   ##
   ## Specify the plugins to enable.

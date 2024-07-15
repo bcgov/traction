@@ -133,7 +133,14 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | `acapy.walletStorageCredentials.password`       | Database password.                                                                                                                                                                                                             | `""`       |
 | `acapy.walletStorageCredentials.admin_account`  | Database account with CREATEDB role used to create additional databases per wallet.                                                                                                                                            | `postgres` |
 | `acapy.walletStorageCredentials.admin_password` | Database password for admin account.                                                                                                                                                                                           | `""`       |
-| `acapy.walletStorageCredentials.existingSecret` | Name of an existing secret containing 'database-user', 'database-password', 'admin-password' keys.                                                                                                                             | `""`       |
+| `acapy.walletStorageCredentials.existingSecret` | Name of an existing secret containing 'database-user', 'database-password', 'admin-password' keys.    
+
+### Multitenancy Configuration
+
+| Name                                            | Description                                                                                                                                                                                                                    | Value                       |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------- |
+| `acapy.multitenancyConfiguration.json`          | json with config. Overrides all other values including subchart values. e.g.: '{"wallet_type":"single-wallet-askar", "wallet_name":"askar-wallet"}'                                                                            | `""`                        |
+| `acapy.multitenancyConfiguration.wallet_type`   | The multitenant wallet type.                                                                                                                                                                                                   | `single-wallet-askar`       |
 
 ### Acapy Plugins
 

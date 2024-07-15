@@ -8,22 +8,21 @@ readme = "README.md"
 
 
 [tool.poetry.dependencies]
-python = "^3.9"
-aries-cloudagent = { version = "0.12.2" }
+python = "^3.12"
+aries-cloudagent = { version = "1.0.0" }
 python-dateutil = "^2.8.2"
 typing-extensions = "4.8.0"
 traction-innkeeper = {path = "./traction_innkeeper", develop = true}
 
-aries-askar = { version = "~0.3.0" }
+aries-askar = { version = "~0.3.2" }
 anoncreds= { version = "0.2.0" }
 indy-credx = { version = "~1.1.1" }
-indy-vdr = { version = "~0.4.0" }
+indy-vdr = { version = "~0.4.1" }
 ursa-bbs-signatures = { version = "~1.0.1" }
 python3-indy = { version = "^1.11.1" }
 
 [tool.poetry.dev-dependencies]
-black = "^24.4.2"
-flake8 = "^7.1.0"
+ruff = "^0.5.7"
 
 [build-system]
 requires = ["setuptools", "poetry-core>=1.2"]
