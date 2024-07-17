@@ -146,7 +146,7 @@ jobs:
           yq e -i '.traction.tenant_proxy.image.tag = $IMAGE_TAG' services/traction/charts/dev/values.yaml
           yq e -i '.traction.ui.image.tag = $IMAGE_TAG' services/traction/charts/dev/values.yaml
 
-      - name: Commit and Push to Configuration Repo
+      - name: Commit and Push to trust-over-ip-configurations Repo
         run: |
           cd trust-over-ip-configurations
           git config user.name "github-actions[bot]"
@@ -193,7 +193,7 @@ jobs:
       - name: Add github.com to known hosts
         run: ssh-keyscan github.com >> ~/.ssh/known_hosts
 
-      - name: Checkout GitOps repo
+      - name: Checkout services directory from the trust-over-ip-configurations repo
         uses: actions/checkout@v4
         with:
           repository: bcgov/trust-over-ip-configurations
