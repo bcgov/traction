@@ -8,7 +8,7 @@ from aiohttp_apispec import (
     request_schema,
 )
 from aries_cloudagent.admin.request_context import AdminRequestContext
-from aries_cloudagent.admin.server import AdminConfigSchema
+from aries_cloudagent.admin.routes import AdminConfigSchema
 from aries_cloudagent.messaging.models.openapi import OpenAPISchema
 from aries_cloudagent.multitenant.admin.routes import (
     format_wallet_record,
