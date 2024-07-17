@@ -57,7 +57,7 @@ runs:
 
     - name: Prepare docker tags for image
       id: meta
-      uses: docker/metadata-action@v4
+      uses: docker/metadata-action@v5
       with:
         images: ${{ inputs.registry }}/${{ inputs.image_name }}
         tags: |
@@ -68,7 +68,7 @@ runs:
 
     - name: Build and push image
       id: builder
-      uses: docker/build-push-action@v3
+      uses: docker/build-push-action@v6
       with:
         context: ${{ inputs.context }}
         file: ${{ inputs.dockerfile }}
