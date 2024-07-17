@@ -1,4 +1,4 @@
-name: Build & Deploy Development
+name: Build, Update Config, and Deploy Development
 on:
   workflow_dispatch:
   push:
@@ -69,9 +69,9 @@ jobs:
       image_tag: ${{ steps.builder.outputs.image_tag }}
       image_version: ${{ steps.builder.outputs.image_version }}
 
-  check_changed:
+  check_helm_changes:
     runs-on: ubuntu-latest
-    name: Check for helm changes
+    name: Check for Helm Chart changes
     outputs:
       helm_changed: ${{ steps.list-changed.outputs.changed }}
     steps:
@@ -88,14 +88,14 @@ jobs:
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-  gitops_update:
+  update_configs_repo:
     runs-on: ubuntu-latest
-    name: Update GitOps Repo
+    name: Update Configurations Repo
     needs:
       - build_ui
       - build_acapy
       - build_proxy
-      - check_changed
+      - check_helm_changes
     steps:
       - uses: actions/checkout@v4
 
@@ -107,7 +107,7 @@ jobs:
       - name: Add github.com to known hosts
         run: ssh-keyscan github.com >> ~/.ssh/known_hosts
 
-      - name: Checkout GitOps repo
+      - name: Checkout services directory from the trust-over-ip-configurations repo
         uses: actions/checkout@v4
         with:
           repository: bcgov/trust-over-ip-configurations
@@ -116,7 +116,7 @@ jobs:
             services
           path: trust-over-ip-configurations
 
-      - name: Lookup chart version
+      - name: Lookup Helm Chart and App versions
         id: chart_version
         run: |
           helm repo add traction https://bcgov.github.io/traction
@@ -131,7 +131,7 @@ jobs:
           IMAGE_TAG: ${{ needs.build_acapy.outputs.image_version }}
         run: |
           cd trust-over-ip-configurations
-          if [[ "${{ needs.check_changed.outputs.helm_changed }}" == "true" ]]; then
+          if [[ "${{ needs.check_helm_changes.outputs.helm_changed }}" == "true" ]]; then
             APP_VERSION="${{ steps.chart_version.outputs.LOCAL_APP_VERSION }}"
             CHART_VERSION="${{ steps.chart_version.outputs.LOCAL_CHART_VERSION }}"
           else
@@ -146,7 +146,7 @@ jobs:
           yq e -i '.traction.tenant_proxy.image.tag = $IMAGE_TAG' services/traction/charts/dev/values.yaml
           yq e -i '.traction.ui.image.tag = $IMAGE_TAG' services/traction/charts/dev/values.yaml
 
-      - name: Commit and push changes
+      - name: Commit and Push to Configuration Repo
         run: |
           cd trust-over-ip-configurations
           git config user.name "github-actions[bot]"
@@ -163,16 +163,16 @@ jobs:
           github_token: ${{ secrets.DITP_CONFIGS_REPO_TOKEN }}
           workflow_file_name: gitops_sync.yaml
 
-      - name: Sync Traction Dev
+      - name: Trigger ArgoCD Sync of bc0192-dev-traction
         uses: OpsVerseIO/argocd-sync@0.2.0
-        if: needs.check_changed.outputs.helm_changed != 'true' && steps.workflow-trigger.outputs.conclusion == 'success'
+        if: needs.check_helm_changes.outputs.helm_changed != 'true' && steps.workflow-trigger.outputs.conclusion == 'success'
         with:
           address: https://gitops-shared.apps.silver.devops.gov.bc.ca
           token: ${{ secrets.DITP_GITOPS_ARGO_SECRET}}
           action: sync
           appName: "bc0192-dev-traction"
 
-  deploy:
+  deploy_dev:
     name: Deploy Dev
     environment: development
     runs-on: ubuntu-latest
@@ -180,8 +180,8 @@ jobs:
       - build_ui
       - build_acapy
       - build_proxy
-      - check_changed
-    if: ${{ needs.check_changed.outputs.helm_changed == 'true' && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) && (github.repository_owner == 'bcgov') }}
+      - check_helm_changes
+    if: ${{ needs.check_helm_changes.outputs.helm_changed == 'true' && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) && (github.repository_owner == 'bcgov') }}
     steps:
       - uses: actions/checkout@v4
 
@@ -210,7 +210,7 @@ jobs:
           certificate_authority_data: ${{ secrets.OPENSHIFT_CA_CRT }}
           namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
 
-      - name: Traction Dev Helm
+      - name: Deploy Traction to Development
         run: |
           cp trust-over-ip-configurations/services/traction/charts/dev/values.yaml ./dev-values.yaml
           yq e -i 'del(.traction) | . *= load("trust-over-ip-configurations/services/traction/charts/dev/values.yaml").traction' ./dev-values.yaml
