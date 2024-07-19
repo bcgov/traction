@@ -147,7 +147,7 @@ jobs:
           git commit -m "Update chart version and image tags" || echo "No changes to commit"
           git push origin main
 
-      - uses: convictional/trigger-workflow-and-wait@v1.6.1
+      - uses: convictional/trigger-workflow-and-wait@v1.6.5
         id: workflow-trigger
         with:
           owner: bcgov
