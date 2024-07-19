@@ -99,14 +99,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.DITP_GITOPS_REPO_SECRET }}
-
-      - name: Add github.com to known hosts
-        run: ssh-keyscan github.com >> ~/.ssh/known_hosts
-
       - name: Checkout services directory from the trust-over-ip-configurations repo
         uses: actions/checkout@v4
         with:
@@ -184,14 +176,6 @@ jobs:
     if: ${{ needs.check_helm_changes.outputs.helm_changed == 'true' && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) && (github.repository_owner == 'bcgov') }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.DITP_GITOPS_REPO_SECRET }}
-
-      - name: Add github.com to known hosts
-        run: ssh-keyscan github.com >> ~/.ssh/known_hosts
 
       - name: Checkout services directory from the trust-over-ip-configurations repo
         uses: actions/checkout@v4
