@@ -62,7 +62,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: bcgov/trust-over-ip-configurations
-          ssh-key: ${{ secrets.DITP_GITOPS_REPO_SECRET }}
+          ssh-key: ${{ secrets.DITP_CONFIGS_REPO_SECRET }}
           sparse-checkout: |
             services
           path: trust-over-ip-configurations
@@ -105,7 +105,7 @@ jobs:
           git push origin main
 
       - name: Trigger and wait for GitOps sync workflow
-        uses: convictional/trigger-workflow-and-wait@v1.6.1
+        uses: convictional/trigger-workflow-and-wait@v1.6.5
         id: workflow-trigger
         with:
           owner: bcgov
