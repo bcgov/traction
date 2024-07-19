@@ -159,7 +159,7 @@ jobs:
         uses: OpsVerseIO/argocd-sync@0.2.0
         if: needs.check_helm_changes.outputs.helm_changed != 'true' && steps.workflow-trigger.outputs.conclusion == 'success'
         with:
-          address: https://gitops-shared.apps.silver.devops.gov.bc.ca
+          address: gitops-shared.apps.silver.devops.gov.bc.ca
           token: ${{ secrets.DITP_GITOPS_ARGO_SECRET}}
           action: sync
           appName: "bc0192-dev-traction"
