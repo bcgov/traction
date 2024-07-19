@@ -103,7 +103,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: bcgov/trust-over-ip-configurations
-          ssh-key: ${{ secrets.DITP_GITOPS_REPO_SECRET }}
+          ssh-key: ${{ secrets.DITP_CONFIGS_REPO_SECRET }}
           sparse-checkout: |
             services
           path: trust-over-ip-configurations
@@ -181,7 +181,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: bcgov/trust-over-ip-configurations
-          ssh-key: ${{ secrets.DITP_GITOPS_REPO_SECRET }}
+          ssh-key: ${{ secrets.DITP_CONFIGS_REPO_SECRET }}
           sparse-checkout: |
             services
           path: trust-over-ip-configurations
