@@ -1,4 +1,4 @@
-name: Build & Deploy Development
+name: Build, Update Config, and Deploy Development
 on:
   workflow_dispatch:
   push:
@@ -69,7 +69,102 @@ jobs:
       image_tag: ${{ steps.builder.outputs.image_tag }}
       image_version: ${{ steps.builder.outputs.image_version }}
 
-  deploy:
+  check_helm_changes:
+    runs-on: ubuntu-latest
+    name: Check for Helm Chart changes
+    outputs:
+      helm_changed: ${{ steps.list-changed.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.6.1
+
+      - name: Run chart-testing (list-changed)
+        id: list-changed
+        run: |
+          changed=$(ct list-changed --target-branch ${{ github.event.repository.default_branch }})
+          if [[ -n "$changed" ]]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  update_configs_repo:
+    runs-on: ubuntu-latest
+    name: Update Configurations Repo
+    needs:
+      - build_ui
+      - build_acapy
+      - build_proxy
+      - check_helm_changes
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout services directory from the trust-over-ip-configurations repo
+        uses: actions/checkout@v4
+        with:
+          repository: bcgov/trust-over-ip-configurations
+          ssh-key: ${{ secrets.DITP_GITOPS_REPO_SECRET }}
+          sparse-checkout: |
+            services
+          path: trust-over-ip-configurations
+
+      - name: Lookup Helm Chart and App versions
+        id: chart_version
+        run: |
+          helm repo add traction https://bcgov.github.io/traction
+          helm repo update
+          echo "PUBLISHED_APP_VERSION=$(helm search repo traction -ojson | jq -r '.[0].app_version')" >> $GITHUB_OUTPUT
+          echo "PUBLISHED_CHART_VERSION=$(helm search repo traction -ojson | jq -r '.[0].version')" >> $GITHUB_OUTPUT
+          echo "LOCAL_APP_VERSION=$(yq e .appVersion charts/traction/Chart.yaml)" >> $GITHUB_OUTPUT
+          echo "LOCAL_CHART_VERSION=$(yq e .version charts/traction/Chart.yaml)" >> $GITHUB_OUTPUT
+
+      - name: Update versions
+        env:
+          IMAGE_TAG: ${{ needs.build_acapy.outputs.image_version }}
+        run: |
+          cd trust-over-ip-configurations
+          if [[ "${{ needs.check_helm_changes.outputs.helm_changed }}" == "true" ]]; then
+            APP_VERSION="${{ steps.chart_version.outputs.LOCAL_APP_VERSION }}"
+            CHART_VERSION="${{ steps.chart_version.outputs.LOCAL_CHART_VERSION }}"
+          else
+            APP_VERSION="${{ steps.chart_version.outputs.PUBLISHED_APP_VERSION }}"
+            CHART_VERSION="${{ steps.chart_version.outputs.PUBLISHED_CHART_VERSION }}"
+          fi
+
+          yq e -i '.appVersion = $APP_VERSION' services/traction/charts/dev/Chart.yaml
+          yq e -i '.version = $CHART_VERSION' services/traction/charts/dev/Chart.yaml
+          yq e -i '.dependencies[0].version = $CHART_VERSION' services/traction/charts/dev/Chart.yaml
+          yq e -i '.traction.acapy.image.tag = $IMAGE_TAG' services/traction/charts/dev/values.yaml
+          yq e -i '.traction.tenant_proxy.image.tag = $IMAGE_TAG' services/traction/charts/dev/values.yaml
+          yq e -i '.traction.ui.image.tag = $IMAGE_TAG' services/traction/charts/dev/values.yaml
+
+      - name: Commit and Push to trust-over-ip-configurations Repo
+        run: |
+          cd trust-over-ip-configurations
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add services/traction/charts/dev/values.yaml services/traction/charts/dev/Chart.yaml
+          git commit -m "Update chart version and image tags" || echo "No changes to commit"
+          git push origin main
+
+      - uses: convictional/trigger-workflow-and-wait@v1.6.1
+        id: workflow-trigger
+        with:
+          owner: bcgov
+          repo: trust-over-ip-configurations
+          github_token: ${{ secrets.DITP_CONFIGS_REPO_TOKEN }}
+          workflow_file_name: gitops_sync.yaml
+
+      - name: Trigger ArgoCD Sync of bc0192-dev-traction
+        uses: OpsVerseIO/argocd-sync@0.2.0
+        if: needs.check_helm_changes.outputs.helm_changed != 'true' && steps.workflow-trigger.outputs.conclusion == 'success'
+        with:
+          address: https://gitops-shared.apps.silver.devops.gov.bc.ca
+          token: ${{ secrets.DITP_GITOPS_ARGO_SECRET}}
+          action: sync
+          appName: "bc0192-dev-traction"
+
+  deploy_dev:
     name: Deploy Dev
     environment: development
     runs-on: ubuntu-latest
@@ -77,10 +172,19 @@ jobs:
       - build_ui
       - build_acapy
       - build_proxy
-    if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) && (github.repository_owner == 'bcgov') }}
-
+      - check_helm_changes
+    if: ${{ needs.check_helm_changes.outputs.helm_changed == 'true' && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) && (github.repository_owner == 'bcgov') }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Checkout services directory from the trust-over-ip-configurations repo
+        uses: actions/checkout@v4
+        with:
+          repository: bcgov/trust-over-ip-configurations
+          ssh-key: ${{ secrets.DITP_GITOPS_REPO_SECRET }}
+          sparse-checkout: |
+            services
+          path: trust-over-ip-configurations
 
       - name: Authenticate and set context
         uses: redhat-actions/oc-login@v1
@@ -90,9 +194,11 @@ jobs:
           certificate_authority_data: ${{ secrets.OPENSHIFT_CA_CRT }}
           namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
 
-      - name: Traction Dev Helm
+      - name: Deploy Traction to Development
         run: |
-          helm upgrade --install traction -f ./deploy/traction/values-development.yaml --set acapy.image.tag=${{ needs.build_acapy.outputs.image_version }} --set tenant_proxy.image.tag=${{ needs.build_acapy.outputs.image_version }} --set ui.image.tag=${{ needs.build_ui.outputs.image_version }} ./charts/traction --wait
+          cp trust-over-ip-configurations/services/traction/charts/dev/values.yaml ./dev-values.yaml
+          yq e -i 'del(.traction) | . *= load("trust-over-ip-configurations/services/traction/charts/dev/values.yaml").traction' ./dev-values.yaml
+          helm upgrade --install traction -f ./dev-values.yaml --set acapy.image.tag=${{ needs.build_acapy.outputs.image_version }} --set tenant_proxy.image.tag=${{ needs.build_acapy.outputs.image_version }} --set ui.image.tag=${{ needs.build_ui.outputs.image_version }} ./charts/traction --wait
 
       - name: Restart Deployments
         run: |

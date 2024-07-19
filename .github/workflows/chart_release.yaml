@@ -9,7 +9,8 @@ on:
 jobs:
   # Sometimes chart-releaser might fetch an outdated index.yaml from gh-pages, causing a WAW hazard on the repo
   # This job checks the remote file is up to date with the local one on release
-  validate-gh-pages-index:
+  validate-chart-index:
+    name: Validate Chart Index
     runs-on: ubuntu-latest
     if: github.repository_owner == 'bcgov'
     steps:
@@ -26,10 +27,10 @@ jobs:
           test "$LOCAL" = "$REMOTE"
 
   chart-release:
-    name: Create chart release
+    name: Create and Publish Chart Release
     runs-on: ubuntu-latest
     if: github.repository_owner == 'bcgov'
-    needs: [ validate-gh-pages-index ]
+    needs: [ validate-chart-index ]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -48,3 +49,74 @@ jobs:
           config: .github/cr.yaml
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+  update-configs-and-sync:
+    runs-on: ubuntu-latest
+    name: Update Configs and Sync
+    needs:
+      - chart-release
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout services directory from the trust-over-ip-configurations repo
+        uses: actions/checkout@v4
+        with:
+          repository: bcgov/trust-over-ip-configurations
+          ssh-key: ${{ secrets.DITP_GITOPS_REPO_SECRET }}
+          sparse-checkout: |
+            services
+          path: trust-over-ip-configurations
+
+      - name: Lookup latest chart
+        id: chart_version
+        run: |
+          helm repo add traction https://bcgov.github.io/traction
+          helm repo update
+          echo "::set output name=APP_VERSION::$(helm search repo traction -ojson | jq '.[0].app_version')"
+          echo "::set output name=CHART_VERSION::$(helm search repo traction -ojson | jq '.[0].version')"
+
+      - name: Update test
+        env:
+          APP_VERSION: ${{ steps.chart_version.outputs.APP_VERSION }}
+          CHART_VERSION: ${{ steps.chart_version.outputs.CHART_VERSION }}
+        run: |
+          cd trust-over-ip-configurations
+          yq e -i '.appVersion = $APP_VERSION' services/traction/charts/test/Chart.yaml
+          yq e -i '.version = $CHART_VERSION' services/traction/charts/test/Chart.yaml
+          yq e -i '.dependencies[0].version = $CHART_VERSION' services/traction/charts/test/Chart.yaml
+
+      - name: Update prod
+        env:
+          APP_VERSION: ${{ steps.chart_version.outputs.APP_VERSION }}
+          CHART_VERSION: ${{ steps.chart_version.outputs.CHART_VERSION }}
+        run: |
+          cd trust-over-ip-configurations
+          yq e -i '.appVersion = $APP_VERSION' services/traction/charts/prod/Chart.yaml
+          yq e -i '.version = $CHART_VERSION' services/traction/charts/prod/Chart.yaml
+          yq e -i '.dependencies[0].version = $CHART_VERSION' services/traction/charts/prod/Chart.yaml
+
+      - name: Commit and Push to trust-over-ip-configurations Repo
+        run: |
+          cd trust-over-ip-configurations
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add services/traction/charts/test/Chart.yaml services/traction/charts/prod/Chart.yaml
+          git commit -m "Update chart and app versions" || echo "No changes to commit"
+          git push origin main
+
+      - name: Trigger and wait for GitOps sync workflow
+        uses: convictional/trigger-workflow-and-wait@v1.6.1
+        id: workflow-trigger
+        with:
+          owner: bcgov
+          repo: trust-over-ip-configurations
+          github_token: ${{ secrets.DITP_CONFIGS_REPO_TOKEN }}
+          workflow_file_name: gitops_sync.yaml
+
+      - name: Trigger ArgoCD Sync of bc0192-test-traction
+        uses: OpsVerseIO/argocd-sync@0.2.0
+        with:
+          address: https://gitops-shared.apps.silver.devops.gov.bc.ca
+          token: ${{ secrets.DITP_GITOPS_ARGO_SECRET}}
+          action: sync
+          appName: "bc0192-test-traction"
