@@ -131,12 +131,12 @@ jobs:
             CHART_VERSION="${{ steps.chart_version.outputs.PUBLISHED_CHART_VERSION }}"
           fi
 
-          yq e -i '.appVersion = $APP_VERSION' services/traction/charts/dev/Chart.yaml
-          yq e -i '.version = $CHART_VERSION' services/traction/charts/dev/Chart.yaml
-          yq e -i '.dependencies[0].version = $CHART_VERSION' services/traction/charts/dev/Chart.yaml
-          yq e -i '.traction.acapy.image.tag = $IMAGE_TAG' services/traction/charts/dev/values.yaml
-          yq e -i '.traction.tenant_proxy.image.tag = $IMAGE_TAG' services/traction/charts/dev/values.yaml
-          yq e -i '.traction.ui.image.tag = $IMAGE_TAG' services/traction/charts/dev/values.yaml
+          yq e -i '.appVersion = env(APP_VERSION)' services/traction/charts/dev/Chart.yaml
+          yq e -i '.version = env(CHART_VERSION)' services/traction/charts/dev/Chart.yaml
+          yq e -i '.dependencies[0].version = env(CHART_VERSION)' services/traction/charts/dev/Chart.yaml
+          yq e -i '.traction.acapy.image.tag = env(IMAGE_TAG)' services/traction/charts/dev/values.yaml
+          yq e -i '.traction.tenant_proxy.image.tag = env(IMAGE_TAG)' services/traction/charts/dev/values.yaml
+          yq e -i '.traction.ui.image.tag = env(IMAGE_TAG)' services/traction/charts/dev/values.yaml
 
       - name: Commit and Push to trust-over-ip-configurations Repo
         run: |
