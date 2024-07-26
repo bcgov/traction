@@ -3,7 +3,7 @@
     v-model:expandedRows="expandedRows"
     v-model:filters="filter"
     :loading="loading"
-    :value="formattedcredentialExchanges"
+    :value="formattedCredentialExchanges"
     :paginator="true"
     :rows="TABLE_OPT.ROWS_DEFAULT"
     :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
@@ -30,7 +30,7 @@
     </template>
     <template #empty>{{ $t('common.noRecordsFound') }}</template>
     <template #loading>{{ $t('common.loading') }}</template>
-    <template #expansion="{ data }">
+    <template #expansion="{ data }: { data: FormattedHeldCredentialRecord }">
       <CredentialAttributes :attributes="data.credential_attributes" />
       <hr class="expand-divider" />
       <RowExpandData
@@ -40,27 +40,27 @@
     </template>
     <Column :expander="true" header-style="width: 3rem" />
     <Column header="Actions" class="action-col">
-      <template #body="{ data }">
+      <template #body="{ data }: { data: FormattedHeldCredentialRecord }">
         <Button
           title="Accept Credential into Wallet"
           icon="pi pi-check"
           class="p-button-rounded p-button-icon-only p-button-text"
-          :class="{ accepted: data.state === 'credential_acked' }"
-          :disabled="data.state !== 'offer_received'"
+          :class="{ accepted: data.state === 'done' }"
+          :disabled="data.state !== 'offer-received'"
           @click="$emit('accept', $event, data)"
         />
         <Button
           title="Reject Credential Offer"
           icon="pi pi-times"
           class="p-button-rounded p-button-icon-only p-button-text"
-          :disabled="data.state !== 'offer_received'"
+          :disabled="data.state !== 'offer-received'"
           @click="$emit('reject', $event, data)"
         />
         <Button
           title="Delete Credential Exchange Record"
           icon="pi pi-trash"
           class="p-button-rounded p-button-icon-only p-button-text"
-          :disabled="data.state === 'offer_received'"
+          :disabled="data.state === 'offer-received'"
           @click="$emit('delete', $event, data)"
         />
       </template>
@@ -147,11 +147,7 @@
 
 <script setup lang="ts">
 // Types
-import { ExtendedV20CredExRecordByFormat } from '@/types';
-import {
-  CredAttrSpec,
-  V20CredExRecordDetail,
-} from '@/types/acapyApi/acapyInterface';
+import { FormattedHeldCredentialRecord } from '@/helpers/tableFormatters';
 
 // Vue
 import { computed, onMounted, ref } from 'vue';
@@ -169,7 +165,7 @@ import { useConnectionStore, useHolderStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other components
 import RowExpandData from '@/components/common/RowExpandData.vue';
-import { formatDateLong } from '@/helpers';
+import { formatHeldCredentials } from '@/helpers/tableFormatters';
 import { API_PATH, TABLE_OPT } from '@/helpers/constants';
 import LoadingLabel from '../common/LoadingLabel.vue';
 import StatusChip from '../common/StatusChip.vue';
@@ -187,26 +183,9 @@ const { loading, credentialExchanges } = storeToRefs(useHolderStore());
 const holderStore = useHolderStore();
 
 // The data table row format
-const formattedcredentialExchanges = computed(() =>
-  credentialExchanges.value.map((ce) => ({
-    credential_exchange_id: ce.cred_ex_record?.cred_ex_id,
-    credential_attributes: getAttributes(ce),
-    connection: findConnectionName(ce.cred_ex_record?.connection_id ?? ''),
-    credential_definition_id: (
-      ce.cred_ex_record?.by_format as ExtendedV20CredExRecordByFormat
-    )?.cred_offer?.indy?.cred_def_id,
-    state: ce.cred_ex_record?.state,
-    updated: formatDateLong(ce.cred_ex_record?.updated_at ?? ''),
-    updated_at: ce.cred_ex_record?.updated_at,
-    created: formatDateLong(ce.cred_ex_record?.created_at ?? ''),
-    created_at: ce.cred_ex_record?.created_at,
-  }))
+const formattedCredentialExchanges = computed(() =>
+  formatHeldCredentials(credentialExchanges, findConnectionName)
 );
-
-// Cred attributes
-const getAttributes = (data: V20CredExRecordDetail): CredAttrSpec[] => {
-  return data.cred_ex_record?.cred_offer?.credential_preview?.attributes ?? [];
-};
 
 const expandedRows = ref([]);
 

@@ -1,6 +1,7 @@
 import {
   RevocationModuleResponse,
   RevokeRequest,
+  V20CredExRecordDetail,
 } from '@/types/acapyApi/acapyInterface';
 
 import { defineStore } from 'pinia';
@@ -14,7 +15,7 @@ export const useIssuerStore = defineStore('issuer', () => {
   const acapyApi = useAcapyApi();
 
   // state
-  const credentials: Ref<any[]> = ref([]);
+  const credentials: Ref<V20CredExRecordDetail[]> = ref([]);
   const selectedCredential: any = ref(null);
   const loading: any = ref(false);
   const error: any = ref(null);

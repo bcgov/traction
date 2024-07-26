@@ -8,7 +8,7 @@
       v-model:filters="filter"
       v-model:expandedRows="expandedRows"
       :loading="loading"
-      :value="formattedCredentials20"
+      :value="formattedIssuedCredentials"
       :paginator="true"
       :rows="TABLE_OPT.ROWS_DEFAULT"
       :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
@@ -143,8 +143,11 @@
 </template>
 
 <script setup lang="ts">
+// Types
+import { ExtendedV20CredExRecordByFormat } from '@/types';
+
 // Vue
-import { Ref, computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 // State
 import { useConnectionStore, useIssuerStore } from '@/store';
 import { storeToRefs } from 'pinia';
@@ -158,7 +161,8 @@ import InputIcon from 'primevue/inputicon';
 import IconField from 'primevue/iconfield';
 import { useToast } from 'vue-toastification';
 // Other Components
-import { formatDateLong, stringOrBooleanTruthy } from '@/helpers';
+import { stringOrBooleanTruthy } from '@/helpers';
+import { formatIssuedCredentials } from '@/helpers/tableFormatters';
 import { API_PATH, TABLE_OPT } from '@/helpers/constants';
 import LoadingLabel from '@/components/common/LoadingLabel.vue';
 import RowExpandData from '@/components/common/RowExpandData.vue';
@@ -179,19 +183,8 @@ const issuerStore = useIssuerStore();
 const { loading, credentials, selectedCredential } =
   storeToRefs(useIssuerStore());
 
-const formattedCredentials20: Ref<any[]> = computed(() =>
-  credentials.value.map((cred: any) => ({
-    connection_id: cred.cred_ex_record.connection_id,
-    state: cred.cred_ex_record.state,
-    cred_rev_id: cred.indy.cred_rev_id,
-    rev_reg_id: cred.indy.rev_reg_id,
-    connection: findConnectionName(cred.cred_ex_record.connection_id),
-    credential_definition_id:
-      cred.cred_ex_record.by_format?.cred_offer?.indy?.cred_def_id,
-    credential_exchange_id: cred.cred_ex_record.cred_ex_id,
-    created: formatDateLong(cred.cred_ex_record.created_at),
-    created_at: cred.created_at,
-  }))
+const formattedIssuedCredentials = computed(() =>
+  formatIssuedCredentials(credentials, findConnectionName)
 );
 
 // Get the credentials

@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 // Types
-import { V20CredExRecordDetail } from '@/types/acapyApi/acapyInterface';
+import { FormattedIssuedCredentialRecord } from '@/helpers/tableFormatters';
 
 // Vue/State
 import { computed, ref } from 'vue';
@@ -38,15 +38,14 @@ defineEmits(['success']);
 
 // Props
 const props = defineProps<{
-  credExchRecord: V20CredExRecordDetail;
+  credExchRecord: FormattedIssuedCredentialRecord;
   connectionDisplay: string;
 }>();
 
 // Check revocation allowed
 const canRevoke = computed(() => {
   return (
-    props.credExchRecord.cred_ex_record?.state === 'done' &&
-    props.credExchRecord.indy?.rev_reg_id
+    props.credExchRecord.state === 'done' && props.credExchRecord.cred_rev_id
   );
 });
 

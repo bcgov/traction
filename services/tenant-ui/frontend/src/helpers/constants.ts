@@ -87,6 +87,10 @@ export const API_PATH = {
   ISSUE_CREDENTIAL_20_RECORD: (id: string) =>
     `/issue-credential-2.0/records/${id}`,
   ISSUE_CREDENTIALS_20_SEND_OFFER: '/issue-credential-2.0/send-offer',
+  ISSUE_CREDENTIAL_20_RECORDS_SEND_REQUEST: (id: string) =>
+    `/issue-credential-2.0/records/${id}/send-request`,
+  ISSUE_CREDENTIAL_20_RECORDS_PROBLEM_REPORT: (id: string) =>
+    `/issue-credential-2.0/records/${id}/problem-report`,
 
   LEDGER_TAA: '/ledger/taa',
   LEDGER_TAA_ACCEPT: '/ledger/taa/accept',

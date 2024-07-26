@@ -30,21 +30,21 @@
       <p>
         <small>
           <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
-          {{ t('issue.connection') }}: {{ props.connectionDisplay }}
+          {{ t('issue.connection') }} {{ props.credExchRecord?.connection }}
         </small>
       </p>
       <p>
         <small>
           <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
-          {{ t('issue.revocationId') }}:
-          {{ props.credExchRecord?.indy?.cred_rev_id }}
+          {{ t('issue.revocationId') }}
+          {{ props.credExchRecord?.cred_rev_id }}
         </small>
       </p>
       <p>
         <small>
           <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
-          {{ t('issue.revocationRegistry') }}:
-          {{ props.credExchRecord?.indy?.rev_reg_id }}
+          {{ t('issue.revocationRegistry') }}
+          {{ props.credExchRecord?.rev_reg_id }}
         </small>
       </p>
     </div>
@@ -60,10 +60,8 @@
 
 <script setup lang="ts">
 // Types
-import {
-  RevokeRequest,
-  V20CredExRecordDetail,
-} from '@/types/acapyApi/acapyInterface';
+import { FormattedIssuedCredentialRecord } from '@/helpers/tableFormatters';
+import { RevokeRequest } from '@/types/acapyApi/acapyInterface';
 
 // Vue/State
 import { reactive, ref } from 'vue';
@@ -86,7 +84,7 @@ const emit = defineEmits(['closed', 'success']);
 
 // Props
 const props = defineProps<{
-  credExchRecord: V20CredExRecordDetail;
+  credExchRecord: FormattedIssuedCredentialRecord;
   connectionDisplay: string;
 }>();
 
@@ -110,9 +108,9 @@ const handleSubmit = async (isFormValid: boolean) => {
   try {
     const payload: RevokeRequest = {
       comment: formFields.comment,
-      connection_id: props.credExchRecord.cred_ex_record?.connection_id,
-      rev_reg_id: props.credExchRecord.indy?.rev_reg_id,
-      cred_rev_id: props.credExchRecord.indy?.cred_rev_id,
+      connection_id: props.credExchRecord.connection_id,
+      rev_reg_id: props.credExchRecord.rev_reg_id,
+      cred_rev_id: props.credExchRecord.cred_rev_id,
       publish: true,
       notify: true,
     };
