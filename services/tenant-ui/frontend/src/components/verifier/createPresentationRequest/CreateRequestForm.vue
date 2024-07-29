@@ -77,7 +77,7 @@
 // Types
 import {
   IndyProofRequest,
-  V10PresentationSendRequestRequest,
+  V20PresSendRequestRequest,
 } from '@/types/acapyApi/acapyInterface';
 
 // Vue
@@ -195,12 +195,12 @@ const handleSubmit = async (isFormValid: boolean) => {
         ? JSON.parse(proofRequestJson.value)
         : proofRequestJson.value;
     // Set up the body with the fields from the form
-    const payload: V10PresentationSendRequestRequest = {
+    const payload: V20PresSendRequestRequest = {
       connection_id: formFields.selectedConnection.value,
       auto_verify: false,
       comment: formFields.comment,
       trace: false,
-      proof_request: proofRequest,
+      presentation_request: { indy: proofRequest },
     };
     await verifierStore.sendPresentationRequest(payload);
     toast.info('Request Sent');

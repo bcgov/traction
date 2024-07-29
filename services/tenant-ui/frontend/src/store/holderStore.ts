@@ -1,7 +1,7 @@
 import {
   IndyCredInfo,
   OcaRecord,
-  V10CredentialExchange,
+  V20CredExRecordDetail,
 } from '@/types/acapyApi/acapyInterface';
 
 import { defineStore } from 'pinia';
@@ -16,7 +16,7 @@ export const useHolderStore = defineStore('holder', () => {
 
   // state
   const credentials: Ref<IndyCredInfo[]> = ref([]);
-  const credentialExchanges: Ref<V10CredentialExchange[]> = ref([]);
+  const credentialExchanges: Ref<V20CredExRecordDetail[]> = ref([]);
   const selectedCredential: any = ref(null);
 
   const ocas: Ref<OcaRecord[]> = ref([]);
@@ -44,7 +44,7 @@ export const useHolderStore = defineStore('holder', () => {
 
   async function listHolderCredentialExchanges() {
     return fetchList(
-      API_PATH.ISSUE_CREDENTIAL_RECORDS,
+      API_PATH.ISSUE_CREDENTIAL_20_RECORDS,
       credentialExchanges,
       error,
       loading,
@@ -92,7 +92,7 @@ export const useHolderStore = defineStore('holder', () => {
     let result = null;
 
     await acapyApi
-      .postHttp(API_PATH.ISSUE_CREDENTIAL_RECORDS_SEND_REQUEST(credExId))
+      .postHttp(API_PATH.ISSUE_CREDENTIAL_20_RECORDS_SEND_REQUEST(credExId))
       .then((res) => {
         result = res.data.item;
       })
@@ -123,7 +123,7 @@ export const useHolderStore = defineStore('holder', () => {
     let result = null;
 
     await acapyApi
-      .deleteHttp(API_PATH.ISSUE_CREDENTIAL_RECORD(credExId))
+      .deleteHttp(API_PATH.ISSUE_CREDENTIAL_20_RECORD(credExId))
       .then((res) => {
         result = res.data.item;
       })
@@ -149,7 +149,7 @@ export const useHolderStore = defineStore('holder', () => {
     console.log('> holderStore.sendProblemReport');
 
     await acapyApi
-      .postHttp(API_PATH.ISSUE_CREDENTIAL_RECORDS_PROBLEM_REPORT(credExId), {
+      .postHttp(API_PATH.ISSUE_CREDENTIAL_20_RECORDS_PROBLEM_REPORT(credExId), {
         description: 'Tenant rejected credential offer through Tenant UI.',
       })
       .then(() => {
