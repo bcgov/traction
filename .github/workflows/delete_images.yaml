@@ -14,7 +14,7 @@ jobs:
       - name: Delete containers older than a Month
         uses: snok/container-retention-policy@v3.0.0
         with:
-          account: snok
+          account: bcgov
           image-names: traction-plugins-acapy, traction-tenant-proxy, traction-tenant-ui
           cut-off: 1month
           tag-selection: untagged
