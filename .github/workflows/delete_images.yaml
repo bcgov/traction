@@ -2,7 +2,7 @@ name: Delete old container images
 
 on:
   schedule:
-    - cron: '0 2 * * 2' # This job runs every Tuesday
+    - cron: "0 2 * * 2" # This job runs every Tuesday
   workflow_dispatch:
 
 jobs:
@@ -12,12 +12,10 @@ jobs:
     if: github.repository_owner == 'bcgov'
     steps:
       - name: Delete containers older than a Month
-        uses: snok/container-retention-policy@v2
+        uses: snok/container-retention-policy@v3.0.0
         with:
+          account: bcgov
           image-names: traction-plugins-acapy, traction-tenant-proxy, traction-tenant-ui
-          cut-off: One month ago UTC
-          account-type: org
-          org-name: ${{ github.repository_owner}}
-          skip-tags: pr-* , *.*.*
-          token: ${{ secrets.PAT }}
-          token-type: 'pat'
+          cut-off: 1month
+          tag-selection: untagged
+          token: ${{ secrets.GITHUB_TOKEN }}
