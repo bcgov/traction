@@ -34,12 +34,7 @@ describe('IssuedCredentials', () => {
 
   test('table body is rendered with expected values', async () => {
     const wrapper = mountIssuedCredentials();
-    const expectedTexts = [
-      '',
-      'test-cred_def_id',
-      'test-name',
-      'credential_acked',
-    ];
+    const expectedTexts = ['', 'test-cred_def_id', 'test-name', 'done'];
 
     // td is an expected text or valid date
     wrapper.findAll('tbody td').forEach((td) => {

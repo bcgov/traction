@@ -1,6 +1,7 @@
 import {
   RevocationModuleResponse,
   RevokeRequest,
+  V20CredExRecordDetail,
 } from '@/types/acapyApi/acapyInterface';
 
 import { defineStore } from 'pinia';
@@ -14,7 +15,7 @@ export const useIssuerStore = defineStore('issuer', () => {
   const acapyApi = useAcapyApi();
 
   // state
-  const credentials: Ref<any[]> = ref([]);
+  const credentials: Ref<V20CredExRecordDetail[]> = ref([]);
   const selectedCredential: any = ref(null);
   const loading: any = ref(false);
   const error: any = ref(null);
@@ -26,7 +27,7 @@ export const useIssuerStore = defineStore('issuer', () => {
   async function listCredentials() {
     selectedCredential.value = null;
     return fetchList(
-      `${API_PATH.ISSUE_CREDENTIAL_RECORDS}?role=issuer`,
+      `${API_PATH.ISSUE_CREDENTIAL_20_RECORDS}?role=issuer`,
       credentials,
       error,
       loading
@@ -34,14 +35,14 @@ export const useIssuerStore = defineStore('issuer', () => {
   }
 
   async function offerCredential(payload: any = {}) {
-    console.log('> issuerStore.createSchemaTemplate');
+    console.log('> issuerStore.offerCredential');
     error.value = null;
     loading.value = true;
 
     let result = null;
 
     await acapyApi
-      .postHttp(API_PATH.ISSUE_CREDENTIALS_SEND_OFFER, payload)
+      .postHttp(API_PATH.ISSUE_CREDENTIALS_20_SEND_OFFER, payload)
       .then((res) => {
         result = res.data.item;
         console.log(result);
@@ -55,7 +56,7 @@ export const useIssuerStore = defineStore('issuer', () => {
       .finally(() => {
         loading.value = false;
       });
-    console.log('< issuerStore.createSchemaTemplate');
+    console.log('< issuerStore.offerCredential');
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
@@ -68,7 +69,7 @@ export const useIssuerStore = defineStore('issuer', () => {
   async function getCredential(id: string, params: any = {}) {
     const getloading: any = ref(false);
     return fetchItem(
-      API_PATH.ISSUE_CREDENTIAL_RECORDS,
+      API_PATH.ISSUE_CREDENTIAL_20_RECORDS,
       id,
       error,
       getloading,
@@ -116,7 +117,7 @@ export const useIssuerStore = defineStore('issuer', () => {
     let result = null;
 
     await acapyApi
-      .deleteHttp(API_PATH.ISSUE_CREDENTIAL_RECORD(credExchangeId))
+      .deleteHttp(API_PATH.ISSUE_CREDENTIAL_20_RECORD(credExchangeId))
       .then((res) => {
         result = res.data.item;
       })

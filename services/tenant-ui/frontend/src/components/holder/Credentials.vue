@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 // Types
-import { V10CredentialExchange } from '@/types/acapyApi/acapyInterface';
+import { FormattedHeldCredentialRecord } from '@/helpers/tableFormatters';
 
 // Vue
 import { ref } from 'vue';
@@ -68,14 +68,14 @@ const holderStore = useHolderStore();
 const cardView = ref(false);
 
 // Actions for a cred row/card
-const acceptOffer = (event: any, data: V10CredentialExchange) => {
+const acceptOffer = (event: any, data: FormattedHeldCredentialRecord) => {
   if (data.credential_exchange_id) {
     holderStore.acceptCredentialOffer(data.credential_exchange_id).then(() => {
       toast.success(`Credential successfully added to your wallet`);
     });
   }
 };
-const rejectOffer = (event: any, data: V10CredentialExchange) => {
+const rejectOffer = (event: any, data: FormattedHeldCredentialRecord) => {
   confirm.require({
     target: event.currentTarget,
     message: 'Are you sure you want to reject this credential offer?',
@@ -100,7 +100,7 @@ const rejectOffer = (event: any, data: V10CredentialExchange) => {
     },
   });
 };
-const deleteCredential = (event: any, data: V10CredentialExchange) => {
+const deleteCredential = (event: any, data: FormattedHeldCredentialRecord) => {
   confirm.require({
     target: event.currentTarget,
     message: 'Are you sure you want to delete this credential exchange record?',

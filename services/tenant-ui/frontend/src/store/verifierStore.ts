@@ -1,5 +1,5 @@
 // Types
-import { V10PresentationSendRequestRequest } from '@/types/acapyApi/acapyInterface';
+import { V20PresSendRequestRequest } from '@/types/acapyApi/acapyInterface';
 
 import { useAcapyApi } from './acapyApi';
 import { API_PATH } from '@/helpers/constants';
@@ -24,7 +24,7 @@ export const useVerifierStore = defineStore('verifier', () => {
   async function listPresentations() {
     selectedPresentation.value = null;
     return fetchList(
-      API_PATH.PRESENT_PROOF_RECORDS,
+      API_PATH.PRESENT_PROOF_20_RECORDS,
       presentations,
       error,
       loading
@@ -34,7 +34,7 @@ export const useVerifierStore = defineStore('verifier', () => {
   async function deleteRecord(id: string) {
     loading.value = true;
     try {
-      await acapyApi.deleteHttp(API_PATH.PRESENT_PROOF_RECORD(id));
+      await acapyApi.deleteHttp(API_PATH.PRESENT_PROOF_20_RECORD(id));
       listPresentations();
     } catch (err) {
       error.value = err;
@@ -47,16 +47,14 @@ export const useVerifierStore = defineStore('verifier', () => {
     }
   }
 
-  async function sendPresentationRequest(
-    payload: V10PresentationSendRequestRequest
-  ) {
+  async function sendPresentationRequest(payload: V20PresSendRequestRequest) {
     loading.value = true;
     error.value = null;
 
     let result = null;
     try {
       result = await acapyApi.postHttp(
-        API_PATH.PRESENT_PROOF_SEND_REQUEST,
+        API_PATH.PRESENT_PROOF_20_SEND_REQUEST,
         payload
       );
       listPresentations();
