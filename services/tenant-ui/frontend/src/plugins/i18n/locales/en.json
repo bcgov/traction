@@ -524,6 +524,7 @@
       "confirmDeletionIncorrect": "Incorrect tenant name. Please confirm the correct name before deletion.",
       "confirmDeletionSuccess": "Tenant {0} successfully marked as deleted",
       "deleteTenant": "Delete Tenant",
+      "perminentDelete": "Perminently Delete",
       "editSettings": "Edit Tenant Config",
       "enableLedgerSwitch": "Tenant can switch endorser/ledger",
       "endorserAlias": "Endorser Alias:",

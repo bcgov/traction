@@ -14,7 +14,9 @@
         </div>
         <ConfirmPopup group="templating">
           <template #message="slotProps">
-            <div class="flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700 p-4 mb-4 pb-0">
+            <div
+              class="flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700 p-4 mb-4 pb-0"
+            >
               <i :class="slotProps.message.icon" class=""></i>
               <p>{{ slotProps.message.message }}</p>
             </div>
@@ -22,7 +24,8 @@
         </ConfirmPopup>
         <Button
           class="my-4 w-full"
-          @click="showTenentDeletionWarning($event)" label="Delete Tenant"
+          label="Delete Tenant"
+          @click="showTenentDeletionWarning($event)"
         />
         <div class="col text-right">
           <img v-if="isIssuer" src="/img/badges/issuer.png" />
@@ -48,20 +51,21 @@ import { storeToRefs } from 'pinia';
 import { useTenantStore } from '@/store';
 const tenantStore = useTenantStore();
 const { tenant, isIssuer, loading } = storeToRefs(useTenantStore());
-import { useConfirm } from "primevue/useconfirm";
+import { useConfirm } from 'primevue/useconfirm';
 
 const confirm = useConfirm();
 const toast = useToast();
 const showTenentDeletionWarning = (event: any) => {
   confirm.require({
-    message: "WARNING: Deletion of a tenant is permanent. Would you like to proceed?",
+    message:
+      'WARNING: Deletion of a tenant is permanent. Would you like to proceed?',
     icon: 'pi pi-exclamation-circle',
     accept: () => {
       tenantStore.deleteTenant();
       window.location.href = '/logout';
     },
-  })
-}
+  });
+};
 const reloadProfileDetails = async () => {
   try {
     await Promise.allSettled([

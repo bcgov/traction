@@ -18,7 +18,7 @@
       <div class="flex items-center">
         <Checkbox v-model="perminant" :binary="true" />
         <label class="ml-2" for="">
-          Perminently Delete
+          {{ $t('tenants.settings.perminentDelete') }}
         </label>
       </div>
 
@@ -57,7 +57,7 @@ const emit = defineEmits(['closed', 'success']);
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
 
 const confirmationTenantName = ref('');
-const perminant = ref(false)
+const perminant = ref(false);
 const isTenantNameCorrect = computed(
   () => confirmationTenantName.value === props.tenant.tenant_name
 );
