@@ -20,6 +20,7 @@ from aries_cloudagent.messaging.valid import (
     UUIDFour,
 )
 from aries_cloudagent.storage.error import StorageNotFoundError, StorageError
+from aries_cloudagent.admin.decorators.auth import tenant_authentication
 from marshmallow import fields, ValidationError
 
 from . import OcaService
@@ -112,6 +113,7 @@ class OcaRecordOperationResponseSchema(OpenAPISchema):
 @request_schema(AddOcaRecordRequestSchema())
 @response_schema(OcaRecordSchema(), 200, description="")
 @error_handler
+@tenant_authentication
 async def oca_record_create(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     service = context.inject(OcaService)
@@ -126,6 +128,7 @@ async def oca_record_create(request: web.BaseRequest):
 @match_info_schema(OcaIdMatchInfoSchema())
 @response_schema(OcaRecordSchema(), 200, description="")
 @error_handler
+@tenant_authentication
 async def oca_record_read(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     service = context.inject(OcaService)
@@ -141,6 +144,7 @@ async def oca_record_read(request: web.BaseRequest):
 @request_schema(OcaRecordSchema())
 @response_schema(OcaRecordSchema(), 200, description="")
 @error_handler
+@tenant_authentication
 async def oca_record_update(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     service = context.inject(OcaService)
@@ -155,6 +159,7 @@ async def oca_record_update(request: web.BaseRequest):
 @match_info_schema(OcaIdMatchInfoSchema())
 @response_schema(OcaRecordOperationResponseSchema, 200, description="")
 @error_handler
+@tenant_authentication
 async def oca_record_delete(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     service = context.inject(OcaService)
@@ -169,6 +174,7 @@ async def oca_record_delete(request: web.BaseRequest):
 @querystring_schema(OcaRecordListQueryStringSchema())
 @response_schema(OcaRecordListSchema(), 200, description="")
 @error_handler
+@tenant_authentication
 async def oca_record_list(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     service = context.inject(OcaService)

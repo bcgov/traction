@@ -8,8 +8,8 @@ readme = "README.md"
 packages = [{include = "traction_innkeeper"}]
 
 [tool.poetry.dependencies]
-python = "^3.9"
-aries-cloudagent = { version = "0.12.2rc1" }
+python = "^3.12"
+aries-cloudagent = { git = "https://github.com/jamshale/aries-cloudagent-python.git" }
 python-dateutil = "^2.8.2"
 bcrypt = "^4.2.0"
 mergedeep = "^1.3.4"

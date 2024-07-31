@@ -23,7 +23,7 @@ plugin:
 
  
 plugin-config-value:
-  - multitenant_provider.manager.class_name="multitenant_provider.v1_0.manager.AskarMultitokenMultitenantManager"
+  - multitenant_provider.manager.class_name="multitenant_provider.v1_0.manager.SingleWalletAskarMultitokenMultitenantManager"
   - multitenant_provider.manager.always_check_provided_wallet_key=true
   - multitenant_provider.errors.on_unneeded_wallet_key=false
   - multitenant_provider.token_expiry.units=days
@@ -46,9 +46,9 @@ jwt-secret: insecure-jwt-secret
 multitenant-admin: true
 
 # Wallet
-# wallet-name: default
+wallet-name: default
 wallet-type: askar
-# wallet-key: "insecure, for use in demo only"
+wallet-key: "insecure, for use in demo only"
 
 log-level: info
 

@@ -8,8 +8,8 @@ readme = "README.md"
 
 
 [tool.poetry.dependencies]
-python = "^3.9"
-aries-cloudagent = { version = "0.12.2rc1" }
+python = "^3.12"
+aries-cloudagent = { git = "https://github.com/jamshale/aries-cloudagent-python.git"}
 python-dateutil = "^2.8.2"
 typing-extensions = "4.8.0"
 traction-innkeeper = {path = "./traction_innkeeper", develop = true}
@@ -22,8 +22,7 @@ ursa-bbs-signatures = { version = "~1.0.1" }
 python3-indy = { version = "^1.11.1" }
 
 [tool.poetry.dev-dependencies]
-black = "^24.4.2"
-flake8 = "^7.1.0"
+ruff = "^0.5.0"
 
 [build-system]
 requires = ["setuptools", "poetry-core>=1.2"]
