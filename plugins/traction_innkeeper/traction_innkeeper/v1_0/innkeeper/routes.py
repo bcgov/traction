@@ -809,7 +809,35 @@ async def innkeeper_tenant_delete(request: web.BaseRequest):
             return web.json_response({"success": f"Tenant {tenant_id} soft deleted."})
         else:
             raise web.HTTPNotFound(reason=f"Tenant {tenant_id} not found.")
-    
+
+
+@docs(
+    tags=[SWAGGER_CATEGORY],
+)
+@match_info_schema(TenantIdMatchInfoSchema())
+@response_schema(TenantRecordSchema(), 200, description="")
+@innkeeper_only
+@error_handler
+async def innkeeper_tenant_hard_delete(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    tenant_id = request.match_info["tenant_id"]
+
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+    async with profile.session() as session:
+        rec = await TenantRecord.retrieve_by_id(session, tenant_id)
+        if rec:
+            multitenant_mgr = context.profile.inject(BaseMultitenantManager)
+            wallet_id = rec.wallet_id
+            wallet_record = await WalletRecord.retrieve_by_id(session, wallet_id)
+
+            await multitenant_mgr.remove_wallet(wallet_id)
+            await rec.delete_record(session)
+            LOGGER.info("Tenant %s rd deleted.", tenant_id)
+            return web.json_response({"success": f"Tenant {tenant_id} hard deleted."})
+        else:
+            raise web.HTTPNotFound(reason=f"Tenant {tenant_id} not found.")
+
 
 @docs(
     tags=[SWAGGER_CATEGORY],
@@ -822,10 +850,10 @@ async def innkeeper_tenant_delete(request: web.BaseRequest):
 async def innkeeper_tenant_restore(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     tenant_id = request.match_info["tenant_id"]
-    
+
     mgr = context.inject(TenantManager)
     profile = mgr.profile
-    
+
     async with profile.session() as session:
         rec = await TenantRecord.retrieve_by_id(session, tenant_id)
         if rec:
@@ -837,7 +865,7 @@ async def innkeeper_tenant_restore(request: web.BaseRequest):
                 return web.json_response({"success": f"Tenant {tenant_id} restored."})
         else:
             raise web.HTTPNotFound(reason=f"Tenant {tenant_id} not found.")
- 
+
 
 @docs(tags=[SWAGGER_CATEGORY], summary="Create API Key Record")
 @request_schema(TenantAuthenticationsApiRequestSchema())
@@ -960,9 +988,7 @@ async def innkeeper_config_handler(request: web.BaseRequest):
     profile = mgr.profile
 
     config = {
-        key: (
-           profile.context.settings[key]
-        )
+        key: (profile.context.settings[key])
         for key in profile.context.settings
         if key
         not in [
@@ -975,9 +1001,13 @@ async def innkeeper_config_handler(request: web.BaseRequest):
         ]
     }
     try:
-      del config["plugin_config"]["traction_innkeeper"]["innkeeper_wallet"]["wallet_key"]
+        del config["plugin_config"]["traction_innkeeper"]["innkeeper_wallet"][
+            "wallet_key"
+        ]
     except KeyError as e:
-      LOGGER.warn(f"The key to be removed: '{e.args[0]}' is missing from the dictionary.")
+        LOGGER.warn(
+            f"The key to be removed: '{e.args[0]}' is missing from the dictionary."
+        )
     config["version"] = __version__
 
     return web.json_response({"config": config})
@@ -1033,6 +1063,9 @@ async def register(app: web.Application):
             ),
             web.put("/innkeeper/tenants/{tenant_id}/config", tenant_config_update),
             web.delete("/innkeeper/tenants/{tenant_id}", innkeeper_tenant_delete),
+            web.delete(
+                "/innkeeper/tenants/{tenant_id}/hard", innkeeper_tenant_hard_delete
+            ),
             web.put("/innkeeper/tenants/{tenant_id}/restore", innkeeper_tenant_restore),
             web.get(
                 "/innkeeper/default-config",
