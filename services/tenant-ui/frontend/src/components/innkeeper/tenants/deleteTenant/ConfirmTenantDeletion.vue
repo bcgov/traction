@@ -14,11 +14,19 @@
         placeholder="Type the tenant name here"
         class="w-full mb-4"
       />
+
+      <div class="flex items-center">
+        <Checkbox v-model="perminant" :binary="true" />
+        <label class="ml-2" for="">
+          Perminently Delete
+        </label>
+      </div>
+
       <Button
         :disabled="!isTenantNameCorrect"
         label="Delete"
         severity="danger"
-        class="w-full"
+        class="w-full my-2"
         type="submit"
       />
     </div>
@@ -29,6 +37,7 @@
 import { ref, computed } from 'vue';
 
 import InputText from 'primevue/inputtext';
+import Checkbox from 'primevue/checkbox';
 import Button from 'primevue/button';
 
 import { useInnkeeperTenantsStore } from '@/store';
@@ -48,6 +57,7 @@ const emit = defineEmits(['closed', 'success']);
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
 
 const confirmationTenantName = ref('');
+const perminant = ref(false)
 const isTenantNameCorrect = computed(
   () => confirmationTenantName.value === props.tenant.tenant_name
 );
@@ -60,7 +70,11 @@ async function handleDelete() {
     return;
   }
   try {
-    await innkeeperTenantsStore.deleteTenant(props.tenant.tenant_id);
+    if (perminant.value) {
+      await innkeeperTenantsStore.hardDeleteTenant(props.tenant.tenant_id);
+    } else {
+      await innkeeperTenantsStore.deleteTenant(props.tenant.tenant_id);
+    }
     toast.success(
       t('tenants.settings.confirmDeletionSuccess', [props.tenant.tenant_name])
     );

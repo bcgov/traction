@@ -60,6 +60,7 @@ export const API_PATH = {
   INNKEEPER_TOKEN: '/innkeeper/token',
   INNKEEPER_TENANTS: '/innkeeper/tenants/',
   INNKEEPER_TENANT: (id: string) => `/innkeeper/tenants/${id}`,
+  INNKEEPER_HARD_DELETE_TENANT: (id: string) => `/innkeeper/tenants/${id}/hard`,
   INNKEEPER_TENANT_CONFIG: (id: string) => `/innkeeper/tenants/${id}/config`,
   INNKEEPER_TENANT_DEFAULT_CONFIG: '/innkeeper/default-config',
   INNKEEPER_TENANT_RESTORE: (id: string) => `/innkeeper/tenants/${id}/restore`,
@@ -130,6 +131,7 @@ export const API_PATH = {
   SCHEMA_STORAGE_ITEM: (id: string) => `/schema-storage/${id}`,
 
   TENANT_SELF: '/tenant',
+  TENANT_DELETE: '/tenant',
   TENANT_ENDORSER_CONNECTION: '/tenant/endorser-connection',
   TENANT_ENDORSER_INFO: '/tenant/endorser-info',
   TENANT_REGISTER_PUBLIC_DID: '/ledger/register-nym',

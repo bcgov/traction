@@ -259,6 +259,25 @@ export const useTenantStore = defineStore('tenant', () => {
     console.log('< tenantStore.getPublicDid');
   }
 
+  async function deleteTenant() {
+    console.log('> tenantStore.deleteTenant');
+    let result = null;
+    error.value = null;
+    loading.value = true;
+    await acapyApi
+      .deleteHttp(API_PATH.TENANT_DELETE)
+      .then((res) => (result = res.data))
+      .catch((err) => (error.value = err))
+      .finally(() => (loading.value = false));
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return result;
+  }
+
   async function getWalletcDids() {
     console.log('> tenantStore.getWalletDids');
     await fetchList(
@@ -639,6 +658,7 @@ export const useTenantStore = defineStore('tenant', () => {
     getTransactions,
     getWalletcDids,
     getWriteLedger,
+    deleteTenant,
     registerPublicDid,
     setTenantLoginDataFromLocalStorage,
     setWriteLedger,
