@@ -277,6 +277,24 @@ export const useTenantStore = defineStore('tenant', () => {
     // return data so $onAction.after listeners can add their own handler
     return result;
   }
+  async function softDeleteTenant() {
+    console.log('> tenantStore.softDeleteTenant');
+    let result = null;
+    error.value = null;
+    loading.value = true;
+    await acapyApi
+      .deleteHttp(API_PATH.TENANT_DELETE_SOFT)
+      .then((res) => (result = res.data))
+      .catch((err) => (error.value = err))
+      .finally(() => (loading.value = false));
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return result;
+  }
 
   async function getWalletcDids() {
     console.log('> tenantStore.getWalletDids');
@@ -659,6 +677,7 @@ export const useTenantStore = defineStore('tenant', () => {
     getWalletcDids,
     getWriteLedger,
     deleteTenant,
+    softDeleteTenant,
     registerPublicDid,
     setTenantLoginDataFromLocalStorage,
     setWriteLedger,
