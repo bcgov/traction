@@ -11,8 +11,14 @@
         <div class="col-fixed" style="width: 50rem">
           <ProfileForm />
           <Issuance />
+          <Button
+            class="my-4 w-full p-danger"
+            :style="{ padding: '0.5rem 1rem', fontWeight: 'normal' }"
+            severity="danger"
+            label="Delete Tenant"
+            @click="openModal"
+          />
         </div>
-        <Button class="my-4 w-full" label="Delete Tenant" @click="openModal" />
         <Dialog
           v-model:visible="displayModal"
           :style="{ minWidth: '500px' }"
