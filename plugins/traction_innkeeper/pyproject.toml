@@ -17,7 +17,7 @@ typing-extensions = "4.8.0"
 anoncreds = "^0.2.0"
 
 [tool.poetry.dev-dependencies]
-black = "^24.4.2"
+black = "^24.8.0"
 flake8 = "^7.1.0"
 
 [build-system]
