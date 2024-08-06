@@ -4,10 +4,10 @@ on:
     branches:
       - main
     paths:
-      - 'plugins/**'
-      - 'services/tenant-ui/**'
-      - 'charts/traction/**'
-      - 'charts/tenant-ui/**'
+      - "plugins/**"
+      - "services/tenant-ui/**"
+      - "charts/traction/**"
+      - "charts/tenant-ui/**"
     types:
       - closed
 
@@ -17,8 +17,8 @@ jobs:
     environment: development
     runs-on: ubuntu-22.04
     if: github.repository_owner == 'bcgov'
-    steps:  
-      - uses: actions/checkout@v4  
+    steps:
+      - uses: actions/checkout@v4
       - name: Check out manifest repo
         uses: actions/checkout@v4
         with:
@@ -33,29 +33,27 @@ jobs:
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           certificate_authority_data: ${{ secrets.OPENSHIFT_CA_CRT }}
           namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
-      
+
       - name: Uninstall Traction via Helm
         continue-on-error: true
         run: |
           helm uninstall pr-${{ github.event.number }}-traction
-      
+
       - name: Remove Traction Openshift Objects
-        continue-on-error: true 
+        continue-on-error: true
         run: |
           oc delete secret,pvc --selector "app.kubernetes.io/instance"=pr-${{ github.event.number }}-traction
 
   clean-ghcr:
     runs-on: ubuntu-22.04
     if: github.repository_owner == 'bcgov'
-    name: Delete closed or stale pr images
+    name: Delete closed PR images
     steps:
-      - name: Delete containers 
-        uses: snok/container-retention-policy@v2
+      - name: Delete Images
+        uses: snok/container-retention-policy@v3.0.0
         with:
+          account: bcgov
           image-names: traction-plugins-acapy, traction-tenant-proxy, traction-tenant-ui
-          cut-off: now UTC
-          account-type: org
-          org-name: ${{ github.repository_owner}}
-          filter-tags: pr-${{ github.event.number }}
-          token: ${{ secrets.PAT }}
-          token-type: 'pat'
+          image-tags: pr-${{ github.event.number }}
+          cut-off: 1second
+          token: ${{ secrets.GITHUB_TOKEN }}
