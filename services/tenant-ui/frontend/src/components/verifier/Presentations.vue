@@ -9,7 +9,7 @@
       v-model:expandedRows="expandedRows"
       :loading="loading"
       :value="presentations"
-      data-key="presentation_exchange_id"
+      data-key="pres_ex_id"
       :paginator="true"
       :global-filter-fields="[
         'presentation_request.name',
@@ -52,14 +52,14 @@
               v-if="
                 stringOrBooleanTruthy(config.frontend.showWritableComponents)
               "
-              :record-id="data.presentation_exchange_id"
+              :record-id="data.pres_ex_id"
             />
             <CreateRequest
               v-if="
                 data.role === 'verifier' &&
                 stringOrBooleanTruthy(config.frontend.showWritableComponents)
               "
-              :existing-pres-req="data.presentation_request"
+              :existing-pres-req="data.by_format.pres_request.indy"
               icon-display
             />
           </div>
@@ -67,7 +67,7 @@
       </Column>
       <Column
         :sortable="true"
-        field="presentation_request.name"
+        field="by_format.pres_request.indy.name"
         header="Name"
       />
       <Column :sortable="true" field="role" header="Role" />
@@ -81,25 +81,16 @@
           <StatusChip :status="data.state" />
         </template>
       </Column>
-      <Column
-        :sortable="true"
-        field="presentation_request_dict.comment"
-        header="Comment"
-      />
+      <Column :sortable="true" field="pres_request.comment" header="Comment" />
       <Column :sortable="true" field="created_at" header="Created at">
         <template #body="{ data }">
           {{ formatDateLong(data.created_at) }}
         </template>
       </Column>
       <template #expansion="{ data }">
-        <!-- <PresentationRowExpandData
-        :row="data"
-        :header="false"
-        :show-information="true"
-      /> -->
         <RowExpandData
-          :id="data.presentation_exchange_id"
-          :url="API_PATH.PRESENT_PROOF_RECORDS"
+          :id="data.pres_ex_id"
+          :url="API_PATH.PRESENT_PROOF_20_RECORDS"
         />
       </template>
     </DataTable>

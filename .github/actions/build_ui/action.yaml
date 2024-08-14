@@ -43,7 +43,7 @@ runs:
     - name: Set up Node
       uses: actions/setup-node@master
       with:
-        node-version: 16
+        node-version: 22
 
     - name: Install backend dependencies
       shell: bash
