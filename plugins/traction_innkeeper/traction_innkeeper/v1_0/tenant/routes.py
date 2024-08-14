@@ -80,6 +80,7 @@ class TenantLedgerIdConfigSchema(OpenAPISchema):
         required=True,
     )
 
+
 @web.middleware
 async def setup_tenant_context(request: web.Request, handler):
     """Middle ware to extract tenant_id and provide it to log formatter
@@ -465,6 +466,55 @@ async def tenant_server_config_handler(request: web.BaseRequest):
     return web.json_response({"config": config})
 
 
+@docs(
+    tags=[SWAGGER_CATEGORY],
+)
+@response_schema(TenantRecordSchema(), 200, description="")
+@error_handler
+async def tenant_delete_soft(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    wallet_id = context.profile.settings.get("wallet.id")
+
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+    async with profile.session() as session:
+        rec = await TenantRecord.query_by_wallet_id(session, wallet_id)
+        if rec:
+            await rec.soft_delete(session)
+            LOGGER.info("Tenant %s soft deleted.", rec.tenant_id)
+            return web.json_response(
+                {"success": f"Tenant {rec.tenant_id} soft deleted."}
+            )
+        else:
+            raise web.HTTPNotFound(reason=f"Tenant not found.")
+
+
+@docs(
+    tags=[SWAGGER_CATEGORY],
+)
+@response_schema(TenantRecordSchema(), 200, description="")
+@error_handler
+async def tenant_delete(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    wallet_id = context.profile.settings.get("wallet.id")
+
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+    async with profile.session() as session:
+        rec = await TenantRecord.query_by_wallet_id(session, wallet_id)
+        if rec:
+            multitenant_mgr = context.profile.inject(BaseMultitenantManager)
+
+            await multitenant_mgr.remove_wallet(rec.wallet_id)
+            await rec.delete_record(session)
+            LOGGER.info("Tenant %s rd deleted.", rec.tenant_id)
+            return web.json_response(rec.serialize())
+        else:
+            raise web.HTTPNotFound(
+                reason=f"Tenant with wallet id {wallet_id} not found."
+            )
+
+
 async def register(app: web.Application):
     """Register routes."""
     LOGGER.info("> registering routes")
@@ -499,6 +549,8 @@ async def register(app: web.Application):
                 tenant_server_config_handler,
                 allow_head=False,
             ),
+            web.delete("/tenant/hard", tenant_delete),
+            web.delete("/tenant/soft", tenant_delete_soft),
         ]
     )
     LOGGER.info("< registering routes")

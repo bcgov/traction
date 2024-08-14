@@ -48,7 +48,7 @@
       <Accordion>
         <AccordionTab header="Endorser Details">
           <h5 class="my-0">{{ $t('profile.endorserInfo') }}</h5>
-          <vue-json-pretty :data="endorserInfo" />
+          <vue-json-pretty :data="endorserInfo as any" />
           <h5 class="my-0">{{ $t('profile.endorserConnection') }}</h5>
           <vue-json-pretty
             v-if="endorserConnection"

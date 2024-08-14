@@ -16,6 +16,7 @@
     >
       <ConfirmTenantDeletion
         :tenant="props.tenant"
+        api="Innkeeper"
         @success="$emit('success')"
         @closed="handleClose"
       />
