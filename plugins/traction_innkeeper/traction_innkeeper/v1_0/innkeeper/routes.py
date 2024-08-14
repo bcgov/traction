@@ -450,6 +450,16 @@ async def tenant_checkin(request: web.BaseRequest):
     )
 
 
+async def delete_auth_tokens(context: AdminRequestContext, wallet_record: WalletRecord):
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+    multitenant_mgr = profile.inject(BaseMultitenantManager)
+
+    wallet_record.jwt_iat = None
+    async with multitenant_mgr._profile.session() as session:
+        await wallet_record.save(session)
+
+
 @docs(tags=["multitenancy"], summary="Get auth token for a tenant")
 @match_info_schema(TenantIdMatchInfoSchema())
 @request_schema(CustomCreateWalletTokenRequestSchema)
@@ -518,6 +528,60 @@ async def tenant_create_token(request: web.BaseRequest):
     # Wallet key access use suppled, API key access used looked up key
     key = wallet_key if wallet_key else wallet_record.wallet_key
     token = await multitenant_mgr.create_auth_token(wallet_record, key)
+
+    return web.json_response({"token": token})
+
+
+@docs(
+    tags=["multitenancy"],
+    summary="Get auth token for a subwallet (innkeeper plugin override)",
+)
+@request_schema(CreateWalletTokenRequestSchema)
+@response_schema(CreateWalletTokenResponseSchema(), 200, description="")
+@error_handler
+async def tenant_wallet_create_token(request: web.BaseRequest):
+    raise web.HTTPUnauthorized(reason="Tenant is disabled")
+    context: AdminRequestContext = request["context"]
+    wallet_id = request.match_info["wallet_id"]
+    wallet_key = None
+
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+
+    # Tenants must always be fetch by their wallet id.
+    rec = await TenantRecord.query_by_wallet_id(profile.session(), wallet_id)
+    LOGGER.warn("when creating token ", rec)
+    if rec.state == TenantRecord.STATE_DELETED:
+        raise web.HTTPUnauthorized(reason="Tenant is disabled")
+
+    # The rest is from https://github.com/hyperledger/aries-acapy-plugins/blob/main/multitenant_provider/multitenant_provider/v1_0/routes.py
+    LOGGER.warn(f"wallet_id = {wallet_id}")
+
+    # "builtin" wallet_create_token uses request.has_body / can_read_body
+    # which do not always return true, so wallet_key wasn't getting set or passed
+    # into create_auth_token.
+
+    # if there's no body or the wallet_key is not in the body,
+    # or wallet_key is blank, return an error
+    if not request.body_exists:
+        raise web.HTTPUnauthorized(reason="Missing wallet_key")
+
+    body = await request.json()
+    wallet_key = body.get("wallet_key")
+    LOGGER.warn(f"wallet_key = {wallet_key}")
+
+    # If wallet_key is not there or blank return an error
+    if not wallet_key:
+        raise web.HTTPUnauthorized(reason="Missing wallet_key")
+
+    profile = context.profile
+    # TODO
+    # config = profile.inject(MultitenantProviderConfig)
+    multitenant_mgr = profile.inject(BaseMultitenantManager)
+    async with profile.session() as session:
+        wallet_record = await WalletRecord.retrieve_by_id(session, wallet_id)
+
+    token = await multitenant_mgr.create_auth_token(wallet_record, wallet_key)
 
     return web.json_response({"token": token})
 
@@ -1029,6 +1093,9 @@ async def register(app: web.Application):
                 "/multitenancy/reservations/{reservation_id}/check-in", tenant_checkin
             ),
             web.post("/multitenancy/tenant/{tenant_id}/token", tenant_create_token),
+            web.post(
+                "/multitenancy/wallet/{wallet_id}/token", tenant_wallet_create_token
+            ),
         ]
     )
     # routes that require a tenant token for the innkeeper wallet/tenant/agent.
