@@ -540,7 +540,6 @@ async def tenant_create_token(request: web.BaseRequest):
 @response_schema(CreateWalletTokenResponseSchema(), 200, description="")
 @error_handler
 async def tenant_wallet_create_token(request: web.BaseRequest):
-    raise web.HTTPUnauthorized(reason="Tenant is disabled")
     context: AdminRequestContext = request["context"]
     wallet_id = request.match_info["wallet_id"]
     wallet_key = None
@@ -549,10 +548,11 @@ async def tenant_wallet_create_token(request: web.BaseRequest):
     profile = mgr.profile
 
     # Tenants must always be fetch by their wallet id.
-    rec = await TenantRecord.query_by_wallet_id(profile.session(), wallet_id)
-    LOGGER.warn("when creating token ", rec)
-    if rec.state == TenantRecord.STATE_DELETED:
-        raise web.HTTPUnauthorized(reason="Tenant is disabled")
+    async with profile.session() as session:
+        rec = await TenantRecord.query_by_wallet_id(session, wallet_id)
+        LOGGER.warn("when creating token ", rec)
+        if rec.state == TenantRecord.STATE_DELETED:
+            raise web.HTTPUnauthorized(reason="Tenant is disabled")
 
     # The rest is from https://github.com/hyperledger/aries-acapy-plugins/blob/main/multitenant_provider/multitenant_provider/v1_0/routes.py
     LOGGER.warn(f"wallet_id = {wallet_id}")
@@ -1098,6 +1098,19 @@ async def register(app: web.Application):
             ),
         ]
     )
+    for r in app.router.routes():
+        if r.method == "POST":
+            if (
+                r.resource
+                and r.resource.canonical == "/multitenancy/wallet/{wallet_id}/token"
+            ):
+                LOGGER.info(
+                    f"found route: {r.method} {r.resource.canonical} ({r.handler})"
+                )
+                LOGGER.info(f"... replacing current handler: {r.handler}")
+                r._handler = tenant_wallet_create_token
+                LOGGER.info(f"... with new handler: {r.handler}")
+                has_wallet_create_token = True
     # routes that require a tenant token for the innkeeper wallet/tenant/agent.
     # these require not only a tenant, but it has to be the innkeeper tenant!
     app.add_routes(

@@ -51,6 +51,9 @@ spec:
            --endpoint https://{{ include "acapy.host" . }} \
            --arg-file '/home/aries/argfile.yml' \
            --plugin 'aries_cloudagent.messaging.jsonld' \ 
+           {{- if .Values.acapy.plugins.multitenantProvider }}
+           --plugin multitenant_provider.v1_0 \
+           {{- end }}  
            {{- if .Values.acapy.plugins.tractionInnkeeper }}
            --plugin traction_plugins.traction_innkeeper.v1_0 \
            --plugin-config-value traction_innkeeper.innkeeper_wallet.tenant_id=\"$(INNKEEPER_WALLET_TENANT_ID)\" \
@@ -62,9 +65,6 @@ spec:
            {{- if .Values.acapy.plugins.connectionUpdate }}
            --plugin connection_update.v1_0 \
            {{- end }}
-           {{- if .Values.acapy.plugins.multitenantProvider }}
-           --plugin multitenant_provider.v1_0 \
-           {{- end }}  
            {{- if .Values.acapy.plugins.rpc }}
            --plugin rpc.v1_0 \
            {{- end }}           
