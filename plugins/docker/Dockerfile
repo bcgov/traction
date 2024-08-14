@@ -1,4 +1,4 @@
-FROM ghcr.io/hyperledger/aries-cloudagent-python:py3.9-0.12.2 as base
+FROM ghcr.io/hyperledger/aries-cloudagent-python:py3.9-0.12.2 AS base
 
 # Install and Configure Poetry
 USER root
