@@ -21,7 +21,7 @@
             {{ $t('tenants.settings.permanentDelete') }}
           </label>
         </div>
-        <div class="flex items-center my-2">
+        <div v-if="!props.unsuspendable" class="flex items-center my-2">
           <RadioButton v-model="perminant" value="Soft" />
           <label class="ml-2" for="">
             {{ $t('tenants.settings.softDelete') }}
@@ -67,6 +67,7 @@ type DeletionAPI = 'Innkeeper' | 'Tenant';
 const props = defineProps<{
   tenant: TenantRecord;
   api: DeletionAPI;
+  unsuspendable?: boolean;
 }>();
 
 const emit = defineEmits(['closed', 'success']);
@@ -82,12 +83,11 @@ const displayWarning = computed(() => {
   if (perminant.value == 'Hard') return true;
   else return false;
 });
-// toast.info("hello");
 
 const toast = useToast();
 
 type DeletionType = 'Hard' | 'Soft';
-const perminant: Ref<DeletionType> = ref('Soft');
+const perminant: Ref<DeletionType> = ref(props.unsuspendable ? 'Hard' : 'Soft');
 
 const tenantDelete = async () => {
   const tenantStore = useTenantStore();
@@ -119,7 +119,14 @@ async function handleDelete() {
       await innkeeperDelete();
     }
     toast.success(
-      t('tenants.settings.confirmDeletionSuccess', [props.tenant.tenant_name])
+      t('tenants.settings.confirmDeletionSuccess', [
+        props.tenant.tenant_name,
+        t(
+          perminant.value == 'Hard'
+            ? 'tenants.settings.deleted'
+            : 'tenants.settings.suspended'
+        ),
+      ])
     );
     emit('success');
     emit('closed');

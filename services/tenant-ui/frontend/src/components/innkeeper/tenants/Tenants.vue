@@ -52,6 +52,7 @@
               {{ $t('common.deleted') }}
             </span>
             <RestoreTenant :id="data.tenant_id" :name="data.tenant_name" />
+            <DeleteTenant :tenant="data" unsuspendable />
           </div>
         </template>
       </Column>
