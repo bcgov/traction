@@ -16,6 +16,7 @@
     >
       <ConfirmTenantDeletion
         :tenant="props.tenant"
+        :unsuspendable="props.unsuspendable"
         api="Innkeeper"
         @success="$emit('success')"
         @closed="handleClose"
@@ -38,6 +39,7 @@ defineEmits(['success']);
 
 const props = defineProps<{
   tenant: TenantRecord;
+  unsuspendable?: boolean;
 }>();
 
 const displayModal = ref(false);
