@@ -104,15 +104,6 @@ git rebase origin/main
 git push --force
 ```
 
-## Who is maintaining Traction?
-[The Province of British Columbia](https://github.com/bcgov/) is maintaining Traction as an open-source project.
-
-Maintainer(s):
-- Jason Sherman
-- Jason Syrotuck
-- Lucas O'Neil
-- Jamie Popkin
-
 ## How is Traction licensed?
 
 Traction is licensed under Apache License 2.0 which can be reviewed [here](./LICENSE).
@@ -121,5 +112,4 @@ Traction is licensed under Apache License 2.0 which can be reviewed [here](./LIC
 ## Engage with the community
 
 Connect with others
-- on Discord: [EMDT Public Discord Channel](https://discord.com/channels/766403442599657522/854432442382680104)
 - for Aries discussion see the Hyperlerger Aries Github [participation section](https://github.com/hyperledger/aries#project-participation)

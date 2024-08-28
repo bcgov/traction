@@ -1,8 +1,8 @@
 name: Delete old container images
 
 on:
-  schedule:
-    - cron: "0 2 * * 2" # This job runs every Tuesday
+  # schedule:
+  #   - cron: "0 2 * * 2" # This job runs every Tuesday
   workflow_dispatch:
 
 jobs:
@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-22.04
     if: github.repository_owner == 'bcgov'
     steps:
-      - name: Delete containers older than a Month
+      - name: Delete container images older than a Month
         uses: snok/container-retention-policy@v3.0.0
         with:
           account: bcgov
