@@ -2,6 +2,7 @@ version: "3.9"
 services:
   ngrok-traction-agent:
     image: ngrok/ngrok
+    platform: linux/amd64
     environment:
       - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
       - TRACTION_ACAPY_HTTP_PORT=${TRACTION_ACAPY_HTTP_PORT}
@@ -11,6 +12,7 @@ services:
 
   traction-acapy-image-builder:
     pull_policy: missing
+    platform: linux/amd64
     build:
       context: ../plugins
       dockerfile: ./docker/Dockerfile
@@ -20,6 +22,7 @@ services:
 
   traction-agent:
     pull_policy: missing
+    platform: linux/amd64
     build:
       context: ../services/aca-py
       dockerfile: Dockerfile.acapy
@@ -99,6 +102,7 @@ services:
       - POSTGRES_USER=${POSTGRESQL_USER}
       - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
       - POSTGRES_DB=${POSTGRESQL_DB}
+    platform: linux/amd64
     ports:
       - ${POSTGRESQL_PORT}:5432
     volumes:
@@ -116,6 +120,7 @@ services:
     build:
       context: ../services/tenant-ui
       dockerfile: Dockerfile
+    platform: linux/amd64
     image: traction:tenant-ui
     depends_on:
       tenant-proxy:
@@ -149,6 +154,7 @@ services:
     build:
       context: ../plugins
       dockerfile: ./docker/Dockerfile.tenant-proxy
+    platform: linux/amd64
     image: traction:tenant-proxy
     depends_on:
       traction-agent:
@@ -167,6 +173,7 @@ services:
     build:
       context: ../services/endorser
       dockerfile: Dockerfile
+    platform: linux/amd64
     image: traction:endorser-api
     depends_on:
       endorser-agent:
@@ -194,6 +201,7 @@ services:
 
   endorser-agent:
     image: ghcr.io/hyperledger/aries-cloudagent-python:py3.9-0.12.2
+    platform: linux/amd64
     depends_on:
       endorser-db:
         condition: service_healthy
@@ -236,6 +244,7 @@ services:
 
   endorser-db:
     image: "postgres:14.5"
+    platform: linux/amd64
     environment:
       - POSTGRES_USER=${POSTGRESQL_USER}
       - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
@@ -257,6 +266,7 @@ services:
     build:
       context: ../services/endorser
       dockerfile: Dockerfile
+    platform: linux/amd64
     image: traction:endorser-api
     depends_on:
       endorser-agent-1:
@@ -287,6 +297,7 @@ services:
     depends_on:
       endorser-db-1:
         condition: service_healthy
+    platform: linux/amd64
     ports:
       - ${ACAPY_ENDORSER_1_ADMIN_PORT}:${ACAPY_ENDORSER_1_ADMIN_PORT}
       - ${ACAPY_ENDORSER_1_HTTP_PORT}:${ACAPY_ENDORSER_1_HTTP_PORT}
@@ -326,6 +337,7 @@ services:
 
   endorser-db-1:
     image: "postgres:14.5"
+    platform: linux/amd64
     environment:
       - POSTGRES_USER=${POSTGRESQL_USER}
       - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
@@ -344,6 +356,7 @@ services:
 
   maildev:
     image: maildev/maildev
+    platform: linux/amd64
     ports:
       - "1080:1080"
       - "1025:1025"

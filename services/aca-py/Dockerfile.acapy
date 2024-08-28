@@ -1,4 +1,4 @@
-FROM traction:plugins-acapy
+FROM --platform=linux/amd64 traction:plugins-acapy
 
 USER root
 
