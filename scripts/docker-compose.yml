@@ -204,28 +204,10 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
 
-  endorser-db:
-    image: "postgres:14.5"
-    environment:
-      - POSTGRES_USER=${POSTGRESQL_USER}
-      - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
-      - POSTGRES_DB=${POSTGRESQL_DB}
-    ports:
-      - ${ENDORSER_POSTGRESQL_PORT}:5432
-    volumes:
-      - endorser-wallet:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    extra_hosts:
-      - host.docker.internal:host-gateway
-
   endorser-agent-1:
     image: ghcr.io/hyperledger/aries-cloudagent-python:py3.9-0.12.2
     depends_on:
-      endorser-db-1:
+      endorser-db:
         condition: service_healthy
     ports:
       - ${ACAPY_ENDORSER_1_ADMIN_PORT}:${ACAPY_ENDORSER_1_ADMIN_PORT}
@@ -245,7 +227,7 @@ services:
         --wallet-key '${ENDORSER_ACAPY_WALLET_ENCRYPTION_KEY}' \
         --wallet-type '${ENDORSER_ACAPY_WALLET_TYPE}' \
         --wallet-storage-type '${ENDORSER_ACAPY_WALLET_STORAGE_TYPE}' \
-        --wallet-storage-config '{\"url\":\"${ENDORSER_1_POSTGRESQL_HOST}:5432\",\"max_connections\":5}' \
+        --wallet-storage-config '{\"url\":\"${ENDORSER_POSTGRESQL_HOST}:5432\",\"max_connections\":5}' \
         --wallet-storage-creds '{\"account\":\"${POSTGRESQL_USER}\",\"password\":\"${POSTGRESQL_PASSWORD}\",\"admin_account\":\"${POSTGRESQL_USER}\",\"admin_password\":\"${POSTGRESQL_PASSWORD}\"}' \
         --wallet-name endorser-wallet-1  \
         --seed '${ACAPY_ENDORSER_SEED_1}' \
@@ -264,16 +246,16 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
 
-  endorser-db-1:
+  endorser-db:
     image: "postgres:14.5"
     environment:
       - POSTGRES_USER=${POSTGRESQL_USER}
       - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
       - POSTGRES_DB=${POSTGRESQL_DB}
     ports:
-      - ${ENDORSER_1_POSTGRESQL_PORT}:5432
+      - ${ENDORSER_POSTGRESQL_PORT}:5432
     volumes:
-      - endorser-wallet-1:/var/lib/postgresql/data
+      - endorser-wallet:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
