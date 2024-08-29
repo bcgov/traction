@@ -25,6 +25,7 @@ from aries_cloudagent.storage.error import StorageError, StorageNotFoundError
 from aries_cloudagent.version import __version__
 from aries_cloudagent.wallet.error import WalletSettingsError
 from aries_cloudagent.wallet.models.wallet_record import WalletRecord
+from multitenant_provider.v1_0.routes import plugin_wallet_create_token
 from marshmallow import fields, validate
 
 from . import TenantManager
@@ -542,7 +543,6 @@ async def tenant_create_token(request: web.BaseRequest):
 async def tenant_wallet_create_token(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     wallet_id = request.match_info["wallet_id"]
-    wallet_key = None
 
     mgr = context.inject(TenantManager)
     profile = mgr.profile
@@ -550,40 +550,11 @@ async def tenant_wallet_create_token(request: web.BaseRequest):
     # Tenants must always be fetch by their wallet id.
     async with profile.session() as session:
         rec = await TenantRecord.query_by_wallet_id(session, wallet_id)
-        LOGGER.warn("when creating token ", rec)
+        LOGGER.debug("when creating token ", rec)
         if rec.state == TenantRecord.STATE_DELETED:
             raise web.HTTPUnauthorized(reason="Tenant is disabled")
 
-    # The rest is from https://github.com/hyperledger/aries-acapy-plugins/blob/main/multitenant_provider/multitenant_provider/v1_0/routes.py
-    LOGGER.warn(f"wallet_id = {wallet_id}")
-
-    # "builtin" wallet_create_token uses request.has_body / can_read_body
-    # which do not always return true, so wallet_key wasn't getting set or passed
-    # into create_auth_token.
-
-    # if there's no body or the wallet_key is not in the body,
-    # or wallet_key is blank, return an error
-    if not request.body_exists:
-        raise web.HTTPUnauthorized(reason="Missing wallet_key")
-
-    body = await request.json()
-    wallet_key = body.get("wallet_key")
-    LOGGER.warn(f"wallet_key = {wallet_key}")
-
-    # If wallet_key is not there or blank return an error
-    if not wallet_key:
-        raise web.HTTPUnauthorized(reason="Missing wallet_key")
-
-    profile = context.profile
-    # TODO
-    # config = profile.inject(MultitenantProviderConfig)
-    multitenant_mgr = profile.inject(BaseMultitenantManager)
-    async with profile.session() as session:
-        wallet_record = await WalletRecord.retrieve_by_id(session, wallet_id)
-
-    token = await multitenant_mgr.create_auth_token(wallet_record, wallet_key)
-
-    return web.json_response({"token": token})
+    return await plugin_wallet_create_token(request)
 
 
 @docs(
@@ -1098,6 +1069,8 @@ async def register(app: web.Application):
             ),
         ]
     )
+    # Find the endpoint for token creation that already exists and
+    # override it
     for r in app.router.routes():
         if r.method == "POST":
             if (
