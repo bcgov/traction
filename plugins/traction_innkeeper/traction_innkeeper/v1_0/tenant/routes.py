@@ -109,31 +109,6 @@ async def setup_tenant_context(request: web.Request, handler):
     return await handler(request)
 
 
-def active_tenant_only(func):
-    @functools.wraps(func)
-    async def wrapper(request):
-        print("> innkeeper_only")
-        context: AdminRequestContext = request["context"]
-        profile = context.profile
-        wallet_name = str(profile.settings.get("wallet.name"))
-        wallet_innkeeper = bool(profile.settings.get("wallet.innkeeper"))
-        LOGGER.info(f"wallet.name = {wallet_name}")
-        LOGGER.info(f"wallet.innkeeper = {wallet_innkeeper}")
-        if wallet_innkeeper:
-            try:
-                ret = await func(request)
-                return ret
-            finally:
-                print("< innkeeper_only")
-        else:
-            LOGGER.error(
-                f"API call is for innkeepers only. wallet.name = '{wallet_name}', wallet.innkeeper = {wallet_innkeeper}"
-            )
-            raise web.HTTPUnauthorized()
-
-    return wrapper
-
-
 @docs(
     tags=[SWAGGER_CATEGORY],
 )
