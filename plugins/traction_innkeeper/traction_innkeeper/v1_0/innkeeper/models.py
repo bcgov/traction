@@ -8,6 +8,7 @@ from aries_cloudagent.ledger.base import LOGGER
 from aries_cloudagent.messaging.models.base_record import BaseRecord, BaseRecordSchema
 from aries_cloudagent.messaging.util import datetime_to_str, str_to_datetime
 from aries_cloudagent.messaging.valid import UUIDFour
+from aries_cloudagent.multitenant.askar_profile_manager import WalletRecord
 from aries_cloudagent.storage.error import StorageDuplicateError, StorageNotFoundError
 from marshmallow import fields, EXCLUDE, validate
 
@@ -364,6 +365,11 @@ class TenantRecord(BaseRecord):
         for rec in recs:
             if rec.tenant_id == self.tenant_id:
                 await rec.delete_record(session)
+
+        # Delete the tenants wallet token
+        wallet_record = await WalletRecord.retrieve_by_id(session, self.wallet_id)
+        wallet_record.jwt_iat = None
+        await wallet_record.save(session)
 
         if self.state != self.STATE_DELETED:
             self.state = self.STATE_DELETED
