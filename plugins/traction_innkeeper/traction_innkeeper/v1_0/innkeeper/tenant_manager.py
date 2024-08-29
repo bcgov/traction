@@ -16,6 +16,7 @@ from aries_cloudagent.wallet.models.wallet_record import WalletRecord
 
 from .config import TractionInnkeeperConfig, InnkeeperWalletConfig, ReservationConfig
 from .models import TenantAuthenticationApiRecord, TenantRecord, ReservationRecord
+from multitenant_provider.v1_0.models import WalletTokenRecord 
 
 
 class TenantManager:
@@ -186,6 +187,9 @@ class TenantManager:
         tenant_id = config.tenant_id
         wallet_name = config.wallet_name
         wallet_key = config.wallet_key
+        
+        print("***********************************")
+        print(WalletTokenRecord.RECORD_TYPE)
         # multi_ledger_manager = self._profile.inject(BaseMultipleLedgerManager)
 
         # does innkeeper already exist?
