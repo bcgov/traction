@@ -25,6 +25,7 @@ from aries_cloudagent.storage.error import StorageError, StorageNotFoundError
 from aries_cloudagent.version import __version__
 from aries_cloudagent.wallet.error import WalletSettingsError
 from aries_cloudagent.wallet.models.wallet_record import WalletRecord
+from multitenant_provider.v1_0.routes import plugin_wallet_create_token
 from marshmallow import fields, validate
 
 from . import TenantManager
@@ -520,6 +521,30 @@ async def tenant_create_token(request: web.BaseRequest):
     token = await multitenant_mgr.create_auth_token(wallet_record, key)
 
     return web.json_response({"token": token})
+
+
+@docs(
+    tags=["multitenancy"],
+    summary="Get auth token for a subwallet (innkeeper plugin override)",
+)
+@request_schema(CreateWalletTokenRequestSchema)
+@response_schema(CreateWalletTokenResponseSchema(), 200, description="")
+@error_handler
+async def tenant_wallet_create_token(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    wallet_id = request.match_info["wallet_id"]
+
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+
+    # Tenants must always be fetch by their wallet id.
+    async with profile.session() as session:
+        rec = await TenantRecord.query_by_wallet_id(session, wallet_id)
+        LOGGER.debug("when creating token ", rec)
+        if rec.state == TenantRecord.STATE_DELETED:
+            raise web.HTTPUnauthorized(reason="Tenant is disabled")
+
+    return await plugin_wallet_create_token(request)
 
 
 @docs(
@@ -1029,8 +1054,26 @@ async def register(app: web.Application):
                 "/multitenancy/reservations/{reservation_id}/check-in", tenant_checkin
             ),
             web.post("/multitenancy/tenant/{tenant_id}/token", tenant_create_token),
+            web.post(
+                "/multitenancy/wallet/{wallet_id}/token", tenant_wallet_create_token
+            ),
         ]
     )
+    # Find the endpoint for token creation that already exists and
+    # override it
+    for r in app.router.routes():
+        if r.method == "POST":
+            if (
+                r.resource
+                and r.resource.canonical == "/multitenancy/wallet/{wallet_id}/token"
+            ):
+                LOGGER.info(
+                    f"found route: {r.method} {r.resource.canonical} ({r.handler})"
+                )
+                LOGGER.info(f"... replacing current handler: {r.handler}")
+                r._handler = tenant_wallet_create_token
+                LOGGER.info(f"... with new handler: {r.handler}")
+                has_wallet_create_token = True
     # routes that require a tenant token for the innkeeper wallet/tenant/agent.
     # these require not only a tenant, but it has to be the innkeeper tenant!
     app.add_routes(

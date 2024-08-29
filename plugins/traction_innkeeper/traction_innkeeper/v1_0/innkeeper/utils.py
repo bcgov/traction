@@ -7,7 +7,7 @@ from aries_cloudagent.core.profile import Profile
 from aries_cloudagent.messaging.models.openapi import OpenAPISchema
 from marshmallow import fields
 
-from .models import ReservationRecord, TenantAuthenticationApiRecord
+from .models import ReservationRecord, TenantAuthenticationApiRecord, TenantRecord
 
 
 from . import TenantManager
@@ -114,7 +114,9 @@ async def refresh_registration_token(reservation_id: str, manager: TenantManager
             )
         except Exception as err:
             LOGGER.error("Failed to retrieve reservation: %s", err)
-            raise ReservationException("Could not retrieve reservation record.") from err
+            raise ReservationException(
+                "Could not retrieve reservation record."
+            ) from err
 
         if reservation.state != ReservationRecord.STATE_APPROVED:
             raise ReservationException("Only approved reservations can refresh tokens.")
@@ -140,7 +142,8 @@ async def refresh_registration_token(reservation_id: str, manager: TenantManager
 
         LOGGER.info("Refreshed token for reservation %s", reservation_id)
 
-        return _pwd 
+        return _pwd
+
 
 def generate_api_key_data():
     _key = str(uuid.uuid4().hex)
@@ -156,6 +159,8 @@ def generate_api_key_data():
 
 
 async def create_api_key(rec: TenantAuthenticationApiRecord, manager: TenantManager):
+    if rec.state == TenantRecord.STATE_DELETED:
+        raise ValueError("Tenant is disabled")
     async with manager.profile.session() as session:
         _key, _salt, _hash = generate_api_key_data()
         rec.api_key_token_salt = _salt.decode("utf-8")
