@@ -15,18 +15,6 @@ updates:
 
   # Maintain dependencies for Python Packages
   - package-ecosystem: "pip"
-    directory: "/services/endorser"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "04:00"
-      timezone: "Canada/Pacific"
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
-
-  # Maintain dependencies for Python Packages
-  - package-ecosystem: "pip"
     directory: "/plugins"
     schedule:
       interval: "weekly"
@@ -121,15 +109,6 @@ updates:
   # Maintain dependencies for docker
   - package-ecosystem: "docker"
     directory: "/services/aca-py"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "04:00"
-      timezone: "Canada/Pacific"
-    
-  # Maintain dependencies for docker
-  - package-ecosystem: "docker"
-    directory: "/services/endorser"
     schedule:
       interval: "weekly"
       day: "monday"
