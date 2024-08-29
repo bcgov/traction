@@ -451,16 +451,6 @@ async def tenant_checkin(request: web.BaseRequest):
     )
 
 
-async def delete_auth_tokens(context: AdminRequestContext, wallet_record: WalletRecord):
-    mgr = context.inject(TenantManager)
-    profile = mgr.profile
-    multitenant_mgr = profile.inject(BaseMultitenantManager)
-
-    wallet_record.jwt_iat = None
-    async with multitenant_mgr._profile.session() as session:
-        await wallet_record.save(session)
-
-
 @docs(tags=["multitenancy"], summary="Get auth token for a tenant")
 @match_info_schema(TenantIdMatchInfoSchema())
 @request_schema(CustomCreateWalletTokenRequestSchema)
