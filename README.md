@@ -52,7 +52,6 @@ Traction makes it easier to integrate digital trust technology into existing lin
 
 - [ACA-Py + plugins](./plugins/README.md)
 - [Tenant UI](./services/tenant-ui/README.md)
-- [Endorser Services](./services/endorser/README.md)
 
 
 ## Start contributing to Traction
