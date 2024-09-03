@@ -46,7 +46,7 @@ jobs:
 
   clean-ghcr:
     runs-on: ubuntu-22.04
-    if: github.repository_owner == 'bcgov'
+    if: ${{ false }}
     name: Delete closed PR images
     steps:
       - name: Delete Images
