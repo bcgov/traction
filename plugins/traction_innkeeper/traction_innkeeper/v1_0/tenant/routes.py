@@ -554,7 +554,7 @@ async def register(app: web.Application):
     # register tenant specific middleware
     app.middlewares.append(setup_tenant_context)
 
-    # Dissallow accessing endpoints
+    # Disallow accessing endpoints
     app.middlewares.append(double_check_token)
 
     # routes that require a tenant token.
