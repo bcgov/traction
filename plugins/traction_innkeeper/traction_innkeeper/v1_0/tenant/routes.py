@@ -1,6 +1,7 @@
 import logging
 
 from aiohttp import web
+from aiohttp.web_middlewares import middleware
 from aiohttp_apispec import (
     docs,
     match_info_schema,
@@ -22,6 +23,7 @@ from aries_cloudagent.wallet.models.wallet_record import (
     WalletRecordSchema,
     WalletRecord,
 )
+from aries_cloudagent.admin import server
 from marshmallow import fields, validate
 
 from ..innkeeper.routes import (
@@ -106,6 +108,36 @@ async def setup_tenant_context(request: web.Request, handler):
 
     log_records_inject(tenant_id)
 
+    return await handler(request)
+
+
+@web.middleware
+async def double_check_token(request: web.Request, handler):
+    """Middle ware to ensure tokens are not associated with suspended tenants"""
+    authorization_header = request.headers.get("Authorization")
+    if not authorization_header:
+        return await handler(request)
+
+    context: AdminRequestContext = request["context"]
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+    multitenant_mgr = profile.inject(BaseMultitenantManager)
+    try:
+        bearer, _, token = authorization_header.partition(" ")
+        if bearer != "Bearer":
+            raise web.HTTPUnauthorized(reason="Invalid Authorization header structure")
+    except ():
+        raise web.HTTPUnauthorized()
+    (
+        walletid,
+        _,
+    ) = multitenant_mgr.get_wallet_details_from_token(token=token)
+
+    async with profile.session() as session:
+        # Ensure that this tenant is not suspended
+        rec = await TenantRecord.query_by_wallet_id(session, walletid)
+        if TenantRecord.STATE_DELETED == rec.state:
+            raise web.HTTPUnauthorized(reason="Tenant Is Suspended")
     return await handler(request)
 
 
@@ -521,6 +553,9 @@ async def register(app: web.Application):
 
     # register tenant specific middleware
     app.middlewares.append(setup_tenant_context)
+
+    # Dissallow accessing endpoints
+    app.middlewares.append(double_check_token)
 
     # routes that require a tenant token.
     app.add_routes(
