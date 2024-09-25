@@ -112,7 +112,7 @@ async def setup_tenant_context(request: web.Request, handler):
 
 
 @web.middleware
-async def double_check_token(request: web.Request, handler):
+async def check_token_not_suspended(request: web.Request, handler):
     """Middle ware to ensure tokens are not associated with suspended tenants"""
     authorization_header = request.headers.get("Authorization")
     if not authorization_header:
@@ -555,7 +555,7 @@ async def register(app: web.Application):
     app.middlewares.append(setup_tenant_context)
 
     # Disallow accessing endpoints
-    app.middlewares.append(double_check_token)
+    app.middlewares.append(check_token_not_suspended)
 
     # routes that require a tenant token.
     app.add_routes(
