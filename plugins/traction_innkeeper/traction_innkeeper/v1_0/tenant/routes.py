@@ -87,6 +87,9 @@ class TenantLedgerIdConfigSchema(OpenAPISchema):
 async def setup_tenant_context(request: web.Request, handler):
     """Middle ware to extract tenant_id and provide it to log formatter
 
+    In addition this will also ensure tenants are not suspended before
+    accessing endpoints.
+
     This middleware is appended to the app middlewares and therefore runs
     last. At this point the wallet_id has been extracted from a previous
     middleware function and is used to query the tenant record.
@@ -105,11 +108,12 @@ async def setup_tenant_context(request: web.Request, handler):
             rec = await TenantRecord.query_by_wallet_id(session, wallet_id)
             LOGGER.debug(rec)
             tenant_id = rec.tenant_id
-            # Ensure tokens are not associated with suspended tenants
-            if TenantRecord.STATE_DELETED == rec.state:
-                raise web.HTTPUnauthorized(reason="Tenant Is Suspended")
 
     log_records_inject(tenant_id)
+
+    # Ensure tokens are not associated with suspended tenants
+    if TenantRecord.STATE_DELETED == rec.state:
+        raise web.HTTPUnauthorized(reason="Tenant Is Suspended")
 
     return await handler(request)
 
