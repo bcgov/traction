@@ -6,7 +6,7 @@
     <DataTable
       v-model:selection="selectedPresentation"
       v-model:filters="filter"
-      v-model:expandedRows="expandedRows"
+      v-model:expanded-rows="expandedRows"
       :loading="loading"
       :value="presentations"
       data-key="pres_ex_id"
