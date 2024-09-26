@@ -1,10 +1,12 @@
+@use "sass:color";
+
 // Theme variables
 $tenant-ui-primary-color: #003366; // Main color blocks
 $tenant-ui-text-on-primary: #ffffff;
 $tenant-ui-secondary-color: #3c5973; // Buttons, actions
 $tenant-ui-accent-color: #fcba19;
-$tenant-ui-secondary-active: darken( $tenant-ui-secondary-color, 10% );
-$tenant-ui-shadow: lighten( $tenant-ui-secondary-color, 30% );
+$tenant-ui-secondary-active: color.adjust($tenant-ui-secondary-color, $lightness: -10%);
+$tenant-ui-shadow: color.adjust($tenant-ui-secondary-color, $lightness: 30%);
 $tenant-ui-flat-highlight: #ebeef3;
 
 // General text colors
