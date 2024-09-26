@@ -108,12 +108,11 @@ async def setup_tenant_context(request: web.Request, handler):
             rec = await TenantRecord.query_by_wallet_id(session, wallet_id)
             LOGGER.debug(rec)
             tenant_id = rec.tenant_id
+            # Ensure tokens are not associated with suspended tenants
+            if TenantRecord.STATE_DELETED == rec.state:
+                raise web.HTTPUnauthorized(reason="Tenant Is Suspended")
 
     log_records_inject(tenant_id)
-
-    # Ensure tokens are not associated with suspended tenants
-    if TenantRecord.STATE_DELETED == rec.state:
-        raise web.HTTPUnauthorized(reason="Tenant Is Suspended")
 
     return await handler(request)
 
