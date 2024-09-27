@@ -6,7 +6,7 @@
     <DataTable
       v-model:selection="selectedCredential"
       v-model:filters="filter"
-      v-model:expandedRows="expandedRows"
+      v-model:expanded-rows="expandedRows"
       :loading="loading"
       :value="formattedIssuedCredentials"
       :paginator="true"

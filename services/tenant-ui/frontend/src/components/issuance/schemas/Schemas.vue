@@ -5,7 +5,7 @@
   >
     <DataTable
       v-model:selection="selectedSchema"
-      v-model:expandedRows="expandedRows"
+      v-model:expanded-rows="expandedRows"
       v-model:filters="filter"
       :loading="loading"
       :value="formattedSchemaList"
