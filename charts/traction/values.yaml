@@ -43,7 +43,6 @@ acapy:
   ## @param acapy.autoscaling.maxReplicas Maximum number of AcaPy replicas
   ## @param acapy.autoscaling.targetCPUUtilizationPercentage Target CPU utilization percentage
   ## @param acapy.autoscaling.targetMemoryUtilizationPercentage Target Memory utilization percentage
-  ## @param acapy.autoscaling.stabilizationWindowSeconds Stabilization window in seconds
   ##
   autoscaling:
     enabled: false
@@ -51,7 +50,6 @@ acapy:
     maxReplicas: 3
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
-    stabilizationWindowSeconds: 300
 
   ## @param acapy.labelOverride
   labelOverride: ""
@@ -465,7 +463,6 @@ tenant_proxy:
   ## @param tenant_proxy.autoscaling.maxReplicas Maximum number of Tenant proxy replicas
   ## @param tenant_proxy.autoscaling.targetCPUUtilizationPercentage Target CPU utilization percentage
   ## @param tenant_proxy.autoscaling.targetMemoryUtilizationPercentage Target Memory utilization percentage
-  ## @param tenant_proxy.autoscaling.stabilizationWindowSeconds Stabilization window in seconds
   ##
   autoscaling:
     enabled: false
@@ -473,7 +470,6 @@ tenant_proxy:
     maxReplicas: 3
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
-    stabilizationWindowSeconds: 300
 
   ## @param tenant_proxy.podAnnotations Map of annotations to add to the Tenant proxy pods
   ##

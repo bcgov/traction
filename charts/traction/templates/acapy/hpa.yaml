@@ -37,7 +37,4 @@ spec:
           averageUtilization: {{ .Values.acapy.autoscaling.targetMemoryUtilizationPercentage }}
         {{- end }}
     {{- end }}
-  behavior:
-    scaleDown:
-      stabilizationWindowSeconds: {{ .Values.acapy.autoscaling.stabilizationWindowSeconds }}
 {{- end }}

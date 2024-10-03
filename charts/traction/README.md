@@ -70,7 +70,6 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | `acapy.autoscaling.maxReplicas`                       | Maximum number of AcaPy replicas                                                                                    | `10`                                   |
 | `acapy.autoscaling.targetCPUUtilizationPercentage`    | Target CPU utilization percentage                                                                                   | `80`                                   |
 | `acapy.autoscaling.targetMemoryUtilizationPercentage` | Target Memory utilization percentage                                                                                | `80`                                   |
-| `acapy.autoscaling.stabilizationWindowSeconds`        | Stabilization window in seconds                                                                                     | `300`                                  |
 | `acapy.labelOverride`                                 |                                                                                                                     | `""`                                   |
 
 ### Acapy configuration file
@@ -253,7 +252,6 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | `tenant_proxy.autoscaling.maxReplicas`                       | Maximum number of Tenant proxy replicas                                                                             | `5`                                   |
 | `tenant_proxy.autoscaling.targetCPUUtilizationPercentage`    | Target CPU utilization percentage                                                                                   | `80`                                  |
 | `tenant_proxy.autoscaling.targetMemoryUtilizationPercentage` | Target Memory utilization percentage                                                                                | `80`                                  |
-| `tenant_proxy.autoscaling.stabilizationWindowSeconds`        | Stabilization window in seconds                                                                                     | `300`                                 |
 | `tenant_proxy.podAnnotations`                                | Map of annotations to add to the Tenant proxy pods                                                                  | `{}`                                  |
 | `tenant_proxy.podSecurityContext`                            | Pod Security Context                                                                                                | `{}`                                  |
 | `tenant_proxy.containerSecurityContext`                      | Container Security Context                                                                                          | `{}`                                  |
