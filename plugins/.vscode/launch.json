@@ -8,7 +8,7 @@
         "name": "Run/Debug Plugin",
         "type": "python",
         "request": "launch",
-        "preLaunchTask": "docker-compose-start --target=amd64",
+        "preLaunchTask": "docker-compose-start",
         "module": "poetry",
         "justMyCode": false,
         "args": [

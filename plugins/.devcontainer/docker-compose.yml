@@ -4,7 +4,6 @@ services:
     build:
       context: ..
       dockerfile: ./docker/Dockerfile
-      platform: linux/amd64  # Specify the platform as AMD64 (x86_64)
     depends_on:
       traction-db:
         condition: service_healthy
@@ -23,7 +22,6 @@ services:
 
   traction-db:
     image: "postgres:12"
-    platform: linux/amd64  # Ensure the database runs on AMD64 (x86_64)
     environment:
       - POSTGRES_PASSWORD=postgresPass
     ports:
@@ -40,7 +38,6 @@ services:
     build:
       context: ..
       dockerfile: ./docker/Dockerfile.tenant-proxy
-    platform: linux/amd64  # Specify the platform as AMD64 (x86_64)
     restart: unless-stopped
     environment:
       - ACAPY_ADMIN_URL=http://traction-agent:3001
