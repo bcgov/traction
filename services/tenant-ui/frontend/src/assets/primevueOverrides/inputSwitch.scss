@@ -1,22 +1,24 @@
+@use "sass:color";
+
 @import '../variables.scss';
 
 // Input Switches
 .p-inputswitch {
   &[data-p-highlight="true"] .p-inputswitch-slider {
-    background: darken($tenant-ui-status-green-background, 20%);
+    background: color.adjust($tenant-ui-status-green-background, $lightness: -20%);;
     &::before {
       background-color: white !important;
     }
   }
   &[data-p-highlight="false"] .p-inputswitch-slider {
-    background: darken($tenant-ui-status-red-background, 20%);
+    background: color.adjust($tenant-ui-status-red-background, $lightness: -20%);
   }
   &:hover {
     &[data-p-highlight="true"] .p-inputswitch-slider {
-      background: darken($tenant-ui-status-green-background, 40%) !important;
+      background: color.adjust($tenant-ui-status-green-background, $lightness: -40%) !important;
     }
     &[data-p-highlight="false"] .p-inputswitch-slider {
-      background: darken($tenant-ui-status-red-background, 40%) !important;
+      background: color.adjust($tenant-ui-status-red-background, $lightness: -40%) !important;
     }
   }
 }
