@@ -2,7 +2,6 @@
 	"name": "tenant-ui",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"image": "mcr.microsoft.com/devcontainers/typescript-node:0-20",
-	"platforms": ["linux/amd64"],
 	"features": {
 		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
 		"ghcr.io/devcontainers-contrib/features/vue-cli:2": {}

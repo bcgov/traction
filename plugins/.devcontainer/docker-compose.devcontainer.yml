@@ -2,7 +2,6 @@ version: "3.9"
 services:
   traction-db:
     image: "postgres:12"
-    platform: linux/amd64  # Ensure the container uses x86_64 architecture
     environment:
       - POSTGRES_PASSWORD=postgresPass
     ports:
@@ -19,7 +18,6 @@ services:
     build:
       context: ..
       dockerfile: ./docker/Dockerfile.tenant-proxy
-      platform: linux/amd64  # Ensure the container uses x86_64 architecture
     restart: unless-stopped
     environment:
       - ACAPY_ADMIN_URL=http://host.docker.internal:3001
