@@ -129,7 +129,7 @@ docker build -f ./Dockerfile --tag traction:plugins-acapy ..
 cd ../../services/aca-py
 docker build -f ./Dockerfile.acapy --tag traction:traction-agent .
 cd ../../scripts
-docker compose up
+docker compose -f docker-compose.logs.yml -f docker-compose.yml up
 ```
 
 If there are still errors, try turning buildkit off. In the terminal where you are running your builds:
