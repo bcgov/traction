@@ -80,15 +80,6 @@ it randomly.
 {{- end }}
 
 {{/*
-Return true if a database secret should be created
-*/}}
-{{- define "acapy.database.createSecret" -}}
-{{- if not .Values.acapy.walletStorageCredentials.existingSecret -}}
-{{- true -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
 Return true if a api secret should be created
 */}}
 {{- define "acapy.api.createSecret" -}}
