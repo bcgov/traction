@@ -26,7 +26,7 @@
     "dompurify": "^3.1.6",
     "json-editor-vue": "^0.17.0",
     "marked": "^14.1.2",
-    "oidc-client-ts": "^3.0.1",
+    "oidc-client-ts": "^3.1.0",
     "pinia": "^2.2.2",
     "primeflex": "^3.3.1",
     "primeicons": "^7.0.0",
