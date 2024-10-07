@@ -1,6 +1,6 @@
-## @param nameOverride
+## @param nameOverride String to override the helm chart name, second part of the prefix
 nameOverride: ""
-## @param fullnameOverride
+## @param fullnameOverride String to fully override the helm chart name, full prefix. *Must be provided if using a custom release name.*
 fullnameOverride: ""
 ## @param ingressSuffix Domain suffix to be used for default hostpaths in ingress
 ingressSuffix: -dev.example.com
@@ -173,8 +173,8 @@ acapy:
   ## @param acapy.walletStorageCredentials.admin_account Database account with CREATEDB role used to create additional databases per wallet.
   ## @param acapy.walletStorageCredentials.admin_password Database password for admin account.
   ## @param acapy.walletStorageCredentials.existingSecret Name of an existing secret containing database user, password, and admin password.
-  ## @param acapy.walletStorageCredentials.secretKeys.adminPasswordKey Key in existing secret containing admin password.
-  ## @param acapy.walletStorageCredentials.secretKeys.userPasswordKey Key in existing secret containing password .
+  ## @param acapy.walletStorageCredentials.secretKeys.adminPasswordKey Key in existing secret containing admin account password.
+  ## @param acapy.walletStorageCredentials.secretKeys.userPasswordKey Key in existing secret containing account password.
   ##
   walletStorageCredentials:
     json: ''
@@ -182,8 +182,8 @@ acapy:
     admin_account: postgres
     existingSecret: ""
     secretKeys:
-      adminPasswordKey: admin-password
-      userPasswordKey: database-password
+      adminPasswordKey: postgres-password
+      userPasswordKey: password
   ## @section Acapy Plugins
   ##
   ## Specify the plugins to enable.
