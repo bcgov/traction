@@ -7,10 +7,7 @@
     {
       "name": "backend - run dev",
       "request": "launch",
-      "runtimeArgs": [
-        "run-script",
-        "dev"
-      ],
+      "runtimeArgs": ["run-script", "dev"],
       "runtimeExecutable": "npm",
       "skipFiles": [],
       "type": "node",
@@ -19,11 +16,8 @@
     {
       "name": "frontend - run dev",
       "request": "launch",
-      "cwd":"${workspaceFolder}/frontend", 
-      "runtimeArgs": [
-        "run-script",
-        "dev"
-      ],
+      "cwd": "${workspaceFolder}/frontend",
+      "runtimeArgs": ["run-script", "dev", "--", "--host"],
       "runtimeExecutable": "npm",
       "skipFiles": [],
       "type": "node",
@@ -39,9 +33,6 @@
       "sourceMapPathOverrides": {
         "webpack:///./src/*": "${webRoot}/*"
       }
-    },
-
-    
-
+    }
   ]
 }
