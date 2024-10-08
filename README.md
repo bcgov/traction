@@ -13,7 +13,7 @@
 - [What is Traction comprised of?](#what-is-traction-comprised-of)
 - [Start contributing to Traction](#start-contributing-to-traction)
 - [Who is maintaining Traction?](#who-is-maintaining-traction)
-- [How is Traction licenced?](#how-is-traction-licensed)
+- [How is Traction licensed?](#how-is-traction-licensed)
 - [Engage with the community](#engage-with-the-community)
 
 
@@ -111,4 +111,4 @@ Traction is licensed under Apache License 2.0 which can be reviewed [here](./LIC
 ## Engage with the community
 
 Connect with others
-- for Aries discussion see the Hyperlerger Aries Github [participation section](https://github.com/hyperledger/aries#project-participation)
+- for Aries discussion see the Hyperledger Aries Github [participation section](https://github.com/hyperledger/aries#project-participation)
