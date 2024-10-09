@@ -860,12 +860,12 @@ postgresql:
   ## ref: https://github.com/bitnami/containers/tree/main/bitnami/postgresql#creating-a-database-user-on-first-run
   ##
   auth:
-    ## @param postgresql.auth.enablePostgresUser Assign a password to the "postgres" admin user. Otherwise, remote access will be blocked for this user
+    ## @param postgresql.auth.enablePostgresUser Assign a password to the "postgres" admin user. Otherwise, remote access will be blocked for this user. Not recommended for production deployment.
     ##
     enablePostgresUser: true
     ## @param postgresql.auth.database Name for a custom database to create
     ##
-    database: traction
+    database: askar-wallet
     ## @param postgresql.auth.username Name for a custom user to create
     ##
     username: acapy
