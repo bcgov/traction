@@ -1,9 +1,56 @@
-import { Server } from "http";
+import { IncomingMessage, Server } from "http";
+import axios from "axios";
+import config from "config";
+import jwt from "jsonwebtoken";
 import WebSocket from "ws";
 
 const WEBSOCKET_URL = "ws://host.docker.internal:3100/loki/api/v1/tail";
+// const TRACTION_URL: string = config.get("server.tractionUrl");
+const TRACTION_URL = "http://host.docker.internal:8032";
 
 const wss = new WebSocket.Server({ noServer: true });
+
+const getTenant = async (token: string): Promise<any> => {
+  const response = await axios.get(`${TRACTION_URL}/tenant`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+const parseToken = (url: URL): string | null => {
+  const token = url.searchParams.get("token");
+  return token;
+};
+
+const authenticateTenant = async (
+  req: IncomingMessage
+): Promise<any | never> => {
+  const token = parseToken(
+    new URL(req.url as string, `http://${req.headers.host}`)
+  );
+
+  if (!token) {
+    throw new Error("Unauthorized: No token provided");
+  }
+
+  const decodedToken = jwt.decode(token, { complete: true });
+  if (!decodedToken) {
+    throw new Error("Unauthorized: Invalid token");
+  }
+
+  const tenant = await getTenant(token);
+  if (!tenant) {
+    throw new Error("Unauthorized: Tenant not found");
+  }
+
+  return tenant;
+};
+
+const logError = (err: Error) => {
+  console.error(`Error: ${err}`);
+};
 
 const handleLokiWebSocket = (tenantId: string, ws: WebSocket) => {
   const loki = new WebSocket(
@@ -62,28 +109,30 @@ const handleTenantWebSocket = (
 };
 
 export const configureLogStream = (server: Server): void => {
-  server.on("upgrade", (req, socket, head) => {
-    socket.on("error", (err) => {
-      // Socket pre-error
-      console.error(`Socket error: ${err}`);
-    });
+  server.on(
+    "upgrade",
+    async (req: IncomingMessage & { tenant: any }, socket, head) => {
+      // Socket pre upgrade
+      socket.on("error", logError);
 
-    // TODO: Perform token auth here
+      try {
+        req.tenant = await authenticateTenant(req);
+      } catch (err: any | Error) {
+        socket.write(`HTTP/1.1 401 ${err.message}\r\n\r\n`);
+        socket.destroy();
+        return;
+      }
 
-    wss.handleUpgrade(req, socket, head, (ws) => {
-      socket.removeListener("error", (err) => {
-        // Socket post-error
-        console.error(`Socket error: ${err}`);
+      wss.handleUpgrade(req, socket, head, (ws) => {
+        // Socket post upgrade
+        socket.removeListener("error", logError);
+        wss.emit("connection", ws, req);
       });
+    }
+  );
 
-      wss.emit("connection", ws, req);
-    });
-  });
-
-  wss.on("connection", (ws, req) => {
-    // TODO: The Tenant ID should be extracted from the token
-    // const tenantId = req.headers["x-tenant-id"] as string;
-    const tenantId = "innkeeper";
+  wss.on("connection", (ws, req: IncomingMessage & { tenant: any }) => {
+    const { tenant_id: tenantId = null } = req.tenant;
     const loki = handleLokiWebSocket(tenantId, ws);
     handleTenantWebSocket(tenantId, ws, loki);
   });
