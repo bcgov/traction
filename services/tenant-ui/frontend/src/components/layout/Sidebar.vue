@@ -103,5 +103,11 @@ const items = ref([
     icon: 'pi pi-fw pi-question-circle',
     route: '/about',
   },
+
+  {
+    label: t('log.log'),
+    icon: 'pi pi-fw pi-file',
+    route: '/log',
+  },
 ]);
 </script>

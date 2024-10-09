@@ -576,5 +576,8 @@
     "presentationRequestBody": "Proof Request <JA>",
     "verification": "Verification <JA>",
     "verifications": "Verifications <JA>"
+  },
+  "log": {
+    "log": "Log <JA>"
   }
 }

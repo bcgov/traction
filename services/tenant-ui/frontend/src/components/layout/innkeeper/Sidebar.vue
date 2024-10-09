@@ -59,6 +59,11 @@ const items = ref([
     icon: 'pi pi-fw pi-question-circle',
     route: ROOT + 'about',
   },
+  {
+    label: t('log.log'),
+    icon: 'pi pi-fw pi-file',
+    route: ROOT + 'log',
+  },
 ]);
 </script>
 <style scoped lang="scss">
