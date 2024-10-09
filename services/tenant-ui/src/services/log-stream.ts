@@ -4,9 +4,8 @@ import config from "config";
 import jwt from "jsonwebtoken";
 import WebSocket from "ws";
 
-const WEBSOCKET_URL = "ws://host.docker.internal:3100/loki/api/v1/tail";
-// const TRACTION_URL: string = config.get("server.tractionUrl");
-const TRACTION_URL = "http://host.docker.internal:8032";
+const LOKI_URL: string = config.get("server.lokiUrl");
+const TRACTION_URL: string = config.get("server.tractionUrl");
 
 const wss = new WebSocket.Server({ noServer: true });
 
@@ -54,7 +53,7 @@ const logError = (err: Error) => {
 
 const handleLokiWebSocket = (tenantId: string, ws: WebSocket) => {
   const loki = new WebSocket(
-    `${WEBSOCKET_URL}?query={container_name="scripts-traction-agent-1"} |= \`${tenantId}\``
+    `${LOKI_URL}/loki/api/v1/tail?query={container_name="scripts-traction-agent-1"} |= \`${tenantId}\``
   );
 
   loki.on("open", () => {

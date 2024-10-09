@@ -46,6 +46,7 @@
   },
   "server": {
     "tractionUrl": "SERVER_TRACTION_URL",
+    "lokiUrl": "SERVER_LOKI_URL",
     "oidc": {
       "jwksUri": "SERVER_OIDC_JWKS",
       "realm": "SERVER_OIDC_REALM",

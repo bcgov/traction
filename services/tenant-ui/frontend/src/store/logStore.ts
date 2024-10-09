@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { Ref, ref } from 'vue';
-import { useTokenStore } from './tokenStore';
+import { useConfigStore, useTokenStore } from '@/store';
 
 export enum LogStreamState {
   OPEN,
@@ -13,6 +13,7 @@ export enum LogOrder {
 }
 
 export const useLogStore = defineStore('log', () => {
+  const { config } = useConfigStore();
   const { token } = useTokenStore();
 
   const logStream: Ref<WebSocket | null> = ref(null);
@@ -41,7 +42,9 @@ export const useLogStore = defineStore('log', () => {
         throw new Error('No token available to start log stream');
       }
       if (!logStream.value) {
-        logStream.value = new WebSocket('ws://localhost:8080?token=' + token);
+        logStream.value = new WebSocket(
+          `${config.server.lokiUrl}?token=${token}`
+        );
         logStream.value.onopen = () => {
           logStreamState.value = LogStreamState.OPEN;
         };
