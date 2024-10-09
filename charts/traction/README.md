@@ -52,11 +52,11 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 
 ## Parameters
 
-| Name               | Description                                                                                                    | Value              |
-| ------------------ | -------------------------------------------------------------------------------------------------------------- | ------------------ |
-| `nameOverride`     | String to override the helm chart name, second part of the prefix                                              | '""'               |
-| `fullnameOverride` | String to fully override the helm chart name, full prefix. ***Must be set when using a custom release name.*** | '""'               |
-| `ingressSuffix`    | Domain suffix to be used for default hostpaths in ingress                                                      | `-dev.example.com` |
+| Name               | Description                                                                                                                                            | Value              |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------ |
+| `nameOverride`     | String to override the helm chart name, second part of the prefix                                                                                      | '""'               |
+| `fullnameOverride` | String to fully override the helm chart name, full prefix. ***Must be set when using a custom release name that does not include the word traction.*** | '""'               |
+| `ingressSuffix`    | Domain suffix to be used for default hostpaths in ingress                                                                                              | `-dev.example.com` |
 
 ### Acapy Configuration
 

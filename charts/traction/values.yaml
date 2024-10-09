@@ -1,6 +1,6 @@
 ## @param nameOverride String to override the helm chart name, second part of the prefix
 nameOverride: ""
-## @param fullnameOverride String to fully override the helm chart name, full prefix. *Must be provided if using a custom release name.*
+## @param fullnameOverride String to fully override the helm chart name, full prefix. *Must be provided if using a custom release name that does not include the word traction.*
 fullnameOverride: ""
 ## @param ingressSuffix Domain suffix to be used for default hostpaths in ingress
 ingressSuffix: -dev.example.com
