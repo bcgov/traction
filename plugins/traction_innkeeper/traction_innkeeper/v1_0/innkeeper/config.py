@@ -17,7 +17,7 @@ class EndorserLedgerConfig(BaseModel):
 
     class Config:
         alias_generator = _alias_generator
-        allow_population_by_field_name = True
+        populate_by_name = True
 
     def serialize(self) -> dict:
         """Serialize the EndorserLedgerConfig to a mapping."""
@@ -41,7 +41,7 @@ class InnkeeperWalletConfig(BaseModel):
 
     class Config:
         alias_generator = _alias_generator
-        allow_population_by_field_name = True
+        populate_by_name = True
 
     @classmethod
     def default(cls):
@@ -65,7 +65,7 @@ class ReservationConfig(BaseModel):
 
     class Config:
         alias_generator = _alias_generator
-        allow_population_by_field_name = True
+        populate_by_name = True
 
     @classmethod
     def default(cls):
@@ -100,7 +100,7 @@ def get_config(settings: Mapping[str, Any]) -> TractionInnkeeperConfig:
         LOGGER.debug("Retrieved: %s", plugin_config_dict)
         plugin_config_dict = process_config_dict(plugin_config_dict)
         LOGGER.debug("Parsed: %s", plugin_config_dict)
-        default_config = TractionInnkeeperConfig.default().dict()
+        default_config = TractionInnkeeperConfig.default().model_dump()
         LOGGER.debug("Default Config: %s", default_config)
         config_dict = merge({}, default_config, plugin_config_dict)
         LOGGER.debug("Merged: %s", config_dict)
@@ -109,6 +109,6 @@ def get_config(settings: Mapping[str, Any]) -> TractionInnkeeperConfig:
         LOGGER.warning("Using default configuration")
         config = TractionInnkeeperConfig.default()
 
-    LOGGER.debug("Returning config: %s", config.json(indent=2))
-    LOGGER.debug("Returning config(aliases): %s", config.json(by_alias=True, indent=2))
+    LOGGER.debug("Returning config: %s", config.model_dump_json(indent=2))
+    LOGGER.debug("Returning config(aliases): %s", config.model_dump_json(by_alias=True, indent=2))
     return config
