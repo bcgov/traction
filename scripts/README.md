@@ -147,6 +147,12 @@ This will leave the volume (data) intact and available on restart.
 docker compose down
 ```
 
+For mac users with ARM architecture, try using the conveniance script
+
+```
+./run-mac.sh
+```
+
 *IMPORTANT* when environments are torn down and then brought up, a new ngrok endpoint is created. This could cause issues reusing tenants/wallets as they will be registered with defunct ngrok endpoints.
 
 ### teardown
