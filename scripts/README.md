@@ -99,6 +99,7 @@ CountryMac:scripts jason$ docker-compose version
 
 ```sh
 cp .env-example .env
+./manage build
 ./manage start
 ```
 
