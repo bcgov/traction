@@ -99,7 +99,7 @@ CountryMac:scripts jason$ docker-compose version
 
 ```sh
 cp .env-example .env
-./manage up
+./manage start
 ```
 
 **Note:** to use your `ngrok` auth token and prevent the tunnels from expiring, add the value in the `.env` file after uncommenting the line defining `NGROK_AUTHTOKEN` and then start the project with `docker compose up`.
