@@ -44,8 +44,6 @@ build_docker_images() {
     exit 1
   fi
 
-  docker compose up -d
-
   # Capture the Docker Compose command
   compose_cmd=$(get_docker_compose_command)
 
