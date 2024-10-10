@@ -356,6 +356,17 @@ Generate acapy wallet storage credentials
 {{- end -}}
 {{- end -}}
 
+{{/*
+Multitenancy config
+*/}}
+{{- define "acapy.multitenancyConfiguration" -}}
+{{- if .Values.acapy.multitenancyConfiguration.json -}}
+{{- .Values.acapy.multitenancyConfiguration.json -}}
+{{- else -}}
+'{"wallet_type":"{{ .Values.acapy.multitenancyConfiguration.wallet_type | default "single-wallet-askar" }}"}'
+{{- end -}}
+{{- end -}}
+
 {{- define "acapy.openshift.route.tls" -}}
 {{- if (.Values.acapy.openshift.route.tls.enabled) -}}
 tls:

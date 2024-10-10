@@ -14,6 +14,7 @@ from aries_cloudagent.protocols.endorse_transaction.v1_0.routes import (
 
 from aries_cloudagent.storage.error import StorageNotFoundError, StorageError
 from aries_cloudagent.wallet.error import WalletError
+from aries_cloudagent.admin.decorators.auth import tenant_authentication
 from marshmallow import fields
 
 from .endorser_connection_service import EndorserConnectionService
@@ -68,6 +69,7 @@ class EndorserInfoResponseSchema(OpenAPISchema):
 # @request_schema(EndorserLedgerRequestSchema)
 @response_schema(ConnRecordSchema(), 200, description="")
 @error_handler
+@tenant_authentication
 async def endorser_connection_set(request: web.BaseRequest):
     """
     Request handler for creating and sending a request to a configured endorser
@@ -118,6 +120,7 @@ async def endorser_connection_set(request: web.BaseRequest):
 )
 @response_schema(ConnRecordSchema(), 200)
 @error_handler
+@tenant_authentication
 async def endorser_connection_get(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     profile = context.profile
@@ -137,6 +140,7 @@ async def endorser_connection_get(request: web.BaseRequest):
 )
 @response_schema(EndorserInfoSchema(), 200)
 @error_handler
+@tenant_authentication
 async def endorser_info_get(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     profile = context.profile

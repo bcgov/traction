@@ -143,6 +143,13 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | `acapy.walletStorageCredentials.secretKeys.adminPasswordKey` | Key in existing secret containing admin account password.                                                                                                                                                                      | `postgres-password` |
 | `acapy.walletStorageCredentials.secretKeys.userPasswordKey`  | Key in existing secret containing account password.                                                                                                                                                                            | `password`          |
 
+### Multitenancy Configuration
+
+| Name                                            | Description                                                                                                                                                                                                                    | Value                       |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------- |
+| `acapy.multitenancyConfiguration.json`          | json with config. Overrides all other values including subchart values. e.g.: '{"wallet_type":"single-wallet-askar", "wallet_name":"askar-wallet"}'                                                                            | `""`                        |
+| `acapy.multitenancyConfiguration.wallet_type`   | The multitenant wallet type.                                                                                                                                                                                                   | `single-wallet-askar`       |
+
 ### Acapy Plugins
 
 | Name                                | Description                             | Value  |
