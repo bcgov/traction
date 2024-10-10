@@ -20,7 +20,7 @@ build_docker_images() {
   # Check if the plugins/docker directory exists
   if [ -d "../plugins/docker" ]; then
     pushd ../plugins/docker > /dev/null
-    docker build -f ./Dockerfile --tag traction:plugins-acapy ..
+    docker build -f ./Dockerfile --tag traction:plugins-acapy .. --no-cache
     popd > /dev/null
   else
     echo "Error: Directory '../plugins/docker' does not exist. Check the path."
@@ -32,7 +32,7 @@ build_docker_images() {
   if [ -d "../services/aca-py" ]; then
     pushd ../services/aca-py > /dev/null
     if [ -f "./Dockerfile.acapy" ]; then
-      docker build -f ./Dockerfile.acapy --tag traction:traction-agent .
+      docker build -f ./Dockerfile.acapy --tag traction:traction-agent . --no-cache
     else
       echo "Error: File 'Dockerfile.acapy' not found in '../services/aca-py'."
       popd > /dev/null
@@ -53,8 +53,16 @@ build_docker_images() {
     exit 1
   fi
 
-  $compose_cmd up -d  
-}
+  built_services="traction-acapy-image-builder tenant-ui tenant-proxy endorser-api endorser-api-1"
+  pulled_services="ngrok-traction-agent traction-db endorser-db endorser-db-1 maildev endorser-agent endorser-agent-1"
+  other_services="traction-agent"
+
+
+ $compose_cmd build $built_services --no-cache --parallel
+ $compose_cmd pull $pulled_services
+
+ 
+ }
 
 # Function to start Docker containers
 start_docker_containers() {
