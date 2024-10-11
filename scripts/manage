@@ -1,12 +1,15 @@
 #!/bin/bash
 
+# Global variable to hold Docker Compose command
+compose_cmd=""
+
 # Function to determine the correct Docker Compose command
 get_docker_compose_command() {
   # Check if `docker compose` is available
   if command -v "docker" > /dev/null && docker compose version > /dev/null 2>&1; then
-    echo "docker compose"
+    compose_cmd="docker compose"
   elif command -v docker-compose > /dev/null 2>&1; then
-    echo "docker-compose"
+    compose_cmd="docker-compose"
   else
     echo "Error: Neither 'docker compose' nor 'docker-compose' is installed." >&2
     exit 1
@@ -44,56 +47,23 @@ build_docker_images() {
     exit 1
   fi
 
-  # Capture the Docker Compose command
-  compose_cmd=$(get_docker_compose_command)
-
-  # Check if the command is empty or not set correctly
-  if [ -z "$compose_cmd" ]; then
-    echo "Error: Failed to determine Docker Compose command." >&2
-    exit 1
-  fi
-
   built_services="traction-acapy-image-builder tenant-ui tenant-proxy endorser-api endorser-api-1"
   pulled_services="ngrok-traction-agent traction-db endorser-db endorser-db-1 maildev endorser-agent endorser-agent-1"
   other_services="traction-agent"
 
-
- $compose_cmd build $built_services --no-cache --parallel
- $compose_cmd pull $pulled_services
-
- 
- }
+  $compose_cmd build $built_services --no-cache --parallel
+  $compose_cmd pull $pulled_services
+}
 
 # Function to start Docker containers
 start_docker_containers() {
   echo "Starting Docker containers..."
-    # Capture the Docker Compose command
-    compose_cmd=$(get_docker_compose_command)
-
-    # Check if the command is empty or not set correctly
-    if [ -z "$compose_cmd" ]; then
-      echo "Error: Failed to determine Docker Compose command." >&2
-      exit 1
-    fi
-
-    # Use the captured command to build, start, or stop
-    $compose_cmd up -d
+  $compose_cmd up -d
 }
 
 # Function to stop Docker containers
 stop_docker_containers() {
   echo "Stopping Docker containers..."
-
-  # Capture the Docker Compose command
-  compose_cmd=$(get_docker_compose_command)
-
-  # Check if the command is empty or not set correctly
-  if [ -z "$compose_cmd" ]; then
-    echo "Error: Failed to determine Docker Compose command." >&2
-    exit 1
-  fi
-
-  # Use the captured command to stop and remove containers
   $compose_cmd stop
 }
 
@@ -130,6 +100,7 @@ show_usage() {
 # Main function to control script flow based on user input
 main() {
   set_mac_os_options
+  get_docker_compose_command
 
   case "$1" in
     build)
