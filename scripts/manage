@@ -1,11 +1,22 @@
 #!/bin/bash
 
+# ASCII Art Header
+generate_traction_ascii_art() {
+  echo "  _______             _   _             "
+  echo " |__   __|           | | (_)            "
+  echo "    | |_ __ __ _  ___| |_ _  ___  _ __  "
+  echo "    | | '__/ _\` |/ __| __| |/ _ \| '_ \ "
+  echo "    | | | | (_| | (__| |_| | (_) | | | |"
+  echo "    |_|_|  \__,_|\___|\__|_|\___/|_| |_|"
+  echo "                                        "
+  echo "                                        "
+}
+
 # Global variable to hold Docker Compose command
 compose_cmd=""
 
 # Function to determine the correct Docker Compose command
 get_docker_compose_command() {
-  # Check if `docker compose` is available
   if command -v "docker" > /dev/null && docker compose version > /dev/null 2>&1; then
     compose_cmd="docker compose"
   elif command -v docker-compose > /dev/null 2>&1; then
@@ -19,8 +30,6 @@ get_docker_compose_command() {
 # Function to build Docker images
 build_docker_images() {
   echo "Building Docker images..."
-  echo "Building traction:plugins-acapy"
-  # Check if the plugins/docker directory exists
   if [ -d "../plugins/docker" ]; then
     pushd ../plugins/docker > /dev/null
     docker build -f ./Dockerfile --tag traction:plugins-acapy .. --no-cache
@@ -30,8 +39,6 @@ build_docker_images() {
     exit 1
   fi
 
-  echo "Building traction:traction-agent"
-  # Check if the services/aca-py directory exists
   if [ -d "../services/aca-py" ]; then
     pushd ../services/aca-py > /dev/null
     if [ -f "./Dockerfile.acapy" ]; then
@@ -49,8 +56,6 @@ build_docker_images() {
 
   built_services="traction-acapy-image-builder tenant-ui tenant-proxy endorser-api endorser-api-1"
   pulled_services="ngrok-traction-agent traction-db endorser-db endorser-db-1 maildev endorser-agent endorser-agent-1"
-  other_services="traction-agent"
-
   $compose_cmd build $built_services --no-cache --parallel
   $compose_cmd pull $pulled_services
 }
@@ -79,22 +84,28 @@ set_mac_os_options() {
   if [[ $OSTYPE == 'darwin'* ]]; then
     echo "Setting Mac OS specific options..."
 
-    # Set default platform to linux/amd64 for Arm-based Macs
     architecture=$(uname -m)
     if [[ "${architecture}" == 'arm'* ]] || [[ "${architecture}" == 'aarch'* ]]; then
       export DOCKER_DEFAULT_PLATFORM=linux/amd64
     fi
 
-    # Set date and stat options for Mac OS
-    export TA_RATIFICATION_TIME_OPS='-jf '%Y-%m-%dT%H:%M:%S%Z' +%s '
-    export STAT_OPS='-f '%A''
+    export TA_RATIFICATION_TIME_OPS='-jf %Y-%m-%dT%H:%M:%S%Z +%s'
+    export STAT_OPS='-f %A'
   fi
 }
 
-# Display usage information
-show_usage() {
-  echo "Usage: $0 {build|start|stop|restart}"
-  exit 1
+# Display menu
+show_menu() {
+  generate_traction_ascii_art
+  echo "--------------------------------------------"
+  echo "        Traction Management Script"
+  echo "--------------------------------------------"
+  echo " Select an Action you want to perform:"
+  echo "   1) Build"
+  echo "   2) Start"
+  echo "   3) Stop"
+  echo "   4) Restart"
+  echo "   5) Exit"
 }
 
 # Main function to control script flow based on user input
@@ -102,29 +113,32 @@ main() {
   set_mac_os_options
   get_docker_compose_command
 
-  case "$1" in
-    build)
-      build_docker_images
-      ;;
-    start)
-      start_docker_containers
-      ;;
-    stop)
-      stop_docker_containers
-      ;;
-    restart)
-      restart_docker_containers
-      ;;
-    *)
-      show_usage
-      ;;
-  esac
+  while true; do
+    show_menu
+    read -p "Action [1-5]: " action
+    case "$action" in
+      1)
+        build_docker_images
+        ;;
+      2)
+        start_docker_containers
+        ;;
+      3)
+        stop_docker_containers
+        ;;
+      4)
+        restart_docker_containers
+        ;;
+      5)
+        echo "Exiting..."
+        exit 0
+        ;;
+      *)
+        echo "Invalid option, please select a number between 1 and 5."
+        ;;
+    esac
+  done
 }
 
-# Check if any argument is provided, otherwise show usage
-if [ $# -eq 0 ]; then
-  show_usage
-fi
-
-# Execute the main function with the provided argument
-main "$1"
+# Execute the main function
+main
