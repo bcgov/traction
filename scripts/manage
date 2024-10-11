@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# ASCII Art Header
+# Function to generate Traction ASCII Art
 generate_traction_ascii_art() {
   echo "  _______             _   _             "
   echo " |__   __|           | | (_)            "
@@ -10,6 +10,15 @@ generate_traction_ascii_art() {
   echo "    |_|_|  \__,_|\___|\__|_|\___/|_| |_|"
   echo "                                        "
   echo "                                        "
+  echo "--------------------------------------------"
+  echo "        Traction Management Script"
+  echo "--------------------------------------------"
+  echo " Select an Action you want to perform:"
+  echo "   1) Build"
+  echo "   2) Start"
+  echo "   3) Stop"
+  echo "   4) Restart"
+  echo "   5) Exit"
 }
 
 # Global variable to hold Docker Compose command
@@ -97,15 +106,6 @@ set_mac_os_options() {
 # Display menu
 show_menu() {
   generate_traction_ascii_art
-  echo "--------------------------------------------"
-  echo "        Traction Management Script"
-  echo "--------------------------------------------"
-  echo " Select an Action you want to perform:"
-  echo "   1) Build"
-  echo "   2) Start"
-  echo "   3) Stop"
-  echo "   4) Restart"
-  echo "   5) Exit"
 }
 
 # Main function to control script flow based on user input
@@ -113,32 +113,56 @@ main() {
   set_mac_os_options
   get_docker_compose_command
 
-  while true; do
-    show_menu
-    read -p "Action [1-5]: " action
-    case "$action" in
-      1)
+  if [ "$#" -eq 0 ]; then
+    # No command-line arguments provided, show the menu
+    while true; do
+      show_menu
+      read -p "Action [1-5]: " action
+      case "$action" in
+        1)
+          build_docker_images
+          ;;
+        2)
+          start_docker_containers
+          ;;
+        3)
+          stop_docker_containers
+          ;;
+        4)
+          restart_docker_containers
+          ;;
+        5)
+          echo "Exiting..."
+          exit 0
+          ;;
+        *)
+          echo "Invalid option, please select a number between 1 and 5."
+          ;;
+      esac
+    done
+  else
+    # Command-line argument is provided, execute corresponding function
+    case "$1" in
+      build)
         build_docker_images
         ;;
-      2)
+      start)
         start_docker_containers
         ;;
-      3)
+      stop)
         stop_docker_containers
         ;;
-      4)
+      restart)
         restart_docker_containers
         ;;
-      5)
-        echo "Exiting..."
-        exit 0
-        ;;
       *)
-        echo "Invalid option, please select a number between 1 and 5."
+        echo "Unknown command: $1"
+        echo "Usage: $0 {build|start|stop|restart}"
+        exit 1
         ;;
     esac
-  done
+  fi
 }
 
 # Execute the main function
-main
+main "$@"
