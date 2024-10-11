@@ -94,7 +94,7 @@ stop_docker_containers() {
   fi
 
   # Use the captured command to stop and remove containers
-  $compose_cmd down
+  $compose_cmd stop
 }
 
 # Function to restart Docker containers
