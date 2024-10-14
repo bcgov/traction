@@ -18,7 +18,8 @@ generate_traction_ascii_art() {
   echo "   2) Start"
   echo "   3) Stop"
   echo "   4) Restart"
-  echo "   5) Exit"
+  echo "   5) Down (Stop and remove containers)"
+  echo "   6) Exit"
 }
 
 # Global variable to hold Docker Compose command
@@ -88,6 +89,12 @@ restart_docker_containers() {
   start_docker_containers
 }
 
+# Function to stop and remove Docker containers
+down_docker_containers() {
+  echo "Stopping and removing Docker containers..."
+  $compose_cmd down
+}
+
 # Check for Mac OS and set platform options if applicable
 set_mac_os_options() {
   if [[ $OSTYPE == 'darwin'* ]]; then
@@ -117,7 +124,7 @@ main() {
     # No command-line arguments provided, show the menu
     while true; do
       show_menu
-      read -p "Action [1-5]: " action
+      read -p "Action [1-6]: " action
       case "$action" in
         1)
           build_docker_images
@@ -132,11 +139,14 @@ main() {
           restart_docker_containers
           ;;
         5)
+          down_docker_containers
+          ;;
+        6)
           echo "Exiting..."
           exit 0
           ;;
         *)
-          echo "Invalid option, please select a number between 1 and 5."
+          echo "Invalid option, please select a number between 1 and 6."
           ;;
       esac
     done
@@ -155,9 +165,12 @@ main() {
       restart)
         restart_docker_containers
         ;;
+      down)
+        down_docker_containers
+        ;;
       *)
         echo "Unknown command: $1"
-        echo "Usage: $0 {build|start|stop|restart}"
+        echo "Usage: $0 {build|start|stop|restart|down}"
         exit 1
         ;;
     esac
