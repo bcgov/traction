@@ -1,4 +1,4 @@
-FROM python:3.12-slim AS base
+FROM python:3.13-slim AS base
 WORKDIR /usr/src/app
 
 # Install and configure poetry
@@ -19,7 +19,7 @@ ARG install_flags=--no-dev
 RUN poetry install ${install_flags}
 USER $user
 
-FROM python:3.12-bullseye
+FROM python:3.13-bullseye
 WORKDIR /usr/src/app
 COPY --from=base /usr/src/app/.venv /usr/src/app/.venv
 ENV PATH="/usr/src/app/.venv/bin:$PATH"
