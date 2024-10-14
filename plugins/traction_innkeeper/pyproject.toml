@@ -18,7 +18,7 @@ anoncreds = "^0.2.0"
 multitenant-provider = {git = "https://github.com/hyperledger/aries-acapy-plugins", rev = "1.0.0", subdirectory = "multitenant_provider"}
 
 [tool.poetry.dev-dependencies]
-black = "^24.8.0"
+black = "^24.10.0"
 flake8 = "^7.1.1"
 
 [build-system]
