@@ -95,7 +95,7 @@ CountryMac:scripts jason$ docker-compose version
 ### start
 
 1. copy `.env-example` to `.env` and adjust as necessary for your environment
-2. bring up traction
+2. Run the ./manage script in a bash-compatible shell to start Traction.
 
 ```sh
 cp .env-example .env
