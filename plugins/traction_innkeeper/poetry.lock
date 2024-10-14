@@ -214,31 +214,32 @@ yaml = ["PyYAML (>=3.10)"]
 
 [[package]]
 name = "aries-cloudagent"
-version = "1.0.0"
+version = "1.0.1"
 description = "Hyperledger Aries Cloud Agent Python (ACA-Py) is a foundation for building decentralized identity applications and services running in non-mobile environments."
 optional = false
 python-versions = "<4.0,>=3.12"
 files = [
-    {file = "aries_cloudagent-1.0.0-py3-none-any.whl", hash = "sha256:807ce84090d607bd6a595a3e8d0a3935f6c9a24bcddaa189a4e32dd65adb2b80"},
-    {file = "aries_cloudagent-1.0.0.tar.gz", hash = "sha256:2ab701357d38c9ae1922157a0449340c447dd97eab68d178b09d3a13b2d6276d"},
+    {file = "aries_cloudagent-1.0.1-py3-none-any.whl", hash = "sha256:081970c001b03c7f5e43500e8ed059cecb8099c6a31fc668c1eed5da746390af"},
+    {file = "aries_cloudagent-1.0.1.tar.gz", hash = "sha256:680d5970ee0f49afc5b3d39cb8969b351e0df1fa02e6e6d8695cbd3c3206f694"},
 ]
 
 [package.dependencies]
-aiohttp = ">=3.10.3,<3.11.0"
+aiohttp = ">=3.10.5,<3.11.0"
 aiohttp-apispec-acapy = ">=3.0.2,<3.1.0"
 aiohttp-cors = ">=0.7.0,<0.8.0"
 apispec = ">=6.6.0,<7.0.0"
 async-timeout = ">=4.0.2,<4.1.0"
 base58 = ">=2.1.0,<2.2.0"
+canonicaljson = ">=2.0.0,<3.0.0"
 ConfigArgParse = ">=1.7,<1.8"
 deepmerge = ">=0.3.0,<0.4.0"
 did-peer-2 = ">=0.1.2,<0.2.0"
 did-peer-4 = ">=0.1.4,<0.2.0"
 ecdsa = ">=0.19.0,<0.20.0"
 jsonpath-ng = "1.6.1"
-Markdown = ">=3.6,<3.7"
+Markdown = ">=3.7,<3.8"
 markupsafe = "2.1.5"
-marshmallow = ">=3.21.3,<3.22.0"
+marshmallow = ">=3.22.0,<3.23.0"
 nest_asyncio = ">=1.6.0,<1.7.0"
 packaging = ">=23.2,<23.3"
 portalocker = ">=2.10.1,<2.11.0"
@@ -254,7 +255,7 @@ qrcode = {version = ">=6.1,<7.0", extras = ["pil"]}
 requests = ">=2.32.3,<2.33.0"
 rlp = "4.0.1"
 sd-jwt = ">=0.10.3,<0.11.0"
-unflatten = ">=0.1,<0.2"
+unflatten = ">=0.2,<0.3"
 uuid_utils = ">=0.9.0,<0.10.0"
 
 [package.extras]
@@ -399,6 +400,17 @@ python-versions = ">=3.7"
 files = [
     {file = "cachetools-5.5.0-py3-none-any.whl", hash = "sha256:02134e8439cdc2ffb62023ce1debca2944c3f289d66bb17ead3ab3dede74b292"},
     {file = "cachetools-5.5.0.tar.gz", hash = "sha256:2cc24fb4cbe39633fb7badd9db9ca6295d766d9c2995f245725a46715d050f2a"},
+]
+
+[[package]]
+name = "canonicaljson"
+version = "2.0.0"
+description = "Canonical JSON"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "canonicaljson-2.0.0-py3-none-any.whl", hash = "sha256:c38a315de3b5a0532f1ec1f9153cd3d716abfc565a558d00a4835428a34fca5b"},
+    {file = "canonicaljson-2.0.0.tar.gz", hash = "sha256:e2fdaef1d7fadc5d9cb59bd3d0d41b064ddda697809ac4325dced721d12f113f"},
 ]
 
 [[package]]
@@ -1302,13 +1314,13 @@ source = ["Cython (>=3.0.11)"]
 
 [[package]]
 name = "markdown"
-version = "3.6"
+version = "3.7"
 description = "Python implementation of John Gruber's Markdown."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "Markdown-3.6-py3-none-any.whl", hash = "sha256:48f276f4d8cfb8ce6527c8f79e2ee29708508bf4d40aa410fbc3b4ee832c850f"},
-    {file = "Markdown-3.6.tar.gz", hash = "sha256:ed4f41f6daecbeeb96e576ce414c41d2d876daa9a16cb35fa8ed8c2ddfad0224"},
+    {file = "Markdown-3.7-py3-none-any.whl", hash = "sha256:7eb6df5690b81a1d7942992c97fad2938e956e79df20cbc6186e9c3a77b1c803"},
+    {file = "markdown-3.7.tar.gz", hash = "sha256:2ae2471477cfd02dbbf038d5d9bc226d40def84b4fe2986e49b59b6b472bbed2"},
 ]
 
 [package.extras]
@@ -1386,13 +1398,13 @@ files = [
 
 [[package]]
 name = "marshmallow"
-version = "3.21.3"
+version = "3.22.0"
 description = "A lightweight library for converting complex datatypes to and from native Python datatypes."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "marshmallow-3.21.3-py3-none-any.whl", hash = "sha256:86ce7fb914aa865001a4b2092c4c2872d13bc347f3d42673272cabfdbad386f1"},
-    {file = "marshmallow-3.21.3.tar.gz", hash = "sha256:4f57c5e050a54d66361e826f94fba213eb10b67b2fdb02c3e0343ce207ba1662"},
+    {file = "marshmallow-3.22.0-py3-none-any.whl", hash = "sha256:71a2dce49ef901c3f97ed296ae5051135fd3febd2bf43afe0ae9a82143a494d9"},
+    {file = "marshmallow-3.22.0.tar.gz", hash = "sha256:4972f529104a220bb8637d595aa4c9762afbe7f7a77d82dc58c1615d70c5823e"},
 ]
 
 [package.dependencies]
@@ -1400,7 +1412,7 @@ packaging = ">=17.0"
 
 [package.extras]
 dev = ["marshmallow[tests]", "pre-commit (>=3.5,<4.0)", "tox"]
-docs = ["alabaster (==0.7.16)", "autodocsumm (==0.2.12)", "sphinx (==7.3.7)", "sphinx-issues (==4.1.0)", "sphinx-version-warning (==1.1.2)"]
+docs = ["alabaster (==1.0.0)", "autodocsumm (==0.2.13)", "sphinx (==8.0.2)", "sphinx-issues (==4.1.0)", "sphinx-version-warning (==1.1.2)"]
 tests = ["pytest", "pytz", "simplejson"]
 
 [[package]]
@@ -2321,13 +2333,13 @@ files = [
 
 [[package]]
 name = "unflatten"
-version = "0.1.1"
+version = "0.2.0"
 description = "Unflatten dict to dict with nested dict/arrays"
 optional = false
 python-versions = "*"
 files = [
-    {file = "unflatten-0.1.1-py2.py3-none-any.whl", hash = "sha256:42de0eae963f34cbb8d80a35cdab962f723b879a3e93c603fac9ca6062e96de3"},
-    {file = "unflatten-0.1.1.tar.gz", hash = "sha256:5d695d6b0a70ff7aca5d63474b79cd397ed5f7d87de0e990aaf0b04db77784a5"},
+    {file = "unflatten-0.2.0-py2.py3-none-any.whl", hash = "sha256:a0afa7ff22313dcc60ff45110b796ed5b4e908614826e8672a9f76d3a20c1f54"},
+    {file = "unflatten-0.2.0.tar.gz", hash = "sha256:9710bc558882f697bc36a95a97614be296f07c8f8df1bc2b4ef96c189ce5cf84"},
 ]
 
 [[package]]
@@ -2573,4 +2585,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "8990c0700515ac118e3f97834611134fe248d1ef207b47624545b9d31982b11a"
+content-hash = "0ee2051888499ab36e6f064e8ed0605e91b09c3e0789e0ae85952ec3ab5d3f48"
