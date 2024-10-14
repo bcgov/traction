@@ -1,7 +1,7 @@
 <template>
   <MainCardContent :title="$t('tenants.tenants')" :refresh-callback="loadTable">
     <DataTable
-      v-model:expandedRows="expandedRows"
+      v-model:expanded-rows="expandedRows"
       v-model:filters="filter"
       :loading="loading"
       :value="formattedTenants"
@@ -20,9 +20,9 @@
           <div class="flex justify-content-end">
             <div class="container">
               <ToggleButton
-                v-model="showDeleted"
-                :on-label="$t('common.hideDeleted')"
-                :off-label="$t('common.showDeleted')"
+                v-model="showSuspended"
+                :on-label="$t('common.hideSuspended')"
+                :off-label="$t('common.showSuspended')"
                 class="mr-2 container-item"
                 style="width: 10rem"
                 @change="loadTable"
@@ -49,9 +49,10 @@
           </div>
           <div v-else class="container">
             <span class="container-item deleted-btn">
-              {{ $t('common.deleted') }}
+              {{ $t('common.suspended') }}
             </span>
             <RestoreTenant :id="data.tenant_id" :name="data.tenant_name" />
+            <DeleteTenant :tenant="data" unsuspendable />
           </div>
         </template>
       </Column>
@@ -136,10 +137,10 @@
       <Column
         :sortable="true"
         field="deleted"
-        :header="$t('common.deletedAt')"
+        :header="$t('common.suspendedAt')"
         filter-field="deleted"
         :show-filter-match-modes="false"
-        :hidden="!showDeleted"
+        :hidden="!showSuspended"
       >
         <template #body="{ data }">
           {{ data.deleted_at }}
@@ -149,7 +150,7 @@
             v-model="filterModel.value"
             type="text"
             class="p-column-filter"
-            :placeholder="$t('common.searchByDeleted')"
+            :placeholder="$t('common.searchBySuspended')"
             @input="filterCallback()"
           />
         </template>
@@ -185,13 +186,13 @@ import RowExpandData from '@/components/common/RowExpandData.vue';
 const toast = useToast();
 
 const innkeeperTenantsStore = useInnkeeperTenantsStore();
-const showDeleted = ref(false);
+const showSuspended = ref(false);
 
 // Populating the Table
 const { loading, tenants } = storeToRefs(useInnkeeperTenantsStore());
 const loadTable = () => {
   innkeeperTenantsStore
-    .listTenants(showDeleted.value ? 'all' : 'active')
+    .listTenants(showSuspended.value ? 'all' : 'active')
     .catch((err: string) => {
       console.error(err);
       toast.error(`Failure: ${err}`);

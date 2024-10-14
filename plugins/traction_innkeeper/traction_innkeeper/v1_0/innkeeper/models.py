@@ -4,7 +4,6 @@ from datetime import datetime, timezone
 from typing import Optional, Union, List
 
 from aries_cloudagent.core.profile import ProfileSession
-from aries_cloudagent.ledger.base import LOGGER
 from aries_cloudagent.messaging.models.base_record import BaseRecord, BaseRecordSchema
 from aries_cloudagent.messaging.util import datetime_to_str, str_to_datetime
 from aries_cloudagent.messaging.valid import UUIDFour
@@ -357,11 +356,18 @@ class TenantRecord(BaseRecord):
         Soft delete the tenant record by setting its state to 'deleted'.
         Note: This method should be called on an instance of the TenantRecord.
         """
+        # Delete api records
+        recs = await TenantAuthenticationApiRecord.query_by_tenant_id(
+            session, self.tenant_id
+        )
+        for rec in recs:
+            if rec.tenant_id == self.tenant_id:
+                await rec.delete_record(session)
+
         if self.state != self.STATE_DELETED:
             self.state = self.STATE_DELETED
             self.deleted_at = datetime_to_str(datetime.utcnow())
             await self.save(session, reason="Soft delete")
-
 
     async def restore_deleted(self, session: ProfileSession):
         """

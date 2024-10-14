@@ -1,16 +1,14 @@
 import logging
 
 from aiohttp import web
-from aiohttp_apispec import docs, response_schema, match_info_schema
+from aiohttp_apispec import docs, match_info_schema, response_schema
+from aries_cloudagent.admin.decorators.auth import tenant_authentication
 from aries_cloudagent.admin.request_context import AdminRequestContext
 from aries_cloudagent.connections.models.conn_record import ConnRecord
 from aries_cloudagent.messaging.models.base import BaseModelError
 from aries_cloudagent.protocols.connections.v1_0.routes import (
-    ConnectionsConnIdMatchInfoSchema,
-    InvitationResultSchema,
-)
+    ConnectionsConnIdMatchInfoSchema, InvitationResultSchema)
 from aries_cloudagent.storage.error import StorageNotFoundError
-
 
 LOGGER = logging.getLogger(__name__)
 
@@ -18,6 +16,7 @@ LOGGER = logging.getLogger(__name__)
 @docs(tags=["connection"], summary="Fetch connection invitation")
 @match_info_schema(ConnectionsConnIdMatchInfoSchema())
 @response_schema(InvitationResultSchema(), 200, description="")
+@tenant_authentication
 async def connections_invitation(request: web.BaseRequest):
     """Handle fetching invitation associated with a single connection record."""
     context: AdminRequestContext = request["context"]

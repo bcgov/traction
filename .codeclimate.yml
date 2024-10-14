@@ -70,7 +70,6 @@ exclude_patterns:
   - ".vscode/"
   - "charts/"
   - "scripts/"
-  - "services/endorser/"
   - "services/tenant-ui/frontend/src/overlayLibrary"
   - "services/tenant-ui/frontend/src/types/acapyApi"
   - "services/traction/acapy_client/"

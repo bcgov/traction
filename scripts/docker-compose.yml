@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3.12"
 services:
   ngrok-traction-agent:
     image: ngrok/ngrok
@@ -162,38 +162,8 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
 
-  endorser-api:
-    pull_policy: missing
-    build:
-      context: ../services/endorser
-      dockerfile: Dockerfile
-    image: traction:endorser-api
-    depends_on:
-      endorser-agent:
-        condition: service_started
-      endorser-db:
-        condition: service_healthy
-    environment:
-      - POSTGRESQL_HOST=${ENDORSER_POSTGRESQL_HOST}
-      - POSTGRESQL_PORT=${POSTGRESQL_PORT}
-      - POSTGRESQL_DB=${ENDORSER_PSQL_DB}
-      - ENDORSER_API_ADMIN_USER=${ENDORSER_API_ADMIN_USER}
-      - ENDORSER_API_ADMIN_KEY=${ENDORSER_API_ADMIN_KEY}
-      - ACAPY_ADMIN_URL=${ENDORSER_ACAPY_ADMIN_URL}
-      - ACAPY_ADMIN_URL_API_KEY=${ENDORSER_ACAPY_ADMIN_URL_API_KEY}
-      - ENVIRONMENT=production
-      - TRACTION_WEBHOOK_URL=${ENDORSER_WEBHOOK_URL}
-      - ACAPY_WEBHOOK_URL_API_KEY=${ENDORSER_ACAPY_WEBHOOK_URL_API_KEY}
-      - ENDORSER_API_PORT=${ENDORSER_API_PORT}
-    ports:
-      - ${ENDORSER_SERVICE_PORT}:${ENDORSER_API_PORT}
-    volumes:
-      - ../services/endorser:/app:rw
-    extra_hosts:
-      - host.docker.internal:host-gateway
-
   endorser-agent:
-    image: ghcr.io/hyperledger/aries-cloudagent-python:py3.9-0.12.2
+    image: ghcr.io/hyperledger/aries-cloudagent-python:py3.12-1.0.0
     depends_on:
       endorser-db:
         condition: service_healthy
@@ -234,58 +204,10 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
 
-  endorser-db:
-    image: "postgres:14.5"
-    environment:
-      - POSTGRES_USER=${POSTGRESQL_USER}
-      - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
-      - POSTGRES_DB=${POSTGRESQL_DB}
-    ports:
-      - ${ENDORSER_POSTGRESQL_PORT}:5432
-    volumes:
-      - endorser-wallet:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    extra_hosts:
-      - host.docker.internal:host-gateway
-
-  endorser-api-1:
-    pull_policy: missing
-    build:
-      context: ../services/endorser
-      dockerfile: Dockerfile
-    image: traction:endorser-api
-    depends_on:
-      endorser-agent-1:
-        condition: service_started
-      endorser-db-1:
-        condition: service_healthy
-    environment:
-      - POSTGRESQL_HOST=${ENDORSER_1_POSTGRESQL_HOST}
-      - POSTGRESQL_PORT=${POSTGRESQL_PORT}
-      - POSTGRESQL_DB=${ENDORSER_PSQL_DB}
-      - ENDORSER_API_ADMIN_USER=${ENDORSER_API_ADMIN_USER}
-      - ENDORSER_API_ADMIN_KEY=${ENDORSER_API_ADMIN_KEY}
-      - ACAPY_ADMIN_URL=${ENDORSER_1_ACAPY_ADMIN_URL}
-      - ACAPY_ADMIN_URL_API_KEY=${ENDORSER_ACAPY_ADMIN_URL_API_KEY}
-      - ENVIRONMENT=production
-      - TRACTION_WEBHOOK_URL=${ENDORSER_1_WEBHOOK_URL}
-      - ACAPY_WEBHOOK_URL_API_KEY=${ENDORSER_ACAPY_WEBHOOK_URL_API_KEY}
-      - ENDORSER_API_PORT=${ENDORSER_API_1_PORT}
-    ports:
-      - ${ENDORSER_1_SERVICE_PORT}:${ENDORSER_API_1_PORT}
-    volumes:
-      - ../services/endorser:/app:rw
-    extra_hosts:
-      - host.docker.internal:host-gateway
-
   endorser-agent-1:
-    image: ghcr.io/hyperledger/aries-cloudagent-python:py3.9-0.12.2
+    image: ghcr.io/hyperledger/aries-cloudagent-python:py3.12-1.0.0
     depends_on:
-      endorser-db-1:
+      endorser-db:
         condition: service_healthy
     ports:
       - ${ACAPY_ENDORSER_1_ADMIN_PORT}:${ACAPY_ENDORSER_1_ADMIN_PORT}
@@ -305,7 +227,7 @@ services:
         --wallet-key '${ENDORSER_ACAPY_WALLET_ENCRYPTION_KEY}' \
         --wallet-type '${ENDORSER_ACAPY_WALLET_TYPE}' \
         --wallet-storage-type '${ENDORSER_ACAPY_WALLET_STORAGE_TYPE}' \
-        --wallet-storage-config '{\"url\":\"${ENDORSER_1_POSTGRESQL_HOST}:5432\",\"max_connections\":5}' \
+        --wallet-storage-config '{\"url\":\"${ENDORSER_POSTGRESQL_HOST}:5432\",\"max_connections\":5}' \
         --wallet-storage-creds '{\"account\":\"${POSTGRESQL_USER}\",\"password\":\"${POSTGRESQL_PASSWORD}\",\"admin_account\":\"${POSTGRESQL_USER}\",\"admin_password\":\"${POSTGRESQL_PASSWORD}\"}' \
         --wallet-name endorser-wallet-1  \
         --seed '${ACAPY_ENDORSER_SEED_1}' \
@@ -324,16 +246,16 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
 
-  endorser-db-1:
+  endorser-db:
     image: "postgres:14.5"
     environment:
       - POSTGRES_USER=${POSTGRESQL_USER}
       - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
       - POSTGRES_DB=${POSTGRESQL_DB}
     ports:
-      - ${ENDORSER_1_POSTGRESQL_PORT}:5432
+      - ${ENDORSER_POSTGRESQL_PORT}:5432
     volumes:
-      - endorser-wallet-1:/var/lib/postgresql/data
+      - endorser-wallet:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
