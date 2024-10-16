@@ -33,7 +33,7 @@
     "primevue": "^3.53.0",
     "qrcode.vue": "^3.5.0",
     "vue": "^3.5.12",
-    "vue-i18n": "^9.13.1",
+    "vue-i18n": "^9.14.1",
     "vue-json-pretty": "^2.4.0",
     "vue-router": "^4.4.5",
     "vue-toastification": "^2.0.0-rc.5"
