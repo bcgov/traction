@@ -1,4 +1,4 @@
-FROM ghcr.io/hyperledger/aries-cloudagent-python:py3.12-1.0.0 AS base
+FROM ghcr.io/hyperledger/aries-cloudagent-python:py3.12-1.0.1 AS base
 
 # Install and Configure Poetry
 USER root
@@ -24,16 +24,16 @@ RUN poetry install --only main
 RUN ln -s $(poetry env info -p)/lib/python3.6/site-packages site-packages
 
 
-FROM ghcr.io/hyperledger/aries-cloudagent-python:py3.12-1.0.0
+FROM ghcr.io/hyperledger/aries-cloudagent-python:py3.12-1.0.1
 COPY --from=base --chown=aries:aries /home/aries/.venv /home/aries/.venv
 ENV PATH="/home/aries/.venv/bin:$PATH"
 
 COPY --chown=aries:aries docker/default.yml ./
 COPY --chown=aries:aries traction_innkeeper/traction_innkeeper traction_plugins/traction_innkeeper
-RUN pip install git+https://github.com/hyperledger/aries-acapy-plugins@1.0.0#subdirectory=basicmessage_storage
-RUN pip install git+https://github.com/hyperledger/aries-acapy-plugins@1.0.0#subdirectory=connection_update
-RUN pip install git+https://github.com/hyperledger/aries-acapy-plugins@1.0.0#subdirectory=multitenant_provider
-RUN pip install git+https://github.com/hyperledger/aries-acapy-plugins@1.0.0#subdirectory=rpc
+RUN pip install git+https://github.com/hyperledger/aries-acapy-plugins@1.0.1#subdirectory=basicmessage_storage
+RUN pip install git+https://github.com/hyperledger/aries-acapy-plugins@1.0.1#subdirectory=connection_update
+RUN pip install git+https://github.com/hyperledger/aries-acapy-plugins@1.0.1#subdirectory=multitenant_provider
+RUN pip install git+https://github.com/hyperledger/aries-acapy-plugins@1.0.1#subdirectory=rpc
 
 
 ENTRYPOINT ["/bin/bash", "-c", "aca-py \"$@\"", "--"]
