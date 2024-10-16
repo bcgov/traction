@@ -95,12 +95,11 @@ CountryMac:scripts jason$ docker-compose version
 ### start
 
 1. copy `.env-example` to `.env` and adjust as necessary for your environment
-2. bring up traction
+2. Run the ./manage script in a bash-compatible shell to start Traction.
 
 ```sh
 cp .env-example .env
-docker compose build
-docker compose up
+./manage
 ```
 
 **Note:** to use your `ngrok` auth token and prevent the tunnels from expiring, add the value in the `.env` file after uncommenting the line defining `NGROK_AUTHTOKEN` and then start the project with `docker compose up`.
