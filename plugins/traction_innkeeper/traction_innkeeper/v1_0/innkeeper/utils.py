@@ -3,8 +3,8 @@ import logging
 import uuid
 from datetime import datetime, timedelta
 
-from aries_cloudagent.core.profile import Profile
-from aries_cloudagent.messaging.models.openapi import OpenAPISchema
+from acapy_agent.core.profile import Profile
+from acapy_agent.messaging.models.openapi import OpenAPISchema
 from marshmallow import fields
 
 from .models import ReservationRecord, TenantAuthenticationApiRecord, TenantRecord

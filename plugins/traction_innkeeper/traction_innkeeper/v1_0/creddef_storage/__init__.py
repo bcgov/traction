@@ -1,10 +1,10 @@
 import logging
 
-from aries_cloudagent.config.injection_context import InjectionContext
-from aries_cloudagent.core.event_bus import EventBus
-from aries_cloudagent.core.plugin_registry import PluginRegistry
+from acapy_agent.config.injection_context import InjectionContext
+from acapy_agent.core.event_bus import EventBus
+from acapy_agent.core.plugin_registry import PluginRegistry
 
-from aries_cloudagent.core.protocol_registry import ProtocolRegistry
+from acapy_agent.core.protocol_registry import ProtocolRegistry
 
 from .creddef_storage_service import CredDefStorageService, subscribe
 

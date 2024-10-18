@@ -10,21 +10,21 @@ from aiohttp_apispec import (
     response_schema,
     use_kwargs,
 )
-from aries_cloudagent.admin.request_context import AdminRequestContext
-from aries_cloudagent.admin.routes import AdminConfigSchema
-from aries_cloudagent.messaging.models.base import BaseModelError
-from aries_cloudagent.messaging.models.openapi import OpenAPISchema
-from aries_cloudagent.messaging.valid import JSONWebToken, UUIDFour
-from aries_cloudagent.multitenant.admin.routes import (
+from acapy_agent.admin.request_context import AdminRequestContext
+from acapy_agent.admin.routes import AdminConfigSchema
+from acapy_agent.messaging.models.base import BaseModelError
+from acapy_agent.messaging.models.openapi import OpenAPISchema
+from acapy_agent.messaging.valid import JSONWebToken, UUIDFour
+from acapy_agent.multitenant.admin.routes import (
     CreateWalletTokenRequestSchema,
     CreateWalletTokenResponseSchema,
 )
-from aries_cloudagent.multitenant.base import BaseMultitenantManager
-from aries_cloudagent.multitenant.error import WalletKeyMissingError
-from aries_cloudagent.storage.error import StorageError, StorageNotFoundError
-from aries_cloudagent.version import __version__
-from aries_cloudagent.wallet.error import WalletSettingsError
-from aries_cloudagent.wallet.models.wallet_record import WalletRecord
+from acapy_agent.multitenant.base import BaseMultitenantManager
+from acapy_agent.multitenant.error import WalletKeyMissingError
+from acapy_agent.storage.error import StorageError, StorageNotFoundError
+from acapy_agent.version import __version__
+from acapy_agent.wallet.error import WalletSettingsError
+from acapy_agent.wallet.models.wallet_record import WalletRecord
 from multitenant_provider.v1_0.routes import plugin_wallet_create_token
 from marshmallow import fields, validate
 
