@@ -1,7 +1,7 @@
 from typing import Optional
 
-from aries_cloudagent.messaging.models.base_record import BaseRecord, BaseRecordSchema
-from aries_cloudagent.messaging.valid import (
+from acapy_agent.messaging.models.base_record import BaseRecord, BaseRecordSchema
+from acapy_agent.messaging.valid import (
     INDY_SCHEMA_ID_EXAMPLE,
     INDY_SCHEMA_ID_VALIDATE,
 )
