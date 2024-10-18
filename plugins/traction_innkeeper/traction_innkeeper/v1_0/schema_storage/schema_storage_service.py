@@ -1,20 +1,20 @@
 import logging
 from typing import Optional
 
-from aries_cloudagent.core.event_bus import Event, EventBus
-from aries_cloudagent.core.profile import Profile
-from aries_cloudagent.ledger.error import LedgerError
-from aries_cloudagent.ledger.multiple_ledger.ledger_requests_executor import (
+from acapy_agent.core.event_bus import Event, EventBus
+from acapy_agent.core.profile import Profile
+from acapy_agent.ledger.error import LedgerError
+from acapy_agent.ledger.multiple_ledger.ledger_requests_executor import (
     IndyLedgerRequestsExecutor,
     GET_SCHEMA,
 )
-from aries_cloudagent.messaging.schemas.util import SCHEMA_SENT_RECORD_TYPE
-from aries_cloudagent.multitenant.base import BaseMultitenantManager
-from aries_cloudagent.storage.base import BaseStorage
-from aries_cloudagent.storage.error import StorageNotFoundError
+from acapy_agent.messaging.schemas.util import SCHEMA_SENT_RECORD_TYPE
+from acapy_agent.multitenant.base import BaseMultitenantManager
+from acapy_agent.storage.base import BaseStorage
+from acapy_agent.storage.error import StorageNotFoundError
 
 from .models import SchemaStorageRecord
-from aries_cloudagent.messaging.schemas.util import (
+from acapy_agent.messaging.schemas.util import (
     EVENT_LISTENER_PATTERN as SCHEMAS_EVENT_LISTENER_PATTERN,
 )
 

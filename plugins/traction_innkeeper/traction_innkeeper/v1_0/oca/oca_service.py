@@ -1,12 +1,12 @@
 import logging
 from typing import Optional
 
-from aries_cloudagent.core.error import BaseError
-from aries_cloudagent.core.profile import Profile
-from aries_cloudagent.storage.error import StorageDuplicateError, StorageNotFoundError
-from aries_cloudagent.wallet.base import BaseWallet
-from aries_cloudagent.wallet.did_info import DIDInfo
-from aries_cloudagent.wallet.error import WalletError
+from acapy_agent.core.error import BaseError
+from acapy_agent.core.profile import Profile
+from acapy_agent.storage.error import StorageDuplicateError, StorageNotFoundError
+from acapy_agent.wallet.base import BaseWallet
+from acapy_agent.wallet.did_info import DIDInfo
+from acapy_agent.wallet.error import WalletError
 from marshmallow import ValidationError
 
 from .models import OcaRecord

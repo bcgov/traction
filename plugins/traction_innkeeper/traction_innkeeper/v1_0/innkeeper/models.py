@@ -3,11 +3,11 @@ import uuid
 from datetime import datetime, timezone
 from typing import Optional, Union, List
 
-from aries_cloudagent.core.profile import ProfileSession
-from aries_cloudagent.messaging.models.base_record import BaseRecord, BaseRecordSchema
-from aries_cloudagent.messaging.util import datetime_to_str, str_to_datetime
-from aries_cloudagent.messaging.valid import UUIDFour
-from aries_cloudagent.storage.error import StorageDuplicateError, StorageNotFoundError
+from acapy_agent.core.profile import ProfileSession
+from acapy_agent.messaging.models.base_record import BaseRecord, BaseRecordSchema
+from acapy_agent.messaging.util import datetime_to_str, str_to_datetime
+from acapy_agent.messaging.valid import UUIDFour
+from acapy_agent.storage.error import StorageDuplicateError, StorageNotFoundError
 from marshmallow import fields, EXCLUDE, validate
 
 ENDORSER_LEDGER_CONFIG_EXAMPLE = {

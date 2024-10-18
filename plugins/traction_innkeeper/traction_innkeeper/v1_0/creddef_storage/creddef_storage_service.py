@@ -1,13 +1,13 @@
 import logging
 from typing import Optional
 
-from aries_cloudagent.core.event_bus import EventBus, Event
-from aries_cloudagent.core.profile import Profile
-from aries_cloudagent.storage.error import StorageNotFoundError
+from acapy_agent.core.event_bus import EventBus, Event
+from acapy_agent.core.profile import Profile
+from acapy_agent.storage.error import StorageNotFoundError
 
 from .models import CredDefStorageRecord
 
-from aries_cloudagent.messaging.credential_definitions.util import (
+from acapy_agent.messaging.credential_definitions.util import (
     EVENT_LISTENER_PATTERN as CREDDEF_EVENT_LISTENER_PATTERN,
 )
 
