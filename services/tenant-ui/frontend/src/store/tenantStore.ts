@@ -74,23 +74,21 @@ interface ServerConfig {
       monitor_notification: boolean;
       anoncreds_legacy_support: string;
     };
-    ledger: {
-      ledger_config_list: Array<{
-        id: string;
-        is_production: boolean;
-        is_write: boolean;
-        genesis_transactions: string;
-        keepalive: number;
-        read_only: boolean;
-        socks_proxy: any;
-        pool_name: string;
-        endorser_alias: string;
-        endorser_did: string;
-      }>;
+    'ledger.ledger_config_list': Array<{
+      id: string;
+      is_production: boolean;
+      is_write: boolean;
+      genesis_transactions: string;
       keepalive: number;
       read_only: boolean;
-      write_ledger: 'bcovrin-test';
-    };
+      socks_proxy: any;
+      pool_name: string;
+      endorser_alias: string;
+      endorser_did: string;
+    }>;
+    'ledger.keepalive': number;
+    'ledger.read_only': boolean;
+    'ledger.write_ledger': string;
     log: { level: string };
     auto_ping_connection: boolean;
     trace: {
@@ -128,7 +126,7 @@ interface ServerConfig {
       endorser_alias: string;
       endorser_public_did: string;
     };
-    version: string;
+    version: string | undefined;
   };
 }
 
@@ -143,7 +141,7 @@ export const useTenantStore = defineStore('tenant', () => {
   const publicDid: any = ref(null);
   const writeLedger: any = ref(null);
   const publicDidRegistrationProgress: Ref<string> = ref('');
-  const serverConfig: Ref<ServerConfig | null> = ref(null);
+  const serverConfig: Ref<ServerConfig | object> = ref({});
   const taa: Ref<any> = ref(null);
   const tenantConfig: any = ref(null);
   const tenantWallet: any = ref(null);
@@ -221,12 +219,13 @@ export const useTenantStore = defineStore('tenant', () => {
 
   async function getServerConfig() {
     // loading.value = true;
-    serverConfig.value = await fetchItem<AdminConfig>(
+    const val = await fetchItem<AdminConfig>(
       API_PATH.TENANT_SERVER_CONFIG,
       '',
       error,
       ref(false)
     );
+    if (val != null) serverConfig.value = val;
     // loading.value = false;
   }
 
