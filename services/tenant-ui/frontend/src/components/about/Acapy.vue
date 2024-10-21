@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, Ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useInnkeeperTenantsStore, useTenantStore } from '@/store';
@@ -38,7 +38,7 @@ const { serverConfig: innServerConfig } = storeToRefs(
 );
 const { serverConfig } = storeToRefs(useTenantStore());
 
-const acapyVersion = ref('');
+const acapyVersion: Ref<string | undefined> = ref('');
 const currentRouteName = computed(() => {
   return route.name;
 });
@@ -50,7 +50,8 @@ onMounted(async () => {
     acapyVersion.value = innServerConfig.value?.config?.version;
   } else {
     await tenantsStore.getServerConfig();
-    acapyVersion.value = serverConfig.value?.config?.version;
+    if (typeof serverConfig.value == 'object' && 'config' in serverConfig.value)
+      acapyVersion.value = serverConfig.value.config.version;
   }
 });
 </script>

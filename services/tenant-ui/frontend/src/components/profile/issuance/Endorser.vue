@@ -38,10 +38,22 @@
           </span>
         </template>
       </Column>
-      <Column :sortable="true" field="read_only" header="Read Only" dataType="boolean" style="min-width: 6rem">
+      <Column
+        :sortable="true"
+        field="read_only"
+        header="Read Only"
+        data-type="boolean"
+        style="min-width: 6rem"
+      >
         <template #body="{ data }">
           <div class="flex align-items-center">
-            <i class="pi" :class="{ 'pi-pencil text-red-500': data.verified, 'pi-pencil text-green-400': !data.verified }"></i>
+            <i
+              class="pi"
+              :class="{
+                'pi-pencil text-red-500': data.verified,
+                'pi-pencil text-green-400': !data.verified,
+              }"
+            ></i>
           </div>
         </template>
       </Column>
@@ -91,16 +103,24 @@ import EndorserConnect from './EndorserConnect.vue';
 const configStore = useConfigStore();
 const tenantStore = useTenantStore();
 const { config } = storeToRefs(configStore);
-const { endorserConnection, endorserInfo, tenantConfig, loading, serverConfig} =
-  storeToRefs(tenantStore);
+const {
+  endorserConnection,
+  endorserInfo,
+  tenantConfig,
+  loading,
+  serverConfig,
+} = storeToRefs(tenantStore);
 
-const endorserList = serverConfig.value.config["ledger.ledger_config_list"].map(
-  (config: any) => ({
-    ledger_id: config.id,
-    endorser_alias: config.endorser_alias,
-    read_only: config.read_only,
-  })
-);
+const endorserList =
+  'config' in serverConfig.value
+    ? serverConfig.value.config['ledger.ledger_config_list'].map(
+        (config: any) => ({
+          ledger_id: config.id,
+          endorser_alias: config.endorser_alias,
+          read_only: config.read_only,
+        })
+      )
+    : [];
 
 // Allowed to connect to endorser and register DID?
 const canBecomeIssuer = computed(
