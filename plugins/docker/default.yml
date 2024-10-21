@@ -46,9 +46,9 @@ jwt-secret: insecure-jwt-secret
 multitenant-admin: true
 
 # Wallet
-# wallet-name: default
+wallet-name: default
 wallet-type: askar
-# wallet-key: "insecure, for use in demo only"
+wallet-key: "insecure, for use in demo only"
 
 log-level: info
 

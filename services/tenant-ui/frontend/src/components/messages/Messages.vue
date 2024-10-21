@@ -8,7 +8,7 @@
       {{ $t('messages.disclaimer') }}
     </p>
     <DataTable
-      v-model:expandedRows="expandedRows"
+      v-model:expanded-rows="expandedRows"
       v-model:selection="selectedMessage"
       v-model:filters="filter"
       :loading="loading"

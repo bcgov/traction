@@ -124,6 +124,8 @@ spec:
               value: {{ include "acapy.walletStorageConfig" . }}
             - name: ACAPY_WALLET_STORAGE_CREDS
               value: {{ include "acapy.walletStorageCredentials" . }}
+            - name: ACAPY_MULTITENANCY_CONFIGURATION
+              value: {{ include "acapy.multitenancyConfiguration" . }}
           readinessProbe:
             httpGet:
               path: /status/ready

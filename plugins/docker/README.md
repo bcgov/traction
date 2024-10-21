@@ -7,9 +7,8 @@ The dockerfile is copying over the local plugins code, but should it? Probably s
 
 ### developer notes
 
-- install python 3.6.13
-- install poetry version 1.1.15
-- the base docker image is python 3.6.13, so best to develop using that version
+- install python 3.12
+- install poetry version 1.8.3
 
 ### build and run
 ```

@@ -1,0 +1,181 @@
+#!/bin/bash
+
+# Function to generate Traction ASCII Art
+generate_traction_ascii_art() {
+  echo "  _______             _   _             "
+  echo " |__   __|           | | (_)            "
+  echo "    | |_ __ __ _  ___| |_ _  ___  _ __  "
+  echo "    | | '__/ _\` |/ __| __| |/ _ \| '_ \ "
+  echo "    | | | | (_| | (__| |_| | (_) | | | |"
+  echo "    |_|_|  \__,_|\___|\__|_|\___/|_| |_|"
+  echo "                                        "
+  echo "                                        "
+  echo "--------------------------------------------"
+  echo "        Traction Management Script"
+  echo "--------------------------------------------"
+  echo " Select an Action you want to perform:"
+  echo "   1) Build"
+  echo "   2) Start"
+  echo "   3) Stop"
+  echo "   4) Restart"
+  echo "   5) Down (Stop and remove containers)"
+  echo "   6) Exit"
+}
+
+# Global variable to hold Docker Compose command
+compose_cmd=""
+
+# Function to determine the correct Docker Compose command
+get_docker_compose_command() {
+  if command -v "docker" > /dev/null && docker compose version > /dev/null 2>&1; then
+    compose_cmd="docker compose"
+  elif command -v docker-compose > /dev/null 2>&1; then
+    compose_cmd="docker-compose"
+  else
+    echo "Error: Neither 'docker compose' nor 'docker-compose' is installed." >&2
+    exit 1
+  fi
+}
+
+# Function to build Docker images
+build_docker_images() {
+  echo "Building Docker images..."
+  if [ -d "../plugins/docker" ]; then
+    pushd ../plugins/docker > /dev/null
+    docker build -f ./Dockerfile --tag traction:plugins-acapy .. --no-cache
+    popd > /dev/null
+  else
+    echo "Error: Directory '../plugins/docker' does not exist. Check the path."
+    exit 1
+  fi
+
+  if [ -d "../services/aca-py" ]; then
+    pushd ../services/aca-py > /dev/null
+    if [ -f "./Dockerfile.acapy" ]; then
+      docker build -f ./Dockerfile.acapy --tag traction:traction-agent . --no-cache
+    else
+      echo "Error: File 'Dockerfile.acapy' not found in '../services/aca-py'."
+      popd > /dev/null
+      exit 1
+    fi
+    popd > /dev/null
+  else
+    echo "Error: Directory '../services/aca-py' does not exist. Please verify the path."
+    exit 1
+  fi
+
+  built_services="traction-acapy-image-builder tenant-ui tenant-proxy endorser-api endorser-api-1"
+  pulled_services="ngrok-traction-agent traction-db endorser-db endorser-db-1 maildev endorser-agent endorser-agent-1"
+  $compose_cmd build $built_services --no-cache --parallel
+  $compose_cmd pull $pulled_services
+}
+
+# Function to start Docker containers
+start_docker_containers() {
+  echo "Starting Docker containers..."
+  $compose_cmd up -d
+}
+
+# Function to stop Docker containers
+stop_docker_containers() {
+  echo "Stopping Docker containers..."
+  $compose_cmd stop
+}
+
+# Function to restart Docker containers
+restart_docker_containers() {
+  echo "Restarting Docker containers..."
+  stop_docker_containers
+  start_docker_containers
+}
+
+# Function to stop and remove Docker containers
+down_docker_containers() {
+  echo "Stopping and removing Docker containers..."
+  $compose_cmd down
+}
+
+# Check for Mac OS and set platform options if applicable
+set_mac_os_options() {
+  if [[ $OSTYPE == 'darwin'* ]]; then
+    echo "Setting Mac OS specific options..."
+
+    architecture=$(uname -m)
+    if [[ "${architecture}" == 'arm'* ]] || [[ "${architecture}" == 'aarch'* ]]; then
+      export DOCKER_DEFAULT_PLATFORM=linux/amd64
+    fi
+
+    export TA_RATIFICATION_TIME_OPS='-jf %Y-%m-%dT%H:%M:%S%Z +%s'
+    export STAT_OPS='-f %A'
+  fi
+}
+
+# Display menu
+show_menu() {
+  generate_traction_ascii_art
+}
+
+# Main function to control script flow based on user input
+main() {
+  set_mac_os_options
+  get_docker_compose_command
+
+  if [ "$#" -eq 0 ]; then
+    # No command-line arguments provided, show the menu
+    while true; do
+      show_menu
+      read -p "Action [1-6]: " action
+      case "$action" in
+        1)
+          build_docker_images
+          ;;
+        2)
+          start_docker_containers
+          ;;
+        3)
+          stop_docker_containers
+          ;;
+        4)
+          restart_docker_containers
+          ;;
+        5)
+          down_docker_containers
+          ;;
+        6)
+          echo "Exiting..."
+          exit 0
+          ;;
+        *)
+          echo "Invalid option, please select a number between 1 and 6."
+          ;;
+      esac
+    done
+  else
+    # Command-line argument is provided, execute corresponding function
+    case "$1" in
+      build)
+        build_docker_images
+        ;;
+      start)
+        start_docker_containers
+        ;;
+      stop)
+        stop_docker_containers
+        ;;
+      restart)
+        restart_docker_containers
+        ;;
+      down)
+        down_docker_containers
+        ;;
+      *)
+        echo "Unknown command: $1"
+        echo "Usage: $0 {build|start|stop|restart|down}"
+        exit 1
+        ;;
+    esac
+  fi
+}
+
+# Execute the main function
+main "$@"

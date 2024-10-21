@@ -4,48 +4,38 @@
         "dockerfile": "Dockerfile",
         "context": "..",
         "args": {
-          "VARIANT": "3.9-bullseye",
+          "VARIANT": "3.12-bullseye",
           "POETRY_VERSION": "1.8.3"
         }
     },
     "customizations": {
         "vscode": {
+          "extensions": ["ms-python.python", "ms-python.vscode-pylance"],
           "settings": {
-            "python.pythonPath": "/usr/local/bin/python",
-            "python.linting.enabled": true,
-            "python.linting.pylintEnabled": true,
-            "python.formatting.autopep8Path": "/usr/local/py-utils/bin/autopep8",
-            "python.formatting.blackPath": "/usr/local/py-utils/bin/black",
-            "python.formatting.yapfPath": "/usr/local/py-utils/bin/yapf",
-            "python.linting.banditPath": "/usr/local/py-utils/bin/bandit",
-            "python.linting.flake8Path": "/usr/local/py-utils/bin/flake8",
-            "python.linting.mypyPath": "/usr/local/py-utils/bin/mypy",
-            "python.linting.pycodestylePath": "/usr/local/py-utils/bin/pycodestyle",
-            "python.linting.pydocstylePath": "/usr/local/py-utils/bin/pydocstyle",
-            "python.linting.pylintPath": "/usr/local/py-utils/bin/pylint",
-            "python.testing.pytestArgs": [
-                ".",
-                "--no-cov"
-            ],
+            "python.testing.pytestArgs": ["./basicmessage_storage", "--no-cov"],
             "python.testing.unittestEnabled": false,
             "python.testing.pytestEnabled": true,
             "python.testing.pytestPath": "pytest",
             "editor.defaultFormatter": null,
             "editor.formatOnSave": false, // enable per language
             "[python]": {
-                "editor.formatOnSave": true
+              "editor.formatOnSave": true,
+              "editor.codeActionsOnSave": {
+                  "source.fixAll": true,
+                  "source.organizeImports": true
+                },
+              "editor.defaultFormatter": "charliermarsh.ruff",
+              "ruff.organizeImports": true
             },
-            "python.formatting.provider": "black",
-            "python.formatting.blackArgs": [],
-            "python.venvFolders": ["${localWorkspaceFolder}/plugins/.venv"]
-          },
-          "extensions": [
-              "ms-python.python",
-              "ms-python.pylint",
-              "ms-python.vscode-pylance"
-        ]
-      }
-    },
+            "ruff.codeAction.fixViolation": {
+                "enable": true
+            },
+            "ruff.fixAll": true,
+            "ruff.format.args": ["--config=./pyproject.toml"],
+            "ruff.lint.args": ["--config=./pyproject.toml"]
+          }
+        }
+      },
 
     "features": {
         "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
@@ -57,8 +47,10 @@
     "remoteEnv": {
         // "PATH": "${containerEnv:PATH}:${workspaceRoot}/.venv/bin"
     },
+      
+    // "mounts": ["source=${localWorkspaceFolder}/demo/configs,target=/configs,type=bind,consistency=cached"],
+    // Use 'forwardPorts' to make a list of ports inside the container available locally.
     
-    // Use 'forwardPorts' to make a list of ports inside the container available locally.    
 	"forwardPorts": [
         3000,3001,3002,
         8032

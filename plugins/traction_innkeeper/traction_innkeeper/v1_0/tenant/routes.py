@@ -9,7 +9,7 @@ from aiohttp_apispec import (
     request_schema,
 )
 from aries_cloudagent.admin.request_context import AdminRequestContext
-from aries_cloudagent.admin.server import AdminConfigSchema
+from aries_cloudagent.admin.routes import AdminConfigSchema
 from aries_cloudagent.messaging.models.openapi import OpenAPISchema
 from aries_cloudagent.multitenant.admin.routes import (
     format_wallet_record,
@@ -24,6 +24,7 @@ from aries_cloudagent.wallet.models.wallet_record import (
     WalletRecord,
 )
 from aries_cloudagent.admin import server
+from aries_cloudagent.admin.decorators.auth import tenant_authentication
 from marshmallow import fields, validate
 
 from ..innkeeper.routes import (
@@ -122,6 +123,7 @@ async def setup_tenant_context(request: web.Request, handler):
 )
 @response_schema(TenantRecordSchema(), 200, description="")
 @error_handler
+@tenant_authentication
 async def tenant_self(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     # we need the caller's wallet id
@@ -142,6 +144,7 @@ async def tenant_self(request: web.BaseRequest):
 @docs(tags=[SWAGGER_CATEGORY], summary="Get a tenant subwallet")
 @response_schema(WalletRecordSchema(), 200, description="")
 @error_handler
+@tenant_authentication
 async def tenant_wallet_get(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     # we need the caller's wallet id
@@ -163,6 +166,7 @@ async def tenant_wallet_get(request: web.BaseRequest):
 @docs(tags=[SWAGGER_CATEGORY], summary="Get tenant setting")
 @response_schema(TenantConfigSchema(), 200, description="")
 @error_handler
+@tenant_authentication
 async def tenant_config_get(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     wallet_id = context.profile.settings.get("wallet.id")
@@ -190,6 +194,7 @@ async def tenant_config_get(request: web.BaseRequest):
 @request_schema(TenantLedgerIdConfigSchema)
 @response_schema(TenantLedgerIdConfigSchema(), 200, description="")
 @error_handler
+@tenant_authentication
 async def tenant_config_ledger_id_set(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     wallet_id = context.profile.settings.get("wallet.id")
@@ -213,6 +218,7 @@ async def tenant_config_ledger_id_set(request: web.BaseRequest):
 @request_schema(CustomUpdateWalletRequestSchema)
 @response_schema(WalletRecordSchema(), 200, description="")
 @error_handler
+@tenant_authentication
 async def tenant_wallet_update(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     # we need the caller's wallet id
@@ -272,6 +278,7 @@ async def tenant_wallet_update(request: web.BaseRequest):
 @request_schema(UpdateContactRequestSchema)
 @response_schema(UpdateContactRequestSchema, 200, description="")
 @error_handler
+@tenant_authentication
 async def tenant_email_update(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     # we need the caller's wallet id
@@ -297,6 +304,7 @@ async def tenant_email_update(request: web.BaseRequest):
 @request_schema(TenantApiKeyRequestSchema())
 @response_schema(TenantAuthenticationsApiResponseSchema(), 200, description="")
 @error_handler
+@tenant_authentication
 async def tenant_api_key(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     wallet_id = context.profile.settings.get("wallet.id")
@@ -331,6 +339,7 @@ async def tenant_api_key(request: web.BaseRequest):
 @match_info_schema(TenantAuthenticationApiIdMatchInfoSchema())
 @response_schema(TenantAuthenticationApiRecordSchema(), 200, description="")
 @error_handler
+@tenant_authentication
 async def tenant_api_key_get(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     wallet_id = context.profile.settings.get("wallet.id")
@@ -361,6 +370,7 @@ async def tenant_api_key_get(request: web.BaseRequest):
 @docs(tags=[SWAGGER_CATEGORY], summary="List tenant API Key Records")
 @response_schema(TenantAuthenticationApiListSchema(), 200, description="")
 @error_handler
+@tenant_authentication
 async def tenant_api_key_list(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     wallet_id = context.profile.settings.get("wallet.id")
@@ -387,6 +397,7 @@ async def tenant_api_key_list(request: web.BaseRequest):
 @match_info_schema(TenantAuthenticationApiIdMatchInfoSchema)
 @response_schema(TenantAuthenticationApiOperationResponseSchema, 200, description="")
 @error_handler
+@tenant_authentication
 async def tenant_api_key_delete(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     wallet_id = context.profile.settings.get("wallet.id")
@@ -428,6 +439,7 @@ async def tenant_api_key_delete(request: web.BaseRequest):
 @docs(tags=[SWAGGER_CATEGORY], summary="Fetch the server configuration")
 @response_schema(AdminConfigSchema(), 200, description="")
 @error_handler
+@tenant_authentication
 async def tenant_server_config_handler(request: web.BaseRequest):
     context: AdminRequestContext = request["context"]
     # use base/root profile for server config, use Tenant Manager profile

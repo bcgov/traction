@@ -2,7 +2,7 @@ import functools
 import logging
 import uuid
 
-from aiohttp import ClientSession, web
+from aiohttp import web
 from aiohttp_apispec import (
     docs,
     match_info_schema,
@@ -11,7 +11,7 @@ from aiohttp_apispec import (
     use_kwargs,
 )
 from aries_cloudagent.admin.request_context import AdminRequestContext
-from aries_cloudagent.admin.server import AdminConfigSchema
+from aries_cloudagent.admin.routes import AdminConfigSchema
 from aries_cloudagent.messaging.models.base import BaseModelError
 from aries_cloudagent.messaging.models.openapi import OpenAPISchema
 from aries_cloudagent.messaging.valid import JSONWebToken, UUIDFour
@@ -30,22 +30,22 @@ from marshmallow import fields, validate
 
 from . import TenantManager
 from .config import InnkeeperWalletConfig
+from .models import (
+    ReservationRecord,
+    ReservationRecordSchema,
+    TenantAuthenticationApiRecord,
+    TenantAuthenticationApiRecordSchema,
+    TenantRecord,
+    TenantRecordSchema,
+)
 from .utils import (
-    approve_reservation,
-    refresh_registration_token,
-    create_api_key,
     EndorserLedgerConfigSchema,
     ReservationException,
     TenantApiKeyException,
     TenantConfigSchema,
-)
-from .models import (
-    ReservationRecord,
-    ReservationRecordSchema,
-    TenantRecord,
-    TenantRecordSchema,
-    TenantAuthenticationApiRecord,
-    TenantAuthenticationApiRecordSchema,
+    approve_reservation,
+    create_api_key,
+    refresh_registration_token,
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -905,7 +905,6 @@ async def innkeeper_authentications_api(request: web.BaseRequest):
 
     # keys are under base/root profile, use Tenant Manager profile
     mgr = context.inject(TenantManager)
-    profile = mgr.profile
 
     try:
         api_key, tenant_authentication_api_id = await create_api_key(rec, mgr)
