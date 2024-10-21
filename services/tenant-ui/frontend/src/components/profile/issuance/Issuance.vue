@@ -22,7 +22,7 @@
     </p>
   </div>
   <div v-else>
-    <h5 class="mb-0 mt-3">{{ $t('common.endorser') }}</h5>
+    <h5 class="mb-0 mt-3">{{ $t('common.ledgers') }}</h5>
     <div v-if="endorserInfo">
       <Endorser />
 
@@ -49,6 +49,7 @@ import { useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other Components
 import Endorser from './Endorser.vue';
+import ReadOnlyLedger from './ReadOnlyLedger.vue';
 import PublicDid from './PublicDid.vue';
 import TaaAcceptance from './TaaAcceptance.vue';
 import { useToast } from 'vue-toastification';
@@ -69,6 +70,7 @@ const errLoading = ref(false);
 const loadIssuer = async () => {
   try {
     await Promise.all([
+      tenantStore.getServerConfig(),
       tenantStore.getIssuanceStatus(),
       tenantStore.getWalletcDids(),
       tenantStore.getTransactions(),

@@ -38,6 +38,13 @@
           </span>
         </template>
       </Column>
+      <Column :sortable="true" field="read_only" header="Read Only" dataType="boolean" style="min-width: 6rem">
+        <template #body="{ data }">
+          <div class="flex align-items-center">
+            <i class="pi" :class="{ 'pi-pencil text-red-500': data.verified, 'pi-pencil text-green-400': !data.verified }"></i>
+          </div>
+        </template>
+      </Column>
     </DataTable>
     <div v-if="showNotActiveWarn" class="inactive-endorser">
       <i class="pi pi-exclamation-triangle"></i>
@@ -84,13 +91,14 @@ import EndorserConnect from './EndorserConnect.vue';
 const configStore = useConfigStore();
 const tenantStore = useTenantStore();
 const { config } = storeToRefs(configStore);
-const { endorserConnection, endorserInfo, tenantConfig, loading } =
+const { endorserConnection, endorserInfo, tenantConfig, loading, serverConfig} =
   storeToRefs(tenantStore);
 
-const endorserList = tenantConfig.value.connect_to_endorser.map(
+const endorserList = serverConfig.value.config["ledger.ledger_config_list"].map(
   (config: any) => ({
-    ledger_id: config.ledger_id,
+    ledger_id: config.id,
     endorser_alias: config.endorser_alias,
+    read_only: config.read_only,
   })
 );
 
