@@ -19,7 +19,7 @@ data:
   FRONTEND_SESSION_TIMEOUT_SECONDS: {{ .Values.ui.oidc.session.timeoutSeconds | quote }}
   FRONTEND_SESSION_COUNTDOWN_SECONDS: {{ .Values.ui.oidc.session.countdownSeconds | quote }}
   FRONTEND_TENANT_PROXY_URL: https://{{ include "tenant_proxy.host" . }}
-  FRONTEND_LOG_STREAM_URL: wss://{{ include "tenant-ui.fullname" . }}:{{ .Values.tenant-ui.service.port }}/logStream
+  FRONTEND_LOG_STREAM_URL: wss://{{ include "tenant-ui.fullname" . }}:{{ .Values.ui.service.httpPort }}/logStream
   SERVER_OIDC_JWKS: {{ .Values.ui.oidc.jwksUri | quote }}
   SERVER_OIDC_REALM: {{ .Values.ui.oidc.realm | quote }}
   SERVER_OIDC_ROLE: {{ .Values.ui.oidc.roleName | quote }}

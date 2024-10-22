@@ -591,6 +591,18 @@ tenant_proxy:
   ##
   tolerations: []
 
+## @section Loki configuration
+##
+loki:
+  ## Loki service configuration
+  ##
+  service:
+    ## @param loki.service.type Kubernetes Service type
+    ##
+    type: ClusterIP
+    ## @param loki.service.port Port to expose for http services
+    port: 3100
+
 ## @section Tenant-UI Configuration
 ##
 ui:
