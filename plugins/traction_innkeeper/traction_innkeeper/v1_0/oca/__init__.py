@@ -1,13 +1,13 @@
 import logging
 
-from aries_cloudagent.admin.base_server import BaseAdminServer
-from aries_cloudagent.admin.server import AdminServer
-from aries_cloudagent.config.injection_context import InjectionContext
-from aries_cloudagent.core.event_bus import EventBus, Event
-from aries_cloudagent.core.plugin_registry import PluginRegistry
-from aries_cloudagent.core.profile import Profile
-from aries_cloudagent.core.protocol_registry import ProtocolRegistry
-from aries_cloudagent.core.util import STARTUP_EVENT_PATTERN
+from acapy_agent.admin.base_server import BaseAdminServer
+from acapy_agent.admin.server import AdminServer
+from acapy_agent.config.injection_context import InjectionContext
+from acapy_agent.core.event_bus import EventBus, Event
+from acapy_agent.core.plugin_registry import PluginRegistry
+from acapy_agent.core.profile import Profile
+from acapy_agent.core.protocol_registry import ProtocolRegistry
+from acapy_agent.core.util import STARTUP_EVENT_PATTERN
 
 from .oca_service import OcaService
 
