@@ -1,8 +1,8 @@
 import axios from "axios";
 import config from "config";
-const TRACURL: string = config.get("server.tractionUrl");
-const INN_USER = config.get("server.innkeeper.user");
-const INN_PW = config.get("server.innkeeper.key");
+const TRACTION_URL: string = config.get("server.tractionUrl");
+const INNKEEPER_USER = config.get("server.innkeeper.user");
+const INNKEEPER_KEY = config.get("server.innkeeper.key");
 
 /**
  * @function login
@@ -10,8 +10,8 @@ const INN_PW = config.get("server.innkeeper.key");
  * @returns {string} The inkeeper token
  */
 export const login = async () => {
-  const loginUrl = `${TRACURL}/multitenancy/tenant/${INN_USER}/token`;
-  const payload = { wallet_key: INN_PW };
+  const loginUrl = `${TRACTION_URL}/multitenancy/tenant/${INNKEEPER_USER}/token`;
+  const payload = { wallet_key: INNKEEPER_KEY };
   const res = await axios({
     method: "post",
     url: loginUrl,
@@ -29,7 +29,7 @@ export const login = async () => {
 export const createReservation = async (req: any, token: string) => {
   try {
     const auth = `Bearer ${token}`;
-    const reservationUrl = `${TRACURL}/innkeeper/reservations`;
+    const reservationUrl = `${TRACTION_URL}/innkeeper/reservations`;
     const payload = req.body;
 
     const res = await axios({

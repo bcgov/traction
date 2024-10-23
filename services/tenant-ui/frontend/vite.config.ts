@@ -28,6 +28,12 @@ export default defineConfig({
   },
   server: {
     proxy: {
+      '/logStream': {
+        target: 'ws://localhost:8080',
+        ws: true,
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/logStream/, ''),
+      },
       '/api': proxyObject,
       '/config': proxyObject,
     },
