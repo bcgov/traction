@@ -1,11 +1,11 @@
 import logging
 import re
 
-from aries_cloudagent.core.event_bus import EventBus, Event
-from aries_cloudagent.core.profile import Profile
-from aries_cloudagent.messaging.models.base import BaseModelError
-from aries_cloudagent.protocols.issue_credential.v1_0 import V10CredentialExchange
-from aries_cloudagent.storage.error import StorageError, StorageNotFoundError
+from acapy_agent.core.event_bus import EventBus, Event
+from acapy_agent.core.profile import Profile
+from acapy_agent.messaging.models.base import BaseModelError
+from acapy_agent.protocols.issue_credential.v1_0 import V10CredentialExchange
+from acapy_agent.storage.error import StorageError, StorageNotFoundError
 
 LOGGER = logging.getLogger(__name__)
 REVOCATION_NOTIFICATION_EVENT_PATTERN = re.compile(

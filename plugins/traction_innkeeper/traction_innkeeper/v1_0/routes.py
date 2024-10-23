@@ -1,7 +1,7 @@
 import logging
 
 from aiohttp import web
-from aries_cloudagent.utils.classloader import ClassLoader
+from acapy_agent.utils.classloader import ClassLoader
 
 from . import MODULES
 

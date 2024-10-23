@@ -80,15 +80,6 @@ it randomly.
 {{- end }}
 
 {{/*
-Return true if a database secret should be created
-*/}}
-{{- define "acapy.database.createSecret" -}}
-{{- if not .Values.acapy.walletStorageCredentials.existingSecret -}}
-{{- true -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
 Return true if a api secret should be created
 */}}
 {{- define "acapy.api.createSecret" -}}
@@ -131,14 +122,10 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 Get the admin-password key.
 */}}
 {{- define "acapy.database.adminPasswordKey" -}}
-{{- if .Values.acapy.walletStorageCredentials.existingSecret -}}
-    {{- if .Values.acapy.walletStorageCredentials.secretKeys.adminPasswordKey -}}
-        {{- printf "%s" (tpl .Values.acapy.walletStorageCredentials.secretKeys.adminPasswordKey $) -}}
-    {{- else if .Values.postgresql.auth.secretKeys.adminPasswordKey -}}
-        {{- printf "%s" (tpl .Values.postgresql.auth.secretKeys.adminPasswordKey $) -}}
-    {{- end -}}
-{{- else -}}
-    {{- "admin-password" -}}
+{{- if .Values.acapy.walletStorageCredentials.secretKeys.adminPasswordKey -}}
+    {{- printf "%s" (tpl .Values.acapy.walletStorageCredentials.secretKeys.adminPasswordKey $) -}}
+{{- else if .Values.postgresql.auth.secretKeys.adminPasswordKey -}}
+    {{- printf "%s" (tpl .Values.postgresql.auth.secretKeys.adminPasswordKey $) -}}
 {{- end -}}
 {{- end -}}
 
@@ -146,16 +133,12 @@ Get the admin-password key.
 Get the user-password key.
 */}}
 {{- define "acapy.database.userPasswordKey" -}}
-{{- if .Values.acapy.walletStorageCredentials.existingSecret -}}
-    {{- if or (empty .Values.acapy.walletStorageCredentials.account) (eq .Values.acapy.walletStorageCredentials.account "postgres") -}}
-        {{- printf "%s" (include "acapy.database.adminPasswordKey" .) -}}
-    {{- else -}}
-        {{- if .Values.acapy.walletStorageCredentials.secretKeys.userPasswordKey -}}
-            {{- printf "%s" (tpl .Values.acapy.walletStorageCredentials.secretKeys.userPasswordKey $) -}}
-        {{- end -}}
-    {{- end -}}
+{{- if or (empty .Values.acapy.walletStorageCredentials.account) (eq .Values.acapy.walletStorageCredentials.account "postgres") -}}
+    {{- printf "%s" (include "acapy.database.adminPasswordKey" .) -}}
 {{- else -}}
-    {{- "database-password" -}}
+    {{- if .Values.acapy.walletStorageCredentials.secretKeys.userPasswordKey -}}
+        {{- printf "%s" (tpl .Values.acapy.walletStorageCredentials.secretKeys.userPasswordKey $) -}}
+    {{- end -}}
 {{- end -}}
 {{- end -}}
 
