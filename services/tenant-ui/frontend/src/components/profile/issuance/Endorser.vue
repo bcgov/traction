@@ -46,15 +46,13 @@
         style="min-width: 6rem"
       >
         <template #body="{ data }">
-          <div class="flex align-items-center">
-            <i
-              class="pi"
-              :class="{
-                'pi-pencil text-red-500': data.verified,
-                'pi-pencil text-green-400': !data.verified,
-              }"
-            ></i>
-          </div>
+          <i
+            class="pi"
+            :class="{
+              'pi-pencil text-green-500': !data.read_only,
+              'pi-pencil text-red-400': data.read_only,
+            }"
+          ></i>
         </template>
       </Column>
     </DataTable>
