@@ -38,6 +38,23 @@
           </span>
         </template>
       </Column>
+      <Column
+        :sortable="true"
+        field="is_write"
+        header="Read Only"
+        data-type="boolean"
+        style="min-width: 6rem"
+      >
+        <template #body="{ data }">
+          <i
+            class="pi"
+            :class="{
+              'pi-pencil text-green-500': data.is_write,
+              'pi-pencil text-red-400': !data.is_write,
+            }"
+          ></i>
+        </template>
+      </Column>
     </DataTable>
     <div v-if="showNotActiveWarn" class="inactive-endorser">
       <i class="pi pi-exclamation-triangle"></i>
@@ -84,15 +101,24 @@ import EndorserConnect from './EndorserConnect.vue';
 const configStore = useConfigStore();
 const tenantStore = useTenantStore();
 const { config } = storeToRefs(configStore);
-const { endorserConnection, endorserInfo, tenantConfig, loading } =
-  storeToRefs(tenantStore);
+const {
+  endorserConnection,
+  endorserInfo,
+  tenantConfig,
+  loading,
+  serverConfig,
+} = storeToRefs(tenantStore);
 
-const endorserList = tenantConfig.value.connect_to_endorser.map(
-  (config: any) => ({
-    ledger_id: config.ledger_id,
-    endorser_alias: config.endorser_alias,
-  })
-);
+const endorserList =
+  'config' in serverConfig.value
+    ? serverConfig.value.config['ledger.ledger_config_list'].map(
+        (config: any) => ({
+          ledger_id: config.id,
+          endorser_alias: config.endorser_alias,
+          is_write: config.is_write,
+        })
+      )
+    : [];
 
 // Allowed to connect to endorser and register DID?
 const canBecomeIssuer = computed(
