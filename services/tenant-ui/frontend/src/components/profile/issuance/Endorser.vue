@@ -15,7 +15,9 @@
       <template #loading>{{ $t('common.loading') }}</template>
       <Column :sortable="false" header="Connect">
         <template #body="{ data }">
-          <EndorserConnect :ledger-info="data" />
+          <div v-if="data.is_write">
+            <EndorserConnect :ledger-info="data" />
+          </div>
         </template>
       </Column>
       <Column :sortable="true" field="ledger_id" header="Ledger" />
@@ -41,7 +43,7 @@
       <Column
         :sortable="true"
         field="is_write"
-        header="Read Only"
+        header="Writable"
         data-type="boolean"
         style="min-width: 6rem"
       >
@@ -49,8 +51,8 @@
           <i
             class="pi"
             :class="{
-              'pi-pencil text-green-500': data.is_write,
-              'pi-pencil text-red-400': !data.is_write,
+              'pi-check-circle text-green-500': data.is_write,
+              '': !data.is_write,
             }"
           ></i>
         </template>
@@ -115,7 +117,7 @@ const endorserList =
         (config: any) => ({
           ledger_id: config.id,
           endorser_alias: config.endorser_alias,
-          is_write: config.is_write,
+          is_write: !config.is_write,
         })
       )
     : [];
