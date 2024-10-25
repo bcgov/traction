@@ -117,7 +117,7 @@ const endorserList =
         (config: any) => ({
           ledger_id: config.id,
           endorser_alias: config.endorser_alias,
-          is_write: !config.is_write,
+          is_write: config.is_write,
         })
       )
     : [];
