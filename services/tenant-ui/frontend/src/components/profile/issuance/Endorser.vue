@@ -15,7 +15,9 @@
       <template #loading>{{ $t('common.loading') }}</template>
       <Column :sortable="false" header="Connect">
         <template #body="{ data }">
-          <EndorserConnect :ledger-info="data" />
+          <div v-if="data.is_write">
+            <EndorserConnect :ledger-info="data" />
+          </div>
         </template>
       </Column>
       <Column :sortable="true" field="ledger_id" header="Ledger" />
@@ -36,6 +38,23 @@
               style="font-size: 0.8rem"
             ></i>
           </span>
+        </template>
+      </Column>
+      <Column
+        :sortable="true"
+        field="is_write"
+        header="Writable"
+        data-type="boolean"
+        style="min-width: 6rem"
+      >
+        <template #body="{ data }">
+          <i
+            class="pi"
+            :class="{
+              'pi-check-circle text-green-500': data.is_write,
+              '': !data.is_write,
+            }"
+          ></i>
         </template>
       </Column>
     </DataTable>
@@ -84,15 +103,24 @@ import EndorserConnect from './EndorserConnect.vue';
 const configStore = useConfigStore();
 const tenantStore = useTenantStore();
 const { config } = storeToRefs(configStore);
-const { endorserConnection, endorserInfo, tenantConfig, loading } =
-  storeToRefs(tenantStore);
+const {
+  endorserConnection,
+  endorserInfo,
+  tenantConfig,
+  loading,
+  serverConfig,
+} = storeToRefs(tenantStore);
 
-const endorserList = tenantConfig.value.connect_to_endorser.map(
-  (config: any) => ({
-    ledger_id: config.ledger_id,
-    endorser_alias: config.endorser_alias,
-  })
-);
+const endorserList =
+  'config' in serverConfig.value
+    ? serverConfig.value.config['ledger.ledger_config_list'].map(
+        (config: any) => ({
+          ledger_id: config.id,
+          endorser_alias: config.endorser_alias,
+          is_write: config.is_write,
+        })
+      )
+    : [];
 
 // Allowed to connect to endorser and register DID?
 const canBecomeIssuer = computed(
