@@ -49,5 +49,5 @@ app.use("/config", (_, res, next) => {
 app.use(APIROOT, router);
 
 app.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}`);
+  console.log(`Listening on port ${PORT}, apiroot: ${APIROOT}`);
 });
