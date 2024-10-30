@@ -24,13 +24,14 @@ generate_traction_ascii_art() {
 
 # Global variable to hold Docker Compose command
 compose_cmd=""
+compose_files_opt="-f docker-compose.logs.yml -f docker-compose.yml"
 
 # Function to determine the correct Docker Compose command
 get_docker_compose_command() {
   if command -v "docker" > /dev/null && docker compose version > /dev/null 2>&1; then
-    compose_cmd="docker compose"
+    compose_cmd="docker compose $compose_files_opt"
   elif command -v docker-compose > /dev/null 2>&1; then
-    compose_cmd="docker-compose"
+    compose_cmd="docker-compose $compose_files_opt"
   else
     echo "Error: Neither 'docker compose' nor 'docker-compose' is installed." >&2
     exit 1
@@ -65,7 +66,7 @@ build_docker_images() {
   fi
 
   built_services="traction-acapy-image-builder tenant-ui tenant-proxy endorser-api endorser-api-1"
-  pulled_services="ngrok-traction-agent traction-db endorser-db endorser-db-1 maildev endorser-agent endorser-agent-1"
+  pulled_services="loki promtail grafana ngrok-traction-agent traction-db endorser-db endorser-db-1 maildev endorser-agent endorser-agent-1"
   $compose_cmd build $built_services --no-cache --parallel
   $compose_cmd pull $pulled_services
 }
