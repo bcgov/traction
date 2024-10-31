@@ -73,7 +73,8 @@ router.post(
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() });
+        res.status(422).json({ errors: errors.array() });
+        return;
       }
 
       const result = await emailComponent.sendConfirmationEmail(req);
@@ -92,7 +93,8 @@ router.post(
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() });
+        res.status(422).json({ errors: errors.array() });
+        return
       }
 
       const result = await emailComponent.sendStatusEmail(req);
