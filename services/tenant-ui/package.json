@@ -23,7 +23,7 @@
     "express": "^4.21.1",
     "express-oauth-jwt": "^2.0.2",
     "express-validator": "^7.2.0",
-    "jose": "^5.8.0",
+    "jose": "^5.9.6",
     "nodemailer": "^6.9.16"
   },
   "devDependencies": {
