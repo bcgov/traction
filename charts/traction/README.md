@@ -414,7 +414,6 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | `postgresql.primary.resources.requests.cpu`           | The requested cpu for the PostgreSQL Primary containers                                                                                            | `300m`                  |
 | `postgresql.primary.service.ports.postgresql`         | PostgreSQL service port                                                                                                                            | `5432`                  |
 | `postgresql.primary.extendedConfiguration`            | Extended PostgreSQL Primary configuration (appended to main or default configuration)                                                              | `max_connections = 500` |
-| `postgresql-ha.enabled`                               | Deploy HA PostgreSQL chart. Not currently supported, provided for future use.                                                                      | `false`                 |
 
 ## Maintainers
 
