@@ -402,7 +402,6 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | `postgresql.fullnameOverride`                         | When overriding fullnameOverride, you must override this to match.                                                                                 | `""`                    |
 | `postgresql.architecture`                             | PostgreSQL architecture (`standalone` or `replication`)                                                                                            | `standalone`            |
 | `postgresql.auth.enablePostgresUser`                  | Assign a password to the "postgres" admin user. Otherwise, remote access will be blocked for this user. Not recommended for production deployment. | `true`                  |
-| `postgresql.auth.database`                            | Name for a custom database to create                                                                                                               | `traction`              |
 | `postgresql.auth.username`                            | Name for a custom user to create                                                                                                                   | `acapy`                 |
 | `postgresql.primary.persistence.enabled`              | Enable PostgreSQL Primary data persistence using PVC                                                                                               | `true`                  |
 | `postgresql.primary.persistence.size`                 | PVC Storage Request for PostgreSQL volume                                                                                                          | `1Gi`                   |
@@ -414,7 +413,6 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | `postgresql.primary.resources.requests.cpu`           | The requested cpu for the PostgreSQL Primary containers                                                                                            | `300m`                  |
 | `postgresql.primary.service.ports.postgresql`         | PostgreSQL service port                                                                                                                            | `5432`                  |
 | `postgresql.primary.extendedConfiguration`            | Extended PostgreSQL Primary configuration (appended to main or default configuration)                                                              | `max_connections = 500` |
-| `postgresql-ha.enabled`                               | Deploy HA PostgreSQL chart. Not currently supported, provided for future use.                                                                      | `false`                 |
 
 ## Maintainers
 
