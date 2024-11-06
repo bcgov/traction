@@ -11,7 +11,8 @@ acapy:
       walletkey: "change-me"
       tenantid: "innkeeper"
   argfile.yml:
-    wallet-name: default
+    tails-server-base-url: https://tails-dev.vonx.io
+    tails-server-upload-url: https://tails-dev.vonx.io
   ledgers.yml:
     - id: bcovrin-test
       is_production: true
