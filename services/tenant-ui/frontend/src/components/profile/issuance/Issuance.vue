@@ -49,7 +49,6 @@ import { useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other Components
 import Endorser from './Endorser.vue';
-import ReadOnlyLedger from './ReadOnlyLedger.vue';
 import PublicDid from './PublicDid.vue';
 import TaaAcceptance from './TaaAcceptance.vue';
 import { useToast } from 'vue-toastification';
