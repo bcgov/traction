@@ -1,6 +1,6 @@
 {
   "name": "tenant-ui",
-  "version": "1.0.0",
+  "version": "1.0.99",
   "description": "",
   "main": "index.ts",
   "scripts": {
