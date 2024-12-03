@@ -1,7 +1,7 @@
 <template>
   <Button
     class="w-full mt-5"
-    label="IDIR"
+    :label="config.frontend.oidc.label"
     :loading="loading"
     @click="oidcLogin"
   />
@@ -13,10 +13,13 @@
 // State
 import { useInnkeeperOidcStore } from '@/store';
 import { storeToRefs } from 'pinia';
+import { useConfigStore } from '../../store';
 // PrimeVue/etc
 import Button from 'primevue/button';
 import { useToast } from 'vue-toastification';
 const toast = useToast();
+
+const { config } = storeToRefs(useConfigStore());
 
 const innkeeperOidcStore = useInnkeeperOidcStore();
 const { loading, error } = storeToRefs(useInnkeeperOidcStore());
