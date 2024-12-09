@@ -39,7 +39,7 @@
     "vue-toastification": "^2.0.0-rc.5"
   },
   "devDependencies": {
-    "@intlify/eslint-plugin-vue-i18n": "^3.0.0",
+    "@intlify/eslint-plugin-vue-i18n": "^3.2.0",
     "@pinia/testing": "^0.1.7",
     "@types/dompurify": "^3.0.5",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
