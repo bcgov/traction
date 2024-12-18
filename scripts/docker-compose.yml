@@ -178,7 +178,6 @@ services:
         --auto-provision
         --arg-file endorser-acapy-args.yml \
         --inbound-transport http '0.0.0.0' ${ACAPY_ENDORSER_HTTP_PORT} \
-        --webhook-url '${ENDORSER_WEBHOOK_URL}' \
         --genesis-url '${ACAPY_GENESIS_URL}' \
         --endpoint ${ACAPY_ENDORSER_ENDPOINT} \
         --wallet-name '${ENDORSER_ACAPY_WALLET_DATABASE}' \
@@ -192,9 +191,6 @@ services:
         --admin '0.0.0.0' ${ACAPY_ENDORSER_ADMIN_PORT} \
         --label '${ENDORSER_AGENT_NAME}' \
         ${ENDORSER_ACAPY_ADMIN_CONFIG} \
-        ${ENDORSER_ACAPY_READ_ONLY_MODE} \
-        --endorser-protocol-role endorser \
-        --auto-endorse-transactions \
         ",
       ]
     environment:
@@ -220,7 +216,6 @@ services:
         --auto-provision
         --arg-file endorser-acapy-args.yml \
         --inbound-transport http '0.0.0.0' ${ACAPY_ENDORSER_1_HTTP_PORT} \
-        --webhook-url '${ENDORSER_1_WEBHOOK_URL}' \
         --genesis-url '${ACAPY_GENESIS_URL_1}' \
         --endpoint ${ACAPY_ENDORSER_1_ENDPOINT} \
         --wallet-name '${ENDORSER_1_ACAPY_WALLET_DATABASE}' \
@@ -234,9 +229,6 @@ services:
         --admin '0.0.0.0' ${ACAPY_ENDORSER_1_ADMIN_PORT} \
         --label '${ENDORSER_AGENT_NAME}' \
         ${ENDORSER_ACAPY_ADMIN_CONFIG} \
-        ${ENDORSER_ACAPY_READ_ONLY_MODE} \
-        --endorser-protocol-role endorser \
-        --auto-endorse-transactions \
         ",
       ]
     environment:
