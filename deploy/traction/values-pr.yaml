@@ -11,7 +11,8 @@ acapy:
       walletkey: "change-me"
       tenantid: "innkeeper"
   argfile.yml:
-    wallet-name: default
+    tails-server-base-url: https://tails-dev.vonx.io
+    tails-server-upload-url: https://tails-dev.vonx.io
   ledgers.yml:
     - id: bcovrin-test
       is_production: true
@@ -83,6 +84,7 @@ ui:
     authority: https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-citz
     jwksUri: https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-citz/protocol/openid-connect/certs
     extraQueryParams: '{"kc_idp_hint":"idir"}'
+    label: "IDIR"
     reservationForm: >-
       {
         "formDataSchema": {

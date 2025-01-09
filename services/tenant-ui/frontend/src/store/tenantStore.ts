@@ -4,6 +4,7 @@ import {
   EndorserInfo,
   TransactionRecord,
 } from '@/types/acapyApi/acapyInterface';
+import { ServerConfig } from '@/types/index';
 interface TransactionRecordEx extends TransactionRecord {
   meta_data?: {
     [key: string]: any;
@@ -38,7 +39,7 @@ export const useTenantStore = defineStore('tenant', () => {
   const publicDid: any = ref(null);
   const writeLedger: any = ref(null);
   const publicDidRegistrationProgress: Ref<string> = ref('');
-  const serverConfig: any = ref(null);
+  const serverConfig: Ref<ServerConfig | object> = ref({});
   const taa: Ref<any> = ref(null);
   const tenantConfig: any = ref(null);
   const tenantWallet: any = ref(null);
@@ -115,13 +116,15 @@ export const useTenantStore = defineStore('tenant', () => {
   }
 
   async function getServerConfig() {
-    loading.value = true;
-    serverConfig.value = await fetchItem<AdminConfig>(
+    // loading.value = true;
+    const val = await fetchItem<AdminConfig>(
       API_PATH.TENANT_SERVER_CONFIG,
       '',
       error,
       ref(false)
     );
+    if (val != null) serverConfig.value = val;
+    // loading.value = false;
   }
 
   async function getIssuanceStatus() {

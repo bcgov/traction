@@ -6,14 +6,9 @@ import express, { Request, Response } from "express";
 import config from "config";
 import * as emailComponent from "../components/email";
 import * as innkeeperComponent from "../components/innkeeper";
-import { secure } from "express-oauth-jwt";
 import { body, validationResult } from "express-validator";
-import { createRemoteJWKSet } from "jose";
 import { NextFunction } from "express";
-
-const jwksService = createRemoteJWKSet(
-  new URL(config.get("server.oidc.jwksUri"))
-);
+import oidcMiddleware from "../middleware/oidcMiddleware";
 
 export const router = express.Router();
 
@@ -22,7 +17,7 @@ router.use(express.json());
 // For the secured innkeepr OIDC login request to verify the token and get a token from Traction
 router.get(
   "/innkeeperLogin",
-  secure(jwksService),
+  oidcMiddleware,
   async (req: any, res: Response, next: NextFunction) => {
     try {
       // Validate JWT from OIDC login before moving on
@@ -73,7 +68,8 @@ router.post(
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() });
+        res.status(422).json({ errors: errors.array() });
+        return;
       }
 
       const result = await emailComponent.sendConfirmationEmail(req);
@@ -93,7 +89,8 @@ router.post(
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() });
+        res.status(422).json({ errors: errors.array() });
+        return
       }
 
       const result = await emailComponent.sendStatusEmail(req);

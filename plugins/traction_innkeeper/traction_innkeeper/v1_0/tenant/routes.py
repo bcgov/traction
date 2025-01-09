@@ -8,23 +8,23 @@ from aiohttp_apispec import (
     response_schema,
     request_schema,
 )
-from aries_cloudagent.admin.request_context import AdminRequestContext
-from aries_cloudagent.admin.routes import AdminConfigSchema
-from aries_cloudagent.messaging.models.openapi import OpenAPISchema
-from aries_cloudagent.multitenant.admin.routes import (
+from acapy_agent.admin.request_context import AdminRequestContext
+from acapy_agent.admin.routes import AdminConfigSchema
+from acapy_agent.messaging.models.openapi import OpenAPISchema
+from acapy_agent.multitenant.admin.routes import (
     format_wallet_record,
     UpdateWalletRequestSchema,
     get_extra_settings_dict_per_tenant,
 )
-from aries_cloudagent.multitenant.base import BaseMultitenantManager
-from aries_cloudagent.storage.error import StorageNotFoundError
-from aries_cloudagent.version import __version__
-from aries_cloudagent.wallet.models.wallet_record import (
+from acapy_agent.multitenant.base import BaseMultitenantManager
+from acapy_agent.storage.error import StorageNotFoundError
+from acapy_agent.version import __version__
+from acapy_agent.wallet.models.wallet_record import (
     WalletRecordSchema,
     WalletRecord,
 )
-from aries_cloudagent.admin import server
-from aries_cloudagent.admin.decorators.auth import tenant_authentication
+from acapy_agent.admin import server
+from acapy_agent.admin.decorators.auth import tenant_authentication
 from marshmallow import fields, validate
 
 from ..innkeeper.routes import (

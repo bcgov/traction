@@ -52,6 +52,6 @@ app.use(API_ROOT, router);
 
 configureLogStream(
   app.listen(PORT, () => {
-    console.log(`Listening on port ${PORT}`);
+    console.log(`Listening on port ${PORT}, apiroot: ${API_ROOT}`);
   })
 );

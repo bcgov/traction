@@ -1,12 +1,12 @@
 import logging
 import re
 
-from aries_cloudagent.config.injector import Injector
-from aries_cloudagent.connections.models.conn_record import ConnRecord
-from aries_cloudagent.core.event_bus import Event, EventBus
-from aries_cloudagent.core.profile import Profile
-from aries_cloudagent.protocols.didexchange.v1_0.manager import DIDXManager
-from aries_cloudagent.protocols.endorse_transaction.v1_0.manager import (
+from acapy_agent.config.injector import Injector
+from acapy_agent.connections.models.conn_record import ConnRecord
+from acapy_agent.core.event_bus import Event, EventBus
+from acapy_agent.core.profile import Profile
+from acapy_agent.protocols.didexchange.v1_0.manager import DIDXManager
+from acapy_agent.protocols.endorse_transaction.v1_0.manager import (
     TransactionManager,
 )
 

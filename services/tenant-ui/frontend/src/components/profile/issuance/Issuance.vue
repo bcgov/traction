@@ -22,7 +22,7 @@
     </p>
   </div>
   <div v-else>
-    <h5 class="mb-0 mt-3">{{ $t('common.endorser') }}</h5>
+    <h5 class="mb-0 mt-3">{{ $t('common.ledgers') }}</h5>
     <div v-if="endorserInfo">
       <Endorser />
 
@@ -69,6 +69,7 @@ const errLoading = ref(false);
 const loadIssuer = async () => {
   try {
     await Promise.all([
+      tenantStore.getServerConfig(),
       tenantStore.getIssuanceStatus(),
       tenantStore.getWalletcDids(),
       tenantStore.getTransactions(),
