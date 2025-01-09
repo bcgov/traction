@@ -163,7 +163,7 @@ services:
       - host.docker.internal:host-gateway
 
   endorser-agent:
-    image: ghcr.io/openwallet-foundation/acapy-agent:py3.12-1.1.0
+    image: ghcr.io/openwallet-foundation/acapy-agent:py3.12-1.2.0
     depends_on:
       endorser-db:
         condition: service_healthy
@@ -201,7 +201,7 @@ services:
       - host.docker.internal:host-gateway
 
   endorser-agent-1:
-    image: ghcr.io/openwallet-foundation/acapy-agent:py3.12-1.1.0
+    image: ghcr.io/openwallet-foundation/acapy-agent:py3.12-1.2.0
     depends_on:
       endorser-db:
         condition: service_healthy
