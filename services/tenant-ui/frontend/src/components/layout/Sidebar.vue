@@ -6,7 +6,7 @@
     </h1>
     <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
     <h1 class="sidebar-app-title small">T</h1>
-    <PanelMenu :model="items" class="mt-5">
+    <PanelMenu :model="sidebarItems" class="mt-5">
       <template #item="{ item }">
         <PanelMenuItemLink :item="item" />
       </template>
@@ -19,16 +19,16 @@ import { ref } from 'vue';
 import PanelMenu from 'primevue/panelmenu';
 import ProgressSpinner from 'primevue/progressspinner';
 import { storeToRefs } from 'pinia';
-import { useTenantStore } from '../../store';
 import { useI18n } from 'vue-i18n';
+import { useConfigStore, useTenantStore } from '../../store';
 import PanelMenuItemLink from '../common/PanelMenuItemLink.vue';
 
 const { t } = useI18n();
-
+const { config } = useConfigStore();
 // tenant should be loaded by login...
 const { tenant, loading } = storeToRefs(useTenantStore());
 
-const items = ref([
+const sidebarItems = [
   {
     label: t('dashboard.dashboard'),
     icon: 'pi pi-fw pi-chart-bar',
@@ -103,11 +103,14 @@ const items = ref([
     icon: 'pi pi-fw pi-question-circle',
     route: '/about',
   },
+];
 
-  {
+const { logStreamUrl } = config?.frontend;
+if (logStreamUrl) {
+  sidebarItems.push({
     label: t('log.log'),
     icon: 'pi pi-fw pi-file',
     route: '/log',
-  },
-]);
+  });
+}
 </script>

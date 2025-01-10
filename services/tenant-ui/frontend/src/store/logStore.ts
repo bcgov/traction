@@ -43,7 +43,7 @@ export const useLogStore = defineStore('log', () => {
       }
       if (!logStream.value) {
         logStream.value = new WebSocket(
-          `${config.frontend.logStreamUrl}?token=${token}`
+          `${config?.frontend?.logStreamUrl}?token=${token}`
         );
         logStream.value.onopen = () => {
           logStreamState.value = LogStreamState.OPEN;
