@@ -105,8 +105,7 @@ const sidebarItems = [
   },
 ];
 
-const { logStreamUrl } = config?.frontend;
-if (logStreamUrl) {
+if (config?.frontend?.logStreamUrl) {
   sidebarItems.push({
     label: t('log.log'),
     icon: 'pi pi-fw pi-file',

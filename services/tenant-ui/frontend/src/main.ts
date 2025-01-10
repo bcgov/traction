@@ -68,8 +68,7 @@ async function loadApp() {
   }
 
   // Log Setup
-  const { logStreamUrl } = configStore?.config?.frontend;
-  if (!logStreamUrl) {
+  if (!configStore?.config?.frontend?.logStreamUrl) {
     console.warn('Log not configured');
     router.removeRoute('Log');
   }
