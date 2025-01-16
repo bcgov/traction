@@ -591,18 +591,6 @@ tenant_proxy:
   ##
   tolerations: []
 
-## @section Loki configuration
-##
-loki:
-  ## Loki service configuration
-  ##
-  service:
-    ## @param loki.service.type Kubernetes Service type
-    ##
-    type: ClusterIP
-    ## @param loki.service.port Port to expose for http services
-    port: 3100
-
 ## @section Tenant-UI Configuration
 ##
 ui:
@@ -615,6 +603,8 @@ ui:
   ## @param ui.requireEmailForReservation Whether the Email field is needed for a tenant reservation
   ## If false will default not.applicable@example.com to API 
   requireEmailForReservation: true
+  ## @param ui.lokiUrl The endpoint to stream loki logs from for the Tenant UI
+  lokiUrl: ""
   image:
     ## @param ui.image.repository
     repository: ghcr.io/bcgov/traction-tenant-ui

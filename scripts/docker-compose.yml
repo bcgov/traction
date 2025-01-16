@@ -1,15 +1,8 @@
 version: "3.12"
-x-logging: &default-logging
-  driver: loki
-  options:
-    loki-url: http://localhost:3100/loki/api/v1/push
-    loki-retries: 5
-    loki-batch-size: 400
 
 services:
   ngrok-traction-agent:
     image: ngrok/ngrok
-    logging: *default-logging
     environment:
       - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
       - TRACTION_ACAPY_HTTP_PORT=${TRACTION_ACAPY_HTTP_PORT}
@@ -19,7 +12,6 @@ services:
 
   traction-acapy-image-builder:
     pull_policy: missing
-    logging: *default-logging
     build:
       context: ../plugins
       dockerfile: ./docker/Dockerfile
@@ -33,7 +25,6 @@ services:
       context: ../services/aca-py
       dockerfile: Dockerfile.acapy
     image: traction:traction-agent
-    logging: *default-logging
     depends_on:
       traction-acapy-image-builder:
         condition: service_started
@@ -105,7 +96,6 @@ services:
 
   traction-db:
     image: "postgres:14.5"
-    logging: *default-logging
     environment:
       - POSTGRES_USER=${POSTGRESQL_USER}
       - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
@@ -124,7 +114,6 @@ services:
 
   tenant-ui:
     pull_policy: missing
-    logging: *default-logging
     build:
       context: ../services/tenant-ui
       dockerfile: Dockerfile
@@ -160,7 +149,6 @@ services:
 
   tenant-proxy:
     pull_policy: missing
-    logging: *default-logging
     build:
       context: ../plugins
       dockerfile: ./docker/Dockerfile.tenant-proxy
@@ -182,7 +170,6 @@ services:
     depends_on:
       endorser-db:
         condition: service_healthy
-    logging: *default-logging
     ports:
       - ${ACAPY_ENDORSER_ADMIN_PORT}:${ACAPY_ENDORSER_ADMIN_PORT}
       - ${ACAPY_ENDORSER_HTTP_PORT}:${ACAPY_ENDORSER_HTTP_PORT}
@@ -221,7 +208,6 @@ services:
     depends_on:
       endorser-db:
         condition: service_healthy
-    logging: *default-logging
     ports:
       - ${ACAPY_ENDORSER_1_ADMIN_PORT}:${ACAPY_ENDORSER_1_ADMIN_PORT}
       - ${ACAPY_ENDORSER_1_HTTP_PORT}:${ACAPY_ENDORSER_1_HTTP_PORT}
@@ -257,7 +243,6 @@ services:
 
   endorser-db:
     image: "postgres:14.5"
-    logging: *default-logging
     environment:
       - POSTGRES_USER=${POSTGRESQL_USER}
       - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}

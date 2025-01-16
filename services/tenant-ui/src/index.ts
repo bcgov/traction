@@ -7,8 +7,9 @@ import { router } from "./routes/router";
 
 import { configureLogStream } from "./services/log-stream";
 
-const PORT: number = parseInt(config.get("server.port") as string, 10);
 const API_ROOT: string = config.get("server.apiPath");
+const LOKI_URL: string = config.get("server.lokiUrl");
+const PORT: number = parseInt(config.get("server.port") as string, 10);
 const STATIC_FILES_PATH: string = config.get("server.staticFiles");
 
 import history from "connect-history-api-fallback";
@@ -50,8 +51,10 @@ app.use("/config", (_, res, next) => {
 // This service's api endpoints
 app.use(API_ROOT, router);
 
-configureLogStream(
-  app.listen(PORT, () => {
-    console.log(`Listening on port ${PORT}, apiroot: ${API_ROOT}`);
-  })
-);
+if (LOKI_URL) {
+  configureLogStream(
+    app.listen(PORT, () => {
+      console.log(`Listening on port ${PORT}, apiroot: ${API_ROOT}`);
+    })
+  );
+}

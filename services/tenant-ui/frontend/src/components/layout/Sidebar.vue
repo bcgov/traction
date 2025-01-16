@@ -15,13 +15,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import PanelMenu from 'primevue/panelmenu';
+import PanelMenuItemLink from '../common/PanelMenuItemLink.vue';
 import ProgressSpinner from 'primevue/progressspinner';
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import { useConfigStore, useTenantStore } from '../../store';
-import PanelMenuItemLink from '../common/PanelMenuItemLink.vue';
 
 const { t } = useI18n();
 const { config } = useConfigStore();

@@ -57,6 +57,35 @@ services:
       - "3000:3000"
     networks:
       - loki
+  
+  # Override the logging config for the services in the main docker compose
+  ngrok-traction-agent:
+    logging: *default-logging
+
+  traction-acapy-image-builder:
+    logging: *default-logging
+
+  traction-agent:
+    logging: *default-logging
+
+  traction-db:
+    logging: *default-logging
+
+  tenant-ui:
+    logging: *default-logging
+
+  tenant-proxy:
+    logging: *default-logging 
+
+  endorser-agent:
+    logging: *default-logging
+
+  endorser-db:
+    logging: *default-logging
+
+  endorser-agent-1:
+    logging: *default-logging
+    
 
 networks:
   loki:

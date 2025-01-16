@@ -19,7 +19,7 @@ data:
   FRONTEND_SESSION_TIMEOUT_SECONDS: {{ .Values.ui.oidc.session.timeoutSeconds | quote }}
   FRONTEND_SESSION_COUNTDOWN_SECONDS: {{ .Values.ui.oidc.session.countdownSeconds | quote }}
   FRONTEND_TENANT_PROXY_URL: https://{{ include "tenant_proxy.host" . }}
-  FRONTEND_LOG_STREAM_URL: wss://{{ include "tenant-ui.fullname" . }}:{{ .Values.ui.service.httpPort }}/logStream
+  # FRONTEND_LOG_STREAM_URL: wss://{{ include "tenant-ui.fullname" . }}:{{ .Values.ui.service.httpPort }}/logStream
   SERVER_OIDC_JWKS: {{ .Values.ui.oidc.jwksUri | quote }}
   SERVER_OIDC_REALM: {{ .Values.ui.oidc.realm | quote }}
   SERVER_OIDC_ROLE: {{ .Values.ui.oidc.roleName | quote }}
@@ -30,7 +30,7 @@ data:
   SERVER_SMTP_SECURE: {{ .Values.ui.smtp.secure | quote }}
   SERVER_SMTP_USER: {{ .Values.ui.smtp.user | quote }}
   SERVER_TRACTION_URL: http://{{ include "tenant_proxy.fullname" . }}:{{ .Values.tenant_proxy.service.port }}
-  SERVER_LOKI_URL: http://{{ include "loki.fullname" . }}:{{ .Values.loki.service.port }}
+  SERVER_LOKI_URL: {{ .Values.ui.lokiUrl | quote }}
   UX_APP_INNKEEPER_TITLE: {{ .Values.ui.ux.appInnkeeperTitle | quote }}
   UX_APP_TITLE: {{ .Values.ui.ux.appTitle | quote }}
   UX_COPYRIGHT: {{ .Values.ui.ux.copyright | quote }}
