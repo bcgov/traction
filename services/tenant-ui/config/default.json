@@ -1,7 +1,7 @@
 {
   "frontend": {
     "tenantProxyPath": "http://localhost:8032",
-    "logStreamUrl": "ws://localhost:5101/logStream",
+    "logStreamUrl": "",
     "apiPath": "api/",
     "basePath": "/",
     "showDeveloper": true,
