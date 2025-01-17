@@ -22,7 +22,7 @@ maintainers:
     url: https://github.com/esune
 dependencies:
   - name: postgresql
-    version: 11.9.13
+    version: 16.4.3
     repository: https://charts.bitnami.com/bitnami/
     condition: postgresql.enabled
   - name: common
