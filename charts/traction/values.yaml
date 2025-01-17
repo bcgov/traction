@@ -177,7 +177,7 @@ acapy:
   ## @param acapy.walletStorageCredentials.secretKeys.userPasswordKey Key in existing secret containing account password.
   ##
   walletStorageCredentials:
-    json: ''
+    json: ""
     account: acapy
     admin_account: postgres
     existingSecret: ""
@@ -186,14 +186,14 @@ acapy:
       userPasswordKey: password
   ## @section ACA-Py Multitenancy Configuration
   ##  Specifies the multitenancy config.
-  ##  Possible values: wallet_type, wallet_name, wallet_key, cache_size, 'key_derivation_method. 
+  ##  Possible values: wallet_type, wallet_name, wallet_key, cache_size, 'key_derivation_method.
   ##  "wallet_name" is only used when "wallet_type" is "askar-profile"
   ##
   ## @param acapy.multitenancyConfiguration.json Raw json with config. Overrides all other values including subchart values. e.g.: '{"wallet_type":"single-wallet-askar", "wallet_name":"askar-wallet"}'
   ## @param acapy.multitenancyConfiguration.wallet_type Database account name.
-  ##     
+  ##
   multitenancyConfiguration:
-    json: ''
+    json: ""
     wallet_type: single-wallet-askar
   ## @section Acapy Plugins
   ##
@@ -289,9 +289,7 @@ acapy:
   ## @param acapy.resources.requests.cpu The requested cpu for the Acapy containers
   ##
   resources:
-    limits:
-      cpu: 300m
-      memory: 300Mi
+    limits: {}
     requests:
       cpu: 120m
       memory: 200Mi
@@ -553,9 +551,7 @@ tenant_proxy:
   ## @param tenant_proxy.resources.requests.cpu The requested cpu for the Tenant proxy containers
   ##
   resources:
-    limits:
-      cpu: 100m
-      memory: 50Mi
+    limits: {}
     requests:
       cpu: 10m
       memory: 50Mi
@@ -601,7 +597,7 @@ ui:
   ## @param ui.oidc.quickConnectEndorserName A ledger that has endorser auto-accept/transact enabled
   quickConnectEndorserName: ""
   ## @param ui.requireEmailForReservation Whether the Email field is needed for a tenant reservation
-  ## If false will default not.applicable@example.com to API 
+  ## If false will default not.applicable@example.com to API
   requireEmailForReservation: true
   ## @param ui.lokiUrl The endpoint to stream loki logs from for the Tenant UI
   lokiUrl: ""
@@ -687,7 +683,7 @@ ui:
     reservationForm: >-
       {}
     ## @param ui.oidc.extraQueryParams
-    extraQueryParams: '{}'
+    extraQueryParams: "{}"
 
   ## SMTP Configuration
   smtp:
@@ -768,9 +764,7 @@ ui:
   ## @param ui.resources.requests.cpu The requested cpu for the tenant-ui containers
   ##
   resources:
-    limits:
-      cpu: 300m
-      memory: 128Mi
+    limits: {}
     requests:
       cpu: 10m
       memory: 80Mi
@@ -911,9 +905,7 @@ postgresql:
     ## @param postgresql.primary.resources.requests.cpu The requested cpu for the PostgreSQL Primary containers
     ##
     resources:
-      limits:
-        cpu: 500m
-        memory: 500Mi
+      limits: {}
       requests:
         cpu: 100m
         memory: 100Mi
