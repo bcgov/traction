@@ -146,3 +146,7 @@ If no value is set using either of these methods MATOMO tracker code will never 
 
 For more information on configuration settings see
 [Set up your configuration](https://github.com/bcgov/traction/tree/main/services/tenant-ui#set-up-your-configuration)
+
+## Log Streaming
+
+The Tenant UI can display streamed logs from a Loki aggregator. For details on setup, see ["Optional Local Log Streaming Setup" in the scripts README](../../scripts/README.md)

@@ -1,4 +1,5 @@
 version: "3.12"
+
 services:
   ngrok-traction-agent:
     image: ngrok/ngrok
@@ -122,7 +123,9 @@ services:
         condition: service_started
     environment:
       - SERVER_TRACTION_URL=${SERVER_TRACTION_URL}
+      - SERVER_LOKI_URL=${SERVER_LOKI_URL}
       - FRONTEND_TENANT_PROXY_URL=${FRONTEND_TENANT_PROXY_URL}
+      - FRONTEND_LOG_STREAM_URL=${FRONTEND_LOG_STREAM_URL}
       - IMAGE_BUILDTIME=${IMAGE_BUILDTIME}
       - IMAGE_TAG=${IMAGE_TAG}
       - IMAGE_VERSION=${IMAGE_VERSION}

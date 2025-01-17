@@ -13,15 +13,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import PanelMenu from 'primevue/panelmenu';
 import { useI18n } from 'vue-i18n';
 import PanelMenuItemLink from '@/components/common/PanelMenuItemLink.vue';
+import { useConfigStore } from '../../../store';
 
 const { t } = useI18n();
+const { config } = useConfigStore();
 
 const ROOT = '/innkeeper/';
-const items = ref([
+const items = [
   {
     label: t('reservations.reservations'),
     icon: 'pi pi-fw pi-book',
@@ -59,7 +60,15 @@ const items = ref([
     icon: 'pi pi-fw pi-question-circle',
     route: ROOT + 'about',
   },
-]);
+];
+
+if (config?.frontend?.logStreamUrl) {
+  items.push({
+    label: t('log.log'),
+    icon: 'pi pi-fw pi-file',
+    route: ROOT + 'log',
+  });
+}
 </script>
 <style scoped lang="scss">
 .sidebar-app-title.small {

@@ -79,6 +79,7 @@ router.post(
     }
   }
 );
+
 router.post(
   "/email/reservationStatus",
   body("contactEmail").isEmail(),

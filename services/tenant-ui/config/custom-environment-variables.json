@@ -1,6 +1,7 @@
 {
   "frontend": {
     "tenantProxyPath": "FRONTEND_TENANT_PROXY_URL",
+    "logStreamUrl": "FRONTEND_LOG_STREAM_URL",
     "showInnkeeperReservationPassword": "FRONTEND_INNKEEPER_SHOW_RESERVATION_PASSWORD",
     "showInnkeeperAdminLogin": "FRONTEND_INNKEEPER_SHOW_ADMIN",
     "showWritableComponents": "FRONTEND_TENANT_SHOW_WRITABLE_COMPONENTS",
@@ -46,6 +47,7 @@
   },
   "server": {
     "tractionUrl": "SERVER_TRACTION_URL",
+    "lokiUrl": "SERVER_LOKI_URL",
     "oidc": {
       "jwksUri": "SERVER_OIDC_JWKS",
       "realm": "SERVER_OIDC_REALM",

@@ -63,6 +63,8 @@ The default configuration will stand up the following environment:
 - BCovrin Test ledger... see `ACAPY_GENESIS_URL` environment variable ([http://test.bcovrin.vonx.io/genesis](http://test.bcovrin.vonx.io/genesis)).
 - previously registered Endorser DID... see `ACAPY_ENDORSER_PUBLIC_DID` environment variable.
 
+### Log streaming
+The Traction Tenant UI can optionally be configured to stream Tenant logs via a specified Loki endpoint. To see details on testing this with the local Docker setup see here.
 
 ## Run Local Traction
 - docker
@@ -128,7 +130,7 @@ docker build -f ./Dockerfile --tag traction:plugins-acapy ..
 cd ../../services/aca-py
 docker build -f ./Dockerfile.acapy --tag traction:traction-agent .
 cd ../../scripts
-docker compose up
+docker compose -f docker-compose.logs.yml -f docker-compose.yml up
 ```
 
 If there are still errors, try turning buildkit off. In the terminal where you are running your builds:
@@ -204,3 +206,36 @@ You can use the wallet id and key to retrieve a token and use the Tenant API.
 10. You are now logged in as your tenant/wallet/agent.
 11. Scroll to [GET /tenant](http://localhost:8032/api/doc#/traction-tenant/get_tenant), expand, Try it out and Execute.
 12. These are your tenant's details. Only you are authorized to fetch your tenant data.
+
+## Optional Local Log Streaming Setup
+The local development environment can optionally be set up to stream Tenant logs from the Traction services to the Tenant UI using Grafana Promtail and Loki.
+
+This requires some additional infrastructure that can be stood up in the docker compose environment to use locally. (in a operational deployment of Traction you would likely just need to specify your own Loki url to the Tenant UI environment, and set up the infrastructure as desired in your archetecture). By defuault these logging services will not build, but you can enable them as follows.
+
+**Ensure Loki driver is enabled in your Docker environment**  
+Can set up if needed with `docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions`. Traction assumes 'loki' alias for this.
+
+**Set environment**  
+In your local .env modify the following values
+```
+FRONTEND_LOG_STREAM_URL=ws://localhost:5101/logStream
+SERVER_LOKI_URL=ws://localhost:3100
+```
+
+For operational setup of the Tenant UI when deploying with Helm, 
+the Tenant UI configmap.yaml can be set with the following to pull the correct endpoint for the frontend:
+`FRONTEND_LOG_STREAM_URL: wss://{{ include "tenant-ui.fullname" . }}:{{ .Values.ui.service.httpPort }}/logStream`
+
+
+
+**Start up additional logging services**  
+In `/scripts` instead of just running the single docker compose, add on the logging one:  
+```
+docker compose -f docker-compose.logs.yml -f docker-compose.yml up
+```
+
+If using the `manage` script run
+```
+./manage build loki  
+./manage start loki  
+```

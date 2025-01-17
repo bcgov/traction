@@ -67,6 +67,12 @@ async function loadApp() {
     console.warn('Matomo not configured');
   }
 
+  // Log Setup
+  if (!configStore?.config?.frontend?.logStreamUrl) {
+    console.log('Log streaming not configured');
+    router.removeRoute('Log');
+  }
+
   // 4. load/initialize other components
   app.use(i18n);
   app.use(PrimeVue);

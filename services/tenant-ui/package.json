@@ -23,7 +23,9 @@
     "express": "^4.21.1",
     "express-validator": "^7.2.0",
     "jose": "^5.9.6",
-    "nodemailer": "^6.9.16"
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.16",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@types/config": "^3.3.5",
@@ -31,8 +33,10 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",
+    "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^22.9.0",
     "@types/nodemailer": "^6.4.16",
+    "@types/ws": "^8.5.12",
     "@typescript-eslint/eslint-plugin": "^8.14.0",
     "@typescript-eslint/parser": "^8.14.0",
     "eslint": "^8.57.0",
