@@ -49,7 +49,6 @@ acapy:
         auto_issuer: true
   resources:
     limits:
-      cpu: 200m
       memory: 300Mi
     requests:
       cpu: 120m
@@ -133,7 +132,6 @@ ui:
     innkeeperInbox: lucas.o'neil@gov.bc.ca
   resources:
     limits:
-      cpu: 300m
       memory: 128Mi
     requests:
       cpu: 10m
@@ -154,7 +152,6 @@ postgresql:
   primary:
     resources:
       limits:
-        cpu: 200m
         memory: 128Mi
       requests:
         cpu: 100m
