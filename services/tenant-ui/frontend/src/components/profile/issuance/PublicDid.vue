@@ -99,7 +99,6 @@ const hasPublicDid = computed(() => !!publicDid.value && !!publicDid.value.did);
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/variables.scss';
 .p-datatable {
   border-top: 1px solid $tenant-ui-panel-border-color;
 }

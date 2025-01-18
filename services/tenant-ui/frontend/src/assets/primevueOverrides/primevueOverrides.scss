@@ -1,5 +1,5 @@
-@import 'buttons.scss';
-@import 'datatable.scss';
-@import 'formFields.scss';
-@import 'inputSwitch.scss';
-@import 'panels.scss';
+@forward 'buttons.scss';
+@forward 'datatable.scss';
+@forward 'formFields.scss';
+@forward 'inputSwitch.scss';
+@forward 'panels.scss';

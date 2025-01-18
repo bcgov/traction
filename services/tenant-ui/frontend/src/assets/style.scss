@@ -1,8 +1,10 @@
-@import 'primevue/resources/themes/lara-light-blue/theme.css'; // includes '~primevue/resources/themes/nova/theme.css'
-@import 'layout.scss';
-@import 'tenantuiComponents.scss';
-@import 'primevueOverrides/primevueOverrides.scss';
-@import 'toast.scss';
+@forward 'primevue/resources/themes/lara-light-blue/theme.css'; // includes '~primevue/resources/themes/nova/theme.css'
+@forward 'layout.scss';
+@forward 'tenantuiComponents.scss';
+@forward 'primevueOverrides/primevueOverrides.scss';
+@forward 'toast.scss';
+@forward 'variables.scss';
+@use 'variables.scss' as *;
 
 // General HTML
 html,
