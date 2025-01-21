@@ -1,4 +1,4 @@
-@import 'variables.scss';
+@use 'variables.scss' as *;
 // For styling UI pieces that we are adding to the Tenant UI ourselves
 
 // The chip that displays api response statuses etc

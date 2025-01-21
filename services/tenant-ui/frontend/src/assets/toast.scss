@@ -1,25 +1,7 @@
-@import 'variables.scss';
+@forward "vue-toastification/dist/index.css";
+@use 'variables.scss' as *;
 // For overriding the Vue-Toastification library
 // https://github.com/Maronato/vue-toastification/blob/main/src/scss/_variables.scss
-
-// Override the variables or import a file that overrides them
-$vt-color-error: $tenant-ui-status-red-background;
-$vt-text-color-error: $tenant-ui-status-red-color;
-$vt-color-success: #76c078;
-$vt-text-color-success: white;
-$vt-color-info: #b3e5fc;
-$vt-text-color-info: #0c5ea0;
-$vt-color-warning: $tenant-ui-status-amber-background;
-$vt-text-color-warning: $tenant-ui-status-amber-color;
-
-// Import the regular Vue Toastification stylesheets (or create your own)
-@import 'vue-toastification/src/scss/_variables';
-@import 'vue-toastification/src/scss/_toastContainer';
-@import 'vue-toastification/src/scss/_toast';
-@import 'vue-toastification/src/scss/_closeButton';
-@import 'vue-toastification/src/scss/_progressBar';
-@import 'vue-toastification/src/scss/_icon';
-@import 'vue-toastification/src/scss/animations/_bounce';
 
 // Some custom styling
 .Vue-Toastification__toast {

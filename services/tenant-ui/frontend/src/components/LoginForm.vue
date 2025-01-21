@@ -220,7 +220,6 @@ const handleSubmit = async (isFormValid: boolean) => {
 </script>
 
 <style scoped lang="scss">
-@import '@/assets/variables.scss';
 .tab-container {
   &::v-deep(.p-tabview-panels) {
     padding: 0;

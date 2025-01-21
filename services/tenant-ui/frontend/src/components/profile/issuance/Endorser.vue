@@ -136,7 +136,6 @@ const showNotActiveWarn = computed(
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/variables.scss';
 .inactive-endorser {
   color: $tenant-ui-text-warning;
 }

@@ -1,4 +1,4 @@
-@import 'variables.scss';
+@use 'variables.scss' as *; // Import variables as global
 
 // General application layout and styles for the 'containing' components (nav, content, etc)
 
