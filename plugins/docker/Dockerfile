@@ -1,4 +1,4 @@
-FROM ghcr.io/openwallet-foundation/acapy-agent:py3.12-1.1.0 AS base
+FROM ghcr.io/openwallet-foundation/acapy-agent:py3.12-1.2.1 AS base
 
 # Install and Configure Poetry
 USER root
@@ -24,16 +24,16 @@ RUN poetry install --only main
 RUN ln -s $(poetry env info -p)/lib/python3.6/site-packages site-packages
 
 
-FROM ghcr.io/openwallet-foundation/acapy-agent:py3.12-1.1.0
+FROM ghcr.io/openwallet-foundation/acapy-agent:py3.12-1.2.1
 COPY --from=base --chown=aries:aries /home/aries/.venv /home/aries/.venv
 ENV PATH="/home/aries/.venv/bin:$PATH"
 
 COPY --chown=aries:aries docker/default.yml ./
 COPY --chown=aries:aries traction_innkeeper/traction_innkeeper traction_plugins/traction_innkeeper
-RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.1.0#subdirectory=basicmessage_storage
-RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.1.0#subdirectory=connection_update
-RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.1.0#subdirectory=multitenant_provider
-RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.1.0#subdirectory=rpc
+RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.2.1#subdirectory=basicmessage_storage
+RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.2.1#subdirectory=connection_update
+RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.2.1#subdirectory=multitenant_provider
+RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.2.1#subdirectory=rpc
 
 
 ENTRYPOINT ["/bin/bash", "-c", "aca-py \"$@\"", "--"]
