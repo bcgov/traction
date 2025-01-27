@@ -24,7 +24,7 @@
     "express-validator": "^7.2.0",
     "jose": "^5.9.6",
     "jsonwebtoken": "^9.0.2",
-    "nodemailer": "^6.9.16",
+    "nodemailer": "^6.10.0",
     "ws": "^8.18.0"
   },
   "devDependencies": {
