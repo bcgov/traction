@@ -58,7 +58,7 @@
     "prettier": "^3.3.3",
     "sass": "^1.83.4",
     "typescript": "^5.6.3",
-    "vite": "^6.0.11",
+    "vite": "^6.1.0",
     "vitest": "^3.0.3",
     "vue-tsc": "^2.1.10",
     "whatwg-fetch": "^3.6.20"
