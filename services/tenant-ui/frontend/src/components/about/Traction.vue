@@ -3,10 +3,10 @@
     <div class="col-12 md:col-6">
       <strong>{{ $t('about.traction.info') }}</strong>
       <p class="my-0">
-        {{ $t('about.traction.tractionVersion', { version: '1.0.1' }) }}
+        {{ $t('about.traction.tractionVersion', { version: '1.1.0' }) }}
       </p>
       <p class="mt-0">
-        {{ $t('about.traction.uiVersion', { version: '1.0.1' }) }}
+        {{ $t('about.traction.uiVersion', { version: '1.1.0' }) }}
       </p>
     </div>
 
