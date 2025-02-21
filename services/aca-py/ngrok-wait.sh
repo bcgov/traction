@@ -34,7 +34,7 @@ exec aca-py start \
     --endpoint ${ACAPY_ENDPOINT} \
     --wallet-name "${TRACTION_ACAPY_WALLET_NAME}" \
     --wallet-key "${TRACTION_ACAPY_WALLET_ENCRYPTION_KEY}" \
-    --wallet-storage-config "{\"url\":\"${POSTGRESQL_HOST}:5432\",\"max_connections\":5, \"wallet_scheme\":\"${TRACTION_ACAPY_WALLET_SCHEME}\"}" \
+    --wallet-storage-config "{\"url\":\"${POSTGRESQL_HOST}:5432\",\"max_connections\":5}" \
     --wallet-storage-creds "{\"account\":\"${POSTGRESQL_USER}\",\"password\":\"${POSTGRESQL_PASSWORD}\",\"admin_account\":\"${POSTGRESQL_USER}\",\"admin_password\":\"${POSTGRESQL_PASSWORD}\"}" \
     --admin "0.0.0.0" ${TRACTION_ACAPY_ADMIN_PORT} \
     --plugin multitenant_provider.v1_0 \

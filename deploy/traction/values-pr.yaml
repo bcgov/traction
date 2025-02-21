@@ -31,6 +31,15 @@ acapy:
       endorser_did: "EZpKx6nT56Hv83JmNz7ik8"
       endorser_alias: "sovrin-testnet-endorser"
   plugin-config.yml:
+    multitenant_provider:
+      manager:
+        class_name: multitenant_provider.v1_0.manager.BasicMultitokenMultitenantManager
+        always_check_provided_wallet_key: true
+      errors:
+        on_unneeded_wallet_key: false
+      token_expiry:
+        units: days
+        amount: 1
     traction_innkeeper:
       innkeeper_wallet:
         print_key: true

@@ -1,6 +1,6 @@
 multitenant_provider:
   manager:
-    class_name: "multitenant_provider.v1_0.manager.AskarMultitokenMultitenantManager"
+    class_name: "multitenant_provider.v1_0.manager.BasicMultitokenMultitenantManager"
     always_check_provided_wallet_key: true
   errors:
     on_unneeded_wallet_key: false
