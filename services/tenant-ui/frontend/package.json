@@ -21,7 +21,7 @@
     "@jsonforms/vue-vanilla": "^3.5.1",
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.4",
-    "axios": "^1.7.7",
+    "axios": "^1.8.2",
     "date-fns": "^4.1.0",
     "dompurify": "^3.2.4",
     "json-editor-vue": "^0.17.3",
