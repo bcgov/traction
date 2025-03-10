@@ -30,7 +30,7 @@
         :header="`Identifier_${index + 1}`"
       >
         <ul>
-          <li v-for="(val, attr_name, i) in item" :key="i">
+          <li v-for="(val, attr_name) in item" :key="attr_name">
             <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
             <strong>{{ attr_name }}</strong> : {{ val }}
           </li>
