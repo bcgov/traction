@@ -20,6 +20,12 @@ acapy:
       genesis_url: "http://test.bcovrin.vonx.io/genesis"
       endorser_did: "DfQetNSm7gGEHuzfUvpfPn"
       endorser_alias: "bcovrin-test-endorser"
+    - id: candy-dev
+      is_production: true
+      is_write: true
+      genesis_url: "https://raw.githubusercontent.com/ICCS-ISAC/dtrust-reconu/main/CANdy/dev/pool_transactions_genesis"
+      endorser_did: "85DZerr49BLCuG5wWyDviy"
+      endorser_alias: "candy-dev-endorser"
     - id: candy-prod
       is_production: true
       is_write: false
