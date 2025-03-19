@@ -9,7 +9,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-acapy-agent = { version = "1.2.3" }
+acapy-agent = { version = "1.2.4" }
 python-dateutil = "^2.9.0"
 typing-extensions = "4.12.2"
 traction-innkeeper = {path = "./traction_innkeeper", develop = true}
