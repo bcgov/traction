@@ -419,9 +419,8 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | Name            | Email                         | Url                                  |
 | --------------- | ----------------------------- | ------------------------------------ |
 | i5okie          | <ivan.polchenko@quartech.com> | <https://github.com/i5okie>          |
-| usingtechnology | <tools@usingtechnolo.gy>      | <https://github.com/usingtechnology> |
-| Jsyro           | <jason.syrotuck@nttdata.com>  | <https://github.com/Jsyro>           |
 | esune           | <emiliano.sune@quartech.com>  | <https://github.com/esune>           |
+| loneil          | <lucasoneil@gmail.com>        | <lucasoneil@gmail.com>               |
 
 ## License
 

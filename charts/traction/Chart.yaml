@@ -11,15 +11,12 @@ maintainers:
   - email: ivan.polchenko@quartech.com
     name: i5okie
     url: https://github.com/i5okie
-  - email: tools@usingtechnolo.gy
-    name: usingtechnology
-    url: https://github.com/usingtechnology
-  - email: jason.syrotuck@nttdata.com
-    name: Jsyro
-    url: https://github.com/Jsyro
   - email: emiliano.sune@quartech.com
     name: esune
     url: https://github.com/esune
+  - email: lucasoneil@gmail.com
+    name: loneil
+    url: https://github.com/loneil
 dependencies:
   - name: postgresql
     version: 15.5.38
