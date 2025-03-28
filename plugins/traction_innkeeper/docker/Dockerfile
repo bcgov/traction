@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 # Install and configure poetry
 USER root
 
-ENV POETRY_VERSION=1.6.1
+ENV POETRY_VERSION=2.1.1
 ENV POETRY_HOME=/opt/poetry
 RUN apt-get update && apt-get install -y curl && apt-get clean
 RUN curl -sSL https://install.python-poetry.org | python -
