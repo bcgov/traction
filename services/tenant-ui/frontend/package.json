@@ -59,7 +59,7 @@
     "sass": "^1.86.0",
     "typescript": "^5.8.2",
     "vite": "^6.2.2",
-    "vitest": "^3.0.9",
+    "vitest": "^3.1.1",
     "vue-tsc": "^2.2.8",
     "whatwg-fetch": "^3.6.20"
   }
