@@ -38,7 +38,7 @@ runs:
   steps:
     - uses: actions/checkout@v4
       with:
-        ref: ${{ inputs.ref != '' && inputs.ref ||  env.GITHUB_REF }}${{ inputs.ref }}
+        ref: ${{ inputs.ref != '' && inputs.ref ||  env.GITHUB_REF }}
 
     - name: Set up Node
       uses: actions/setup-node@master
