@@ -71,7 +71,6 @@ jobs:
 
   deploy_dev:
     name: Deploy Dev
-    environment: development
     runs-on: ubuntu-latest
     needs:
       - build_ui
