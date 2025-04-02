@@ -93,7 +93,7 @@ const getConnection = {
   accept: 'manual',
   their_role: 'inviter',
   my_did: 'X3N8xPdizduz1ArZZpKxmg',
-  connection_protocol: 'didexchange/1.0',
+  connection_protocol: 'didexchange/1.1',
   updated_at: '2023-07-05T16:13:15.717908Z',
   rfc23_state: 'completed',
   request_id: 'f90ffe70-89bc-4b20-b43c-e875c1863fd9',

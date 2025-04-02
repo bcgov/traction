@@ -52,7 +52,7 @@ const endorserConnection = {
   updated_at: '2023-06-27T18:06:58.559734Z',
   rfc23_state: 'completed',
   created_at: '2023-06-27T18:06:57.441183Z',
-  connection_protocol: 'didexchange/1.0',
+  connection_protocol: 'didexchange/1.1',
   their_role: 'inviter',
   request_id: '1f0ae8e3-b956-40c1-8871-3d197b1634f9',
 };
@@ -80,7 +80,7 @@ const connectToEndorser = {
   updated_at: '2023-06-27T18:06:57.451265Z',
   rfc23_state: 'request-sent',
   created_at: '2023-06-27T18:06:57.441183Z',
-  connection_protocol: 'didexchange/1.0',
+  connection_protocol: 'didexchange/1.1',
   their_role: 'inviter',
   request_id: '1f0ae8e3-b956-40c1-8871-3d197b1634f9',
 };
