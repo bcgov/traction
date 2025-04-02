@@ -19,7 +19,7 @@ multitenant-provider = {git = "https://github.com/openwallet-foundation/acapy-pl
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.1.0"
-flake8 = "^7.1.2"
+flake8 = "^7.2.0"
 
 [build-system]
 requires = ["setuptools", "poetry-core>=2.0"]
