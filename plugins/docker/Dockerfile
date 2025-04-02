@@ -2,7 +2,7 @@ FROM ghcr.io/openwallet-foundation/acapy-agent:py3.12-1.2.4 AS base
 
 # Install and Configure Poetry
 USER root
-ENV POETRY_VERSION=1.8.3
+ENV POETRY_VERSION=2.1.1
 ENV POETRY_HOME=/opt/poetry
 RUN apt-get update && apt-get install -y curl && apt-get clean
 RUN curl -sSL https://install.python-poetry.org | python -

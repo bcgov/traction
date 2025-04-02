@@ -17,10 +17,10 @@ typing-extensions = "4.12.2"
 anoncreds = "^0.2.0"
 multitenant-provider = {git = "https://github.com/openwallet-foundation/acapy-plugins", rev = "1.2.4", subdirectory = "multitenant_provider"}
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 black = "^25.1.0"
 flake8 = "^7.1.2"
 
 [build-system]
-requires = ["setuptools", "poetry-core>=1.2"]
+requires = ["setuptools", "poetry-core>=2.0"]
 build-backend = "poetry.core.masonry.api"
