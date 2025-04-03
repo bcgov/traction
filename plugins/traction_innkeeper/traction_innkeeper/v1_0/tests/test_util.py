@@ -27,8 +27,8 @@ from traction_innkeeper.v1_0.innkeeper.utils import (
 
 # Mock the TenantRecord states if not easily importable or for isolation
 class MockTenantRecord:
-    STATE_ACTIVE = "active"
-    STATE_DELETED = "deleted"
+    STATE_ACTIVE: str = "active"
+    STATE_DELETED: str = "deleted"
 
 
 def test_generate_api_key_data():
@@ -85,12 +85,6 @@ def test_generate_reservation_token_data():
 
     # Check expiry is in the future relative to now
     assert expiry > now_utc
-
-
-# Mock the TenantRecord states if not easily importable or for isolation
-class MockTenantRecord:
-    STATE_ACTIVE = "active"
-    STATE_DELETED = "deleted"
 
 
 @pytest.mark.asyncio
@@ -166,16 +160,9 @@ async def test_create_api_key_deleted_tenant():
 
 # Mock the ReservationRecord states if not easily importable
 class MockReservationRecord:
-    STATE_REQUESTED = "requested"
-    STATE_APPROVED = "approved"
-    STATE_DENIED = "denied"  # Example other state
-
-
-# Mock the ReservationRecord states if not easily importable
-class MockReservationRecord:
-    STATE_REQUESTED = "requested"
-    STATE_APPROVED = "approved"
-    STATE_DENIED = "denied"  # Example other state
+    STATE_REQUESTED: str = "requested"
+    STATE_APPROVED: str = "approved"
+    STATE_DENIED: str = "denied"  # Example other state
 
 
 @pytest.mark.asyncio
