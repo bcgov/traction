@@ -8,6 +8,7 @@ on:
       - "services/tenant-ui/**"
       - "charts/traction/**"
       - "charts/tenant-ui/**"
+      - "deploy/traction/**"
     types:
       - opened
       - synchronize
