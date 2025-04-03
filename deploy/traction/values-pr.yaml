@@ -14,7 +14,7 @@ acapy:
     tails-server-base-url: https://tails-dev.vonx.io
     tails-server-upload-url: https://tails-dev.vonx.io
     log-level: debug
-    wallet-type: askar-anoncreds
+    wallet-type: askar
   ledgers.yml:
     - id: bcovrin-test
       is_production: true
