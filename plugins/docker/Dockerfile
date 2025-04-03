@@ -35,7 +35,7 @@ RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.2.4
 RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.2.4#subdirectory=multitenant_provider
 RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.2.4#subdirectory=rpc
 
-RUN pip install git+https://github.com/openwallet-foundation/acapy#subdirectory=acapy_agent
+RUN pip install git+https://github.com/openwallet-foundation/acapy
 
 
 ENTRYPOINT ["/bin/bash", "-c", "aca-py \"$@\"", "--"]
