@@ -14,7 +14,8 @@ acapy:
     tails-server-base-url: https://tails-dev.vonx.io
     tails-server-upload-url: https://tails-dev.vonx.io
     log-level: debug
-    wallet-type: askar-anoncreds
+    wallet-type: askar
+    base-wallet-routes: /anoncreds/wallet/upgrade
   ledgers.yml:
     - id: bcovrin-test
       is_production: true
@@ -26,12 +27,6 @@ acapy:
       is_production: true
       is_write: false
       genesis_url: "https://raw.githubusercontent.com/ICCS-ISAC/dtrust-reconu/main/CANdy/prod/pool_transactions_genesis"
-    - id: sovrin-testnet
-      is_production: true
-      is_write: true
-      genesis_url: "https://raw.githubusercontent.com/sovrin-foundation/sovrin/stable/sovrin/pool_transactions_sandbox_genesis"
-      endorser_did: "EZpKx6nT56Hv83JmNz7ik8"
-      endorser_alias: "sovrin-testnet-endorser"
   plugin-config.yml:
     traction_innkeeper:
       innkeeper_wallet:
@@ -40,11 +35,8 @@ acapy:
         connect_to_endorser:
           - endorser_alias: bcovrin-test-endorser
             ledger_id: bcovrin-test
-          - endorser_alias: sovrin-testnet-endorser
-            ledger_id: sovrin-testnet
         create_public_did:
           - bcovrin-test
-          - sovrin-testnet
       reservation:
         expiry_minutes: 2880
         auto_approve: true
