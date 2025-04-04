@@ -1,4 +1,4 @@
-name: Test Innkeeper Plugin
+name: Test and Lint Innkeeper Plugin
 
 on:
   pull_request:
