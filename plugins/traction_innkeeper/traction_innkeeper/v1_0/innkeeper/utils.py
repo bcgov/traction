@@ -3,7 +3,6 @@ import logging
 import uuid
 from datetime import datetime, timedelta
 
-from acapy_agent.core.profile import Profile
 from acapy_agent.messaging.models.openapi import OpenAPISchema
 from marshmallow import fields
 
