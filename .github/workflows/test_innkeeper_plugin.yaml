@@ -47,4 +47,6 @@ jobs:
       #----------------------------------------------
       - name: Unit test plugins
         id: unit-tests
+        env:
+          PYTHONPATH: .
         run: poetry run pytest traction_innkeeper
