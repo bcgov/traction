@@ -1,13 +1,11 @@
 import logging
-from typing import Any
 from acapy_agent.wallet.crypto import ED25519
-from acapy_agent.wallet.did_method import HolderDefinedDid
 import pytest
 from unittest.mock import MagicMock, AsyncMock, patch, call, ANY
 
 from acapy_agent.core.profile import Profile
 from acapy_agent.storage.error import StorageDuplicateError, StorageNotFoundError
-from acapy_agent.wallet.base import SOV, BaseWallet, DIDMethod
+from acapy_agent.wallet.base import SOV, BaseWallet
 from acapy_agent.wallet.did_info import DIDInfo
 from acapy_agent.wallet.error import WalletError
 from marshmallow import ValidationError
@@ -286,11 +284,11 @@ async def test_list_oca_records_as_root(
 
 @pytest.mark.asyncio
 @patch(
-    f"traction_innkeeper.v1_0.oca.oca_service.OcaService.get_public_did_info",
+    "traction_innkeeper.v1_0.oca.oca_service.OcaService.get_public_did_info",
     new_callable=AsyncMock,
 )
 @patch(
-    f"traction_innkeeper.v1_0.oca.oca_service.OcaRecord.query", new_callable=AsyncMock
+    "traction_innkeeper.v1_0.oca.oca_service.OcaRecord.query", new_callable=AsyncMock
 )
 async def test_list_oca_records_as_tenant(
     mock_query: AsyncMock,
@@ -327,7 +325,7 @@ async def test_list_oca_records_as_tenant(
 @pytest.mark.asyncio
 @patch("traction_innkeeper.v1_0.oca.oca_service.OcaService.get_public_did_info")
 @patch(
-    f"traction_innkeeper.v1_0.oca.oca_service.OcaRecord.query", new_callable=AsyncMock
+    "traction_innkeeper.v1_0.oca.oca_service.OcaRecord.query", new_callable=AsyncMock
 )
 async def test_list_oca_records_tenant_no_did(
     mock_query: AsyncMock,
@@ -350,11 +348,11 @@ async def test_list_oca_records_tenant_no_did(
 
 @pytest.mark.asyncio
 @patch(
-    f"traction_innkeeper.v1_0.oca.oca_service.OcaService.get_public_did_info",
+    "traction_innkeeper.v1_0.oca.oca_service.OcaService.get_public_did_info",
     new_callable=AsyncMock,
 )
 @patch(
-    f"traction_innkeeper.v1_0.oca.oca_service.OcaRecord.query", new_callable=AsyncMock
+    "traction_innkeeper.v1_0.oca.oca_service.OcaRecord.query", new_callable=AsyncMock
 )
 async def test_find_or_new_oca_record_finds_existing_no_update(
     mock_query: AsyncMock,
@@ -477,7 +475,7 @@ async def test_find_or_new_oca_record_creates_new(
 @pytest.mark.asyncio
 @patch("traction_innkeeper.v1_0.oca.oca_service.OcaService.get_public_did_info")
 @patch(
-    f"traction_innkeeper.v1_0.oca.oca_service.OcaRecord.query", new_callable=AsyncMock
+    "traction_innkeeper.v1_0.oca.oca_service.OcaRecord.query", new_callable=AsyncMock
 )
 async def test_find_or_new_oca_record_duplicate_error(
     mock_query: AsyncMock,

@@ -1,5 +1,5 @@
 import logging
-from unittest.mock import MagicMock, AsyncMock, patch, call, ANY
+from unittest.mock import MagicMock, AsyncMock, patch
 import pytest
 
 # Assuming tenant_manager.py is in ../innkeeper relative to this test file
@@ -8,8 +8,6 @@ from traction_innkeeper.v1_0.innkeeper.tenant_manager import TenantManager
 # Import classes that need mocking or inspection
 from traction_innkeeper.v1_0.innkeeper.models import (
     TenantRecord,
-    ReservationRecord,
-    TenantAuthenticationApiRecord,
 )  # noqa F401 mocked
 from traction_innkeeper.v1_0.innkeeper.config import (
     TractionInnkeeperConfig,
@@ -18,12 +16,10 @@ from traction_innkeeper.v1_0.innkeeper.config import (
 )
 from acapy_agent.core.profile import Profile
 from acapy_agent.storage.error import (
-    StorageDuplicateError,
     StorageNotFoundError,
 )  # noqa F401 used in tests
 from acapy_agent.wallet.models.wallet_record import WalletRecord
 from acapy_agent.multitenant.base import BaseMultitenantManager
-from acapy_agent.core.error import BaseError
 
 
 # Disable logging noise during tests
