@@ -36,12 +36,12 @@ jobs:
         id: install-dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root --all-extras
-      # #----------------------------------------------
-      # #       Lint plugins
-      # #----------------------------------------------
-      # - name: Lint plugins
-      #   id: lint-plugins
-      #   run: poetry run ruff check .
+      #----------------------------------------------
+      #       Lint plugins
+      #----------------------------------------------
+      - name: Lint plugins
+        id: lint-plugins
+        run: poetry run ruff check .
       #----------------------------------------------
       #       Unit tests
       #----------------------------------------------
