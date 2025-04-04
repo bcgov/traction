@@ -20,6 +20,10 @@ from traction_innkeeper.v1_0.oca.oca_service import (
 
 # Disable logging noise during tests
 logging.disable(logging.CRITICAL)
+ISSUER_DID = "55GkHamhTU1ZbTbV2ab9DE"
+SCHEMA_ID = f"{ISSUER_DID}:2:schema:1.0"
+CRED_DEF_ID = f"{ISSUER_DID}:3:CL:1:tag"
+OCA_ID = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
 
 
 # --- Fixtures (Optional but can simplify setup) ---
@@ -178,17 +182,17 @@ def test_is_cred_def_owner(oca_service: OcaService):
 
 def test_validate_oca_data_success(oca_service: OcaService):
     """Test successful OCA data validation."""
-    issuer_did = "55GkHamhTU1ZbTbV2ab9DE"
+    issuer_did = ISSUER_DID
     valid_data = {
-        "schema_id": f"{issuer_did}:2:schema:1.0",
-        "cred_def_id": f"{issuer_did}:3:CL:1:tag",
+        "schema_id": SCHEMA_ID,
+        "cred_def_id": CRED_DEF_ID,
         "url": "http://example.com/oca",
     }
     assert oca_service.validate_oca_data(issuer_did, valid_data) is True
 
     valid_data_bundle = {
-        "schema_id": f"{issuer_did}:2:schema:1.0",
-        "cred_def_id": f"{issuer_did}:3:CL:1:tag",
+        "schema_id": SCHEMA_ID,
+        "cred_def_id": CRED_DEF_ID,
         "bundle": {"some": "data"},
     }
     assert oca_service.validate_oca_data(issuer_did, valid_data_bundle) is True
@@ -228,11 +232,13 @@ def test_validate_oca_data_failures(oca_service: OcaService):
 def test_build_tag_filter(oca_service: OcaService):
     """Test tag filter building."""
     assert oca_service.build_tag_filter(None, None) == {}
-    assert oca_service.build_tag_filter("schema-1", None) == {"schema_id": "schema-1"}
-    assert oca_service.build_tag_filter(None, "cd-1") == {"cred_def_id": "cd-1"}
-    assert oca_service.build_tag_filter("schema-1", "cd-1") == {
-        "schema_id": "schema-1",
-        "cred_def_id": "cd-1",
+    assert oca_service.build_tag_filter(SCHEMA_ID, None) == {"schema_id": SCHEMA_ID}
+    assert oca_service.build_tag_filter(None, CRED_DEF_ID) == {
+        "cred_def_id": CRED_DEF_ID
+    }
+    assert oca_service.build_tag_filter(SCHEMA_ID, CRED_DEF_ID) == {
+        "schema_id": SCHEMA_ID,
+        "cred_def_id": CRED_DEF_ID,
     }
 
 
@@ -371,7 +377,11 @@ async def test_find_or_new_oca_record_finds_existing_no_update(
     # Configure the query mock's return value
     mock_query.return_value = [mock_existing_rec]
 
-    oca_data = {"schema_id": "s1", "cred_def_id": "cd1", "url": "http://old.com"}
+    oca_data = {
+        "schema_id": SCHEMA_ID,
+        "cred_def_id": CRED_DEF_ID,
+        "url": "http://old.com",
+    }
 
     record = await oca_service.find_or_new_oca_record(
         issuer_profile, oca_data, update=False
@@ -410,8 +420,8 @@ async def test_find_or_new_oca_record_finds_existing_and_updates(
     MockOcaRecord.query = AsyncMock(return_value=[mock_existing_rec])
 
     oca_data = {
-        "schema_id": "s1",
-        "cred_def_id": "cd1",
+        "schema_id": SCHEMA_ID,
+        "cred_def_id": CRED_DEF_ID,
         "url": "http://new.com",
         "bundle": {"new": "bundle"},
     }
@@ -455,7 +465,11 @@ async def test_find_or_new_oca_record_creates_new(
     mock_new_rec_instance = MagicMock(spec=OcaRecord)
     MockOcaRecord.return_value = mock_new_rec_instance
 
-    oca_data = {"schema_id": "s1", "cred_def_id": "cd1", "url": "http://new.com"}
+    oca_data = {
+        "schema_id": SCHEMA_ID,
+        "cred_def_id": CRED_DEF_ID,
+        "url": "http://new.com",
+    }
 
     record = await oca_service.find_or_new_oca_record(
         issuer_profile, oca_data, update=True
@@ -464,8 +478,8 @@ async def test_find_or_new_oca_record_creates_new(
     assert record == mock_new_rec_instance
     # Check OcaRecord constructor was called correctly
     MockOcaRecord.assert_called_once_with(
-        schema_id="s1",
-        cred_def_id="cd1",
+        schema_id=SCHEMA_ID,
+        cred_def_id=CRED_DEF_ID,
         url="http://new.com",
         bundle=None,
         owner_did=mock_did_info.did,
@@ -491,7 +505,7 @@ async def test_find_or_new_oca_record_duplicate_error(
     mock_get_info.return_value = mock_did_info
     mock_query.return_value = [MagicMock(), MagicMock()]
 
-    oca_data = {"schema_id": "s1", "cred_def_id": "cd1"}
+    oca_data = {"schema_id": SCHEMA_ID, "cred_def_id": CRED_DEF_ID}
 
     with pytest.raises(StorageDuplicateError):
         await oca_service.find_or_new_oca_record(issuer_profile, oca_data)
@@ -525,7 +539,7 @@ async def test_create_or_update_oca_record_success(
     mock_rec = AsyncMock(spec=OcaRecord)
     mock_find_or_new.return_value = mock_rec
 
-    oca_data = {"schema_id": "s1", "cred_def_id": "cd1:test-did-123", "url": "u"}
+    oca_data = {"schema_id": SCHEMA_ID, "cred_def_id": "cd1:test-did-123", "url": "u"}
 
     result = await oca_service.create_or_update_oca_record(issuer_profile, oca_data)
 
@@ -586,7 +600,7 @@ async def test_read_oca_record_success(
     mock_rec = AsyncMock(spec=OcaRecord, owner_did=public_did)
     mock_retrieve.return_value = mock_rec
 
-    oca_id = "oca-record-id-1"
+    oca_id = OCA_ID
     result = await oca_service.read_oca_record(issuer_profile, oca_id)
 
     assert result == mock_rec
@@ -614,7 +628,7 @@ async def test_read_oca_record_did_mismatch(
     mock_rec = AsyncMock(spec=OcaRecord, owner_did="different-owner-did")
     mock_retrieve.return_value = mock_rec
 
-    oca_id = "oca-record-id-2"
+    oca_id = OCA_ID
     with pytest.raises(PublicDIDMismatchError):
         await oca_service.read_oca_record(issuer_profile, oca_id)
 
@@ -642,7 +656,7 @@ async def test_update_oca_record_success(
     mock_rec = AsyncMock(spec=OcaRecord, owner_did=public_did)
     mock_retrieve.return_value = mock_rec
 
-    oca_id = "oca-record-id-3"
+    oca_id = OCA_ID
     update_data = {"url": "http://updated.com", "bundle": None}
 
     result = await oca_service.update_oca_record(issuer_profile, oca_id, update_data)
@@ -673,7 +687,7 @@ async def test_update_oca_record_did_mismatch(
     mock_rec = AsyncMock(spec=OcaRecord, owner_did="different-owner-did")
     mock_retrieve.return_value = mock_rec
 
-    oca_id = "oca-record-id-4"
+    oca_id = OCA_ID
     update_data = {"url": "http://irrelevant.com"}
     with pytest.raises(PublicDIDMismatchError):
         await oca_service.update_oca_record(issuer_profile, oca_id, update_data)
@@ -700,7 +714,7 @@ async def test_update_oca_record_validation_error(
     mock_rec = AsyncMock(spec=OcaRecord, owner_did=public_did)
     mock_retrieve.return_value = mock_rec
 
-    oca_id = "oca-record-id-5"
+    oca_id = OCA_ID
     update_data = {}  # Missing url and bundle
 
     with pytest.raises(ValidationError, match="URL or bundle is required"):
@@ -732,7 +746,7 @@ async def test_delete_oca_record_success(
         StorageNotFoundError("Not found after delete"),
     ]
 
-    oca_id = "oca-record-id-6"
+    oca_id = OCA_ID
     result = await oca_service.delete_oca_record(issuer_profile, oca_id)
 
     assert result is True
@@ -766,7 +780,7 @@ async def test_delete_oca_record_did_mismatch(
     mock_rec = AsyncMock(spec=OcaRecord, owner_did="different-owner-did")
     mock_retrieve.return_value = mock_rec
 
-    oca_id = "oca-record-id-7"
+    oca_id = OCA_ID
     with pytest.raises(PublicDIDMismatchError):
         await oca_service.delete_oca_record(issuer_profile, oca_id)
 
