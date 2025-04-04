@@ -1,7 +1,6 @@
 import logging
 
 from aiohttp import web
-from aiohttp.web_middlewares import middleware
 from aiohttp_apispec import (
     docs,
     match_info_schema,
@@ -23,7 +22,6 @@ from acapy_agent.wallet.models.wallet_record import (
     WalletRecordSchema,
     WalletRecord,
 )
-from acapy_agent.admin import server
 from acapy_agent.admin.decorators.auth import tenant_authentication
 from marshmallow import fields, validate
 
@@ -506,7 +504,7 @@ async def tenant_delete_soft(request: web.BaseRequest):
                 {"success": f"Tenant {rec.tenant_id} soft deleted."}
             )
         else:
-            raise web.HTTPNotFound(reason=f"Tenant not found.")
+            raise web.HTTPNotFound(reason="Tenant not found.")
 
 
 @docs(

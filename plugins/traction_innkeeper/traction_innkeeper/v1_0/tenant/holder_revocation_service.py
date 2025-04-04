@@ -9,7 +9,7 @@ from acapy_agent.storage.error import StorageError, StorageNotFoundError
 
 LOGGER = logging.getLogger(__name__)
 REVOCATION_NOTIFICATION_EVENT_PATTERN = re.compile(
-    f"acapy::revocation-notification::.*"
+    "acapy::revocation-notification::.*"
 )
 
 

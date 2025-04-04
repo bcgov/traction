@@ -12,7 +12,7 @@ RUN poetry config virtualenvs.in-project true
 
 # Setup project
 RUN mkdir traction_plugins && touch traction_plugins/__init__.py
-COPY --chown=aries:aries pyproject.toml README.md ./
+COPY --chown=aries:aries traction_innkeeper/pyproject.toml README.md ./
 
 # copy over our local plugins code so we can build/install them
 # these should come from github or some version, published location

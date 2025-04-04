@@ -2,7 +2,7 @@ import functools
 import logging
 
 from aiohttp import web
-from aiohttp_apispec import docs, response_schema, request_schema
+from aiohttp_apispec import docs, response_schema
 from acapy_agent.admin.request_context import AdminRequestContext
 from acapy_agent.connections.models.conn_record import ConnRecordSchema
 from acapy_agent.messaging.models.base import BaseModelError
