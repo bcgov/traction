@@ -96,7 +96,6 @@ def tenant_manager(mock_profile, mock_traction_config, mock_multitenant_mgr):
 
 
 @pytest.mark.asyncio
-# Patch dependencies *within* the tenant_manager module scope
 @patch("traction_innkeeper.v1_0.innkeeper.tenant_manager.WalletRecord", autospec=True)
 @patch("traction_innkeeper.v1_0.innkeeper.tenant_manager.TenantRecord", autospec=True)
 async def test_create_tenant_success(
@@ -173,7 +172,6 @@ async def test_create_tenant_wallet_not_found(
 
 
 @pytest.mark.asyncio
-# Patching methods *on the instance* and dependencies
 @patch.object(TenantManager, "get_unique_wallet_name", new_callable=AsyncMock)
 @patch.object(TenantManager, "get_token", new_callable=AsyncMock)
 @patch.object(TenantManager, "create_tenant", new_callable=AsyncMock)
@@ -256,7 +254,6 @@ async def test_create_wallet_success(
 
 
 @pytest.mark.asyncio
-# Patching the model methods used within get_wallet_and_tenant
 @patch(
     "traction_innkeeper.v1_0.innkeeper.tenant_manager.WalletRecord.retrieve_by_id",
     new_callable=AsyncMock,
