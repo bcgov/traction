@@ -19,6 +19,7 @@ multitenant-provider = {git = "https://github.com/openwallet-foundation/acapy-pl
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.11.4"
+pytest = "^8.3.5"
 
 [tool.pytest.ini_options]
 # You might already have asyncio_mode set, 'auto' is common
