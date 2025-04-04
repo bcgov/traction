@@ -196,10 +196,7 @@ const handleSubmit = async (isFormValid: boolean) => {
           alias: formFields.alias,
           goal: goal.value,
           goal_code: code,
-          handshake_protocols: [
-            'https://didcomm.org/didexchange/1.0',
-            'https://didcomm.org/connections/1.0',
-          ],
+          handshake_protocols: ['https://didcomm.org/didexchange/1.1'],
           my_label: my_label.value,
           protocol_version: '1.1',
           use_public_did: false,

@@ -310,7 +310,7 @@ export interface ConnRecord {
    * Connection protocol used
    * @example "connections/1.0"
    */
-  connection_protocol?: 'connections/1.0' | 'didexchange/1.0';
+  connection_protocol?: 'connections/1.0' | 'didexchange/1.0' | 'didexchange/1.1';
   /**
    * Time of record creation
    * @pattern ^\d{4}-\d\d-\d\d[T ]\d\d:\d\d(?:\:(?:\d\d(?:\.\d{1,6})?))?(?:[+-]\d\d:?\d\d|Z|)$
