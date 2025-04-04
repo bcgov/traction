@@ -20,6 +20,13 @@ multitenant-provider = {git = "https://github.com/openwallet-foundation/acapy-pl
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.11.4"
 
+[tool.pytest.ini_options]
+# You might already have asyncio_mode set, 'auto' is common
+asyncio_mode = "auto"
+# Add this line to set the scope explicitly
+asyncio_default_fixture_loop_scope = "function"
+# ... other pytest options like testpaths, addopts, etc.
+
 [build-system]
 requires = ["setuptools", "poetry-core>=2.0"]
 build-backend = "poetry.core.masonry.api"
