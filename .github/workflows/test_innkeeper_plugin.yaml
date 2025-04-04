@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: ["main"]
     paths:
-      - "/plugins/traction_innkeeper/traction_innkeeper/**"
+      - "plugins/**"
 
 jobs:
   backend:
