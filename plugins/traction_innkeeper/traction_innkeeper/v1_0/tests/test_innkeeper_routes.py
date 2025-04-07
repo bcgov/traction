@@ -53,7 +53,7 @@ def mock_profile_inject():
     def _injector(cls_to_inject, *args, **kwargs):
         mock_instance = injectables.get(cls_to_inject)
         if not mock_instance:
-            return MagicMock()  # Default fallback
+            return MagicMock()
         return mock_instance
 
     return MagicMock(side_effect=_injector), injectables
@@ -136,7 +136,7 @@ def mock_tenant_mgr(mock_profile: MagicMock):
     mgr.profile = mock_profile  # Link profile
     # Mock config attributes needed by routes
     mgr._config = MagicMock()
-    mgr._config.reservation = MagicMock(auto_approve=False)  # Default: no auto_approve
+    mgr._config.reservation = MagicMock(auto_approve=False)
     mgr._config.innkeeper_wallet = MagicMock(spec=InnkeeperWalletConfig)
     mgr._config.innkeeper_wallet.connect_to_endorser = []
     mgr._config.innkeeper_wallet.create_public_did = []
@@ -160,8 +160,8 @@ def mock_multitenant_mgr(mock_profile: MagicMock):
 # Test Reservation Creation (POST /innkeeper/reservations)
 # This route just calls the non-innkeeper version, so we mostly test the pass-through
 @pytest.mark.asyncio
-@pytest.mark.usefixtures("mock_tenant_mgr")  # For injection setup
-@patch(f"{test_module.__name__}.tenant_reservation")  # Patch the underlying handler
+@pytest.mark.usefixtures("mock_tenant_mgr")
+@patch(f"{test_module.__name__}.tenant_reservation")
 async def test_innkeeper_tenant_reservation(
     mock_underlying_handler: AsyncMock,
     mock_request: MagicMock,
@@ -170,16 +170,14 @@ async def test_innkeeper_tenant_reservation(
     """Test POST /innkeeper/reservations endpoint."""
     profile = mock_context.profile  # Needed to check innkeeper status
 
-    # Arrange: Mock the return value of the underlying handler
+    # Mock the return value of the underlying handler
     mock_response_data = {"reservation_id": TEST_RESERVATION_ID}
     mock_underlying_handler.return_value = web.json_response(
         mock_response_data, status=200
     )
 
-    # Act
     response = await test_module.innkeeper_tenant_reservation(mock_request)
 
-    # Assert
     # 1. Check innkeeper_only decorator logic (implicitly passed by profile setup)
     assert profile.settings.get("wallet.innkeeper") is True
     # 2. Check that the underlying handler was called
@@ -191,7 +189,7 @@ async def test_innkeeper_tenant_reservation(
 
 # Test Default Config Settings (GET /innkeeper/default-config)
 @pytest.mark.asyncio
-@pytest.mark.usefixtures("mock_tenant_mgr")  # For injection setup
+@pytest.mark.usefixtures("mock_tenant_mgr")
 async def test_tenant_default_config_settings(
     mock_request: MagicMock,
     mock_context: MagicMock,
@@ -201,7 +199,7 @@ async def test_tenant_default_config_settings(
     mock_context.inject.return_value = mock_tenant_mgr
     profile = mock_context.profile
 
-    # Arrange: Configure the mock manager's config
+    # Configure the mock manager's config
     mock_endorser_config = MagicMock(
         spec=EndorserLedgerConfig,
     )
@@ -217,10 +215,8 @@ async def test_tenant_default_config_settings(
         "created_public_did": ["did:sov:123"],
     }
 
-    # Act
     response = await test_module.tenant_default_config_settings(mock_request)
 
-    # Assert
     assert profile.settings.get("wallet.innkeeper") is True
     mock_context.inject.assert_called_once_with(test_module.TenantManager)
     assert response.status == 200
@@ -245,11 +241,11 @@ async def test_tenant_config_update(
         "curr_ledger_id": "ledger-2",
     }
 
-    # Arrange: Mock request body and match_info
+    # Mock request body and match_info
     mock_request._set_json_body(update_body)
     mock_request._set_match_info("tenant_id", TEST_TENANT_ID)
 
-    # Arrange: Mock TenantRecord retrieval and save
+    # Mock TenantRecord retrieval and save
     mock_tenant_rec = AsyncMock(spec=TenantRecord)
     mock_tenant_rec.serialize.return_value = {
         "tenant_id": TEST_TENANT_ID,
@@ -257,10 +253,8 @@ async def test_tenant_config_update(
     }
     MockTenantRecordCls.retrieve_by_id = AsyncMock(return_value=mock_tenant_rec)
 
-    # Act
     response = await test_module.tenant_config_update(mock_request)
 
-    # Assert
     assert profile.settings.get("wallet.innkeeper") is True
     mock_context.inject.assert_called_once_with(test_module.TenantManager)
     mock_request.json.assert_awaited_once()
@@ -297,21 +291,19 @@ async def test_innkeeper_tenant_res_update(
         "create_public_did": ["did:sov:res"],
     }
 
-    # Arrange: Mock request body and match_info
+    # Mock request body and match_info
     mock_request._set_json_body(update_body)
     mock_request._set_match_info("reservation_id", TEST_RESERVATION_ID)
 
-    # Arrange: Mock ReservationRecord retrieval and save
+    # Mock ReservationRecord retrieval and save
     mock_res_rec = AsyncMock(spec=ReservationRecord)
     mock_res_rec.serialize.return_value = {"reservation_id": TEST_RESERVATION_ID}
     MockReservationRecordCls.retrieve_by_reservation_id = AsyncMock(
         return_value=mock_res_rec
     )
 
-    # Act
     response = await test_module.innkeeper_tenant_res_update(mock_request)
 
-    # Assert
     assert profile.settings.get("wallet.innkeeper") is True
     mock_context.inject.assert_called_once_with(test_module.TenantManager)
     mock_request.json.assert_awaited_once()
@@ -341,17 +333,15 @@ async def test_innkeeper_reservations_list(
     """Test GET /innkeeper/reservations/ endpoint."""
     profile = mock_context.profile
 
-    # Arrange: Mock ReservationRecord query
+    # Mock ReservationRecord query
     mock_rec_1 = MagicMock(spec=ReservationRecord)
     mock_rec_1.serialize.return_value = {"reservation_id": "res-1"}
     mock_rec_2 = MagicMock(spec=ReservationRecord)
     mock_rec_2.serialize.return_value = {"reservation_id": "res-2"}
     MockReservationRecordCls.query = AsyncMock(return_value=[mock_rec_1, mock_rec_2])
 
-    # Act
     response = await test_module.innkeeper_reservations_list(mock_request)
 
-    # Assert
     assert profile.settings.get("wallet.innkeeper") is True
     mock_context.inject.assert_called_once_with(test_module.TenantManager)
     MockReservationRecordCls.query.assert_awaited_once_with(
@@ -365,8 +355,8 @@ async def test_innkeeper_reservations_list(
 
 # Test Reservation Approve (PUT /innkeeper/reservations/{reservation_id}/approve)
 @pytest.mark.asyncio
-@pytest.mark.usefixtures("mock_tenant_mgr")  # For injection
-@patch(f"{test_module.__name__}.approve_reservation")  # Patch helper
+@pytest.mark.usefixtures("mock_tenant_mgr")
+@patch(f"{test_module.__name__}.approve_reservation")
 async def test_innkeeper_reservations_approve(
     mock_approve_helper: AsyncMock,
     mock_request: MagicMock,
@@ -377,17 +367,15 @@ async def test_innkeeper_reservations_approve(
     profile = mock_context.profile
     approve_body = {"state_notes": "Welcome!"}
 
-    # Arrange: Mock request body and match_info
+    # Mock request body and match_info
     mock_request._set_json_body(approve_body)
     mock_request._set_match_info("reservation_id", TEST_RESERVATION_ID)
 
-    # Arrange: Mock helper return value
+    # Mock helper return value
     mock_approve_helper.return_value = TEST_RESERVATION_PWD
 
-    # Act
     response = await test_module.innkeeper_reservations_approve(mock_request)
 
-    # Assert
     assert profile.settings.get("wallet.innkeeper") is True
     mock_context.inject.assert_called_once_with(test_module.TenantManager)
     mock_request.json.assert_awaited_once()
@@ -411,19 +399,17 @@ async def test_innkeeper_reservations_approve_conflict(
     """Test PUT /innkeeper/reservations/{reservation_id}/approve endpoint conflict."""
     approve_body = {"state_notes": "Welcome!"}
 
-    # Arrange: Mock request body and match_info
+    # Mock request body and match_info
     mock_request._set_json_body(approve_body)
     mock_request._set_match_info("reservation_id", TEST_RESERVATION_ID)
 
-    # Arrange: Mock helper to raise exception
+    # Mock helper to raise exception
     mock_approve_helper.side_effect = ReservationException("Already approved")
 
-    # Act & Assert
     with pytest.raises(web.HTTPConflict) as excinfo:
         await test_module.innkeeper_reservations_approve(mock_request)
     assert "Already approved" in str(excinfo.value)
 
-    # Assert helper was called
     mock_approve_helper.assert_awaited_once_with(
         TEST_RESERVATION_ID, approve_body["state_notes"], ANY
     )
@@ -432,7 +418,7 @@ async def test_innkeeper_reservations_approve_conflict(
 # Test Reservation Refresh Password (PUT /innkeeper/reservations/{reservation_id}/refresh-password)
 @pytest.mark.asyncio
 @pytest.mark.usefixtures("mock_tenant_mgr")
-@patch(f"{test_module.__name__}.refresh_registration_token")  # Patch helper
+@patch(f"{test_module.__name__}.refresh_registration_token")
 async def test_innkeeper_reservations_refresh_password(
     mock_refresh_helper: AsyncMock,
     mock_request: MagicMock,
@@ -442,17 +428,15 @@ async def test_innkeeper_reservations_refresh_password(
     """Test PUT /innkeeper/reservations/{reservation_id}/refresh-password endpoint."""
     profile = mock_context.profile
 
-    # Arrange: Mock request match_info
+    # Mock request match_info
     mock_request._set_match_info("reservation_id", TEST_RESERVATION_ID)
 
-    # Arrange: Mock helper return value
+    # Mock helper return value
     new_pwd = "refreshed-pwd"
     mock_refresh_helper.return_value = new_pwd
 
-    # Act
     response = await test_module.innkeeper_reservations_refresh_password(mock_request)
 
-    # Assert
     assert profile.settings.get("wallet.innkeeper") is True
     mock_context.inject.assert_called_once_with(test_module.TenantManager)
     mock_refresh_helper.assert_awaited_once_with(TEST_RESERVATION_ID, ANY)
@@ -473,15 +457,15 @@ async def test_innkeeper_reservations_deny(
     profile = mock_context.profile
     deny_body = {"state_notes": "No room."}
 
-    # Arrange: Mock request body and match_info
+    # Mock request body and match_info
     mock_request._set_json_body(deny_body)
     mock_request._set_match_info("reservation_id", TEST_RESERVATION_ID)
 
-    # Arrange: States as strings for serialization
+    # States as strings for serialization
     MockReservationRecordCls.STATE_DENIED = "denied"
     MockReservationRecordCls.STATE_REQUESTED = "requested"
 
-    # Arrange: Mock ReservationRecord retrieval (state=REQUESTED) and save
+    # Mock ReservationRecord retrieval (state=REQUESTED) and save
     mock_res_rec = MagicMock(
         spec=ReservationRecord, state=MockReservationRecordCls.STATE_REQUESTED
     )
@@ -493,10 +477,8 @@ async def test_innkeeper_reservations_deny(
         return_value=mock_res_rec
     )
 
-    # Act
     response = await test_module.innkeeper_reservations_deny(mock_request)
 
-    # Assert
     assert profile.settings.get("wallet.innkeeper") is True
     mock_context.inject.assert_called_once_with(test_module.TenantManager)
     mock_request.json.assert_awaited_once()
@@ -526,11 +508,11 @@ async def test_innkeeper_reservations_deny_conflict(
     """Test PUT /innkeeper/reservations/{reservation_id}/deny endpoint conflict."""
     deny_body = {"state_notes": "No room."}
 
-    # Arrange: Mock request body and match_info
+    # Mock request body and match_info
     mock_request._set_json_body(deny_body)
     mock_request._set_match_info("reservation_id", TEST_RESERVATION_ID)
 
-    # Arrange: Mock ReservationRecord retrieval (state=APPROVED)
+    # Mock ReservationRecord retrieval (state=APPROVED)
     mock_res_rec = AsyncMock(
         spec=ReservationRecord, state=ReservationRecord.STATE_APPROVED
     )
@@ -538,7 +520,6 @@ async def test_innkeeper_reservations_deny_conflict(
         return_value=mock_res_rec
     )
 
-    # Act & Assert
     with pytest.raises(web.HTTPConflict) as excinfo:
         await test_module.innkeeper_reservations_deny(mock_request)
     assert f"state is currently '{ReservationRecord.STATE_APPROVED}'" in str(
@@ -564,7 +545,7 @@ async def test_innkeeper_tenants_list_default(
     profile = mock_context.profile
 
     MockTenantRecordCls.STATE_ACTIVE = "active"
-    # Arrange: Mock TenantRecord query
+    # Mock TenantRecord query
     mock_rec_1 = MagicMock(spec=TenantRecord)
     mock_rec_1.serialize.return_value = {
         "tenant_id": "t-1",
@@ -572,10 +553,8 @@ async def test_innkeeper_tenants_list_default(
     }
     MockTenantRecordCls.query = AsyncMock(return_value=[mock_rec_1])
 
-    # Act
     response = await test_module.innkeeper_tenants_list(mock_request)
 
-    # Assert
     assert profile.settings.get("wallet.innkeeper") is True
     mock_context.inject.assert_called_once_with(test_module.TenantManager)
     # Default filter is state=active
@@ -602,10 +581,10 @@ async def test_innkeeper_tenants_list_deleted(
     """Test GET /innkeeper/tenants/?state=deleted endpoint."""
     profile = mock_context.profile
 
-    # Arrange: Set query parameter
+    # Set query parameter
     mock_request.query["state"] = TenantRecord.STATE_DELETED
 
-    # Arrange: Mock TenantRecord query
+    # Mock TenantRecord query
     mock_rec_1 = MagicMock(spec=TenantRecord)
     mock_rec_1.serialize.return_value = {
         "tenant_id": "t-del",
@@ -613,10 +592,8 @@ async def test_innkeeper_tenants_list_deleted(
     }
     MockTenantRecordCls.query = AsyncMock(return_value=[mock_rec_1])
 
-    # Act
     response = await test_module.innkeeper_tenants_list(mock_request)
 
-    # Assert
     assert profile.settings.get("wallet.innkeeper") is True
     mock_context.inject.assert_called_once_with(test_module.TenantManager)
     MockTenantRecordCls.query.assert_awaited_once_with(
@@ -642,10 +619,10 @@ async def test_innkeeper_tenants_list_all(
     """Test GET /innkeeper/tenants/?state=all endpoint."""
     profile = mock_context.profile
 
-    # Arrange: Set query parameter
+    # Set query parameter
     mock_request.query["state"] = "all"
 
-    # Arrange: Mock TenantRecord query
+    # Mock TenantRecord query
     mock_rec_1 = MagicMock(spec=TenantRecord)
     mock_rec_1.serialize.return_value = {
         "tenant_id": "t-1",
@@ -658,10 +635,8 @@ async def test_innkeeper_tenants_list_all(
     }
     MockTenantRecordCls.query = AsyncMock(return_value=[mock_rec_1, mock_rec_2])
 
-    # Act
     response = await test_module.innkeeper_tenants_list(mock_request)
 
-    # Assert
     assert profile.settings.get("wallet.innkeeper") is True
     mock_context.inject.assert_called_once_with(test_module.TenantManager)
     # No state filter when state=all
@@ -689,18 +664,16 @@ async def test_innkeeper_tenant_get(
     """Test GET /innkeeper/tenants/{tenant_id} endpoint."""
     profile = mock_context.profile
 
-    # Arrange: Mock request match_info
+    # Mock request match_info
     mock_request._set_match_info("tenant_id", TEST_TENANT_ID)
 
-    # Arrange: Mock TenantRecord retrieval
+    # Mock TenantRecord retrieval
     mock_tenant_rec = MagicMock(spec=TenantRecord)
     mock_tenant_rec.serialize.return_value = {"tenant_id": TEST_TENANT_ID}
     MockTenantRecordCls.retrieve_by_id = AsyncMock(return_value=mock_tenant_rec)
 
-    # Act
     response = await test_module.innkeeper_tenant_get(mock_request)
 
-    # Assert
     assert profile.settings.get("wallet.innkeeper") is True
     mock_context.inject.assert_called_once_with(test_module.TenantManager)
     MockTenantRecordCls.retrieve_by_id.assert_awaited_once_with(ANY, TEST_TENANT_ID)
@@ -721,17 +694,15 @@ async def test_innkeeper_tenant_delete(
     """Test DELETE /innkeeper/tenants/{tenant_id} endpoint (soft delete)."""
     profile = mock_context.profile
 
-    # Arrange: Mock request match_info
+    # Mock request match_info
     mock_request._set_match_info("tenant_id", TEST_TENANT_ID)
 
-    # Arrange: Mock TenantRecord retrieval and soft_delete
+    # Mock TenantRecord retrieval and soft_delete
     mock_tenant_rec = AsyncMock(spec=TenantRecord)
     MockTenantRecordCls.retrieve_by_id = AsyncMock(return_value=mock_tenant_rec)
 
-    # Act
     response = await test_module.innkeeper_tenant_delete(mock_request)
 
-    # Assert
     assert profile.settings.get("wallet.innkeeper") is True
     mock_context.inject.assert_called_once_with(test_module.TenantManager)
     MockTenantRecordCls.retrieve_by_id.assert_awaited_once_with(ANY, TEST_TENANT_ID)
@@ -753,25 +724,23 @@ async def test_innkeeper_tenant_delete_not_found(
 ):
     """Test DELETE /innkeeper/tenants/{tenant_id} endpoint not found."""
 
-    # Arrange: Mock request match_info
+    # Mock request match_info
     mock_request._set_match_info("tenant_id", TEST_TENANT_ID)
 
-    # Arrange: Mock TenantRecord retrieval to raise error
+    # Mock TenantRecord retrieval to raise error
     MockTenantRecordCls.retrieve_by_id = AsyncMock(
         side_effect=StorageNotFoundError("Not found")
     )
 
-    # Act & Assert
     with pytest.raises(web.HTTPNotFound):
         await test_module.innkeeper_tenant_delete(mock_request)
 
-    # Assert retrieval was attempted
     MockTenantRecordCls.retrieve_by_id.assert_awaited_once_with(ANY, TEST_TENANT_ID)
 
 
 # Test Tenant Hard Delete (DELETE /innkeeper/tenants/{tenant_id}/hard)
 @pytest.mark.asyncio
-@pytest.mark.usefixtures("mock_tenant_mgr", "mock_multitenant_mgr")  # Need both
+@pytest.mark.usefixtures("mock_tenant_mgr", "mock_multitenant_mgr")
 @patch(f"{test_module.__name__}.TenantRecord", autospec=True)
 @patch(f"{test_module.__name__}.WalletRecord", autospec=True)
 async def test_innkeeper_tenant_hard_delete(
@@ -784,23 +753,21 @@ async def test_innkeeper_tenant_hard_delete(
     """Test DELETE /innkeeper/tenants/{tenant_id}/hard endpoint."""
     profile = mock_context.profile
 
-    # Arrange: Mock request match_info
+    # Mock request match_info
     mock_request._set_match_info("tenant_id", TEST_TENANT_ID)
 
-    # Arrange: Mock TenantRecord retrieval and delete
+    # Mock TenantRecord retrieval and delete
     mock_tenant_rec = AsyncMock(spec=TenantRecord, wallet_id=TEST_WALLET_ID)
     MockTenantRecordCls.retrieve_by_id = AsyncMock(return_value=mock_tenant_rec)
 
-    # Arrange: Mock WalletRecord retrieval (needed by handler)
+    # Mock WalletRecord retrieval (needed by handler)
     MockWalletRecordCls.retrieve_by_id = AsyncMock()
 
-    # Arrange: Mock multitenant manager remove_wallet
+    # Mock multitenant manager remove_wallet
     mock_multitenant_mgr.remove_wallet = AsyncMock()
 
-    # Act
     response = await test_module.innkeeper_tenant_hard_delete(mock_request)
 
-    # Assert
     assert profile.settings.get("wallet.innkeeper") is True
 
     MockTenantRecordCls.retrieve_by_id.assert_awaited_once_with(ANY, TEST_TENANT_ID)
@@ -827,19 +794,17 @@ async def test_innkeeper_tenant_restore(
     """Test PUT /innkeeper/tenants/{tenant_id}/restore endpoint."""
     profile = mock_context.profile
 
-    # Arrange: Mock request match_info
+    # Mock request match_info
     mock_request._set_match_info("tenant_id", TEST_TENANT_ID)
 
-    # Arrange: Mock TenantRecord retrieval (state=DELETED) and restore_deleted
+    # Mock TenantRecord retrieval (state=DELETED) and restore_deleted
     mock_tenant_rec = AsyncMock(
         spec=TenantRecord, state=MockTenantRecordCls.STATE_DELETED
     )
     MockTenantRecordCls.retrieve_by_id = AsyncMock(return_value=mock_tenant_rec)
 
-    # Act
     response = await test_module.innkeeper_tenant_restore(mock_request)
 
-    # Assert
     assert profile.settings.get("wallet.innkeeper") is True
     mock_context.inject.assert_called_once_with(test_module.TenantManager)
     MockTenantRecordCls.retrieve_by_id.assert_awaited_once_with(ANY, TEST_TENANT_ID)
@@ -861,27 +826,25 @@ async def test_innkeeper_tenant_restore_not_deleted(
 ):
     """Test PUT /innkeeper/tenants/{tenant_id}/restore endpoint when not deleted."""
 
-    # Arrange: Mock request match_info
+    # Mock request match_info
     mock_request._set_match_info("tenant_id", TEST_TENANT_ID)
 
-    # Arrange: Mock TenantRecord retrieval (state=ACTIVE)
+    # Mock TenantRecord retrieval (state=ACTIVE)
     mock_tenant_rec = AsyncMock(spec=TenantRecord, state=TenantRecord.STATE_ACTIVE)
     MockTenantRecordCls.retrieve_by_id = AsyncMock(return_value=mock_tenant_rec)
 
-    # Act & Assert
     with pytest.raises(web.HTTPBadRequest) as excinfo:
         await test_module.innkeeper_tenant_restore(mock_request)
     assert f"Tenant {TEST_TENANT_ID} is not deleted" in str(excinfo.value)
 
-    # Assert retrieval was attempted
     MockTenantRecordCls.retrieve_by_id.assert_awaited_once_with(ANY, TEST_TENANT_ID)
 
 
 # Test Create API Key (POST /innkeeper/authentications/api)
 @pytest.mark.asyncio
-@pytest.mark.usefixtures("mock_tenant_mgr")  # For injection
+@pytest.mark.usefixtures("mock_tenant_mgr")
 @patch(f"{test_module.__name__}.TenantAuthenticationApiRecord", autospec=True)
-@patch(f"{test_module.__name__}.create_api_key")  # Patch helper
+@patch(f"{test_module.__name__}.create_api_key")
 async def test_innkeeper_authentications_api_create(
     mock_create_api_key_helper: AsyncMock,
     MockTenantAuthApiRecordCls: MagicMock,
@@ -893,26 +856,24 @@ async def test_innkeeper_authentications_api_create(
     profile = mock_context.profile
     create_body = {"tenant_id": TEST_TENANT_ID, "alias": "Innkeeper Test Key"}
 
-    # Arrange: Mock request body
+    # Mock request body
     mock_request._set_json_body(create_body)
 
-    # Arrange: Mock TenantAuthenticationApiRecord constructor (used internally)
+    # Mock TenantAuthenticationApiRecord constructor (used internally)
     mock_auth_rec_instance = MagicMock(spec=TenantAuthenticationApiRecord)
     MockTenantAuthApiRecordCls.return_value = mock_auth_rec_instance
 
-    # Arrange: Mock helper return value
+    # Mock helper return value
     mock_create_api_key_helper.return_value = (TEST_API_KEY, TEST_AUTH_API_ID)
 
-    # Act
     response = await test_module.innkeeper_authentications_api(mock_request)
 
-    # Assert
     assert profile.settings.get("wallet.innkeeper") is True
     mock_context.inject.assert_called_once_with(test_module.TenantManager)
     mock_request.json.assert_awaited_once()
-    # Assert constructor called
+
     MockTenantAuthApiRecordCls.assert_called_once_with(**create_body)
-    # Assert helper called
+
     mock_create_api_key_helper.assert_awaited_once_with(mock_auth_rec_instance, ANY)
     assert response.status == 200
     assert json.loads(response.body) == {
@@ -933,17 +894,15 @@ async def test_innkeeper_authentications_api_list(
     """Test GET /innkeeper/authentications/api/ endpoint."""
     profile = mock_context.profile
 
-    # Arrange: Mock query
+    # Mock query
     mock_rec_1 = MagicMock(spec=TenantAuthenticationApiRecord)
     mock_rec_1.serialize.return_value = {"tenant_authentication_api_id": "api-1"}
     mock_rec_2 = MagicMock(spec=TenantAuthenticationApiRecord)
     mock_rec_2.serialize.return_value = {"tenant_authentication_api_id": "api-2"}
     MockTenantAuthApiRecordCls.query = AsyncMock(return_value=[mock_rec_1, mock_rec_2])
 
-    # Act
     response = await test_module.innkeeper_authentications_api_list(mock_request)
 
-    # Assert
     assert profile.settings.get("wallet.innkeeper") is True
     mock_context.inject.assert_called_once_with(test_module.TenantManager)
     MockTenantAuthApiRecordCls.query.assert_awaited_once_with(
@@ -970,10 +929,10 @@ async def test_innkeeper_authentications_api_get(
     """Test GET /innkeeper/authentications/api/{id} endpoint."""
     profile = mock_context.profile
 
-    # Arrange: Mock request match_info
+    # Mock request match_info
     mock_request._set_match_info("tenant_authentication_api_id", TEST_AUTH_API_ID)
 
-    # Arrange: Mock retrieval
+    # Mock retrieval
     mock_auth_rec = MagicMock(spec=TenantAuthenticationApiRecord)
     mock_auth_rec.serialize.return_value = {
         "tenant_authentication_api_id": TEST_AUTH_API_ID
@@ -982,10 +941,8 @@ async def test_innkeeper_authentications_api_get(
         return_value=mock_auth_rec
     )
 
-    # Act
     response = await test_module.innkeeper_authentications_api_get(mock_request)
 
-    # Assert
     assert profile.settings.get("wallet.innkeeper") is True
     mock_context.inject.assert_called_once_with(test_module.TenantManager)
     MockTenantAuthApiRecordCls.retrieve_by_auth_api_id.assert_awaited_once_with(
@@ -1010,10 +967,10 @@ async def test_innkeeper_authentications_api_delete(
     """Test DELETE /innkeeper/authentications/api/{id} endpoint."""
     profile = mock_context.profile
 
-    # Arrange: Mock request match_info
+    # Mock request match_info
     mock_request._set_match_info("tenant_authentication_api_id", TEST_AUTH_API_ID)
 
-    # Arrange: Mock retrieval and delete
+    # Mock retrieval and delete
     mock_auth_rec = AsyncMock(spec=TenantAuthenticationApiRecord)
     # Simulate retrieve succeeding the first time, failing the second time (after delete)
     MockTenantAuthApiRecordCls.retrieve_by_auth_api_id.side_effect = [
@@ -1021,18 +978,16 @@ async def test_innkeeper_authentications_api_delete(
         StorageNotFoundError("Not Found after delete"),
     ]
 
-    # Act
     response = await test_module.innkeeper_authentications_api_delete(mock_request)
 
-    # Assert
     assert profile.settings.get("wallet.innkeeper") is True
     mock_context.inject.assert_called_once_with(test_module.TenantManager)
-    # Assert retrieve was called twice
+
     assert MockTenantAuthApiRecordCls.retrieve_by_auth_api_id.await_count == 2
     MockTenantAuthApiRecordCls.retrieve_by_auth_api_id.assert_any_await(
         ANY, TEST_AUTH_API_ID
     )
-    # Assert delete was called on the instance
+
     mock_auth_rec.delete_record.assert_awaited_once_with(ANY)
     assert response.status == 200
     assert json.loads(response.body) == {"success": True}
@@ -1048,7 +1003,7 @@ async def test_innkeeper_config_handler(
 ):
     """Test GET /innkeeper/server/status/config endpoint."""
     profile: Profile = mock_request["context"].profile
-    # Arrange: Add some more settings to the mock profile context for the test
+    # Add some more settings to the mock profile context for the test
     profile.context.settings = {
         "admin.admin_api_key": "dummy-admin-key",
         "wallet.id": "test-innkeeper-wallet-id",
@@ -1071,13 +1026,10 @@ async def test_innkeeper_config_handler(
 
     mock_request["context"].profile = profile
     mock_request["context"].inject.return_value = mock_request["context"]
-    # Act
+
     response = await test_module.innkeeper_config_handler(mock_request)
 
-    # Assert
-    assert (
-        profile.settings.get("wallet.innkeeper") is True
-    )  # From decorator check simulation
+    assert profile.settings.get("wallet.innkeeper") is True
     mock_request["context"].inject.assert_called_once_with(test_module.TenantManager)
     assert response.status == 200
     response_body = json.loads(response.body)
@@ -1096,8 +1048,3 @@ async def test_innkeeper_config_handler(
     assert response_body["config"]["wallet.id"] == TEST_INNKEEPER_WALLET_ID
     assert response_body["config"]["version"] == __version__
     assert response_body["config"]["some_other_setting"] == "value"
-
-    # For a more robust check, compare the whole structure
-    # It's tricky because the exact settings depend on ACA-Py version/defaults
-    # So, checking absence of sensitive keys and presence of some known keys is often pragmatic.
-    # assert response_body["config"] == expected_config # Might be too brittle

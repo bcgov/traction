@@ -136,7 +136,7 @@ async def test_tenant_self(
     mock_request: MagicMock,
 ):
     """Test GET /tenant endpoint."""
-    # Arrange: Setup mock TenantRecord instance and its query method
+    # Setup mock TenantRecord instance and its query method
     mock_tenant_rec = AsyncMock(spec=TenantRecord)
     mock_tenant_rec.serialize.return_value = {
         "tenant_id": TEST_TENANT_ID,
@@ -144,7 +144,6 @@ async def test_tenant_self(
     }
     MockTenantRecordCls.query_by_wallet_id = AsyncMock(return_value=mock_tenant_rec)
 
-    # Act
     response = await test_module.tenant_self(mock_request)
 
     # Assert
@@ -167,7 +166,7 @@ async def test_tenant_wallet_get(
     mock_request: MagicMock,
 ):
     """Test GET /tenant/wallet endpoint."""
-    # Arrange: Setup mock WalletRecord
+    # Setup mock WalletRecord
     mock_wallet_rec = MagicMock(spec=WalletRecord)
     MockWalletRecordCls.retrieve_by_id = AsyncMock(return_value=mock_wallet_rec)
     mock_format_wallet_record.return_value = {
@@ -175,7 +174,6 @@ async def test_tenant_wallet_get(
         "settings": {},
     }
 
-    # Act
     response = await test_module.tenant_wallet_get(mock_request)
 
     # Assert
@@ -193,7 +191,7 @@ async def test_tenant_config_get(
     mock_request: MagicMock,
 ):
     """Test GET /tenant/config endpoint."""
-    # Arrange: Setup mock TenantRecord with attributes
+    # Setup mock TenantRecord with attributes
     mock_tenant_rec = MagicMock(
         spec=TenantRecord,
         connected_to_endorsers=[{"endorser_alias": "test-endorser"}],
@@ -204,7 +202,6 @@ async def test_tenant_config_get(
     )
     MockTenantRecordCls.query_by_wallet_id = AsyncMock(return_value=mock_tenant_rec)
 
-    # Act
     response = await test_module.tenant_config_get(mock_request)
 
     # Assert
@@ -230,15 +227,14 @@ async def test_tenant_config_ledger_id_set(
     """Test PUT /tenant/config/set-ledger-id endpoint."""
     new_ledger_id = "new-ledger-id"
 
-    # Arrange: Setup mock request body
+    # Setup mock request body
     mock_request._set_json_body({"ledger_id": new_ledger_id})
 
-    # Arrange: Setup mock TenantRecord and its save method
+    # Setup mock TenantRecord and its save method
     mock_tenant_rec = AsyncMock(spec=TenantRecord)
     mock_tenant_rec.curr_ledger_id = "old-ledger-id"  # Initial value to be overwritten
     MockTenantRecordCls.query_by_wallet_id = AsyncMock(return_value=mock_tenant_rec)
 
-    # Act
     response = await test_module.tenant_config_ledger_id_set(mock_request)
 
     # Assert
@@ -272,21 +268,20 @@ async def test_tenant_wallet_update(
         "extra_settings": {"some_setting": "value"},
     }
 
-    # Arrange: Setup mock request body
+    # Setup mock request body
     mock_request._set_json_body(update_body)
 
-    # Arrange: Setup mock multitenant manager's update_wallet (on the instance fixture)
+    # Setup mock multitenant manager's update_wallet (on the instance fixture)
     mock_wallet_rec = MagicMock(spec=WalletRecord)
     mock_multitenant_mgr.update_wallet = AsyncMock(return_value=mock_wallet_rec)
 
-    # Arrange: Setup return value for helper functions
+    # Setup return value for helper functions
     mock_format_wallet_record.return_value = {
         "wallet_id": TEST_WALLET_ID,
         "settings": {"default_label": "New Label"},
     }
     mock_get_extra_settings.return_value = {"traction.some_setting": "value"}
 
-    # Act
     response = await test_module.tenant_wallet_update(mock_request)
 
     # Assert
@@ -322,15 +317,14 @@ async def test_tenant_email_update(
     new_email = "new.email@example.com"
     update_body = {"contact_email": new_email}
 
-    # Arrange: Setup mock request body
+    # Setup mock request body
     mock_request._set_json_body(update_body)
 
-    # Arrange: Setup mock TenantRecord and its save method
+    # Setup mock TenantRecord and its save method
     mock_tenant_rec = AsyncMock(spec=TenantRecord)
     mock_tenant_rec.contact_email = "old@example.com"
     MockTenantRecordCls.query_by_wallet_id = AsyncMock(return_value=mock_tenant_rec)
 
-    # Act
     response = await test_module.tenant_email_update(mock_request)
 
     # Assert
@@ -359,21 +353,20 @@ async def test_tenant_api_key_create(
     new_auth_api_id = "new-auth-id-123"
     new_api_key = "secret-key-xyz"
 
-    # Arrange: Mock TenantRecord query
+    # Mock TenantRecord query
     mock_tenant_rec = MagicMock(spec=TenantRecord, tenant_id=TEST_TENANT_ID)
     MockTenantRecordCls.query_by_wallet_id = AsyncMock(return_value=mock_tenant_rec)
 
-    # Arrange: Mock request body
+    # Mock request body
     mock_request._set_json_body(create_body)
 
-    # Arrange: Mock helper function return value
+    # Mock helper function return value
     mock_create_api_key.return_value = (new_api_key, new_auth_api_id)
 
-    # Arrange: Mock the TenantAuthenticationApiRecord constructor and instance
+    # Mock the TenantAuthenticationApiRecord constructor and instance
     mock_auth_rec_instance = MagicMock(spec=TenantAuthenticationApiRecord)
     MockTenantAuthApiRecordCls.return_value = mock_auth_rec_instance
 
-    # Act
     response = await test_module.tenant_api_key(mock_request)
 
     # Assert
@@ -404,14 +397,14 @@ async def test_tenant_api_key_get_record(
     """Test GET /tenant/authentications/api/{id} endpoint."""
     auth_api_id_to_get = "auth-api-id-456"
 
-    # Arrange: Configure request match_info
+    # Configure request match_info
     mock_request._set_match_info("tenant_authentication_api_id", auth_api_id_to_get)
 
-    # Arrange: Mock TenantRecord query
+    # Mock TenantRecord query
     mock_tenant_rec = MagicMock(spec=TenantRecord, tenant_id=TEST_TENANT_ID)
     MockTenantRecordCls.query_by_wallet_id = AsyncMock(return_value=mock_tenant_rec)
 
-    # Arrange: Mock TenantAuthenticationApiRecord retrieval and serialize
+    # Mock TenantAuthenticationApiRecord retrieval and serialize
     mock_auth_rec = MagicMock(
         spec=TenantAuthenticationApiRecord, tenant_id=TEST_TENANT_ID
     )
@@ -424,7 +417,6 @@ async def test_tenant_api_key_get_record(
         return_value=mock_auth_rec
     )
 
-    # Act
     response = await test_module.tenant_api_key_get(mock_request)
 
     # Assert
@@ -454,14 +446,14 @@ async def test_tenant_api_key_get_record_not_found_wrong_tenant(
     other_tenant_id = "other-tenant-id"
     auth_api_id_to_get = "auth-api-id-789"
 
-    # Arrange: Configure request match_info
+    # Configure request match_info
     mock_request._set_match_info("tenant_authentication_api_id", auth_api_id_to_get)
 
-    # Arrange: Mock TenantRecord query (returns record for TEST_TENANT_ID)
+    # Mock TenantRecord query (returns record for TEST_TENANT_ID)
     mock_tenant_rec = MagicMock(spec=TenantRecord, tenant_id=TEST_TENANT_ID)
     MockTenantRecordCls.query_by_wallet_id = AsyncMock(return_value=mock_tenant_rec)
 
-    # Arrange: Mock TenantAuthenticationApiRecord retrieval - return record belonging to different tenant
+    # Mock TenantAuthenticationApiRecord retrieval - return record belonging to different tenant
     mock_auth_rec = MagicMock(
         spec=TenantAuthenticationApiRecord, tenant_id=other_tenant_id
     )
@@ -469,7 +461,6 @@ async def test_tenant_api_key_get_record_not_found_wrong_tenant(
         return_value=mock_auth_rec
     )
 
-    # Act & Assert
     with pytest.raises(web.HTTPNotFound):
         await test_module.tenant_api_key_get(mock_request)
 
@@ -490,11 +481,11 @@ async def test_tenant_api_key_list_records(
     mock_request: MagicMock,
 ):
     """Test GET /tenant/authentications/api/ endpoint."""
-    # Arrange: Mock TenantRecord query
+    # Mock TenantRecord query
     mock_tenant_rec = MagicMock(spec=TenantRecord, tenant_id=TEST_TENANT_ID)
     MockTenantRecordCls.query_by_wallet_id = AsyncMock(return_value=mock_tenant_rec)
 
-    # Arrange: Mock TenantAuthenticationApiRecord query
+    # Mock TenantAuthenticationApiRecord query
     mock_auth_rec_1 = MagicMock(spec=TenantAuthenticationApiRecord)
     mock_auth_rec_1.serialize.return_value = {
         "tenant_authentication_api_id": "id1",
@@ -509,7 +500,6 @@ async def test_tenant_api_key_list_records(
         return_value=[mock_auth_rec_1, mock_auth_rec_2]
     )
 
-    # Act
     response = await test_module.tenant_api_key_list(mock_request)
 
     # Assert
@@ -538,14 +528,14 @@ async def test_tenant_api_key_delete_record(
     """Test DELETE /tenant/authentications/api/{id} endpoint."""
     auth_api_id_to_delete = "auth-api-id-abc"
 
-    # Arrange: Configure request match_info
+    # Configure request match_info
     mock_request._set_match_info("tenant_authentication_api_id", auth_api_id_to_delete)
 
-    # Arrange: Mock TenantRecord query
+    # Mock TenantRecord query
     mock_tenant_rec = MagicMock(spec=TenantRecord, tenant_id=TEST_TENANT_ID)
     MockTenantRecordCls.query_by_wallet_id = AsyncMock(return_value=mock_tenant_rec)
 
-    # Arrange: Mock TenantAuthenticationApiRecord retrieval and delete
+    # Mock TenantAuthenticationApiRecord retrieval and delete
     mock_auth_rec = AsyncMock(
         spec=TenantAuthenticationApiRecord, tenant_id=TEST_TENANT_ID
     )
@@ -555,7 +545,6 @@ async def test_tenant_api_key_delete_record(
         StorageNotFoundError("Not Found after delete"),
     ]
 
-    # Act
     response = await test_module.tenant_api_key_delete(mock_request)
 
     # Assert
@@ -581,7 +570,7 @@ async def test_tenant_delete_hard(
     mock_multitenant_mgr: MagicMock,  # Used for assertions
 ):
     """Test DELETE /tenant/hard endpoint."""
-    # Arrange: Mock TenantRecord query and delete
+    # Mock TenantRecord query and delete
     mock_tenant_rec = AsyncMock(
         spec=TenantRecord, tenant_id=TEST_TENANT_ID, wallet_id=TEST_WALLET_ID
     )
@@ -591,10 +580,9 @@ async def test_tenant_delete_hard(
     }
     MockTenantRecordCls.query_by_wallet_id = AsyncMock(return_value=mock_tenant_rec)
 
-    # Arrange: Mock multitenant manager remove_wallet (on the instance)
+    # Mock multitenant manager remove_wallet (on the instance)
     mock_multitenant_mgr.remove_wallet = AsyncMock()
 
-    # Act
     response = await test_module.tenant_delete(mock_request)
 
     # Assert
@@ -617,11 +605,10 @@ async def test_tenant_delete_soft(
     mock_request: MagicMock,
 ):
     """Test DELETE /tenant/soft endpoint."""
-    # Arrange: Mock TenantRecord query and soft_delete
+    # Mock TenantRecord query and soft_delete
     mock_tenant_rec = AsyncMock(spec=TenantRecord, tenant_id=TEST_TENANT_ID)
     MockTenantRecordCls.query_by_wallet_id = AsyncMock(return_value=mock_tenant_rec)
 
-    # Act
     response = await test_module.tenant_delete_soft(mock_request)
 
     # Assert
