@@ -55,7 +55,7 @@ SWAGGER_CATEGORY = "traction-innkeeper"
 def innkeeper_only(func):
     @functools.wraps(func)
     async def wrapper(request):
-        print("> innkeeper_only")
+        LOGGER.info("> innkeeper_only")
         context: AdminRequestContext = request["context"]
         profile = context.profile
         wallet_name = str(profile.settings.get("wallet.name"))
@@ -67,7 +67,7 @@ def innkeeper_only(func):
                 ret = await func(request)
                 return ret
             finally:
-                print("< innkeeper_only")
+                LOGGER.info("< innkeeper_only")
         else:
             LOGGER.error(
                 f"API call is for innkeepers only. wallet.name = '{wallet_name}', wallet.innkeeper = {wallet_innkeeper}"
