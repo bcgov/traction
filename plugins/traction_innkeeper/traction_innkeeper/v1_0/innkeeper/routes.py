@@ -55,7 +55,7 @@ SWAGGER_CATEGORY = "traction-innkeeper"
 def innkeeper_only(func):
     @functools.wraps(func)
     async def wrapper(request):
-        print("> innkeeper_only")
+        LOGGER.info("> innkeeper_only")
         context: AdminRequestContext = request["context"]
         profile = context.profile
         wallet_name = str(profile.settings.get("wallet.name"))
@@ -67,7 +67,7 @@ def innkeeper_only(func):
                 ret = await func(request)
                 return ret
             finally:
-                print("< innkeeper_only")
+                LOGGER.info("< innkeeper_only")
         else:
             LOGGER.error(
                 f"API call is for innkeepers only. wallet.name = '{wallet_name}', wallet.innkeeper = {wallet_innkeeper}"
@@ -854,7 +854,7 @@ async def innkeeper_tenant_hard_delete(request: web.BaseRequest):
         if rec:
             multitenant_mgr = context.profile.inject(BaseMultitenantManager)
             wallet_id = rec.wallet_id
-            wallet_record = await WalletRecord.retrieve_by_id(session, wallet_id)
+            await WalletRecord.retrieve_by_id(session, wallet_id)
 
             await multitenant_mgr.remove_wallet(wallet_id)
             await rec.delete_record(session)
@@ -1072,7 +1072,6 @@ async def register(app: web.Application):
                 LOGGER.info(f"... replacing current handler: {r.handler}")
                 r._handler = tenant_wallet_create_token
                 LOGGER.info(f"... with new handler: {r.handler}")
-                has_wallet_create_token = True
     # routes that require a tenant token for the innkeeper wallet/tenant/agent.
     # these require not only a tenant, but it has to be the innkeeper tenant!
     app.add_routes(

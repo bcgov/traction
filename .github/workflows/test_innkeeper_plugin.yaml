@@ -1,0 +1,52 @@
+name: Test and Lint Innkeeper Plugin
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "plugins/**"
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./plugins/traction_innkeeper
+
+    steps:
+      #----------------------------------------------
+      #       Check out repo
+      #----------------------------------------------
+      - name: Check out repository
+        uses: actions/checkout@v4
+      #----------------------------------------------
+      #       Install python and poetry with cache
+      #----------------------------------------------
+      - name: Install poetry
+        run: pipx install poetry==2.1.1
+        id: setup-poetry
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "poetry"
+      #----------------------------------------------
+      #       Install dependencies
+      #----------------------------------------------
+      - name: Install dependencies
+        id: install-dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root --all-extras
+      #----------------------------------------------
+      #       Lint plugins
+      #----------------------------------------------
+      - name: Lint plugins
+        id: lint-plugins
+        run: poetry run ruff check .
+      #----------------------------------------------
+      #       Unit tests
+      #----------------------------------------------
+      - name: Unit test plugins
+        id: unit-tests
+        env:
+          PYTHONPATH: .
+        run: poetry run pytest traction_innkeeper
