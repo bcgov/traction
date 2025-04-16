@@ -20,6 +20,7 @@ plugin:
   - multitenant_provider.v1_0
   - traction_plugins.traction_innkeeper.v1_0
   - rpc.v1_0
+  - connections.v1_0
 
  
 plugin-config-value:
