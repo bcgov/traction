@@ -42,3 +42,4 @@ exec aca-py start \
     --plugin basicmessage_storage.v1_0 \
     --plugin connection_update.v1_0 \
     --plugin rpc.v1_0 \
+    --plugin connections.v1_0 \
