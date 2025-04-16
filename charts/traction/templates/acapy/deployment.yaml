@@ -69,7 +69,7 @@ spec:
            --plugin rpc.v1_0 \
            {{- end }}
            {{- if .Values.acapy.plugins.webvh }}
-           --plugin webvh.v1_0 \
+           --plugin webvh \
            {{- end }}             
            "
           ]
