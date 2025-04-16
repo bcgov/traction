@@ -30,6 +30,13 @@ acapy:
       genesis_url: "https://raw.githubusercontent.com/sovrin-foundation/sovrin/stable/sovrin/pool_transactions_sandbox_genesis"
       endorser_did: "EZpKx6nT56Hv83JmNz7ik8"
       endorser_alias: "sovrin-testnet-endorser"
+  plugins:
+    basicmessageStorage: true
+    connectionUpdate: true
+    multitenantProvider: true
+    tractionInnkeeper: true
+    rpc: true
+    webvh: true
   plugin-config.yml:
     traction_innkeeper:
       innkeeper_wallet:
