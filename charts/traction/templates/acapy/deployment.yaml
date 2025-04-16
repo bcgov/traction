@@ -67,7 +67,10 @@ spec:
            {{- end }}
            {{- if .Values.acapy.plugins.rpc }}
            --plugin rpc.v1_0 \
-           {{- end }}           
+           {{- end }}
+           {{- if .Values.acapy.plugins.webvh }}
+           --plugin webvh.v1_0 \
+           {{- end }}             
            "
           ]
           ports:
