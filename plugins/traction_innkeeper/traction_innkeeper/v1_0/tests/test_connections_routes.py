@@ -4,20 +4,16 @@ from unittest.mock import MagicMock, AsyncMock, patch, ANY
 
 import pytest
 from aiohttp import web
-from acapy_agent.core.profile import Profile
 from acapy_agent.storage.error import StorageNotFoundError
 from acapy_agent.messaging.models.base import BaseModelError
 
-# Import the module containing the routes to be tested
 from traction_innkeeper.v1_0.connections import routes as test_module
 
-# Import Schemas and Models used for mocking return types or validation
 from acapy_agent.connections.models.conn_record import ConnRecord
 from acapy_agent.protocols.connections.v1_0.messages.connection_invitation import (
     ConnectionInvitation,
 )
 
-# Disable logging noise during tests
 logging.disable(logging.CRITICAL)
 
 # --- Constants ---
