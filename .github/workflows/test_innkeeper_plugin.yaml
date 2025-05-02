@@ -49,4 +49,4 @@ jobs:
         id: unit-tests
         env:
           PYTHONPATH: .
-        run: poetry run pytest traction_innkeeper
+        run: poetry run pytest traction_innkeeper --cov --cov-fail-under 90
