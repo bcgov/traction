@@ -32,6 +32,7 @@ acapy:
       endorser_alias: "sovrin-testnet-endorser"
   plugins:
     basicmessageStorage: true
+    connections: true
     connectionUpdate: true
     multitenantProvider: true
     tractionInnkeeper: true
