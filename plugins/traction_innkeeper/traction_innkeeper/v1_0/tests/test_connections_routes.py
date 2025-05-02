@@ -7,7 +7,7 @@ from acapy_agent.connections.models.conn_record import ConnRecord
 from acapy_agent.messaging.models.base import BaseModelError
 from acapy_agent.storage.error import StorageNotFoundError
 from aiohttp import web
-from connections.v1_0 import ConnectionInvitation
+from connections.v1_0.routes import ConnectionInvitation
 from traction_innkeeper.v1_0.connections import routes as test_module
 
 logging.disable(logging.CRITICAL)
