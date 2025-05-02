@@ -40,5 +40,7 @@ exec aca-py start \
     --plugin multitenant_provider.v1_0 \
     --plugin traction_plugins.traction_innkeeper.v1_0 \
     --plugin basicmessage_storage.v1_0 \
+    --plugin connections.v1_0 \
     --plugin connection_update.v1_0 \
     --plugin rpc.v1_0 \
+    --plugin webvh

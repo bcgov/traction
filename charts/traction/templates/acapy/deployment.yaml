@@ -62,6 +62,9 @@ spec:
            {{- if .Values.acapy.plugins.basicmessageStorage }}
            --plugin basicmessage_storage.v1_0 \
            {{- end }}
+           {{- if .Values.acapy.plugins.connections }}
+           --plugin connections.v1_0 \
+           {{- end }} 
            {{- if .Values.acapy.plugins.connectionUpdate }}
            --plugin connection_update.v1_0 \
            {{- end }}

@@ -207,6 +207,7 @@ acapy:
   ##
   plugins:
     basicmessageStorage: true
+    conections: true
     connectionUpdate: true
     multitenantProvider: true
     tractionInnkeeper: true
