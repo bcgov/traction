@@ -1,18 +1,14 @@
 import json
 import logging
-from unittest.mock import MagicMock, AsyncMock, patch, ANY
+from unittest.mock import ANY, AsyncMock, MagicMock, patch
 
 import pytest
-from aiohttp import web
-from acapy_agent.storage.error import StorageNotFoundError
-from acapy_agent.messaging.models.base import BaseModelError
-
-from traction_innkeeper.v1_0.connections import routes as test_module
-
 from acapy_agent.connections.models.conn_record import ConnRecord
-from acapy_agent.protocols.connections.v1_0.messages.connection_invitation import (
-    ConnectionInvitation,
-)
+from acapy_agent.messaging.models.base import BaseModelError
+from acapy_agent.storage.error import StorageNotFoundError
+from aiohttp import web
+from connections.v1_0 import ConnectionInvitation
+from traction_innkeeper.v1_0.connections import routes as test_module
 
 logging.disable(logging.CRITICAL)
 
