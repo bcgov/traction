@@ -62,12 +62,18 @@ spec:
            {{- if .Values.acapy.plugins.basicmessageStorage }}
            --plugin basicmessage_storage.v1_0 \
            {{- end }}
+           {{- if .Values.acapy.plugins.connections }}
+           --plugin connections \
+           {{- end }} 
            {{- if .Values.acapy.plugins.connectionUpdate }}
            --plugin connection_update.v1_0 \
            {{- end }}
            {{- if .Values.acapy.plugins.rpc }}
            --plugin rpc.v1_0 \
-           {{- end }}           
+           {{- end }}
+           {{- if .Values.acapy.plugins.webvh }}
+           --plugin webvh \
+           {{- end }}             
            "
           ]
           ports:

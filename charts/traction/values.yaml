@@ -207,10 +207,12 @@ acapy:
   ##
   plugins:
     basicmessageStorage: true
+    connections: true
     connectionUpdate: true
     multitenantProvider: true
     tractionInnkeeper: true
     rpc: true
+    webvh: true
 
   ## @section Acapy Plugin Configuration
   ## Specify configuration values for each plugin.
