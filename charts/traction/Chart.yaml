@@ -2,8 +2,8 @@ apiVersion: v2
 name: traction
 description: The Traction service allows organizations to verify, hold, and issue verifiable credentials. The Traction Tenant UI allows tenants to manage their agent.
 type: application
-version: 0.3.7
-appVersion: 1.1.2
+version: 0.3.8
+appVersion: 1.2.0
 home: "https://github.com/bcgov/traction"
 sources: ["https://github.com/bcgov/traction"]
 icon: "https://github.com/bcgov/traction/raw/main/docs/assets/readme-logo.png"
@@ -11,15 +11,12 @@ maintainers:
   - email: ivan.polchenko@quartech.com
     name: i5okie
     url: https://github.com/i5okie
-  - email: tools@usingtechnolo.gy
-    name: usingtechnology
-    url: https://github.com/usingtechnology
-  - email: jason.syrotuck@nttdata.com
-    name: Jsyro
-    url: https://github.com/Jsyro
   - email: emiliano.sune@quartech.com
     name: esune
     url: https://github.com/esune
+  - email: lucasoneil@gmail.com
+    name: loneil
+    url: https://github.com/loneil
 dependencies:
   - name: postgresql
     version: 15.5.38
