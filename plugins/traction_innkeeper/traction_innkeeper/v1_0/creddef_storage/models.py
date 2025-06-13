@@ -67,29 +67,37 @@ class CredDefStorageRecordSchema(BaseRecordSchema):
 
     cred_def_id = fields.Str(
         required=True,
-        description="Cred Def identifier",
         validate=INDY_CRED_DEF_ID_VALIDATE,
-        example=INDY_CRED_DEF_ID_EXAMPLE,
+        metadata={
+            "description": "Cred Def identifier",
+            "example": INDY_CRED_DEF_ID_EXAMPLE,
+        },
     )
     schema_id = fields.Str(
-        description="Schema identifier",
         validate=INDY_SCHEMA_ID_VALIDATE,
-        example=INDY_SCHEMA_ID_EXAMPLE,
+        metadata={
+            "description": "Schema identifier",
+            "example": INDY_SCHEMA_ID_EXAMPLE,
+        },
     )
     support_revocation = fields.Boolean(
-        required=False, description="Revocation supported flag"
+        required=False, metadata={"description": "Revocation supported flag"}
     )
     rev_reg_size = fields.Int(
-        description="Revocation registry size",
         required=False,
         strict=True,
         allow_none=True,
         validate=INDY_REV_REG_SIZE_VALIDATE,
-        example=INDY_REV_REG_SIZE_EXAMPLE,
+        metadata={
+            "description": "Revocation registry size",
+            "example": INDY_REV_REG_SIZE_EXAMPLE,
+        },
     )
     tag = fields.Str(
         required=False,
-        description="Credential definition identifier tag",
-        default="default",
-        example="default",
+        metadata={
+            "description": "Credential definition identifier tag",
+            "default": "default",
+            "example": "default",
+        },
     )
