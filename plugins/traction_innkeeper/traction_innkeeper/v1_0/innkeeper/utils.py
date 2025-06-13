@@ -18,11 +18,15 @@ class EndorserLedgerConfigSchema(OpenAPISchema):
     """Schema for EndorserLedgerConfig."""
 
     endorser_alias = fields.Str(
-        description="Endorser alias/identifier",
+        metadata={
+            "description": "Endorser alias/identifier",
+        },
         required=True,
     )
     ledger_id = fields.Str(
-        description="Ledger identifier",
+        metadata={
+            "description": "Ledger identifier",
+        },
         required=True,
     )
 
@@ -32,28 +36,40 @@ class TenantConfigSchema(OpenAPISchema):
 
     connect_to_endorser = fields.List(
         fields.Nested(EndorserLedgerConfigSchema()),
-        description="Endorser config",
+        metadata={
+            "description": "Endorser config",
+        },
     )
     create_public_did = fields.List(
         fields.Str(
-            description="Ledger identifier",
+            metadata={
+                "description": "Ledger identifier",
+            },
             required=False,
         ),
-        description="Public DID config",
+        metadata={
+            "description": "Public DID config",
+        },
     )
     auto_issuer = fields.Bool(
         required=False,
-        description="True if tenant can make itself issuer, false if only innkeeper can",
-        default=False,
+        metadata={
+            "description": "True if tenant can make itself issuer, false if only innkeeper can",
+        },
+        dump_default=False,
     )
     enable_ledger_switch = fields.Bool(
         required=False,
-        description="True if tenant can switch endorser/ledger",
-        default=False,
+        metadata={
+            "description": "True if tenant can switch endorser/ledger",
+        },
+        dump_default=False,
     )
     curr_ledger_id = fields.Str(
         required=False,
-        description="Current ledger identifier",
+        metadata={
+            "description": "Current ledger identifier",
+        },
     )
 
 

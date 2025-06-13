@@ -107,9 +107,11 @@ class CustomCreateWalletTokenRequestSchema(CreateWalletTokenRequestSchema):
     """Request schema for creating a wallet token."""
 
     api_key = fields.Str(
-        description="API key for this wallet",
+        metadata={
+            "description": "API key for this wallet",
+            "example": "3bd14a1e8fb645ddadf9913c0922ff3b",
+        },
         required=False,
-        example="3bd14a1e8fb645ddadf9913c0922ff3b",
     )
 
 
@@ -118,14 +120,20 @@ class DefaultConfigValuesSchema(OpenAPISchema):
 
     connected_to_endorsers = fields.List(
         fields.Nested(EndorserLedgerConfigSchema()),
-        description="Endorser config",
+        metadata={
+            "description": "Endorser config",
+        },
     )
     created_public_did = fields.List(
         fields.Str(
-            description="Ledger identifier",
+            metadata={
+                "description": "Ledger identifier",
+            },
             required=False,
         ),
-        description="Public DID config",
+        metadata={
+            "description": "Public DID config",
+        },
     )
 
 
@@ -134,19 +142,25 @@ class ReservationRequestSchema(OpenAPISchema):
 
     tenant_name = fields.Str(
         required=True,
-        description="Proposed name of Tenant",
-        example="line of business short name",
+        metadata={
+            "description": "Proposed name of Tenant",
+            "example": "line of business short name",
+        },
     )
 
     contact_email = fields.Str(
         required=True,
-        description="Contact email for this tenant request",
+        metadata={
+            "description": "Contact email for this tenant request",
+        },
     )
 
     context_data = fields.Dict(
         required=False,
-        description="Optional context data for this tenant request",
-        example={"contact_phone": "555-555-5555"},
+        metadata={
+            "description": "Optional context data for this tenant request",
+            "example": {"contact_phone": "555-555-5555"},
+        },
     )
 
 
@@ -155,8 +169,10 @@ class ReservationResponseSchema(OpenAPISchema):
 
     reservation_id = fields.Str(
         required=True,
-        description="The reservation record identifier",
-        example=UUIDFour.EXAMPLE,
+        metadata={
+            "description": "The reservation record identifier",
+            "example": UUIDFour.EXAMPLE,
+        },
     )
 
 
@@ -165,8 +181,10 @@ class CheckinSchema(OpenAPISchema):
 
     reservation_pwd = fields.Str(
         required=True,
-        description="The reservation password",
-        example=UUIDFour.EXAMPLE,
+        metadata={
+            "description": "The reservation password",
+            "example": UUIDFour.EXAMPLE,
+        },
     )
 
 
@@ -174,14 +192,17 @@ class CheckinResponseSchema(OpenAPISchema):
     """Response schema for reservation Check-in."""
 
     wallet_id = fields.Str(
-        description="Subwallet identifier", required=True, example=UUIDFour.EXAMPLE
+        required=True,
+        metadata={"description": "Subwallet identifier", "example": UUIDFour.EXAMPLE},
     )
     wallet_key = fields.Str(
-        description="Master key used for key derivation.", example="MySecretKey123"
+        metadata={"description": "Subwallet identifier", "example": UUIDFour.EXAMPLE}
     )
     token = fields.Str(
-        description="Authorization token to authenticate wallet requests",
-        example=JSONWebToken.EXAMPLE,
+        metadata={
+            "description": "Master key used for key derivation.",
+            "example": "MySecretKey123",
+        }
     )
 
 
@@ -190,13 +211,14 @@ class ReservationListSchema(OpenAPISchema):
 
     results = fields.List(
         fields.Nested(ReservationRecordSchema()),
-        description="List of reservations",
+        metadata={"description": "Authorization token to authenticate wallet requests"},
     )
 
 
 class ReservationIdMatchInfoSchema(OpenAPISchema):
     reservation_id = fields.Str(
-        description="Reservation identifier", required=True, example=UUIDFour.EXAMPLE
+        required=True,
+        metadata={"description": "Reservation identifier", "example": UUIDFour.EXAMPLE},
     )
 
 
@@ -213,7 +235,9 @@ class ReservationApproveResponseSchema(OpenAPISchema):
 
     reservation_pwd = fields.Str(
         required=True,
-        description="The reservation password - deliver to tenant contact",
+        metadata={
+            "description": "The reservation password - deliver to tenant contact",
+        },
     )
 
 
@@ -222,8 +246,10 @@ class ReservationApproveRequestSchema(OpenAPISchema):
 
     state_notes = fields.Str(
         required=False,
-        description="Reason(s) for approving a tenant reservation",
-        example="Welcome",
+        metadata={
+            "description": "Reason(s) for approving a tenant reservation",
+            "example": "Welcome",
+        },
     )
 
 
@@ -232,14 +258,17 @@ class ReservationDenyRequestSchema(OpenAPISchema):
 
     state_notes = fields.Str(
         required=True,
-        description="Reason(s) for approving or denying a tenant reservation",
-        example="No room at the inn.",
+        metadata={
+            "description": "Reason(s) for approving or denying a tenant reservation",
+            "example": "No room at the inn.",
+        },
     )
 
 
 class TenantIdMatchInfoSchema(OpenAPISchema):
     tenant_id = fields.Str(
-        description="Tenant identifier", required=True, example=UUIDFour.EXAMPLE
+        required=True,
+        metadata={"description": "Tenant identifier", "example": UUIDFour.EXAMPLE},
     )
 
 
@@ -248,14 +277,15 @@ class TenantAuthenticationsApiRequestSchema(OpenAPISchema):
 
     tenant_id = fields.Str(
         required=True,
-        description="Tenant ID",
-        example=UUIDFour.EXAMPLE,
+        metadata={"description": "Tenant ID", "example": UUIDFour.EXAMPLE},
     )
 
     alias = fields.Str(
         required=True,
-        description="Alias/label",
-        example="API key for sample line of business",
+        metadata={
+            "description": "Alias/label",
+            "example": "API key for sample line of business",
+        },
     )
 
 
@@ -264,14 +294,18 @@ class TenantAuthenticationsApiResponseSchema(OpenAPISchema):
 
     tenant_authentication_api_id = fields.Str(
         required=True,
-        description="The API key record identifier",
-        example=UUIDFour.EXAMPLE,
+        metadata={
+            "description": "The API key record identifier",
+            "example": UUIDFour.EXAMPLE,
+        },
     )
 
     api_key = fields.Str(
         required=True,
-        description="The API key",
-        example="3bd14a1e8fb645ddadf9913c0922ff3b",
+        metadata={
+            "description": "The API key",
+            "example": "3bd14a1e8fb645ddadf9913c0922ff3b",
+        },
     )
 
 
@@ -280,7 +314,7 @@ class TenantListSchema(OpenAPISchema):
 
     results = fields.List(
         fields.Nested(TenantRecordSchema()),
-        description="List of tenants",
+        metadata={"description": "List of tenants"},
     )
 
 
@@ -289,8 +323,10 @@ class TenantListQuerySchema(OpenAPISchema):
 
     state = fields.Str(
         required=False,
-        description="The state of the tenants to filter by.",
-        example=TenantRecord.STATE_ACTIVE,
+        metadata={
+            "description": "The state of the tenants to filter by.",
+            "example": TenantRecord.STATE_ACTIVE,
+        },
         validate=validate.OneOf(
             [TenantRecord.STATE_ACTIVE, TenantRecord.STATE_DELETED, "all"]
         ),
@@ -302,7 +338,9 @@ class TenantAuthenticationApiListSchema(OpenAPISchema):
 
     results = fields.List(
         fields.Nested(TenantAuthenticationApiRecordSchema()),
-        description="List of reservations",
+        metadata={
+            "description": "List of reservations",
+        },
     )
 
 
@@ -310,9 +348,11 @@ class TenantAuthenticationApiIdMatchInfoSchema(OpenAPISchema):
     """Schema for finding a tenant auth user by the record ID."""
 
     tenant_authentication_api_id = fields.Str(
-        description="Tenant authentication api key identifier",
         required=True,
-        example=UUIDFour.EXAMPLE,
+        metadata={
+            "description": "Tenant authentication api key identifier",
+            "example": UUIDFour.EXAMPLE,
+        },
     )
 
 
@@ -321,7 +361,9 @@ class TenantAuthenticationApiOperationResponseSchema(OpenAPISchema):
 
     success = fields.Bool(
         required=True,
-        description="True if operation successful, false if otherwise",
+        metadata={
+            "description": "True if operation successful, false if otherwise",
+        },
     )
 
 

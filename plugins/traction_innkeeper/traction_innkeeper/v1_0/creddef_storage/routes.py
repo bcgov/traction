@@ -43,13 +43,18 @@ class CredDefStorageListSchema(OpenAPISchema):
 
     results = fields.List(
         fields.Nested(CredDefStorageRecordSchema()),
-        description="List of cred def storage records",
+        metadata={
+            "description": "List of cred def storage records",
+        },
     )
 
 
 class CredDefIdMatchInfoSchema(OpenAPISchema):
     cred_def_id = fields.Str(
-        description="Credential Definition identifier", required=True
+        metadata={
+            "description": "Credential Definition identifier",
+        },
+        required=True,
     )
 
 
@@ -58,7 +63,9 @@ class CredDefStorageOperationResponseSchema(OpenAPISchema):
 
     success = fields.Bool(
         required=True,
-        description="True if operation successful, false if otherwise",
+        metadata={
+            "description": "True if operation successful, false if otherwise",
+        },
     )
 
 
