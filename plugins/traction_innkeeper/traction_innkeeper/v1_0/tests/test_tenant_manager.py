@@ -150,7 +150,7 @@ async def test_create_tenant_success(
     MockWalletRecord.retrieve_by_id = AsyncMock(return_value=mock_wallet_rec_instance)
 
     # Setup mock TenantRecord instance methods (save, query)
-    mock_tenant_rec_instance = AsyncMock(spec=TenantRecord)
+    mock_tenant_rec_instance = MagicMock(spec=TenantRecord)
     # Make the MockTenantRecord class return our instance when called
     MockTenantRecord.return_value = mock_tenant_rec_instance
 

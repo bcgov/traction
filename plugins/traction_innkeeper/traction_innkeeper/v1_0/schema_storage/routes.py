@@ -42,16 +42,18 @@ class SchemaStorageListSchema(OpenAPISchema):
 
     results = fields.List(
         fields.Nested(SchemaStorageRecordSchema()),
-        description="List of schema storage records",
+        metadata={
+            "description": "List of schema storage records",
+        },
     )
 
 
 class SchemaIdMatchInfoSchema(OpenAPISchema):
-    schema_id = fields.Str(description="Schema identifier", required=True)
+    schema_id = fields.Str(metadata={"description": "Schema identifier"}, required=True)
 
 
 class SchemaStorageAddSchema(OpenAPISchema):
-    schema_id = fields.Str(description="Schema identifier", required=True)
+    schema_id = fields.Str(metadata={"description": "Schema identifier"}, required=True)
 
 
 class SchemaStorageOperationResponseSchema(OpenAPISchema):
@@ -59,7 +61,9 @@ class SchemaStorageOperationResponseSchema(OpenAPISchema):
 
     success = fields.Bool(
         required=True,
-        description="True if operation successful, false if otherwise",
+        metadata={
+            "description": "True if operation successful, false if otherwise",
+        },
     )
 
 

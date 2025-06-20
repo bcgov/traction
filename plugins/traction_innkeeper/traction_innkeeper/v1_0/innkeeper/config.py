@@ -2,7 +2,7 @@ import logging
 from typing import Any, Mapping, Optional, List
 
 from mergedeep import merge
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 LOGGER = logging.getLogger(__name__)
 
@@ -15,9 +15,9 @@ class EndorserLedgerConfig(BaseModel):
     endorser_alias: str
     ledger_id: str
 
-    class Config:
-        alias_generator = _alias_generator
-        populate_by_name = True
+    config: ConfigDict = ConfigDict(
+        alias_generator=_alias_generator, populate_by_name=True
+    )
 
     def serialize(self) -> dict:
         """Serialize the EndorserLedgerConfig to a mapping."""
@@ -39,9 +39,9 @@ class InnkeeperWalletConfig(BaseModel):
     create_public_did: List[str] = []
     enable_ledger_switch: bool = False
 
-    class Config:
-        alias_generator = _alias_generator
-        populate_by_name = True
+    config: ConfigDict = ConfigDict(
+        alias_generator=_alias_generator, populate_by_name=True
+    )
 
     @classmethod
     def default(cls):
@@ -63,9 +63,9 @@ class ReservationConfig(BaseModel):
     auto_approve: bool
     auto_issuer: bool = False
 
-    class Config:
-        alias_generator = _alias_generator
-        populate_by_name = True
+    config: ConfigDict = ConfigDict(
+        alias_generator=_alias_generator, populate_by_name=True
+    )
 
     @classmethod
     def default(cls):
@@ -110,5 +110,7 @@ def get_config(settings: Mapping[str, Any]) -> TractionInnkeeperConfig:
         config = TractionInnkeeperConfig.default()
 
     LOGGER.debug("Returning config: %s", config.model_dump_json(indent=2))
-    LOGGER.debug("Returning config(aliases): %s", config.model_dump_json(by_alias=True, indent=2))
+    LOGGER.debug(
+        "Returning config(aliases): %s", config.model_dump_json(by_alias=True, indent=2)
+    )
     return config

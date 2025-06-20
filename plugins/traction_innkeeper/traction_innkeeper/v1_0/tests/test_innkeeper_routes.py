@@ -196,7 +196,6 @@ async def test_tenant_default_config_settings(
     mock_tenant_mgr: MagicMock,  # Need the instance to configure its config
 ):
     """Test GET /innkeeper/default-config endpoint."""
-    mock_context.inject.return_value = mock_tenant_mgr
     profile = mock_context.profile
 
     # Configure the mock manager's config
@@ -214,6 +213,8 @@ async def test_tenant_default_config_settings(
         "connected_to_endorsers": [{"endorser_alias": "test-endorser"}],
         "created_public_did": ["did:sov:123"],
     }
+
+    mock_context.inject.return_value = mock_tenant_mgr
 
     response = await test_module.tenant_default_config_settings(mock_request)
 

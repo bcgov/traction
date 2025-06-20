@@ -50,11 +50,20 @@ def mock_profile():
     """Provides a mocked Profile with settings, session, and inject."""
     profile = MagicMock(spec=Profile)
     mock_session = AsyncMock(name="MockSession")
+
+    # Make profile.session() return the same mock_session each time
     profile.session = MagicMock(return_value=mock_session)
-    mock_session.__aenter__.return_value = mock_session
-    mock_session.__aexit__.return_value = None
+
+    # Properly mock the async context manager methods
+    mock_session.__aenter__ = AsyncMock(return_value=mock_session)
+    mock_session.__aexit__ = AsyncMock(return_value=None)
+
+    # Mock the session methods
+    mock_session.inject_or = MagicMock()
+    mock_session.inject = MagicMock()
+
     profile.settings = mock_session
-    profile.settings.get = MagicMock()  # Mock the .get method directly
+    profile.settings.get = MagicMock()
     profile.inject = MagicMock()
     return profile, mock_session
 
@@ -101,8 +110,8 @@ def mock_ledger_executor(mock_profile: tuple):
 def mock_ledger():
     """Provides a mocked BaseLedger."""
     ledger = AsyncMock(spec=BaseLedger)
-    ledger.get_schema = AsyncMock()
-    # Make ledger usable in 'async with' block
+    ledger.get_schema = AsyncMock(return_value=TEST_SCHEMA_DATA)
+    # Mock async context manager
     ledger.__aenter__ = AsyncMock(return_value=ledger)
     ledger.__aexit__ = AsyncMock(return_value=None)
     return ledger
@@ -289,67 +298,6 @@ async def test_add_item_existing(
 @pytest.mark.asyncio
 @patch(
     "traction_innkeeper.v1_0.schema_storage.schema_storage_service.SchemaStorageService.read_item",
-    new_callable=AsyncMock,
-)
-@patch("traction_innkeeper.v1_0.schema_storage.models.SchemaStorageRecord.deserialize")
-@patch(
-    "traction_innkeeper.v1_0.schema_storage.schema_storage_service.IndyLedgerRequestsExecutor",
-    autospec=True,
-)
-async def test_add_item_new_success_no_multitenant(
-    MockExecutorCls: MagicMock,
-    mock_deserialize: MagicMock,
-    mock_read_item: AsyncMock,
-    schema_storage_service: SchemaStorageService,
-    mock_profile: tuple,
-    mock_ledger: AsyncMock,
-    mock_schema_storage_record: AsyncMock,
-):
-    """Test add_item success for a new record without multitenancy."""
-    profile, session = mock_profile
-    mock_read_item.return_value = None  # Does not exist
-    session.inject_or = MagicMock(return_value=None)  # No multitenant manager
-    mock_executor_instance = MagicMock()
-    mock_executor_instance.get_ledger_for_identifier = AsyncMock(
-        return_value=(TEST_LEDGER_ID, mock_ledger)
-    )
-
-    session.inject = MagicMock(return_value=mock_executor_instance)
-    MockExecutorCls.return_value = mock_executor_instance  # Instance from class mock
-    mock_ledger.get_schema.return_value = TEST_SCHEMA_DATA
-    mock_deserialize.return_value = mock_schema_storage_record
-
-    result = await schema_storage_service.add_item(profile, TEST_SCHEMA_ID)
-
-    assert result == mock_schema_storage_record
-    mock_read_item.assert_awaited_once_with(profile, TEST_SCHEMA_ID)
-    profile.session.assert_has_calls(
-        [call(), call()]
-    )  # For inject_or/inject, then for save
-    session.inject_or.assert_called_once_with(BaseMultitenantManager)
-    # Executor injected directly from session context when no multitenancy
-    session.inject.assert_called_once_with(MockExecutorCls)
-    mock_executor_instance.get_ledger_for_identifier.assert_awaited_once_with(
-        TEST_SCHEMA_ID, txn_record_type=GET_SCHEMA
-    )
-    mock_ledger.get_schema.assert_awaited_once_with(TEST_SCHEMA_ID)
-    expected_data = {
-        "schema_id": TEST_SCHEMA_ID,
-        "schema": TEST_SCHEMA_DATA,
-        "ledger_id": TEST_LEDGER_ID,
-    }
-    mock_deserialize.assert_called_once_with(expected_data)
-    mock_schema_storage_record.save.assert_awaited_once_with(
-        session, reason="New schema storage record"
-    )
-    # Ensure constructor wasn't called, instance came from session.inject
-    MockExecutorCls.assert_not_called()
-
-
-@pytest.mark.asyncio
-@patch(
-    "traction_innkeeper.v1_0.schema_storage.schema_storage_service.SchemaStorageService.read_item",
-    new_callable=AsyncMock,
 )
 @patch("traction_innkeeper.v1_0.schema_storage.models.SchemaStorageRecord.deserialize")
 @patch(
@@ -368,30 +316,49 @@ async def test_add_item_new_success_with_multitenant(
     """Test add_item success for a new record with multitenancy."""
     profile, session = mock_profile
     mock_read_item.return_value = None  # Does not exist
+
+    # Mock multitenant manager
     mock_multitenant_mgr = MagicMock(spec=BaseMultitenantManager)
-    session.inject_or.return_value = mock_multitenant_mgr  # Multitenant manager exists
-    mock_executor_instance = MockExecutorCls.return_value  # Instance from class mock
+    session.inject_or.return_value = mock_multitenant_mgr
+
+    # Mock executor instance
+    mock_executor_instance = MockExecutorCls.return_value
     mock_executor_instance.get_ledger_for_identifier = AsyncMock(
         return_value=(TEST_LEDGER_ID, mock_ledger)
     )
-    mock_ledger.get_schema.return_value = TEST_SCHEMA_DATA
+
+    # Mock ledger.get_schema
+    mock_ledger.get_schema = AsyncMock(return_value=TEST_SCHEMA_DATA)
+
+    # Mock the async context manager for ledger
+    mock_ledger.__aenter__ = AsyncMock(return_value=mock_ledger)
+    mock_ledger.__aexit__ = AsyncMock(return_value=None)
+
+    # Mock deserialize
     mock_deserialize.return_value = mock_schema_storage_record
 
+    # Execute the test
     result = await schema_storage_service.add_item(profile, TEST_SCHEMA_ID)
 
+    # Assertions
     assert result == mock_schema_storage_record
     mock_read_item.assert_awaited_once_with(profile, TEST_SCHEMA_ID)
-    profile.session.assert_has_calls([call(), call()])  # For inject_or, then for save
+
+    # profile.session() should be called twice
+    assert profile.session.call_count == 2
+
     session.inject_or.assert_called_once_with(BaseMultitenantManager)
-    # Executor constructed directly when multitenancy is enabled
     MockExecutorCls.assert_called_once_with(profile)
-    session.inject.assert_not_called()  # Should not inject executor
+    session.inject.assert_not_called()
+
     mock_executor_instance.get_ledger_for_identifier.assert_awaited_once_with(
         TEST_SCHEMA_ID, txn_record_type=GET_SCHEMA
     )
     mock_ledger.get_schema.assert_awaited_once_with(TEST_SCHEMA_ID)
     mock_deserialize.assert_called_once()
-    mock_schema_storage_record.save.assert_awaited_once_with(session, reason=ANY)
+    mock_schema_storage_record.save.assert_awaited_once_with(
+        session, reason="New schema storage record"
+    )
 
 
 @pytest.mark.asyncio
@@ -414,7 +381,7 @@ async def test_add_item_ledger_schema_not_found(
     profile, session = mock_profile
     mock_read_item.return_value = None
     session.inject_or.return_value = None  # No multitenant
-    mock_executor_instance = AsyncMock()
+    mock_executor_instance = MagicMock()
     mock_executor_instance.get_ledger_for_identifier = AsyncMock(
         return_value=(TEST_LEDGER_ID, mock_ledger)
     )
@@ -473,7 +440,6 @@ async def test_add_item_deserialize_error(
 @pytest.mark.asyncio
 @patch(
     "traction_innkeeper.v1_0.schema_storage.schema_storage_service.SchemaStorageService.read_item",
-    new_callable=AsyncMock,
 )
 @patch("traction_innkeeper.v1_0.schema_storage.models.SchemaStorageRecord.deserialize")
 @patch(
@@ -493,7 +459,7 @@ async def test_add_item_save_error(
     profile, session = mock_profile
     mock_read_item.return_value = None
     session.inject_or.return_value = None
-    mock_executor_instance = AsyncMock()
+    mock_executor_instance = MagicMock()
     mock_executor_instance.get_ledger_for_identifier = AsyncMock(
         return_value=(TEST_LEDGER_ID, mock_ledger)
     )

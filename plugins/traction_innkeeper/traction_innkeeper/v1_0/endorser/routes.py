@@ -56,12 +56,16 @@ class EndorserInfoResponseSchema(OpenAPISchema):
 
     endorser_name = fields.Str(
         required=True,
-        description="Alias/name for endorser connection",
+        metadata={
+            "description": "Alias/name for endorser connection",
+        },
     )
 
     endorser_did = fields.Str(
         required=True,
-        description="Alias/name for endorser connection",
+        metadata={
+            "description": "Alias/name for endorser connection",
+        },
     )
 
 
