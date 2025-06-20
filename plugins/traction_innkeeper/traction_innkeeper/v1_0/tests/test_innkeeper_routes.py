@@ -213,15 +213,16 @@ async def test_tenant_default_config_settings(
         "connected_to_endorsers": [{"endorser_alias": "test-endorser"}],
         "created_public_did": ["did:sov:123"],
     }
-    mock_tenant_mgr._config.innkeeper_wallet.connect_to_endorser = []
-    mock_tenant_mgr._config.innkeeper_wallet.create_public_did = []
+
+    mock_context.inject.return_value = mock_tenant_mgr
 
     response = await test_module.tenant_default_config_settings(mock_request)
 
     assert profile.settings.get("wallet.innkeeper") is True
     mock_context.inject.assert_called_once_with(test_module.TenantManager)
     assert response.status == 200
-    assert json.loads(response.body) == default_config_response
+    assert json.loads(response.body) == expected_response
+
 
 # Test Tenant Config Update (PUT /innkeeper/tenants/{tenant_id}/config)
 @pytest.mark.asyncio

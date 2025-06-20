@@ -1,7 +1,7 @@
 import bcrypt
 import logging
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 from acapy_agent.messaging.models.openapi import OpenAPISchema
 from marshmallow import fields
@@ -84,7 +84,7 @@ def generate_reservation_token_data(expiry_minutes: int):
     LOGGER.info(f"_hash = {_hash}")
 
     minutes = expiry_minutes
-    _expiry = datetime.utcnow() + timedelta(minutes=minutes)
+    _expiry = datetime.now(UTC) + timedelta(minutes=minutes)
     LOGGER.info(f"_expiry = {_expiry}")
 
     return _pwd, _salt, _hash, _expiry
