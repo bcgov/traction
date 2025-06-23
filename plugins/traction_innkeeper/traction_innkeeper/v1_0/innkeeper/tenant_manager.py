@@ -268,7 +268,7 @@ class TenantManager:
 
     async def get_unique_wallet_name(self, wallet_name: str):
         self._logger.info(f"> get_unique_wallet_name('{wallet_name}')")
-        unique_wallet_name = wallet_name.copy()
+        unique_wallet_name = wallet_name
         async with self._profile.session() as session:
             w = await self.check_tables_for_wallet_name(session, unique_wallet_name)
             idx = 1
