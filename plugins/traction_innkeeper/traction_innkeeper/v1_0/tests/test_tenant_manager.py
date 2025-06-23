@@ -530,14 +530,14 @@ async def test_get_unique_wallet_name_needs_multiple_suffixes(
 
     unique_name = await tenant_manager.get_unique_wallet_name(wallet_name)
 
-    # Note: The loop logic adds '-1', then '-1-2', etc.
-    assert unique_name == f"{wallet_name}-1-2"
+    # Note: The loop logic adds '-1', then '-2', etc.
+    assert unique_name == f"{wallet_name}-2"
     assert mock_check_tables.await_count == 3
     mock_check_tables.assert_has_awaits(
         [
             call(session, wallet_name),
             call(session, f"{wallet_name}-1"),
-            call(session, f"{wallet_name}-1-2"),
+            call(session, f"{wallet_name}-2"),
         ]
     )
 

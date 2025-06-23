@@ -274,7 +274,7 @@ class TenantManager:
             idx = 1
             while w:
                 self._logger.info(f"'{unique_wallet_name}': wallet_exists = {w}")
-                unique_wallet_name = f"{unique_wallet_name}-{idx}"
+                unique_wallet_name = f"{wallet_name}-{idx}"
                 w = await self.check_tables_for_wallet_name(session, unique_wallet_name)
                 idx += 1
         # return a unique wallet/tenant name, either the input or calculated...
