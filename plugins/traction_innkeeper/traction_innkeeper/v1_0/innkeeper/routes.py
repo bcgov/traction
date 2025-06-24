@@ -14,7 +14,7 @@ from acapy_agent.admin.request_context import AdminRequestContext
 from acapy_agent.admin.routes import AdminConfigSchema
 from acapy_agent.messaging.models.base import BaseModelError
 from acapy_agent.messaging.models.openapi import OpenAPISchema
-from acapy_agent.messaging.valid import JSONWebToken, UUIDFour
+from acapy_agent.messaging.valid import UUIDFour
 from acapy_agent.multitenant.admin.routes import (
     CreateWalletTokenRequestSchema,
     CreateWalletTokenResponseSchema,
