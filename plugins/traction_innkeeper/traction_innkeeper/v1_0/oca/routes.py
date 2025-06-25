@@ -57,9 +57,12 @@ def error_handler(func):
 
 class OcaRecordListQueryStringSchema(OpenAPISchema):
     cred_def_id = fields.Str(
-        required=False, description="Cred Def identifier", 
-        example=INDY_CRED_DEF_ID_EXAMPLE, 
-        validate=INDY_CRED_DEF_ID_VALIDATE
+        required=False,
+        metadata={
+            "description": "Cred Def identifier",
+            "example": INDY_CRED_DEF_ID_EXAMPLE,
+        },
+        validate=INDY_CRED_DEF_ID_VALIDATE,
     )
 
 
@@ -68,7 +71,9 @@ class OcaRecordListSchema(OpenAPISchema):
 
     results = fields.List(
         fields.Nested(OcaRecordSchema()),
-        description="List of OCA records",
+        metadata={
+            "description": "List of OCA records",
+        },
     )
 
 
@@ -77,26 +82,35 @@ class AddOcaRecordRequestSchema(OpenAPISchema):
 
     schema_id = fields.Str(
         required=False,
-        description="Schema identifier",
         validate=INDY_SCHEMA_ID_VALIDATE,
-        example=INDY_SCHEMA_ID_EXAMPLE,
+        metadata={
+            "description": "Schema identifier",
+            "example": INDY_SCHEMA_ID_EXAMPLE,
+        },
     )
     cred_def_id = fields.Str(
         required=False,
-        description="Cred Def identifier",
         validate=INDY_CRED_DEF_ID_VALIDATE,
-        example=INDY_CRED_DEF_ID_EXAMPLE,
+        metadata={
+            "description": "Cred Def identifier",
+            "example": INDY_CRED_DEF_ID_EXAMPLE,
+        },
     )
-    url = fields.Str(required=False, description="(Public) Url for OCA Bundle")
+    url = fields.Str(
+        required=False, metadata={"description": "(Public) Url for OCA Bundle"}
+    )
     bundle = fields.Dict(
         required=False,
-        description="OCA Bundle",
+        metadata={
+            "description": "OCA Bundle",
+        },
     )
 
 
 class OcaIdMatchInfoSchema(OpenAPISchema):
     oca_id = fields.Str(
-        description="OCA Record identifier", required=True, example=UUIDFour.EXAMPLE
+        required=True,
+        metadata={"description": "OCA Record identifier", "example": UUIDFour.EXAMPLE},
     )
 
 
@@ -105,7 +119,9 @@ class OcaRecordOperationResponseSchema(OpenAPISchema):
 
     success = fields.Bool(
         required=True,
-        description="True if operation successful, false if otherwise",
+        metadata={
+            "description": "True if operation successful, false if otherwise",
+        },
     )
 
 

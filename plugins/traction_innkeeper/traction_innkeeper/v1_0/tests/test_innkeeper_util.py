@@ -70,10 +70,10 @@ def test_generate_reservation_token_data():
     assert bcrypt.checkpw(pwd.encode("utf-8"), hash_val) is True
 
     # Verify expiry time (allow for a small delta due to execution time)
-    now_utc = datetime.datetime.now(datetime.timezone.utc).replace(
-        tzinfo=None
-    )  # Ensure comparison is offset-naive like the function's output
+    now_utc = datetime.datetime.now(datetime.timezone.utc)
+    # Ensure comparison is offset-naive like the function's output
     expected_expiry = now_utc + datetime.timedelta(minutes=test_expiry_minutes)
+    expiry.replace(tzinfo=None)  # Convert expiry to naive
     # Check if the generated expiry is within a reasonable range (e.g., 1 minute) of the expected time
     time_difference = abs(expiry - expected_expiry)
     assert time_difference < datetime.timedelta(minutes=1)
