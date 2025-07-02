@@ -1,6 +1,7 @@
 import config from "config";
 import cors from "cors";
 import express from "express";
+import { Request, Response, NextFunction } from "express";
 import path from "path";
 
 import { router } from "./routes/router";
@@ -51,10 +52,25 @@ app.use("/config", (_, res, next) => {
 // This service's api endpoints
 app.use(API_ROOT, router);
 
+// Catch-all error handler (Express 5 style)
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  console.error(err);
+
+  res.status(err.status || 500).json({
+    error: {
+      message: err.message || "Internal Server Error",
+    },
+  });
+});
+
 if (LOKI_URL) {
   configureLogStream(
     app.listen(PORT, () => {
-      console.log(`Listening on port ${PORT}, apiroot: ${API_ROOT}`);
+      console.log(`Listening on port ${PORT}, apiroot: ${API_ROOT}, LOKI_URL: ${LOKI_URL}`);
     })
   );
+} else {
+  app.listen(PORT, () => {
+    console.log(`Listening on port ${PORT}, apiroot: ${API_ROOT}`);
+  });
 }

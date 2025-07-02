@@ -26,7 +26,7 @@ const eta = new Eta();
  * @returns {boolean}
  */
 export function stringOrBooleanTruthy(value: string | boolean) {
-  return value === 'true' || value === true;
+  return value === "true" || value === true;
 }
 
 /**
@@ -47,7 +47,10 @@ export const sendConfirmationEmail = async (req: Request) => {
     });
 
     req.body.serverUrlStatusRouteAutofill = buildStatusAutofill(req.body);
-    const tenantHtml = eta.renderString(RESERVATION_RECIEVED_TENANT_TEMPLATE, req);
+    const tenantHtml = eta.renderString(
+      RESERVATION_RECIEVED_TENANT_TEMPLATE,
+      req
+    );
 
     // Send a confirmation email to the person doing the reservation
     await transporter.sendMail({
