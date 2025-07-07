@@ -4,10 +4,11 @@
 
 import express, { Request, Response } from "express";
 import config from "config";
-import * as emailComponent from "../components/email";
-import * as innkeeperComponent from "../components/innkeeper";
 import { body, validationResult } from "express-validator";
-import oidcMiddleware from "../middleware/oidcMiddleware";
+
+import * as emailComponent from "../components/email.js";
+import * as innkeeperComponent from "../components/innkeeper.js";
+import oidcMiddleware from "../middleware/oidcMiddleware.js";
 
 export const router = express.Router();
 

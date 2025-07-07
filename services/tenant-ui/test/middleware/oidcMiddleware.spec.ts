@@ -1,13 +1,18 @@
 import { Request, Response, NextFunction } from "express";
-import oidcMiddleware from "../../src/middleware/oidcMiddleware";
+import oidcMiddleware from "../../src/middleware/oidcMiddleware.js";
 import { jwtVerify } from "jose";
+import { Mock } from "vitest";
 
-jest.mock("config", () => ({
-    get: jest.fn().mockReturnValue("http://example.com/.well-known/jwks.json"),
-  }));
-jest.mock("jose", () => ({
-  createRemoteJWKSet: jest.fn(),
-  jwtVerify: jest.fn(),
+vi.mock(import("config"), async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    get: vi.fn().mockReturnValue("http://example.com/.well-known/jwks.json")
+  }
+})
+vi.mock("jose", () => ({
+  createRemoteJWKSet: vi.fn(),
+  jwtVerify: vi.fn(),
 }));
 
 interface AuthenticatedRequest extends Request {
@@ -24,10 +29,10 @@ describe("oidcMiddleware", () => {
       headers: {},
     };
     res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
     };
-    next = jest.fn();
+    next = vi.fn();
   });
 
   it("should return 401 if no authorization header is present", async () => {
@@ -48,7 +53,7 @@ describe("oidcMiddleware", () => {
 
   it("should return 401 if token is invalid", async () => {
     req.headers!.authorization = "Bearer invalidtoken";
-    (jwtVerify as jest.Mock).mockRejectedValue(new Error("Invalid token"));
+    (jwtVerify as Mock).mockRejectedValue(new Error("Invalid token"));
 
     await oidcMiddleware(req as Request, res as Response, next);
 
@@ -58,7 +63,7 @@ describe("oidcMiddleware", () => {
 
   it("should call next if token is valid", async () => {
     req.headers!.authorization = "Bearer validtoken";
-    (jwtVerify as jest.Mock).mockResolvedValue({ payload: { sub: "123" } });
+    (jwtVerify as Mock).mockResolvedValue({ payload: { sub: "123" } });
 
     await oidcMiddleware(req as AuthenticatedRequest, res as Response, next);
 

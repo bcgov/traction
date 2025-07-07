@@ -1,4 +1,4 @@
-import { buildStatusAutofill } from "../../src/helpers";
+import { buildStatusAutofill } from "../../src/helpers/index.js";
 
 describe("buildStatusAutofill", () => {
   const body = {
