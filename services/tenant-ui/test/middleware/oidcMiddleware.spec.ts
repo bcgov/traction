@@ -1,10 +1,12 @@
+import type * as Config from "config";
+
 import { Request, Response, NextFunction } from "express";
 import oidcMiddleware from "../../src/middleware/oidcMiddleware.js";
 import { jwtVerify } from "jose";
 import { Mock } from "vitest";
 
-vi.mock(import("config"), async (importOriginal) => {
-  const actual = await importOriginal();
+vi.mock("config", async (importOriginal) => {
+  const actual = await importOriginal() as typeof Config;;
   return {
     ...actual,
     get: vi.fn().mockReturnValue("http://example.com/.well-known/jwks.json"),
