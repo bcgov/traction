@@ -1,17 +1,22 @@
 {
   "name": "tenant-ui",
   "version": "1.2.0",
-  "description": "",
+  "type": "module",
+  "description": "The backend for the Tenant UI service, providing API endpoints and serving the static Vue frontend.",
   "main": "index.ts",
   "scripts": {
     "build": "rimraf dist && tsc",
     "prestart": "npm run build",
-    "start": "node dist/src/index.js",
-    "dev": "ts-node-dev --respawn --pretty --transpile-only src/index.ts",
-    "lint": "eslint . --ext .ts --max-warnings=0 --ignore-path .gitignore --ignore-pattern 'frontend/*' .",
-    "test": "jest"
+    "start": "node --enable-source-maps dist/src/index.js",
+    "dev": "tsx watch src/index.ts",
+    "lint": "eslint . --max-warnings=0",
+    "lintfix": "eslint --fix",
+    "test": "vitest",
+    "coverage": "vitest run --coverage",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -24,26 +29,29 @@
     "express-validator": "^7.2.0",
     "jose": "^6.0.11",
     "jsonwebtoken": "^9.0.2",
-    "nodemailer": "^7.0.4",
+    "nodemailer": "^7.0.5",
     "ws": "^8.18.3"
   },
   "devDependencies": {
+    "@eslint/js": "^9.30.1",
     "@types/config": "^3.3.5",
     "@types/connect-history-api-fallback": "^1.5.4",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
-    "@types/jest": "^30.0.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.0.10",
     "@types/nodemailer": "^6.4.16",
     "@types/ws": "^8.18.1",
-    "@typescript-eslint/eslint-plugin": "^8.35.1",
-    "@typescript-eslint/parser": "^8.35.1",
-    "eslint": "^8.57.0",
-    "jest": "^30.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.36.0",
+    "@typescript-eslint/parser": "^8.36.0",
+    "@vitest/coverage-v8": "^3.2.4",
+    "eslint": "^9.30.1",
+    "eslint-config-prettier": "^10.1.5",
+    "globals": "^16.3.0",
+    "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
-    "ts-jest": "^29.4.0",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.8.3"
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
   }
 }

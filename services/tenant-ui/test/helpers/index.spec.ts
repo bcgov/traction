@@ -1,4 +1,4 @@
-import { buildStatusAutofill } from "../../src/helpers";
+import { buildStatusAutofill } from "../../src/helpers/index.js";
 
 describe("buildStatusAutofill", () => {
   const body = {
@@ -8,7 +8,9 @@ describe("buildStatusAutofill", () => {
   };
 
   it("should return a correctly formed url including the body params", () => {
-    expect(buildStatusAutofill(body)).toBe("http://tenant-ui.gov.bc.ca?email=my.email@gov.fake&id=50542cfe-e9bd-4881-8a71-1b529f40bc2b");
+    expect(buildStatusAutofill(body)).toBe(
+      "http://tenant-ui.gov.bc.ca?email=my.email@gov.fake&id=50542cfe-e9bd-4881-8a71-1b529f40bc2b"
+    );
   });
 
   it("should return a blank string for no input param", () => {

@@ -1,4 +1,5 @@
 FROM node:24-alpine
+
 WORKDIR /usr/src/app
 COPY . .
 # install backend libs
@@ -13,4 +14,4 @@ RUN cd frontend && npm run build
 RUN rm -rf frontend/node_modules
 
 EXPOSE 8080
-CMD [ "node", "dist/src/index.js" ]
+CMD [ "node", "--enable-source-maps", "dist/src/index.js" ]

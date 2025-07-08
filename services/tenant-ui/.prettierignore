@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+coverage/
+
+# Other parts of the project
+frontend/
+config/
+.devcontainer/
+README.md
+
+# Package files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+tsconfig.json
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Generated files
+*.d.ts.map
+*.js.map
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -2,16 +2,20 @@ import config from "config";
 import cors from "cors";
 import express from "express";
 import { Request, Response, NextFunction } from "express";
-import path from "path";
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
 
-import { router } from "./routes/router";
-
-import { configureLogStream } from "./services/log-stream";
+import { router } from "./routes/router.js";
+import { logStartupBanner } from "./helpers/startbanner.js";
+import { configureLogStream } from "./services/log-stream.js";
 
 const API_ROOT: string = config.get("server.apiPath");
 const LOKI_URL: string = config.get("server.lokiUrl");
 const PORT: number = parseInt(config.get("server.port") as string, 10);
 const STATIC_FILES_PATH: string = config.get("server.staticFiles");
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 import history from "connect-history-api-fallback";
 
@@ -23,9 +27,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Host the static frontend assets
-app.use("/favicon.ico", (_, res) => {
-  res.redirect("/favicon.ico");
-});
 app.use("/", express.static(path.join(__dirname, STATIC_FILES_PATH)));
 
 // Since the server config can have important secret values in, you must opt-in
@@ -63,14 +64,17 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   });
 });
 
-if (LOKI_URL) {
-  configureLogStream(
-    app.listen(PORT, () => {
-      console.log(`Listening on port ${PORT}, apiroot: ${API_ROOT}, LOKI_URL: ${LOKI_URL}`);
-    })
-  );
-} else {
-  app.listen(PORT, () => {
-    console.log(`Listening on port ${PORT}, apiroot: ${API_ROOT}`);
+// Start the server
+const server = app.listen(PORT, () => {
+  logStartupBanner({
+    port: PORT,
+    apiRoot: API_ROOT,
+    staticPath: STATIC_FILES_PATH,
+    lokiUrl: LOKI_URL,
   });
+});
+
+// If logging is enabled, wire the log stream
+if (LOKI_URL) {
+  configureLogStream(server);
 }
