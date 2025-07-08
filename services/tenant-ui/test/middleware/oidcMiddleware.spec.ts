@@ -4,12 +4,12 @@ import { jwtVerify } from "jose";
 import { Mock } from "vitest";
 
 vi.mock(import("config"), async (importOriginal) => {
-  const actual = await importOriginal()
+  const actual = await importOriginal();
   return {
     ...actual,
-    get: vi.fn().mockReturnValue("http://example.com/.well-known/jwks.json")
-  }
-})
+    get: vi.fn().mockReturnValue("http://example.com/.well-known/jwks.json"),
+  };
+});
 vi.mock("jose", () => ({
   createRemoteJWKSet: vi.fn(),
   jwtVerify: vi.fn(),
@@ -58,7 +58,10 @@ describe("oidcMiddleware", () => {
     await oidcMiddleware(req as Request, res as Response, next);
 
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ message: "Invalid token", error: expect.any(Error) });
+    expect(res.json).toHaveBeenCalledWith({
+      message: "Invalid token",
+      error: expect.any(Error),
+    });
   });
 
   it("should call next if token is valid", async () => {

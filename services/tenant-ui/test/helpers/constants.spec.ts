@@ -15,7 +15,12 @@ describe("constants", () => {
 
     it("should have immutable structure", () => {
       const statusKeys = Object.keys(RESERVATION_STATUSES);
-      expect(statusKeys).toEqual(["APPROVED", "CHECKED_IN", "DENIED", "REQUESTED"]);
+      expect(statusKeys).toEqual([
+        "APPROVED",
+        "CHECKED_IN",
+        "DENIED",
+        "REQUESTED",
+      ]);
     });
   });
 });

@@ -5,4 +5,5 @@ export const RESERVATION_STATUSES = {
   REQUESTED: "requested",
 } as const;
 
-export type ReservationStatus = typeof RESERVATION_STATUSES[keyof typeof RESERVATION_STATUSES];
+export type ReservationStatus =
+  (typeof RESERVATION_STATUSES)[keyof typeof RESERVATION_STATUSES];
