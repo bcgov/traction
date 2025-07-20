@@ -93,7 +93,7 @@ export function paramFromUrlString(url: string, paramName: string) {
 export function isJsonString(str: string) {
   try {
     JSON.parse(str);
-  } catch (e) {
+  } catch (_e) {
     return false;
   }
   return true;
@@ -113,7 +113,7 @@ export function configStringToObject(value: string) {
     // if an object IS supplied, return that
     if (typeof value === 'object') return value;
     return JSON.parse(value);
-  } catch (e) {
+  } catch (_e) {
     // If the value from config is not a stringified JSON object, return an empty object
     console.warn(
       `configStringToObject: non-string config value passed ${value}`

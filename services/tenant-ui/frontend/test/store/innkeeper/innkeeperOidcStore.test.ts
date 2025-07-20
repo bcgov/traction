@@ -1,14 +1,12 @@
 import { createPinia, setActivePinia } from 'pinia';
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, test } from 'vitest';
 
 import { useInnkeeperOidcStore } from '@/store/innkeeper/innkeeperOidcStore';
-
-let store: any;
 
 describe('innkeeperOidcStore', () => {
   beforeEach(async () => {
     setActivePinia(createPinia());
-    store = useInnkeeperOidcStore();
+    useInnkeeperOidcStore();
   });
 
   describe('Successful API calls', () => {

@@ -9,6 +9,7 @@ const toast = useToast();
 const loadedInterval = (
   schema: SchemaSendRequest,
   getStoredSchemas: () => Promise<SchemaStorageRecord[] | undefined>,
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   loadTable: Function,
   message: string,
   setSelected: Ref<SchemaStorageRecord | undefined> | undefined = undefined,

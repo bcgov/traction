@@ -1,5 +1,3 @@
-/* eslint-disable */
-/* tslint:disable */
 /*
  * ---------------------------------------------------------------
  * ## THIS FILE WAS GENERATED VIA SWAGGER-TYPESCRIPT-API        ##
@@ -15,6 +13,7 @@ export interface AMLRecord {
   version?: string;
 }
 
+const a = 1;
 export interface ActionMenuFetchResult {
   /** Action menu */
   result?: Menu;

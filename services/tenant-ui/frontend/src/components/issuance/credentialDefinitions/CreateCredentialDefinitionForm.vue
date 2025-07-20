@@ -178,7 +178,7 @@ const handleSubmit = async (isFormValid: boolean) => {
     let rrs = 0;
     try {
       rrs = parseInt(formFields.creddef_revocation_registry_size) || 0;
-    } catch (err) {
+    } catch (_err) {
       rrs = 0;
     }
     payload.revocation_registry_size = rrs;

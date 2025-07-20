@@ -450,7 +450,7 @@ export const useTenantStore = defineStore('tenant', () => {
       // Assign the public DID
       console.log(`calling /wallet/did/public with ${postedDID}`);
       publicDidRegistrationProgress.value = 'Assigning the public DID';
-      const dRes = await acapyApi.postHttp(
+      await acapyApi.postHttp(
         `${API_PATH.WALLET_DID_PUBLIC}?did=${postedDID}`,
         {}
       );
@@ -459,10 +459,7 @@ export const useTenantStore = defineStore('tenant', () => {
       const payload = {
         ledger_id: writeLedger.value.ledger_id,
       };
-      const eRes = await acapyApi.putHttp(
-        API_PATH.TENANT_CONFIG_SET_LEDGER_ID,
-        payload
-      );
+      await acapyApi.putHttp(API_PATH.TENANT_CONFIG_SET_LEDGER_ID, payload);
     } catch (err) {
       registrationError = err;
     } finally {

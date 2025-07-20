@@ -1,7 +1,7 @@
 import { createTestingPinia } from '@pinia/testing';
 import { mount } from '@vue/test-utils';
 import PrimeVue from 'primevue/config';
-import { describe, expect, test, vi } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
 import SessionTimeoutModal from '@/components/common/SessionTimeoutModal.vue';
 

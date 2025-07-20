@@ -62,7 +62,6 @@ import { stringOrBooleanTruthy } from '@/helpers';
 const toast = useToast();
 
 // State setup
-const configStore = useConfigStore();
 const { config } = storeToRefs(useConfigStore());
 const reservationStore = useReservationStore();
 const { loading, status } = storeToRefs(useReservationStore());
@@ -286,7 +285,7 @@ const formIsValid = () => {
  * Send the reservation form data to the API. But only
  * if the form is valid.
  */
-const handleSubmit = async (event: any) => {
+const handleSubmit = async (_event: any) => {
   // Show messages for the build in validator
   formValidationMode.value = 'ValidateAndShow';
 

@@ -20,13 +20,10 @@ import Dialog from 'primevue/dialog';
 // State
 
 // Other Imports
-import { useToast } from 'vue-toastification';
 import VueJsonPretty from 'vue-json-pretty';
 import 'vue-json-pretty/lib/styles.css';
 
 // State setup
-
-const toast = useToast();
 
 const displayModal = ref(false);
 const openModal = async () => {
@@ -38,7 +35,7 @@ const handleClose = async () => {
   displayModal.value = false;
 };
 
-const props = defineProps({
+defineProps({
   object: {
     type: Object as PropType<any>,
     required: true,

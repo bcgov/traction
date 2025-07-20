@@ -23,7 +23,7 @@ describe('InfoModal', () => {
   test('mount renders hidden dialog', async () => {
     const wrapper = mountInfoModal();
 
-    const dialog = wrapper.getComponent({ name: 'Dialog' });
+    wrapper.getComponent({ name: 'Dialog' });
     expect(wrapper.getComponent({ name: 'Dialog' }).attributes().visible).toBe(
       'false'
     );
@@ -38,7 +38,7 @@ describe('InfoModal', () => {
     wrapper.get('span').trigger('click');
 
     await flushPromises();
-    const dialog = wrapper.getComponent({ name: 'Dialog' });
+    wrapper.getComponent({ name: 'Dialog' });
     expect(wrapper.getComponent({ name: 'Dialog' }).attributes().visible).toBe(
       'true'
     );
@@ -50,7 +50,7 @@ describe('InfoModal', () => {
   test('setting displayModal on open modal to false closes to modal', async () => {
     const wrapper = mountInfoModal();
     const wrapperVm = wrapper.vm as unknown as typeof InfoModal;
-    const dialog = wrapper.getComponent({ name: 'Dialog' });
+    wrapper.getComponent({ name: 'Dialog' });
     wrapper.get('span').trigger('click');
     await flushPromises();
 

@@ -32,8 +32,6 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['success']);
-
 const confirmAction = (event: any) => {
   confirm.require({
     target: event.currentTarget,
