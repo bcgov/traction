@@ -47,7 +47,6 @@
     "@vitejs/plugin-vue": "^6.0.0",
     "@vitest/coverage-v8": "^3.2.4",
     "@vue/test-utils": "^2.4.6",
-    "cross-env": "^7.0.3",
     "eslint": "^9.31.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.3",
