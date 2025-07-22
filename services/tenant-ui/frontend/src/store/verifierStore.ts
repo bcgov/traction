@@ -5,7 +5,6 @@ import { useAcapyApi } from './acapyApi';
 import { API_PATH } from '@/helpers/constants';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { fetchItem } from './utils/fetchItem';
 import { fetchList } from './utils/fetchList';
 
 export const useVerifierStore = defineStore('verifier', () => {

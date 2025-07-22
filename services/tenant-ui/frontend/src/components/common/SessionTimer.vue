@@ -31,7 +31,7 @@ const {
 let inactivityCount = 0;
 const displaySessionWarning = ref(false);
 const countDown = ref(countdownSeconds);
-let countDownInterval: string | number | NodeJS.Timeout | undefined;
+let countDownInterval: ReturnType<typeof setInterval> | undefined;
 const route = useRoute();
 
 onBeforeUnmount(() => {

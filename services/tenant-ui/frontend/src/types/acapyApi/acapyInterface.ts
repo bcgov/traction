@@ -1,5 +1,3 @@
-/* eslint-disable */
-/* tslint:disable */
 /*
  * ---------------------------------------------------------------
  * ## THIS FILE WAS GENERATED VIA SWAGGER-TYPESCRIPT-API        ##
@@ -24,7 +22,7 @@ export type ActionMenuModulesResult = object;
 
 export interface AddOcaRecordRequest {
   /** OCA Bundle */
-  bundle?: object;
+  bundle?: Record<string, any>;
   /**
    * Cred Def identifier
    * @pattern ^([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}):3:CL:(([1-9][0-9]*)|([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}:2:.+:[0-9.]+)):(.+)?$
@@ -41,17 +39,24 @@ export interface AddOcaRecordRequest {
   url?: string;
 }
 
-export interface AdminConfig {
-  /** Configuration settings */
-  config?: object;
+export interface AddProof {
+  /** @example {"hello":"world"} */
+  document: Record<string, any>;
+  /** @example {"cryptosuite":"eddsa-jcs-2022","proofPurpose":"assertionMethod","type":"DataIntegrityProof","verificationMethod":"did:web:example.com#key-01"} */
+  options?: DataIntegrityProofOptions;
 }
 
-export interface AdminMediationDeny {
-  /** List of mediator rules for recipient */
-  mediator_terms?: string[];
-  /** List of recipient rules for mediation */
-  recipient_terms?: string[];
+export interface AddProofResponse {
+  /** @example {"hello":"world"} */
+  secured_document: Record<string, any>;
 }
+
+export interface AdminConfig {
+  /** Configuration settings */
+  config: Record<string, any>;
+}
+
+export type AdminMediationDeny = object;
 
 export interface AdminModules {
   /** List of admin modules */
@@ -64,11 +69,11 @@ export type AdminShutdown = object;
 
 export interface AdminStatus {
   /** Conductor statistics */
-  conductor?: object;
+  conductor?: Record<string, any>;
   /** Default label */
   label?: string | null;
   /** Timing results */
-  timing?: object;
+  timing?: Record<string, any>;
   /** Version code */
   version?: string;
 }
@@ -89,6 +94,174 @@ export interface AdminStatusReadiness {
   ready?: boolean;
 }
 
+export interface AnonCredsPresSpec {
+  /** Nested object mapping proof request attribute referents to requested-attribute specifiers */
+  requested_attributes: Record<string, AnonCredsRequestedCredsRequestedAttr>;
+  /** Nested object mapping proof request predicate referents to requested-predicate specifiers */
+  requested_predicates: Record<string, AnonCredsRequestedCredsRequestedPred>;
+  /** Self-attested attributes to build into proof */
+  self_attested_attributes: Record<string, string>;
+  /**
+   * Whether to trace event (default false)
+   * @example false
+   */
+  trace?: boolean;
+}
+
+export interface AnonCredsPresentationReqAttrSpec {
+  /**
+   * Attribute name
+   * @example "favouriteDrink"
+   */
+  name?: string;
+  /** Attribute name group */
+  names?: string[];
+  non_revoked?: AnonCredsPresentationReqAttrSpecNonRevoked | null;
+  /** If present, credential must satisfy one of given restrictions: specify schema_id, schema_issuer_did, schema_name, schema_version, issuer_did, cred_def_id, and/or attr::<attribute-name>::value where <attribute-name> represents a credential attribute name */
+  restrictions?: Record<string, string>[];
+}
+
+export interface AnonCredsPresentationReqAttrSpecNonRevoked {
+  /**
+   * Earliest time of interest in non-revocation interval
+   * @min 0
+   * @max 18446744073709552000
+   * @example 1640995199
+   */
+  from?: number;
+  /**
+   * Latest time of interest in non-revocation interval
+   * @min 0
+   * @max 18446744073709552000
+   * @example 1640995199
+   */
+  to?: number;
+}
+
+export interface AnonCredsPresentationReqPredSpec {
+  /**
+   * Attribute name
+   * @example "index"
+   */
+  name: string;
+  non_revoked?: AnonCredsPresentationReqPredSpecNonRevoked | null;
+  /**
+   * Predicate type ('<', '<=', '>=', or '>')
+   * @example ">="
+   */
+  p_type: '<' | '<=' | '>=' | '>';
+  /** Threshold value */
+  p_value: number;
+  /** If present, credential must satisfy one of given restrictions: specify schema_id, schema_issuer_did, schema_name, schema_version, issuer_did, cred_def_id, and/or attr::<attribute-name>::value where <attribute-name> represents a credential attribute name */
+  restrictions?: Record<string, string>[];
+}
+
+export interface AnonCredsPresentationReqPredSpecNonRevoked {
+  /**
+   * Earliest time of interest in non-revocation interval
+   * @min 0
+   * @max 18446744073709552000
+   * @example 1640995199
+   */
+  from?: number;
+  /**
+   * Latest time of interest in non-revocation interval
+   * @min 0
+   * @max 18446744073709552000
+   * @example 1640995199
+   */
+  to?: number;
+}
+
+export interface AnonCredsPresentationRequest {
+  /**
+   * Proof request name
+   * @example "Proof request"
+   */
+  name?: string;
+  non_revoked?: AnonCredsPresentationRequestNonRevoked | null;
+  /**
+   * Nonce
+   * @pattern ^[1-9][0-9]*$
+   * @example "1"
+   */
+  nonce?: string;
+  /** Requested attribute specifications of proof request */
+  requested_attributes: Record<string, AnonCredsPresentationReqAttrSpec>;
+  /** Requested predicate specifications of proof request */
+  requested_predicates: Record<string, AnonCredsPresentationReqPredSpec>;
+  /**
+   * Proof request version
+   * @pattern ^[0-9.]+$
+   * @example "1.0"
+   */
+  version?: string;
+}
+
+export interface AnonCredsPresentationRequestNonRevoked {
+  /**
+   * Earliest time of interest in non-revocation interval
+   * @min 0
+   * @max 18446744073709552000
+   * @example 1640995199
+   */
+  from?: number;
+  /**
+   * Latest time of interest in non-revocation interval
+   * @min 0
+   * @max 18446744073709552000
+   * @example 1640995199
+   */
+  to?: number;
+}
+
+export interface AnonCredsRequestedCredsRequestedAttr {
+  /**
+   * Wallet credential identifier (typically but not necessarily a UUID)
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+   */
+  cred_id: string;
+  /** Whether to reveal attribute in proof (default true) */
+  revealed?: boolean;
+}
+
+export interface AnonCredsRequestedCredsRequestedPred {
+  /**
+   * Wallet credential identifier (typically but not necessarily a UUID)
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+   */
+  cred_id: string;
+  /**
+   * Epoch timestamp of interest for non-revocation proof
+   * @min 0
+   * @max 18446744073709552000
+   * @example 1640995199
+   */
+  timestamp?: number;
+}
+
+export type AnonCredsRevocationModuleResponse = object;
+
+export interface AnonCredsSchema {
+  /** Schema attribute names */
+  attrNames: string[];
+  /**
+   * Issuer Identifier of the credential definition or schema
+   * @example "did:(method):WgWxqztrNooG92RXvxSTWv"
+   */
+  issuerId: string;
+  /**
+   * Schema name
+   * @example "Example schema"
+   */
+  name: string;
+  /**
+   * Schema version
+   * @example "1.0"
+   */
+  version: string;
+}
+
 export interface AttachDecorator {
   /**
    * Attachment identifier
@@ -97,7 +270,6 @@ export interface AttachDecorator {
   '@id'?: string;
   /**
    * Byte count of data included by reference
-   * @format int32
    * @example 1234
    */
   byte_count?: number;
@@ -255,8 +427,8 @@ export interface Checkin {
 
 export interface CheckinResponse {
   /**
-   * Authorization token to authenticate wallet requests
-   * @example "eyJhbGciOiJFZERTQSJ9.eyJhIjogIjAifQ.dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
+   * Master key used for key derivation.
+   * @example "MySecretKey123"
    */
   token?: string;
   /**
@@ -265,19 +437,20 @@ export interface CheckinResponse {
    */
   wallet_id: string;
   /**
-   * Master key used for key derivation.
-   * @example "MySecretKey123"
+   * Subwallet identifier
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
    */
   wallet_key?: string;
 }
 
 export interface ClaimFormat {
-  jwt?: object;
-  jwt_vc?: object;
-  jwt_vp?: object;
-  ldp?: object;
-  ldp_vc?: object;
-  ldp_vp?: object;
+  di_vc?: Record<string, any>;
+  jwt?: Record<string, any>;
+  jwt_vc?: Record<string, any>;
+  jwt_vp?: Record<string, any>;
+  ldp?: Record<string, any>;
+  ldp_vc?: Record<string, any>;
+  ldp_vp?: Record<string, any>;
 }
 
 export interface ClearPendingRevocationsRequest {
@@ -288,6 +461,39 @@ export interface ClearPendingRevocationsRequest {
 export interface ConfigurableWriteLedgers {
   /** List of configurable write ledgers identifiers */
   write_ledgers?: string[];
+}
+
+export interface ConfigureWebvh {
+  /**
+   * Auto sign witness requests
+   * @example "false"
+   */
+  auto_attest?: boolean;
+  /**
+   * Notify watchers on DID updates
+   * @example "false"
+   */
+  notify_watchers?: boolean;
+  /**
+   * URL of the webvh server
+   * @example "http://localhost:8000"
+   */
+  server_url?: string;
+  /**
+   * Enable the witness role
+   * @example "false"
+   */
+  witness?: boolean;
+  /**
+   * An invitation from a witness, required for a controller
+   * @example "http://localhost:3000?oob=eyJAdHlwZSI6ICJodHRwczovL2RpZGNvbW0ub3JnL291dC1vZi1iYW5kLzEuMS9pbnZpdGF0aW9uIiwgIkBpZCI6ICJlMzI5OGIyNS1mZjRlLTRhZmItOTI2Yi03ZDcyZmVlMjQ1ODgiLCAibGFiZWwiOiAid2VidmgtZW5kb3JzZXIiLCAiaGFuZHNoYWtlX3Byb3RvY29scyI6IFsiaHR0cHM6Ly9kaWRjb21tLm9yZy9kaWRleGNoYW5nZS8xLjAiXSwgInNlcnZpY2VzIjogW3siaWQiOiAiI2lubGluZSIsICJ0eXBlIjogImRpZC1jb21tdW5pY2F0aW9uIiwgInJlY2lwaWVudEtleXMiOiBbImRpZDprZXk6ejZNa3FDQ1pxNURSdkdMcDV5akhlZlZTa2JhN0tYWlQ1Nld2SlJacEQ2Z3RvRzU0I3o2TWtxQ0NacTVEUnZHTHA1eWpIZWZWU2tiYTdLWFpUNTZXdkpSWnBENmd0b0c1NCJdLCAic2VydmljZUVuZHBvaW50IjogImh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCJ9XX0"
+   */
+  witness_invitation?: string;
+  /**
+   * Existing key to use as witness key
+   * @example "z6MkgKA7yrw5kYSiDuQFcye4bMaJpcfHFry3Bx45pdWh3s8i"
+   */
+  witness_key?: string;
 }
 
 export interface ConnRecord {
@@ -305,10 +511,10 @@ export interface ConnRecord {
    * Connection identifier
    * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
    */
-  connection_id?: string;
+  connection_id: string;
   /**
    * Connection protocol used
-   * @example "connections/1.0"
+   * @example "didexchange/1.1"
    */
   connection_protocol?: 'connections/1.0' | 'didexchange/1.0' | 'didexchange/1.1';
   /**
@@ -345,8 +551,8 @@ export interface ConnRecord {
   invitation_msg_id?: string;
   /**
    * Our DID for connection
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
-   * @example "WgWxqztrNooG92RXvxSTWv"
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$|^did:([a-zA-Z0-9_]+)(:[a-zA-Z0-9_.%-]+)?:([a-zA-Z0-9_.%-]+(:[a-zA-Z0-9_.%-]+)*)((;[a-zA-Z0-9_.:%-]+=[a-zA-Z0-9_.:%-]*)*)(\/[^#?]*)?([?][^#]*)?(\#.*)?$$
+   * @example "did:peer:WgWxqztrNooG92RXvxSTWv"
    */
   my_did?: string;
   /**
@@ -360,19 +566,14 @@ export interface ConnRecord {
    */
   rfc23_state?: string;
   /**
-   * Routing state of connection
-   * @example "active"
-   */
-  routing_state?: 'none' | 'request' | 'active' | 'error';
-  /**
    * Current record state
    * @example "active"
    */
   state?: string;
   /**
    * Their DID for connection
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
-   * @example "WgWxqztrNooG92RXvxSTWv"
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$|^did:([a-zA-Z0-9_]+)(:[a-zA-Z0-9_.%-]+)?:([a-zA-Z0-9_.%-]+(:[a-zA-Z0-9_.%-]+)*)((;[a-zA-Z0-9_.:%-]+=[a-zA-Z0-9_.:%-]*)*)(\/[^#?]*)?([?][^#]*)?(\#.*)?$$
+   * @example "did:peer:WgWxqztrNooG92RXvxSTWv"
    */
   their_did?: string;
   /**
@@ -411,7 +612,7 @@ export interface ConnectionInvitation {
   '@type'?: string;
   /**
    * DID for connection invitation
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$|^did:([a-zA-Z0-9_]+):([a-zA-Z0-9_.%-]+(:[a-zA-Z0-9_.%-]+)*)((;[a-zA-Z0-9_.:%-]+=[a-zA-Z0-9_.:%-]*)*)(\/[^#?]*)?([?][^#]*)?(\#.*)?$$
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$|^did:([a-zA-Z0-9_]+)(:[a-zA-Z0-9_.%-]+)?:([a-zA-Z0-9_.%-]+(:[a-zA-Z0-9_.%-]+)*)((;[a-zA-Z0-9_.:%-]+=[a-zA-Z0-9_.:%-]*)*)(\/[^#?]*)?([?][^#]*)?(\#.*)?$$
    * @example "did:peer:WgWxqztrNooG92RXvxSTWv"
    */
   did?: string;
@@ -439,36 +640,84 @@ export interface ConnectionInvitation {
 
 export interface ConnectionList {
   /** List of connection records */
-  results?: ConnRecord[];
+  results: ConnRecord[];
+}
+
+export interface ConnectionListV1 {
+  /** List of connection records */
+  results: MaybeStoredConnectionsRecord[];
 }
 
 export interface ConnectionMetadata {
   /** Dictionary of metadata associated with connection. */
-  results?: object;
+  results?: Record<string, any>;
 }
 
 export interface ConnectionMetadataSetRequest {
   /** Dictionary of metadata to set for connection. */
-  metadata: object;
+  metadata: Record<string, any>;
+}
+
+export interface ConnectionMetadataSetRequestV1 {
+  /** Dictionary of metadata to set for connection. */
+  metadata: Record<string, any>;
+}
+
+export interface ConnectionMetadataV1 {
+  /** Dictionary of metadata associated with connection. */
+  results?: Record<string, any>;
 }
 
 export type ConnectionModuleResponse = object;
+
+export type ConnectionModuleResponseV1 = object;
 
 export interface ConnectionStaticRequest {
   /** Alias to assign to this connection */
   alias?: string;
   /**
    * Local DID
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
-   * @example "WgWxqztrNooG92RXvxSTWv"
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
+   * @example "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw"
    */
   my_did?: string;
   /** Seed to use for the local DID */
   my_seed?: string;
   /**
    * Remote DID
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
-   * @example "WgWxqztrNooG92RXvxSTWv"
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
+   * @example "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw"
+   */
+  their_did?: string;
+  /**
+   * URL endpoint for other party
+   * @pattern ^[A-Za-z0-9\.\-\+]+://([A-Za-z0-9][.A-Za-z0-9-_]+[A-Za-z0-9])+(:[1-9][0-9]*)?(/[^?&#]+)?$
+   * @example "https://myhost:8021"
+   */
+  their_endpoint?: string;
+  /** Other party's label for this connection */
+  their_label?: string;
+  /** Seed to use for the remote DID */
+  their_seed?: string;
+  /** Remote verification key */
+  their_verkey?: string;
+}
+
+export interface ConnectionStaticRequestV1 {
+  /** Alias to assign to this connection */
+  alias?: string;
+  /**
+   * Local DID
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
+   * @example "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw"
+   */
+  my_did?: string;
+  /** Seed to use for the local DID */
+  my_seed?: string;
+  /**
+   * Remote DID
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
+   * @example "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw"
    */
   their_did?: string;
   /**
@@ -488,8 +737,8 @@ export interface ConnectionStaticRequest {
 export interface ConnectionStaticResult {
   /**
    * Local DID
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
-   * @example "WgWxqztrNooG92RXvxSTWv"
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
+   * @example "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw"
    */
   my_did: string;
   /**
@@ -507,8 +756,42 @@ export interface ConnectionStaticResult {
   record: ConnRecord;
   /**
    * Remote DID
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
-   * @example "WgWxqztrNooG92RXvxSTWv"
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
+   * @example "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw"
+   */
+  their_did: string;
+  /**
+   * Remote verification key
+   * @pattern ^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{43,44}$
+   * @example "H3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV"
+   */
+  their_verkey: string;
+}
+
+export interface ConnectionStaticResultV1 {
+  /**
+   * Local DID
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
+   * @example "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw"
+   */
+  my_did: string;
+  /**
+   * My URL endpoint
+   * @pattern ^[A-Za-z0-9\.\-\+]+://([A-Za-z0-9][.A-Za-z0-9-_]+[A-Za-z0-9])+(:[1-9][0-9]*)?(/[^?&#]+)?$
+   * @example "https://myhost:8021"
+   */
+  my_endpoint: string;
+  /**
+   * My verification key
+   * @pattern ^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{43,44}$
+   * @example "H3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV"
+   */
+  my_verkey: string;
+  record: MaybeStoredConnectionsRecord;
+  /**
+   * Remote DID
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
+   * @example "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw"
    */
   their_did: string;
   /**
@@ -531,6 +814,32 @@ export interface Constraints {
   subject_is_issuer?: 'required' | 'preferred';
 }
 
+export interface CreateDidIndyRequest {
+  /**
+   * Additional features to enable for the did.
+   * @example "{}"
+   */
+  features?: Record<string, any>;
+  /**
+   * Additional configuration options. Supported options: did, seed, key_type. Default key_type is ed25519.
+   * @example {"did":"did:indy:WRfXPg8dantKVubE3HX8pw","key_type":"ed25519","seed":"000000000000000000000000Trustee1"}
+   */
+  options?: Record<string, any>;
+}
+
+export interface CreateDidIndyResponse {
+  /**
+   * DID created
+   * @example "did:indy:DFZgMggBEXcZFVQ2ZBTwdr"
+   */
+  did?: string;
+  /**
+   * Verification key
+   * @example "BnSWTUQmdYCewSGFrRUhT6LmKdcCcSzRGqWXMPnEP168"
+   */
+  verkey?: string;
+}
+
 export interface CreateInvitationRequest {
   /**
    * Identifier for active mediation record to be used
@@ -539,7 +848,7 @@ export interface CreateInvitationRequest {
    */
   mediation_id?: string;
   /** Optional metadata to attach to the connection created with the invitation */
-  metadata?: object;
+  metadata?: Record<string, any>;
   /**
    * Optional label for connection invitation
    * @example "Bob"
@@ -556,6 +865,70 @@ export interface CreateInvitationRequest {
   service_endpoint?: string;
 }
 
+export interface CreateKeyRequest {
+  /**
+   * Which key algorithm to use.
+   * @example "ed25519"
+   */
+  alg?: string;
+  /**
+   * Optional kid to bind to the keypair, such as a verificationMethod.
+   * @example "did:web:example.com#key-01"
+   */
+  kid?: string;
+  /**
+   * Optional seed to generate the key pair. Must enable insecure wallet mode.
+   * @example "00000000000000000000000000000000"
+   */
+  seed?: string;
+}
+
+export interface CreateKeyResponse {
+  /**
+   * The associated kid
+   * @example "did:web:example.com#key-01"
+   */
+  kid?: string;
+  /**
+   * The Public Key Multibase format (multikey)
+   * @example "z6MkgKA7yrw5kYSiDuQFcye4bMaJpcfHFry3Bx45pdWh3s8i"
+   */
+  multikey?: string;
+}
+
+export interface CreateOptions {
+  /**
+   * Identifier for the DID. Must be unique within the namespace. If not provided, a random one will be generated.
+   * @example "1"
+   */
+  identifier?: string;
+  /**
+   * Namespace for the DID
+   * @example "prod"
+   */
+  namespace: string;
+  /**
+   * Portable flag
+   * @example false
+   */
+  portable?: boolean;
+  /**
+   * Prerotation flag
+   * @example false
+   */
+  prerotation?: boolean;
+  /**
+   * List of watchers for this DID.
+   * @example ["https://watcher.webvh.test-suite.app"]
+   */
+  watchers?: string[];
+  /**
+   * The witness treshold
+   * @example 1
+   */
+  witnessTreshold?: number;
+}
+
 export interface CreateWalletResponse {
   /**
    * Time of record creation
@@ -566,7 +939,7 @@ export interface CreateWalletResponse {
   /** Mode regarding management of wallet key */
   key_management_mode: 'managed' | 'unmanaged';
   /** Settings for this wallet. */
-  settings?: object;
+  settings?: Record<string, any>;
   /**
    * Current record state
    * @example "active"
@@ -592,7 +965,7 @@ export interface CreateWalletResponse {
 
 export interface CreateWalletTokenRequest {
   /**
-   * Master key used for key derivation. Only required for         unamanged wallets.
+   * Master key used for key derivation. Only required for unmanaged wallets.
    * @example "MySecretKey123"
    */
   wallet_key?: string;
@@ -624,6 +997,69 @@ export interface CredAttrSpec {
   value: string;
 }
 
+export interface CredDef {
+  /**
+   * Issuer Identifier of the credential definition or schema
+   * @example "did:(method):WgWxqztrNooG92RXvxSTWv"
+   */
+  issuerId?: string;
+  /**
+   * Schema identifier
+   * @example "did:(method):2:schema_name:1.0"
+   */
+  schemaId?: string;
+  /**
+   * The tag value passed in by the Issuer to an AnonCred's Credential Definition create and store implementation.
+   * @example "default"
+   */
+  tag?: string;
+  type?: 'CL';
+  value?: CredDefValueSchemaAnonCreds;
+}
+
+export interface CredDefPostOptions {
+  /**
+   * Create transaction for endorser (optional, default false). Use this for agents who don't specify an author role but want to create a transaction for an endorser to sign.
+   * @example false
+   */
+  create_transaction_for_endorser?: boolean;
+  /**
+   * Connection identifier (optional) (this is an example). You can set this if you know the endorser's connection id you want to use. If not specified then the agent will attempt to find an endorser connection.
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+   */
+  endorser_connection_id?: string;
+  /**
+   * Maximum number of credential revocations per registry
+   * @example 1000
+   */
+  revocation_registry_size?: number;
+  /** Support credential revocation */
+  support_revocation?: boolean;
+}
+
+export interface CredDefPostRequest {
+  credential_definition?: InnerCredDef;
+  options?: CredDefPostOptions;
+}
+
+export interface CredDefResult {
+  credential_definition_metadata?: Record<string, any>;
+  credential_definition_state?: CredDefState;
+  job_id?: string;
+  registration_metadata?: Record<string, any>;
+}
+
+export interface CredDefState {
+  /** credential definition */
+  credential_definition?: CredDef;
+  /**
+   * credential definition id
+   * @example "did:(method):3:CL:20:tag"
+   */
+  credential_definition_id?: string | null;
+  state?: 'finished' | 'failed' | 'action' | 'wait';
+}
+
 export interface CredDefStorageList {
   /** List of cred def storage records */
   results?: CredDefStorageRecord[];
@@ -649,7 +1085,6 @@ export interface CredDefStorageRecord {
   cred_def_id: string;
   /**
    * Revocation registry size
-   * @format int32
    * @min 4
    * @max 32768
    * @example 1000
@@ -670,6 +1105,7 @@ export interface CredDefStorageRecord {
   support_revocation?: boolean;
   /**
    * Credential definition identifier tag
+   * @default "default"
    * @example "default"
    */
   tag?: string;
@@ -712,6 +1148,30 @@ export interface CredDefValuePrimary {
   z?: string;
 }
 
+export interface CredDefValuePrimarySchemaAnonCreds {
+  /**
+   * @pattern ^[0-9]*$
+   * @example "0"
+   */
+  n?: string;
+  r?: Record<string, any>;
+  /**
+   * @pattern ^[0-9]*$
+   * @example "0"
+   */
+  rctxt?: string;
+  /**
+   * @pattern ^[0-9]*$
+   * @example "0"
+   */
+  s?: string;
+  /**
+   * @pattern ^[0-9]*$
+   * @example "0"
+   */
+  z?: string;
+}
+
 export interface CredDefValueRevocation {
   /** @example "1 1F14F&ECB578F 2 095E45DDF417D" */
   g?: string;
@@ -737,21 +1197,66 @@ export interface CredDefValueRevocation {
   y?: string;
 }
 
+export interface CredDefValueRevocationSchemaAnonCreds {
+  /** @example "1 1F14F&ECB578F 2 095E45DDF417D" */
+  g?: string;
+  /** @example "1 1D64716fCDC00C 1 0C781960FA66E3D3 2 095E45DDF417D" */
+  g_dash?: string;
+  /** @example "1 16675DAE54BFAE8 2 095E45DD417D" */
+  h?: string;
+  /** @example "1 21E5EF9476EAF18 2 095E45DDF417D" */
+  h0?: string;
+  /** @example "1 236D1D99236090 2 095E45DDF417D" */
+  h1?: string;
+  /** @example "1 1C3AE8D1F1E277 2 095E45DDF417D" */
+  h2?: string;
+  /** @example "1 1B2A32CF3167 1 2490FEBF6EE55 1 0000000000000000" */
+  h_cap?: string;
+  /** @example "1 1D8549E8C0F8 2 095E45DDF417D" */
+  htilde?: string;
+  /** @example "1 142CD5E5A7DC 1 153885BD903312 2 095E45DDF417D" */
+  pk?: string;
+  /** @example "1 0C430AAB2B4710 1 1CB3A0932EE7E 1 0000000000000000" */
+  u?: string;
+  /** @example "1 153558BD903312 2 095E45DDF417D 1 0000000000000000" */
+  y?: string;
+}
+
+export interface CredDefValueSchemaAnonCreds {
+  /** Primary value for credential definition */
+  primary?: CredDefValuePrimarySchemaAnonCreds;
+  /** Revocation value for credential definition */
+  revocation?: CredDefValueRevocationSchemaAnonCreds;
+}
+
 export interface CredInfoList {
   results?: IndyCredInfo[];
 }
 
 export interface CredRevIndyRecordsResult {
   /** Indy revocation registry delta */
-  rev_reg_delta?: object;
+  rev_reg_delta?: Record<string, any>;
+}
+
+export interface CredRevIndyRecordsResultSchemaAnonCreds {
+  /** Indy revocation registry delta */
+  rev_reg_delta?: Record<string, any>;
 }
 
 export interface CredRevRecordDetailsResult {
   results?: IssuerCredRevRecord[];
 }
 
+export interface CredRevRecordDetailsResultSchemaAnonCreds {
+  results?: IssuerCredRevRecordSchemaAnonCreds[];
+}
+
 export interface CredRevRecordResult {
   result?: IssuerCredRevRecord;
+}
+
+export interface CredRevRecordResultSchemaAnonCreds {
+  result?: IssuerCredRevRecordSchemaAnonCreds;
 }
 
 export interface CredRevokedResult {
@@ -765,6 +1270,8 @@ export interface Credential {
    * @example ["https://www.w3.org/2018/credentials/v1","https://www.w3.org/2018/credentials/examples/v1"]
    */
   '@context': any[];
+  /** @example {"id":"https://example.com/credentials/status/3#94567","statusListCredential":"https://example.com/credentials/status/3","statusListIndex":"94567","statusPurpose":"revocation","type":"BitstringStatusListEntry"} */
+  credentialStatus?: any;
   /** @example {"alumniOf":{"id":"did:example:c276e12ec21ebfeb1f712ebc6f1"},"id":"did:example:ebfeb1f712ebc6f1c276e12ec21"} */
   credentialSubject: any;
   /**
@@ -774,6 +1281,7 @@ export interface Credential {
    */
   expirationDate?: string;
   /**
+   * The ID of the credential
    * @pattern \w+:(\/?\/?)[^\s]+
    * @example "http://example.edu/credentials/1872"
    */
@@ -783,7 +1291,7 @@ export interface Credential {
    * @pattern ^([0-9]{4})-([0-9]{2})-([0-9]{2})([Tt ]([0-9]{2}):([0-9]{2}):([0-9]{2})(\.[0-9]+)?)?(([Zz]|([+-])([0-9]{2}):([0-9]{2})))?$
    * @example "2010-01-01T19:23:24Z"
    */
-  issuanceDate: string;
+  issuanceDate?: string;
   /**
    * The JSON-LD Verifiable Credential Issuer. Either string of object with id field.
    * @example "did:key:z6MkpTHR8VNsBxYAAWHut2Geadd9jSwuBV8xRoAnwWsdvktH"
@@ -799,6 +1307,19 @@ export interface Credential {
    * @example ["VerifiableCredential","AlumniCredential"]
    */
   type: string[];
+  /**
+   * The valid from date
+   * @pattern ^([0-9]{4})-([0-9]{2})-([0-9]{2})([Tt ]([0-9]{2}):([0-9]{2}):([0-9]{2})(\.[0-9]+)?)?(([Zz]|([+-])([0-9]{2}):([0-9]{2})))?$
+   * @example "2010-01-01T19:23:24Z"
+   */
+  validFrom?: string;
+  /**
+   * The valid until date
+   * @pattern ^([0-9]{4})-([0-9]{2})-([0-9]{2})([Tt ]([0-9]{2}):([0-9]{2}):([0-9]{2})(\.[0-9]+)?)?(([Zz]|([+-])([0-9]{2}):([0-9]{2})))?$
+   * @example "2010-01-01T19:23:24Z"
+   */
+  validUntil?: string;
+  [key: string]: any;
 }
 
 export interface CredentialDefinition {
@@ -841,7 +1362,6 @@ export interface CredentialDefinitionGetResult {
 export interface CredentialDefinitionSendRequest {
   /**
    * Revocation registry size
-   * @format int32
    * @min 4
    * @max 32768
    * @example 1000
@@ -868,7 +1388,7 @@ export interface CredentialDefinitionSendResult {
    * @pattern ^([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}):3:CL:(([1-9][0-9]*)|([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}:2:.+:[0-9.]+)):(.+)?$
    * @example "WgWxqztrNooG92RXvxSTWv:3:CL:20:tag"
    */
-  credential_definition_id?: string;
+  credential_definition_id: string;
 }
 
 export interface CredentialDefinitionsCreatedResult {
@@ -921,8 +1441,8 @@ export interface CredentialProposal {
   cred_def_id?: string;
   credential_proposal?: CredentialPreview;
   /**
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
-   * @example "WgWxqztrNooG92RXvxSTWv"
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
+   * @example "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw"
    */
   issuer_did?: string;
   /**
@@ -931,8 +1451,8 @@ export interface CredentialProposal {
    */
   schema_id?: string;
   /**
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
-   * @example "WgWxqztrNooG92RXvxSTWv"
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
+   * @example "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw"
    */
   schema_issuer_did?: string;
   schema_name?: string;
@@ -949,6 +1469,7 @@ export interface CredentialStatusOptions {
    * @example "CredentialStatusList2017"
    */
   type: string;
+  [key: string]: any;
 }
 
 export interface CustomCreateWalletTokenRequest {
@@ -958,7 +1479,7 @@ export interface CustomCreateWalletTokenRequest {
    */
   api_key?: string;
   /**
-   * Master key used for key derivation. Only required for         unamanged wallets.
+   * Master key used for key derivation. Only required for unmanaged wallets.
    * @example "MySecretKey123"
    */
   wallet_key?: string;
@@ -966,19 +1487,19 @@ export interface CustomCreateWalletTokenRequest {
 
 export interface CustomUpdateWalletRequest {
   /** Agent config key-value pairs */
-  extra_settings?: object;
+  extra_settings?: Record<string, any>;
   /**
    * Image url for this wallet. This image url is publicized            (self-attested) to other agents as part of forming a connection.
    * @example "https://aries.ca/images/sample.png"
    */
   image_url?: string;
   /**
-   * Label for this wallet. This label is publicized        (self-attested) to other agents as part of forming a connection.
+   * Label for this wallet. This label is publicized (self-attested) to other agents as part of forming a connection.
    * @example "Alice"
    */
   label?: string;
   /**
-   * Webhook target dispatch type for this wallet.         default - Dispatch only to webhooks associated with this wallet.         base - Dispatch only to webhooks associated with the base wallet.         both - Dispatch to both webhook targets.
+   * Webhook target dispatch type for this wallet. default: Dispatch only to webhooks associated with this wallet. base: Dispatch only to webhooks associated with the base wallet. both: Dispatch to both webhook targets.
    * @example "default"
    */
   wallet_dispatch_type?: 'default' | 'both' | 'base';
@@ -989,31 +1510,33 @@ export interface CustomUpdateWalletRequest {
 export interface DID {
   /**
    * DID of interest
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$|^did:([a-zA-Z0-9_]+):([a-zA-Z0-9_.%-]+(:[a-zA-Z0-9_.%-]+)*)((;[a-zA-Z0-9_.:%-]+=[a-zA-Z0-9_.:%-]*)*)(\/[^#?]*)?([?][^#]*)?(\#.*)?$$
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$|^did:([a-zA-Z0-9_]+)(:[a-zA-Z0-9_.%-]+)?:([a-zA-Z0-9_.%-]+(:[a-zA-Z0-9_.%-]+)*)((;[a-zA-Z0-9_.:%-]+=[a-zA-Z0-9_.:%-]*)*)(\/[^#?]*)?([?][^#]*)?(\#.*)?$$
    * @example "did:peer:WgWxqztrNooG92RXvxSTWv"
    */
-  did?: string;
+  did: string;
   /**
    * Key type associated with the DID
    * @example "ed25519"
    */
-  key_type?: 'ed25519' | 'bls12381g2';
+  key_type: 'ed25519' | 'bls12381g2' | 'p256';
+  /** Additional metadata associated with the DID */
+  metadata?: Record<string, any>;
   /**
    * Did method associated with the DID
    * @example "sov"
    */
-  method?: string;
+  method: string;
   /**
    * Whether DID is current public DID, posted to ledger but not current public DID, or local to the wallet
    * @example "wallet_only"
    */
-  posture?: 'public' | 'posted' | 'wallet_only';
+  posture: 'public' | 'posted' | 'wallet_only';
   /**
    * Public verification key
    * @pattern ^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{43,44}$
    * @example "H3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV"
    */
-  verkey?: string;
+  verkey: string;
 }
 
 export interface DIDCreate {
@@ -1025,7 +1548,7 @@ export interface DIDCreate {
   /** To define a key type and/or a did depending on chosen DID method. */
   options?: DIDCreateOptions;
   /**
-   * Optional seed to use for DID, Must beenabled in configuration before use.
+   * Optional seed to use for DID, Must be enabled in configuration before use.
    * @example "000000000000000000000000Trustee1"
    */
   seed?: string;
@@ -1034,7 +1557,7 @@ export interface DIDCreate {
 export interface DIDCreateOptions {
   /**
    * Specify final value of the did (including did:<method>: prefix)if the method supports or requires so.
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$|^did:([a-zA-Z0-9_]+):([a-zA-Z0-9_.%-]+(:[a-zA-Z0-9_.%-]+)*)((;[a-zA-Z0-9_.:%-]+=[a-zA-Z0-9_.:%-]*)*)(\/[^#?]*)?([?][^#]*)?(\#.*)?$$
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$|^did:([a-zA-Z0-9_]+)(:[a-zA-Z0-9_.%-]+)?:([a-zA-Z0-9_.%-]+(:[a-zA-Z0-9_.%-]+)*)((;[a-zA-Z0-9_.:%-]+=[a-zA-Z0-9_.:%-]*)*)(\/[^#?]*)?([?][^#]*)?(\#.*)?$$
    * @example "did:peer:WgWxqztrNooG92RXvxSTWv"
    */
   did?: string;
@@ -1042,14 +1565,14 @@ export interface DIDCreateOptions {
    * Key type to use for the DID keypair. Validated with the chosen DID method's supported key types.
    * @example "ed25519"
    */
-  key_type: 'ed25519' | 'bls12381g2';
+  key_type: 'ed25519' | 'bls12381g2' | 'p256';
 }
 
 export interface DIDEndpoint {
   /**
    * DID of interest
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
-   * @example "WgWxqztrNooG92RXvxSTWv"
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
+   * @example "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw"
    */
   did: string;
   /**
@@ -1063,8 +1586,8 @@ export interface DIDEndpoint {
 export interface DIDEndpointWithType {
   /**
    * DID of interest
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
-   * @example "WgWxqztrNooG92RXvxSTWv"
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
+   * @example "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw"
    */
   did: string;
   /**
@@ -1078,6 +1601,12 @@ export interface DIDEndpointWithType {
    * @example "Endpoint"
    */
   endpoint_type?: 'Endpoint' | 'Profile' | 'LinkedDomains';
+  /**
+   * Mediation ID to use for endpoint information.
+   * @pattern [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+   */
+  mediation_id?: string;
 }
 
 export interface DIDList {
@@ -1087,6 +1616,14 @@ export interface DIDList {
 
 export interface DIDResult {
   result?: DID;
+}
+
+export interface DIDRotateRequestJSON {
+  /**
+   * The DID the rotating party is rotating to
+   * @example "did:web:example.com"
+   */
+  to_did: string;
 }
 
 export interface DIDXRejectRequest {
@@ -1110,7 +1647,7 @@ export interface DIDXRequest {
   '@type'?: string;
   /**
    * DID of exchange
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$|^did:([a-zA-Z0-9_]+):([a-zA-Z0-9_.%-]+(:[a-zA-Z0-9_.%-]+)*)((;[a-zA-Z0-9_.:%-]+=[a-zA-Z0-9_.:%-]*)*)(\/[^#?]*)?([?][^#]*)?(\#.*)?$$
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$|^did:([a-zA-Z0-9_]+)(:[a-zA-Z0-9_.%-]+)?:([a-zA-Z0-9_.%-]+(:[a-zA-Z0-9_.%-]+)*)((;[a-zA-Z0-9_.:%-]+=[a-zA-Z0-9_.:%-]*)*)(\/[^#?]*)?([?][^#]*)?(\#.*)?$$
    * @example "did:peer:WgWxqztrNooG92RXvxSTWv"
    */
   did?: string;
@@ -1172,12 +1709,12 @@ export interface DIFPresSpec {
    * Mapping of input_descriptor id to list of stored W3C credential record_id
    * @example {"<input descriptor id_1>":["<record id_1>","<record id_2>"],"<input descriptor id_2>":["<record id>"]}
    */
-  record_ids?: object;
+  record_ids?: Record<string, any>;
   /**
    * reveal doc [JSON-LD frame] dict used to derive the credential when selective disclosure is required
    * @example {"@context":["https://www.w3.org/2018/credentials/v1","https://w3id.org/security/bbs/v1"],"@explicit":true,"@requireAll":true,"credentialSubject":{"@explicit":true,"@requireAll":true,"Observation":[{"effectiveDateTime":{},"@explicit":true,"@requireAll":true}]},"issuanceDate":{},"issuer":{},"type":["VerifiableCredential","LabReport"]}
    */
-  reveal_doc?: object;
+  reveal_doc?: Record<string, any>;
 }
 
 export interface DIFProofProposal {
@@ -1188,6 +1725,165 @@ export interface DIFProofProposal {
 export interface DIFProofRequest {
   options?: DIFOptions;
   presentation_definition: PresentationDefinition;
+  [key: string]: any;
+}
+
+export interface DRPCRecord {
+  /**
+   * Time of record creation
+   * @pattern ^\d{4}-\d\d-\d\d[T ]\d\d:\d\d(?:\:(?:\d\d(?:\.\d{1,6})?))?(?:[+-]\d\d:?\d\d|Z|)$
+   * @example "2021-12-31T23:59:59Z"
+   */
+  created_at?: string;
+  /**
+   * RPC request
+   * @example {"id":1,"jsonrpc":"2.0","method":"example.method","params":["1","a"]}
+   */
+  request: any;
+  /**
+   * RPC response
+   * @default null
+   * @example {"id":1,"jsonrpc":"2.0","result":"result"}
+   */
+  response?: any;
+  /**
+   * RPC state
+   * @example "request-received"
+   */
+  state: 'request-sent' | 'request-received' | 'completed';
+  /**
+   * Time of last record update
+   * @pattern ^\d{4}-\d\d-\d\d[T ]\d\d:\d\d(?:\:(?:\d\d(?:\.\d{1,6})?))?(?:[+-]\d\d:?\d\d|Z|)$
+   * @example "2021-12-31T23:59:59Z"
+   */
+  updated_at?: string;
+}
+
+export interface DRPCRecordList {
+  /** List of DIDComm RPC request/reponse exchanges */
+  results: DRPCRecord[];
+}
+
+export interface DRPCRequestJSON {
+  /**
+   * RPC Request
+   * @example {"id":1,"jsonrpc":"2.0","method":"example.method","params":["1","a"]}
+   */
+  request: any;
+}
+
+export interface DRPCRequestMessage {
+  /**
+   * Message identifier
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+   */
+  '@id'?: string;
+  /**
+   * Message type
+   * @example "https://didcomm.org/my-family/1.0/my-message-type"
+   */
+  '@type'?: string;
+  /**
+   * RPC request
+   * @example {"id":1,"jsonrpc":"2.0","method":"example.method","params":["1","a"]}
+   */
+  request: any;
+}
+
+export interface DRPCResponseJSON {
+  /**
+   * RPC Response
+   * @example {"id":1,"jsonrpc":"2.0","result":"result"}
+   */
+  response: any;
+  /**
+   * Thread identifier
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+   */
+  thread_id: string;
+}
+
+export interface DRPCResponseMessage {
+  /**
+   * Message identifier
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+   */
+  '@id'?: string;
+  /**
+   * Message type
+   * @example "https://didcomm.org/my-family/1.0/my-message-type"
+   */
+  '@type'?: string;
+  /**
+   * RPC response
+   * @example {"id":1,"jsonrpc":"2.0","result":"result"}
+   */
+  response: any;
+}
+
+export interface DataIntegrityProofOptions {
+  /**
+   * The value is used once for a particular domain and window of time. This value is used to mitigate replay attacks.
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+   */
+  challenge?: string;
+  /**
+   * The date and time the proof was created is OPTIONAL and, if included, MUST be specified as an [XMLSCHEMA11-2] dateTimeStamp string
+   * @example "2010-01-01T19:23:24Z"
+   */
+  created?: string;
+  /**
+   * An identifier for the cryptographic suite that can be used to verify the proof.
+   * @example "eddsa-jcs-2022"
+   */
+  cryptosuite: string;
+  /**
+   * It conveys one or more security domains in which the proof is meant to be used.
+   * @example "example.com"
+   */
+  domain?: string;
+  /**
+   * The expires property is OPTIONAL and, if present, specifies when the proof expires. If present, it MUST be an [XMLSCHEMA11-2] dateTimeStamp string
+   * @example "2010-01-01T19:23:24Z"
+   */
+  expires?: string;
+  /**
+   * An optional identifier for the proof, which MUST be a URL [URL], such as a UUID as a URN
+   * @example "urn:uuid:6a1676b8-b51f-11ed-937b-d76685a20ff5"
+   */
+  id?: string;
+  /**
+   * One use of this field is to increase privacy by decreasing linkability that is the result of deterministically generated signatures.
+   * @example "CF69iO3nfvqRsRBNElE8b4wO39SyJHPM7Gg1nExltW5vSfQA1lvDCR/zXX1To0/4NLo=="
+   */
+  nonce?: string;
+  /**
+   * Each value identifies another data integrity proof that MUST verify before the current proof is processed.
+   * @example "urn:uuid:6a1676b8-b51f-11ed-937b-d76685a20ff5"
+   */
+  previousProof?: string;
+  /**
+   * The proof purpose acts as a safeguard to prevent the proof from being misused by being applied to a purpose other than the one that was intended.
+   * @example "assertionMethod"
+   */
+  proofPurpose: string;
+  /**
+   * The value of the proof signature.
+   * @example "zsy1AahqbzJQ63n9RtekmwzqZeVj494VppdAVJBnMYrTwft6cLJJGeTSSxCCJ6HKnRtwE7jjDh6sB2z2AAiZY9BBnCD8wUVgwqH3qchGRCuC2RugA4eQ9fUrR4Yuycac3caiaaay"
+   */
+  proofValue?: string;
+  /**
+   * The specific type of proof MUST be specified as a string that maps to a URL [URL].
+   * @example "DataIntegrityProof"
+   */
+  type: string;
+  /**
+   * A verification method is the means and information needed to verify the proof.
+   * @pattern \w+:(\/?\/?)[^\s]+
+   * @example "did:key:z6Mkgg342Ycpuk263R9d8Aq6MUaxPn1DDeHyGo38EefXmgDL#z6Mkgg342Ycpuk263R9d8Aq6MUaxPn1DDeHyGo38EefXmgDL"
+   */
+  verificationMethod: string;
+  [key: string]: any;
 }
 
 export interface Date {
@@ -1205,6 +1901,8 @@ export interface DefaultConfigValues {
   /** Public DID config */
   created_public_did?: string[];
 }
+
+export type DeleteResponse = object;
 
 export interface Disclose {
   /**
@@ -1238,9 +1936,16 @@ export interface Disclosures {
 
 export interface Doc {
   /** Credential to sign */
-  credential: object;
+  credential: Record<string, any>;
   /** Signature options */
   options: SignatureOptions;
+}
+
+export interface DocumentVerificationResult {
+  document?: Record<string, any>;
+  errors?: string[];
+  results?: ProofResult[];
+  verified: boolean;
 }
 
 export interface EndorserInfo {
@@ -1272,6 +1977,38 @@ export interface EndpointsResult {
   their_endpoint?: string;
 }
 
+export interface EndpointsResultV1 {
+  /**
+   * My endpoint
+   * @pattern ^[A-Za-z0-9\.\-\+]+://([A-Za-z0-9][.A-Za-z0-9-_]+[A-Za-z0-9])+(:[1-9][0-9]*)?(/[^?&#]+)?$
+   * @example "https://myhost:8021"
+   */
+  my_endpoint?: string;
+  /**
+   * Their endpoint
+   * @pattern ^[A-Za-z0-9\.\-\+]+://([A-Za-z0-9][.A-Za-z0-9-_]+[A-Za-z0-9])+(:[1-9][0-9]*)?(/[^?&#]+)?$
+   * @example "https://myhost:8021"
+   */
+  their_endpoint?: string;
+}
+
+export interface FetchCredentialResponse {
+  results?: VerifiableCredential;
+}
+
+export interface FetchKeyResponse {
+  /**
+   * The associated kid
+   * @example "did:web:example.com#key-01"
+   */
+  kid?: string;
+  /**
+   * The Public Key Multibase format (multikey)
+   * @example "z6MkgKA7yrw5kYSiDuQFcye4bMaJpcfHFry3Bx45pdWh3s8i"
+   */
+  multikey?: string;
+}
+
 export interface Filter {
   /** Const */
   const?: any;
@@ -1284,7 +2021,6 @@ export interface Filter {
   format?: string;
   /**
    * Max Length
-   * @format int32
    * @example 1234
    */
   maxLength?: number;
@@ -1292,7 +2028,6 @@ export interface Filter {
   maximum?: any;
   /**
    * Min Length
-   * @format int32
    * @example 1234
    */
   minLength?: number;
@@ -1327,6 +2062,22 @@ export interface Generated {
   remainder?: string;
 }
 
+export interface GetCredDefResult {
+  /** credential definition */
+  credential_definition?: CredDef;
+  /**
+   * credential definition id
+   * @example "did:(method):3:CL:20:tag"
+   */
+  credential_definition_id?: string;
+  credential_definitions_metadata?: Record<string, any>;
+  resolution_metadata?: Record<string, any>;
+}
+
+export interface GetCredDefsResponse {
+  credential_definition_ids?: string[];
+}
+
 export interface GetDIDEndpointResponse {
   /**
    * Full verification key
@@ -1357,6 +2108,34 @@ export interface GetNymRoleResponse {
     | 'NETWORK_MONITOR'
     | 'USER'
     | 'ROLE_REMOVE';
+}
+
+export interface GetSchemaResult {
+  resolution_metadata?: Record<string, any>;
+  schema?: AnonCredsSchema;
+  /**
+   * Schema identifier
+   * @example "did:(method):2:schema_name:1.0"
+   */
+  schema_id?: string;
+  schema_metadata?: Record<string, any>;
+}
+
+export interface GetSchemasResponse {
+  schema_ids?: string[];
+}
+
+export interface Hangup {
+  /**
+   * Message identifier
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+   */
+  '@id'?: string;
+  /**
+   * Message type
+   * @example "https://didcomm.org/my-family/1.0/my-message-type"
+   */
+  '@type'?: string;
 }
 
 export type HolderModuleResponse = object;
@@ -1431,7 +2210,7 @@ export interface IndyCredInfo {
 
 export interface IndyCredPrecis {
   /** Credential info */
-  cred_info?: IndyCredInfo;
+  cred_info: IndyCredInfo;
   /** Non-revocation interval from presentation request */
   interval?: IndyNonRevocationInterval;
   presentation_referents?: string[];
@@ -1439,9 +2218,9 @@ export interface IndyCredPrecis {
 
 export interface IndyCredRequest {
   /** Blinded master secret */
-  blinded_ms: object;
+  blinded_ms: Record<string, any>;
   /** Blinded master secret correctness proof */
-  blinded_ms_correctness_proof: object;
+  blinded_ms_correctness_proof: Record<string, any>;
   /**
    * Credential definition identifier
    * @pattern ^([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}):3:CL:(([1-9][0-9]*)|([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}:2:.+:[0-9.]+)):(.+)?$
@@ -1455,9 +2234,8 @@ export interface IndyCredRequest {
    */
   nonce: string;
   /**
-   * Prover DID
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
-   * @example "WgWxqztrNooG92RXvxSTWv"
+   * Prover DID/Random String/UUID
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
    */
   prover_did: string;
 }
@@ -1470,7 +2248,7 @@ export interface IndyCredential {
    */
   cred_def_id: string;
   /** Revocation registry state */
-  rev_reg?: object | null;
+  rev_reg?: Record<string, any>;
   /**
    * Revocation registry identifier
    * @pattern ^([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}):4:([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}):3:CL:(([1-9][0-9]*)|([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}:2:.+:[0-9.]+))(:.+)?:CL_ACCUM:(.+$)
@@ -1484,13 +2262,13 @@ export interface IndyCredential {
    */
   schema_id: string;
   /** Credential signature */
-  signature: object;
+  signature: Record<string, any>;
   /** Credential signature correctness proof */
-  signature_correctness_proof: object;
+  signature_correctness_proof: Record<string, any>;
   /** Credential attributes */
   values: Record<string, IndyAttrValue>;
   /** Witness for revocation proof */
-  witness?: object | null;
+  witness?: Record<string, any>;
 }
 
 export interface IndyEQProof {
@@ -1540,10 +2318,7 @@ export interface IndyGEProofPred {
   attr_name?: string;
   /** Predicate type */
   p_type?: 'LT' | 'LE' | 'GE' | 'GT';
-  /**
-   * Predicate threshold value
-   * @format int32
-   */
+  /** Predicate threshold value */
   value?: number;
 }
 
@@ -1572,7 +2347,6 @@ export interface IndyNonRevocProof {
 export interface IndyNonRevocationInterval {
   /**
    * Earliest time of interest in non-revocation interval
-   * @format int32
    * @min 0
    * @max 18446744073709552000
    * @example 1640995199
@@ -1580,7 +2354,6 @@ export interface IndyNonRevocationInterval {
   from?: number;
   /**
    * Latest time of interest in non-revocation interval
-   * @format int32
    * @min 0
    * @max 18446744073709552000
    * @example 1640995199
@@ -1633,17 +2406,14 @@ export interface IndyPresPredSpec {
    * @example ">="
    */
   predicate: '<' | '<=' | '>=' | '>';
-  /**
-   * Threshold value
-   * @format int32
-   */
+  /** Threshold value */
   threshold: number;
 }
 
 export interface IndyPresPreview {
   /**
    * Message type identifier
-   * @example "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/present-proof/1.0/presentation-preview"
+   * @example "https://didcomm.org/present-proof/1.0/presentation-preview"
    */
   '@type'?: string;
   attributes: IndyPresAttrSpec[];
@@ -1701,7 +2471,6 @@ export interface IndyProofIdentifier {
   schema_id?: string;
   /**
    * Timestamp epoch
-   * @format int32
    * @min 0
    * @max 18446744073709552000
    * @example 1640995199
@@ -1746,7 +2515,6 @@ export interface IndyProofReqAttrSpec {
 export interface IndyProofReqAttrSpecNonRevoked {
   /**
    * Earliest time of interest in non-revocation interval
-   * @format int32
    * @min 0
    * @max 18446744073709552000
    * @example 1640995199
@@ -1754,7 +2522,6 @@ export interface IndyProofReqAttrSpecNonRevoked {
   from?: number;
   /**
    * Latest time of interest in non-revocation interval
-   * @format int32
    * @min 0
    * @max 18446744073709552000
    * @example 1640995199
@@ -1774,10 +2541,7 @@ export interface IndyProofReqPredSpec {
    * @example ">="
    */
   p_type: '<' | '<=' | '>=' | '>';
-  /**
-   * Threshold value
-   * @format int32
-   */
+  /** Threshold value */
   p_value: number;
   /** If present, credential must satisfy one of given restrictions: specify schema_id, schema_issuer_did, schema_name, schema_version, issuer_did, cred_def_id, and/or attr::<attribute-name>::value where <attribute-name> represents a credential attribute name */
   restrictions?: Record<string, string>[];
@@ -1786,7 +2550,6 @@ export interface IndyProofReqPredSpec {
 export interface IndyProofReqPredSpecNonRevoked {
   /**
    * Earliest time of interest in non-revocation interval
-   * @format int32
    * @min 0
    * @max 18446744073709552000
    * @example 1640995199
@@ -1794,7 +2557,6 @@ export interface IndyProofReqPredSpecNonRevoked {
   from?: number;
   /**
    * Latest time of interest in non-revocation interval
-   * @format int32
    * @min 0
    * @max 18446744073709552000
    * @example 1640995199
@@ -1830,7 +2592,6 @@ export interface IndyProofRequest {
 export interface IndyProofRequestNonRevoked {
   /**
    * Earliest time of interest in non-revocation interval
-   * @format int32
    * @min 0
    * @max 18446744073709552000
    * @example 1640995199
@@ -1838,7 +2599,6 @@ export interface IndyProofRequestNonRevoked {
   from?: number;
   /**
    * Latest time of interest in non-revocation interval
-   * @format int32
    * @min 0
    * @max 18446744073709552000
    * @example 1640995199
@@ -1857,16 +2617,13 @@ export interface IndyProofRequestedProof {
   /** Proof requested proof revealed attributes */
   revealed_attrs?: Record<string, IndyProofRequestedProofRevealedAttr>;
   /** Proof requested proof self-attested attributes */
-  self_attested_attrs?: object;
+  self_attested_attrs?: Record<string, any>;
   /** Unrevealed attributes */
-  unrevealed_attrs?: object;
+  unrevealed_attrs?: Record<string, any>;
 }
 
 export interface IndyProofRequestedProofPredicate {
-  /**
-   * Sub-proof index
-   * @format int32
-   */
+  /** Sub-proof index */
   sub_proof_index?: number;
 }
 
@@ -1879,18 +2636,12 @@ export interface IndyProofRequestedProofRevealedAttr {
   encoded?: string;
   /** Raw value */
   raw?: string;
-  /**
-   * Sub-proof index
-   * @format int32
-   */
+  /** Sub-proof index */
   sub_proof_index?: number;
 }
 
 export interface IndyProofRequestedProofRevealedAttrGroup {
-  /**
-   * Sub-proof index
-   * @format int32
-   */
+  /** Sub-proof index */
   sub_proof_index?: number;
   /** Indy proof requested proof revealed attr groups group value */
   values?: Record<string, RawEncoded>;
@@ -1914,7 +2665,6 @@ export interface IndyRequestedCredsRequestedPred {
   cred_id: string;
   /**
    * Epoch timestamp of interest for non-revocation proof
-   * @format int32
    * @min 0
    * @max 18446744073709552000
    * @example 1640995199
@@ -1957,7 +2707,6 @@ export interface IndyRevRegDefValue {
   issuanceType?: 'ISSUANCE_ON_DEMAND' | 'ISSUANCE_BY_DEFAULT';
   /**
    * Maximum number of credentials; registry size
-   * @format int32
    * @min 1
    * @example 10
    */
@@ -2012,13 +2761,54 @@ export interface IndyRevRegEntryValue {
   revoked?: number[];
 }
 
+export interface InnerCredDef {
+  /**
+   * Issuer Identifier of the credential definition
+   * @example "did:(method):WgWxqztrNooG92RXvxSTWv"
+   */
+  issuerId: string;
+  /**
+   * Schema identifier
+   * @example "did:(method):2:schema_name:1.0"
+   */
+  schemaId: string;
+  /**
+   * Credential definition tag
+   * @example "default"
+   */
+  tag: string;
+}
+
+export interface InnerRevRegDef {
+  /**
+   * Credential definition identifier
+   * @example "did:(method):2:schema_name:1.0"
+   */
+  credDefId: string;
+  /**
+   * Issuer Identifier of the credential definition or schema
+   * @example "did:(method):WgWxqztrNooG92RXvxSTWv"
+   */
+  issuerId: string;
+  /**
+   * Maximum number of credential revocations per registry
+   * @example 777
+   */
+  maxCredNum: number;
+  /**
+   * tag for revocation registry
+   * @example "default"
+   */
+  tag: string;
+}
+
 export interface InputDescriptors {
   constraints?: Constraints;
   group?: string[];
   /** ID */
   id?: string;
   /** Metadata dictionary */
-  metadata?: object;
+  metadata?: Record<string, any>;
   /** Name */
   name?: string;
   /** Purpose */
@@ -2063,7 +2853,7 @@ export interface InvitationCreateRequest {
    */
   mediation_id?: string;
   /** Optional metadata to attach to the connection created with the invitation */
-  metadata?: object;
+  metadata?: Record<string, any>;
   /**
    * Label for connection invitation
    * @example "Invitation to Barry"
@@ -2074,6 +2864,16 @@ export interface InvitationCreateRequest {
    * @example "1.1"
    */
   protocol_version?: string;
+  /**
+   * DID to use in invitation
+   * @example "did:example:123"
+   */
+  use_did?: string;
+  /**
+   * DID method to use in invitation
+   * @example "did:peer:2"
+   */
+  use_did_method?: 'did:peer:2' | 'did:peer:4';
   /**
    * Whether to use public DID in invitation
    * @example false
@@ -2169,21 +2969,51 @@ export interface InvitationRecord {
   updated_at?: string;
 }
 
+export type InvitationRecordResponse = object;
+
+export interface InvitationResponse {
+  /**
+   * Optional alias for the connection
+   * @example "Bob"
+   */
+  alias?: string | null;
+  /**
+   * Connection identifier
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+   */
+  connection_id: string;
+  invitation: ConnectionInvitation;
+  /**
+   * Invitation URL
+   * @example "http://192.168.56.101:8020/invite?c_i=eyJAdHlwZSI6Li4ufQ=="
+   */
+  invitation_url: string;
+}
+
 export interface InvitationResult {
   /**
    * Connection identifier
    * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
    */
-  connection_id?: string;
-  invitation?: ConnectionInvitation;
+  connection_id: string;
+  invitation: ConnectionInvitation;
   /**
    * Invitation URL
    * @example "http://192.168.56.101:8020/invite?c_i=eyJAdHlwZSI6Li4ufQ=="
    */
-  invitation_url?: string;
+  invitation_url: string;
 }
 
 export type IssueCredentialModuleResponse = object;
+
+export interface IssueCredentialRequest {
+  credential?: Credential;
+  options?: LDProofVCOptions;
+}
+
+export interface IssueCredentialResponse {
+  verifiableCredential?: VerifiableCredential;
+}
 
 export interface IssuerCredRevRecord {
   /**
@@ -2235,6 +3065,44 @@ export interface IssuerCredRevRecord {
   updated_at?: string;
 }
 
+export interface IssuerCredRevRecordSchemaAnonCreds {
+  /**
+   * Time of record creation
+   * @pattern ^\d{4}-\d\d-\d\d[T ]\d\d:\d\d(?:\:(?:\d\d(?:\.\d{1,6})?))?(?:[+-]\d\d:?\d\d|Z|)$
+   * @example "2021-12-31T23:59:59Z"
+   */
+  created_at?: string;
+  /** Credential definition identifier */
+  cred_def_id?: string;
+  /**
+   * Credential exchange record identifier at credential issue
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+   */
+  cred_ex_id?: string;
+  /** Credential exchange version */
+  cred_ex_version?: string;
+  /** Credential revocation identifier */
+  cred_rev_id?: string;
+  /**
+   * Issuer credential revocation record identifier
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+   */
+  record_id?: string;
+  /** Revocation registry identifier */
+  rev_reg_id?: string;
+  /**
+   * Issue credential revocation record state
+   * @example "issued"
+   */
+  state?: string;
+  /**
+   * Time of last record update
+   * @pattern ^\d{4}-\d\d-\d\d[T ]\d\d:\d\d(?:\:(?:\d\d(?:\.\d{1,6})?))?(?:[+-]\d\d:?\d\d|Z|)$
+   * @example "2021-12-31T23:59:59Z"
+   */
+  updated_at?: string;
+}
+
 export interface IssuerRevRegRecord {
   /**
    * Time of record creation
@@ -2255,13 +3123,12 @@ export interface IssuerRevRegRecord {
   error_msg?: string;
   /**
    * Issuer DID
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
-   * @example "WgWxqztrNooG92RXvxSTWv"
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
+   * @example "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw"
    */
   issuer_did?: string;
   /**
    * Maximum number of credentials for revocation registry
-   * @format int32
    * @example 1000
    */
   max_cred_num?: number;
@@ -2315,12 +3182,12 @@ export interface IssuerRevRegRecord {
 export interface JWSCreate {
   /**
    * DID of interest
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$|^did:([a-zA-Z0-9_]+):([a-zA-Z0-9_.%-]+(:[a-zA-Z0-9_.%-]+)*)((;[a-zA-Z0-9_.:%-]+=[a-zA-Z0-9_.:%-]*)*)(\/[^#?]*)?([?][^#]*)?(\#.*)?$$
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$|^did:([a-zA-Z0-9_]+)(:[a-zA-Z0-9_.%-]+)?:([a-zA-Z0-9_.%-]+(:[a-zA-Z0-9_.%-]+)*)((;[a-zA-Z0-9_.:%-]+=[a-zA-Z0-9_.:%-]*)*)(\/[^#?]*)?([?][^#]*)?(\#.*)?$$
    * @example "did:peer:WgWxqztrNooG92RXvxSTWv"
    */
   did?: string;
-  headers?: object;
-  payload: object;
+  headers?: Record<string, any>;
+  payload: Record<string, any>;
   /**
    * Information used for proof verification
    * @pattern \w+:(\/?\/?)[^\s]+
@@ -2331,7 +3198,7 @@ export interface JWSCreate {
 
 export interface JWSVerify {
   /**
-   * @pattern ^[-_a-zA-Z0-9]*\.[-_a-zA-Z0-9]*\.[-_a-zA-Z0-9]*$
+   * @pattern ^[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]*\.[a-zA-Z0-9_-]+$
    * @example "eyJhbGciOiJFZERTQSJ9.eyJhIjogIjAifQ.dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
    */
   jwt?: string;
@@ -2341,11 +3208,11 @@ export interface JWSVerifyResponse {
   /** Error text */
   error?: string;
   /** Headers from verified JWT. */
-  headers: object;
+  headers: Record<string, any>;
   /** kid of signer */
   kid: string;
   /** Payload from verified JWT */
-  payload: object;
+  payload: Record<string, any>;
   valid: boolean;
 }
 
@@ -2369,26 +3236,24 @@ export interface KeylistQuery {
    * Query dictionary object
    * @example {"filter":{}}
    */
-  filter?: object;
+  filter?: Record<string, any>;
   /** Pagination info */
   paginate?: KeylistQueryPaginate;
 }
 
 export interface KeylistQueryFilterRequest {
   /** Filter for keylist query */
-  filter?: object;
+  filter?: Record<string, any>;
 }
 
 export interface KeylistQueryPaginate {
   /**
    * Limit for keylist query
-   * @format int32
    * @example 30
    */
   limit?: number;
   /**
    * Offset value for query
-   * @format int32
    * @example 0
    */
   offset?: number;
@@ -2437,10 +3302,11 @@ export interface LDProofVCDetail {
    * Options for specifying how the linked data proof is created.
    * @example {"proofType":"Ed25519Signature2018"}
    */
-  options: LDProofVCDetailOptions;
+  options: LDProofVCOptions;
+  [key: string]: any;
 }
 
-export interface LDProofVCDetailOptions {
+export interface LDProofVCOptions {
   /**
    * A challenge to include in the proof. SHOULD be provided by the requesting party of the credential (=holder)
    * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
@@ -2468,24 +3334,50 @@ export interface LDProofVCDetailOptions {
    * The proof type used for the proof. Should match suites registered in the Linked Data Cryptographic Suite Registry
    * @example "Ed25519Signature2018"
    */
-  proofType: string;
+  proofType?: string;
+  /**
+   * The verification method to use for the proof. Should match a verification method in the wallet
+   * @example "did:example:123456#key-1"
+   */
+  verificationMethod?: string;
+  [key: string]: any;
 }
 
 export interface LedgerConfigInstance {
-  /** genesis_file */
-  genesis_file?: string;
-  /** genesis_transactions */
-  genesis_transactions?: string;
-  /** genesis_url */
-  genesis_url?: string;
-  /** ledger_id */
-  id?: string;
-  /** is_production */
-  is_production?: boolean;
+  /** Endorser service alias (optional) */
+  endorser_alias?: string;
+  /** Endorser DID (optional) */
+  endorser_did?: string;
+  /**
+   * Ledger identifier. Auto-generated UUID4 if not provided
+   * @example "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+   */
+  id: string;
+  /** Production-grade ledger (true/false) */
+  is_production: boolean;
+  /** Write capability enabled (default: False) */
+  is_write?: boolean;
+  /**
+   * Keep-alive timeout in seconds for idle connections
+   * @default 5
+   */
+  keepalive?: number;
+  /**
+   * Ledger pool name (defaults to ledger ID if not specified)
+   * @example "bcovrin-test-pool"
+   */
+  pool_name?: string;
+  /** Read-only access (default: False) */
+  read_only?: boolean;
+  /** SOCKS proxy URL (optional) */
+  socks_proxy?: string;
 }
 
 export interface LedgerConfigList {
-  ledger_config_list: LedgerConfigInstance[];
+  /** Non-production ledgers (may be empty) */
+  non_production_ledgers: LedgerConfigInstance[];
+  /** Production ledgers (may be empty) */
+  production_ledgers: LedgerConfigInstance[];
 }
 
 export type LedgerModulesResult = object;
@@ -2501,11 +3393,10 @@ export interface LinkedDataProof {
    * @pattern ^\d{4}-\d\d-\d\d[T ]\d\d:\d\d(?:\:(?:\d\d(?:\.\d{1,6})?))?(?:[+-]\d\d:?\d\d|Z|)$
    * @example "2021-12-31T23:59:59Z"
    */
-  created: string;
+  created?: string;
   /**
    * A string value specifying the restricted domain of the signature.
-   * @pattern \w+:(\/?\/?)[^\s]+
-   * @example "example.com"
+   * @example "https://example.com"
    */
   domain?: string;
   /**
@@ -2539,14 +3430,116 @@ export interface LinkedDataProof {
    * @example "did:key:z6Mkgg342Ycpuk263R9d8Aq6MUaxPn1DDeHyGo38EefXmgDL#z6Mkgg342Ycpuk263R9d8Aq6MUaxPn1DDeHyGo38EefXmgDL"
    */
   verificationMethod: string;
+  [key: string]: any;
 }
 
-export interface MediationCreateRequest {
-  /** List of mediator rules for recipient */
-  mediator_terms?: string[];
-  /** List of recipient rules for mediation */
-  recipient_terms?: string[];
+export interface ListCredentialsResponse {
+  results?: VerifiableCredential[];
 }
+
+export interface MaybeStoredConnectionsRecord {
+  /**
+   * Connection acceptance: manual or auto
+   * @example "auto"
+   */
+  accept?: 'manual' | 'auto';
+  /**
+   * Optional alias to apply to connection for later use
+   * @example "Bob, providing quotes"
+   */
+  alias?: string;
+  /**
+   * Connection identifier
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+   */
+  connection_id?: string;
+  connection_protocol?:
+    | 'connections/1.0'
+    | 'didexchange/1.0'
+    | 'didexchange/1.1';
+  /**
+   * Time of record creation
+   * @pattern ^\d{4}-\d\d-\d\d[T ]\d\d:\d\d(?:\:(?:\d\d(?:\.\d{1,6})?))?(?:[+-]\d\d:?\d\d|Z|)$
+   * @example "2021-12-31T23:59:59Z"
+   */
+  created_at?: string;
+  /**
+   * Error message
+   * @example "No DIDDoc provided; cannot connect to public DID"
+   */
+  error_msg?: string;
+  /**
+   * Inbound routing connection id to use
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+   */
+  inbound_connection_id?: string;
+  /**
+   * Public key for connection
+   * @pattern ^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{43,44}$
+   * @example "H3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV"
+   */
+  invitation_key?: string;
+  /**
+   * Invitation mode
+   * @example "once"
+   */
+  invitation_mode?: 'once' | 'multi' | 'static';
+  /**
+   * ID of out-of-band invitation message
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+   */
+  invitation_msg_id?: string;
+  /**
+   * Our DID for connection
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$|^did:([a-zA-Z0-9_]+)(:[a-zA-Z0-9_.%-]+)?:([a-zA-Z0-9_.%-]+(:[a-zA-Z0-9_.%-]+)*)((;[a-zA-Z0-9_.:%-]+=[a-zA-Z0-9_.:%-]*)*)(\/[^#?]*)?([?][^#]*)?(\#.*)?$$
+   * @example "did:peer:WgWxqztrNooG92RXvxSTWv"
+   */
+  my_did?: string;
+  /**
+   * Connection request identifier
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+   */
+  request_id?: string;
+  /**
+   * State per RFC 23
+   * @example "invitation-sent"
+   */
+  rfc23_state?: string;
+  /**
+   * Current record state
+   * @example "active"
+   */
+  state?: string;
+  /**
+   * Their DID for connection
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$|^did:([a-zA-Z0-9_]+)(:[a-zA-Z0-9_.%-]+)?:([a-zA-Z0-9_.%-]+(:[a-zA-Z0-9_.%-]+)*)((;[a-zA-Z0-9_.:%-]+=[a-zA-Z0-9_.:%-]*)*)(\/[^#?]*)?([?][^#]*)?(\#.*)?$$
+   * @example "did:peer:WgWxqztrNooG92RXvxSTWv"
+   */
+  their_did?: string;
+  /**
+   * Their label for connection
+   * @example "Bob"
+   */
+  their_label?: string;
+  /**
+   * Other agent's public DID for connection
+   * @example "2cpBmR3FqGKWi5EyUbpRY8"
+   */
+  their_public_did?: string;
+  /**
+   * Their role in the connection protocol
+   * @example "requester"
+   */
+  their_role?: 'invitee' | 'requester' | 'inviter' | 'responder';
+  /**
+   * Time of last record update
+   * @pattern ^\d{4}-\d\d-\d\d[T ]\d\d:\d\d(?:\:(?:\d\d(?:\.\d{1,6})?))?(?:[+-]\d\d:?\d\d|Z|)$
+   * @example "2021-12-31T23:59:59Z"
+   */
+  updated_at?: string;
+}
+
+export type MediationCreateRequest = object;
 
 export interface MediationDeny {
   /**
@@ -2559,8 +3552,6 @@ export interface MediationDeny {
    * @example "https://didcomm.org/my-family/1.0/my-message-type"
    */
   '@type'?: string;
-  mediator_terms?: string[];
-  recipient_terms?: string[];
 }
 
 export interface MediationGrant {
@@ -2585,15 +3576,14 @@ export interface MediationGrant {
 export interface MediationIdMatchInfo {
   /**
    * Mediation record identifier
-   * @format uuid
    * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
    */
-  mediation_id?: string;
+  mediation_id: string;
 }
 
 export interface MediationList {
   /** List of mediation records */
-  results?: MediationRecord[];
+  results: MediationRecord[];
 }
 
 export interface MediationRecord {
@@ -2754,7 +3744,7 @@ export type MultitenantModuleResponse = object;
 
 export interface OcaRecord {
   /** OCA Bundle */
-  bundle?: object;
+  bundle?: Record<string, any>;
   /**
    * Time of record creation
    * @pattern ^\d{4}-\d\d-\d\d[T ]\d\d:\d\d(?:\:(?:\d\d(?:\.\d{1,6})?))?(?:[+-]\d\d:?\d\d|Z|)$
@@ -2830,6 +3820,11 @@ export interface OobRecord {
   /** Out of band invitation message */
   invitation: InvitationMessage;
   /**
+   * Allow for multiple uses of the oob invitation
+   * @example true
+   */
+  multi_use?: boolean;
+  /**
    * Oob record identifier
    * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
    */
@@ -2889,9 +3884,9 @@ export interface PingRequestResponse {
 
 export interface PluginCreateWalletRequest {
   /** Agent config key-value pairs */
-  extra_settings?: object;
+  extra_settings?: Record<string, any>;
   /**
-   * Image url for this wallet. This image url is publicized        (self-attested) to other agents as part of forming a connection.
+   * Image url for this wallet. This image url is publicized (self-attested) to other agents as part of forming a connection.
    * @example "https://aries.ca/images/sample.png"
    */
   image_url?: string;
@@ -2901,12 +3896,12 @@ export interface PluginCreateWalletRequest {
    */
   key_management_mode?: 'managed';
   /**
-   * Label for this wallet. This label is publicized        (self-attested) to other agents as part of forming a connection.
+   * Label for this wallet. This label is publicized (self-attested) to other agents as part of forming a connection.
    * @example "Alice"
    */
   label?: string;
   /**
-   * Webhook target dispatch type for this wallet.         default - Dispatch only to webhooks associated with this wallet.         base - Dispatch only to webhooks associated with the base wallet.         both - Dispatch to both webhook targets.
+   * Webhook target dispatch type for this wallet. default: Dispatch only to webhooks associated with this wallet. base: Dispatch only to webhooks associated with the base wallet. both: Dispatch to both webhook targets.
    * @example "default"
    */
   wallet_dispatch_type?: 'default' | 'both' | 'base';
@@ -2926,12 +3921,43 @@ export interface PluginCreateWalletRequest {
    */
   wallet_name?: string;
   /**
-   * Type of the wallet to create
-   * @example "indy"
+   * Type of the wallet to create. Must be same as base wallet.
+   * @example "askar"
    */
-  wallet_type?: 'askar' | 'in_memory' | 'indy';
+  wallet_type?: 'askar' | 'askar-anoncreds';
   /** List of Webhook URLs associated with this subwallet */
   wallet_webhook_urls?: string[];
+}
+
+export interface Presentation {
+  /**
+   * The JSON-LD context of the presentation
+   * @example ["https://www.w3.org/2018/credentials/v1"]
+   */
+  '@context': any[];
+  /**
+   * The JSON-LD Verifiable Credential Holder. Either string of object with id field.
+   * @example "did:key:z6MkpTHR8VNsBxYAAWHut2Geadd9jSwuBV8xRoAnwWsdvktH"
+   */
+  holder?: any;
+  /**
+   * The ID of the presentation
+   * @pattern \w+:(\/?\/?)[^\s]+
+   * @example "http://example.edu/presentations/1872"
+   */
+  id?: string;
+  /**
+   * The proof of the presentation
+   * @example {"created":"2019-12-11T03:50:55","jws":"eyJhbGciOiAiRWREU0EiLCAiYjY0IjogZmFsc2UsICJjcml0JiNjQiXX0..lKJU0Df_keblRKhZAS9Qq6zybm-HqUXNVZ8vgEPNTAjQKBhQDxvXNo7nvtUBb_Eq1Ch6YBKY5qBQ","proofPurpose":"assertionMethod","type":"Ed25519Signature2018","verificationMethod":"did:key:z6Mkgg342Ycpuk263R9d8Aq6MUaxPn1DDeHyGo38EefXmgDL#z6Mkgg342Ycpuk263R9d8Aq6MUaxPn1DDeHyGo38EefXmgDL"}
+   */
+  proof?: LinkedDataProof;
+  /**
+   * The JSON-LD type of the presentation
+   * @example ["VerifiablePresentation"]
+   */
+  type: string[];
+  verifiableCredential?: Record<string, any>[];
+  [key: string]: any;
 }
 
 export interface PresentationDefinition {
@@ -2982,12 +4008,26 @@ export interface PresentationRequest {
   'request_presentations~attach': AttachDecorator[];
 }
 
+export interface PresentationVerificationResult {
+  credential_results?: DocumentVerificationResult[];
+  errors?: string[];
+  presentation_result?: DocumentVerificationResult;
+  verified: boolean;
+}
+
 export interface ProfileSettings {
   /**
    * Profile settings dict
    * @example {"debug.invite_public":true,"log.level":"INFO","public_invites":false}
    */
-  settings?: object;
+  settings?: Record<string, any>;
+}
+
+export interface ProofResult {
+  error?: string;
+  proof?: Record<string, any>;
+  purpose_result?: PurposeResult;
+  verified?: boolean;
 }
 
 export interface ProtocolDescriptor {
@@ -2996,9 +4036,48 @@ export interface ProtocolDescriptor {
   roles?: string[] | null;
 }
 
+export interface ProvePresentationRequest {
+  options?: LDProofVCOptions;
+  presentation?: Presentation;
+}
+
+export interface ProvePresentationResponse {
+  verifiablePresentation?: VerifiablePresentation;
+}
+
 export interface PublishRevocations {
   /** Credential revocation ids by revocation registry id */
   rrid2crid?: Record<string, string[]>;
+}
+
+export interface PublishRevocationsOptions {
+  /**
+   * Create transaction for endorser (optional, default false). Use this for agents who don't specify an author role but want to create a transaction for an endorser to sign.
+   * @example false
+   */
+  create_transaction_for_endorser?: boolean;
+  /**
+   * Connection identifier (optional) (this is an example). You can set this if you know the endorser's connection id you want to use. If not specified then the agent will attempt to find an endorser connection.
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+   */
+  endorser_connection_id?: string;
+}
+
+export interface PublishRevocationsResultSchemaAnonCreds {
+  /** Credential revocation ids by revocation registry id */
+  rrid2crid?: Record<string, string[]>;
+}
+
+export interface PublishRevocationsSchemaAnonCreds {
+  options?: PublishRevocationsOptions;
+  /** Credential revocation ids by revocation registry id */
+  rrid2crid?: Record<string, string[]>;
+}
+
+export interface PurposeResult {
+  controller?: Record<string, any>;
+  error?: string;
+  valid?: boolean;
 }
 
 export interface Queries {
@@ -3061,7 +4140,7 @@ export interface ReceiveInvitationRequest {
   '@type'?: string;
   /**
    * DID for connection invitation
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$|^did:([a-zA-Z0-9_]+):([a-zA-Z0-9_.%-]+(:[a-zA-Z0-9_.%-]+)*)((;[a-zA-Z0-9_.:%-]+=[a-zA-Z0-9_.:%-]*)*)(\/[^#?]*)?([?][^#]*)?(\#.*)?$$
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$|^did:([a-zA-Z0-9_]+)(:[a-zA-Z0-9_.%-]+)?:([a-zA-Z0-9_.%-]+(:[a-zA-Z0-9_.%-]+)*)((;[a-zA-Z0-9_.:%-]+=[a-zA-Z0-9_.:%-]*)*)(\/[^#?]*)?([?][^#]*)?(\#.*)?$$
    * @example "did:peer:WgWxqztrNooG92RXvxSTWv"
    */
   did?: string;
@@ -3089,7 +4168,7 @@ export interface ReceiveInvitationRequest {
 
 export interface RemoveWalletRequest {
   /**
-   * Master key used for key derivation. Only required for         unmanaged wallets.
+   * Master key used for key derivation. Only required for unmanaged wallets.
    * @example "MySecretKey123"
    */
   wallet_key?: string;
@@ -3117,13 +4196,13 @@ export interface ReservationDenyRequest {
 }
 
 export interface ReservationList {
-  /** List of reservations */
+  /** Authorization token to authenticate wallet requests */
   results?: ReservationRecord[];
 }
 
 export interface ReservationRecord {
   /** @example "{"endorser_alias": " ... ", "ledger_id": " ... "}" */
-  connect_to_endorser?: object[];
+  connect_to_endorser?: Record<string, any>[];
   /** Contact email for this tenant request */
   contact_email: string;
   /** Contact name for this tenant request */
@@ -3134,7 +4213,7 @@ export interface ReservationRecord {
    * Context data for this tenant request
    * @example "{"tenant_reason": " ... ", "contact_name": " ... ", "contact_phone": " ... "}"
    */
-  context_data?: object;
+  context_data?: Record<string, any>;
   create_public_did?: string[];
   /**
    * Time of record creation
@@ -3191,7 +4270,7 @@ export interface ReservationRequest {
    * Optional context data for this tenant request
    * @example {"contact_phone":"555-555-5555"}
    */
-  context_data?: object;
+  context_data?: Record<string, any>;
   /**
    * Proposed name of Tenant
    * @example "line of business short name"
@@ -3209,9 +4288,72 @@ export interface ReservationResponse {
 
 export interface ResolutionResult {
   /** DID Document */
-  did_document: object;
+  did_document: Record<string, any>;
   /** Resolution metadata */
-  metadata: object;
+  metadata: Record<string, any>;
+}
+
+export interface RevList {
+  /**
+   * The current accumulator value
+   * @example "21 118...1FB"
+   */
+  currentAccumulator?: string;
+  /**
+   * Issuer Identifier of the credential definition or schema
+   * @example "did:(method):WgWxqztrNooG92RXvxSTWv"
+   */
+  issuerId?: string;
+  /**
+   * The ID of the revocation registry definition
+   * @example "did:(method):4:did:<method>:3:CL:20:tag:CL_ACCUM:0"
+   */
+  revRegDefId?: string;
+  /**
+   * Bit list representing revoked credentials
+   * @example [0,1,1,0]
+   */
+  revocationList?: number[];
+  /**
+   * Timestamp at which revocation list is applicable
+   * @example "2021-12-31T23:59:59Z"
+   */
+  timestamp?: number;
+}
+
+export interface RevListCreateRequest {
+  options?: RevListOptions;
+  /**
+   * Revocation registry definition identifier
+   * @example "did:(method):4:did:<method>:3:CL:20:tag:CL_ACCUM:0"
+   */
+  rev_reg_def_id: string;
+}
+
+export interface RevListOptions {
+  /**
+   * Create transaction for endorser (optional, default false). Use this for agents who don't specify an author role but want to create a transaction for an endorser to sign.
+   * @example false
+   */
+  create_transaction_for_endorser?: boolean;
+  /**
+   * Connection identifier (optional) (this is an example). You can set this if you know the endorser's connection id you want to use. If not specified then the agent will attempt to find an endorser connection.
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+   */
+  endorser_connection_id?: string;
+}
+
+export interface RevListResult {
+  job_id?: string;
+  registration_metadata?: Record<string, any>;
+  revocation_list_metadata?: Record<string, any>;
+  revocation_list_state?: RevListState;
+}
+
+export interface RevListState {
+  /** revocation list */
+  revocation_list?: RevList;
+  state?: 'finished' | 'failed' | 'action' | 'wait';
 }
 
 export interface RevRegCreateRequest {
@@ -3223,7 +4365,6 @@ export interface RevRegCreateRequest {
   credential_definition_id?: string;
   /**
    * Revocation registry size
-   * @format int32
    * @min 4
    * @max 32768
    * @example 1000
@@ -3231,10 +4372,85 @@ export interface RevRegCreateRequest {
   max_cred_num?: number;
 }
 
+export interface RevRegCreateRequestSchemaAnonCreds {
+  options?: RevRegDefOptions;
+  revocation_registry_definition?: InnerRevRegDef;
+}
+
+export interface RevRegDef {
+  /**
+   * Credential definition identifier
+   * @example "did:(method):3:CL:20:tag"
+   */
+  credDefId?: string;
+  /**
+   * Issuer Identifier of the credential definition or schema
+   * @example "did:(method):WgWxqztrNooG92RXvxSTWv"
+   */
+  issuerId?: string;
+  revocDefType?: string;
+  /**
+   * tag for the revocation registry definition
+   * @example "default"
+   */
+  tag?: string;
+  value?: RevRegDefValue;
+}
+
+export interface RevRegDefOptions {
+  /**
+   * Create transaction for endorser (optional, default false). Use this for agents who don't specify an author role but want to create a transaction for an endorser to sign.
+   * @example false
+   */
+  create_transaction_for_endorser?: boolean;
+  /**
+   * Connection identifier (optional) (this is an example). You can set this if you know the endorser's connection id you want to use. If not specified then the agent will attempt to find an endorser connection.
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+   */
+  endorser_connection_id?: string;
+}
+
+export interface RevRegDefResult {
+  job_id?: string;
+  registration_metadata?: Record<string, any>;
+  revocation_registry_definition_metadata?: Record<string, any>;
+  revocation_registry_definition_state?: RevRegDefState;
+}
+
+export interface RevRegDefState {
+  /** revocation registry definition */
+  revocation_registry_definition?: RevRegDef;
+  /**
+   * revocation registry definition id
+   * @example "did:(method):4:did:<method>:3:CL:20:tag:CL_ACCUM:0"
+   */
+  revocation_registry_definition_id?: string;
+  state?: 'finished' | 'failed' | 'action' | 'wait' | 'decommissioned' | 'full';
+}
+
+export interface RevRegDefValue {
+  /** @example 777 */
+  maxCredNum?: number;
+  /** @example "H3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV" */
+  publicKeys?: Record<string, any>;
+  /** @example "7Qen9RDyemMuV7xGQvp7NjwMSpyHieJyBakycxN7dX7P" */
+  tailsHash?: string;
+  /** @example "https://tails-server.com/hash/7Qen9RDyemMuV7xGQvp7NjwMSpyHieJyBakycxN7dX7P" */
+  tailsLocation?: string;
+}
+
 export interface RevRegIssuedResult {
   /**
    * Number of credentials issued against revocation registry
-   * @format int32
+   * @min 0
+   * @example 0
+   */
+  result?: number;
+}
+
+export interface RevRegIssuedResultSchemaAnonCreds {
+  /**
+   * Number of credentials issued against revocation registry
    * @min 0
    * @example 0
    */
@@ -3242,6 +4458,10 @@ export interface RevRegIssuedResult {
 }
 
 export interface RevRegResult {
+  result?: IssuerRevRegRecord;
+}
+
+export interface RevRegResultSchemaAnonCreds {
   result?: IssuerRevRegRecord;
 }
 
@@ -3256,14 +4476,27 @@ export interface RevRegUpdateTailsFileUri {
 
 export interface RevRegWalletUpdatedResult {
   /** Calculated accumulator for phantom revocations */
-  accum_calculated?: object;
+  accum_calculated?: Record<string, any>;
   /** Applied ledger transaction to fix revocations */
-  accum_fixed?: object;
+  accum_fixed?: Record<string, any>;
   /** Indy revocation registry delta */
-  rev_reg_delta?: object;
+  rev_reg_delta?: Record<string, any>;
+}
+
+export interface RevRegWalletUpdatedResultSchemaAnonCreds {
+  /** Calculated accumulator for phantom revocations */
+  accum_calculated?: Record<string, any>;
+  /** Applied ledger transaction to fix revocations */
+  accum_fixed?: Record<string, any>;
+  /** Indy revocation registry delta */
+  rev_reg_delta?: Record<string, any>;
 }
 
 export interface RevRegsCreated {
+  rev_reg_ids?: string[];
+}
+
+export interface RevRegsCreatedSchemaAnonCreds {
   rev_reg_ids?: string[];
 }
 
@@ -3306,6 +4539,61 @@ export interface RevokeRequest {
   thread_id?: string;
 }
 
+export interface RevokeRequestSchemaAnonCreds {
+  /** Optional comment to include in revocation notification */
+  comment?: string;
+  /**
+   * Connection ID to which the revocation notification will be sent; required if notify is true
+   * @pattern [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+   */
+  connection_id?: string;
+  /**
+   * Credential exchange identifier
+   * @pattern [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+   */
+  cred_ex_id?: string;
+  /**
+   * Credential revocation identifier
+   * @pattern ^[1-9][0-9]*$
+   * @example "12345"
+   */
+  cred_rev_id?: string;
+  /** Send a notification to the credential recipient */
+  notify?: boolean;
+  /** Specify which version of the revocation notification should be sent */
+  notify_version?: 'v1_0' | 'v2_0';
+  /** (True) publish revocation to ledger immediately, or (default, False) mark it pending */
+  publish?: boolean;
+  /**
+   * Revocation registry identifier
+   * @pattern ^(.+$)
+   * @example "did:(method):4:did:<method>:3:CL:20:tag:CL_ACCUM:0"
+   */
+  rev_reg_id?: string;
+  /** Thread ID of the credential exchange message thread resulting in the credential now being revoked; required if notify is true */
+  thread_id?: string;
+}
+
+export interface Rotate {
+  /**
+   * Message identifier
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+   */
+  '@id'?: string;
+  /**
+   * Message type
+   * @example "https://didcomm.org/my-family/1.0/my-message-type"
+   */
+  '@type'?: string;
+  /**
+   * The DID the rotating party is rotating to
+   * @example "did:example:newdid"
+   */
+  to_did: string;
+}
+
 export interface RouteRecord {
   connection_id?: string;
   /**
@@ -3331,6 +4619,49 @@ export interface RouteRecord {
   wallet_id?: string;
 }
 
+export interface SDJWSCreate {
+  /**
+   * DID of interest
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$|^did:([a-zA-Z0-9_]+)(:[a-zA-Z0-9_.%-]+)?:([a-zA-Z0-9_.%-]+(:[a-zA-Z0-9_.%-]+)*)((;[a-zA-Z0-9_.:%-]+=[a-zA-Z0-9_.:%-]*)*)(\/[^#?]*)?([?][^#]*)?(\#.*)?$$
+   * @example "did:peer:WgWxqztrNooG92RXvxSTWv"
+   */
+  did?: string;
+  headers?: Record<string, any>;
+  non_sd_list?: string[];
+  payload: Record<string, any>;
+  /**
+   * Information used for proof verification
+   * @pattern \w+:(\/?\/?)[^\s]+
+   * @example "did:key:z6Mkgg342Ycpuk263R9d8Aq6MUaxPn1DDeHyGo38EefXmgDL#z6Mkgg342Ycpuk263R9d8Aq6MUaxPn1DDeHyGo38EefXmgDL"
+   */
+  verificationMethod?: string;
+}
+
+export interface SDJWSVerify {
+  /**
+   * @pattern ^[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]*\.[a-zA-Z0-9_-]+(?:~[a-zA-Z0-9._-]+)*~?$
+   * @example "eyJhbGciOiJFZERTQSJ9.eyJhIjogIjAifQ.dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk~WyJEM3BUSFdCYWNRcFdpREc2TWZKLUZnIiwgIkRFIl0~WyJPMTFySVRjRTdHcXExYW9oRkd0aDh3IiwgIlNBIl0~WyJkVmEzX1JlTGNsWTU0R1FHZm5oWlRnIiwgInVwZGF0ZWRfYXQiLCAxNTcwMDAwMDAwXQ"
+   */
+  sd_jwt?: string;
+}
+
+export interface SDJWSVerifyResponse {
+  /**
+   * Disclosure arrays associated with the SD-JWT
+   * @example [["fx1iT_mETjGiC-JzRARnVg","name","Alice"],["n4-t3mlh8jSS6yMIT7QHnA","street_address",{"_sd":["kLZrLK7enwfqeOzJ9-Ss88YS3mhjOAEk9lr_ix2Heng"]}]]
+   */
+  disclosures?: any[][];
+  /** Error text */
+  error?: string;
+  /** Headers from verified JWT. */
+  headers: Record<string, any>;
+  /** kid of signer */
+  kid: string;
+  /** Payload from verified JWT */
+  payload: Record<string, any>;
+  valid: boolean;
+}
+
 export interface Schema {
   /** Schema attribute names */
   attrNames?: string[];
@@ -3347,7 +4678,6 @@ export interface Schema {
   name?: string;
   /**
    * Schema sequence number
-   * @format int32
    * @min 1
    * @example 10
    */
@@ -3377,6 +4707,31 @@ export interface SchemaInputDescriptor {
   uri?: string;
 }
 
+export interface SchemaPostOption {
+  /**
+   * Create transaction for endorser (optional, default false). Use this for agents who don't specify an author role but want to create a transaction for an endorser to sign.
+   * @example false
+   */
+  create_transaction_for_endorser?: boolean;
+  /**
+   * Connection identifier (optional) (this is an example). You can set this if you know the endorser's connection id you want to use. If not specified then the agent will attempt to find an endorser connection.
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+   */
+  endorser_connection_id?: string;
+}
+
+export interface SchemaPostRequest {
+  options?: SchemaPostOption;
+  schema?: AnonCredsSchema;
+}
+
+export interface SchemaResult {
+  job_id?: string;
+  registration_metadata?: Record<string, any>;
+  schema_metadata?: Record<string, any>;
+  schema_state?: SchemaState;
+}
+
 export interface SchemaSendRequest {
   /** List of schema attributes */
   attributes: string[];
@@ -3404,6 +4759,16 @@ export interface SchemaSendResult {
   schema_id: string;
 }
 
+export interface SchemaState {
+  schema?: AnonCredsSchema;
+  /**
+   * Schema identifier
+   * @example "did:(method):2:schema_name:1.0"
+   */
+  schema_id?: string;
+  state?: 'finished' | 'failed' | 'action' | 'wait';
+}
+
 export interface SchemaStorageAdd {
   /** Schema identifier */
   schema_id: string;
@@ -3429,9 +4794,9 @@ export interface SchemaStorageRecord {
   /** Schema identifier */
   ledger_id?: string;
   /** (Indy) schema */
-  schema?: object;
+  schema?: Record<string, any>;
   /** Serialized schema */
-  schema_dict?: object;
+  schema_dict?: Record<string, any>;
   /**
    * Schema identifier
    * @pattern ^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}:2:.+:[0-9.]+$
@@ -3496,7 +4861,7 @@ export interface SignResponse {
   /** Error text */
   error?: string;
   /** Signed document */
-  signed_doc?: object;
+  signed_doc?: Record<string, any>;
 }
 
 export interface SignatureOptions {
@@ -3510,12 +4875,20 @@ export interface SignatureOptions {
 export interface SignedDoc {
   /** Linked data proof */
   proof: SignatureOptions;
+  [key: string]: any;
+}
+
+export interface StoreCredentialRequest {
+  verifiableCredential?: VerifiableCredential;
+}
+
+export interface StoreCredentialResponse {
+  credentialId?: string;
 }
 
 export interface SubmissionRequirements {
   /**
    * Count Value
-   * @format int32
    * @example 1234
    */
   count?: number;
@@ -3524,13 +4897,11 @@ export interface SubmissionRequirements {
   from_nested?: SubmissionRequirements[];
   /**
    * Max Value
-   * @format int32
    * @example 1234
    */
   max?: number;
   /**
    * Min Value
-   * @format int32
    * @example 1234
    */
   min?: number;
@@ -3551,7 +4922,6 @@ export interface TAAAccept {
 export interface TAAAcceptance {
   mechanism?: string;
   /**
-   * @format int32
    * @min 0
    * @max 18446744073709552000
    * @example 1640995199
@@ -3683,7 +5053,12 @@ export interface TenantRecord {
   /** True if tenant can make itself issuer, false if only innkeeper can */
   auto_issuer?: boolean;
   /** @example "{"endorser_alias": " ... ", "ledger_id": " ... "}" */
-  connect_to_endorser?: object[];
+  connect_to_endorser?: Record<string, any>[];
+  /**
+   * Email used to contact this Tenant
+   * @example "tmp@emailserver.com"
+   */
+  contact_email: string;
   /**
    * Time of record creation
    * @pattern ^\d{4}-\d\d-\d\d[T ]\d\d:\d\d(?:\:(?:\d\d(?:\.\d{1,6})?))?(?:[+-]\d\d:?\d\d|Z|)$
@@ -3750,7 +5125,7 @@ export interface TransactionRecord {
    */
   _type?: string;
   /**
-   * The connection identifier for thie particular transaction record
+   * The connection identifier for this particular transaction record
    * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
    */
   connection_id?: string;
@@ -3761,16 +5136,16 @@ export interface TransactionRecord {
    */
   created_at?: string;
   /**
-   * If True, Endorser will write the transaction after endorsing it
-   * @example true
+   * Request Endorser to write the ledger transaction, this parameter is deprecated and no longer supported.
+   * @example false
    */
   endorser_write_txn?: boolean;
   formats?: Record<string, string>[];
-  messages_attach?: object[];
+  messages_attach?: Record<string, any>[];
   /** @example {"context":{"param1":"param1_value","param2":"param2_value"},"post_process":[{"topic":"topic_value","other":"other_value"}]} */
-  meta_data?: object;
-  signature_request?: object[];
-  signature_response?: object[];
+  meta_data?: Record<string, any>;
+  signature_request?: Record<string, any>[];
+  signature_response?: Record<string, any>[];
   /**
    * Current record state
    * @example "active"
@@ -3782,7 +5157,7 @@ export interface TransactionRecord {
    */
   thread_id?: string;
   /** @example {"expires_time":"2020-12-13T17:29:06+0000"} */
-  timing?: object;
+  timing?: Record<string, any>;
   /** Record trace information, based on agent configuration */
   trace?: boolean;
   /**
@@ -3805,9 +5180,9 @@ export interface TxnOrCredentialDefinitionSendResult {
 }
 
 export interface TxnOrPublishRevocationsResult {
-  sent?: PublishRevocations;
-  /** Revocation registry revocations transaction to endorse */
-  txn?: TransactionRecord;
+  /** Credential revocation ids by revocation registry id */
+  rrid2crid?: Record<string, string[]>;
+  txn?: TransactionRecord[];
 }
 
 export interface TxnOrRegisterLedgerNymResponse {
@@ -3841,35 +5216,71 @@ export interface UpdateConnectionRequest {
   alias?: string;
 }
 
+export interface UpdateContactRequest {
+  /**
+   * The new email to associate with this tenant.
+   * @example "example@exampleserver.com"
+   */
+  contact_email?: string;
+}
+
+export interface UpdateKeyRequest {
+  /**
+   * New kid to bind to the key pair, such as a verificationMethod.
+   * @example "did:web:example.com#key-02"
+   */
+  kid: string;
+  /**
+   * Multikey of the key pair to update
+   * @example "z6MkgKA7yrw5kYSiDuQFcye4bMaJpcfHFry3Bx45pdWh3s8i"
+   */
+  multikey: string;
+}
+
+export interface UpdateKeyResponse {
+  /**
+   * The associated kid
+   * @example "did:web:example.com#key-02"
+   */
+  kid?: string;
+  /**
+   * The Public Key Multibase format (multikey)
+   * @example "z6MkgKA7yrw5kYSiDuQFcye4bMaJpcfHFry3Bx45pdWh3s8i"
+   */
+  multikey?: string;
+}
+
 export interface UpdateProfileSettings {
   /**
    * Agent config key-value pairs
    * @example {"ACAPY_INVITE_PUBLIC":true,"log-level":"INFO","public-invites":false}
    */
-  extra_settings?: object;
+  extra_settings?: Record<string, any>;
 }
 
 export interface UpdateWalletRequest {
   /** Agent config key-value pairs */
-  extra_settings?: object;
+  extra_settings?: Record<string, any>;
   /**
-   * Image url for this wallet. This image url is publicized        (self-attested) to other agents as part of forming a connection.
+   * Image url for this wallet. This image url is publicized (self-attested) to other agents as part of forming a connection.
    * @example "https://aries.ca/images/sample.png"
    */
   image_url?: string;
   /**
-   * Label for this wallet. This label is publicized        (self-attested) to other agents as part of forming a connection.
+   * Label for this wallet. This label is publicized (self-attested) to other agents as part of forming a connection.
    * @example "Alice"
    */
   label?: string;
   /**
-   * Webhook target dispatch type for this wallet.         default - Dispatch only to webhooks associated with this wallet.         base - Dispatch only to webhooks associated with the base wallet.         both - Dispatch to both webhook targets.
+   * Webhook target dispatch type for this wallet. default: Dispatch only to webhooks associated with this wallet. base: Dispatch only to webhooks associated with the base wallet. both: Dispatch to both webhook targets.
    * @example "default"
    */
   wallet_dispatch_type?: 'default' | 'both' | 'base';
   /** List of Webhook URLs associated with this subwallet */
   wallet_webhook_urls?: string[];
 }
+
+export type UpgradeResult = object;
 
 export interface V10CredentialBoundOfferRequest {
   /** Optional counter-proposal */
@@ -3908,8 +5319,8 @@ export interface V10CredentialCreate {
   credential_proposal: CredentialPreview;
   /**
    * Credential issuer DID
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
-   * @example "WgWxqztrNooG92RXvxSTWv"
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
+   * @example "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw"
    */
   issuer_did?: string;
   /**
@@ -3920,8 +5331,8 @@ export interface V10CredentialCreate {
   schema_id?: string;
   /**
    * Schema issuer DID
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
-   * @example "WgWxqztrNooG92RXvxSTWv"
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
+   * @example "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw"
    */
   schema_issuer_did?: string;
   /**
@@ -3993,7 +5404,7 @@ export interface V10CredentialExchange {
   /** (Indy) credential request */
   credential_request?: IndyCredRequest;
   /** (Indy) credential request metadata */
-  credential_request_metadata?: object;
+  credential_request_metadata?: Record<string, any>;
   /**
    * Error message
    * @example "Credential definition identifier is not set in proposal"
@@ -4065,7 +5476,6 @@ export interface V10CredentialFreeOfferRequest {
   comment?: string | null;
   /**
    * Connection identifier
-   * @format uuid
    * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
    */
   connection_id: string;
@@ -4096,7 +5506,6 @@ export interface V10CredentialProposalRequestMand {
   comment?: string | null;
   /**
    * Connection identifier
-   * @format uuid
    * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
    */
   connection_id: string;
@@ -4109,8 +5518,8 @@ export interface V10CredentialProposalRequestMand {
   credential_proposal: CredentialPreview;
   /**
    * Credential issuer DID
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
-   * @example "WgWxqztrNooG92RXvxSTWv"
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
+   * @example "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw"
    */
   issuer_did?: string;
   /**
@@ -4121,8 +5530,8 @@ export interface V10CredentialProposalRequestMand {
   schema_id?: string;
   /**
    * Schema issuer DID
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
-   * @example "WgWxqztrNooG92RXvxSTWv"
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
+   * @example "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw"
    */
   schema_issuer_did?: string;
   /**
@@ -4147,7 +5556,6 @@ export interface V10CredentialProposalRequestOpt {
   comment?: string | null;
   /**
    * Connection identifier
-   * @format uuid
    * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
    */
   connection_id: string;
@@ -4160,8 +5568,8 @@ export interface V10CredentialProposalRequestOpt {
   credential_proposal?: CredentialPreview;
   /**
    * Credential issuer DID
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
-   * @example "WgWxqztrNooG92RXvxSTWv"
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
+   * @example "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw"
    */
   issuer_did?: string;
   /**
@@ -4172,8 +5580,8 @@ export interface V10CredentialProposalRequestOpt {
   schema_id?: string;
   /**
    * Schema issuer DID
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
-   * @example "WgWxqztrNooG92RXvxSTWv"
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
+   * @example "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw"
    */
   schema_issuer_did?: string;
   /**
@@ -4355,7 +5763,6 @@ export interface V10PresentationProposalRequest {
   comment?: string | null;
   /**
    * Connection identifier
-   * @format uuid
    * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
    */
   connection_id: string;
@@ -4394,7 +5801,6 @@ export interface V10PresentationSendRequestRequest {
   comment?: string | null;
   /**
    * Connection identifier
-   * @format uuid
    * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
    */
   connection_id: string;
@@ -4453,7 +5859,6 @@ export interface V20CredExFree {
   comment?: string | null;
   /**
    * Connection identifier
-   * @format uuid
    * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
    */
   connection_id: string;
@@ -4567,18 +5972,67 @@ export interface V20CredExRecord {
   updated_at?: string;
 }
 
+export interface V20CredExRecordAnonCreds {
+  /**
+   * Time of record creation
+   * @pattern ^\d{4}-\d\d-\d\d[T ]\d\d:\d\d(?:\:(?:\d\d(?:\.\d{1,6})?))?(?:[+-]\d\d:?\d\d|Z|)$
+   * @example "2021-12-31T23:59:59Z"
+   */
+  created_at?: string;
+  /**
+   * Record identifier
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+   */
+  cred_ex_anoncreds_id?: string;
+  /**
+   * Corresponding v2.0 credential exchange record identifier
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+   */
+  cred_ex_id?: string;
+  /**
+   * Credential identifier stored in wallet
+   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+   */
+  cred_id_stored?: string;
+  /** Credential request metadata for anoncreds holder */
+  cred_request_metadata?: Record<string, any>;
+  /**
+   * Credential revocation identifier within revocation registry
+   * @example "did:(method):3:CL:20:tag"
+   */
+  cred_rev_id?: string;
+  /**
+   * Revocation registry identifier
+   * @example "did:(method):4:did:<method>:3:CL:20:tag:CL_ACCUM:0"
+   */
+  rev_reg_id?: string;
+  /**
+   * Current record state
+   * @example "active"
+   */
+  state?: string;
+  /**
+   * Time of last record update
+   * @pattern ^\d{4}-\d\d-\d\d[T ]\d\d:\d\d(?:\:(?:\d\d(?:\.\d{1,6})?))?(?:[+-]\d\d:?\d\d|Z|)$
+   * @example "2021-12-31T23:59:59Z"
+   */
+  updated_at?: string;
+}
+
 export interface V20CredExRecordByFormat {
-  cred_issue?: object;
-  cred_offer?: object;
-  cred_proposal?: object;
-  cred_request?: object;
+  cred_issue?: Record<string, any>;
+  cred_offer?: Record<string, any>;
+  cred_proposal?: Record<string, any>;
+  cred_request?: Record<string, any>;
 }
 
 export interface V20CredExRecordDetail {
+  anoncreds?: V20CredExRecordAnonCreds;
   /** Credential exchange record */
   cred_ex_record?: V20CredExRecord;
   indy?: V20CredExRecordIndy;
   ld_proof?: V20CredExRecordLDProof;
+  vc_di?: V20CredExRecord;
 }
 
 export interface V20CredExRecordIndy {
@@ -4604,7 +6058,7 @@ export interface V20CredExRecordIndy {
    */
   cred_id_stored?: string;
   /** Credential request metadata for indy holder */
-  cred_request_metadata?: object;
+  cred_request_metadata?: Record<string, any>;
   /**
    * Credential revocation identifier within revocation registry
    * @pattern ^[1-9][0-9]*$
@@ -4671,10 +6125,47 @@ export interface V20CredExRecordListResult {
 }
 
 export interface V20CredFilter {
+  /** Credential filter for anoncreds */
+  anoncreds?: V20CredFilterAnonCreds;
   /** Credential filter for indy */
   indy?: V20CredFilterIndy;
   /** Credential filter for linked data proof */
   ld_proof?: LDProofVCDetail;
+  /** Credential filter for vc_di */
+  vc_di?: V20CredFilterVCDI;
+}
+
+export interface V20CredFilterAnonCreds {
+  /**
+   * Credential definition identifier
+   * @example "did:(method):3:CL:20:tag"
+   */
+  cred_def_id?: string;
+  /**
+   * Credential issuer ID
+   * @example "did:(method):WgWxqztrNooG92RXvxSTWv"
+   */
+  issuer_id?: string;
+  /**
+   * Schema identifier
+   * @example "did:(method):2:schema_name:1.0"
+   */
+  schema_id?: string;
+  /**
+   * Schema issuer ID
+   * @example "did:(method):WgWxqztrNooG92RXvxSTWv"
+   */
+  schema_issuer_id?: string;
+  /**
+   * Schema name
+   * @example "preferences"
+   */
+  schema_name?: string;
+  /**
+   * Schema version
+   * @example "1.0"
+   */
+  schema_version?: string;
 }
 
 export interface V20CredFilterIndy {
@@ -4686,8 +6177,8 @@ export interface V20CredFilterIndy {
   cred_def_id?: string;
   /**
    * Credential issuer DID
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
-   * @example "WgWxqztrNooG92RXvxSTWv"
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
+   * @example "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw"
    */
   issuer_did?: string;
   /**
@@ -4698,8 +6189,8 @@ export interface V20CredFilterIndy {
   schema_id?: string;
   /**
    * Schema issuer DID
-   * @pattern ^(did:sov:)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
-   * @example "WgWxqztrNooG92RXvxSTWv"
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
+   * @example "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw"
    */
   schema_issuer_did?: string;
   /**
@@ -4718,6 +6209,44 @@ export interface V20CredFilterIndy {
 export interface V20CredFilterLDProof {
   /** Credential filter for linked data proof */
   ld_proof: LDProofVCDetail;
+}
+
+export interface V20CredFilterVCDI {
+  /**
+   * Credential definition identifier
+   * @pattern ^([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}):3:CL:(([1-9][0-9]*)|([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}:2:.+:[0-9.]+)):(.+)?$
+   * @example "WgWxqztrNooG92RXvxSTWv:3:CL:20:tag"
+   */
+  cred_def_id?: string;
+  /**
+   * Credential issuer DID
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
+   * @example "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw"
+   */
+  issuer_did?: string;
+  /**
+   * Schema identifier
+   * @pattern ^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}:2:.+:[0-9.]+$
+   * @example "WgWxqztrNooG92RXvxSTWv:2:schema_name:1.0"
+   */
+  schema_id?: string;
+  /**
+   * Schema issuer DID
+   * @pattern ^(did:(sov|indy):)?[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}$
+   * @example "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw"
+   */
+  schema_issuer_did?: string;
+  /**
+   * Schema name
+   * @example "preferences"
+   */
+  schema_name?: string;
+  /**
+   * Schema version
+   * @pattern ^[0-9.]+$
+   * @example "1.0"
+   */
+  schema_version?: string;
 }
 
 export interface V20CredFormat {
@@ -4819,7 +6348,6 @@ export interface V20CredOfferRequest {
   comment?: string | null;
   /**
    * Connection identifier
-   * @format uuid
    * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
    */
   connection_id: string;
@@ -4891,7 +6419,6 @@ export interface V20CredRequestFree {
   comment?: string | null;
   /**
    * Connection identifier
-   * @format uuid
    * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
    */
   connection_id: string;
@@ -5112,9 +6639,9 @@ export interface V20PresExRecord {
 }
 
 export interface V20PresExRecordByFormat {
-  pres?: object;
-  pres_proposal?: object;
-  pres_request?: object;
+  pres?: Record<string, any>;
+  pres_proposal?: Record<string, any>;
+  pres_request?: Record<string, any>;
 }
 
 export interface V20PresExRecordList {
@@ -5152,12 +6679,15 @@ export interface V20PresProposal {
   '@type'?: string;
   /** Human-readable comment */
   comment?: string;
+  /** Acceptable attachment formats */
   formats: V20PresFormat[];
   /** Attachment per acceptable format on corresponding identifier */
   'proposals~attach': AttachDecorator[];
 }
 
 export interface V20PresProposalByFormat {
+  /** Presentation proposal for anoncreds */
+  anoncreds?: AnonCredsPresentationRequest;
   /** Presentation proposal for DIF */
   dif?: DIFProofProposal;
   /** Presentation proposal for indy */
@@ -5173,7 +6703,6 @@ export interface V20PresProposalRequest {
   comment?: string | null;
   /**
    * Connection identifier
-   * @format uuid
    * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
    */
   connection_id: string;
@@ -5198,6 +6727,7 @@ export interface V20PresRequest {
   '@type'?: string;
   /** Human-readable comment */
   comment?: string;
+  /** Acceptable attachment formats */
   formats: V20PresFormat[];
   /** Attachment per acceptable format on corresponding identifier */
   'request_presentations~attach': AttachDecorator[];
@@ -5206,6 +6736,8 @@ export interface V20PresRequest {
 }
 
 export interface V20PresRequestByFormat {
+  /** Presentation proposal for anoncreds */
+  anoncreds?: AnonCredsPresentationRequest;
   /** Presentation request for DIF */
   dif?: DIFProofRequest;
   /** Presentation request for indy */
@@ -5223,7 +6755,6 @@ export interface V20PresSendRequestRequest {
   comment?: string | null;
   /**
    * Connection identifier
-   * @format uuid
    * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
    */
   connection_id: string;
@@ -5236,9 +6767,11 @@ export interface V20PresSendRequestRequest {
 }
 
 export interface V20PresSpecByFormatRequest {
+  /** Presentation specification for anoncreds */
+  anoncreds?: AnonCredsPresSpec;
   /** Whether to remove the presentation exchange record on completion (overrides --preserve-exchange-records configuration setting) */
   auto_remove?: boolean;
-  /** Optional Presentation specification for DIF, overrides the PresentionExchange record's PresRequest */
+  /** Optional Presentation specification for DIF, overrides the PresentationExchange record's PresRequest */
   dif?: DIFPresSpec;
   /** Presentation specification for indy */
   indy?: IndyPresSpec;
@@ -5267,7 +6800,7 @@ export interface VCRecord {
   contexts?: string[];
   cred_tags?: Record<string, string>;
   /** (JSON-serializable) credential value */
-  cred_value?: object;
+  cred_value?: Record<string, any>;
   expanded_types?: string[];
   /**
    * Credential identifier
@@ -5293,6 +6826,126 @@ export interface VCRecordList {
   results?: VCRecord[];
 }
 
+export interface VerifiableCredential {
+  /**
+   * The JSON-LD context of the credential
+   * @example ["https://www.w3.org/2018/credentials/v1","https://www.w3.org/2018/credentials/examples/v1"]
+   */
+  '@context': any[];
+  /** @example {"id":"https://example.com/credentials/status/3#94567","statusListCredential":"https://example.com/credentials/status/3","statusListIndex":"94567","statusPurpose":"revocation","type":"BitstringStatusListEntry"} */
+  credentialStatus?: any;
+  /** @example {"alumniOf":{"id":"did:example:c276e12ec21ebfeb1f712ebc6f1"},"id":"did:example:ebfeb1f712ebc6f1c276e12ec21"} */
+  credentialSubject: any;
+  /**
+   * The expiration date
+   * @pattern ^([0-9]{4})-([0-9]{2})-([0-9]{2})([Tt ]([0-9]{2}):([0-9]{2}):([0-9]{2})(\.[0-9]+)?)?(([Zz]|([+-])([0-9]{2}):([0-9]{2})))?$
+   * @example "2010-01-01T19:23:24Z"
+   */
+  expirationDate?: string;
+  /**
+   * The ID of the credential
+   * @pattern \w+:(\/?\/?)[^\s]+
+   * @example "http://example.edu/credentials/1872"
+   */
+  id?: string;
+  /**
+   * The issuance date
+   * @pattern ^([0-9]{4})-([0-9]{2})-([0-9]{2})([Tt ]([0-9]{2}):([0-9]{2}):([0-9]{2})(\.[0-9]+)?)?(([Zz]|([+-])([0-9]{2}):([0-9]{2})))?$
+   * @example "2010-01-01T19:23:24Z"
+   */
+  issuanceDate?: string;
+  /**
+   * The JSON-LD Verifiable Credential Issuer. Either string of object with id field.
+   * @example "did:key:z6MkpTHR8VNsBxYAAWHut2Geadd9jSwuBV8xRoAnwWsdvktH"
+   */
+  issuer: any;
+  /**
+   * The proof of the credential
+   * @example {"created":"2019-12-11T03:50:55","jws":"eyJhbGciOiAiRWREU0EiLCAiYjY0IjogZmFsc2UsICJjcml0JiNjQiXX0..lKJU0Df_keblRKhZAS9Qq6zybm-HqUXNVZ8vgEPNTAjQKBhQDxvXNo7nvtUBb_Eq1Ch6YBKY5qBQ","proofPurpose":"assertionMethod","type":"Ed25519Signature2018","verificationMethod":"did:key:z6Mkgg342Ycpuk263R9d8Aq6MUaxPn1DDeHyGo38EefXmgDL#z6Mkgg342Ycpuk263R9d8Aq6MUaxPn1DDeHyGo38EefXmgDL"}
+   */
+  proof: LinkedDataProof;
+  /**
+   * The JSON-LD type of the credential
+   * @example ["VerifiableCredential","AlumniCredential"]
+   */
+  type: string[];
+  /**
+   * The valid from date
+   * @pattern ^([0-9]{4})-([0-9]{2})-([0-9]{2})([Tt ]([0-9]{2}):([0-9]{2}):([0-9]{2})(\.[0-9]+)?)?(([Zz]|([+-])([0-9]{2}):([0-9]{2})))?$
+   * @example "2010-01-01T19:23:24Z"
+   */
+  validFrom?: string;
+  /**
+   * The valid until date
+   * @pattern ^([0-9]{4})-([0-9]{2})-([0-9]{2})([Tt ]([0-9]{2}):([0-9]{2}):([0-9]{2})(\.[0-9]+)?)?(([Zz]|([+-])([0-9]{2}):([0-9]{2})))?$
+   * @example "2010-01-01T19:23:24Z"
+   */
+  validUntil?: string;
+  [key: string]: any;
+}
+
+export interface VerifiablePresentation {
+  /**
+   * The JSON-LD context of the presentation
+   * @example ["https://www.w3.org/2018/credentials/v1"]
+   */
+  '@context': any[];
+  /**
+   * The JSON-LD Verifiable Credential Holder. Either string of object with id field.
+   * @example "did:key:z6MkpTHR8VNsBxYAAWHut2Geadd9jSwuBV8xRoAnwWsdvktH"
+   */
+  holder?: any;
+  /**
+   * The ID of the presentation
+   * @pattern \w+:(\/?\/?)[^\s]+
+   * @example "http://example.edu/presentations/1872"
+   */
+  id?: string;
+  /**
+   * The proof of the presentation
+   * @example {"created":"2019-12-11T03:50:55","jws":"eyJhbGciOiAiRWREU0EiLCAiYjY0IjogZmFsc2UsICJjcml0JiNjQiXX0..lKJU0Df_keblRKhZAS9Qq6zybm-HqUXNVZ8vgEPNTAjQKBhQDxvXNo7nvtUBb_Eq1Ch6YBKY5qBQ","proofPurpose":"assertionMethod","type":"Ed25519Signature2018","verificationMethod":"did:key:z6Mkgg342Ycpuk263R9d8Aq6MUaxPn1DDeHyGo38EefXmgDL#z6Mkgg342Ycpuk263R9d8Aq6MUaxPn1DDeHyGo38EefXmgDL"}
+   */
+  proof: LinkedDataProof;
+  /**
+   * The JSON-LD type of the presentation
+   * @example ["VerifiablePresentation"]
+   */
+  type: string[];
+  verifiableCredential?: Record<string, any>[];
+  [key: string]: any;
+}
+
+export interface VerifyCredentialRequest {
+  options?: LDProofVCOptions;
+  verifiableCredential?: VerifiableCredential;
+}
+
+export interface VerifyCredentialResponse {
+  results?: PresentationVerificationResult;
+}
+
+export interface VerifyDiRequest {
+  /** @example {"hello":"world","proof":[{"cryptosuite":"eddsa-jcs-2022","proofPurpose":"assertionMethod","type":"DataIntegrityProof","verificationMethod":"did:key:                            z6MksxraKwH8GR7NKeQ4HVZAeRKvD76kfd6G7jm8MscbDmy8#                                z6MksxraKwH8GR7NKeQ4HVZAeRKvD76kfd6G7jm8MscbDmy8","proofValue":"zHtda8vV7kJQUPfSKiTGSQDhZfhkgtpnVziT7cdEzhu                            fjPjbeRmysHvizMJEox1eHR7xUGzNUj1V4yaKiLw7UA6E"}]} */
+  securedDocument: Record<string, any>;
+}
+
+export interface VerifyDiResponse {
+  /**
+   * Verified
+   * @example true
+   */
+  verified?: boolean;
+}
+
+export interface VerifyPresentationRequest {
+  options?: LDProofVCOptions;
+  verifiablePresentation?: VerifiablePresentation;
+}
+
+export interface VerifyPresentationResponse {
+  results?: PresentationVerificationResult;
+}
+
 export interface VerifyRequest {
   /** Signed document */
   doc: SignedDoc;
@@ -5312,10 +6965,7 @@ export interface W3CCredentialsListRequest {
   given_id?: string;
   /** Credential issuer identifier to match */
   issuer_id?: string;
-  /**
-   * Maximum number of results to return
-   * @format int32
-   */
+  /** Maximum number of results to return */
   max_results?: number;
   proof_types?: string[];
   /** Schema identifiers, all of which to match */
@@ -5344,7 +6994,7 @@ export interface WalletRecord {
   /** Mode regarding management of wallet key */
   key_management_mode: 'managed' | 'unmanaged';
   /** Settings for this wallet. */
-  settings?: object;
+  settings?: Record<string, any>;
   /**
    * Current record state
    * @example "active"
@@ -5361,6 +7011,56 @@ export interface WalletRecord {
    * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
    */
   wallet_id: string;
+}
+
+export interface WebvhAddVM {
+  /**
+   * An user provided verification method ID
+   * @example "key-01"
+   */
+  id?: string;
+  /**
+   * An existing multikey to bind.
+   * @example ""
+   */
+  multikey?: string;
+  relationships?: (
+    | 'keyAgreement'
+    | 'authentication'
+    | 'assertionMethod'
+    | 'capabilityInvocation'
+    | 'capabilityDelegation'
+  )[];
+  type?: 'Multikey' | 'JsonWebKey';
+}
+
+export interface WebvhCreate {
+  options?: CreateOptions;
+}
+
+export interface WebvhCreateWitnessInvitation {
+  /**
+   * Optional alias for the connection.
+   * @example "Issuer 01"
+   */
+  alias?: string;
+  /**
+   * Optional label for the connection recipient.
+   * @example "Witnessing Service"
+   */
+  label?: string;
+}
+
+export interface WebvhDeactivate {
+  /**
+   * ID of the DID to deactivate
+   * @example "did:webvh:scid:example.com:prod:1"
+   */
+  id: string;
+}
+
+export interface WebvhUpdateWhois {
+  presentation: Presentation;
 }
 
 export interface WriteLedger {

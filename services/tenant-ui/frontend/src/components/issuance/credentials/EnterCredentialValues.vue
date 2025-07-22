@@ -65,7 +65,7 @@ interface CredentialValue {
 }
 interface Props {
   existingCredentialValues?: CredentialValue[];
-  header: String;
+  header: string;
   schemaForSelectedCred: any;
 }
 const props = defineProps<Props>();

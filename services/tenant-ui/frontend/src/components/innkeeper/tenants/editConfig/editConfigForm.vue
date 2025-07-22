@@ -56,18 +56,14 @@
 import { TenantRecord } from '@/types/acapyApi/acapyInterface';
 
 // Vue
-import { onMounted, reactive, ref, Ref, computed } from 'vue';
+import { onMounted, reactive, ref, computed } from 'vue';
 // PrimeVue / Validation
 import Button from 'primevue/button';
 import InputSwitch from 'primevue/inputswitch';
 import { useVuelidate } from '@vuelidate/core';
 import { useToast } from 'vue-toastification';
 // State
-import {
-  useConfigStore,
-  useInnkeeperTenantsStore,
-  useTenantStore,
-} from '@/store';
+import { useInnkeeperTenantsStore, useTenantStore } from '@/store';
 import { TABLE_OPT } from '@/helpers/constants';
 import { storeToRefs } from 'pinia';
 
@@ -81,11 +77,8 @@ const { loading, defaultConfigValues } = storeToRefs(
   useInnkeeperTenantsStore()
 );
 // For the innkeeper tenant, reuse here for getting configured endorser
-const {
-  endorserInfo,
-  tenantConfig,
-  loading: loadingEndorser,
-} = storeToRefs(useTenantStore());
+const { tenantConfig, loading: loadingEndorser } =
+  storeToRefs(useTenantStore());
 
 // Props
 const props = defineProps<{

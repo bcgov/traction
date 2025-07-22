@@ -1,10 +1,10 @@
 /**
  * Determine a fallback or default locale to use based on the overlay object
- * @param { Object } overlayObject the object of translations from the overlay
+ * @param { object } overlayObject the object of translations from the overlay
  * @param { string } locale the selected language locale
  * @returns { string } a locale string
  */
-export const localeDefault = (overlayObject: Object, locale: string) => {
+export const localeDefault = (overlayObject: object, locale: string) => {
   const defaultLocale = 'en-CA';
   try {
     if (locale in overlayObject) {

@@ -1,5 +1,5 @@
 import { createTestingPinia } from '@pinia/testing';
-import { flushPromises, mount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import PrimeVue from 'primevue/config';
 import { describe, expect, test } from 'vitest';
 

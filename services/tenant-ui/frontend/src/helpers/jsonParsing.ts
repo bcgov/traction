@@ -5,7 +5,7 @@ export function tryParseJson<T>(jsonString: string): T | undefined {
       return o;
     }
     return undefined;
-  } catch (e) {
+  } catch (_e) {
     return undefined;
   }
 }

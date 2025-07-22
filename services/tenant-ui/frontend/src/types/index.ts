@@ -14,7 +14,7 @@ import {
 
 export interface GetItem {
   item?: any;
-  error?: Ref<String>;
+  error?: Ref<string>;
   loading: boolean;
   fetchItem: (id?: string, params?: any) => Promise<void>;
 }
