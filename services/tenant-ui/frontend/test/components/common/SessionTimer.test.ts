@@ -22,7 +22,7 @@ describe('SessionTimer', () => {
   });
 
   test('unmounting clears the intervals', async () => {
-    const spy = vi.spyOn(global, 'clearInterval');
+    const spy = vi.spyOn(globalThis, 'clearInterval');
     const wrapper = mountSessionTimer();
     await wrapper.unmount();
 
