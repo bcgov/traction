@@ -1,23 +1,51 @@
+## @param global.imageRegistry Global Docker image registry
+## @param global.imagePullSecrets Global Docker registry secret names as an array
+## @param global.defaultStorageClass Global default StorageClass for Persistent Volume(s)
+##
+global:
+  imageRegistry: ""
+  ## E.g.
+  ## imagePullSecrets:
+  ##   - myRegistryKeySecretName
+  ##
+  imagePullSecrets: []
+  ## @param ingressSuffix Domain suffix to be used for default hostpaths in ingress
+  ingressSuffix: -dev.example.com
+  defaultStorageClass: ""
+  ## Security parameters
+  ##
+  security:
+    ## @param global.security.allowInsecureImages Allows skipping image verification
+    allowInsecureImages: false
+  ## Compatibility adaptations for Kubernetes platforms
+  ##
+  compatibility:
+    ## Compatibility adaptations for Openshift
+    ##
+    openshift:
+      ## @param global.compatibility.openshift.adaptSecurityContext Adapt the securityContext sections of the deployment to make them compatible with Openshift restricted-v2 SCC: remove runAsUser, runAsGroup and fsGroup and let the platform use their allowed default IDs. Possible values: auto (apply if the detected running cluster is Openshift), force (perform the adaptation always), disabled (do not perform adaptation)
+      ##
+      adaptSecurityContext: auto
 ## @param nameOverride String to override the helm chart name, second part of the prefix
 nameOverride: ""
 ## @param fullnameOverride String to fully override the helm chart name, full prefix. *Must be provided if using a custom release name that does not include the word traction.*
 fullnameOverride: ""
-## @param ingressSuffix Domain suffix to be used for default hostpaths in ingress
-ingressSuffix: -dev.example.com
 
-## @section Acapy Configuration
-##
 acapy:
+  ## @param acapy.image.registry
   ## @param acapy.image.repository
   ## @param acapy.image.pullPolicy
   ## @param acapy.image.pullSecrets [array]
-  ## @param acapy.image.tag Overrides the image tag which defaults to the chart appVersion.
+  ## @param acapy.image.tag Overrides the image tag which defaults to the chart appVersion. Cannot be empty string.
+  ## @param acapy.image.digest Overrides the image digest which is used instead of the tag.
   ##
   image:
-    repository: ghcr.io/bcgov/traction-plugins-acapy
+    registry: ghcr.io
+    repository: bcgov/traction-plugins-acapy
     pullPolicy: IfNotPresent
     pullSecrets: []
-    tag: ""
+    tag: 1.2.0
+    digest: ""
 
   ## ServiceAccount configuration
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
@@ -52,9 +80,6 @@ acapy:
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
     stabilizationWindowSeconds: 300
-
-  ## @param acapy.labelOverride
-  labelOverride: ""
 
   ## @section Acapy configuration file
   ##
@@ -116,8 +141,6 @@ acapy:
     emit-new-didcomm-prefix: true
     endorser-alias: endorser
     endorser-protocol-role: author
-    genesis-transactions-list: /home/aries/ledgers.yml
-    label: '{{ include "acapy.label" .}}'
     log-level: info
     monitor-ping: true
     monitor-revocation-notification: true
@@ -129,9 +152,99 @@ acapy:
     read-only-ledger: false
     tails-server-base-url: https://tails-test.vonx.io
     tails-server-upload-url: https://tails-test.vonx.io
-    wallet-name: askar-wallet
-    wallet-storage-type: postgres_storage
-    wallet-type: askar
+
+  ## ACA-Py ingress configuration (disabled - using Traction's ingress instead)
+  ##
+  ## @param acapy.ingress.agent.enabled Enable ingress for the agent endpoint
+  ## @param acapy.ingress.agent.hostname Hostname to expose the agent endpoint
+  ## @param acapy.ingress.admin.enabled Enable ingress for the admin endpoint
+  ## @param acapy.ingress.admin.hostname Hostname to expose the admin endpoint
+   ingress:
+     agent:
+       enabled: false
+       hostname: ""
+     admin:
+       enabled: false
+       hostname: ""
+
+  ## ACA-Py agent and admin URLs (will be set by Traction ingress)
+  ## @param acapy.agentUrl Override the agent URL advertised by ACA-Py
+  ## @param acapy.adminUrl Override the admin URL for internal access
+  agentUrl: ""
+  adminUrl: ""
+
+  ## Environment variables configuration
+  ## @param acapy.extraEnvVars Extra environment variables to add to the container (array of objects)
+  ## @param acapy.extraEnvVarsCM Name of an existing ConfigMap with extra env vars
+  ## @param acapy.extraEnvVarsSecret Name of an existing Secret with extra env vars
+  extraEnvVars: []
+
+  extraEnvVarsCM: ""
+  extraEnvVarsSecret: ""
+
+  ## Websockets configuration
+  ## @param acapy.websockets.enabled Enable WebSocket transport for ACA-Py
+  websockets:
+    enabled: false
+
+  ## Additional arguments for ACA-Py
+  ## @param acapy.extraArgs Additional CLI args appended to the aca-py start command (array)
+  extraArgs:
+    - --plugin 'aries_cloudagent.messaging.jsonld'
+    - --plugin traction_plugins.traction_innkeeper.v1_0
+    - --plugin-config-value traction_innkeeper.innkeeper_wallet.tenant_id=\"$(INNKEEPER_WALLET_TENANT_ID)\"
+    - --plugin-config-value traction_innkeeper.innkeeper_wallet.wallet_key=\"$(INNKEEPER_WALLET_WALLET_KEY)\"
+    - --plugin multitenant_provider.v1_0
+    - --plugin basicmessage_storage.v1_0
+    - --plugin connections
+    - --plugin connection_update.v1_0
+    - --plugin rpc.v1_0
+    - --plugin webvh
+
+  ## Init containers
+  ## @param acapy.initContainers Extra init containers to add to the pod (array of objects)
+  initContainers: []
+
+  ## Extra volumes and volume mounts
+  ## @param acapy.extraVolumes Extra volumes to add to the pod (array)
+  ## @param acapy.extraVolumeMounts Extra volumeMounts to add to the main container (array)
+  extraVolumes: []
+  extraVolumeMounts: []
+
+  ## Update strategy
+  ## @param acapy.updateStrategy Custom update strategy for the Deployment
+  updateStrategy: {}
+
+  ## Common labels and annotations
+  ## @param acapy.commonLabels Additional common labels to add to all AcaPy resources
+  ## @param acapy.commonAnnotations Additional common annotations to add to all AcaPy resources
+  commonLabels: {}
+  commonAnnotations: {}
+
+  ## Service account token
+  ## @param acapy.automountServiceAccountToken Automount service account token for the AcaPy pod
+  automountServiceAccountToken: false
+
+  ## Node selection and pod affinity
+  ## @param acapy.nodeAffinityPreset.type Node affinity preset type (soft|hard|empty)
+  ## @param acapy.nodeAffinityPreset.key Node label key for node affinity preset
+  ## @param acapy.nodeAffinityPreset.values Node label values for node affinity preset
+  nodeAffinityPreset:
+    type: ""
+    key: ""
+    values: []
+  ## @param acapy.podAffinityPreset Pod affinity preset (soft|hard|empty)
+  podAffinityPreset: ""
+  ## @param acapy.podAntiAffinityPreset Pod anti-affinity preset (soft|hard|empty)
+  podAntiAffinityPreset: ""
+
+  ## Topology spread constraints
+  ## @param acapy.topologySpreadConstraints Pod topology spread constraints (array)
+  topologySpreadConstraints: []
+
+  ## Existing configmap
+  ## @param acapy.existingConfigmap Name of an existing ConfigMap providing argfile.yml and other config
+  existingConfigmap: ""
 
   ## Acapy multiledger configuration file
   ## @param acapy.ledgers.yml [object] YAML configuration for connecting to multiple HyperLedger
@@ -144,46 +257,6 @@ acapy:
       endorser_did: "DfQetNSm7gGEHuzfUvpfPn"
       endorser_alias: "bcovrin-test-endorser"
 
-  ## @section Wallet Storage configuration
-  ##  Specifies the storage configuration to use for the wallet.
-  ##  This is required if you are for using 'postgres_storage' wallet 'storage type.
-  ##  For example, '{"url":"localhost:5432", "wallet_scheme":"MultiWalletSingleTable"}'.
-  ##  This configuration maps to the indy sdk postgres plugin (PostgresConfig).
-  ##
-  ## @param acapy.walletStorageConfig.json Raw json, overrides all other values including postgres subchart values. e.g.: '{"url":"localhost:5432", "max_connections":"10", "wallet_scheme":"DatabasePerWallet"}'
-  ## @param acapy.walletStorageConfig.url Database url. Overrides all other values including postgres subchart values.
-  ## @param acapy.walletStorageConfig.max_connections Client max connections, defaults to 10.
-  ## @param acapy.walletStorageConfig.wallet_scheme Wallet scheme.
-  ##
-  walletStorageConfig:
-    json: ""
-    url: ""
-    max_connections: 10
-    wallet_scheme: DatabasePerWallet
-  ## @section Wallet Storage Credentials
-  ##  Specifies the storage credentials to use for the wallet.
-  ##  This is required if you are for using 'postgres_storage' wallet 'storage type.
-  ##  For example, '{"account":"postgres","password":"mysecretpassword","admin_account":"postgres","admin_password":"mysecretpassword"}'.
-  ##  This configuration maps to the indy sdk postgres plugin (PostgresCredential).
-  ##  NOTE: admin_user must have the CREATEDB role or else initialization will fail.
-  ##
-  ## @param acapy.walletStorageCredentials.json Raw json with database credentials. Overrides all other values including postgres subchart values. e.g.: '{"account":"postgres","password":"mysecretpassword","admin_account":"postgres","admin_password":"mysecretpassword"}'
-  ## @param acapy.walletStorageCredentials.account Database account name.
-  ## @param acapy.walletStorageCredentials.password Database password.
-  ## @param acapy.walletStorageCredentials.admin_account Database account with CREATEDB role used to create additional databases per wallet.
-  ## @param acapy.walletStorageCredentials.admin_password Database password for admin account.
-  ## @param acapy.walletStorageCredentials.existingSecret Name of an existing secret containing database user, password, and admin password.
-  ## @param acapy.walletStorageCredentials.secretKeys.adminPasswordKey Key in existing secret containing admin account password.
-  ## @param acapy.walletStorageCredentials.secretKeys.userPasswordKey Key in existing secret containing account password.
-  ##
-  walletStorageCredentials:
-    json: ""
-    account: acapy
-    admin_account: postgres
-    existingSecret: ""
-    secretKeys:
-      adminPasswordKey: postgres-password
-      userPasswordKey: password
   ## @section ACA-Py Multitenancy Configuration
   ##  Specifies the multitenancy config.
   ##  Possible values: wallet_type, wallet_name, wallet_key, cache_size, 'key_derivation_method.
@@ -195,24 +268,6 @@ acapy:
   multitenancyConfiguration:
     json: ""
     wallet_type: single-wallet-askar
-  ## @section Acapy Plugins
-  ##
-  ## Specify the plugins to enable.
-  ##
-  ## @param acapy.plugins.basicmessageStorage Enable the basicmessage storage plugin.
-  ## @param acapy.plugins.connectionUpdate Enable the connection update plugin.
-  ## @param acapy.plugins.multitenantProvider Enable the multitenant provider plugin.
-  ## @param acapy.plugins.tractionInnkeeper Enable the traction innkeeper plugin.
-  ## @param acapy.plugins.rpc Enable the RPC plugin.
-  ##
-  plugins:
-    basicmessageStorage: true
-    connections: true
-    connectionUpdate: true
-    multitenantProvider: true
-    tractionInnkeeper: true
-    rpc: true
-    webvh: true
 
   ## @section Acapy Plugin Configuration
   ## Specify configuration values for each plugin.
@@ -282,6 +337,7 @@ acapy:
     ## @param acapy.persistence.size PVC Storage Request for tails volume
     ##
     size: 1Gi
+
   ## @section Acapy common configurations
   ## Acapy resource requests and limits
   ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
@@ -302,13 +358,13 @@ acapy:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   ##
   podSecurityContext:
-    {}
+    enabled: false
     # fsGroup: 2000
   ## @param acapy.containerSecurityContext Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   ##
   containerSecurityContext:
-    {}
+    enabled: false
     # capabilities:
     #   drop:
     #   - ALL
@@ -321,12 +377,12 @@ acapy:
     ## @param acapy.service.type Kubernetes Service type
     ##
     type: ClusterIP
-    ## @param acapy.service.adminPort Port to expose for admin service
+    ## @param acapy.service.ports.admin Port to expose for admin service
+    ## @param acapy.service.ports.http Port to expose for http service
     ##
-    adminPort: 8031
-    ## @param acapy.service.httpPort Port to expose for http service
-    ##
-    httpPort: 8030
+    ports:
+      admin: 8022
+      http: 8021
   ## @param acapy.affinity Affinity for acapy pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
   ##
@@ -349,6 +405,13 @@ acapy:
     ## @param acapy.networkPolicy.ingress.enabled Enable ingress rules
     ## @param acapy.networkPolicy.ingress.namespaceSelector [object] Namespace selector label that is allowed to access the Tenant proxy pods.
     ## @param acapy.networkPolicy.ingress.podSelector [object] Pod selector label that is allowed to access the Tenant proxy pods.
+    ## @param acapy.networkPolicy.allowExternal Allow ingress from any source (disables from selectors when true)
+    ## @param acapy.networkPolicy.allowExternalEgress Allow all egress traffic (when false, only DNS and extraEgress are applied)
+    ## @param acapy.networkPolicy.extraIngress [array] Extra ingress rules to append (raw NetworkPolicy rule objects)
+    ## @param acapy.networkPolicy.extraEgress [array] Extra egress rules to append (raw NetworkPolicy rule objects)
+    ## @param acapy.networkPolicy.ingressPodMatchLabels [object] Additional pod matchLabels to allow ingress from (merged with common labels)
+    ## @param acapy.networkPolicy.ingressNSMatchLabels [object] Additional namespace matchLabels to allow ingress from
+    ## @param acapy.networkPolicy.ingressNSPodMatchLabels [object] Optional pod matchLabels to combine with ingressNSMatchLabels
     ingress:
       enabled: false
       namespaceSelector:
@@ -412,6 +475,9 @@ acapy:
       ## @param acapy.openshift.adminRoute.wildcardPolicy Wildcard policy for the route
       ##
       wildcardPolicy: None
+
+  existingSecret: ""
+  ## @param acapy.existingSecret Deprecated. Use acapy.secret.*.existingSecret instead.
 
   ## @section Acapy Secrets Configuration
   ##
@@ -837,7 +903,7 @@ ui:
 ingress:
   ## @param ingress.enabled Enable ingress record generation for traction
   ##
-  enabled: true
+  enabled: false
   ## @param ingress.className IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
   ## This is supported in Kubernetes 1.18+ and required if you have more than one IngressClass marked as the default for your cluster .
   ## ref: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
@@ -852,72 +918,3 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
-
-## @section PostgreSQL parameters
-##
-postgresql:
-  ## @param postgresql.enabled Deploy Bitnami PostgreSQL chart.
-  enabled: true
-  ## @param postgresql.fullnameOverride When overriding fullnameOverride, you must override this to match.
-  fullnameOverride: ""
-  ## @param postgresql.architecture PostgreSQL architecture (`standalone` or `replication`)
-  ##
-  architecture: standalone
-  ## Authentication parameters
-  ## ref: https://github.com/bitnami/containers/tree/main/bitnami/postgresql#setting-the-root-password-on-first-run
-  ## ref: https://github.com/bitnami/containers/tree/main/bitnami/postgresql#creating-a-database-on-first-run
-  ## ref: https://github.com/bitnami/containers/tree/main/bitnami/postgresql#creating-a-database-user-on-first-run
-  ##
-  auth:
-    ## @param postgresql.auth.enablePostgresUser Assign a password to the "postgres" admin user. Otherwise, remote access will be blocked for this user. Not recommended for production deployment.
-    ##
-    enablePostgresUser: true
-    ## @param postgresql.auth.username Name for a custom user to create
-    ##
-    username: acapy
-
-  ## PostgreSQL Primary parameters
-  primary:
-    ## PostgreSQL Primary persistence configuration
-    ##
-    persistence:
-      ## @param postgresql.primary.persistence.enabled Enable PostgreSQL Primary data persistence using PVC
-      ##
-      enabled: true
-      ## @param postgresql.primary.persistence.size PVC Storage Request for PostgreSQL volume
-      ##
-      size: 1Gi
-    ## Container Security Context
-    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
-    ## @param postgresql.primary.containerSecurityContext.enabled Enable container security context
-    ##
-    containerSecurityContext:
-      enabled: false
-    ## Pod Security Context
-    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
-    ## @param postgresql.primary.podSecurityContext.enabled Enable security context
-    ##
-    podSecurityContext:
-      enabled: false
-    ## PostgreSQL Primary resource requests and limits
-    ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
-    ## @param postgresql.primary.resources.limits.memory The memory limit for the PostgreSQL Primary containers
-    ## @param postgresql.primary.resources.limits.cpu The cpu limit for the PostgreSQL Primary containers
-    ## @param postgresql.primary.resources.requests.memory The requested memory for the PostgreSQL Primary containers
-    ## @param postgresql.primary.resources.requests.cpu The requested cpu for the PostgreSQL Primary containers
-    ##
-    resources:
-      limits: {}
-      requests:
-        cpu: 100m
-        memory: 100Mi
-    ## @param postgresql.primary.service.ports.postgresql PostgreSQL service port
-    ##
-    service:
-      ports:
-        postgresql: 5432
-    ## @param postgresql.primary.extendedConfiguration Extended PostgreSQL Primary configuration (appended to main or default configuration)
-    ## ref: https://github.com/bitnami/containers/tree/main/bitnami/postgresql#allow-settings-to-be-loaded-from-files-other-than-the-default-postgresqlconf
-    ##
-    extendedConfiguration: |
-      max_connections = 500
