@@ -7,7 +7,6 @@ metadata:
     {{- include "tenant-ui.labels" . | nindent 4 }}
   annotations:
     checksum/config: {{ include (print $.Template.BasePath "/ui/configmap.yaml") . | sha256sum }}
-    checksum/innkeeper-secret: {{ include (print $.Template.BasePath "/acapy/plugin_innkeeper_secret.yaml") . | sha256sum }}
 spec:
   {{- if not .Values.ui.autoscaling.enabled }}
   replicas: {{ .Values.ui.replicaCount }}
@@ -60,12 +59,12 @@ spec:
             - name: SERVER_INNKEEPER_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "acapy.plugin.innkeeper.name" . }}
+                  name: {{ template "traction.acapy.plugin.innkeeper.name" . }}
                   key: tenantid
             - name: SERVER_INNKEEPER_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "acapy.plugin.innkeeper.name" . }}
+                  name: {{ template "traction.acapy.plugin.innkeeper.name" . }}
                   key: walletkey
           envFrom:
             - configMapRef:

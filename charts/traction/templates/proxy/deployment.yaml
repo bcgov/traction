@@ -4,8 +4,6 @@ metadata:
   name: {{ include "tenant_proxy.fullname" . }}
   labels:
     {{- include "tenant_proxy.labels" . | nindent 4 }}
-  annotations:
-    checksum/api-secret: {{ include (print $.Template.BasePath "/acapy/api_secret.yaml") . | sha256sum }}
 spec:
   {{- if not .Values.tenant_proxy.autoscaling.enabled }}
   replicas: {{ .Values.tenant_proxy.replicaCount }}
@@ -45,7 +43,7 @@ spec:
               path: /status/ready
               port: 8080
             initialDelaySeconds: 5
-            periodSeconds: 5  
+            periodSeconds: 5
           livenessProbe:
             tcpSocket:
               port: 8080
@@ -55,10 +53,10 @@ spec:
             - name: ACAPY_ADMIN_URL_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "acapy.api.secret.name" . }}
+                  name: {{ template "traction.acapy.api.secretName" . }}
                   key: adminApiKey
             - name: ACAPY_ADMIN_URL
-              value: {{ include "acapy.internal.admin.url" . }}
+              value: {{ include "traction.acapy.internal.admin.url" . }}
           resources:
             {{- toYaml .Values.tenant_proxy.resources | nindent 12 }}
       {{- with .Values.tenant_proxy.nodeSelector }}
