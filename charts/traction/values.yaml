@@ -9,7 +9,7 @@ global:
   ##   - myRegistryKeySecretName
   ##
   imagePullSecrets: []
-  ## @param ingressSuffix Domain suffix to be used for default hostpaths in ingress
+  ## @param global.ingressSuffix Domain suffix to be used for default hostpaths in ingress
   ingressSuffix: -dev.example.com
   defaultStorageClass: ""
   ## Security parameters
@@ -35,7 +35,7 @@ acapy:
   ## @param acapy.image.registry
   ## @param acapy.image.repository
   ## @param acapy.image.pullPolicy
-  ## @param acapy.image.pullSecrets [array]
+  ## @param acapy.image.pullSecrets
   ## @param acapy.image.tag Overrides the image tag which defaults to the chart appVersion. Cannot be empty string.
   ## @param acapy.image.digest Overrides the image digest which is used instead of the tag.
   ##
@@ -103,8 +103,6 @@ acapy:
   ## @param acapy.argfile.yml.emit-new-didcomm-prefix Emit protocol messages with new DIDComm prefix; i.e., 'https://didcomm.org/' instead of (default) prefix 'did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/'.
   ## @param acapy.argfile.yml.endorser-alias For transaction Authors, specify the alias of the Endorser connection that will be used to endorse transactions.
   ## @param acapy.argfile.yml.endorser-protocol-role Specify the role ('author' or 'endorser') which this agent will participate. Authors will request transaction endorement from an Endorser. Endorsers will endorse transactions from Authors, and may write their own  transactions to the ledger. If no role (or 'none') is specified then the endorsement protocol will not be used and this agent will write transactions to the ledger directly.
-  ## @param acapy.argfile.yml.genesis-transactions-list Path to YAML configuration for connecting to multiple HyperLedger Indy ledgers.
-  ## @param acapy.argfile.yml.label Specifies the label for this agent. This label is publicized (self-attested) to other agents as part of forming a connection. Set to release name by default.
   ## @param acapy.argfile.yml.log-level Specifies a custom logging level as one of: ('debug', 'info', 'warning', 'error', 'critical')
   ## @param acapy.argfile.yml.monitor-ping Send a webhook when a ping is sent or received.
   ## @param acapy.argfile.yml.monitor-revocation-notification Specifies that aca-py will emit webhooks on notification of revocation received.
@@ -152,6 +150,9 @@ acapy:
     read-only-ledger: false
     tails-server-base-url: https://tails-test.vonx.io
     tails-server-upload-url: https://tails-test.vonx.io
+    wallet-name: askar-wallet
+    wallet-storage-type: postgres_storage
+    wallet-type: askar
 
   ## ACA-Py ingress configuration (disabled - using Traction's ingress instead)
   ##
@@ -159,13 +160,13 @@ acapy:
   ## @param acapy.ingress.agent.hostname Hostname to expose the agent endpoint
   ## @param acapy.ingress.admin.enabled Enable ingress for the admin endpoint
   ## @param acapy.ingress.admin.hostname Hostname to expose the admin endpoint
-   ingress:
-     agent:
-       enabled: false
-       hostname: ""
-     admin:
-       enabled: false
-       hostname: ""
+  ingress:
+    agent:
+      enabled: false
+      hostname: ""
+    admin:
+      enabled: false
+      hostname: ""
 
   ## ACA-Py agent and admin URLs (will be set by Traction ingress)
   ## @param acapy.agentUrl Override the agent URL advertised by ACA-Py
@@ -188,7 +189,7 @@ acapy:
     enabled: false
 
   ## Additional arguments for ACA-Py
-  ## @param acapy.extraArgs Additional CLI args appended to the aca-py start command (array)
+  ## @param acapy.extraArgs Additional CLI args appended to the aca-py start command
   extraArgs:
     - --plugin 'aries_cloudagent.messaging.jsonld'
     - --plugin traction_plugins.traction_innkeeper.v1_0
@@ -206,8 +207,8 @@ acapy:
   initContainers: []
 
   ## Extra volumes and volume mounts
-  ## @param acapy.extraVolumes Extra volumes to add to the pod (array)
-  ## @param acapy.extraVolumeMounts Extra volumeMounts to add to the main container (array)
+  ## @param acapy.extraVolumes Extra volumes to add to the pod
+  ## @param acapy.extraVolumeMounts Extra volumeMounts to add to the main container
   extraVolumes: []
   extraVolumeMounts: []
 
@@ -233,13 +234,14 @@ acapy:
     type: ""
     key: ""
     values: []
+
   ## @param acapy.podAffinityPreset Pod affinity preset (soft|hard|empty)
   podAffinityPreset: ""
   ## @param acapy.podAntiAffinityPreset Pod anti-affinity preset (soft|hard|empty)
   podAntiAffinityPreset: ""
 
   ## Topology spread constraints
-  ## @param acapy.topologySpreadConstraints Pod topology spread constraints (array)
+  ## @param acapy.topologySpreadConstraints Pod topology spread constraints
   topologySpreadConstraints: []
 
   ## Existing configmap
@@ -256,18 +258,6 @@ acapy:
       genesis_url: "http://test.bcovrin.vonx.io/genesis"
       endorser_did: "DfQetNSm7gGEHuzfUvpfPn"
       endorser_alias: "bcovrin-test-endorser"
-
-  ## @section ACA-Py Multitenancy Configuration
-  ##  Specifies the multitenancy config.
-  ##  Possible values: wallet_type, wallet_name, wallet_key, cache_size, 'key_derivation_method.
-  ##  "wallet_name" is only used when "wallet_type" is "askar-profile"
-  ##
-  ## @param acapy.multitenancyConfiguration.json Raw json with config. Overrides all other values including subchart values. e.g.: '{"wallet_type":"single-wallet-askar", "wallet_name":"askar-wallet"}'
-  ## @param acapy.multitenancyConfiguration.wallet_type Database account name.
-  ##
-  multitenancyConfiguration:
-    json: ""
-    wallet_type: single-wallet-askar
 
   ## @section Acapy Plugin Configuration
   ## Specify configuration values for each plugin.
@@ -314,87 +304,29 @@ acapy:
         auto_issuer: false
     basicmessage_storage:
       wallet_enabled: true
-  ## @section Acapy tails persistence configuration
-  persistence:
-    ## @param acapy.persistence.existingClaim Name of an existing PVC to use
-    ##
-    existingClaim: ""
-    ## @param acapy.persistence.mountPath
-    ##
-    mountPath: /home/aries/.indy_client/tails
-    ## @param acapy.persistence.storageClass PVC Storage Class
-    ## If defined, storageClassName: <storageClass>
-    ## If set to "-", storageClassName: "", which disables dynamic provisioning
-    ## If undefined (the default) or set to null, no storageClassName spec is
-    ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
-    ##   GKE, AWS & OpenStack)
-    ##
-    storageClass: ""
-    ## @param acapy.persistence.accessModes PVC Access Mode. ReadWriteMany is required for each Acapy pod to access the same volume.
-    ##
-    accessModes:
-      - ReadWriteMany
-    ## @param acapy.persistence.size PVC Storage Request for tails volume
-    ##
-    size: 1Gi
 
   ## @section Acapy common configurations
   ## Acapy resource requests and limits
   ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param acapy.resources.limits.memory The memory limit for the Acapy containers
-  ## @param acapy.resources.limits.cpu The cpu limit for the Acapy containers
   ## @param acapy.resources.requests.memory The requested memory for the Acapy containers
   ## @param acapy.resources.requests.cpu The requested cpu for the Acapy containers
   ##
   resources:
-    limits: {}
     requests:
       cpu: 120m
       memory: 200Mi
-  ## @param acapy.podAnnotations Map of annotations to add to the acapy pods
-  ##
-  podAnnotations: {}
-  ## @param acapy.podSecurityContext Pod Security Context
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
-  ##
-  podSecurityContext:
-    enabled: false
-    # fsGroup: 2000
-  ## @param acapy.containerSecurityContext Container Security Context
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
-  ##
-  containerSecurityContext:
-    enabled: false
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1001
+
   ## Acapy service configuration
   ##
   service:
-    ## @param acapy.service.type Kubernetes Service type
-    ##
-    type: ClusterIP
-    ## @param acapy.service.ports.admin Port to expose for admin service
     ## @param acapy.service.ports.http Port to expose for http service
+    ## @param acapy.service.ports.admin Port to expose for admin service
+    ## @param acapy.service.ports.ws Port to expose for websocket service
     ##
     ports:
-      admin: 8022
       http: 8021
-  ## @param acapy.affinity Affinity for acapy pods assignment
-  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
-  ##
-  affinity: {}
-  ## @param acapy.nodeSelector Node labels for acapy pods assignment
-  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
-  ##
-  nodeSelector: {}
-  ## @param acapy.tolerations Tolerations for acapy pods assignment
-  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
-  ##
-  tolerations: []
+      admin: 8022
+      ws: 8023
 
   ## @section Acapy NetworkPolicy parameters
   ##
@@ -402,117 +334,29 @@ acapy:
     ## @param acapy.networkPolicy.enabled Enable network policies
     ##
     enabled: false
-    ## @param acapy.networkPolicy.ingress.enabled Enable ingress rules
-    ## @param acapy.networkPolicy.ingress.namespaceSelector [object] Namespace selector label that is allowed to access the Tenant proxy pods.
-    ## @param acapy.networkPolicy.ingress.podSelector [object] Pod selector label that is allowed to access the Tenant proxy pods.
     ## @param acapy.networkPolicy.allowExternal Allow ingress from any source (disables from selectors when true)
+    allowExternal: false
     ## @param acapy.networkPolicy.allowExternalEgress Allow all egress traffic (when false, only DNS and extraEgress are applied)
-    ## @param acapy.networkPolicy.extraIngress [array] Extra ingress rules to append (raw NetworkPolicy rule objects)
-    ## @param acapy.networkPolicy.extraEgress [array] Extra egress rules to append (raw NetworkPolicy rule objects)
-    ## @param acapy.networkPolicy.ingressPodMatchLabels [object] Additional pod matchLabels to allow ingress from (merged with common labels)
-    ## @param acapy.networkPolicy.ingressNSMatchLabels [object] Additional namespace matchLabels to allow ingress from
-    ## @param acapy.networkPolicy.ingressNSPodMatchLabels [object] Optional pod matchLabels to combine with ingressNSMatchLabels
-    ingress:
-      enabled: false
-      namespaceSelector:
-        {}
-        # network.openshift.io/policy-group: ingress
-      podSelector: {}
+    allowExternalEgress: false
+    ## @param acapy.networkPolicy.extraIngress Extra ingress rules to append (raw NetworkPolicy rule objects)
+    extraIngress: []
+    ## @param acapy.networkPolicy.extraEgress Extra egress rules to append (raw NetworkPolicy rule objects)
+    extraEgress: []
+    ## @param acapy.networkPolicy.ingressPodMatchLabels Additional pod matchLabels to allow ingress from (merged with common labels)
+    ingressPodMatchLabels: {}
+    ## @param acapy.networkPolicy.ingressNSMatchLabels Additional namespace matchLabels to allow ingress from
+    ingressNSMatchLabels: {}
+      # network.openshift.io/policy-group: ingress
 
-  ## @section Acapy OpenShift Route parameters
-  ## ref: https://docs.openshift.com/container-platform/4.11/networking/routes/route-configuration.html
-  ##
-  ## Not required if ingress is enabled
-  openshift:
-    route:
-      ## @param acapy.openshift.route.enabled Create OpenShift Route resource for Acapy
-      ##
-      enabled: false
-      ## @param acapy.openshift.route.path Path that the router watches for, to route traffic to the service
-      ##
-      path: "/"
-      ## @param acapy.openshift.route.targetPort Target port for the service
-      ##
-      targetPort: http
-      ## @param acapy.openshift.route.timeout Timeout in seconds for a route to return
-      ##
-      timeout: 2m
-      tls:
-        ## @param acapy.openshift.route.tls.enabled Enable TLS termination
-        ##
-        enabled: true
-        ## @param acapy.openshift.route.tls.insecureEdgeTerminationPolicy TLS termination policy
-        ##
-        insecureEdgeTerminationPolicy: None
-        ## @param acapy.openshift.route.tls.termination TLS termination type
-        ##
-        termination: edge
-      ## @param acapy.openshift.route.wildcardPolicy Wildcard policy for the route
-      wildcardPolicy: None
-    adminRoute:
-      ## @param acapy.openshift.adminRoute.enabled Create OpenShift Route resource for Acapy admin service
-      ##
-      enabled: false
-      ## @param acapy.openshift.adminRoute.path Path that the router watches for, to route traffic to the service
-      ##
-      path: "/"
-      ## @param acapy.openshift.adminRoute.targetPort Target port for the service
-      ##
-      targetPort: admin
-      ## @param acapy.openshift.adminRoute.timeout Timeout in seconds for a route to return
-      ##
-      timeout: 2m
-      tls:
-        ## @param acapy.openshift.adminRoute.tls.enabled Enable TLS termination
-        ##
-        enabled: true
-        ## @param acapy.openshift.adminRoute.tls.insecureEdgeTerminationPolicy TLS termination policy
-        ##
-        insecureEdgeTerminationPolicy: None
-        ## @param acapy.openshift.adminRoute.tls.termination TLS termination type
-        ##
-        termination: edge
-      ## @param acapy.openshift.adminRoute.wildcardPolicy Wildcard policy for the route
-      ##
-      wildcardPolicy: None
-
-  existingSecret: ""
   ## @param acapy.existingSecret Deprecated. Use acapy.secret.*.existingSecret instead.
-
-  ## @section Acapy Secrets Configuration
-  ##
-  secret:
-    adminApiKey:
-      ## @param acapy.secret.adminApiKey.existingSecret Name of an existing secret to use. Must contain `jwt`, `adminApiKey`, and `webhookapi` keys.
-      existingSecret: ""
-      ## @param acapy.secret.adminApiKey.generated Generate admin api key
-      ##
-      generated: true
-      ## @param acapy.secret.adminApiKey.value Override admin api key
-      ##
-      value: ""
-    walletKey:
-      ## @param acapy.secret.walletKey.existingSecret Name of an existing secret to use. Must contain `walletKey` key.
-      existingSecret: ""
-    pluginInnkeeper:
-      ## @param acapy.secret.pluginInnkeeper.existingSecret Name of an existing secret to use. Must contain `tenantid`, and `walletkey` keys.
-      existingSecret: ""
-      ## @param acapy.secret.pluginInnkeeper.generated Generate plugin innkeeper secret values
-      ##
-      generated: true
-      ## @param acapy.secret.pluginInnkeeper.walletkey Override plugin innkeeper wallet key
-      ##
-      walletkey: ""
-      ## @param acapy.secret.pluginInnkeeper.tenantid Override plugin innkeeper tenant id
-      ##
-      tenantid: ""
+  existingSecret: ""
 
 ## @section Tenant Proxy configuration
 ##
 tenant_proxy:
   ## @param tenant_proxy.image.repository
   ## @param tenant_proxy.image.pullPolicy
-  ## @param tenant_proxy.image.pullSecrets [array]
+  ## @param tenant_proxy.image.pullSecrets
   ## @param tenant_proxy.image.tag Overrides the image tag which defaults to the chart appVersion.
   ##
   image:
@@ -613,13 +457,10 @@ tenant_proxy:
       wildcardPolicy: None
   ## Tenant proxy resource requests and limits
   ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param tenant_proxy.resources.limits.memory The memory limit for the Tenant proxy containers
-  ## @param tenant_proxy.resources.limits.cpu The cpu limit for the Tenant proxy containers
   ## @param tenant_proxy.resources.requests.memory The requested memory for the Tenant proxy containers
   ## @param tenant_proxy.resources.requests.cpu The requested cpu for the Tenant proxy containers
   ##
   resources:
-    limits: {}
     requests:
       cpu: 10m
       memory: 50Mi
@@ -660,9 +501,9 @@ tenant_proxy:
 ui:
   ## @param ui.enabled Deploy tenant-ui
   enabled: true
-  ## @param ui.oidc.showOIDCReservationLogin OIDC reservation login
+  ## @param ui.showOIDCReservationLogin OIDC reservation login
   showOIDCReservationLogin: false
-  ## @param ui.oidc.quickConnectEndorserName A ledger that has endorser auto-accept/transact enabled
+  ## @param ui.quickConnectEndorserName A ledger that has endorser auto-accept/transact enabled
   quickConnectEndorserName: ""
   ## @param ui.requireEmailForReservation Whether the Email field is needed for a tenant reservation
   ## If false will default not.applicable@example.com to API
@@ -674,7 +515,7 @@ ui:
     repository: ghcr.io/bcgov/traction-tenant-ui
     ## @param ui.image.pullPolicy
     pullPolicy: IfNotPresent
-    ## @param ui.image.pullSecrets [array]
+    ## @param ui.image.pullSecrets
     pullSecrets: []
     ## @param ui.image.tag Overrides the image tag which defaults to the chart appVersion.
     tag: ""
@@ -826,13 +667,10 @@ ui:
       podSelector: {}
   ##Resource requests and limits
   ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param ui.resources.limits.memory The memory limit for the tenant-ui containers
-  ## @param ui.resources.limits.cpu The cpu limit for the tenant-ui containers
   ## @param ui.resources.requests.memory The requested memory for the tenant-ui containers
   ## @param ui.resources.requests.cpu The requested cpu for the tenant-ui containers
   ##
   resources:
-    limits: {}
     requests:
       cpu: 10m
       memory: 80Mi
