@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository_owner == 'bcgov'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Build service
         uses: ./.github/actions/build_ui
         id: builder
@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository_owner == 'bcgov'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Build Aca-Py Image
         uses: ./.github/actions/build_acapy
         id: builder
@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository_owner == 'bcgov'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Build Aca-Py Image
         uses: ./.github/actions/build_acapy
         id: builder
@@ -78,10 +78,10 @@ jobs:
       - build_proxy
     if: ${{ contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) && (github.repository_owner == 'bcgov') }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Checkout services directory from the trust-over-ip-configurations repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: bcgov/trust-over-ip-configurations
           ssh-key: ${{ secrets.DITP_CONFIGS_REPO_SECRET }}
