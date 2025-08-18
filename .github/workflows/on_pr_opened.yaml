@@ -35,7 +35,7 @@ jobs:
     needs:
       - ready
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Build UI
         uses: ./.github/actions/build_ui
         id: builder
@@ -57,7 +57,7 @@ jobs:
     needs:
       - ready
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Build Aca-Py Image
         uses: ./.github/actions/build_acapy
         id: builder
@@ -78,7 +78,7 @@ jobs:
     needs:
       - ready
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Build Tenant Proxy Image
         uses: ./.github/actions/build_acapy
         id: builder
@@ -103,7 +103,7 @@ jobs:
     if: ${{ always() && (fromJSON(needs.ready.outputs.deploy) == true) && !(contains(needs.*.result, 'failure')) }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Install OpenShift CLI tools
         uses: redhat-actions/openshift-tools-installer@v1
@@ -134,7 +134,7 @@ jobs:
       - deploy
     if: ${{ (fromJSON(needs.ready.outputs.deploy) == true) && !(contains(needs.*.result, 'failure')) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Find Comment
         uses: peter-evans/find-comment@v3
