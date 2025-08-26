@@ -18,10 +18,9 @@ maintainers:
     name: loneil
     url: https://github.com/loneil
 dependencies:
-  - name: postgresql
-    version: 15.5.38
-    repository: https://charts.bitnami.com/bitnami/
-    condition: postgresql.enabled
+  - name: acapy
+    version: 0.1.7
+    repository: https://openwallet-foundation.github.io/helm-charts/
   - name: common
     repository: "https://charts.bitnami.com/bitnami"
     tags:

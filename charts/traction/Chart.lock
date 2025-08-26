@@ -1,9 +1,9 @@
 dependencies:
 - name: acapy
   repository: https://openwallet-foundation.github.io/helm-charts/
-  version: 0.1.2
+  version: 0.1.7
 - name: common
   repository: https://charts.bitnami.com/bitnami
-  version: 2.31.3
-digest: sha256:ad7d9fcc79a574f97737cb7d8ebedc309423d02a85f576e401c36a518e9790e9
-generated: "2025-08-06T12:01:17.504542-07:00"
+  version: 2.31.4
+digest: sha256:0416af390320c1ff88b882ae1f73c79e29abc0797ec4e3555d7893208b1e3744
+generated: "2025-08-26T14:28:04.305751-07:00"
