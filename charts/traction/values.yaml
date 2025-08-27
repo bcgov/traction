@@ -176,12 +176,11 @@ acapy:
 
   ## Environment variables configuration
   ## @param acapy.extraEnvVars Extra environment variables to add to the container (array of objects)
-  ## @param acapy.extraEnvVarsCM Name of an existing ConfigMap with extra env vars
-  ## @param acapy.extraEnvVarsSecret Name of an existing Secret with extra env vars
   extraEnvVars: []
-
+  ## @param acapy.extraEnvVarsCM Name of an existing ConfigMap with extra env vars
   extraEnvVarsCM: ""
-  extraEnvVarsSecret: ""
+  ## @param acapy.extraEnvVarsSecret Name of an existing Secret with extra env vars (required for innkeeper plugin)
+  extraEnvVarsSecret: innkeeper-secret-name
 
   ## Websockets configuration
   ## @param acapy.websockets.enabled Enable WebSocket transport for ACA-Py
