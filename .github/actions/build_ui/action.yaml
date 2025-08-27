@@ -44,6 +44,8 @@ runs:
       uses: actions/setup-node@master
       with:
         node-version: 24
+        cache: npm
+        cache-dependency-path: ./services/tenant-ui/package-lock.json
 
     - name: Install backend dependencies
       shell: bash
@@ -110,6 +112,8 @@ runs:
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/ui-buildcache:main
+        cache-to: type=registry,ref=ghcr.io/${{ github.repository }}/ui-buildcache:main,mode=max,ttl=168h
 
     - id: values
       shell: bash
