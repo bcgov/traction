@@ -7,13 +7,16 @@ on:
       - "plugins/**"
       - "services/tenant-ui/**"
       - "charts/traction/**"
-      - "charts/tenant-ui/**"
       - "deploy/traction/**"
     types:
       - opened
       - synchronize
       - reopened
       - ready_for_review
+
+concurrency:
+  group: pr-${{ github.event.number }}-on_pr_opened
+  cancel-in-progress: true
 
 jobs:
   ready:
