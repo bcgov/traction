@@ -182,7 +182,7 @@ acapy:
   ## @param acapy.extraEnvVarsCM Name of an existing ConfigMap with extra env vars
   extraEnvVarsCM: ""
   ## @param acapy.extraEnvVarsSecret Name of an existing Secret with extra env vars (required for innkeeper plugin)
-  extraEnvVarsSecret: innkeeper-secret-name
+  extraEnvVarsSecret: '{{- printf "%s-%s" (include "common.names.fullname" .) "plugin-innkeeper" }}'
 
   ## Websockets configuration
   ## @param acapy.websockets.enabled Enable WebSocket transport for ACA-Py
