@@ -153,6 +153,7 @@ ui:
       namespaceSelector:
         network.openshift.io/policy-group: ingress
 ingress:
+  enabled: true
   annotations:
     route.openshift.io/termination: edge
 postgresql:
