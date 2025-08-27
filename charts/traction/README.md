@@ -158,7 +158,6 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | `acapy.networkPolicy.extraEgress`           | Extra egress rules to append (raw NetworkPolicy rule objects)                | `[]`    |
 | `acapy.networkPolicy.ingressPodMatchLabels` | Additional pod matchLabels to allow ingress from (merged with common labels) | `{}`    |
 | `acapy.networkPolicy.ingressNSMatchLabels`  | Additional namespace matchLabels to allow ingress from                       | `{}`    |
-| `acapy.existingSecret`                      | Deprecated. Use acapy.secret.*.existingSecret instead.                       | `""`    |
 
 ### Tenant Proxy configuration
 

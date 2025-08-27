@@ -349,9 +349,6 @@ acapy:
     ingressNSMatchLabels: {}
       # network.openshift.io/policy-group: ingress
 
-  ## @param acapy.existingSecret Deprecated. Use acapy.secret.*.existingSecret instead.
-  existingSecret: ""
-
 ## @section Tenant Proxy configuration
 ##
 tenant_proxy:
