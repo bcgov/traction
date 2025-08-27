@@ -11,6 +11,7 @@ global:
   imagePullSecrets: []
   ## @param global.ingressSuffix Domain suffix to be used for default hostpaths in ingress
   ingressSuffix: -dev.example.com
+  ## @param global.defaultStorageClass Default StorageClass for Persistent Volume Claim
   defaultStorageClass: ""
   ## Security parameters
   ##
@@ -36,7 +37,7 @@ acapy:
   ## @param acapy.image.repository
   ## @param acapy.image.pullPolicy
   ## @param acapy.image.pullSecrets
-  ## @param acapy.image.tag Overrides the image tag which defaults to the chart appVersion. Cannot be empty string.
+  ## @param acapy.image.tag Overrides the image tag which defaults to the chart appVersion.
   ## @param acapy.image.digest Overrides the image digest which is used instead of the tag.
   ##
   image:
@@ -44,7 +45,7 @@ acapy:
     repository: bcgov/traction-plugins-acapy
     pullPolicy: IfNotPresent
     pullSecrets: []
-    tag: 1.2.0
+    tag: ""
     digest: ""
 
   ## ServiceAccount configuration
@@ -60,15 +61,15 @@ acapy:
     automountServiceAccountToken: true
     name: ""
 
-  ## @param acapy.replicaCount Number of AcaPy replicas to deploy
+  ## @param acapy.replicaCount Number of ACA-Py replicas to deploy
   ##
   replicaCount: 1
 
-  ## AcaPy Autoscaling configuration
+  ## ACA-Py Autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
-  ## @param acapy.autoscaling.enabled Enable Horizontal POD autoscaling for AcaPy
-  ## @param acapy.autoscaling.minReplicas Minimum number of AcaPy replicas
-  ## @param acapy.autoscaling.maxReplicas Maximum number of AcaPy replicas
+  ## @param acapy.autoscaling.enabled Enable Horizontal POD autoscaling for ACA-Py
+  ## @param acapy.autoscaling.minReplicas Minimum number of ACA-Py replicas
+  ## @param acapy.autoscaling.maxReplicas Maximum number of ACA-Py replicas
   ## @param acapy.autoscaling.targetCPUUtilizationPercentage Target CPU utilization percentage
   ## @param acapy.autoscaling.targetMemoryUtilizationPercentage Target Memory utilization percentage
   ## @param acapy.autoscaling.stabilizationWindowSeconds Stabilization window in seconds
@@ -81,7 +82,7 @@ acapy:
     targetMemoryUtilizationPercentage: 80
     stabilizationWindowSeconds: 300
 
-  ## @section Acapy configuration file
+  ## @section ACA-Py configuration file
   ##
   ## @param acapy.argfile.yml.auto-accept-invites Automatically accept invites without firing a webhook event or waiting for an admin request. Default: false.
   ## @param acapy.argfile.yml.auto-accept-requests Automatically accept connection requests without firing a webhook event or waiting for an admin request. Default: false.
@@ -117,7 +118,7 @@ acapy:
   ## @param acapy.argfile.yml.wallet-name Specifies the wallet name to be used by the agent. This is useful if your deployment has multiple wallets.
   ## @param acapy.argfile.yml.wallet-storage-type Specifies the type of Indy wallet backend to use. Supported internal storage types are 'basic' (memory), 'default' (sqlite), and 'postgres_storage'.  The default, if not specified, is 'default'.
   ## @param acapy.argfile.yml.wallet-type Specifies the type of Indy wallet provider to use. Supported internal storage types are 'basic' (memory) and 'indy'. The default (if not specified) is 'basic'.
-  ##
+  ## @param acapy.argfile.yml.webhook-url Send webhooks containing internal state changes to the specified URL. Optional API key to be passed in the request body can be appended using a hash separator [#]. This is useful for a controller to monitor agent events and respond to those events using the admin API. If not specified, webhooks are not published by the agent.
   argfile.yml:
     auto-accept-invites: true
     auto-accept-requests: true
@@ -153,6 +154,7 @@ acapy:
     wallet-name: askar-wallet
     wallet-storage-type: postgres_storage
     wallet-type: askar
+    webhook-url: ""
 
   ## ACA-Py ingress configuration (disabled - using Traction's ingress instead)
   ##
@@ -216,13 +218,13 @@ acapy:
   updateStrategy: {}
 
   ## Common labels and annotations
-  ## @param acapy.commonLabels Additional common labels to add to all AcaPy resources
-  ## @param acapy.commonAnnotations Additional common annotations to add to all AcaPy resources
+  ## @param acapy.commonLabels Additional common labels to add to all ACA-Py resources
+  ## @param acapy.commonAnnotations Additional common annotations to add to all ACA-Py resources
   commonLabels: {}
   commonAnnotations: {}
 
   ## Service account token
-  ## @param acapy.automountServiceAccountToken Automount service account token for the AcaPy pod
+  ## @param acapy.automountServiceAccountToken Automount service account token for the ACA-Py pod
   automountServiceAccountToken: false
 
   ## Node selection and pod affinity
@@ -247,7 +249,7 @@ acapy:
   ## @param acapy.existingConfigmap Name of an existing ConfigMap providing argfile.yml and other config
   existingConfigmap: ""
 
-  ## Acapy multiledger configuration file
+  ## ACA-Py multiledger configuration file
   ## @param acapy.ledgers.yml [object] YAML configuration for connecting to multiple HyperLedger
   ##
   ledgers.yml:
@@ -258,7 +260,7 @@ acapy:
       endorser_did: "DfQetNSm7gGEHuzfUvpfPn"
       endorser_alias: "bcovrin-test-endorser"
 
-  ## @section Acapy Plugin Configuration
+  ## @section ACA-Py Plugin Configuration
   ## Specify configuration values for each plugin.
   ## Configuration values are plugin specific, and are rendered as is into the plugin-config.yml file.
   ##
@@ -304,18 +306,18 @@ acapy:
     basicmessage_storage:
       wallet_enabled: true
 
-  ## @section Acapy common configurations
-  ## Acapy resource requests and limits
+  ## @section ACA-Py common configurations
+  ## ACA-Py resource requests and limits
   ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param acapy.resources.requests.memory The requested memory for the Acapy containers
-  ## @param acapy.resources.requests.cpu The requested cpu for the Acapy containers
+  ## @param acapy.resources.requests.memory The requested memory for the ACA-Py containers
+  ## @param acapy.resources.requests.cpu The requested cpu for the ACA-Py containers
   ##
   resources:
     requests:
       cpu: 120m
       memory: 200Mi
 
-  ## Acapy service configuration
+  ## ACA-Py service configuration
   ##
   service:
     ## @param acapy.service.ports.http Port to expose for http service
@@ -327,7 +329,7 @@ acapy:
       admin: 8022
       ws: 8023
 
-  ## @section Acapy NetworkPolicy parameters
+  ## @section ACA-Py NetworkPolicy parameters
   ##
   networkPolicy:
     ## @param acapy.networkPolicy.enabled Enable network policies
@@ -336,7 +338,7 @@ acapy:
     ## @param acapy.networkPolicy.allowExternal Allow ingress from any source (disables from selectors when true)
     allowExternal: false
     ## @param acapy.networkPolicy.allowExternalEgress Allow all egress traffic (when false, only DNS and extraEgress are applied)
-    allowExternalEgress: false
+    allowExternalEgress: true
     ## @param acapy.networkPolicy.extraIngress Extra ingress rules to append (raw NetworkPolicy rule objects)
     extraIngress: []
     ## @param acapy.networkPolicy.extraEgress Extra egress rules to append (raw NetworkPolicy rule objects)
@@ -482,15 +484,15 @@ tenant_proxy:
         # network.openshift.io/policy-group: ingress
       podSelector: {}
 
-  ## @param tenant_proxy.affinity Affinity for acapy pods assignment
+  ## @param tenant_proxy.affinity Affinity for ACA-Py pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
   ##
   affinity: {}
-  ## @param tenant_proxy.nodeSelector Node labels for acapy pods assignment
+  ## @param tenant_proxy.nodeSelector Node labels for ACA-Py pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector: {}
-  ## @param tenant_proxy.tolerations Tolerations for acapy pods assignment
+  ## @param tenant_proxy.tolerations Tolerations for ACA-Py pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
   tolerations: []
