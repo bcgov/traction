@@ -60,12 +60,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ template "traction.acapy.plugin.innkeeper.name" . }}
-                  key: tenantid
+                  key: INNKEEPER_WALLET_TENANT_ID
             - name: SERVER_INNKEEPER_KEY
               valueFrom:
                 secretKeyRef:
                   name: {{ template "traction.acapy.plugin.innkeeper.name" . }}
-                  key: walletkey
+                  key: INNKEEPER_WALLET_WALLET_KEY
           envFrom:
             - configMapRef:
                 name: {{ template "tenant-ui.fullname" . }}
