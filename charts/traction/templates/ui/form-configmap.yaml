@@ -6,7 +6,6 @@ metadata:
   labels:
     {{- include "tenant-ui.labels" . | nindent 4 }}
 data:
-  # TODO: Strip out newline characters
-  reservation.json: |
-    {{ .Values.ui.oidc.reservationForm | replace "\n" "" | nindent 4 }}
+  reservation.json: |-
+    {{- .Values.ui.oidc.reservationForm | nospace | nindent 4 }}
 {{- end -}}
