@@ -11,6 +11,7 @@ const toast = useToast();
 const loadedInterval = (
   credDef: CredentialDefinitionSendRequest,
   getStoredCredDefs: () => Promise<CredDefStorageRecord[] | undefined>,
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   loadTable: Function,
   message: string,
   setSelected: Ref<CredDefStorageRecord | undefined> | undefined = undefined,

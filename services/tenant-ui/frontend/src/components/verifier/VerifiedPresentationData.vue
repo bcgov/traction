@@ -125,7 +125,7 @@ const requested_attribute_groups = (): any => {
     Object.entries(
       props.presentation.acapy.presentation_exchange.presentation_request
         .requested_attributes
-    ).filter(([key, ra]: [string, any]): any => {
+    ).filter(([_key, ra]: [string, any]): any => {
       return 'names' in ra && 'restrictions' in ra;
     })
   );
@@ -136,7 +136,7 @@ const requested_single_attributes = (): any => {
     Object.entries(
       props.presentation.acapy.presentation_exchange.presentation_request
         .requested_attributes
-    ).filter(([key, ra]: [string, any]): any => {
+    ).filter(([_key, ra]: [string, any]): any => {
       return 'name' in ra && 'restrictions' in ra;
     })
   );
@@ -147,7 +147,7 @@ const requested_self_attested_attributes = (): any => {
     Object.entries(
       props.presentation.acapy.presentation_exchange.presentation_request
         .requested_attributes
-    ).filter(([key, ra]) => {
+    ).filter(([_key, ra]) => {
       // @ts-expect-error types have not been defined for this object
       return 'name' in ra && !('restrictions' in ra);
     })

@@ -3,7 +3,6 @@ import { defineStore } from 'pinia';
 import { useAcapyApi } from './acapyApi';
 import { fetchListFromAPI } from './utils';
 import { API_PATH } from '@/helpers/constants';
-import { BasicMessageRecord } from '@/types/acapyApi/acapyInterface';
 
 /**
  * This is the interface for the message list.

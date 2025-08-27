@@ -58,8 +58,8 @@ describe('LoginForm', async () => {
   test('successful login triggers expected methods', async () => {
     await mockVuelidate();
     const wrapper = mountLoginForm();
-    const wrapperVm = wrapper.vm as unknown as typeof LoginForm;
-    const toastSpy = vi.spyOn(wrapperVm.toast, 'error');
+    // const wrapperVm = wrapper.vm as unknown as typeof LoginForm;
+    // const toastSpy = vi.spyOn(wrapperVm.toast, 'error');
     const tenantStore = useTenantStore();
     const tokenStore = useTokenStore();
 

@@ -12,3 +12,4 @@ plugins/poetry.lock
 
 .idea
 **/.idea
+.python-version

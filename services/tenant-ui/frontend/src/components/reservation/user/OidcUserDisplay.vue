@@ -8,13 +8,10 @@
 </template>
 
 <script setup lang="ts">
-// Vue
-import { reactive, ref } from 'vue';
 // State
-import { useConfigStore, useOidcStore } from '@/store';
+import { useOidcStore } from '@/store';
 import { storeToRefs } from 'pinia';
 
-const { config } = storeToRefs(useConfigStore());
 const { user } = storeToRefs(useOidcStore());
 </script>
 

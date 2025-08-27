@@ -143,9 +143,6 @@
 </template>
 
 <script setup lang="ts">
-// Types
-import { ExtendedV20CredExRecordByFormat } from '@/types';
-
 // Vue
 import { computed, onMounted, ref } from 'vue';
 // State

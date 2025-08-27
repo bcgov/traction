@@ -2,12 +2,12 @@ import { IncomingMessage, Server } from "http";
 import axios from "axios";
 import config from "config";
 import jwt from "jsonwebtoken";
-import WebSocket from "ws";
+import WebSocket, { WebSocketServer } from "ws";
 
 const LOKI_URL: string = config.get("server.lokiUrl");
 const TRACTION_URL: string = config.get("server.tractionUrl");
 
-const wss = new WebSocket.Server({ noServer: true });
+const wss = new WebSocketServer({ noServer: true });
 
 const getTenant = async (token: string): Promise<any> => {
   const response = await axios.get(`${TRACTION_URL}/tenant`, {

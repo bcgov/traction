@@ -7,7 +7,6 @@ import InnkeeperLoginForm from '@/components/innkeeper/InnkeeperLoginForm.vue';
 import { useInnkeeperTokenStore } from '@/store';
 
 import { innkeeperLogin } from '../../__mocks__/validation/forms';
-import { beforeEach } from 'node:test';
 
 // Mocks
 vi.mock('@vuelidate/core');

@@ -2,13 +2,13 @@ import { Request } from "express";
 import config from "config";
 import nodemailer from "nodemailer";
 import { Eta } from "eta"; // HTML templating engine
-import { buildStatusAutofill } from "../helpers";
+import { buildStatusAutofill } from "../helpers/index.js";
 
-import { RESERVATION_APPROVED_TENANT_TEMPLATE } from "./email_templates/reservation_approved_tenant";
-import { RESERVATION_DECLINED_TENANT_TEMPLATE } from "./email_templates/reservation_declined_tenant";
-import { RESERVATION_RECIEVED_INNKEEPER_TEMPLATE } from "./email_templates/reservation_received_innkeeper";
-import { RESERVATION_RECIEVED_TENANT_TEMPLATE } from "./email_templates/reservation_received_tenant";
-import { RESERVATION_STATUSES } from "../helpers/constants";
+import { RESERVATION_APPROVED_TENANT_TEMPLATE } from "./email_templates/reservation_approved_tenant.js";
+import { RESERVATION_DECLINED_TENANT_TEMPLATE } from "./email_templates/reservation_declined_tenant.js";
+import { RESERVATION_RECIEVED_INNKEEPER_TEMPLATE } from "./email_templates/reservation_received_innkeeper.js";
+import { RESERVATION_RECIEVED_TENANT_TEMPLATE } from "./email_templates/reservation_received_tenant.js";
+import { RESERVATION_STATUSES } from "../helpers/constants.js";
 
 const SERVER: string = config.get("server.smtp.server");
 const PORT: number = config.get("server.smtp.port");

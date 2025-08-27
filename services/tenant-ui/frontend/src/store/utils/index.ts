@@ -28,8 +28,8 @@ type FilterFunc = (item: any) => boolean;
 export function filterMapSortList(
   list: any,
   mapFn: MapFunc = (item: any) => item,
-  sortFn: SortFunc = (a: any, b: any) => 0,
-  filterFn: FilterFunc = (item: any) => true
+  sortFn: SortFunc = (_a: any, _b: any) => 0,
+  filterFn: FilterFunc = (_item: any) => true
 ): any[] {
   let result: any[] = [];
 

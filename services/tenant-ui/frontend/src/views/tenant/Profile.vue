@@ -51,16 +51,14 @@ import Dialog from 'primevue/dialog';
 import ProfileForm from '@/components/profile/ProfileForm.vue';
 import ProfileFooter from '@/components/profile/ProfileFooter.vue';
 import ConfirmTenantDeletion from '@/components/innkeeper/tenants/deleteTenant/ConfirmTenantDeletion.vue';
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useToast } from 'vue-toastification';
 // State
 import { storeToRefs } from 'pinia';
 import { useTenantStore } from '@/store';
 const tenantStore = useTenantStore();
 const { tenant, isIssuer, loading } = storeToRefs(useTenantStore());
-import { useConfirm } from 'primevue/useconfirm';
 
-const confirm = useConfirm();
 const toast = useToast();
 const displayModal = ref(false);
 const openModal = async () => {

@@ -1,5 +1,5 @@
 import CreateSchema from '@/components/issuance/schemas/CreateSchema.vue';
-import { shallowMount, mount, flushPromises } from '@vue/test-utils';
+import { shallowMount, flushPromises } from '@vue/test-utils';
 import PrimeVue from 'primevue/config';
 import { describe, expect, test, vi } from 'vitest';
 import VueToastificationPlugin from 'vue-toastification';

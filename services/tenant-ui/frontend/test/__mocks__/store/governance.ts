@@ -58,4 +58,4 @@ const store: { [key: string]: any } = {
   listStoredCredentialDefinitions: vi.fn(() => []),
 };
 
-export { store };
+export { schemaStorageRecord, store };

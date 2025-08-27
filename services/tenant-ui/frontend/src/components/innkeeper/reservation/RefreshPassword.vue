@@ -35,7 +35,6 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(['success']);
-const displayModal = ref(false);
 const reason = ref('');
 
 const refresh = async () => {
