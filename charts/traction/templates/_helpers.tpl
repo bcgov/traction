@@ -79,28 +79,6 @@ it randomly.
 {{- end }}
 
 {{/*
-Returns Acapy Fullname
-*/}}
-{{- define "traction.acapy.fullname" -}}
-{{- if .Values.acapy.fullnameOverride }}
-{{- .Values.acapy.fullnameOverride | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- printf "%s-acapy" (include "global.fullname" .) | trunc 63 | trimSuffix "-" }}
-{{- end }}
-{{- end }}
-
-{{/*
-Multitenancy config
-*/}}
-{{- define "traction.acapy.multitenancyConfiguration" -}}
-{{- if .Values.acapy.multitenancyConfiguration.json -}}
-{{- .Values.acapy.multitenancyConfiguration.json -}}
-{{- else -}}
-'{"wallet_type":"{{ .Values.acapy.multitenancyConfiguration.wallet_type | default "single-wallet-askar" }}"}'
-{{- end -}}
-{{- end -}}
-
-{{/*
 Create a default fully qualified tenant proxy name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
@@ -206,8 +184,35 @@ ACA-Py dependency related template functions
 These functions reference the ACA-Py subchart properly
 */}}
 
+{{/* Define ACA-Py base name */}}
+{{- define "traction.acapy.name" -}}
+{{- default "acapy" .Values.acapy.nameOverride -}}
+{{- end -}}
+
 {{/*
-Generate acapy host from dependency subchart
+Returns ACA-Py Fullname
+*/}}
+{{- define "traction.acapy.fullname" -}}
+{{- if .Values.acapy.fullnameOverride }}
+{{- .Values.acapy.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-%s" (include "global.fullname" .) (include "traction.acapy.name" .) | trunc 63 | trimSuffix "-" -}}
+{{- end }}
+{{- end }}
+
+{{/*
+Multitenancy config
+*/}}
+{{- define "traction.acapy.multitenancyConfiguration" -}}
+{{- if .Values.acapy.multitenancyConfiguration.json -}}
+{{- .Values.acapy.multitenancyConfiguration.json -}}
+{{- else -}}
+'{"wallet_type":"{{ .Values.acapy.multitenancyConfiguration.wallet_type | default "single-wallet-askar" }}"}'
+{{- end -}}
+{{- end -}}
+
+{{/*
+Generate ACA-Py host from dependency subchart
 Since we're using Traction's ingress instead of ACA-Py's, we use the ingressSuffix pattern
 */}}
 {{- define "traction.acapy.host" -}}
@@ -215,7 +220,7 @@ Since we're using Traction's ingress instead of ACA-Py's, we use the ingressSuff
 {{- end -}}
 
 {{/*
-Generate acapy admin host from dependency subchart
+Generate ACA-Py admin host from dependency subchart
 Since we're using Traction's ingress instead of ACA-Py's, we use the ingressSuffix pattern
 */}}
 {{- define "traction.acapy.admin.host" -}}
@@ -223,7 +228,7 @@ Since we're using Traction's ingress instead of ACA-Py's, we use the ingressSuff
 {{- end -}}
 
 {{/*
-Generate acapy internal admin URL for tenant proxy
+Generate ACA-Py internal admin URL for tenant proxy
 */}}
 {{- define "traction.acapy.internal.admin.url" -}}
 http://{{- template "traction.acapy.fullname" . }}:{{ .Values.acapy.service.ports.admin | default 8022 }}
