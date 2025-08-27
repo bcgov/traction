@@ -4,7 +4,7 @@ inputs:
   ref:
     description: 'The branch, tag or SHA to checkout'
     required: false
-    default: ''  
+    default: ''
   context:
     required: true
     type: string
@@ -41,7 +41,7 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/checkout@v4   
+    - uses: actions/checkout@v4
       with:
         ref: ${{ inputs.ref != '' && inputs.ref ||  env.GITHUB_REF }}
 
@@ -75,8 +75,10 @@ runs:
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/acapy-buildcache:main
+        cache-to: type=registry,ref=ghcr.io/${{ github.repository }}/acapy-buildcache:main,mode=max,ttl=168h
 
-    - id: values  
+    - id: values
       shell: bash
       run: |
         echo "image_tag=${{ fromJSON(steps.meta.outputs.json).tags[0] }}" >> $GITHUB_OUTPUT
