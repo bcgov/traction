@@ -245,5 +245,5 @@ ACA-Py API secret name (for tenant proxy)
 ACA-Py plugin innkeeper secret name (for tenant ui)
 */}}
 {{- define "traction.acapy.plugin.innkeeper.name" -}}
-{{- template "traction.acapy.fullname" . }}-plugin-innkeeper
+{{- printf "%s-%s" ( include "traction.acapy.fullname" .) "plugin-innkeeper" -}}
 {{- end -}}
