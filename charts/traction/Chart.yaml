@@ -19,7 +19,7 @@ maintainers:
     url: https://github.com/loneil
 dependencies:
   - name: acapy
-    version: 0.1.8
+    version: 0.1.9
     repository: https://openwallet-foundation.github.io/helm-charts/
   - name: common
     repository: "https://charts.bitnami.com/bitnami"
