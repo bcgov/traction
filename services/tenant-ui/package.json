@@ -1,6 +1,6 @@
 {
   "name": "tenant-ui",
-  "version": "1.2.0",
+  "version": "1.2.999",
   "type": "module",
   "description": "The backend for the Tenant UI service, providing API endpoints and serving the static Vue frontend.",
   "main": "index.ts",
