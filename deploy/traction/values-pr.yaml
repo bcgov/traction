@@ -4,6 +4,8 @@ acapy:
   image:
     pullPolicy: Always
 
+  extraEnvVarsSecret: 'innkeeper-pr-shared-secret'
+
   argfile.yml:
     tails-server-base-url: https://tails-dev.vonx.io
     tails-server-upload-url: https://tails-dev.vonx.io
