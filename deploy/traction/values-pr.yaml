@@ -46,8 +46,6 @@ acapy:
         auto_approve: true
         auto_issuer: true
 
-  extraEnvVarsSecret: '{{- printf "%s-%s" (include "common.names.fullname" .) "plugin-innkeeper" }}'
-
   resourcesPreset: micro
 
   networkPolicy:
