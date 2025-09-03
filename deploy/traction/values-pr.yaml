@@ -156,11 +156,3 @@ ingress:
   enabled: true
   annotations:
     route.openshift.io/termination: edge
-postgresql:
-  primary:
-    resources:
-      limits:
-        memory: 128Mi
-      requests:
-        cpu: 100m
-        memory: 50Mi
