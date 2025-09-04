@@ -109,6 +109,7 @@ acapy:
   ## @param acapy.argfile.yml.monitor-revocation-notification Specifies that aca-py will emit webhooks on notification of revocation received.
   ## @param acapy.argfile.yml.multitenant-admin Specify whether to enable the multitenant admin api.
   ## @param acapy.argfile.yml.multitenant Enable multitenant mode.
+  ## @param acapy.argfile.yml.multitenancy-config [array] Multitenancy configuration parameters. Possible values: wallet_name, wallet_key, cache_size, key_derivation_method. "wallet_name" is only used when `wallet_type` is `single-wallet-askar`
   ## @param acapy.argfile.yml.notify-revocation Specifies that aca-py will notify credential recipients when revoking a credential it issued.
   ## @param acapy.argfile.yml.preserve-exchange-records Keep credential exchange records after exchange has completed.
   ## @param acapy.argfile.yml.public-invites Send invitations out using the public DID for the agent, and receive connection requests solicited by invitations which use the public DID. Default: false.
@@ -145,6 +146,9 @@ acapy:
     monitor-revocation-notification: true
     multitenant-admin: true
     multitenant: true
+    multitenancy-config:
+      - wallet_type=single-wallet-askar
+      - wallet_name=askar-wallet
     notify-revocation: true
     preserve-exchange-records: true
     public-invites: true
