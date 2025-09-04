@@ -69,9 +69,9 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ template "tenant-ui.fullname" . }}
-            {{- if .Values.ui.existingSecret }}
+            {{- if .Values.ui.smtp.existingSecret }}
             - secretRef:
-                name: {{ .Values.ui.existingSecret | quote }}
+                name: {{ .Values.ui.smtp.existingSecret | quote }}
             {{- end }}
           resources:
             {{- toYaml .Values.ui.resources | nindent 12 }}
