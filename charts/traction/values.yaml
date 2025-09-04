@@ -522,9 +522,9 @@ ui:
     ## @param ui.image.tag Overrides the image tag which defaults to the chart appVersion.
     tag: ""
 
-  ## @param ui.existingSecret Name of an existing secret to be mounted as environment variables
-  ## For example, when setting smpt.secure to true, a secret is required with the key SERVER_SMTP_PASSWORD
-  existingSecret: ""
+  ## @param ui.pluginInnkeeper.existingSecret Name of an existing Secret providing INNKEEPER_WALLET_TENANT_ID and INNKEEPER_WALLET_WALLET_KEY
+  pluginInnkeeper:
+    existingSecret: ""
 
   ##  Frontend Configuration
   ##
