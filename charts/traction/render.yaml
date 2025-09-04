@@ -1,0 +1,1158 @@
+---
+# Source: traction/charts/acapy/charts/postgresql/templates/primary/networkpolicy.yaml
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: traction-ivan-postgresql
+  namespace: "bc0192-dev"
+  labels:
+    app.kubernetes.io/instance: traction-ivan
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 16.4.0
+    helm.sh/chart: postgresql-15.5.38
+    app.kubernetes.io/component: primary
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: traction-ivan
+      app.kubernetes.io/name: postgresql
+      app.kubernetes.io/component: primary
+  policyTypes:
+    - Ingress
+    - Egress
+  egress:
+    - {}
+  ingress:
+    - ports:
+        - port: 5432
+---
+# Source: traction/charts/acapy/templates/networkpolicy.yaml
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: traction-ivan-acapy
+  namespace: "bc0192-dev"
+  labels:
+    app.kubernetes.io/instance: traction-ivan
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: acapy
+    app.kubernetes.io/version: 1.3.1
+    helm.sh/chart: acapy-0.1.9
+    app.kubernetes.io/component: agent
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: traction-ivan
+      app.kubernetes.io/name: acapy
+  policyTypes:
+    - Ingress
+    - Egress
+  egress:
+    - {}
+  ingress:
+    - ports:
+        - port: 8021
+          protocol: TCP
+        - port: 8022
+          protocol: TCP
+      from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: traction-ivan
+              app.kubernetes.io/name: acapy
+        - namespaceSelector:
+            matchLabels:
+              network.openshift.io/policy-group: null
+---
+# Source: traction/templates/proxy/networkpolicies.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: traction-ivan-ingress
+  labels:
+    app.kubernetes.io/instance: traction-ivan
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: traction-ivan-tenant-proxy
+      app.kubernetes.io/instance: traction-ivan
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              network.openshift.io/policy-group: ingress
+  policyTypes:
+    - Ingress
+---
+# Source: traction/templates/proxy/networkpolicies.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: traction-ivan
+  labels:
+    app.kubernetes.io/instance: traction-ivan
+spec:
+  podSelector:
+    matchLabels:
+      'app.kubernetes.io/instance': traction-ivan
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          'app.kubernetes.io/instance': traction-ivan
+---
+# Source: traction/templates/ui/networkpolicy.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: traction-ivan-tenant-ui-ingress
+  labels:
+    app: traction
+    helm.sh/chart: traction-0.4.0
+    app.kubernetes.io/version: "1.2.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: traction-ivan-tenant-ui
+    app.kubernetes.io/instance: traction-ivan
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: traction-ivan-tenant-ui
+      app.kubernetes.io/instance: traction-ivan
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              network.openshift.io/policy-group: ingress
+  policyTypes:
+    - Ingress
+---
+# Source: traction/charts/acapy/charts/postgresql/templates/primary/pdb.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: traction-ivan-postgresql
+  namespace: "bc0192-dev"
+  labels:
+    app.kubernetes.io/instance: traction-ivan
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 16.4.0
+    helm.sh/chart: postgresql-15.5.38
+    app.kubernetes.io/component: primary
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: traction-ivan
+      app.kubernetes.io/name: postgresql
+      app.kubernetes.io/component: primary
+---
+# Source: traction/charts/acapy/charts/postgresql/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: traction-ivan-postgresql
+  namespace: "bc0192-dev"
+  labels:
+    app.kubernetes.io/instance: traction-ivan
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 16.4.0
+    helm.sh/chart: postgresql-15.5.38
+automountServiceAccountToken: false
+---
+# Source: traction/charts/acapy/charts/postgresql/templates/secrets.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: traction-ivan-postgresql
+  namespace: "bc0192-dev"
+  labels:
+    app.kubernetes.io/instance: traction-ivan
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 16.4.0
+    helm.sh/chart: postgresql-15.5.38
+type: Opaque
+data:
+  postgres-password: "bEhQYWRna2Y3NA=="
+  password: "eFltN2ZEZldZTA=="
+  # We don't auto-generate LDAP password when it's not provided as we do for other passwords
+---
+# Source: traction/charts/acapy/templates/api-secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  annotations:
+    helm.sh/resource-policy: keep
+  name: traction-ivan-acapy-api
+  labels:
+    app.kubernetes.io/instance: traction-ivan
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: acapy
+    app.kubernetes.io/version: 1.3.1
+    helm.sh/chart: acapy-0.1.9
+    app.kubernetes.io/component: agent
+  namespace: bc0192-dev
+type: Opaque
+data:
+  jwt: UDZwUHhXRGpOMzBPZ21vZmJnMzdYWHB6WERtaHY2ZXU=
+  webhookapi: N3g0R2JPUXhVMXN3S0pieVJyUHdyaDhiakRVZ0VkUlA=
+  adminApiKey: b0k3TmRFbDB4dTE1cFZDUVV5OVplcmV1ZUxMdmV1NTc=
+  walletKey: TG53ZFFCNVNIOXFXcFNGb2sxYkJnRlY5S2xkblpQeDQ=
+---
+# Source: traction/charts/acapy/templates/seed-secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: traction-ivan-acapy-seed
+  labels:
+    app.kubernetes.io/instance: traction-ivan
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: acapy
+    app.kubernetes.io/version: 1.3.1
+    helm.sh/chart: acapy-0.1.9
+    app.kubernetes.io/component: agent
+  annotations:
+    helm.sh/resource-policy: keep
+  namespace: bc0192-dev
+type: Opaque
+data:
+  seed: Q3c1Q0NwVUc3NVlVaElqSzhVZnIwRlJhVnE5cHdXSVA=
+---
+# Source: traction/templates/plugin_innkeeper_secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: traction-ivan-acapy-plugin-innkeeper
+  labels:
+    app: traction
+    helm.sh/chart: traction-0.4.0
+    app.kubernetes.io/version: "1.2.0"
+    app.kubernetes.io/managed-by: Helm
+type: Opaque
+data:
+  INNKEEPER_WALLET_TENANT_ID: MmE1NDllNmQtYWVkNi00ODhlLTlkNDgtYWE0MzZhMzlmZDI2
+  INNKEEPER_WALLET_WALLET_KEY: d3dXdnAwWWR6Rk42T1lzaHBsbTBoRTRmMkV4N1F0NUQ=
+---
+# Source: traction/charts/acapy/charts/postgresql/templates/primary/extended-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: traction-ivan-postgresql-extended-configuration
+  namespace: "bc0192-dev"
+  labels:
+    app.kubernetes.io/instance: traction-ivan
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 16.4.0
+    helm.sh/chart: postgresql-15.5.38
+    app.kubernetes.io/component: primary
+data:
+  override.conf: |-
+    max_connections = 500
+---
+# Source: traction/charts/acapy/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: traction-ivan-acapy-config
+  labels:
+    app.kubernetes.io/instance: traction-ivan
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: acapy
+    app.kubernetes.io/version: 1.3.1
+    helm.sh/chart: acapy-0.1.9
+    app.kubernetes.io/component: agent
+data:
+  argfile.yml: |
+    label: "traction-ivan-acapy"
+    inbound-transport:
+      - [http, 0.0.0.0, 8021]
+    outbound-transport:
+      - http
+    endpoint:
+      - "https://{{- printf \"%s%s\" (include \"common.names.fullname\" .) .Values.global.ingressSuffix }}"
+    admin:
+      - 0.0.0.0
+      - 8022
+    admin-insecure-mode: false
+    auto-accept-invites: true
+    auto-accept-requests: true
+    auto-create-revocation-transactions: true
+    auto-ping-connection: true
+    auto-promote-author-did: true
+    auto-provision: true
+    auto-request-endorsement: true
+    auto-respond-credential-offer: false
+    auto-respond-credential-proposal: false
+    auto-respond-credential-request: true
+    auto-respond-messages: true
+    auto-respond-presentation-proposal: true
+    auto-respond-presentation-request: false
+    auto-store-credential: true
+    auto-verify-presentation: true
+    auto-write-transactions: true
+    emit-new-didcomm-mime-type: true
+    emit-new-didcomm-prefix: true
+    endorser-alias: endorser
+    endorser-protocol-role: author
+    genesis-transactions-list: /tmp/ledgers.yml
+    log-level: info
+    monitor-ping: true
+    monitor-revocation-notification: true
+    multitenant: true
+    multitenant-admin: true
+    notify-revocation: true
+    preserve-exchange-records: true
+    public-invites: true
+    read-only-ledger: false
+    requests-through-public-did: false
+    tails-server-base-url: https://tails-dev.vonx.io
+    tails-server-upload-url: https://tails-dev.vonx.io
+    wallet-local-did: true
+    wallet-name: askar-wallet
+    wallet-storage-type: postgres_storage
+    wallet-type: askar
+    webhook-url: ""
+    wallet-storage-config: '{"url":"traction-ivan-postgresql:5432","max_connections":"10","wallet_scheme":"DatabasePerWallet"}'
+  ledgers.yml: |
+    - endorser_alias: bcovrin-test-endorser
+      endorser_did: DfQetNSm7gGEHuzfUvpfPn
+      genesis_url: http://test.bcovrin.vonx.io/genesis
+      id: bcovrin-test
+      is_production: true
+      is_write: true
+    - genesis_url: https://raw.githubusercontent.com/ICCS-ISAC/dtrust-reconu/main/CANdy/prod/pool_transactions_genesis
+      id: candy-prod
+      is_production: true
+      is_write: false
+    - endorser_alias: sovrin-testnet-endorser
+      endorser_did: EZpKx6nT56Hv83JmNz7ik8
+      genesis_url: https://raw.githubusercontent.com/sovrin-foundation/sovrin/stable/sovrin/pool_transactions_sandbox_genesis
+      id: sovrin-testnet
+      is_production: true
+      is_write: true
+  plugin-config.yml: |
+    basicmessage_storage:
+      wallet_enabled: true
+    multitenant_provider:
+      errors:
+        on_unneeded_wallet_key: false
+      manager:
+        always_check_provided_wallet_key: true
+        class_name: multitenant_provider.v1_0.manager.AskarMultitokenMultitenantManager
+      token_expiry:
+        amount: 1
+        units: days
+    traction_innkeeper:
+      innkeeper_wallet:
+        connect_to_endorser:
+        - endorser_alias: bcovrin-test-endorser
+          ledger_id: bcovrin-test
+        - endorser_alias: sovrin-testnet-endorser
+          ledger_id: sovrin-testnet
+        create_public_did:
+        - bcovrin-test
+        - sovrin-testnet
+        print_key: true
+        print_token: true
+        wallet_name: traction_innkeeper
+      reservation:
+        auto_approve: true
+        auto_issuer: true
+        expiry_minutes: 2880
+---
+# Source: traction/templates/ui/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: traction-ivan-tenant-ui
+  labels:
+    app: traction
+    helm.sh/chart: traction-0.4.0
+    app.kubernetes.io/version: "1.2.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: traction-ivan-tenant-ui
+    app.kubernetes.io/instance: traction-ivan
+data:
+  FRONTEND_INNKEEPER_OIDC_ACTIVE: "true"
+  FRONTEND_INNKEEPER_OIDC_AUTHORITY: "https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-citz"
+  FRONTEND_INNKEEPER_OIDC_CLIENT: "innkeeper-frontend"
+  FRONTEND_INNKEEPER_OIDC_LABEL: "IDIR"
+  FRONTEND_INNKEEPER_OIDC_EXTRA_PARAMS: "{\"kc_idp_hint\":\"idir\"}"
+  FRONTEND_INNKEEPER_SHOW_ADMIN: "true"
+  FRONTEND_TENANT_SHOW_WRITABLE_COMPONENTS: "true"
+  FRONTEND_SHOW_OIDC_RESERVATION_LOGIN: "false"
+  FRONTEND_QUICK_CONNECT_ENDORSER_NAME: "bcovrin-test-endorser"
+  FRONTEND_REQUIRE_EMAIL_FOR_RESERVATION: "true"
+  FRONTEND_SESSION_TIMEOUT_SECONDS: "600"
+  FRONTEND_SESSION_COUNTDOWN_SECONDS: "30"
+  FRONTEND_TENANT_PROXY_URL: https://traction-ivan-tenant-proxy-dev.apps.silver.devops.gov.bc.ca
+  # FRONTEND_LOG_STREAM_URL: wss://traction-ivan-tenant-ui:8080/logStream
+  SERVER_OIDC_JWKS: "https://dev.loginproxy.gov.bc.ca/auth/realms/digitaltrust-citz/protocol/openid-connect/certs"
+  SERVER_OIDC_REALM: "Traction"
+  SERVER_OIDC_ROLE: "innkeeper"
+  SERVER_SMTP_INNKEEPER_INBOX: "lucas.o'neil@gov.bc.ca"
+  SERVER_SMTP_PORT: "25"
+  SERVER_SMTP_SENDER_ADDRESS: "DoNotReplyTractionPR@gov.bc.ca"
+  SERVER_SMTP_SERVER: "apps.smtp.gov.bc.ca"
+  SERVER_SMTP_SECURE: "false"
+  SERVER_SMTP_USER: ""
+  SERVER_TRACTION_URL: http://traction-ivan-tenant-proxy:8032
+  SERVER_LOKI_URL: ""
+  UX_APP_INNKEEPER_TITLE: "Traction Innkeeper Console"
+  UX_APP_TITLE: "Traction Tenant Console"
+  UX_COPYRIGHT: ""
+  UX_COVERIMAGE_COPYRIGHT: "Photo by Kristoffer Fredriksson on StockSnap"
+  UX_OWNER: ""
+  UX_SIDEBAR_TITLE: "Traction"
+  UX_INFO_BANNER_MESSAGE: "Traction Pull Request Environment"
+  UX_INFO_BANNER_MESSAGE_LEVEL: "info"
+  UX_INFO_BANNER_SHOW_MESSAGE: "true"
+  UX_ABOUT_TITLE: "Government of British Columbia"
+  UX_ABOUT_LINK_TITLE: "BC Digital Trust Service Agreement"
+  UX_ABOUT_LINK: "https://github.com/bcgov/bc-vcpedia/blob/main/agents/bc-gov-agent-service.md"
+  UX_ABOUT_IMAGE_URL: "/img/bc/bc_logo.png"
+---
+# Source: traction/templates/ui/form-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: traction-ivan-tenant-ui-form
+  labels:
+    app: traction
+    helm.sh/chart: traction-0.4.0
+    app.kubernetes.io/version: "1.2.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: traction-ivan-tenant-ui
+    app.kubernetes.io/instance: traction-ivan
+data:
+  reservation.json: |-
+    {"formDataSchema":{"type":"object","properties":{"ministry":{"type":"string"},"contactName":{"type":"string"},"tenantReason":{"type":"string"}},"required":[]},"formUISchema":{"type":"VerticalLayout","elements":[{"type":"Control","scope":"#/properties/ministry","label":"Ministry"},{"type":"Control","scope":"#/properties/contactName","label":"ContactName"},{"type":"Control","scope":"#/properties/tenantReason","label":"PurposeofTenant","options":{"multi":true}}]}}
+---
+# Source: traction/charts/acapy/templates/tails-pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: traction-ivan-acapy-tails
+  labels:
+    app.kubernetes.io/instance: traction-ivan
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: acapy
+    app.kubernetes.io/version: 1.3.1
+    helm.sh/chart: acapy-0.1.9
+    app.kubernetes.io/component: agent
+  annotations: 
+    helm.sh/resource-policy: keep
+spec:
+  accessModes:
+    - "ReadWriteMany"
+  resources:
+    requests:
+      storage: "1Gi"
+---
+# Source: traction/charts/acapy/charts/postgresql/templates/primary/svc-headless.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: traction-ivan-postgresql-hl
+  namespace: "bc0192-dev"
+  labels:
+    app.kubernetes.io/instance: traction-ivan
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 16.4.0
+    helm.sh/chart: postgresql-15.5.38
+    app.kubernetes.io/component: primary
+  annotations:
+spec:
+  type: ClusterIP
+  clusterIP: None
+  # We want all pods in the StatefulSet to have their addresses published for
+  # the sake of the other Postgresql pods even before they're ready, since they
+  # have to be able to talk to each other in order to become ready.
+  publishNotReadyAddresses: true
+  ports:
+    - name: tcp-postgresql
+      port: 5432
+      targetPort: tcp-postgresql
+  selector:
+    app.kubernetes.io/instance: traction-ivan
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/component: primary
+---
+# Source: traction/charts/acapy/charts/postgresql/templates/primary/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: traction-ivan-postgresql
+  namespace: "bc0192-dev"
+  labels:
+    app.kubernetes.io/instance: traction-ivan
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 16.4.0
+    helm.sh/chart: postgresql-15.5.38
+    app.kubernetes.io/component: primary
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  ports:
+    - name: tcp-postgresql
+      port: 5432
+      targetPort: tcp-postgresql
+      nodePort: null
+  selector:
+    app.kubernetes.io/instance: traction-ivan
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/component: primary
+---
+# Source: traction/charts/acapy/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: traction-ivan-acapy
+  namespace: "bc0192-dev"
+  labels:
+    app.kubernetes.io/instance: traction-ivan
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: acapy
+    app.kubernetes.io/version: 1.3.1
+    helm.sh/chart: acapy-0.1.9
+    app.kubernetes.io/component: agent
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  ports:
+    - name: http
+      port: 8021
+      protocol: TCP
+      targetPort: http
+      nodePort: null
+    - name: admin
+      port: 8022
+      protocol: TCP
+      targetPort: admin
+      nodePort: null
+  selector:
+    app.kubernetes.io/instance: traction-ivan
+    app.kubernetes.io/name: acapy
+---
+# Source: traction/templates/proxy/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: traction-ivan-tenant-proxy
+  labels:
+    app: traction
+    helm.sh/chart: traction-0.4.0
+    app.kubernetes.io/version: "1.2.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8032
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: traction-ivan-tenant-proxy
+    app.kubernetes.io/instance: traction-ivan
+---
+# Source: traction/templates/ui/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: traction-ivan-tenant-ui
+  labels:
+    app: traction
+    helm.sh/chart: traction-0.4.0
+    app.kubernetes.io/version: "1.2.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: traction-ivan-tenant-ui
+    app.kubernetes.io/instance: traction-ivan
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: traction-ivan-tenant-ui
+    app.kubernetes.io/instance: traction-ivan
+---
+# Source: traction/charts/acapy/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traction-ivan-acapy
+  namespace: "bc0192-dev"
+  labels:
+    app.kubernetes.io/instance: traction-ivan
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: acapy
+    app.kubernetes.io/version: 1.3.1
+    helm.sh/chart: acapy-0.1.9
+    app.kubernetes.io/component: agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: traction-ivan
+      app.kubernetes.io/name: acapy
+  strategy: 
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        checksum/configmap: 75fe91c23d70d1ac735890b31114d30750d53d7fbf13cae850bcf39af19cda85
+      labels:
+        app.kubernetes.io/instance: traction-ivan
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: acapy
+        app.kubernetes.io/version: 1.3.1
+        helm.sh/chart: acapy-0.1.9
+        app.kubernetes.io/component: agent
+    spec:
+      automountServiceAccountToken: false
+      serviceAccountName: default
+      
+      securityContext:
+        fsGroup: 1001
+        fsGroupChangePolicy: Always
+        supplementalGroups: []
+        sysctls: []
+      containers:
+        - name: acapy
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 1001
+            runAsNonRoot: true
+            runAsUser: 1001
+            seLinuxOptions: {}
+            seccompProfile:
+              type: RuntimeDefault
+          image: ghcr.io/bcgov/traction-plugins-acapy:1.3.1
+          imagePullPolicy: Always
+          command:
+            - /bin/bash
+            - '-c'
+          args:
+            - >-
+              aca-py start
+              --arg-file '/home/aries/argfile.yml'
+              --plugin-config '/home/aries/plugin-config.yml'
+              --plugin 'aries_cloudagent.messaging.jsonld' --plugin traction_plugins.traction_innkeeper.v1_0 --plugin-config-value traction_innkeeper.innkeeper_wallet.tenant_id=\"$(INNKEEPER_WALLET_TENANT_ID)\" --plugin-config-value traction_innkeeper.innkeeper_wallet.wallet_key=\"$(INNKEEPER_WALLET_WALLET_KEY)\" --plugin multitenant_provider.v1_0 --plugin basicmessage_storage.v1_0 --plugin connections --plugin connection_update.v1_0 --plugin rpc.v1_0 --plugin webvh
+          env:
+            - name: ACAPY_ADMIN_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: traction-ivan-acapy-api
+                  key: adminApiKey
+                  optional: true
+            - name: ACAPY_WALLET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: traction-ivan-acapy-api
+                  key: walletKey
+            - name: ACAPY_WALLET_SEED
+              valueFrom:
+                secretKeyRef:
+                  name: traction-ivan-acapy-seed
+                  key: seed
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: traction-ivan-postgresql
+                  key: password
+            - name: POSTGRES_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: traction-ivan-postgresql
+                  key: postgres-password
+            - name: ACAPY_MULTITENANT_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: traction-ivan-acapy-api
+                  key: jwt
+            - name: ACAPY_WALLET_STORAGE_CREDS
+              value: '{"account":"acapy","password":"$(POSTGRES_PASSWORD)","admin_account":"postgres","admin_password":"$(POSTGRES_POSTGRES_PASSWORD)"}'
+          envFrom:
+            - secretRef:
+                name: traction-ivan-acapy-plugin-innkeeper
+          ports:
+            - name: http
+              containerPort: 8021
+              protocol: TCP
+            - name: admin
+              containerPort: 8022
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /status/live
+              port: admin
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            successThreshold: 1
+            timeoutSeconds: 10
+          readinessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /status/ready
+              port: admin
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          resources:
+            requests:
+              cpu: 120m
+              memory: 200Mi
+          volumeMounts:
+            - name: empty-dir
+              mountPath: /tmp
+            - name: empty-dir
+              mountPath: /home/aries/.acapy_agent/vdr
+            - name: config
+              mountPath: "/home/aries/argfile.yml"
+              subPath: "argfile.yml"
+              readOnly: true
+            - name: config
+              mountPath: "/tmp/ledgers.yml"
+              subPath: "ledgers.yml"
+              readOnly: true
+            - name: config
+              mountPath: "/home/aries/plugin-config.yml"
+              subPath: "plugin-config.yml"
+              readOnly: true
+            - name: tails-data
+              mountPath: "/home/aries/.indy_client/tails"
+      volumes:
+        - name: tails-data
+          persistentVolumeClaim:
+            claimName: traction-ivan-acapy-tails
+        - name: empty-dir
+          emptyDir: {}
+        - name: config
+          configMap:
+            name: traction-ivan-acapy-config
+---
+# Source: traction/templates/proxy/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traction-ivan-tenant-proxy
+  labels:
+    app: traction
+    helm.sh/chart: traction-0.4.0
+    app.kubernetes.io/version: "1.2.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: traction-ivan-tenant-proxy
+      app.kubernetes.io/instance: traction-ivan
+  template:
+    metadata:
+      annotations:
+      labels:
+        app.kubernetes.io/name: traction-ivan-tenant-proxy
+        app.kubernetes.io/instance: traction-ivan
+    spec:
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      securityContext:
+        {}
+      containers:
+        - name: tenant-proxy
+          securityContext:
+            {}
+          image: "ghcr.io/bcgov/traction-tenant-proxy:1.2.0"
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /status/ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          env:
+            - name: ACAPY_ADMIN_URL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: traction-ivan-acapy-api
+                  key: adminApiKey
+            - name: ACAPY_ADMIN_URL
+              value: http://traction-ivan-acapy:8022
+          resources:
+            requests:
+              cpu: 10m
+              memory: 50Mi
+---
+# Source: traction/templates/ui/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traction-ivan-tenant-ui
+  labels:
+    app: traction
+    helm.sh/chart: traction-0.4.0
+    app.kubernetes.io/version: "1.2.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: traction-ivan-tenant-ui
+    app.kubernetes.io/instance: traction-ivan
+  annotations:
+    checksum/config: 954b5f8c5135c9316dc8c30abe77eb6bb15565be2bf6ca03591529ce598eb308
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: traction-ivan-tenant-ui
+      app.kubernetes.io/instance: traction-ivan
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: traction-ivan-tenant-ui
+        app.kubernetes.io/instance: traction-ivan
+    spec:
+      serviceAccountName: default
+      securityContext:
+        {}
+      containers:
+        - name: tenant-ui
+          securityContext:
+            null
+          image: "ghcr.io/bcgov/traction-tenant-ui:1.2.0"
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+            failureThreshold: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          env:
+            - name: SERVER_INNKEEPER_USER
+              valueFrom:
+                secretKeyRef:
+                  name: traction-ivan-acapy-plugin-innkeeper
+                  key: INNKEEPER_WALLET_TENANT_ID
+            - name: SERVER_INNKEEPER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: traction-ivan-acapy-plugin-innkeeper
+                  key: INNKEEPER_WALLET_WALLET_KEY
+          envFrom:
+            - configMapRef:
+                name: traction-ivan-tenant-ui
+          resources:
+            limits:
+              memory: 128Mi
+            requests:
+              cpu: 10m
+              memory: 80Mi
+          volumeMounts:
+            - name: reservation-form
+              mountPath: "/usr/src/app/frontend/dist/forms/reservation.json"
+              subPath: "reservation.json"
+              readOnly: true
+      volumes:
+        - name: reservation-form
+          configMap:
+            name: traction-ivan-tenant-ui-form
+---
+# Source: traction/charts/acapy/charts/postgresql/templates/primary/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: traction-ivan-postgresql
+  namespace: "bc0192-dev"
+  labels:
+    app.kubernetes.io/instance: traction-ivan
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 16.4.0
+    helm.sh/chart: postgresql-15.5.38
+    app.kubernetes.io/component: primary
+spec:
+  replicas: 1
+  serviceName: traction-ivan-postgresql-hl
+  updateStrategy:
+    rollingUpdate: {}
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: traction-ivan
+      app.kubernetes.io/name: postgresql
+      app.kubernetes.io/component: primary
+  template:
+    metadata:
+      name: traction-ivan-postgresql
+      labels:
+        app.kubernetes.io/instance: traction-ivan
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: postgresql
+        app.kubernetes.io/version: 16.4.0
+        helm.sh/chart: postgresql-15.5.38
+        app.kubernetes.io/component: primary
+      annotations:
+        checksum/extended-configuration: f231c584ead90a4176b09eb6d6073240ab2939b8bd09b20013265962083b3208
+    spec:
+      serviceAccountName: traction-ivan-postgresql
+      
+      automountServiceAccountToken: false
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/instance: traction-ivan
+                    app.kubernetes.io/name: postgresql
+                    app.kubernetes.io/component: primary
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      hostNetwork: false
+      hostIPC: false
+      containers:
+        - name: postgresql
+          image: docker.io/bitnami/postgresql:16.4.0-debian-12-r14
+          imagePullPolicy: "IfNotPresent"
+          env:
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: POSTGRESQL_PORT_NUMBER
+              value: "5432"
+            - name: POSTGRESQL_VOLUME_DIR
+              value: "/bitnami/postgresql"
+            - name: PGDATA
+              value: "/bitnami/postgresql/data"
+            # Authentication
+            - name: POSTGRES_USER
+              value: "acapy"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: traction-ivan-postgresql
+                  key: password
+            - name: POSTGRES_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: traction-ivan-postgresql
+                  key: postgres-password
+            # LDAP
+            - name: POSTGRESQL_ENABLE_LDAP
+              value: "no"
+            # TLS
+            - name: POSTGRESQL_ENABLE_TLS
+              value: "no"
+            # Audit
+            - name: POSTGRESQL_LOG_HOSTNAME
+              value: "false"
+            - name: POSTGRESQL_LOG_CONNECTIONS
+              value: "false"
+            - name: POSTGRESQL_LOG_DISCONNECTIONS
+              value: "false"
+            - name: POSTGRESQL_PGAUDIT_LOG_CATALOG
+              value: "off"
+            # Others
+            - name: POSTGRESQL_CLIENT_MIN_MESSAGES
+              value: "error"
+            - name: POSTGRESQL_SHARED_PRELOAD_LIBRARIES
+              value: "pgaudit"
+          ports:
+            - name: tcp-postgresql
+              containerPort: 5432
+          livenessProbe:
+            failureThreshold: 6
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - exec pg_isready -U "acapy" -h 127.0.0.1 -p 5432
+          readinessProbe:
+            failureThreshold: 6
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - -e
+                - |
+                  exec pg_isready -U "acapy" -h 127.0.0.1 -p 5432
+                  [ -f /opt/bitnami/postgresql/tmp/.initialized ] || [ -f /bitnami/postgresql/.initialized ]
+          resources:
+            limits:
+              cpu: 150m
+              ephemeral-storage: 2Gi
+              memory: 192Mi
+            requests:
+              cpu: 100m
+              ephemeral-storage: 50Mi
+              memory: 128Mi
+          volumeMounts:
+            - name: empty-dir
+              mountPath: /tmp
+              subPath: tmp-dir
+            - name: empty-dir
+              mountPath: /opt/bitnami/postgresql/conf
+              subPath: app-conf-dir
+            - name: empty-dir
+              mountPath: /opt/bitnami/postgresql/tmp
+              subPath: app-tmp-dir
+            - name: postgresql-extended-config
+              mountPath: /bitnami/postgresql/conf/conf.d/
+            - name: dshm
+              mountPath: /dev/shm
+            - name: data
+              mountPath: /bitnami/postgresql
+      volumes:
+        - name: empty-dir
+          emptyDir: {}
+        - name: postgresql-extended-config
+          configMap:
+            name: traction-ivan-postgresql-extended-configuration
+        - name: dshm
+          emptyDir:
+            medium: Memory
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: data
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: "1Gi"
+---
+# Source: traction/charts/acapy/templates/ingress-admin.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: traction-ivan-acapy-admin
+  namespace: "bc0192-dev"
+  labels:
+    app.kubernetes.io/instance: traction-ivan
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: acapy
+    app.kubernetes.io/version: 1.3.1
+    helm.sh/chart: acapy-0.1.9
+  annotations:
+    route.openshift.io/termination: edge
+spec:
+  rules:
+    - host: "traction-ivan-acapy-admin-dev.apps.silver.devops.gov.bc.ca"
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: traction-ivan-acapy
+                port:
+                  name: admin
+---
+# Source: traction/charts/acapy/templates/ingress-agent.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: traction-ivan-acapy-agent
+  namespace: "bc0192-dev"
+  labels:
+    app.kubernetes.io/instance: traction-ivan
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: acapy
+    app.kubernetes.io/version: 1.3.1
+    helm.sh/chart: acapy-0.1.9
+  annotations:
+    route.openshift.io/termination: edge
+spec:
+  rules:
+    - host: "traction-ivan-acapy-dev.apps.silver.devops.gov.bc.ca"
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: traction-ivan-acapy
+                port:
+                  name: http
+---
+# Source: traction/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: traction-ivan
+  labels:
+    app: traction
+    helm.sh/chart: traction-0.4.0
+    app.kubernetes.io/version: "1.2.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    route.openshift.io/termination: edge
+spec:
+  rules:
+    - host: "traction-ivan-tenant-proxy-dev.apps.silver.devops.gov.bc.ca"
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: traction-ivan-tenant-proxy
+                port:
+                  number: 8032
+    - host: "traction-ivan-tenant-ui-dev.apps.silver.devops.gov.bc.ca"
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: traction-ivan-tenant-ui
+                port:
+                  number: 8080
