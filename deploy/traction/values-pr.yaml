@@ -79,6 +79,8 @@ tenant_proxy:
 ui:
   showOIDCReservationLogin: false
   quickConnectEndorserName: "bcovrin-test-endorser"
+  pluginInnkeeper:
+    existingSecret: innkeeper-pr-shared-secret
   image:
     pullPolicy: Always
   ux:
