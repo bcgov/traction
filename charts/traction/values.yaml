@@ -148,7 +148,6 @@ acapy:
     multitenant: true
     multitenancy-config:
       - wallet_type=single-wallet-askar
-      - wallet_name=askar-wallet
     notify-revocation: true
     preserve-exchange-records: true
     public-invites: true
