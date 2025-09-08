@@ -46,6 +46,8 @@ acapy:
         expiry_minutes: 2880
         auto_approve: true
         auto_issuer: true
+    webvh:
+      server_url: https://sandbox.bcvh.vonx.io
   resources:
     limits:
       memory: 300Mi
