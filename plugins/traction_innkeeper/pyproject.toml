@@ -20,7 +20,7 @@ connections = {git = "https://github.com/openwallet-foundation/acapy-plugins", r
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.12.5"
-pytest = "^8.4.1"
+pytest = "^8.4.2"
 pytest-cov = "^6.2.1"
 pytest-mock = "^3.14.1"
 pytest-asyncio= "^1.0.0"
