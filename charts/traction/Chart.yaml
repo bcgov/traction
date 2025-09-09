@@ -2,7 +2,7 @@ apiVersion: v2
 name: traction
 description: The Traction service allows organizations to verify, hold, and issue verifiable credentials. The Traction Tenant UI allows tenants to manage their agent.
 type: application
-version: 0.3.8
+version: 0.4.0
 appVersion: 1.2.0
 home: "https://github.com/bcgov/traction"
 sources: ["https://github.com/bcgov/traction"]
@@ -18,10 +18,9 @@ maintainers:
     name: loneil
     url: https://github.com/loneil
 dependencies:
-  - name: postgresql
-    version: 15.5.38
-    repository: https://charts.bitnami.com/bitnami/
-    condition: postgresql.enabled
+  - name: acapy
+    version: 0.2.0
+    repository: https://openwallet-foundation.github.io/helm-charts/
   - name: common
     repository: "https://charts.bitnami.com/bitnami"
     tags:

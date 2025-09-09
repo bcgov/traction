@@ -1,10 +1,10 @@
 {{- if .Values.ingress.enabled -}}
-{{- $acapyFullName := include "acapy.fullname" . -}}
+{{- $acapyFullName := include "traction.acapy.fullname" . -}}
 {{- $tenantProxyFullName := include "tenant_proxy.fullname" . -}}
 {{- $uiFullName := include "tenant-ui.fullname" . -}}
 {{- $uiHttpPort := .Values.ui.service.httpPort -}}
-{{- $httpPort := .Values.acapy.service.httpPort -}}
-{{- $adminPort := .Values.acapy.service.adminPort -}}
+{{- $httpPort := .Values.acapy.service.ports.http -}}
+{{- $adminPort := .Values.acapy.service.ports.admin -}}
 {{- $tenantProxyPort := .Values.tenant_proxy.service.port -}}
 {{- if and .Values.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
@@ -22,7 +22,7 @@ kind: Ingress
 metadata:
   name: {{ include "global.fullname" . }}
   labels:
-    {{- include "acapy.labels" . | nindent 4 }}
+    {{- include "common.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -42,40 +42,6 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    - host: {{ include "acapy.host" . | quote }}
-      http:
-        paths:
-          - path: /
-            {{- if (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
-            pathType: ImplementationSpecific
-            {{- end }}
-            backend:
-              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
-              service:
-                name: {{ $acapyFullName }}
-                port:
-                  number: {{ $httpPort }}
-              {{- else }}
-              serviceName: {{ $acapyFullName }}
-              servicePort: {{ $httpPort }}
-              {{- end }}
-    - host: {{ include "acapy.admin.host" . | quote }}
-      http:
-        paths:
-          - path: /
-            {{- if (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
-            pathType: ImplementationSpecific
-            {{- end }}
-            backend:
-              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
-              service:
-                name: {{ $acapyFullName }}
-                port:
-                  number: {{ $adminPort }}
-              {{- else }}
-              serviceName: {{ $acapyFullName }}
-              servicePort: {{ $adminPort }}
-              {{- end }}
     - host: {{ include "tenant_proxy.host" . | quote }}
       http:
         paths:

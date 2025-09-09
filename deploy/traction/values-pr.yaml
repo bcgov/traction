@@ -1,18 +1,15 @@
-ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
+global:
+  ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
 acapy:
   image:
     pullPolicy: Always
-  secret:
-    adminApiKey:
-      generated: false
-      value: "change-me"
-    pluginInnkeeper:
-      generated: false
-      walletkey: "change-me"
-      tenantid: "innkeeper"
+
+  extraEnvVarsSecret: 'innkeeper-pr-shared-secret'
+
   argfile.yml:
     tails-server-base-url: https://tails-dev.vonx.io
     tails-server-upload-url: https://tails-dev.vonx.io
+
   ledgers.yml:
     - id: bcovrin-test
       is_production: true
@@ -24,20 +21,7 @@ acapy:
       is_production: true
       is_write: false
       genesis_url: "https://raw.githubusercontent.com/ICCS-ISAC/dtrust-reconu/main/CANdy/prod/pool_transactions_genesis"
-    - id: sovrin-testnet
-      is_production: true
-      is_write: true
-      genesis_url: "https://raw.githubusercontent.com/sovrin-foundation/sovrin/stable/sovrin/pool_transactions_sandbox_genesis"
-      endorser_did: "EZpKx6nT56Hv83JmNz7ik8"
-      endorser_alias: "sovrin-testnet-endorser"
-  plugins:
-    basicmessageStorage: true
-    connections: true
-    connectionUpdate: true
-    multitenantProvider: true
-    tractionInnkeeper: true
-    rpc: true
-    webvh: true
+
   plugin-config.yml:
     traction_innkeeper:
       innkeeper_wallet:
@@ -46,27 +30,32 @@ acapy:
         connect_to_endorser:
           - endorser_alias: bcovrin-test-endorser
             ledger_id: bcovrin-test
-          - endorser_alias: sovrin-testnet-endorser
-            ledger_id: sovrin-testnet
         create_public_did:
           - bcovrin-test
-          - sovrin-testnet
       reservation:
         expiry_minutes: 2880
         auto_approve: true
         auto_issuer: true
-  resources:
-    limits:
-      memory: 300Mi
-    requests:
-      cpu: 120m
-      memory: 128Mi
+
+  resourcesPreset: micro
+
   networkPolicy:
     enabled: true
-    ingress:
+    ingressNSMatchLabels:
+      network.openshift.io/policy-group:
+
+  ingress:
+    agent:
       enabled: true
-      namespaceSelector:
-        network.openshift.io/policy-group: ingress
+      hostname: '{{- printf "%s%s" (include "common.names.fullname" .) .Values.global.ingressSuffix }}'
+      annotations:
+        route.openshift.io/termination: edge
+    admin:
+      enabled: true
+      hostname: '{{- printf "%s-admin%s" (include "common.names.fullname" .) .Values.global.ingressSuffix }}'
+      annotations:
+        route.openshift.io/termination: edge
+
 tenant_proxy:
   image:
     pullPolicy: Always
@@ -76,9 +65,12 @@ tenant_proxy:
       enabled: true
       namespaceSelector:
         network.openshift.io/policy-group: ingress
+
 ui:
   showOIDCReservationLogin: false
   quickConnectEndorserName: "bcovrin-test-endorser"
+  pluginInnkeeper:
+    existingSecret: innkeeper-pr-shared-secret
   image:
     pullPolicy: Always
   ux:
@@ -154,13 +146,6 @@ ui:
       namespaceSelector:
         network.openshift.io/policy-group: ingress
 ingress:
+  enabled: true
   annotations:
     route.openshift.io/termination: edge
-postgresql:
-  primary:
-    resources:
-      limits:
-        memory: 128Mi
-      requests:
-        cpu: 100m
-        memory: 50Mi

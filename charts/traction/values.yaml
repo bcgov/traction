@@ -1,23 +1,52 @@
+## @param global.imageRegistry Global Docker image registry
+## @param global.imagePullSecrets Global Docker registry secret names as an array
+## @param global.defaultStorageClass Global default StorageClass for Persistent Volume(s)
+##
+global:
+  imageRegistry: ""
+  ## E.g.
+  ## imagePullSecrets:
+  ##   - myRegistryKeySecretName
+  ##
+  imagePullSecrets: []
+  ## @param global.ingressSuffix Domain suffix to be used for default hostpaths in ingress
+  ingressSuffix: -dev.example.com
+  ## @param global.defaultStorageClass Default StorageClass for Persistent Volume Claim
+  defaultStorageClass: ""
+  ## Security parameters
+  ##
+  security:
+    ## @param global.security.allowInsecureImages Allows skipping image verification
+    allowInsecureImages: false
+  ## Compatibility adaptations for Kubernetes platforms
+  ##
+  compatibility:
+    ## Compatibility adaptations for Openshift
+    ##
+    openshift:
+      ## @param global.compatibility.openshift.adaptSecurityContext Adapt the securityContext sections of the deployment to make them compatible with Openshift restricted-v2 SCC: remove runAsUser, runAsGroup and fsGroup and let the platform use their allowed default IDs. Possible values: auto (apply if the detected running cluster is Openshift), force (perform the adaptation always), disabled (do not perform adaptation)
+      ##
+      adaptSecurityContext: auto
 ## @param nameOverride String to override the helm chart name, second part of the prefix
 nameOverride: ""
 ## @param fullnameOverride String to fully override the helm chart name, full prefix. *Must be provided if using a custom release name that does not include the word traction.*
 fullnameOverride: ""
-## @param ingressSuffix Domain suffix to be used for default hostpaths in ingress
-ingressSuffix: -dev.example.com
 
-## @section Acapy Configuration
-##
 acapy:
+  ## @param acapy.image.registry
   ## @param acapy.image.repository
   ## @param acapy.image.pullPolicy
-  ## @param acapy.image.pullSecrets [array]
+  ## @param acapy.image.pullSecrets
   ## @param acapy.image.tag Overrides the image tag which defaults to the chart appVersion.
+  ## @param acapy.image.digest Overrides the image digest which is used instead of the tag.
   ##
   image:
-    repository: ghcr.io/bcgov/traction-plugins-acapy
+    registry: ghcr.io
+    repository: bcgov/traction-plugins-acapy
     pullPolicy: IfNotPresent
     pullSecrets: []
     tag: ""
+    digest: ""
 
   ## ServiceAccount configuration
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
@@ -32,15 +61,15 @@ acapy:
     automountServiceAccountToken: true
     name: ""
 
-  ## @param acapy.replicaCount Number of AcaPy replicas to deploy
+  ## @param acapy.replicaCount Number of ACA-Py replicas to deploy
   ##
   replicaCount: 1
 
-  ## AcaPy Autoscaling configuration
+  ## ACA-Py Autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
-  ## @param acapy.autoscaling.enabled Enable Horizontal POD autoscaling for AcaPy
-  ## @param acapy.autoscaling.minReplicas Minimum number of AcaPy replicas
-  ## @param acapy.autoscaling.maxReplicas Maximum number of AcaPy replicas
+  ## @param acapy.autoscaling.enabled Enable Horizontal POD autoscaling for ACA-Py
+  ## @param acapy.autoscaling.minReplicas Minimum number of ACA-Py replicas
+  ## @param acapy.autoscaling.maxReplicas Maximum number of ACA-Py replicas
   ## @param acapy.autoscaling.targetCPUUtilizationPercentage Target CPU utilization percentage
   ## @param acapy.autoscaling.targetMemoryUtilizationPercentage Target Memory utilization percentage
   ## @param acapy.autoscaling.stabilizationWindowSeconds Stabilization window in seconds
@@ -53,10 +82,7 @@ acapy:
     targetMemoryUtilizationPercentage: 80
     stabilizationWindowSeconds: 300
 
-  ## @param acapy.labelOverride
-  labelOverride: ""
-
-  ## @section Acapy configuration file
+  ## @section ACA-Py configuration file
   ##
   ## @param acapy.argfile.yml.auto-accept-invites Automatically accept invites without firing a webhook event or waiting for an admin request. Default: false.
   ## @param acapy.argfile.yml.auto-accept-requests Automatically accept connection requests without firing a webhook event or waiting for an admin request. Default: false.
@@ -78,13 +104,12 @@ acapy:
   ## @param acapy.argfile.yml.emit-new-didcomm-prefix Emit protocol messages with new DIDComm prefix; i.e., 'https://didcomm.org/' instead of (default) prefix 'did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/'.
   ## @param acapy.argfile.yml.endorser-alias For transaction Authors, specify the alias of the Endorser connection that will be used to endorse transactions.
   ## @param acapy.argfile.yml.endorser-protocol-role Specify the role ('author' or 'endorser') which this agent will participate. Authors will request transaction endorement from an Endorser. Endorsers will endorse transactions from Authors, and may write their own  transactions to the ledger. If no role (or 'none') is specified then the endorsement protocol will not be used and this agent will write transactions to the ledger directly.
-  ## @param acapy.argfile.yml.genesis-transactions-list Path to YAML configuration for connecting to multiple HyperLedger Indy ledgers.
-  ## @param acapy.argfile.yml.label Specifies the label for this agent. This label is publicized (self-attested) to other agents as part of forming a connection. Set to release name by default.
   ## @param acapy.argfile.yml.log-level Specifies a custom logging level as one of: ('debug', 'info', 'warning', 'error', 'critical')
   ## @param acapy.argfile.yml.monitor-ping Send a webhook when a ping is sent or received.
   ## @param acapy.argfile.yml.monitor-revocation-notification Specifies that aca-py will emit webhooks on notification of revocation received.
   ## @param acapy.argfile.yml.multitenant-admin Specify whether to enable the multitenant admin api.
   ## @param acapy.argfile.yml.multitenant Enable multitenant mode.
+  ## @param acapy.argfile.yml.multitenancy-config [array] Multitenancy configuration parameters. Possible values: wallet_name, wallet_key, cache_size, key_derivation_method. "wallet_name" is only used when `wallet_type` is `single-wallet-askar`
   ## @param acapy.argfile.yml.notify-revocation Specifies that aca-py will notify credential recipients when revoking a credential it issued.
   ## @param acapy.argfile.yml.preserve-exchange-records Keep credential exchange records after exchange has completed.
   ## @param acapy.argfile.yml.public-invites Send invitations out using the public DID for the agent, and receive connection requests solicited by invitations which use the public DID. Default: false.
@@ -94,7 +119,7 @@ acapy:
   ## @param acapy.argfile.yml.wallet-name Specifies the wallet name to be used by the agent. This is useful if your deployment has multiple wallets.
   ## @param acapy.argfile.yml.wallet-storage-type Specifies the type of Indy wallet backend to use. Supported internal storage types are 'basic' (memory), 'default' (sqlite), and 'postgres_storage'.  The default, if not specified, is 'default'.
   ## @param acapy.argfile.yml.wallet-type Specifies the type of Indy wallet provider to use. Supported internal storage types are 'basic' (memory) and 'indy'. The default (if not specified) is 'basic'.
-  ##
+  ## @param acapy.argfile.yml.webhook-url Send webhooks containing internal state changes to the specified URL. Optional API key to be passed in the request body can be appended using a hash separator [#]. This is useful for a controller to monitor agent events and respond to those events using the admin API. If not specified, webhooks are not published by the agent.
   argfile.yml:
     auto-accept-invites: true
     auto-accept-requests: true
@@ -116,13 +141,13 @@ acapy:
     emit-new-didcomm-prefix: true
     endorser-alias: endorser
     endorser-protocol-role: author
-    genesis-transactions-list: /home/aries/ledgers.yml
-    label: '{{ include "acapy.label" .}}'
     log-level: info
     monitor-ping: true
     monitor-revocation-notification: true
     multitenant-admin: true
     multitenant: true
+    multitenancy-config:
+      - wallet_type=single-wallet-askar
     notify-revocation: true
     preserve-exchange-records: true
     public-invites: true
@@ -132,8 +157,102 @@ acapy:
     wallet-name: askar-wallet
     wallet-storage-type: postgres_storage
     wallet-type: askar
+    webhook-url: ""
 
-  ## Acapy multiledger configuration file
+  ## ACA-Py ingress configuration (disabled - using Traction's ingress instead)
+  ##
+  ## @param acapy.ingress.agent.enabled Enable ingress for the agent endpoint
+  ## @param acapy.ingress.agent.hostname Hostname to expose the agent endpoint
+  ## @param acapy.ingress.admin.enabled Enable ingress for the admin endpoint
+  ## @param acapy.ingress.admin.hostname Hostname to expose the admin endpoint
+  ingress:
+    agent:
+      enabled: false
+      hostname: ""
+    admin:
+      enabled: false
+      hostname: ""
+
+  ## ACA-Py agent and admin URLs (will be set by Traction ingress)
+  ## @param acapy.agentUrl Override the agent URL advertised by ACA-Py
+  ## @param acapy.adminUrl Override the admin URL for internal access
+  agentUrl: ""
+  adminUrl: ""
+
+  ## Environment variables configuration
+  ## @param acapy.extraEnvVars Extra environment variables to add to the container (array of objects)
+  extraEnvVars: []
+  ## @param acapy.extraEnvVarsCM Name of an existing ConfigMap with extra env vars
+  extraEnvVarsCM: ""
+  ## @param acapy.extraEnvVarsSecret Name of an existing Secret with extra env vars (required for innkeeper plugin)
+  extraEnvVarsSecret: '{{- printf "%s-%s" (include "common.names.fullname" .) "plugin-innkeeper" }}'
+
+  ## Websockets configuration
+  ## @param acapy.websockets.enabled Enable WebSocket transport for ACA-Py
+  websockets:
+    enabled: false
+
+  ## Additional arguments for ACA-Py
+  ## @param acapy.extraArgs Additional CLI args appended to the aca-py start command
+  extraArgs:
+    - --plugin 'aries_cloudagent.messaging.jsonld'
+    - --plugin traction_plugins.traction_innkeeper.v1_0
+    - --plugin-config-value traction_innkeeper.innkeeper_wallet.tenant_id=\"$(INNKEEPER_WALLET_TENANT_ID)\"
+    - --plugin-config-value traction_innkeeper.innkeeper_wallet.wallet_key=\"$(INNKEEPER_WALLET_WALLET_KEY)\"
+    - --plugin multitenant_provider.v1_0
+    - --plugin basicmessage_storage.v1_0
+    - --plugin connections
+    - --plugin connection_update.v1_0
+    - --plugin rpc.v1_0
+    - --plugin webvh
+
+  ## Init containers
+  ## @param acapy.initContainers Extra init containers to add to the pod (array of objects)
+  initContainers: []
+
+  ## Extra volumes and volume mounts
+  ## @param acapy.extraVolumes Extra volumes to add to the pod
+  ## @param acapy.extraVolumeMounts Extra volumeMounts to add to the main container
+  extraVolumes: []
+  extraVolumeMounts: []
+
+  ## Update strategy
+  ## @param acapy.updateStrategy Custom update strategy for the Deployment
+  updateStrategy: {}
+
+  ## Common labels and annotations
+  ## @param acapy.commonLabels Additional common labels to add to all ACA-Py resources
+  ## @param acapy.commonAnnotations Additional common annotations to add to all ACA-Py resources
+  commonLabels: {}
+  commonAnnotations: {}
+
+  ## Service account token
+  ## @param acapy.automountServiceAccountToken Automount service account token for the ACA-Py pod
+  automountServiceAccountToken: false
+
+  ## Node selection and pod affinity
+  ## @param acapy.nodeAffinityPreset.type Node affinity preset type (soft|hard|empty)
+  ## @param acapy.nodeAffinityPreset.key Node label key for node affinity preset
+  ## @param acapy.nodeAffinityPreset.values Node label values for node affinity preset
+  nodeAffinityPreset:
+    type: ""
+    key: ""
+    values: []
+
+  ## @param acapy.podAffinityPreset Pod affinity preset (soft|hard|empty)
+  podAffinityPreset: ""
+  ## @param acapy.podAntiAffinityPreset Pod anti-affinity preset (soft|hard|empty)
+  podAntiAffinityPreset: ""
+
+  ## Topology spread constraints
+  ## @param acapy.topologySpreadConstraints Pod topology spread constraints
+  topologySpreadConstraints: []
+
+  ## Existing configmap
+  ## @param acapy.existingConfigmap Name of an existing ConfigMap providing argfile.yml and other config
+  existingConfigmap: ""
+
+  ## ACA-Py multiledger configuration file
   ## @param acapy.ledgers.yml [object] YAML configuration for connecting to multiple HyperLedger
   ##
   ledgers.yml:
@@ -144,77 +263,7 @@ acapy:
       endorser_did: "DfQetNSm7gGEHuzfUvpfPn"
       endorser_alias: "bcovrin-test-endorser"
 
-  ## @section Wallet Storage configuration
-  ##  Specifies the storage configuration to use for the wallet.
-  ##  This is required if you are for using 'postgres_storage' wallet 'storage type.
-  ##  For example, '{"url":"localhost:5432", "wallet_scheme":"MultiWalletSingleTable"}'.
-  ##  This configuration maps to the indy sdk postgres plugin (PostgresConfig).
-  ##
-  ## @param acapy.walletStorageConfig.json Raw json, overrides all other values including postgres subchart values. e.g.: '{"url":"localhost:5432", "max_connections":"10", "wallet_scheme":"DatabasePerWallet"}'
-  ## @param acapy.walletStorageConfig.url Database url. Overrides all other values including postgres subchart values.
-  ## @param acapy.walletStorageConfig.max_connections Client max connections, defaults to 10.
-  ## @param acapy.walletStorageConfig.wallet_scheme Wallet scheme.
-  ##
-  walletStorageConfig:
-    json: ""
-    url: ""
-    max_connections: 10
-    wallet_scheme: DatabasePerWallet
-  ## @section Wallet Storage Credentials
-  ##  Specifies the storage credentials to use for the wallet.
-  ##  This is required if you are for using 'postgres_storage' wallet 'storage type.
-  ##  For example, '{"account":"postgres","password":"mysecretpassword","admin_account":"postgres","admin_password":"mysecretpassword"}'.
-  ##  This configuration maps to the indy sdk postgres plugin (PostgresCredential).
-  ##  NOTE: admin_user must have the CREATEDB role or else initialization will fail.
-  ##
-  ## @param acapy.walletStorageCredentials.json Raw json with database credentials. Overrides all other values including postgres subchart values. e.g.: '{"account":"postgres","password":"mysecretpassword","admin_account":"postgres","admin_password":"mysecretpassword"}'
-  ## @param acapy.walletStorageCredentials.account Database account name.
-  ## @param acapy.walletStorageCredentials.password Database password.
-  ## @param acapy.walletStorageCredentials.admin_account Database account with CREATEDB role used to create additional databases per wallet.
-  ## @param acapy.walletStorageCredentials.admin_password Database password for admin account.
-  ## @param acapy.walletStorageCredentials.existingSecret Name of an existing secret containing database user, password, and admin password.
-  ## @param acapy.walletStorageCredentials.secretKeys.adminPasswordKey Key in existing secret containing admin account password.
-  ## @param acapy.walletStorageCredentials.secretKeys.userPasswordKey Key in existing secret containing account password.
-  ##
-  walletStorageCredentials:
-    json: ""
-    account: acapy
-    admin_account: postgres
-    existingSecret: ""
-    secretKeys:
-      adminPasswordKey: postgres-password
-      userPasswordKey: password
-  ## @section ACA-Py Multitenancy Configuration
-  ##  Specifies the multitenancy config.
-  ##  Possible values: wallet_type, wallet_name, wallet_key, cache_size, 'key_derivation_method.
-  ##  "wallet_name" is only used when "wallet_type" is "askar-profile"
-  ##
-  ## @param acapy.multitenancyConfiguration.json Raw json with config. Overrides all other values including subchart values. e.g.: '{"wallet_type":"single-wallet-askar", "wallet_name":"askar-wallet"}'
-  ## @param acapy.multitenancyConfiguration.wallet_type Database account name.
-  ##
-  multitenancyConfiguration:
-    json: ""
-    wallet_type: single-wallet-askar
-  ## @section Acapy Plugins
-  ##
-  ## Specify the plugins to enable.
-  ##
-  ## @param acapy.plugins.basicmessageStorage Enable the basicmessage storage plugin.
-  ## @param acapy.plugins.connectionUpdate Enable the connection update plugin.
-  ## @param acapy.plugins.multitenantProvider Enable the multitenant provider plugin.
-  ## @param acapy.plugins.tractionInnkeeper Enable the traction innkeeper plugin.
-  ## @param acapy.plugins.rpc Enable the RPC plugin.
-  ##
-  plugins:
-    basicmessageStorage: true
-    connections: true
-    connectionUpdate: true
-    multitenantProvider: true
-    tractionInnkeeper: true
-    rpc: true
-    webvh: true
-
-  ## @section Acapy Plugin Configuration
+  ## @section ACA-Py Plugin Configuration
   ## Specify configuration values for each plugin.
   ## Configuration values are plugin specific, and are rendered as is into the plugin-config.yml file.
   ##
@@ -259,194 +308,56 @@ acapy:
         auto_issuer: false
     basicmessage_storage:
       wallet_enabled: true
-  ## @section Acapy tails persistence configuration
-  persistence:
-    ## @param acapy.persistence.existingClaim Name of an existing PVC to use
-    ##
-    existingClaim: ""
-    ## @param acapy.persistence.mountPath
-    ##
-    mountPath: /home/aries/.indy_client/tails
-    ## @param acapy.persistence.storageClass PVC Storage Class
-    ## If defined, storageClassName: <storageClass>
-    ## If set to "-", storageClassName: "", which disables dynamic provisioning
-    ## If undefined (the default) or set to null, no storageClassName spec is
-    ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
-    ##   GKE, AWS & OpenStack)
-    ##
-    storageClass: ""
-    ## @param acapy.persistence.accessModes PVC Access Mode. ReadWriteMany is required for each Acapy pod to access the same volume.
-    ##
-    accessModes:
-      - ReadWriteMany
-    ## @param acapy.persistence.size PVC Storage Request for tails volume
-    ##
-    size: 1Gi
-  ## @section Acapy common configurations
-  ## Acapy resource requests and limits
+
+  ## @section ACA-Py common configurations
+  ## ACA-Py resource requests and limits
   ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param acapy.resources.limits.memory The memory limit for the Acapy containers
-  ## @param acapy.resources.limits.cpu The cpu limit for the Acapy containers
-  ## @param acapy.resources.requests.memory The requested memory for the Acapy containers
-  ## @param acapy.resources.requests.cpu The requested cpu for the Acapy containers
+  ## @param acapy.resources.requests.memory The requested memory for the ACA-Py containers
+  ## @param acapy.resources.requests.cpu The requested cpu for the ACA-Py containers
   ##
   resources:
-    limits: {}
     requests:
       cpu: 120m
       memory: 200Mi
-  ## @param acapy.podAnnotations Map of annotations to add to the acapy pods
-  ##
-  podAnnotations: {}
-  ## @param acapy.podSecurityContext Pod Security Context
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
-  ##
-  podSecurityContext:
-    {}
-    # fsGroup: 2000
-  ## @param acapy.containerSecurityContext Container Security Context
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
-  ##
-  containerSecurityContext:
-    {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1001
-  ## Acapy service configuration
+
+  ## ACA-Py service configuration
   ##
   service:
-    ## @param acapy.service.type Kubernetes Service type
+    ## @param acapy.service.ports.http Port to expose for http service
+    ## @param acapy.service.ports.admin Port to expose for admin service
+    ## @param acapy.service.ports.ws Port to expose for websocket service
     ##
-    type: ClusterIP
-    ## @param acapy.service.adminPort Port to expose for admin service
-    ##
-    adminPort: 8031
-    ## @param acapy.service.httpPort Port to expose for http service
-    ##
-    httpPort: 8030
-  ## @param acapy.affinity Affinity for acapy pods assignment
-  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
-  ##
-  affinity: {}
-  ## @param acapy.nodeSelector Node labels for acapy pods assignment
-  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
-  ##
-  nodeSelector: {}
-  ## @param acapy.tolerations Tolerations for acapy pods assignment
-  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
-  ##
-  tolerations: []
+    ports:
+      http: 8021
+      admin: 8022
+      ws: 8023
 
-  ## @section Acapy NetworkPolicy parameters
+  ## @section ACA-Py NetworkPolicy parameters
   ##
   networkPolicy:
     ## @param acapy.networkPolicy.enabled Enable network policies
     ##
     enabled: false
-    ## @param acapy.networkPolicy.ingress.enabled Enable ingress rules
-    ## @param acapy.networkPolicy.ingress.namespaceSelector [object] Namespace selector label that is allowed to access the Tenant proxy pods.
-    ## @param acapy.networkPolicy.ingress.podSelector [object] Pod selector label that is allowed to access the Tenant proxy pods.
-    ingress:
-      enabled: false
-      namespaceSelector:
-        {}
-        # network.openshift.io/policy-group: ingress
-      podSelector: {}
-
-  ## @section Acapy OpenShift Route parameters
-  ## ref: https://docs.openshift.com/container-platform/4.11/networking/routes/route-configuration.html
-  ##
-  ## Not required if ingress is enabled
-  openshift:
-    route:
-      ## @param acapy.openshift.route.enabled Create OpenShift Route resource for Acapy
-      ##
-      enabled: false
-      ## @param acapy.openshift.route.path Path that the router watches for, to route traffic to the service
-      ##
-      path: "/"
-      ## @param acapy.openshift.route.targetPort Target port for the service
-      ##
-      targetPort: http
-      ## @param acapy.openshift.route.timeout Timeout in seconds for a route to return
-      ##
-      timeout: 2m
-      tls:
-        ## @param acapy.openshift.route.tls.enabled Enable TLS termination
-        ##
-        enabled: true
-        ## @param acapy.openshift.route.tls.insecureEdgeTerminationPolicy TLS termination policy
-        ##
-        insecureEdgeTerminationPolicy: None
-        ## @param acapy.openshift.route.tls.termination TLS termination type
-        ##
-        termination: edge
-      ## @param acapy.openshift.route.wildcardPolicy Wildcard policy for the route
-      wildcardPolicy: None
-    adminRoute:
-      ## @param acapy.openshift.adminRoute.enabled Create OpenShift Route resource for Acapy admin service
-      ##
-      enabled: false
-      ## @param acapy.openshift.adminRoute.path Path that the router watches for, to route traffic to the service
-      ##
-      path: "/"
-      ## @param acapy.openshift.adminRoute.targetPort Target port for the service
-      ##
-      targetPort: admin
-      ## @param acapy.openshift.adminRoute.timeout Timeout in seconds for a route to return
-      ##
-      timeout: 2m
-      tls:
-        ## @param acapy.openshift.adminRoute.tls.enabled Enable TLS termination
-        ##
-        enabled: true
-        ## @param acapy.openshift.adminRoute.tls.insecureEdgeTerminationPolicy TLS termination policy
-        ##
-        insecureEdgeTerminationPolicy: None
-        ## @param acapy.openshift.adminRoute.tls.termination TLS termination type
-        ##
-        termination: edge
-      ## @param acapy.openshift.adminRoute.wildcardPolicy Wildcard policy for the route
-      ##
-      wildcardPolicy: None
-
-  ## @section Acapy Secrets Configuration
-  ##
-  secret:
-    adminApiKey:
-      ## @param acapy.secret.adminApiKey.existingSecret Name of an existing secret to use. Must contain `jwt`, `adminApiKey`, and `webhookapi` keys.
-      existingSecret: ""
-      ## @param acapy.secret.adminApiKey.generated Generate admin api key
-      ##
-      generated: true
-      ## @param acapy.secret.adminApiKey.value Override admin api key
-      ##
-      value: ""
-    walletKey:
-      ## @param acapy.secret.walletKey.existingSecret Name of an existing secret to use. Must contain `walletKey` key.
-      existingSecret: ""
-    pluginInnkeeper:
-      ## @param acapy.secret.pluginInnkeeper.existingSecret Name of an existing secret to use. Must contain `tenantid`, and `walletkey` keys.
-      existingSecret: ""
-      ## @param acapy.secret.pluginInnkeeper.generated Generate plugin innkeeper secret values
-      ##
-      generated: true
-      ## @param acapy.secret.pluginInnkeeper.walletkey Override plugin innkeeper wallet key
-      ##
-      walletkey: ""
-      ## @param acapy.secret.pluginInnkeeper.tenantid Override plugin innkeeper tenant id
-      ##
-      tenantid: ""
+    ## @param acapy.networkPolicy.allowExternal Allow ingress from any source (disables from selectors when true)
+    allowExternal: false
+    ## @param acapy.networkPolicy.allowExternalEgress Allow all egress traffic (when false, only DNS and extraEgress are applied)
+    allowExternalEgress: true
+    ## @param acapy.networkPolicy.extraIngress Extra ingress rules to append (raw NetworkPolicy rule objects)
+    extraIngress: []
+    ## @param acapy.networkPolicy.extraEgress Extra egress rules to append (raw NetworkPolicy rule objects)
+    extraEgress: []
+    ## @param acapy.networkPolicy.ingressPodMatchLabels Additional pod matchLabels to allow ingress from (merged with common labels)
+    ingressPodMatchLabels: {}
+    ## @param acapy.networkPolicy.ingressNSMatchLabels Additional namespace matchLabels to allow ingress from
+    ingressNSMatchLabels: {}
+      # network.openshift.io/policy-group: ingress
 
 ## @section Tenant Proxy configuration
 ##
 tenant_proxy:
   ## @param tenant_proxy.image.repository
   ## @param tenant_proxy.image.pullPolicy
-  ## @param tenant_proxy.image.pullSecrets [array]
+  ## @param tenant_proxy.image.pullSecrets
   ## @param tenant_proxy.image.tag Overrides the image tag which defaults to the chart appVersion.
   ##
   image:
@@ -547,13 +458,10 @@ tenant_proxy:
       wildcardPolicy: None
   ## Tenant proxy resource requests and limits
   ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param tenant_proxy.resources.limits.memory The memory limit for the Tenant proxy containers
-  ## @param tenant_proxy.resources.limits.cpu The cpu limit for the Tenant proxy containers
   ## @param tenant_proxy.resources.requests.memory The requested memory for the Tenant proxy containers
   ## @param tenant_proxy.resources.requests.cpu The requested cpu for the Tenant proxy containers
   ##
   resources:
-    limits: {}
     requests:
       cpu: 10m
       memory: 50Mi
@@ -576,15 +484,15 @@ tenant_proxy:
         # network.openshift.io/policy-group: ingress
       podSelector: {}
 
-  ## @param tenant_proxy.affinity Affinity for acapy pods assignment
+  ## @param tenant_proxy.affinity Affinity for ACA-Py pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
   ##
   affinity: {}
-  ## @param tenant_proxy.nodeSelector Node labels for acapy pods assignment
+  ## @param tenant_proxy.nodeSelector Node labels for ACA-Py pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector: {}
-  ## @param tenant_proxy.tolerations Tolerations for acapy pods assignment
+  ## @param tenant_proxy.tolerations Tolerations for ACA-Py pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
   tolerations: []
@@ -594,9 +502,9 @@ tenant_proxy:
 ui:
   ## @param ui.enabled Deploy tenant-ui
   enabled: true
-  ## @param ui.oidc.showOIDCReservationLogin OIDC reservation login
+  ## @param ui.showOIDCReservationLogin OIDC reservation login
   showOIDCReservationLogin: false
-  ## @param ui.oidc.quickConnectEndorserName A ledger that has endorser auto-accept/transact enabled
+  ## @param ui.quickConnectEndorserName A ledger that has endorser auto-accept/transact enabled
   quickConnectEndorserName: ""
   ## @param ui.requireEmailForReservation Whether the Email field is needed for a tenant reservation
   ## If false will default not.applicable@example.com to API
@@ -608,14 +516,14 @@ ui:
     repository: ghcr.io/bcgov/traction-tenant-ui
     ## @param ui.image.pullPolicy
     pullPolicy: IfNotPresent
-    ## @param ui.image.pullSecrets [array]
+    ## @param ui.image.pullSecrets
     pullSecrets: []
     ## @param ui.image.tag Overrides the image tag which defaults to the chart appVersion.
     tag: ""
 
-  ## @param ui.existingSecret Name of an existing secret to be mounted as environment variables
-  ## For example, when setting smpt.secure to true, a secret is required with the key SERVER_SMTP_PASSWORD
-  existingSecret: ""
+  ## @param ui.pluginInnkeeper.existingSecret Name of an existing Secret providing INNKEEPER_WALLET_TENANT_ID and INNKEEPER_WALLET_WALLET_KEY
+  pluginInnkeeper:
+    existingSecret: ""
 
   ##  Frontend Configuration
   ##
@@ -695,12 +603,15 @@ ui:
     port: 25
     ## @param ui.smtp.secure if true the connection will use TLS when connecting to server. If false (the default) then TLS is used if server supports the STARTTLS extension. In most cases set this value to true if you are connecting to port 465. For port 587 or 25 keep it false
     secure: false
-    ## @param ui.smtp.user SMTP user (use ui.existingSecret to provide SERVER_SMTP_PASSWORD)
+    ## @param ui.smtp.user SMTP user (use ui.smtp.existingSecret to provide SERVER_SMTP_PASSWORD)
     user: ""
     ## @param ui.smtp.senderAddress SMTP sender address
     senderAddress: ""
     ## @param ui.smtp.innkeeperInbox innkeeper notification inbox
     innkeeperInbox: ""
+    ## @param ui.smtp.existingSecret Name of an existing secret to be mounted as environment variables
+    ## A key named SERVER_SMTP_PASSWORD is required if smtp.secure is true
+    existingSecret: ""
 
   ## ServiceAccount configuration
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
@@ -760,13 +671,10 @@ ui:
       podSelector: {}
   ##Resource requests and limits
   ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param ui.resources.limits.memory The memory limit for the tenant-ui containers
-  ## @param ui.resources.limits.cpu The cpu limit for the tenant-ui containers
   ## @param ui.resources.requests.memory The requested memory for the tenant-ui containers
   ## @param ui.resources.requests.cpu The requested cpu for the tenant-ui containers
   ##
   resources:
-    limits: {}
     requests:
       cpu: 10m
       memory: 80Mi
@@ -837,7 +745,7 @@ ui:
 ingress:
   ## @param ingress.enabled Enable ingress record generation for traction
   ##
-  enabled: true
+  enabled: false
   ## @param ingress.className IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
   ## This is supported in Kubernetes 1.18+ and required if you have more than one IngressClass marked as the default for your cluster .
   ## ref: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
@@ -852,72 +760,3 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
-
-## @section PostgreSQL parameters
-##
-postgresql:
-  ## @param postgresql.enabled Deploy Bitnami PostgreSQL chart.
-  enabled: true
-  ## @param postgresql.fullnameOverride When overriding fullnameOverride, you must override this to match.
-  fullnameOverride: ""
-  ## @param postgresql.architecture PostgreSQL architecture (`standalone` or `replication`)
-  ##
-  architecture: standalone
-  ## Authentication parameters
-  ## ref: https://github.com/bitnami/containers/tree/main/bitnami/postgresql#setting-the-root-password-on-first-run
-  ## ref: https://github.com/bitnami/containers/tree/main/bitnami/postgresql#creating-a-database-on-first-run
-  ## ref: https://github.com/bitnami/containers/tree/main/bitnami/postgresql#creating-a-database-user-on-first-run
-  ##
-  auth:
-    ## @param postgresql.auth.enablePostgresUser Assign a password to the "postgres" admin user. Otherwise, remote access will be blocked for this user. Not recommended for production deployment.
-    ##
-    enablePostgresUser: true
-    ## @param postgresql.auth.username Name for a custom user to create
-    ##
-    username: acapy
-
-  ## PostgreSQL Primary parameters
-  primary:
-    ## PostgreSQL Primary persistence configuration
-    ##
-    persistence:
-      ## @param postgresql.primary.persistence.enabled Enable PostgreSQL Primary data persistence using PVC
-      ##
-      enabled: true
-      ## @param postgresql.primary.persistence.size PVC Storage Request for PostgreSQL volume
-      ##
-      size: 1Gi
-    ## Container Security Context
-    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
-    ## @param postgresql.primary.containerSecurityContext.enabled Enable container security context
-    ##
-    containerSecurityContext:
-      enabled: false
-    ## Pod Security Context
-    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
-    ## @param postgresql.primary.podSecurityContext.enabled Enable security context
-    ##
-    podSecurityContext:
-      enabled: false
-    ## PostgreSQL Primary resource requests and limits
-    ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
-    ## @param postgresql.primary.resources.limits.memory The memory limit for the PostgreSQL Primary containers
-    ## @param postgresql.primary.resources.limits.cpu The cpu limit for the PostgreSQL Primary containers
-    ## @param postgresql.primary.resources.requests.memory The requested memory for the PostgreSQL Primary containers
-    ## @param postgresql.primary.resources.requests.cpu The requested cpu for the PostgreSQL Primary containers
-    ##
-    resources:
-      limits: {}
-      requests:
-        cpu: 100m
-        memory: 100Mi
-    ## @param postgresql.primary.service.ports.postgresql PostgreSQL service port
-    ##
-    service:
-      ports:
-        postgresql: 5432
-    ## @param postgresql.primary.extendedConfiguration Extended PostgreSQL Primary configuration (appended to main or default configuration)
-    ## ref: https://github.com/bitnami/containers/tree/main/bitnami/postgresql#allow-settings-to-be-loaded-from-files-other-than-the-default-postgresqlconf
-    ##
-    extendedConfiguration: |
-      max_connections = 500
