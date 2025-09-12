@@ -238,7 +238,11 @@ http://{{- template "traction.acapy.fullname" . }}:{{ .Values.acapy.service.port
 ACA-Py API secret name (for tenant proxy)
 */}}
 {{- define "traction.acapy.api.secretName" -}}
-{{- template "traction.acapy.fullname" . }}-api
+{{- if .Values.acapy.secrets.api.existingSecret -}}
+    {{- .Values.acapy.secrets.api.existingSecret -}}
+{{- else -}}
+    {{- printf "%s-api" (include "traction.acapy.fullname" .) -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
