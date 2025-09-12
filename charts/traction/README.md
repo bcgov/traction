@@ -1,6 +1,6 @@
 # Traction
 
-![version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.2.0](https://img.shields.io/badge/AppVersion-1.2.0-informational?style=flat-square)
+![version: 0.4.1](https://img.shields.io/badge/Version-0.4.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.2.0](https://img.shields.io/badge/AppVersion-1.2.0-informational?style=flat-square)
 
 The Traction service allows organizations to verify, hold, and issue verifiable credentials.
 
@@ -140,13 +140,22 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 
 ### ACA-Py common configurations
 
-| Name                              | Description                                    | Value   |
-| --------------------------------- | ---------------------------------------------- | ------- |
-| `acapy.resources.requests.memory` | The requested memory for the ACA-Py containers | `200Mi` |
-| `acapy.resources.requests.cpu`    | The requested cpu for the ACA-Py containers    | `120m`  |
-| `acapy.service.ports.http`        | Port to expose for http service                | `8021`  |
-| `acapy.service.ports.admin`       | Port to expose for admin service               | `8022`  |
-| `acapy.service.ports.ws`          | Port to expose for websocket service           | `8023`  |
+| Name                                         | Description                                                                                              | Value         |
+| -------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ------------- |
+| `acapy.resources.requests.memory`            | The requested memory for the ACA-Py containers                                                           | `200Mi`       |
+| `acapy.resources.requests.cpu`               | The requested cpu for the ACA-Py containers                                                              | `120m`        |
+| `acapy.service.ports.http`                   | Port to expose for http service                                                                          | `8021`        |
+| `acapy.service.ports.admin`                  | Port to expose for admin service                                                                         | `8022`        |
+| `acapy.service.ports.ws`                     | Port to expose for websocket service                                                                     | `8023`        |
+| `acapy.secrets.api.retainOnUninstall`        | When true, adds helm.sh/resource-policy: keep to generated api secret                                    | `true`        |
+| `acapy.secrets.api.existingSecret`           | Name of an existing Secret providing API related keys. If set, the chart will NOT create the api secret. | `""`          |
+| `acapy.secrets.api.secretKeys.adminApiKey`   | Key in the API secret holding the admin API key.                                                         | `adminApiKey` |
+| `acapy.secrets.api.secretKeys.jwtKey`        | Key in the API secret holding the multitenant JWT signing secret.                                        | `jwt`         |
+| `acapy.secrets.api.secretKeys.walletKey`     | Key in the API secret holding the wallet key.                                                            | `walletKey`   |
+| `acapy.secrets.api.secretKeys.webhookapiKey` | Key in the API secret holding the webhook API key (used when embedding in webhook-url).                  | `webhookapi`  |
+| `acapy.secrets.seed.retainOnUninstall`       | When true, adds helm.sh/resource-policy: keep to generated seed secret                                   | `true`        |
+| `acapy.secrets.seed.existingSecret`          | Name of an existing Secret providing the wallet seed. If set, the chart will NOT create the seed secret. | `""`          |
+| `acapy.secrets.seed.secretKeys.seed`         | Key in the seed secret holding the wallet seed value.                                                    | `seed`        |
 
 ### ACA-Py NetworkPolicy parameters
 

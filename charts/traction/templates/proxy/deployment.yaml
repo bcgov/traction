@@ -54,7 +54,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ template "traction.acapy.api.secretName" . }}
-                  key: adminApiKey
+                  key: {{ .Values.acapy.secrets.api.secretKeys.adminApiKey | default "adminApiKey" }}
             - name: ACAPY_ADMIN_URL
               value: {{ include "traction.acapy.internal.admin.url" . }}
           resources:
