@@ -332,34 +332,13 @@ acapy:
       admin: 8022
       ws: 8023
 
-  ## @section ACA-Py Secrets
-  ## @descriptionStart
-  ## Secrets used by the ACA-Py chart. By default the chart will generate (and retain) the API and seed secrets
-  ## using the getOrGeneratePass helper (random if not already present). In GitOps environments where
-  ## lookups are not possible (e.g. ArgoCD dry‑run), provide existing secrets instead to avoid drift.
-  ##
-  ## API Secret keys expected (unless overridden via secretKeys):
-  ##   adminApiKey   (omitted if argfile.yml.admin-insecure-mode=true)
-  ##   jwt           (multitenant JWT signing secret)
-  ##   walletKey     (primary wallet key / encryption key)
-  ##   webhookapi    (optional key appended to webhook-url if using #APIKEY pattern)
-  ## Seed Secret keys expected:
-  ##   seed          (32 char wallet seed when wallet-local-did=true or deterministic DID needed)
-  ##
-  ## Note: When using multitenant mode, a seed should generally NOT be specified for the base wallet.
-  ##       This can be achieved by setting secrets.seed.enabled=false. However, if a seed is specified,
-  ##       the base wallet will need to be registered using the corresponding did/verkey onto the ledger where the agent is rooted.
-  ## @descriptionEnd
   ## @param acapy.secrets.api.retainOnUninstall When true, adds helm.sh/resource-policy: keep to generated api secret
   ## @param acapy.secrets.api.existingSecret Name of an existing Secret providing API related keys. If set, the chart will NOT create the api secret.
   ## @param acapy.secrets.api.secretKeys.adminApiKey Key in the API secret holding the admin API key.
   ## @param acapy.secrets.api.secretKeys.jwtKey Key in the API secret holding the multitenant JWT signing secret.
   ## @param acapy.secrets.api.secretKeys.walletKey Key in the API secret holding the wallet key.
   ## @param acapy.secrets.api.secretKeys.webhookapiKey Key in the API secret holding the webhook API key (used when embedding in webhook-url).
-  ## @param acapy.secrets.seed.enabled Enable creation and mounting of the seed secret as ACAPY_WALLET_SEED.
-  ## @param acapy.secrets.seed.retainOnUninstall When true, adds helm.sh/resource-policy: keep to generated seed secret
-  ## @param acapy.secrets.seed.existingSecret Name of an existing Secret providing the wallet seed. If set, the chart will NOT create the seed secret.
-  ## @param acapy.secrets.seed.secretKeys.seed Key in the seed secret holding the wallet seed value.
+  ## @param acapy.secrets.seed.enabled Disabled by default, turning this on will cause the Traction agent to NOT start unless additional setup steps are completed (refer to ACA-Py chart docs).
   secrets:
     api:
       retainOnUninstall: true
@@ -371,10 +350,6 @@ acapy:
         webhookapiKey: webhookapi
     seed:
       enabled: false
-      retainOnUninstall: true
-      existingSecret: ""
-      secretKeys:
-        seed: seed
 
   ## @section ACA-Py NetworkPolicy parameters
   ##
