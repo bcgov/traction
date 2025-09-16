@@ -25,4 +25,4 @@ dependencies:
     repository: "https://charts.bitnami.com/bitnami"
     tags:
       - bitnami-common
-    version: 2.x.x
+    version: 2.31.3
