@@ -1,5 +1,5 @@
 {{- if and .Values.ui.enabled .Values.ui.autoscaling.enabled -}}
-apiVersion: {{ include "common.capabilities.hpa.apiVersion" ( dict "context" $ ) }}
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ include "tenant-ui.fullname" . }}
@@ -17,24 +17,16 @@ spec:
     - type: Resource
       resource:
         name: cpu
-        {{- if semverCompare "<1.23-0" (include "common.capabilities.kubeVersion" .) }}
-        targetAverageUtilization: {{ .Values.ui.autoscaling.targetCPUUtilizationPercentage }}
-        {{- else }}
         target:
           type: Utilization
           averageUtilization: {{ .Values.ui.autoscaling.targetCPUUtilizationPercentage }}
-        {{- end }}
     {{- end }}
     {{- if .Values.ui.autoscaling.targetMemoryUtilizationPercentage }}
     - type: Resource
       resource:
         name: memory
-        {{- if semverCompare "<1.23-0" (include "common.capabilities.kubeVersion" .) }}
-        targetAverageUtilization: {{ .Values.ui.autoscaling.targetMemoryUtilizationPercentage }}
-        {{- else }}
         target:
           type: Utilization
           averageUtilization: {{ .Values.ui.autoscaling.targetMemoryUtilizationPercentage }}
-        {{- end }}
     {{- end }}
 {{- end -}}

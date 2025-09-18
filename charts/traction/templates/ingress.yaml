@@ -6,18 +6,7 @@
 {{- $httpPort := .Values.acapy.service.ports.http -}}
 {{- $adminPort := .Values.acapy.service.ports.admin -}}
 {{- $tenantProxyPort := .Values.tenant_proxy.service.port -}}
-{{- if and .Values.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
-  {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
-  {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
-  {{- end }}
-{{- end }}
-{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1
-{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
-apiVersion: networking.k8s.io/v1beta1
-{{- else -}}
-apiVersion: extensions/v1beta1
-{{- end }}
 kind: Ingress
 metadata:
   name: {{ include "global.fullname" . }}
@@ -28,7 +17,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  {{- if and .Values.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  {{- if .Values.ingress.className }}
   ingressClassName: {{ .Values.ingress.className }}
   {{- end }}
   {{- if .Values.ingress.tls }}
@@ -46,36 +35,22 @@ spec:
       http:
         paths:
           - path: /
-            {{- if (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
             pathType: ImplementationSpecific
-            {{- end }}
             backend:
-              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $tenantProxyFullName }}
                 port:
                   number: {{ $tenantProxyPort }}
-              {{- else }}
-              serviceName: {{ $tenantProxyFullName }}
-              servicePort: {{ $tenantProxyPort }}
-              {{- end }}
     {{- if .Values.ui.enabled }}
     - host: {{ include "tenant-ui.host" . | quote }}
       http:
         paths:
           - path: /
-            {{- if (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
             pathType: ImplementationSpecific
-            {{- end }}
             backend:
-              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $uiFullName }}
                 port:
                   number: {{ $uiHttpPort }}
-              {{- else }}
-              serviceName: {{ $uiFullName }}
-              servicePort: {{ $uiHttpPort }}
-              {{- end }}
     {{- end }}
 {{- end }}
