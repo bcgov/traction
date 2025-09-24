@@ -36,7 +36,7 @@ acapy:
         expiry_minutes: 2880
         auto_approve: true
         auto_issuer: true
-    webvh:
+    did-webvh:
       server_url: https://sandbox.bcvh.vonx.io
   
   resourcesPreset: micro

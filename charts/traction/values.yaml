@@ -308,7 +308,7 @@ acapy:
         auto_issuer: false
     basicmessage_storage:
       wallet_enabled: true
-    webvh:
+    did-webvh:
       server_url: ""
 
   ## @section ACA-Py common configurations
