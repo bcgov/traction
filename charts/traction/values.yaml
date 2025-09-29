@@ -308,6 +308,8 @@ acapy:
         auto_issuer: false
     basicmessage_storage:
       wallet_enabled: true
+    did-webvh:
+      server_url: ""
 
   ## @section ACA-Py common configurations
   ## ACA-Py resource requests and limits
