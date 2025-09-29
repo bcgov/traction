@@ -42,7 +42,8 @@ acapy:
 
 #### Convert Plugin Configuration
 
-Plugins are now configured directly as CLI arguments, replace the `plugins` section with `extraArgs`:
+> [!NOTE]
+> Plugins are now configured directly as CLI arguments, replace the `plugins` section with `extraArgs`
 
 ```yaml
 acapy:
