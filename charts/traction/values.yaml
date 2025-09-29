@@ -45,7 +45,7 @@ acapy:
     repository: bcgov/traction-plugins-acapy
     pullPolicy: IfNotPresent
     pullSecrets: []
-    tag: ""
+    tag: 1.2.1
     digest: ""
 
   ## ServiceAccount configuration
