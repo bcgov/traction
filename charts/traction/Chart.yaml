@@ -3,7 +3,7 @@ name: traction
 description: The Traction service allows organizations to verify, hold, and issue verifiable credentials. The Traction Tenant UI allows tenants to manage their agent.
 type: application
 version: 0.4.0
-appVersion: 1.2.0
+appVersion: 1.2.1
 home: "https://github.com/bcgov/traction"
 sources: ["https://github.com/bcgov/traction"]
 icon: "https://github.com/bcgov/traction/raw/main/docs/assets/readme-logo.png"
