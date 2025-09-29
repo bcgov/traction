@@ -105,20 +105,3 @@ jobs:
           git add services/traction/charts/test/Chart.yaml services/traction/charts/prod/Chart.yaml
           git commit -m "Update chart and app versions" || echo "No changes to commit"
           git push origin main
-
-      - name: Trigger and wait for GitOps sync workflow
-        uses: convictional/trigger-workflow-and-wait@v1.6.5
-        id: workflow-trigger
-        with:
-          owner: bcgov
-          repo: trust-over-ip-configurations
-          github_token: ${{ secrets.DITP_CONFIGS_REPO_TOKEN }}
-          workflow_file_name: gitops_sync.yaml
-
-      - name: Trigger ArgoCD Sync of bc0192-test-traction
-        uses: OpsVerseIO/argocd-sync@0.2.0
-        with:
-          address: gitops-shared.apps.silver.devops.gov.bc.ca
-          token: ${{ secrets.DITP_GITOPS_ARGO_SECRET}}
-          action: sync
-          appName: "bc0192-test-traction"
