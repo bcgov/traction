@@ -1,6 +1,6 @@
 # Traction Helm Chart Values Migration Guide
 
-This document contains information related to breaking/major changes to the Traction Helm Chart and provides guidelines for migrating/upgrading deployments to newer chart versoins.
+This document contains information related to breaking/major changes to the Traction Helm Chart and provides guidelines for migrating/upgrading deployments to newer chart versions.
 
 ## 0.4.0
 
