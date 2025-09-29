@@ -87,11 +87,7 @@ acapy:
 Remove these sections from your values file:
 
 - `postgresql.*`
-- `acapy.walletStorageConfig.*`
-- `acapy.walletStorageCredentials.*`
-- `acapy.multitenancyConfiguration.*`
 - `acapy.plugins.*`
-- `acapy.persistence.*`
 - `acapy.secret.*` (replaced with `acapy.secrets.*`)
 
 #### Update UI Configuration
@@ -202,11 +198,7 @@ acapy:
 
 **Removed Sections:**
 
-- `acapy.argfile.yml.genesis-transactions-list` (replaced with `ledgers.yml`)
 - `acapy.argfile.yml.label` (now handled automatically)
-- `acapy.walletStorageConfig.*` (moved to ACA-Py chart)
-- `acapy.walletStorageCredentials.*` (moved to ACA-Py chart)
-- `acapy.multitenancyConfiguration.*` (moved to ACA-Py chart)
 - `acapy.plugins.*` (replaced with `extraArgs`)
 
 **New/Changed Sections:**
