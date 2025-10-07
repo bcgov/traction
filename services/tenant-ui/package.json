@@ -29,7 +29,7 @@
     "express-validator": "^7.2.0",
     "jose": "^6.1.0",
     "jsonwebtoken": "^9.0.2",
-    "nodemailer": "^7.0.6",
+    "nodemailer": "^7.0.7",
     "ws": "^8.18.3"
   },
   "devDependencies": {
