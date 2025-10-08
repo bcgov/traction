@@ -496,7 +496,7 @@
       "acapyHelpAutoRequestEndorsement": "ACAPY_AUTO_REQUEST_ENDORSEMENT - For Authors, specify whether to automatically request endorsement for all transactions. (If not specified, the controller must invoke the request endorse operation for each transaction.)",
       "acapyHelpAutoRespondCredentialOffer": "ACAPY_AUTO_RESPOND_CREDENTIAL_OFFER - Automatically respond to Indy credential offers with a credential request",
       "acapyHelpAutoRespondCredentialRequest": "ACAPY_AUTO_RESPOND_CREDENTIAL_REQUEST - Auto-respond to credential requests with corresponding credentials",
-      "acapyHelpAutoRespondMessages": "ACAPY_AUTO_RESPOND_MESSAGES - Automatically respond to basic messages indicating the message was receieved",
+      "acapyHelpAutoRespondMessages": "ACAPY_AUTO_RESPOND_MESSAGES - Automatically respond to basic messages indicating the message was received",
       "acapyHelpAutoVerifyPresentation": "ACAPY_AUTO_VERIFY_PRESENTATION - Automatically verify a presentation when it is received. ",
       "acapyHelpPreserveExchangeRecords": "ACAPY_PRESERVE_EXCHANGE_RECORDS - Keep credential and presentation exchange records after exchange has completed. ",
       "acapyHelpAutoWriteTransactions": "ACAPY_AUTO_WRITE_TRANSACTIONS - For Authors, specify whether to automatically write any endorsed transactions. (If not specified, the controller must invoke the write transaction operation for each transaction.)",
