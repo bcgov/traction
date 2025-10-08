@@ -339,6 +339,22 @@
             />
           </div>
 
+          <div class="field">
+            <label for="ACAPY_PRESERVE_EXCHANGE_RECORDS">
+              {{ $t('tenant.settings.acapyPreserveExchangeRecords') }}
+              <i
+                v-tooltip="
+                  $t('tenant.settings.acapyHelpPreserveExchangeRecords')
+                "
+                class="pi pi-question-circle"
+              />
+            </label>
+            <InputSwitch
+              id="ACAPY_PRESERVE_EXCHANGE_RECORDS"
+              v-model="v$.ACAPY_PRESERVE_EXCHANGE_RECORDS.$model"
+            />
+          </div>
+
           <!-- Traction cfg - raw json -->
           <Accordion v-if="formattedServerCfg" class="mt-4">
             <AccordionTab :header="$t('serverConfig.expand')">
@@ -440,6 +456,8 @@ const loadTenantSettings = async () => {
         settingMap['debug.auto_respond_messages'];
       formFields.ACAPY_AUTO_VERIFY_PRESENTATION =
         settingMap['debug.auto_verify_presentation'];
+      formFields.ACAPY_PRESERVE_EXCHANGE_RECORDS =
+        settingMap['debug.preserve_exchange_records'];
       formFields.ACAPY_AUTO_WRITE_TRANSACTIONS =
         settingMap['endorser.auto_write'];
       if ('endorser.author' in settingMap && settingMap['endorser.author']) {
@@ -525,6 +543,7 @@ const formFields = reactive({
   ACAPY_AUTO_RESPOND_CREDENTIAL_REQUEST: false,
   ACAPY_AUTO_RESPOND_MESSAGES: false,
   ACAPY_AUTO_VERIFY_PRESENTATION: false,
+  ACAPY_PRESERVE_EXCHANGE_RECORDS: false,
   ACAPY_AUTO_WRITE_TRANSACTIONS: false,
   ACAPY_CREATE_REVOCATION_TRANSACTIONS: false,
   ACAPY_ENDORSER_ROLE: 'author',
@@ -549,6 +568,7 @@ const rules = {
   ACAPY_AUTO_RESPOND_CREDENTIAL_REQUEST: {},
   ACAPY_AUTO_RESPOND_MESSAGES: {},
   ACAPY_AUTO_VERIFY_PRESENTATION: {},
+  ACAPY_PRESERVE_EXCHANGE_RECORDS: {},
   ACAPY_AUTO_WRITE_TRANSACTIONS: {},
   ACAPY_CREATE_REVOCATION_TRANSACTIONS: {},
   ACAPY_ENDORSER_ROLE: {},
@@ -616,6 +636,7 @@ const handleSubmit = async (isFormValid: boolean) => {
         formFields.ACAPY_AUTO_RESPOND_CREDENTIAL_REQUEST,
       ACAPY_AUTO_RESPOND_MESSAGES: formFields.ACAPY_AUTO_RESPOND_MESSAGES,
       ACAPY_AUTO_VERIFY_PRESENTATION: formFields.ACAPY_AUTO_VERIFY_PRESENTATION,
+      ACAPY_PRESERVE_EXCHANGE_RECORDS: formFields.ACAPY_PRESERVE_EXCHANGE_RECORDS,
       ACAPY_AUTO_WRITE_TRANSACTIONS: formFields.ACAPY_AUTO_WRITE_TRANSACTIONS,
       ACAPY_CREATE_REVOCATION_TRANSACTIONS:
         formFields.ACAPY_CREATE_REVOCATION_TRANSACTIONS,
