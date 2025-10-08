@@ -457,7 +457,7 @@ const loadTenantSettings = async () => {
       formFields.ACAPY_AUTO_VERIFY_PRESENTATION =
         settingMap['debug.auto_verify_presentation'];
       formFields.ACAPY_PRESERVE_EXCHANGE_RECORDS =
-        settingMap['debug.preserve_exchange_records'];
+        settingMap['preserve_exchange_records'];
       formFields.ACAPY_AUTO_WRITE_TRANSACTIONS =
         settingMap['endorser.auto_write'];
       if ('endorser.author' in settingMap && settingMap['endorser.author']) {
