@@ -45,7 +45,7 @@ acapy:
     repository: bcgov/traction-plugins-acapy
     pullPolicy: IfNotPresent
     pullSecrets: []
-    tag: 1.2.1
+    tag: 1.2.2
     digest: ""
 
   ## ServiceAccount configuration
@@ -150,6 +150,7 @@ acapy:
       - wallet_type=single-wallet-askar
     notify-revocation: true
     preserve-exchange-records: true
+    debug-webhooks: true
     public-invites: true
     read-only-ledger: false
     tails-server-base-url: https://tails-test.vonx.io
