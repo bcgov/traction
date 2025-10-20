@@ -33,7 +33,7 @@
     "ws": "^8.18.3"
   },
   "devDependencies": {
-    "@eslint/js": "^9.37.0",
+    "@eslint/js": "^9.38.0",
     "@types/config": "^3.3.5",
     "@types/connect-history-api-fallback": "^1.5.4",
     "@types/cors": "^2.8.19",
