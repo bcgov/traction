@@ -33,3 +33,6 @@ traction_innkeeper:
 
 basicmessage_storage:
   wallet_enabled: true
+
+did-webvh:
+  server_url: https://sandbox.bcvh.vonx.io

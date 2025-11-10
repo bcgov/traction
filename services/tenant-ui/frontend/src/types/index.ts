@@ -83,6 +83,13 @@ export interface ServerConfig {
           auto_issuer: boolean;
         };
       };
+      ['did-webvh']?: {
+        server_url?: string;
+        witness?: boolean;
+        witnesses?: string[];
+        watchers?: string[];
+        scids?: Record<string, string>;
+      };
       basicmessage_storage: {
         wallet_enabled: boolean;
       };
