@@ -174,8 +174,6 @@ export const API_PATH = {
   WALLET_UPGRADE: '/anoncreds/wallet/upgrade',
   DID_WEBVH_CONFIG: '/did/webvh/configuration',
   DID_WEBVH_CREATE: '/did/webvh/create',
-  DID_WEBVH_WITNESS_REQUESTS: (recordType: string) =>
-    `/did/webvh/witness-requests/${recordType}`,
 
   SERVER_PLUGINS: '/plugins',
   TRANSACTION_GET: (id: string) => `/transactions/${id}`,
