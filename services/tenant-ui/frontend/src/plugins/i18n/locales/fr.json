@@ -254,9 +254,6 @@
   },
   "identifiers": {
     "identifiers": "Identifiers <FR>",
-    "walletType": "Wallet Type <FR>",
-    "upgradeWallet": "Upgrade Wallet <FR>",
-    "upgradeWalletDescription": "This page requires an askar-anoncreds wallet. <FR>",
     "webvh": {
       "title": "did:webvh Configuration <FR>",
       "serverUrl": "Server URL <FR>",
