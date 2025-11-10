@@ -20,14 +20,26 @@ exports[`Sidebar > mount matches snapshot with expected values 1`] = `
       </transition-stub>
     </div>
     <div class="p-panelmenu-panel" data-pc-section="panel">
-      <div id="undefined_1_header" class="p-panelmenu-header" tabindex="0" role="button" aria-label="connect.connections.connections" aria-expanded="false" aria-controls="undefined_1_content" data-pc-section="header" data-p-highlight="false">
-        <div class="p-panelmenu-header-content" data-pc-section="headercontent"><a class="p-panelmenu-header-action"><span class="p-menuitem-icon pi pi-fw pi-users"></span><span class="p-menuitem-text ml-2">connect.connections.connections</span><span class="pi pi-angle-down text-primary ml-auto"></span></a></div>
+      <div id="undefined_1_header" class="p-panelmenu-header" tabindex="0" role="button" aria-label="identifiers.identifiers" aria-expanded="false" aria-controls="undefined_1_content" data-pc-section="header" data-p-highlight="false">
+        <div class="p-panelmenu-header-content" data-pc-section="headercontent">
+          <router-link-stub to="/identifiers" custom=""></router-link-stub>
+        </div>
       </div>
       <transition-stub name="p-toggleable-content" appear="false" persisted="false" css="true">
         <div id="undefined_1_content" class="p-toggleable-content" role="region" aria-labelledby="undefined_1_header" data-pc-section="toggleablecontent" style="display: none;">
+          <!---->
+        </div>
+      </transition-stub>
+    </div>
+    <div class="p-panelmenu-panel" data-pc-section="panel">
+      <div id="undefined_2_header" class="p-panelmenu-header" tabindex="0" role="button" aria-label="connect.connections.connections" aria-expanded="false" aria-controls="undefined_2_content" data-pc-section="header" data-p-highlight="false">
+        <div class="p-panelmenu-header-content" data-pc-section="headercontent"><a class="p-panelmenu-header-action"><span class="p-menuitem-icon pi pi-fw pi-users"></span><span class="p-menuitem-text ml-2">connect.connections.connections</span><span class="pi pi-angle-down text-primary ml-auto"></span></a></div>
+      </div>
+      <transition-stub name="p-toggleable-content" appear="false" persisted="false" css="true">
+        <div id="undefined_2_content" class="p-toggleable-content" role="region" aria-labelledby="undefined_2_header" data-pc-section="toggleablecontent" style="display: none;">
           <div class="p-panelmenu-content" data-pc-section="menucontent">
-            <ul class="p-submenu-list p-panelmenu-root-list" tabindex="-1" id="undefined_1_list" role="tree" data-pc-section="menu">
-              <li id="undefined_1_0" class="p-menuitem" role="treeitem" aria-label="connect.connections.connections" aria-level="1" aria-setsize="2" aria-posinset="1" data-pc-section="menuitem" data-p-focused="false">
+            <ul class="p-submenu-list p-panelmenu-root-list" tabindex="-1" id="undefined_2_list" role="tree" data-pc-section="menu">
+              <li id="undefined_2_0" class="p-menuitem" role="treeitem" aria-label="connect.connections.connections" aria-level="1" aria-setsize="2" aria-posinset="1" data-pc-section="menuitem" data-p-focused="false">
                 <div class="p-menuitem-content" data-pc-section="content">
                   <router-link-stub to="/connections" custom=""></router-link-stub>
                 </div>
@@ -38,7 +50,7 @@ exports[`Sidebar > mount matches snapshot with expected values 1`] = `
                 </transition-stub>
               </li>
               <!---->
-              <li id="undefined_1_1" class="p-menuitem" role="treeitem" aria-label="connect.invitations.invitations" aria-level="1" aria-setsize="2" aria-posinset="2" data-pc-section="menuitem" data-p-focused="false">
+              <li id="undefined_2_1" class="p-menuitem" role="treeitem" aria-label="connect.invitations.invitations" aria-level="1" aria-setsize="2" aria-posinset="2" data-pc-section="menuitem" data-p-focused="false">
                 <div class="p-menuitem-content" data-pc-section="content">
                   <router-link-stub to="/connections/invitations" custom=""></router-link-stub>
                 </div>
@@ -55,21 +67,9 @@ exports[`Sidebar > mount matches snapshot with expected values 1`] = `
       </transition-stub>
     </div>
     <div class="p-panelmenu-panel" data-pc-section="panel">
-      <div id="undefined_2_header" class="p-panelmenu-header" tabindex="0" role="button" aria-label="issue.issuance" aria-expanded="false" aria-controls="undefined_2_content" data-pc-section="header" data-p-highlight="false">
+      <div id="undefined_3_header" class="p-panelmenu-header" tabindex="0" role="button" aria-label="issue.issuance" aria-expanded="false" aria-controls="undefined_3_content" data-pc-section="header" data-p-highlight="false">
         <div class="p-panelmenu-header-content" data-pc-section="headercontent">
           <router-link-stub to="/issuance/credentials" custom=""></router-link-stub>
-        </div>
-      </div>
-      <transition-stub name="p-toggleable-content" appear="false" persisted="false" css="true">
-        <div id="undefined_2_content" class="p-toggleable-content" role="region" aria-labelledby="undefined_2_header" data-pc-section="toggleablecontent" style="display: none;">
-          <!---->
-        </div>
-      </transition-stub>
-    </div>
-    <div class="p-panelmenu-panel" data-pc-section="panel">
-      <div id="undefined_3_header" class="p-panelmenu-header" tabindex="0" role="button" aria-label="verify.verification" aria-expanded="false" aria-controls="undefined_3_content" data-pc-section="header" data-p-highlight="false">
-        <div class="p-panelmenu-header-content" data-pc-section="headercontent">
-          <router-link-stub to="/verification/verifications" custom=""></router-link-stub>
         </div>
       </div>
       <transition-stub name="p-toggleable-content" appear="false" persisted="false" css="true">
@@ -79,9 +79,9 @@ exports[`Sidebar > mount matches snapshot with expected values 1`] = `
       </transition-stub>
     </div>
     <div class="p-panelmenu-panel" data-pc-section="panel">
-      <div id="undefined_4_header" class="p-panelmenu-header" tabindex="0" role="button" aria-label="common.credentials" aria-expanded="false" aria-controls="undefined_4_content" data-pc-section="header" data-p-highlight="false">
+      <div id="undefined_4_header" class="p-panelmenu-header" tabindex="0" role="button" aria-label="verify.verification" aria-expanded="false" aria-controls="undefined_4_content" data-pc-section="header" data-p-highlight="false">
         <div class="p-panelmenu-header-content" data-pc-section="headercontent">
-          <router-link-stub to="/holder/credentials" custom=""></router-link-stub>
+          <router-link-stub to="/verification/verifications" custom=""></router-link-stub>
         </div>
       </div>
       <transition-stub name="p-toggleable-content" appear="false" persisted="false" css="true">
@@ -91,14 +91,26 @@ exports[`Sidebar > mount matches snapshot with expected values 1`] = `
       </transition-stub>
     </div>
     <div class="p-panelmenu-panel" data-pc-section="panel">
-      <div id="undefined_5_header" class="p-panelmenu-header" tabindex="0" role="button" aria-label="configuration.configuration" aria-expanded="false" aria-controls="undefined_5_content" data-pc-section="header" data-p-highlight="false">
-        <div class="p-panelmenu-header-content" data-pc-section="headercontent"><a class="p-panelmenu-header-action"><span class="p-menuitem-icon pi pi-fw pi-file"></span><span class="p-menuitem-text ml-2">configuration.configuration</span><span class="pi pi-angle-down text-primary ml-auto"></span></a></div>
+      <div id="undefined_5_header" class="p-panelmenu-header" tabindex="0" role="button" aria-label="common.credentials" aria-expanded="false" aria-controls="undefined_5_content" data-pc-section="header" data-p-highlight="false">
+        <div class="p-panelmenu-header-content" data-pc-section="headercontent">
+          <router-link-stub to="/holder/credentials" custom=""></router-link-stub>
+        </div>
       </div>
       <transition-stub name="p-toggleable-content" appear="false" persisted="false" css="true">
         <div id="undefined_5_content" class="p-toggleable-content" role="region" aria-labelledby="undefined_5_header" data-pc-section="toggleablecontent" style="display: none;">
+          <!---->
+        </div>
+      </transition-stub>
+    </div>
+    <div class="p-panelmenu-panel" data-pc-section="panel">
+      <div id="undefined_6_header" class="p-panelmenu-header" tabindex="0" role="button" aria-label="configuration.configuration" aria-expanded="false" aria-controls="undefined_6_content" data-pc-section="header" data-p-highlight="false">
+        <div class="p-panelmenu-header-content" data-pc-section="headercontent"><a class="p-panelmenu-header-action"><span class="p-menuitem-icon pi pi-fw pi-file"></span><span class="p-menuitem-text ml-2">configuration.configuration</span><span class="pi pi-angle-down text-primary ml-auto"></span></a></div>
+      </div>
+      <transition-stub name="p-toggleable-content" appear="false" persisted="false" css="true">
+        <div id="undefined_6_content" class="p-toggleable-content" role="region" aria-labelledby="undefined_6_header" data-pc-section="toggleablecontent" style="display: none;">
           <div class="p-panelmenu-content" data-pc-section="menucontent">
-            <ul class="p-submenu-list p-panelmenu-root-list" tabindex="-1" id="undefined_5_list" role="tree" data-pc-section="menu">
-              <li id="undefined_5_0" class="p-menuitem" role="treeitem" aria-label="configuration.schemas.storage" aria-level="1" aria-setsize="3" aria-posinset="1" data-pc-section="menuitem" data-p-focused="false">
+            <ul class="p-submenu-list p-panelmenu-root-list" tabindex="-1" id="undefined_6_list" role="tree" data-pc-section="menu">
+              <li id="undefined_6_0" class="p-menuitem" role="treeitem" aria-label="configuration.schemas.storage" aria-level="1" aria-setsize="3" aria-posinset="1" data-pc-section="menuitem" data-p-focused="false">
                 <div class="p-menuitem-content" data-pc-section="content">
                   <router-link-stub to="/schemas" custom=""></router-link-stub>
                 </div>
@@ -109,7 +121,7 @@ exports[`Sidebar > mount matches snapshot with expected values 1`] = `
                 </transition-stub>
               </li>
               <!---->
-              <li id="undefined_5_1" class="p-menuitem" role="treeitem" aria-label="configuration.credentialDefinitions.storage" aria-level="1" aria-setsize="3" aria-posinset="2" data-pc-section="menuitem" data-p-focused="false">
+              <li id="undefined_6_1" class="p-menuitem" role="treeitem" aria-label="configuration.credentialDefinitions.storage" aria-level="1" aria-setsize="3" aria-posinset="2" data-pc-section="menuitem" data-p-focused="false">
                 <div class="p-menuitem-content" data-pc-section="content">
                   <router-link-stub to="/credentialDefinitions" custom=""></router-link-stub>
                 </div>
@@ -120,7 +132,7 @@ exports[`Sidebar > mount matches snapshot with expected values 1`] = `
                 </transition-stub>
               </li>
               <!---->
-              <li id="undefined_5_2" class="p-menuitem" role="treeitem" aria-label="configuration.oca.oca" aria-level="1" aria-setsize="3" aria-posinset="3" data-pc-section="menuitem" data-p-focused="false">
+              <li id="undefined_6_2" class="p-menuitem" role="treeitem" aria-label="configuration.oca.oca" aria-level="1" aria-setsize="3" aria-posinset="3" data-pc-section="menuitem" data-p-focused="false">
                 <div class="p-menuitem-content" data-pc-section="content">
                   <router-link-stub to="/oca" custom=""></router-link-stub>
                 </div>
@@ -137,25 +149,25 @@ exports[`Sidebar > mount matches snapshot with expected values 1`] = `
       </transition-stub>
     </div>
     <div class="p-panelmenu-panel" data-pc-section="panel">
-      <div id="undefined_6_header" class="p-panelmenu-header" tabindex="0" role="button" aria-label="messages.messages" aria-expanded="false" aria-controls="undefined_6_content" data-pc-section="header" data-p-highlight="false">
+      <div id="undefined_7_header" class="p-panelmenu-header" tabindex="0" role="button" aria-label="messages.messages" aria-expanded="false" aria-controls="undefined_7_content" data-pc-section="header" data-p-highlight="false">
         <div class="p-panelmenu-header-content" data-pc-section="headercontent">
           <router-link-stub to="/messages/recent" custom=""></router-link-stub>
         </div>
       </div>
       <transition-stub name="p-toggleable-content" appear="false" persisted="false" css="true">
-        <div id="undefined_6_content" class="p-toggleable-content" role="region" aria-labelledby="undefined_6_header" data-pc-section="toggleablecontent" style="display: none;">
+        <div id="undefined_7_content" class="p-toggleable-content" role="region" aria-labelledby="undefined_7_header" data-pc-section="toggleablecontent" style="display: none;">
           <!---->
         </div>
       </transition-stub>
     </div>
     <div class="p-panelmenu-panel" data-pc-section="panel">
-      <div id="undefined_7_header" class="p-panelmenu-header" tabindex="0" role="button" aria-label="about.about" aria-expanded="false" aria-controls="undefined_7_content" data-pc-section="header" data-p-highlight="false">
+      <div id="undefined_8_header" class="p-panelmenu-header" tabindex="0" role="button" aria-label="about.about" aria-expanded="false" aria-controls="undefined_8_content" data-pc-section="header" data-p-highlight="false">
         <div class="p-panelmenu-header-content" data-pc-section="headercontent">
           <router-link-stub to="/about" custom=""></router-link-stub>
         </div>
       </div>
       <transition-stub name="p-toggleable-content" appear="false" persisted="false" css="true">
-        <div id="undefined_7_content" class="p-toggleable-content" role="region" aria-labelledby="undefined_7_header" data-pc-section="toggleablecontent" style="display: none;">
+        <div id="undefined_8_content" class="p-toggleable-content" role="region" aria-labelledby="undefined_8_header" data-pc-section="toggleablecontent" style="display: none;">
           <!---->
         </div>
       </transition-stub>
