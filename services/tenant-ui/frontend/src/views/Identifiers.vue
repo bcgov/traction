@@ -12,17 +12,10 @@
         class="flex align-items-center mb-3 wallet-upgrade-alert"
       >
         <i class="pi pi-exclamation-triangle text-yellow-500 mr-2" />
-        <span class="mr-3">{{ $t('identifiers.walletType') }}</span>
-        <Button
-          :label="$t('identifiers.upgradeWallet')"
-          icon="pi pi-arrow-up"
-          @click="upgradeWallet"
-          :loading="upgrading"
-        />
+        <span class="mr-3">
+          {{ $t('identifiers.upgradeWalletPrompt') }}
+        </span>
       </div>
-      <p v-if="!isAnoncredsWallet" class="text-muted mb-4">
-        {{ $t('identifiers.upgradeWalletDescription') }}
-      </p>
 
       <DataTable
         v-if="isAnoncredsWallet"
@@ -75,6 +68,14 @@
           </template>
         </Column>
       </DataTable>
+      <Message
+        v-else
+        :closable="false"
+        severity="warn"
+        class="wallet-type-warning"
+      >
+        {{ $t('identifiers.upgradeWalletDescription') }}
+      </Message>
 
       <Dialog
         v-model:visible="showCreateDidDialog"
@@ -147,23 +148,13 @@ import { useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
 import { useAcapyApi } from '@/store/acapyApi';
 import { API_PATH, TABLE_OPT } from '@/helpers/constants';
+import Message from 'primevue/message';
 
 const toast = useToast();
 const { t } = useI18n();
 const tenantStore = useTenantStore();
 const acapyApi = useAcapyApi();
 const { tenantWallet, loading, serverConfig } = storeToRefs(tenantStore);
-
-const serverWebvhConfig = computed<any | null>(() => {
-  const cfg: any = serverConfig.value;
-  if (!cfg || typeof cfg !== 'object' || !('config' in cfg)) {
-    return null;
-  }
-  const pluginConfig = cfg.config?.plugin_config ?? {};
-  return pluginConfig['did-webvh'] || pluginConfig.webvh || null;
-});
-
-const upgrading = ref(false);
 const creatingDid = ref(false);
 const refreshingWebvh = ref(false);
 const showCreateDidDialog = ref(false);
@@ -337,45 +328,6 @@ const loadWebvhConfig = async () => {
   }
 };
 
-const upgradeWallet = async () => {
-  upgrading.value = true;
-  try {
-    const walletSettings = tenantWallet.value?.settings ?? {};
-    const walletName =
-      walletSettings['wallet.name'] ??
-      tenantWallet.value?.wallet_name ??
-      tenantWallet.value?.wallet_id ??
-      walletSettings['default_label'];
-
-    if (!walletName) {
-      toast.error('Unable to determine wallet name for upgrade');
-      return;
-    }
-
-    await acapyApi.postHttp(
-      API_PATH.WALLET_UPGRADE,
-      {},
-      {
-        params: {
-          wallet_name: walletName,
-        },
-      }
-    );
-    toast.success('Wallet upgrade initiated successfully');
-    await tenantStore.getTenantSubWallet();
-    await tenantStore.getServerConfig();
-    await loadWebvhConfig();
-  } catch (error: any) {
-    toast.error(
-      `Failed to upgrade wallet: ${
-        error?.response?.data?.message ?? JSON.stringify(error?.response?.data ?? error)
-      }`
-    );
-  } finally {
-    upgrading.value = false;
-  }
-};
-
 const refreshWebvh = async () => {
   if (refreshingWebvh.value) {
     return;
@@ -456,10 +408,6 @@ onMounted(async () => {
 }
 
 .wallet-upgrade-alert {
-  background: rgba(255, 206, 86, 0.15);
-  border: 1px solid rgba(255, 206, 86, 0.4);
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
   color: $tenant-ui-text-warning;
 }
 
@@ -550,5 +498,9 @@ onMounted(async () => {
 .required-label::after {
   content: ' *';
   color: $tenant-ui-text-danger;
+}
+
+.wallet-type-warning {
+  margin-top: 1rem;
 }
 </style>

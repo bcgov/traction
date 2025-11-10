@@ -252,7 +252,7 @@
     "identifiers": "Identifiers",
     "walletType": "Wallet Type",
     "upgradeWallet": "Upgrade Wallet",
-    "upgradeWalletDescription": "Your wallet needs to be upgraded to 'askar-anoncreds' type to use identifiers functionality.",
+    "upgradeWalletDescription": "This page requires an askar-anoncreds wallet.",
     "webvh": {
       "title": "did:webvh Configuration",
       "serverUrl": "Server URL",

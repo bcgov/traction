@@ -256,7 +256,7 @@
     "identifiers": "Identifiers <FR>",
     "walletType": "Wallet Type <FR>",
     "upgradeWallet": "Upgrade Wallet <FR>",
-    "upgradeWalletDescription": "Your wallet needs to be upgraded to 'askar-anoncreds' type to use identifiers functionality. <FR>",
+    "upgradeWalletDescription": "This page requires an askar-anoncreds wallet. <FR>",
     "webvh": {
       "title": "did:webvh Configuration <FR>",
       "serverUrl": "Server URL <FR>",
