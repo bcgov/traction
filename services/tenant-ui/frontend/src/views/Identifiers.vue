@@ -7,16 +7,6 @@
       <ProgressSpinner />
     </div>
     <template v-else>
-      <div
-        v-if="!isAnoncredsWallet"
-        class="flex align-items-center mb-3 wallet-upgrade-alert"
-      >
-        <i class="pi pi-exclamation-triangle text-yellow-500 mr-2" />
-        <span class="mr-3">
-          {{ $t('identifiers.upgradeWalletPrompt') }}
-        </span>
-      </div>
-
       <DataTable
         v-if="isAnoncredsWallet"
         v-model:filters="didTableFilters"
@@ -54,14 +44,32 @@
         </template>
         <template #empty>{{ $t('common.noRecordsFound') }}</template>
         <template #loading>{{ $t('common.loading') }}</template>
-        <Column field="namespace" :header="$t('identifiers.webvh.namespace')" sortable />
-        <Column field="alias" :header="$t('identifiers.webvh.alias')" sortable />
-        <Column field="status" :header="$t('identifiers.webvh.statusHeader')" sortable>
+        <Column
+          field="namespace"
+          :header="$t('identifiers.webvh.namespace')"
+          sortable
+        />
+        <Column
+          field="alias"
+          :header="$t('identifiers.webvh.alias')"
+          sortable
+        />
+        <Column
+          field="status"
+          :header="$t('identifiers.webvh.statusHeader')"
+          sortable
+        >
           <template #body="{ data }">
-            <span :class="['status-chip', data.status]">{{ statusLabel(data.status) }}</span>
+            <span :class="['status-chip', data.status]">
+              {{ statusLabel(data.status) }}
+            </span>
           </template>
         </Column>
-        <Column field="created" :header="$t('identifiers.webvh.createdAt')" sortable />
+        <Column
+          field="created"
+          :header="$t('identifiers.webvh.createdAt')"
+          sortable
+        />
         <Column field="did" :header="$t('identifiers.webvh.didHeader')">
           <template #body="{ data }">
             <code>{{ data.did }}</code>
@@ -74,7 +82,7 @@
         severity="warn"
         class="wallet-type-warning"
       >
-        {{ $t('identifiers.upgradeWalletDescription') }}
+        {{ $t('identifiers.requiresAnoncredsWallet') }}
       </Message>
 
       <Dialog
@@ -100,7 +108,9 @@
             </small>
           </div>
           <div class="field">
-            <label for="dialog-namespace">{{ $t('identifiers.webvh.namespace') }}</label>
+            <label for="dialog-namespace">{{
+              $t('identifiers.webvh.namespace')
+            }}</label>
             <InputText
               id="dialog-namespace"
               v-model.trim="newDidNamespace"
@@ -112,16 +122,16 @@
           <Button
             type="button"
             class="p-button-text"
+            :disabled="creatingDid"
             :label="$t('common.cancel')"
             @click="closeCreateDialog"
-            :disabled="creatingDid"
           />
           <Button
             type="button"
             icon="pi pi-plus"
-            :label="$t('identifiers.webvh.createButton')"
             :disabled="!canCreateDid"
             :loading="creatingDid"
+            :label="$t('identifiers.webvh.createButton')"
             @click="submitCreateDid"
           />
         </template>
@@ -165,6 +175,15 @@ const webvhConfigData = ref<any | null>(null);
 const webvhConfigLoaded = ref(false);
 const didTableFilters = ref({
   global: { value: '', matchMode: FilterMatchMode.CONTAINS },
+});
+
+const serverWebvhConfig = computed<any | null>(() => {
+  const cfg: any = serverConfig.value;
+  if (!cfg || typeof cfg !== 'object' || !('config' in cfg)) {
+    return null;
+  }
+  const pluginConfig = cfg.config?.plugin_config ?? {};
+  return pluginConfig['did-webvh'] || pluginConfig.webvh || null;
 });
 
 const pageLoading = computed(() => {
@@ -214,23 +233,6 @@ const webvhWatchers = computed(() => {
   return Array.isArray(watchers) ? watchers : [];
 });
 
-const hasWitness = computed(() => {
-  return webvhConfig.value?.witness === true;
-});
-
-const needsWebvhConfiguration = computed(() => {
-  if (!isAnoncredsWallet.value) {
-    return false;
-  }
-  const hasUrl = !!webvhServerUrl.value;
-  const witnessEnabled = hasWitness.value;
-  return !(hasUrl && witnessEnabled);
-});
-
-const canAutoConfigureWebvh = computed(
-  () => needsWebvhConfiguration.value && !!webvhServerUrl.value
-);
-
 const webvhDidRows = computed(() => {
   const scids = webvhConfig.value?.scids;
   if (!scids || typeof scids !== 'object') {
@@ -247,7 +249,8 @@ const webvhDidRows = computed(() => {
   return entries.map(([scid, did]) => {
     const segments = (did as string).split(':');
     const alias = segments[segments.length - 1] ?? did;
-    const namespace = segments.length > 2 ? segments[segments.length - 2] : 'default';
+    const namespace =
+      segments.length > 2 ? segments[segments.length - 2] : 'default';
     return {
       scid,
       did,
@@ -259,7 +262,8 @@ const webvhDidRows = computed(() => {
   });
 });
 
-const statusLabel = (_status: string) => t('identifiers.webvh.statusActive') as string;
+const statusLabel = (_status: string) =>
+  t('identifiers.webvh.statusActive') as string;
 
 const canCreateDid = computed(
   () =>
@@ -311,17 +315,7 @@ const loadWebvhConfig = async () => {
       !configData ||
       (typeof configData === 'object' && Object.keys(configData).length === 0);
     webvhConfigData.value = isEmptyConfig ? null : configData;
-    const url = webvhServerUrl.value;
-    const witnessEnabled = hasWitness.value;
-    if (url && witnessEnabled) {
-      // autoConfigureAttempted.value = false; // Removed
-      // autoConfigureFailed.value = false; // Removed
-    } else if (!autoConfigureAttempted.value && url && !witnessEnabled) {
-      // autoConfigureAttempted.value = true; // Removed
-      // autoConfigureFailed.value = false; // Removed
-      // await configureWebvh(true); // Removed
-    }
-  } catch (error) {
+  } catch (_error) {
     webvhConfigData.value = null;
   } finally {
     webvhConfigLoaded.value = true;
@@ -333,8 +327,6 @@ const refreshWebvh = async () => {
     return;
   }
   refreshingWebvh.value = true;
-  // autoConfigureAttempted.value = false; // Removed
-  // autoConfigureFailed.value = false; // Removed
   try {
     await tenantStore.getServerConfig();
     await loadWebvhConfig();
@@ -377,7 +369,8 @@ const createDid = async () => {
   } catch (error: any) {
     toast.error(
       `Failed to create DID: ${
-        error?.response?.data?.message ?? JSON.stringify(error?.response?.data ?? error)
+        error?.response?.data?.message ??
+        JSON.stringify(error?.response?.data ?? error)
       }`
     );
   } finally {
@@ -405,10 +398,6 @@ onMounted(async () => {
 <style scoped lang="scss">
 .wallet-type-check {
   padding: 1rem 0;
-}
-
-.wallet-upgrade-alert {
-  color: $tenant-ui-text-warning;
 }
 
 .webvh-section {

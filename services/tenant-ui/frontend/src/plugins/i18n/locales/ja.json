@@ -254,6 +254,7 @@
   },
   "identifiers": {
     "identifiers": "Identifiers <JA>",
+    "requiresAnoncredsWallet": "This page requires an askar-anoncreds wallet. <JA>",
     "webvh": {
       "title": "did:webvh Configuration <JA>",
       "serverUrl": "Server URL <JA>",
