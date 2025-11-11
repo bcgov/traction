@@ -7,8 +7,36 @@
       <ProgressSpinner />
     </div>
     <template v-else>
+      <Message
+        v-if="needsWebvhConfig"
+        severity="warn"
+        :closable="false"
+        class="config-warning"
+      >
+        <div class="config-warning-content">
+          <p class="mb-2">
+            {{ $t('identifiers.webvh.configureDescription') }}
+          </p>
+          <div class="config-actions">
+            <Button
+              type="button"
+              icon="pi pi-cog"
+              class="p-button-sm"
+              :label="$t('identifiers.webvh.configureButton')"
+              :disabled="!canConfigureWebvh || configuringWebvh"
+              :loading="configuringWebvh"
+              @click="configureWebvh()"
+            />
+            <span v-if="!canConfigureWebvh" class="text-muted">
+              {{ $t('identifiers.webvh.configureMissingUrl') }}
+            </span>
+          </div>
+          <p v-if="autoConfigureFailed" class="mt-2 config-warning-error">
+            {{ $t('identifiers.webvh.autoConfigureFailed') }}
+          </p>
+        </div>
+      </Message>
       <DataTable
-        v-if="isAnoncredsWallet"
         v-model:filters="didTableFilters"
         :value="webvhDidRows"
         :paginator="true"
@@ -76,14 +104,6 @@
           </template>
         </Column>
       </DataTable>
-      <Message
-        v-else
-        :closable="false"
-        severity="warn"
-        class="wallet-type-warning"
-      >
-        {{ $t('identifiers.requiresAnoncredsWallet') }}
-      </Message>
 
       <Dialog
         v-model:visible="showCreateDidDialog"
@@ -93,6 +113,21 @@
         @hide="resetCreateForm"
       >
         <div class="dialog-content">
+          <div class="field">
+            <label for="server-select">{{ $t('identifiers.webvh.serverUrl') }}</label>
+            <Dropdown
+              id="server-select"
+              v-model="selectedWebvhServer"
+              :options="availableWebvhServers"
+              option-label="label"
+              option-value="value"
+              class="w-full"
+              :disabled="!availableWebvhServers.length"
+            />
+            <small v-if="!availableWebvhServers.length" class="p-error">
+              {{ $t('identifiers.webvh.serverUrlMissing') }}
+            </small>
+          </div>
           <div class="field">
             <label for="dialog-alias" class="required-label">
               {{ $t('identifiers.webvh.alias') }}
@@ -141,11 +176,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watchEffect } from 'vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
+import Dropdown from 'primevue/dropdown';
 import ProgressSpinner from 'primevue/progressspinner';
 import Dialog from 'primevue/dialog';
 import IconField from 'primevue/iconfield';
@@ -171,25 +207,47 @@ const showCreateDidDialog = ref(false);
 const createFormTouched = ref(false);
 const newDidAlias = ref('');
 const newDidNamespace = ref('default');
+const selectedWebvhServer = ref<string | null>(null);
 const webvhConfigData = ref<any | null>(null);
 const webvhConfigLoaded = ref(false);
 const didTableFilters = ref({
   global: { value: '', matchMode: FilterMatchMode.CONTAINS },
 });
+const configuringWebvh = ref(false);
+const autoConfigureAttempted = ref(false);
+const autoConfigureFailed = ref(false);
 
-const serverWebvhConfig = computed<any | null>(() => {
-  const cfg: any = serverConfig.value;
-  if (!cfg || typeof cfg !== 'object' || !('config' in cfg)) {
-    return null;
+const serverWebvhConfig = computed(() => {
+  const pluginConfig = serverConfig.value?.config?.plugin_config ?? {};
+  return pluginConfig?.webvh ?? pluginConfig?.['did-webvh'] ?? null;
+});
+
+const availableWebvhServers = computed(() => {
+  if (!serverWebvhConfig.value?.server_url) {
+    return [] as Array<{ label: string; value: string }>;
   }
-  const pluginConfig = cfg.config?.plugin_config ?? {};
-  return pluginConfig['did-webvh'] || pluginConfig.webvh || null;
+  let label = serverWebvhConfig.value.server_url;
+  try {
+    const parsed = new URL(serverWebvhConfig.value.server_url);
+    label = parsed.hostname;
+  } catch (e) {
+    // leave label as raw server_url
+  }
+  return [
+    {
+      label,
+      value: serverWebvhConfig.value.server_url,
+    },
+  ];
+});
+
+watchEffect(() => {
+  if (!selectedWebvhServer.value && availableWebvhServers.value.length) {
+    selectedWebvhServer.value = availableWebvhServers.value[0].value;
+  }
 });
 
 const pageLoading = computed(() => {
-  if (!isAnoncredsWallet.value) {
-    return loading.value;
-  }
   if (loading.value) {
     return true;
   }
@@ -203,11 +261,6 @@ const pageLoading = computed(() => {
     return false;
   }
   return true;
-});
-
-const isAnoncredsWallet = computed(() => {
-  const walletType = tenantWallet.value?.settings?.['wallet.type'];
-  return walletType === 'askar-anoncreds';
 });
 
 const webvhConfig = computed<any | null>(() => {
@@ -229,9 +282,31 @@ const webvhServerUrl = computed(() => webvhConfig.value?.server_url ?? '');
 
 const webvhWatchers = computed(() => {
   if (!webvhConfig.value) return [] as string[];
-  const watchers = webvhConfig.value.watchers ?? [];
-  return Array.isArray(watchers) ? watchers : [];
+  const witnesses = webvhConfig.value.witnesses;
+  const watchers = webvhConfig.value.watchers;
+  const list = Array.isArray(witnesses) && witnesses.length
+    ? witnesses
+    : Array.isArray(watchers)
+    ? watchers
+    : [];
+  return list;
 });
+
+const hasWebvhConfig = computed(() => {
+  const cfg = webvhConfig.value;
+  if (!cfg) {
+    return false;
+  }
+  const witnesses = cfg.witnesses ?? cfg.watchers;
+  const hasWitnesses = Array.isArray(witnesses) && witnesses.length > 0;
+  return Boolean(cfg.server_url && hasWitnesses);
+});
+
+const canConfigureWebvh = computed(() => {
+  return Boolean(serverWebvhConfig.value?.server_url);
+});
+
+const needsWebvhConfig = computed(() => !hasWebvhConfig.value);
 
 const webvhDidRows = computed(() => {
   const scids = webvhConfig.value?.scids;
@@ -267,15 +342,13 @@ const statusLabel = (_status: string) =>
 
 const canCreateDid = computed(
   () =>
-    isAnoncredsWallet.value &&
+    !needsWebvhConfig.value &&
+    selectedWebvhServer.value &&
     newDidAlias.value.trim().length > 0 &&
     !creatingDid.value
 );
 
 const openCreateDialog = () => {
-  if (!isAnoncredsWallet.value) {
-    return;
-  }
   createFormTouched.value = false;
   if (!newDidNamespace.value) {
     newDidNamespace.value = 'default';
@@ -302,11 +375,6 @@ const submitCreateDid = async () => {
 };
 
 const loadWebvhConfig = async () => {
-  if (!isAnoncredsWallet.value) {
-    webvhConfigData.value = null;
-    webvhConfigLoaded.value = true;
-    return;
-  }
   webvhConfigLoaded.value = false;
   try {
     const response = await acapyApi.getHttp(API_PATH.DID_WEBVH_CONFIG);
@@ -315,10 +383,60 @@ const loadWebvhConfig = async () => {
       !configData ||
       (typeof configData === 'object' && Object.keys(configData).length === 0);
     webvhConfigData.value = isEmptyConfig ? null : configData;
+    if (needsWebvhConfig.value && !autoConfigureAttempted.value) {
+      autoConfigureAttempted.value = true;
+      const configured = await configureWebvh(true);
+      if (configured) {
+        await loadWebvhConfig();
+        return;
+      }
+    } else {
+      autoConfigureAttempted.value = true;
+    }
   } catch (_error) {
     webvhConfigData.value = null;
   } finally {
     webvhConfigLoaded.value = true;
+  }
+};
+
+const configureWebvh = async (auto = false) => {
+  if (!auto) {
+    configuringWebvh.value = true;
+  }
+  try {
+    const result = await tenantStore.configureWebvhPlugin({ auto });
+    if (!result.success) {
+      autoConfigureFailed.value = true;
+      if (!auto && 'reason' in result) {
+        const failureMessage =
+          result.reason === 'missing_witnesses'
+            ? t('identifiers.webvh.witnessMissing')
+            : t('identifiers.webvh.configureMissingUrl');
+        toast.error(failureMessage as string);
+      }
+      return false;
+    }
+    autoConfigureFailed.value = false;
+    if (!auto) {
+      toast.success(t('identifiers.webvh.configureSuccess') as string);
+      await loadWebvhConfig();
+    }
+    return true;
+  } catch (error: any) {
+    autoConfigureFailed.value = true;
+    if (!auto) {
+      toast.error(
+        `Failed to configure webvh: ${
+          error?.response?.data?.message ?? JSON.stringify(error ?? {})
+        }`
+      );
+    }
+    return false;
+  } finally {
+    if (!auto) {
+      configuringWebvh.value = false;
+    }
   }
 };
 
@@ -338,18 +456,21 @@ const refreshWebvh = async () => {
 const createDid = async () => {
   creatingDid.value = true;
   try {
+    if (needsWebvhConfig.value || !selectedWebvhServer.value) {
+      toast.error(t('identifiers.webvh.serverUrlMissing') as string);
+      return;
+    }
     const alias = newDidAlias.value.trim();
     const namespace = newDidNamespace.value.trim() || 'default';
 
     const options: Record<string, any> = {
       identifier: alias,
       namespace,
+      server_url: selectedWebvhServer.value,
     };
-    if (webvhServerUrl.value) {
-      options.server_url = webvhServerUrl.value;
-    }
     if (webvhWatchers.value.length) {
       options.watchers = webvhWatchers.value;
+      options.witnesses = webvhWatchers.value;
     }
 
     const response = await acapyApi.postHttp(API_PATH.DID_WEBVH_CREATE, {
@@ -389,9 +510,7 @@ onMounted(async () => {
   if (tasks.length) {
     await Promise.allSettled(tasks);
   }
-  if (isAnoncredsWallet.value) {
-    await loadWebvhConfig();
-  }
+  await loadWebvhConfig();
 });
 </script>
 
@@ -438,25 +557,34 @@ onMounted(async () => {
 .status-chip {
   display: inline-flex;
   align-items: center;
-  padding: 0.2rem 0.6rem;
+  justify-content: center;
+  font-size: 0.75rem;
+  line-height: 1;
+  padding: 0.25rem 0.5rem;
   border-radius: 999px;
-  font-size: 0.85rem;
-  text-transform: capitalize;
+  background-color: rgba(3, 155, 229, 0.12);
+  color: rgba(3, 155, 229, 1);
+}
 
-  &.pending {
-    background: rgba(255, 193, 7, 0.2);
-    color: #8a6d1a;
-  }
+.config-warning {
+  margin-bottom: 1rem;
+}
 
-  &.active {
-    background: rgba(76, 175, 80, 0.2);
-    color: #1b5e20;
-  }
+.config-warning-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
 
-  &.error {
-    background: rgba(244, 67, 54, 0.2);
-    color: #b71c1c;
-  }
+.config-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.config-warning-error {
+  color: $tenant-ui-text-danger;
 }
 
 .table-header {
@@ -487,9 +615,5 @@ onMounted(async () => {
 .required-label::after {
   content: ' *';
   color: $tenant-ui-text-danger;
-}
-
-.wallet-type-warning {
-  margin-top: 1rem;
 }
 </style>

@@ -364,6 +364,62 @@ export const useTenantStore = defineStore('tenant', () => {
     throw new TxTimeoutErr(`Transaction ${txnId} has not been completed`);
   }
 
+  async function configureWebvhPlugin(options: { auto?: boolean } = {}) {
+    const { auto = false } = options;
+    const pluginConfig =
+      serverConfig.value?.config?.plugin_config?.webvh ??
+      serverConfig.value?.config?.plugin_config?.['did-webvh'] ??
+      null;
+    if (!pluginConfig?.server_url) {
+      if (auto) {
+        return { success: false as const, reason: 'missing_server_url' as const };
+      }
+      throw Error('Webvh server_url missing from server configuration');
+    }
+
+    const payload: Record<string, any> = {
+      server_url: pluginConfig.server_url,
+    };
+
+    if (pluginConfig.witness !== undefined) {
+      payload.witness = pluginConfig.witness;
+    } else {
+      payload.witness = true;
+    }
+
+    const witnesses =
+      Array.isArray(pluginConfig.witnesses) && pluginConfig.witnesses.length
+        ? pluginConfig.witnesses
+        : Array.isArray(pluginConfig.watchers) && pluginConfig.watchers.length
+        ? pluginConfig.watchers
+        : [];
+
+    if (!witnesses.length) {
+      if (auto) {
+        return { success: false as const, reason: 'missing_witnesses' as const };
+      }
+      throw Error('Webvh configuration requires at least one witness');
+    }
+
+    if (witnesses.length) {
+      payload.witnesses = witnesses;
+    }
+    if (Array.isArray(pluginConfig.watchers) && pluginConfig.watchers.length) {
+      payload.watchers = pluginConfig.watchers;
+    }
+
+    try {
+      await acapyApi.postHttp(API_PATH.DID_WEBVH_CONFIG, payload);
+      await getServerConfig();
+      return { success: true as const };
+    } catch (error: any) {
+      if (auto) {
+        return { success: false as const, error };
+      }
+      throw (error?.response?.data ?? error) as Error;
+    }
+  }
+
   async function waitForActiveEndorserConnection(maxRetries = 10) {
     const connId = endorserConnection.value.connection_id;
     let retries = 0;
@@ -684,6 +740,7 @@ export const useTenantStore = defineStore('tenant', () => {
     updateTenantSubWallet,
     updateTenantContact,
     waitForActiveEndorserConnection,
+    configureWebvhPlugin,
   };
 });
 
