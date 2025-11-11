@@ -60,6 +60,7 @@ import { useConfigStore, useConnectionStore, useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other Components
 import StatusChip from '@/components/common/StatusChip.vue';
+import type { ServerConfig } from '@/types';
 
 // Props
 const props = defineProps<{
@@ -75,8 +76,26 @@ const configStore = useConfigStore();
 const connectionStore = useConnectionStore();
 const tenantStore = useTenantStore();
 const { config } = storeToRefs(configStore);
-const { endorserConnection, publicDid, tenantConfig, writeLedger } =
-  storeToRefs(tenantStore);
+const {
+  endorserConnection,
+  publicDid,
+  tenantConfig,
+  writeLedger,
+  serverConfig,
+} = storeToRefs(tenantStore);
+
+const serverConfigValue = computed<ServerConfig | null>(() => {
+  const value = serverConfig.value as ServerConfig | undefined;
+  return value && 'config' in value ? value : null;
+});
+
+const webvhPluginConfig = computed(() => {
+  const pluginConfig = serverConfigValue.value?.config?.plugin_config;
+  if (!pluginConfig) {
+    return null;
+  }
+  return pluginConfig.webvh ?? pluginConfig['did-webvh'] ?? null;
+});
 
 const isWebvhLedger = computed(() => props.ledgerInfo?.type === 'webvh');
 
@@ -156,7 +175,7 @@ const currWriteLedger = computed(() => writeLedger?.value?.ledger_id ?? null);
 // Show the endorser connection button when...
 const showEndorserConnect = computed(() => {
   if (isWebvhLedger.value) {
-    return false;
+    return !webvhPluginConfig.value;
   }
   //... no current write ledger or endorser conn is set
   if (!currWriteLedger.value || !endorserConnection.value) {

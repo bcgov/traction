@@ -124,21 +124,24 @@ const serverConfigValue = computed<ServerConfig | null>(() => {
 });
 
 const webvhPluginConfig = computed(() => {
-  const pluginConfig = serverConfigValue.value?.config?.plugin_config ?? {};
-  return pluginConfig?.webvh ?? pluginConfig?.['did-webvh'] ?? null;
+  const pluginConfig = serverConfigValue.value?.config?.plugin_config;
+  if (!pluginConfig) {
+    return null;
+  }
+  return pluginConfig.webvh ?? pluginConfig['did-webvh'] ?? null;
 });
 
 const endorserList = computed(() => {
-  const baseList = serverConfigValue.value
-    ? serverConfigValue.value.config['ledger.ledger_config_list'].map(
-        (config: any) => ({
-          ledger_id: config.id,
-          endorser_alias: config.endorser_alias,
-          is_write: config.is_write,
-          type: 'indy',
-          method: 'indy',
-        })
-      )
+  const ledgerList =
+    serverConfigValue.value?.config?.['ledger.ledger_config_list'];
+  const baseList = Array.isArray(ledgerList)
+    ? ledgerList.map((config: any) => ({
+        ledger_id: config.id,
+        endorser_alias: config.endorser_alias,
+        is_write: config.is_write,
+        type: 'indy',
+        method: 'indy',
+      }))
     : [];
 
   if (webvhPluginConfig.value?.server_url) {

@@ -4,7 +4,7 @@ import {
   EndorserInfo,
   TransactionRecord,
 } from '@/types/acapyApi/acapyInterface';
-import { ServerConfig } from '@/types/index';
+import type { ServerConfig } from '@/types';
 interface TransactionRecordEx extends TransactionRecord {
   meta_data?: {
     [key: string]: any;
@@ -22,7 +22,6 @@ class TxTimeoutErr extends Error {
 
 import { API_PATH } from '@/helpers/constants';
 import { defineStore, storeToRefs } from 'pinia';
-import type { ServerConfig } from '@/types';
 import { computed, ref, Ref } from 'vue';
 import { useAcapyApi } from './acapyApi';
 import { useTokenStore } from './tokenStore';
