@@ -179,6 +179,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watchEffect } from 'vue';
+import type { ServerConfig } from '@/types';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
@@ -219,8 +220,13 @@ const configuringWebvh = ref(false);
 const autoConfigureAttempted = ref(false);
 const autoConfigureFailed = ref(false);
 
+const serverConfigValue = computed<ServerConfig | null>(() => {
+  const value = serverConfig.value as ServerConfig | undefined;
+  return value && 'config' in value ? value : null;
+});
+
 const serverWebvhConfig = computed(() => {
-  const pluginConfig = serverConfig.value?.config?.plugin_config ?? {};
+  const pluginConfig = serverConfigValue.value?.config?.plugin_config ?? {};
   return pluginConfig?.webvh ?? pluginConfig?.['did-webvh'] ?? null;
 });
 

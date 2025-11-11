@@ -105,6 +105,7 @@ import { TABLE_OPT } from '@/helpers/constants';
 import { storeToRefs } from 'pinia';
 // Other Components
 import EndorserConnect from './EndorserConnect.vue';
+import type { ServerConfig } from '@/types';
 
 const configStore = useConfigStore();
 const tenantStore = useTenantStore();
@@ -117,24 +118,28 @@ const {
   serverConfig,
 } = storeToRefs(tenantStore);
 
+const serverConfigValue = computed<ServerConfig | null>(() => {
+  const value = serverConfig.value as ServerConfig | undefined;
+  return value && 'config' in value ? value : null;
+});
+
 const webvhPluginConfig = computed(() => {
-  const pluginConfig = serverConfig.value?.config?.plugin_config ?? {};
+  const pluginConfig = serverConfigValue.value?.config?.plugin_config ?? {};
   return pluginConfig?.webvh ?? pluginConfig?.['did-webvh'] ?? null;
 });
 
 const endorserList = computed(() => {
-  const baseList =
-    'config' in serverConfig.value
-      ? serverConfig.value.config['ledger.ledger_config_list'].map(
-          (config: any) => ({
-            ledger_id: config.id,
-            endorser_alias: config.endorser_alias,
-            is_write: config.is_write,
-            type: 'indy',
-            method: 'indy',
-          })
-        )
-      : [];
+  const baseList = serverConfigValue.value
+    ? serverConfigValue.value.config['ledger.ledger_config_list'].map(
+        (config: any) => ({
+          ledger_id: config.id,
+          endorser_alias: config.endorser_alias,
+          is_write: config.is_write,
+          type: 'indy',
+          method: 'indy',
+        })
+      )
+    : [];
 
   if (webvhPluginConfig.value?.server_url) {
     let identifier = webvhPluginConfig.value.server_url;

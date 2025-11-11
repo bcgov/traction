@@ -90,6 +90,13 @@ export interface ServerConfig {
         watchers?: string[];
         scids?: Record<string, string>;
       };
+      webvh?: {
+        server_url?: string;
+        witness?: boolean;
+        witnesses?: string[];
+        watchers?: string[];
+        scids?: Record<string, string>;
+      };
       basicmessage_storage: {
         wallet_enabled: boolean;
       };

@@ -22,6 +22,7 @@ class TxTimeoutErr extends Error {
 
 import { API_PATH } from '@/helpers/constants';
 import { defineStore, storeToRefs } from 'pinia';
+import type { ServerConfig } from '@/types';
 import { computed, ref, Ref } from 'vue';
 import { useAcapyApi } from './acapyApi';
 import { useTokenStore } from './tokenStore';
@@ -366,9 +367,10 @@ export const useTenantStore = defineStore('tenant', () => {
 
   async function configureWebvhPlugin(options: { auto?: boolean } = {}) {
     const { auto = false } = options;
+    const value = serverConfig.value as ServerConfig | undefined;
     const pluginConfig =
-      serverConfig.value?.config?.plugin_config?.webvh ??
-      serverConfig.value?.config?.plugin_config?.['did-webvh'] ??
+      value?.config?.plugin_config?.webvh ??
+      value?.config?.plugin_config?.['did-webvh'] ??
       null;
     if (!pluginConfig?.server_url) {
       if (auto) {
