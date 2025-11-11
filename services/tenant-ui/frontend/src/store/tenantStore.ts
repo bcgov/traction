@@ -367,11 +367,11 @@ export const useTenantStore = defineStore('tenant', () => {
   async function configureWebvhPlugin(options: { auto?: boolean } = {}) {
     const { auto = false } = options;
     const value = serverConfig.value as ServerConfig | undefined;
-    const pluginConfig =
-      value?.config?.plugin_config?.webvh ??
-      value?.config?.plugin_config?.['did-webvh'] ??
-      null;
-    if (!pluginConfig?.server_url) {
+    const pluginConfig = value?.config?.plugin_config ?? {};
+    const keyedConfig = pluginConfig as Record<string, any>;
+    const configEntry = keyedConfig.webvh ?? keyedConfig['did-webvh'] ?? null;
+
+    if (!configEntry?.server_url) {
       if (auto) {
         return {
           success: false as const,
@@ -382,19 +382,19 @@ export const useTenantStore = defineStore('tenant', () => {
     }
 
     const payload: Record<string, any> = {
-      server_url: pluginConfig.server_url,
+      server_url: configEntry.server_url,
     };
 
-    if (pluginConfig.witness !== undefined) {
-      payload.witness = pluginConfig.witness;
+    if (configEntry.witness !== undefined) {
+      payload.witness = configEntry.witness;
     } else {
       payload.witness = true;
     }
 
-    const witnessesList = Array.isArray(pluginConfig.witnesses)
-      ? pluginConfig.witnesses
-      : Array.isArray(pluginConfig.watchers)
-        ? pluginConfig.watchers
+    const witnessesList = Array.isArray(configEntry.witnesses)
+      ? configEntry.witnesses
+      : Array.isArray(configEntry.watchers)
+        ? configEntry.watchers
         : [];
 
     if (!witnessesList.length) {
@@ -410,8 +410,8 @@ export const useTenantStore = defineStore('tenant', () => {
     if (witnessesList.length) {
       payload.witnesses = witnessesList;
     }
-    if (Array.isArray(pluginConfig.watchers) && pluginConfig.watchers.length) {
-      payload.watchers = pluginConfig.watchers;
+    if (Array.isArray(configEntry.watchers) && configEntry.watchers.length) {
+      payload.watchers = configEntry.watchers;
     }
 
     try {

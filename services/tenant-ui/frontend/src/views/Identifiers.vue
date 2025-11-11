@@ -226,8 +226,12 @@ const serverConfigValue = computed<ServerConfig | null>(() => {
 });
 
 const serverWebvhConfig = computed(() => {
-  const pluginConfig = serverConfigValue.value?.config?.plugin_config ?? {};
-  return pluginConfig?.webvh ?? pluginConfig?.['did-webvh'] ?? null;
+  const pluginConfig = serverConfigValue.value?.config?.plugin_config;
+  if (!pluginConfig) {
+    return null;
+  }
+  const keyedConfig = pluginConfig as typeof pluginConfig & Record<string, any>;
+  return keyedConfig.webvh ?? keyedConfig['did-webvh'] ?? null;
 });
 
 const availableWebvhServers = computed(() => {

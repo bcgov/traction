@@ -94,7 +94,8 @@ const webvhPluginConfig = computed(() => {
   if (!pluginConfig) {
     return null;
   }
-  return pluginConfig.webvh ?? pluginConfig['did-webvh'] ?? null;
+  const keyedConfig = pluginConfig as typeof pluginConfig & Record<string, any>;
+  return keyedConfig.webvh ?? keyedConfig['did-webvh'] ?? null;
 });
 
 const isWebvhLedger = computed(() => props.ledgerInfo?.type === 'webvh');
