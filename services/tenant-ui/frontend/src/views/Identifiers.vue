@@ -114,7 +114,9 @@
       >
         <div class="dialog-content">
           <div class="field">
-            <label for="server-select">{{ $t('identifiers.webvh.serverUrl') }}</label>
+            <label for="server-select">
+              {{ $t('identifiers.webvh.serverUrl') }}
+            </label>
             <Dropdown
               id="server-select"
               v-model="selectedWebvhServer"
@@ -230,7 +232,7 @@ const availableWebvhServers = computed(() => {
   try {
     const parsed = new URL(serverWebvhConfig.value.server_url);
     label = parsed.hostname;
-  } catch (e) {
+  } catch (_error) {
     // leave label as raw server_url
   }
   return [
@@ -278,18 +280,17 @@ const webvhConfig = computed<any | null>(() => {
   };
 });
 
-const webvhServerUrl = computed(() => webvhConfig.value?.server_url ?? '');
-
 const webvhWatchers = computed(() => {
   if (!webvhConfig.value) return [] as string[];
   const witnesses = webvhConfig.value.witnesses;
   const watchers = webvhConfig.value.watchers;
-  const list = Array.isArray(witnesses) && witnesses.length
-    ? witnesses
-    : Array.isArray(watchers)
-    ? watchers
-    : [];
-  return list;
+  if (Array.isArray(witnesses) && witnesses.length) {
+    return witnesses;
+  }
+  if (Array.isArray(watchers) && watchers.length) {
+    return watchers;
+  }
+  return [] as string[];
 });
 
 const hasWebvhConfig = computed(() => {

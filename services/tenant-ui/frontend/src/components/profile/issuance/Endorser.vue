@@ -141,7 +141,7 @@ const endorserList = computed(() => {
     try {
       const parsed = new URL(webvhPluginConfig.value.server_url);
       identifier = parsed.hostname;
-    } catch (e) {
+    } catch (_error) {
       // leave identifier as the raw server_url if parsing fails
     }
     baseList.push({

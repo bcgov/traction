@@ -27,7 +27,9 @@
     </div>
 
     <div
-      v-if="endorserConnection && props.ledgerInfo.ledger_id === currWriteLedger"
+      v-if="
+        endorserConnection && props.ledgerInfo.ledger_id === currWriteLedger
+      "
       class="flex"
     >
       <div class="flex align-items-center mr-2">{{ $t('common.status') }}</div>

@@ -372,7 +372,10 @@ export const useTenantStore = defineStore('tenant', () => {
       null;
     if (!pluginConfig?.server_url) {
       if (auto) {
-        return { success: false as const, reason: 'missing_server_url' as const };
+        return {
+          success: false as const,
+          reason: 'missing_server_url' as const,
+        };
       }
       throw Error('Webvh server_url missing from server configuration');
     }
@@ -387,22 +390,24 @@ export const useTenantStore = defineStore('tenant', () => {
       payload.witness = true;
     }
 
-    const witnesses =
-      Array.isArray(pluginConfig.witnesses) && pluginConfig.witnesses.length
-        ? pluginConfig.witnesses
-        : Array.isArray(pluginConfig.watchers) && pluginConfig.watchers.length
+    const witnessesList = Array.isArray(pluginConfig.witnesses)
+      ? pluginConfig.witnesses
+      : Array.isArray(pluginConfig.watchers)
         ? pluginConfig.watchers
         : [];
 
-    if (!witnesses.length) {
+    if (!witnessesList.length) {
       if (auto) {
-        return { success: false as const, reason: 'missing_witnesses' as const };
+        return {
+          success: false as const,
+          reason: 'missing_witnesses' as const,
+        };
       }
       throw Error('Webvh configuration requires at least one witness');
     }
 
-    if (witnesses.length) {
-      payload.witnesses = witnesses;
+    if (witnessesList.length) {
+      payload.witnesses = witnessesList;
     }
     if (Array.isArray(pluginConfig.watchers) && pluginConfig.watchers.length) {
       payload.watchers = pluginConfig.watchers;
