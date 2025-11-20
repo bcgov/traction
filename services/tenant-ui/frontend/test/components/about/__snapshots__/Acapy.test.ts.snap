@@ -20,16 +20,18 @@ exports[`Acapy > mount matches snapshot with expected values 1`] = `
           <div id="undefined_0_content" class="p-toggleable-content" role="region" aria-labelledby="undefined_0_header_action" data-pc-section="toggleablecontent" style="display: none;">
             <div class="p-accordion-content" data-pc-section="content">
               <div data-v-680038a3="" class="vjs-tree">
-                <div class="vjs-tree-node">
-                  <!---->
-                  <!---->
-                  <div class="vjs-indent">
+                <div>
+                  <div class="vjs-tree-node dynamic-height">
+                    <!---->
+                    <!---->
+                    <div class="vjs-indent">
+                      <!---->
+                    </div>
+                    <!----><span><span class="vjs-value vjs-value-null">null</span>
+                    <!---->
+                    <!----></span>
                     <!---->
                   </div>
-                  <!----><span><span class="vjs-value vjs-value-null">null</span>
-                  <!---->
-                  <!----></span>
-                  <!---->
                 </div>
               </div>
             </div>
