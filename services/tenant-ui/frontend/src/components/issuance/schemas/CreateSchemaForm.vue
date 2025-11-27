@@ -246,7 +246,8 @@ function convertToJson(): SchemaSendRequest | SchemaPostRequest | undefined {
     const schema: AnonCredsSchema = {
       attrNames: attributeNames ?? [],
       name: formFields.name || selectedSchema.value?.schema?.name || '',
-      version: formFields.version || selectedSchema.value?.schema?.version || '',
+      version:
+        formFields.version || selectedSchema.value?.schema?.version || '',
       issuerId: formFields.issuer || '',
     };
     return {
@@ -378,9 +379,7 @@ const handleSubmit = async (isFormValid: boolean) => {
 
     if (isAskarAnoncredsWallet.value) {
       // Use anoncreds endpoint
-      await governanceStore.createAnoncredsSchema(
-        payload as SchemaPostRequest
-      );
+      await governanceStore.createAnoncredsSchema(payload as SchemaPostRequest);
     } else {
       // Use regular endpoint
       await governanceStore.createSchema(payload as SchemaSendRequest);
