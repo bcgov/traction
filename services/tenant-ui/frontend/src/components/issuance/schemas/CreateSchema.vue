@@ -80,10 +80,11 @@ const isWebvhEndorserConnected = computed(() => {
 
   // For askar-anoncreds wallets, check webvh configuration
   // Check if witnesses array exists and has entries (indicates connection)
-  const hasWitnesses =
+  const hasWitnesses = Boolean(
     webvhConfig.value?.witnesses &&
-    Array.isArray(webvhConfig.value.witnesses) &&
-    webvhConfig.value.witnesses.length > 0;
+      Array.isArray(webvhConfig.value.witnesses) &&
+      webvhConfig.value.witnesses.length > 0
+  );
 
   console.log('isWebvhEndorserConnected check:', {
     isAskarAnoncreds: isAskarAnoncredsWallet.value,
@@ -94,31 +95,44 @@ const isWebvhEndorserConnected = computed(() => {
   return hasWitnesses;
 });
 
-// Disable button if askar-anoncreds wallet and webvh endorser is not connected
+// Disable button logic:
+// - For askar wallets: require isIssuer to be true
+// - For askar-anoncreds wallets: only require WebVH endorser to be connected
 const isCreateButtonDisabled = computed(() => {
-  const notIssuer = !isIssuer?.value;
-  const webvhNotConnected =
-    isAskarAnoncredsWallet.value && !isWebvhEndorserConnected.value;
-  const disabled = notIssuer || webvhNotConnected;
-
-  console.log('isCreateButtonDisabled check:', {
-    notIssuer,
-    isAskarAnoncreds: isAskarAnoncredsWallet.value,
-    isWebvhConnected: isWebvhEndorserConnected.value,
-    webvhNotConnected,
-    disabled,
-  });
-
-  return disabled;
+  if (isAskarAnoncredsWallet.value) {
+    // For askar-anoncreds wallets, only check WebVH connection
+    const webvhNotConnected = !isWebvhEndorserConnected.value;
+    console.log('isCreateButtonDisabled check (askar-anoncreds):', {
+      isAskarAnoncreds: true,
+      isWebvhConnected: isWebvhEndorserConnected.value,
+      webvhNotConnected,
+      disabled: webvhNotConnected,
+    });
+    return webvhNotConnected;
+  } else {
+    // For askar wallets, require issuer status
+    const notIssuer = !isIssuer?.value;
+    console.log('isCreateButtonDisabled check (askar):', {
+      isAskarAnoncreds: false,
+      notIssuer,
+      disabled: notIssuer,
+    });
+    return notIssuer;
+  }
 });
 
 // Debug info for why button is disabled
 const disableReason = computed(() => {
-  if (!isIssuer?.value) {
-    return 'not_issuer';
-  }
-  if (isAskarAnoncredsWallet.value && !isWebvhEndorserConnected.value) {
-    return 'webvh_not_connected';
+  if (isAskarAnoncredsWallet.value) {
+    // For askar-anoncreds, only check WebVH connection
+    if (!isWebvhEndorserConnected.value) {
+      return 'webvh_not_connected';
+    }
+  } else {
+    // For askar wallets, check issuer status
+    if (!isIssuer?.value) {
+      return 'not_issuer';
+    }
   }
   return null;
 });
