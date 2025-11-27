@@ -121,24 +121,43 @@ export const useGovernanceStore = defineStore('governance', () => {
 
       // Handle both direct data and axios response structure
       const responseData = schemasResponse?.data || schemasResponse;
-      const schemaIds = (responseData as GetSchemasResponse).schema_ids || [];
+      const schemaIds =
+        (responseData as GetSchemasResponse).schema_ids || [];
       console.log('listAnoncredsSchemas - schemaIds:', schemaIds);
 
       // Fetch full schema details for each schema ID
       const schemaPromises = schemaIds.map(async (schemaId: string) => {
         try {
-          const schemaResponse = await acapyApi.getHttp(
-            API_PATH.ANONCREDS_SCHEMA(schemaId)
-          );
+          // For schema IDs with special characters, we need to URL encode them
+          // But we need to be careful - if the API expects it in the path, we encode the whole thing
+          // If it expects it as a query param, we handle it differently
+          // Try URL encoding the schema ID for the path
+          const encodedSchemaId = encodeURIComponent(schemaId);
+          console.log(`Fetching schema - original ID: ${schemaId}`);
+          console.log(`Fetching schema - encoded ID: ${encodedSchemaId}`);
+          console.log(`Fetching schema - URL: ${API_PATH.ANONCREDS_SCHEMA(encodedSchemaId)}`);
+          
+          // Build the full URL to see what we're actually calling
+          const schemaUrl = API_PATH.ANONCREDS_SCHEMA(encodedSchemaId);
+          console.log(`Schema ${schemaId} - Full URL being called:`, schemaUrl);
+          
+          const schemaResponse = await acapyApi.getHttp(schemaUrl);
           console.log(`Schema ${schemaId} - schemaResponse:`, schemaResponse);
           console.log(
             `Schema ${schemaId} - schemaResponse.data:`,
             schemaResponse.data
           );
+          console.log(
+            `Schema ${schemaId} - schemaResponse.status:`,
+            schemaResponse.status
+          );
 
           // Handle both direct data and axios response structure
           const schemaData = (schemaResponse?.data ||
             schemaResponse) as GetSchemaResult;
+
+          console.log(`Schema ${schemaId} - parsed schemaData:`, schemaData);
+          console.log(`Schema ${schemaId} - schemaData.schema:`, schemaData?.schema);
 
           // Check if schemaData exists and has the expected structure
           if (!schemaData) {
@@ -157,17 +176,34 @@ export const useGovernanceStore = defineStore('governance', () => {
 
           // Map GetSchemaResult to SchemaStorageRecord format
           const schemaObj = schemaData.schema;
+          console.log(`Schema ${schemaId} - schemaObj:`, schemaObj);
+          console.log(`Schema ${schemaId} - schemaObj.name:`, schemaObj.name);
+          console.log(`Schema ${schemaId} - schemaObj.name type:`, typeof schemaObj.name);
+          console.log(`Schema ${schemaId} - schemaObj.name truthy?:`, !!schemaObj.name);
+          console.log(`Schema ${schemaId} - schemaObj.version:`, schemaObj.version);
+          console.log(`Schema ${schemaId} - schemaObj.attrNames:`, schemaObj.attrNames);
+          console.log(`Schema ${schemaId} - schemaObj.issuerId:`, schemaObj.issuerId);
+
+          // Extract values with explicit checks
+          const schemaName = schemaObj.name;
+          const schemaVersion = schemaObj.version;
+          console.log(`Schema ${schemaId} - extracted name:`, schemaName);
+          console.log(`Schema ${schemaId} - extracted version:`, schemaVersion);
+          console.log(`Schema ${schemaId} - name || 'Unknown' evaluates to:`, schemaName || 'Unknown');
+          console.log(`Schema ${schemaId} - version || 'Unknown' evaluates to:`, schemaVersion || 'Unknown');
+
           const mappedSchema: SchemaStorageRecord = {
             schema_id: schemaData.schema_id || schemaId,
             state: 'active',
             schema: {
-              name: schemaObj.name || 'Unknown',
-              version: schemaObj.version || 'Unknown',
+              name: schemaName || 'Unknown',
+              version: schemaVersion || 'Unknown',
               attrNames: Array.isArray(schemaObj.attrNames)
                 ? schemaObj.attrNames
                 : [],
-              id: schemaData.schema_id || schemaId,
-            },
+              // Add issuerId from AnonCreds schema response
+              issuerId: schemaObj.issuerId,
+            } as any, // Type assertion needed since issuerId is not in base Schema interface
             schema_dict: schemaObj, // Store full schema including issuerId
             created_at: schemaData.schema_metadata?.created_at,
             updated_at: schemaData.schema_metadata?.updated_at,
@@ -175,6 +211,8 @@ export const useGovernanceStore = defineStore('governance', () => {
           };
 
           console.log(`Schema ${schemaId} - mappedSchema:`, mappedSchema);
+          console.log(`Schema ${schemaId} - mappedSchema.schema:`, mappedSchema.schema);
+          console.log(`Schema ${schemaId} - mappedSchema.schema.name:`, mappedSchema.schema.name);
           return mappedSchema;
         } catch (err: any) {
           console.error(`Failed to fetch schema ${schemaId}:`, err);
@@ -182,7 +220,12 @@ export const useGovernanceStore = defineStore('governance', () => {
             message: err?.message,
             response: err?.response?.data,
             status: err?.response?.status,
+            fullError: err,
           });
+          // Log the full error response to understand what's happening
+          if (err?.response) {
+            console.error(`Full error response:`, err.response);
+          }
           // Return a minimal schema record even if fetch fails
           // Note: state is optional and typically 'active' or 'deleted' from API
           // We don't set it for error cases since it's not a valid state value
@@ -193,7 +236,7 @@ export const useGovernanceStore = defineStore('governance', () => {
               name: 'Unknown',
               version: 'Unknown',
               attrNames: [],
-              id: schemaId,
+              // No id field - removed per user request
             },
             schema_dict: undefined,
             created_at: undefined,

@@ -43,13 +43,10 @@ export const formatSchemaList = (
 ): FormattedSchema[] => {
   // Safety check - ensure schemaList.value exists and is an array
   if (!schemaList.value || !Array.isArray(schemaList.value)) {
-    console.warn(
-      'formatSchemaList: schemaList.value is not an array',
-      schemaList.value
-    );
+    console.warn('formatSchemaList: schemaList.value is not an array', schemaList.value);
     return [];
   }
-
+  
   console.log('formatSchemaList - input schemaList.value:', schemaList.value);
 
   return schemaList.value
@@ -79,10 +76,7 @@ export const formatSchemaList = (
       // Defensive checks - ensure schema.schema exists (already filtered, but double-check)
       const schemaObj = schema.schema;
       if (!schemaObj || typeof schemaObj !== 'object') {
-        console.error(
-          'formatSchemaList: schema.schema is invalid in map:',
-          schema
-        );
+        console.error('formatSchemaList: schema.schema is invalid in map:', schema);
         // Return a safe default
         return {
           schema: {
@@ -97,7 +91,14 @@ export const formatSchemaList = (
         };
       }
 
-      return {
+      // Log what we're accessing
+      console.log('formatSchemaList - schemaObj:', schemaObj);
+      console.log('formatSchemaList - schemaObj.name:', schemaObj.name);
+      console.log('formatSchemaList - schemaObj.name type:', typeof schemaObj.name);
+      console.log('formatSchemaList - schemaObj.name truthy?:', !!schemaObj.name);
+      console.log('formatSchemaList - schemaObj.version:', schemaObj.version);
+      
+      const formattedSchema = {
         schema: {
           name: schemaObj.name || 'Unknown',
           version: schemaObj.version || 'Unknown',
@@ -112,6 +113,9 @@ export const formatSchemaList = (
           ? [...schema.credentialDefinitions].sort()
           : [],
       };
+      
+      console.log('formatSchemaList - formattedSchema.schema.name:', formattedSchema.schema.name);
+      return formattedSchema;
     });
 };
 

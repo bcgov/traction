@@ -97,12 +97,17 @@ const isWebvhEndorserConnected = computed(() => {
   return false;
 });
 
-// Disable button if askar-anoncreds wallet and webvh endorser is not connected
+// Disable button logic:
+// - For askar wallets: require isIssuer to be true
+// - For askar-anoncreds wallets: only require WebVH endorser to be connected
 const isCreateButtonDisabled = computed(() => {
-  return (
-    !isIssuer.value ||
-    (isAskarAnoncredsWallet.value && !isWebvhEndorserConnected.value)
-  );
+  if (isAskarAnoncredsWallet.value) {
+    // For askar-anoncreds wallets, only check WebVH connection
+    return !isWebvhEndorserConnected.value;
+  } else {
+    // For askar wallets, require issuer status
+    return !isIssuer.value;
+  }
 });
 
 // Load webvh configuration
