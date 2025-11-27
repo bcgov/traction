@@ -393,10 +393,10 @@ export const useTenantStore = defineStore('tenant', () => {
 
     // Extract the key part from did:key:z6Mk...
     const witnessKey = configEntry.witness_id.replace('did:key:', '');
-    
+
     // Construct the invitation URL
     const invitationUrl = `${configEntry.server_url}/api/invitations?_oobid=${witnessKey}`;
-    
+
     // Fetch the invitation
     let witnessInvitation: string;
     try {
@@ -405,11 +405,11 @@ export const useTenantStore = defineStore('tenant', () => {
         throw new Error(`Failed to fetch invitation: ${response.statusText}`);
       }
       const invitation = await response.json();
-      
+
       // Base64 encode the invitation JSON
       const invitationJson = JSON.stringify(invitation);
       const b64Invitation = btoa(invitationJson);
-      
+
       // Create the didcomm URL
       witnessInvitation = `didcomm://?oob=${b64Invitation}`;
     } catch (error) {

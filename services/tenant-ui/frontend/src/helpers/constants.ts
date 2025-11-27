@@ -171,6 +171,7 @@ export const API_PATH = {
   WALLET_DID: '/wallet/did',
   WALLET_DID_PUBLIC: '/wallet/did/public',
   WALLET_DID_CREATE: '/wallet/did/create',
+  WALLET_UPGRADE: '/anoncreds/wallet/upgrade',
   DID_WEBVH_CONFIG: '/did/webvh/configuration',
   DID_WEBVH_CREATE: '/did/webvh/create',
 

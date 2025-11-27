@@ -1,4 +1,5 @@
 <template>
+  <ConfirmDialog />
   <MainCardContent
     :title="$t('tenant.profile.tenantProfile')"
     :refresh-callback="loadTenantSettings"
@@ -355,6 +356,33 @@
             />
           </div>
 
+          <!-- Wallet Type and Upgrade -->
+          <Divider class="mt-3 mb-3" />
+          <div class="field">
+            <label for="walletType">
+              {{ $t('tenant.settings.walletType') }}
+            </label>
+            <div class="flex align-items-center gap-2">
+              <InputText
+                id="walletType"
+                :value="walletTypeDisplay"
+                class="w-full"
+                readonly
+              />
+              <Button
+                v-if="isAskarWallet"
+                label="Upgrade Wallet"
+                icon="pi pi-arrow-up"
+                severity="warning"
+                :loading="upgradingWallet"
+                @click="confirmUpgrade"
+              />
+            </div>
+            <small v-if="isAskarWallet" class="p-text-secondary">
+              {{ $t('tenant.settings.walletUpgradeWarning') }}
+            </small>
+          </div>
+
           <!-- Traction cfg - raw json -->
           <Accordion v-if="formattedServerCfg" class="mt-4">
             <AccordionTab :header="$t('serverConfig.expand')">
@@ -392,6 +420,7 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import Button from 'primevue/button';
+import ConfirmDialog from 'primevue/confirmdialog';
 import Divider from 'primevue/divider';
 import Dropdown from 'primevue/dropdown';
 import InputSwitch from 'primevue/inputswitch';
@@ -401,21 +430,46 @@ import Password from 'primevue/password';
 import ProgressSpinner from 'primevue/progressspinner';
 import VueJsonPretty from 'vue-json-pretty';
 import { useToast } from 'vue-toastification';
+import { useConfirm } from 'primevue/useconfirm';
 import { required, email, url } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
 // State/etc
 import { storeToRefs } from 'pinia';
 import { useTenantStore } from '@/store';
+import { useAcapyApi } from '@/store/acapyApi';
+import { API_PATH } from '@/helpers/constants';
 // Components
 import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
 
 const toast = useToast();
+const confirm = useConfirm();
+const acapyApi = useAcapyApi();
 
 // State setup
 const tenantStore = useTenantStore();
 const { tenant, loading, serverConfig, tenantDefaultSettings, tenantWallet } =
   storeToRefs(useTenantStore());
 const tenantWalletwithExtraSettings: any = ref(null);
+const upgradingWallet = ref(false);
+
+// Wallet type computed properties
+const walletType = computed(() => {
+  return tenantWallet.value?.settings?.['wallet.type'] || 'unknown';
+});
+
+const isAskarWallet = computed(() => {
+  return walletType.value === 'askar';
+});
+
+const walletTypeDisplay = computed(() => {
+  if (walletType.value === 'askar') {
+    return 'askar (can be upgraded to askar-anoncreds)';
+  }
+  if (walletType.value === 'askar-anoncreds') {
+    return 'askar-anoncreds';
+  }
+  return walletType.value;
+});
 
 // Get Tenant Configuration
 const loadTenantSettings = async () => {
@@ -685,6 +739,51 @@ const formattedServerCfg = computed(() => {
     return null;
   }
 });
+
+// Wallet upgrade functionality
+const confirmUpgrade = () => {
+  confirm.require({
+    message: 'This will upgrade your wallet from askar to askar-anoncreds. This operation is NON-REVERSIBLE. Are you sure you want to proceed?',
+    header: 'Confirm Wallet Upgrade',
+    icon: 'pi pi-exclamation-triangle',
+    rejectClass: 'p-button-text',
+    acceptClass: 'p-button-danger',
+    acceptLabel: 'Upgrade',
+    rejectLabel: 'Cancel',
+    accept: () => {
+      upgradeWallet();
+    },
+  });
+};
+
+const upgradeWallet = async () => {
+  if (!tenantWallet.value?.settings?.['wallet.name']) {
+    toast.error('Wallet name not found');
+    return;
+  }
+
+  upgradingWallet.value = true;
+  try {
+    const walletName = tenantWallet.value.settings['wallet.name'];
+    await acapyApi.postHttp(
+      `${API_PATH.WALLET_UPGRADE}?wallet_name=${encodeURIComponent(walletName)}`,
+      {}
+    );
+    toast.success('Wallet upgrade has been triggered. The upgrade will complete in the background.');
+    // Reload settings to reflect the change
+    setTimeout(() => {
+      loadTenantSettings();
+    }, 2000);
+  } catch (error: any) {
+    toast.error(
+      `Failed to upgrade wallet: ${
+        error?.response?.data?.message ?? error?.message ?? 'Unknown error'
+      }`
+    );
+  } finally {
+    upgradingWallet.value = false;
+  }
+};
 </script>
 
 <style scoped lang="scss">

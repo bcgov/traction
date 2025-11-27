@@ -477,7 +477,8 @@
       "title": "Storage",
       "walletStorageConfig": "Wallet Storage Config",
       "walletStorageType": "Wallet Storage Type",
-      "walletType": "Wallet Type"
+      "walletType": "Wallet Type",
+      "walletUpgradeWarning": "Upgrading to askar-anoncreds is a non-reversible operation. Make sure you have a backup before proceeding."
     },
     "tenants": {
       "reservation": "Reservation",

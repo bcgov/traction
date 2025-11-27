@@ -107,9 +107,11 @@ const connectToLedger = async (switchLeger = false) => {
       const result = await tenantStore.configureWebvhPlugin();
       if (!result.success) {
         const failureMessage =
-          'reason' in result && result.reason === 'missing_witnesses'
+          'reason' in result && result.reason === 'missing_witness_id'
             ? t('identifiers.webvh.witnessMissing')
-            : t('identifiers.webvh.autoConfigureFailed');
+            : 'reason' in result && result.reason === 'missing_server_url'
+              ? t('identifiers.webvh.configureMissingUrl')
+              : t('identifiers.webvh.autoConfigureFailed');
         toast.error(failureMessage as string);
         return;
       }

@@ -421,9 +421,11 @@ const configureWebvh = async (auto = false) => {
       autoConfigureFailed.value = true;
       if (!auto && 'reason' in result) {
         const failureMessage =
-          result.reason === 'missing_witnesses'
+          result.reason === 'missing_witness_id'
             ? t('identifiers.webvh.witnessMissing')
-            : t('identifiers.webvh.configureMissingUrl');
+            : result.reason === 'missing_server_url'
+              ? t('identifiers.webvh.configureMissingUrl')
+              : t('identifiers.webvh.autoConfigureFailed');
         toast.error(failureMessage as string);
       }
       return false;
