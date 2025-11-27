@@ -1,6 +1,13 @@
 <template>
   <div>
     <Button
+      v-tooltip="
+        disableReason === 'not_issuer'
+          ? $t('configuration.schemas.notIssuer')
+          : disableReason === 'webvh_not_connected'
+            ? $t('identifiers.webvh.configureDescription')
+            : ''
+      "
       :disabled="isCreateButtonDisabled"
       :label="$t('configuration.schemas.create')"
       icon="pi pi-plus"
@@ -55,7 +62,13 @@ const webvhConfigLoaded = ref(false);
 
 // Check if wallet is askar-anoncreds
 const isAskarAnoncredsWallet = computed(() => {
-  return tenantWallet?.value?.settings?.['wallet.type'] === 'askar-anoncreds';
+  const walletType = tenantWallet?.value?.settings?.['wallet.type'];
+  console.log('Wallet type check:', {
+    walletType,
+    isAskarAnoncreds: walletType === 'askar-anoncreds',
+    tenantWallet: tenantWallet?.value,
+  });
+  return walletType === 'askar-anoncreds';
 });
 
 // Check if webvh endorser is connected
@@ -67,22 +80,47 @@ const isWebvhEndorserConnected = computed(() => {
 
   // For askar-anoncreds wallets, check webvh configuration
   // Check if witnesses array exists and has entries (indicates connection)
-  if (
+  const hasWitnesses =
     webvhConfig.value?.witnesses &&
-    Array.isArray(webvhConfig.value.witnesses)
-  ) {
-    return webvhConfig.value.witnesses.length > 0;
-  }
+    Array.isArray(webvhConfig.value.witnesses) &&
+    webvhConfig.value.witnesses.length > 0;
 
-  return false;
+  console.log('isWebvhEndorserConnected check:', {
+    isAskarAnoncreds: isAskarAnoncredsWallet.value,
+    hasWitnesses,
+    witnesses: webvhConfig.value?.witnesses,
+  });
+
+  return hasWitnesses;
 });
 
 // Disable button if askar-anoncreds wallet and webvh endorser is not connected
 const isCreateButtonDisabled = computed(() => {
-  return (
-    !isIssuer?.value ||
-    (isAskarAnoncredsWallet.value && !isWebvhEndorserConnected.value)
-  );
+  const notIssuer = !isIssuer?.value;
+  const webvhNotConnected =
+    isAskarAnoncredsWallet.value && !isWebvhEndorserConnected.value;
+  const disabled = notIssuer || webvhNotConnected;
+
+  console.log('isCreateButtonDisabled check:', {
+    notIssuer,
+    isAskarAnoncreds: isAskarAnoncredsWallet.value,
+    isWebvhConnected: isWebvhEndorserConnected.value,
+    webvhNotConnected,
+    disabled,
+  });
+
+  return disabled;
+});
+
+// Debug info for why button is disabled
+const disableReason = computed(() => {
+  if (!isIssuer?.value) {
+    return 'not_issuer';
+  }
+  if (isAskarAnoncredsWallet.value && !isWebvhEndorserConnected.value) {
+    return 'webvh_not_connected';
+  }
+  return null;
 });
 
 // Load webvh configuration
@@ -99,7 +137,11 @@ const loadWebvhConfig = async () => {
       !configData ||
       (typeof configData === 'object' && Object.keys(configData).length === 0);
     webvhConfig.value = isEmptyConfig ? null : configData;
+    console.log('WebVH Config:', webvhConfig.value);
+    console.log('Witnesses array:', webvhConfig.value?.witnesses);
+    console.log('Is connected:', isWebvhEndorserConnected.value);
   } catch (_error) {
+    console.error('Error loading WebVH config:', _error);
     webvhConfig.value = null;
   } finally {
     webvhConfigLoaded.value = true;

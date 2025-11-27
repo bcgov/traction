@@ -152,6 +152,7 @@
       "schema": "Schema",
       "selectIssuer": "Select an issuer",
       "issuer": "Issuer",
+      "notIssuer": "You must be an issuer to create schemas. Please register a public DID first.",
       "storage": "Schema Storage",
       "stored": "Stored Schemas"
     },
