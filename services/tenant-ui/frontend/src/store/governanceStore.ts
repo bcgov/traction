@@ -113,8 +113,16 @@ export const useGovernanceStore = defineStore('governance', () => {
       const schemasResponse = await acapyApi.getHttp(
         API_PATH.ANONCREDS_SCHEMAS
       );
-      const schemaIds =
-        (schemasResponse.data as GetSchemasResponse).schema_ids || [];
+      console.log('listAnoncredsSchemas - schemasResponse:', schemasResponse);
+      console.log(
+        'listAnoncredsSchemas - schemasResponse.data:',
+        schemasResponse.data
+      );
+
+      // Handle both direct data and axios response structure
+      const responseData = schemasResponse?.data || schemasResponse;
+      const schemaIds = (responseData as GetSchemasResponse).schema_ids || [];
+      console.log('listAnoncredsSchemas - schemaIds:', schemaIds);
 
       // Fetch full schema details for each schema ID
       const schemaPromises = schemaIds.map(async (schemaId: string) => {
@@ -122,39 +130,90 @@ export const useGovernanceStore = defineStore('governance', () => {
           const schemaResponse = await acapyApi.getHttp(
             API_PATH.ANONCREDS_SCHEMA(schemaId)
           );
-          const schemaData = schemaResponse.data as GetSchemaResult;
+          console.log(`Schema ${schemaId} - schemaResponse:`, schemaResponse);
+          console.log(
+            `Schema ${schemaId} - schemaResponse.data:`,
+            schemaResponse.data
+          );
+
+          // Handle both direct data and axios response structure
+          const schemaData = (schemaResponse?.data ||
+            schemaResponse) as GetSchemaResult;
+
+          // Check if schemaData exists and has the expected structure
+          if (!schemaData) {
+            console.warn(`Schema ${schemaId} returned empty response`);
+            throw new Error('Empty response from schema endpoint');
+          }
+
+          // Ensure schema object exists
+          if (!schemaData.schema) {
+            console.warn(
+              `Schema ${schemaId} missing schema object:`,
+              schemaData
+            );
+            throw new Error('Schema object missing from response');
+          }
 
           // Map GetSchemaResult to SchemaStorageRecord format
+          const schemaObj = schemaData.schema;
           const mappedSchema: SchemaStorageRecord = {
             schema_id: schemaData.schema_id || schemaId,
             state: 'active',
-            schema: schemaData.schema
-              ? ({
-                  name: schemaData.schema.name,
-                  version: schemaData.schema.version,
-                  attrNames: schemaData.schema.attrNames,
-                  id: schemaData.schema_id || schemaId,
-                } as any)
-              : ({} as any),
-            schema_dict: schemaData.schema,
+            schema: {
+              name: schemaObj.name || 'Unknown',
+              version: schemaObj.version || 'Unknown',
+              attrNames: Array.isArray(schemaObj.attrNames)
+                ? schemaObj.attrNames
+                : [],
+              id: schemaData.schema_id || schemaId,
+            },
+            schema_dict: schemaObj, // Store full schema including issuerId
             created_at: schemaData.schema_metadata?.created_at,
             updated_at: schemaData.schema_metadata?.updated_at,
             ledger_id: schemaData.schema_id,
           };
 
+          console.log(`Schema ${schemaId} - mappedSchema:`, mappedSchema);
           return mappedSchema;
-        } catch (err) {
+        } catch (err: any) {
           console.error(`Failed to fetch schema ${schemaId}:`, err);
+          console.error(`Error details:`, {
+            message: err?.message,
+            response: err?.response?.data,
+            status: err?.response?.status,
+          });
           // Return a minimal schema record even if fetch fails
+          // Note: state is optional and typically 'active' or 'deleted' from API
+          // We don't set it for error cases since it's not a valid state value
           return {
             schema_id: schemaId,
-            state: 'error',
+            // state is optional - don't set it for error cases
+            schema: {
+              name: 'Unknown',
+              version: 'Unknown',
+              attrNames: [],
+              id: schemaId,
+            },
+            schema_dict: undefined,
+            created_at: undefined,
+            updated_at: undefined,
+            ledger_id: schemaId,
           } as SchemaStorageRecord;
         }
       });
 
       const schemas = await Promise.all(schemaPromises);
-      storedSchemas.value = schemas.filter((s) => s !== null);
+      console.log('listAnoncredsSchemas - schemas after Promise.all:', schemas);
+
+      // Filter out null, undefined, and schemas without proper structure
+      storedSchemas.value = schemas.filter(
+        (s) => s !== null && s !== undefined && s.schema_id && s.schema
+      );
+      console.log(
+        'listAnoncredsSchemas - storedSchemas.value after filter:',
+        storedSchemas.value
+      );
     } catch (err) {
       console.error(err);
       error.value = err;

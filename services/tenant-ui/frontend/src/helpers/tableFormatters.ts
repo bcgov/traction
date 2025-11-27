@@ -40,18 +40,80 @@ export interface FormattedIssuedCredentialRecord extends V20CredExRecordDetail {
 // Formatter functions to make rows for datatables from API/store lists
 export const formatSchemaList = (
   schemaList: Ref<SchemaStorageRecord[]>
-): FormattedSchema[] =>
-  schemaList.value.map((schema: any) => ({
-    schema: {
-      name: schema.schema.name,
-      version: schema.schema.version,
-      attrNames: schema.schema.attrNames.sort(),
-    },
-    schema_id: schema.schema_id,
-    created: formatDateLong(schema.created_at),
-    created_at: schema.created_at,
-    credentialDefinitions: schema.credentialDefinitions.sort(),
-  }));
+): FormattedSchema[] => {
+  // Safety check - ensure schemaList.value exists and is an array
+  if (!schemaList.value || !Array.isArray(schemaList.value)) {
+    console.warn(
+      'formatSchemaList: schemaList.value is not an array',
+      schemaList.value
+    );
+    return [];
+  }
+
+  console.log('formatSchemaList - input schemaList.value:', schemaList.value);
+
+  return schemaList.value
+    .filter((schema: any) => {
+      // Filter out null, undefined, or invalid schemas
+      if (!schema || typeof schema !== 'object') {
+        return false;
+      }
+      // Must have schema_id
+      if (!schema.schema_id) {
+        console.warn('Schema missing schema_id:', schema);
+        return false;
+      }
+      // Must have schema object with at least name property
+      if (!schema.schema || typeof schema.schema !== 'object') {
+        console.warn('Schema missing schema object:', schema);
+        return false;
+      }
+      // Only show active schemas (or schemas without state set)
+      // state can be 'active' or 'deleted' from the API
+      if (schema.state === 'deleted') {
+        return false;
+      }
+      return true;
+    })
+    .map((schema: any) => {
+      // Defensive checks - ensure schema.schema exists (already filtered, but double-check)
+      const schemaObj = schema.schema;
+      if (!schemaObj || typeof schemaObj !== 'object') {
+        console.error(
+          'formatSchemaList: schema.schema is invalid in map:',
+          schema
+        );
+        // Return a safe default
+        return {
+          schema: {
+            name: 'Invalid',
+            version: 'Unknown',
+            attrNames: [],
+          },
+          schema_id: schema.schema_id || 'Unknown',
+          created: formatDateLong(schema.created_at),
+          created_at: schema.created_at,
+          credentialDefinitions: [],
+        };
+      }
+
+      return {
+        schema: {
+          name: schemaObj.name || 'Unknown',
+          version: schemaObj.version || 'Unknown',
+          attrNames: Array.isArray(schemaObj.attrNames)
+            ? [...schemaObj.attrNames].sort()
+            : [],
+        },
+        schema_id: schema.schema_id || 'Unknown',
+        created: formatDateLong(schema.created_at),
+        created_at: schema.created_at,
+        credentialDefinitions: Array.isArray(schema.credentialDefinitions)
+          ? [...schema.credentialDefinitions].sort()
+          : [],
+      };
+    });
+};
 
 export const formatStoredCredDefs = (
   storedCredDefs: Ref<CredDefStorageRecord[]>
