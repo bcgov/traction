@@ -381,38 +381,50 @@ export const useTenantStore = defineStore('tenant', () => {
       throw Error('Webvh server_url missing from server configuration');
     }
 
-    const payload: Record<string, any> = {
-      server_url: configEntry.server_url,
-    };
-
-    if (configEntry.witness !== undefined) {
-      payload.witness = configEntry.witness;
-    } else {
-      payload.witness = true;
-    }
-
-    const witnessesList = Array.isArray(configEntry.witnesses)
-      ? configEntry.witnesses
-      : Array.isArray(configEntry.watchers)
-        ? configEntry.watchers
-        : [];
-
-    if (!witnessesList.length) {
+    if (!configEntry?.witness_id) {
       if (auto) {
         return {
           success: false as const,
-          reason: 'missing_witnesses' as const,
+          reason: 'missing_witness_id' as const,
         };
       }
-      throw Error('Webvh configuration requires at least one witness');
+      throw Error('Webvh witness_id missing from server configuration');
     }
 
-    if (witnessesList.length) {
-      payload.witnesses = witnessesList;
+    // Extract the key part from did:key:z6Mk...
+    const witnessKey = configEntry.witness_id.replace('did:key:', '');
+    
+    // Construct the invitation URL
+    const invitationUrl = `${configEntry.server_url}/api/invitations?_oobid=${witnessKey}`;
+    
+    // Fetch the invitation
+    let witnessInvitation: string;
+    try {
+      const response = await fetch(invitationUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch invitation: ${response.statusText}`);
+      }
+      const invitation = await response.json();
+      
+      // Base64 encode the invitation JSON
+      const invitationJson = JSON.stringify(invitation);
+      const b64Invitation = btoa(invitationJson);
+      
+      // Create the didcomm URL
+      witnessInvitation = `didcomm://?oob=${b64Invitation}`;
+    } catch (error) {
+      if (auto) {
+        return {
+          success: false as const,
+          reason: 'failed_to_fetch_invitation' as const,
+        };
+      }
+      throw Error(`Failed to fetch and encode witness invitation: ${error}`);
     }
-    if (Array.isArray(configEntry.watchers) && configEntry.watchers.length) {
-      payload.watchers = configEntry.watchers;
-    }
+
+    const payload: Record<string, any> = {
+      witness_invitation: witnessInvitation,
+    };
 
     try {
       await acapyApi.postHttp(API_PATH.DID_WEBVH_CONFIG, payload);
