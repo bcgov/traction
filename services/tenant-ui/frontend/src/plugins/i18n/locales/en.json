@@ -77,6 +77,7 @@
     "protocol": "Protocol",
     "refreshTable": "Refresh Table",
     "request": "Request",
+    "required": "*",
     "searchByCreated": "Search By Created at Date",
     "searchByName": "Search By Name",
     "searchBySuspended": "Search By Suspended at Date",
@@ -149,6 +150,8 @@
       "postFinished": "The schema is now written to the ledger and can be used for credential definitions.",
       "postStart": "Schema posted to the ledger. This may take a few seconds.",
       "schema": "Schema",
+      "selectIssuer": "Select an issuer",
+      "issuer": "Issuer",
       "storage": "Schema Storage",
       "stored": "Stored Schemas"
     },

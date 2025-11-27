@@ -1,5 +1,4 @@
 <template>
-  <ConfirmDialog />
   <MainCardContent
     :title="$t('tenant.profile.tenantProfile')"
     :refresh-callback="loadTenantSettings"
@@ -420,7 +419,6 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import Button from 'primevue/button';
-import ConfirmDialog from 'primevue/confirmdialog';
 import Divider from 'primevue/divider';
 import Dropdown from 'primevue/dropdown';
 import InputSwitch from 'primevue/inputswitch';

@@ -1,8 +1,14 @@
 import {
   AddOcaRecordRequest,
+  CredDefPostRequest,
+  CredDefResult,
   CredDefStorageRecord,
   CredentialDefinitionSendRequest,
+  GetSchemaResult,
+  GetSchemasResponse,
   OcaRecord,
+  SchemaPostRequest,
+  SchemaResult,
   SchemaSendRequest,
 } from '@/types/acapyApi/acapyInterface';
 import { SchemaStorageRecord } from '@/types';
@@ -97,6 +103,65 @@ export const useGovernanceStore = defineStore('governance', () => {
     return fetchList(API_PATH.SCHEMA_STORAGE, storedSchemas, error, loading);
   }
 
+  async function listAnoncredsSchemas() {
+    storedSchemas.value = [];
+    error.value = null;
+    loading.value = true;
+
+    try {
+      // Fetch list of schema IDs
+      const schemasResponse = await acapyApi.getHttp<GetSchemasResponse>(
+        API_PATH.ANONCREDS_SCHEMAS
+      );
+      const schemaIds = schemasResponse.data.schema_ids || [];
+
+      // Fetch full schema details for each schema ID
+      const schemaPromises = schemaIds.map(async (schemaId: string) => {
+        try {
+          const schemaResponse = await acapyApi.getHttp<GetSchemaResult>(
+            API_PATH.ANONCREDS_SCHEMA(schemaId)
+          );
+          const schemaData = schemaResponse.data;
+
+          // Map GetSchemaResult to SchemaStorageRecord format
+          const mappedSchema: SchemaStorageRecord = {
+            schema_id: schemaData.schema_id || schemaId,
+            state: 'active',
+            schema: schemaData.schema
+              ? {
+                  name: schemaData.schema.name,
+                  version: schemaData.schema.version,
+                  attrNames: schemaData.schema.attrNames,
+                  issuerId: schemaData.schema.issuerId,
+                }
+              : undefined,
+            schema_dict: schemaData.schema,
+            created_at: schemaData.schema_metadata?.created_at,
+            updated_at: schemaData.schema_metadata?.updated_at,
+            ledger_id: schemaData.schema_id,
+          };
+
+          return mappedSchema;
+        } catch (err) {
+          console.error(`Failed to fetch schema ${schemaId}:`, err);
+          // Return a minimal schema record even if fetch fails
+          return {
+            schema_id: schemaId,
+            state: 'error',
+          } as SchemaStorageRecord;
+        }
+      });
+
+      const schemas = await Promise.all(schemaPromises);
+      storedSchemas.value = schemas.filter((s) => s !== null);
+    } catch (err) {
+      console.error(err);
+      error.value = err;
+    } finally {
+      loading.value = false;
+    }
+  }
+
   async function getStoredSchemas(): Promise<
     SchemaStorageRecord[] | undefined
   > {
@@ -170,6 +235,40 @@ export const useGovernanceStore = defineStore('governance', () => {
     return result;
   }
 
+  async function createAnoncredsSchema(payload: SchemaPostRequest) {
+    console.log('> governanceStore.createAnoncredsSchema');
+    error.value = null;
+    loading.value = true;
+
+    let result: SchemaResult | null = null;
+
+    await acapyApi
+      .postHttp(API_PATH.ANONCREDS_SCHEMA_POST, payload)
+      .then((res) => {
+        result = res.data;
+        console.log(result);
+      })
+      .then(() => {
+        // Refresh the schema list
+        listAnoncredsSchemas();
+      })
+      .catch((err) => {
+        console.log(err);
+        error.value = err;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< governanceStore.createAnoncredsSchema');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return result;
+  }
+
   async function addSchemaFromLedgerToStorage(
     payload: AddSchemaFromLedgerRequest
   ) {
@@ -231,6 +330,41 @@ export const useGovernanceStore = defineStore('governance', () => {
         loading.value = false;
       });
     console.log('< governanceStore.createCredentialDefinition');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return result;
+  }
+
+  async function createAnoncredsCredentialDefinition(
+    payload: CredDefPostRequest
+  ) {
+    console.log('> governanceStore.createAnoncredsCredentialDefinition');
+    error.value = null;
+    loading.value = true;
+
+    let result: CredDefResult | null = null;
+
+    await acapyApi
+      .postHttp(API_PATH.ANONCREDS_CREDENTIAL_DEFINITION_POST, payload)
+      .then((res) => {
+        result = res.data;
+        console.log(result);
+      })
+      .then(() => {
+        // Refresh the credential definition list
+        listStoredCredentialDefinitions();
+      })
+      .catch((err) => {
+        error.value = err;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< governanceStore.createAnoncredsCredentialDefinition');
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
@@ -418,6 +552,8 @@ export const useGovernanceStore = defineStore('governance', () => {
     storedSchemas,
     // getSchemaTemplate,
     addSchemaFromLedgerToStorage,
+    createAnoncredsCredentialDefinition,
+    createAnoncredsSchema,
     createCredentialDefinition,
     createOca,
     createSchema,
@@ -428,6 +564,7 @@ export const useGovernanceStore = defineStore('governance', () => {
     getCredentialTemplate,
     getOca,
     getStoredSchemas,
+    listAnoncredsSchemas,
     listOcas,
     listStoredCredentialDefinitions,
     listStoredSchemas,

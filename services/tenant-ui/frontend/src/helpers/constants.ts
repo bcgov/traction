@@ -138,6 +138,10 @@ export const API_PATH = {
   SCHEMA: (id: string) => `/schemas/${id}`,
   SCHEMAS_CREATED: '/schemas/created',
   SCHEMAS_WRITE_RECORD: (id: string) => `/schemas/${id}/write_record`,
+  ANONCREDS_SCHEMAS: '/anoncreds/schemas',
+  ANONCREDS_SCHEMA: (id: string) => `/anoncreds/schema/${id}`,
+  ANONCREDS_SCHEMA_POST: '/anoncreds/schema',
+  ANONCREDS_CREDENTIAL_DEFINITION_POST: '/anoncreds/credential-definition',
 
   SCHEMA_STORAGE: '/schema-storage',
   SCHEMA_STORAGE_SYNC: '/schema-storage/sync-created',

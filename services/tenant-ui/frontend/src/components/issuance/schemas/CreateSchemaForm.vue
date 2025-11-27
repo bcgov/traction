@@ -34,6 +34,27 @@
             :validation="v$"
             :advanced-is-error="isError"
           />
+          <!-- issuer (only for askar-anoncreds wallets) -->
+          <div v-if="isAskarAnoncredsWallet" class="field">
+            <label for="issuer" class="block text-900 font-medium mb-2">
+              {{ $t('configuration.schemas.issuer') }}
+              <span class="text-red-500">{{ $t('common.required') }}</span>
+            </label>
+            <Dropdown
+              id="issuer"
+              v-model="formFields.issuer"
+              :options="webvhIdentifiers"
+              option-label="label"
+              option-value="value"
+              :placeholder="t('configuration.schemas.selectIssuer')"
+              class="w-full"
+              :class="{ 'p-invalid': v$.issuer.$error && submitted }"
+              :loading="loadingWebvhIdentifiers"
+            />
+            <small v-if="v$.issuer.$error && submitted" class="p-error">
+              {{ v$.issuer.required.$message }}
+            </small>
+          </div>
           <!-- attributes -->
           <Attributes
             ref="attributes"
@@ -44,7 +65,11 @@
           type="submit"
           :label="t('configuration.schemas.create')"
           class="mt-5 w-full"
-          :disabled="formFields.name === '' && formFields.version === ''"
+          :disabled="
+            formFields.name === '' ||
+            formFields.version === '' ||
+            (isAskarAnoncredsWallet && formFields.issuer === '')
+          "
           :loading="loading"
         />
       </div>
@@ -56,26 +81,44 @@
 // Libraries
 import { useVuelidate } from '@vuelidate/core';
 import { helpers, required } from '@vuelidate/validators';
+import { computed, onMounted, reactive, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
-import { reactive, ref } from 'vue';
+import Dropdown from 'primevue/dropdown';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
 // Source
 import ValidatedField from '@/components/common/ValidatedField.vue';
 import errorHandler from '@/helpers/errorHandler';
+import { API_PATH } from '@/helpers/constants';
 import { tryParseJson } from '@/helpers/jsonParsing';
-import { useGovernanceStore } from '@/store';
+import { useAcapyApi } from '@/store/acapyApi';
+import { useGovernanceStore, useTenantStore } from '@/store';
 import { Attribute } from '@/types';
-import { SchemaSendRequest } from '@/types/acapyApi/acapyInterface';
+import {
+  AnonCredsSchema,
+  SchemaPostRequest,
+  SchemaSendRequest,
+} from '@/types/acapyApi/acapyInterface';
 import Attributes from './Attributes.vue';
 import ToggleJson from '@/components/common/ToggleJson.vue';
 
 const toast = useToast();
 const { t } = useI18n();
+const acapyApi = useAcapyApi();
 
 const governanceStore = useGovernanceStore();
 const { loading, selectedSchema } = storeToRefs(useGovernanceStore());
+const { tenantWallet } = storeToRefs(useTenantStore());
+
+// Check if wallet is askar-anoncreds
+const isAskarAnoncredsWallet = computed(() => {
+  return tenantWallet.value?.settings?.['wallet.type'] === 'askar-anoncreds';
+});
+
+// WebVH identifiers for issuer dropdown
+const webvhIdentifiers = ref<Array<{ label: string; value: string }>>([]);
+const loadingWebvhIdentifiers = ref(false);
 
 const emit = defineEmits(['closed', 'success']);
 const attributes = ref<{ attributes: Array<Attribute> }>({ attributes: [] });
@@ -106,21 +149,31 @@ const props = defineProps({
 const formFields = reactive({
   name: '',
   version: '',
+  issuer: '',
 });
 
-let rules: { [key: string]: any } = {};
-
 const mustBeDecimal = (value: string) => /^\d+(\.\d+)(\.\d+)?$/.test(value);
-rules = {
-  name: { required },
-  version: {
-    required,
-    mustBeDecimal: helpers.withMessage(
-      t('configuration.schemas.mustBeDecimal'),
-      mustBeDecimal
-    ),
-  },
-};
+
+// Rules need to be computed to react to wallet type changes
+const rules = computed(() => {
+  const baseRules: { [key: string]: any } = {
+    name: { required },
+    version: {
+      required,
+      mustBeDecimal: helpers.withMessage(
+        t('configuration.schemas.mustBeDecimal'),
+        mustBeDecimal
+      ),
+    },
+  };
+
+  // Add issuer validation for askar-anoncreds wallets
+  if (isAskarAnoncredsWallet.value) {
+    baseRules.issuer = { required };
+  }
+
+  return baseRules;
+});
 
 const changedField = (field: string) => {
   if (field === 'name' || field === 'version')
@@ -170,20 +223,36 @@ if (props.isCopy) {
 
 const v$ = useVuelidate(rules, formFields);
 
-function convertToJson(): SchemaSendRequest | undefined {
+function convertToJson(): SchemaSendRequest | SchemaPostRequest | undefined {
   const attributeNames = attributes.value?.attributes
     .filter((x: Attribute) => x.name !== '')
     .map((attribute: Attribute) => attribute.name);
-  return {
-    attributes: attributeNames ?? [],
-    schema_name: formFields.name || selectedSchema.value?.schema?.name || '',
-    schema_version:
-      formFields.version || selectedSchema.value?.schema?.version || '',
-  };
+
+  if (isAskarAnoncredsWallet.value) {
+    // For askar-anoncreds wallets, use SchemaPostRequest format
+    const schema: AnonCredsSchema = {
+      attrNames: attributeNames ?? [],
+      name: formFields.name || selectedSchema.value?.schema?.name || '',
+      version: formFields.version || selectedSchema.value?.schema?.version || '',
+      issuerId: formFields.issuer || '',
+    };
+    return {
+      schema,
+    };
+  } else {
+    // For askar wallets, use SchemaSendRequest format
+    return {
+      attributes: attributeNames ?? [],
+      schema_name: formFields.name || selectedSchema.value?.schema?.name || '',
+      schema_version:
+        formFields.version || selectedSchema.value?.schema?.version || '',
+    };
+  }
 }
 
 function schemaToJson(): string | undefined {
-  const rawJson: SchemaSendRequest | undefined = convertToJson();
+  const rawJson: SchemaSendRequest | SchemaPostRequest | undefined =
+    convertToJson();
   if (rawJson) {
     return JSON.stringify(rawJson, undefined, 2);
   } else {
@@ -192,22 +261,75 @@ function schemaToJson(): string | undefined {
   }
 }
 
-function jsonToSchema(jsonString: string): SchemaSendRequest | undefined {
-  const parsed = tryParseJson<SchemaSendRequest>(jsonString);
-  if (parsed) {
-    const newAt: Array<Attribute> = [
-      { name: '' },
-      ...parsed.attributes.map((a) => ({ name: a })),
-    ];
-    attributes.value.attributes = newAt;
-    formFields.name = parsed.schema_name;
-    formFields.version = parsed.schema_version;
-    return parsed;
+function jsonToSchema(
+  jsonString: string
+): SchemaSendRequest | SchemaPostRequest | undefined {
+  if (isAskarAnoncredsWallet.value) {
+    const parsed = tryParseJson<SchemaPostRequest>(jsonString);
+    if (parsed && parsed.schema) {
+      const newAt: Array<Attribute> = [
+        { name: '' },
+        ...parsed.schema.attrNames.map((a) => ({ name: a })),
+      ];
+      attributes.value.attributes = newAt;
+      formFields.name = parsed.schema.name;
+      formFields.version = parsed.schema.version;
+      formFields.issuer = parsed.schema.issuerId;
+      return parsed;
+    } else {
+      toast.error('Invalid JSON detected');
+      return undefined;
+    }
   } else {
-    toast.error('Invalid JSON detected');
-    return undefined;
+    const parsed = tryParseJson<SchemaSendRequest>(jsonString);
+    if (parsed) {
+      const newAt: Array<Attribute> = [
+        { name: '' },
+        ...parsed.attributes.map((a) => ({ name: a })),
+      ];
+      attributes.value.attributes = newAt;
+      formFields.name = parsed.schema_name;
+      formFields.version = parsed.schema_version;
+      return parsed;
+    } else {
+      toast.error('Invalid JSON detected');
+      return undefined;
+    }
   }
 }
+// Load WebVH identifiers for issuer dropdown
+const loadWebvhIdentifiers = async () => {
+  if (!isAskarAnoncredsWallet.value) {
+    return;
+  }
+
+  loadingWebvhIdentifiers.value = true;
+  try {
+    const response = await acapyApi.getHttp(API_PATH.DID_WEBVH_CONFIG);
+    const configData = response?.data ?? response ?? null;
+    const scids = configData?.scids;
+
+    if (scids && typeof scids === 'object') {
+      const entries = Object.entries(scids as Record<string, string>);
+      webvhIdentifiers.value = entries.map(([_scid, did]) => {
+        const segments = (did as string).split(':');
+        const alias = segments[segments.length - 1] ?? did;
+        const namespace =
+          segments.length > 2 ? segments[segments.length - 2] : 'default';
+        return {
+          label: `${namespace} / ${alias}`,
+          value: did,
+        };
+      });
+    }
+  } catch (_error) {
+    console.error('Failed to load WebVH identifiers:', _error);
+    webvhIdentifiers.value = [];
+  } finally {
+    loadingWebvhIdentifiers.value = false;
+  }
+};
+
 // Form submission
 const submitted = ref(false);
 const handleSubmit = async (isFormValid: boolean) => {
@@ -215,21 +337,40 @@ const handleSubmit = async (isFormValid: boolean) => {
   try {
     if (!isFormValid) return;
 
-    const payload: SchemaSendRequest | undefined = jsonVal.value.showRawJson
+    const payload: SchemaSendRequest | SchemaPostRequest | undefined = jsonVal
+      .value.showRawJson
       ? jsonToSchema(jsonVal.value.valuesJson)
       : convertToJson();
 
     if (!payload) return;
 
-    if (!payload.attributes.length) {
-      toast.error(t('configuration.schemas.emptyAttributes'));
-      return;
+    // Validate attributes
+    if (isAskarAnoncredsWallet.value) {
+      const anoncredsPayload = payload as SchemaPostRequest;
+      if (!anoncredsPayload.schema?.attrNames?.length) {
+        toast.error(t('configuration.schemas.emptyAttributes'));
+        return;
+      }
+      if (!anoncredsPayload.schema?.issuerId) {
+        toast.error('Issuer is required');
+        return;
+      }
+    } else {
+      const regularPayload = payload as SchemaSendRequest;
+      if (!regularPayload.attributes.length) {
+        toast.error(t('configuration.schemas.emptyAttributes'));
+        return;
+      }
     }
 
-    if (payload) {
-      await governanceStore.createSchema(payload);
+    if (isAskarAnoncredsWallet.value) {
+      // Use anoncreds endpoint
+      await governanceStore.createAnoncredsSchema(
+        payload as SchemaPostRequest
+      );
     } else {
-      return;
+      // Use regular endpoint
+      await governanceStore.createSchema(payload as SchemaSendRequest);
     }
     toast.success(t('configuration.schemas.postStart'));
     emit('success');
@@ -244,6 +385,12 @@ const handleSubmit = async (isFormValid: boolean) => {
     submitted.value = false;
   }
 };
+
+onMounted(() => {
+  if (isAskarAnoncredsWallet.value) {
+    loadWebvhIdentifiers();
+  }
+});
 </script>
 
 <style scoped>

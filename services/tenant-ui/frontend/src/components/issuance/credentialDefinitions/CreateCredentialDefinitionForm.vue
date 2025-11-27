@@ -69,6 +69,7 @@
   </form>
 </template>
 <script setup lang="ts">
+import { computed } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import {
   between,
@@ -89,8 +90,11 @@ import { useToast } from 'vue-toastification';
 
 import ValidatedField from '@/components/common/ValidatedField.vue';
 import errorHandler from '@/helpers/errorHandler';
-import { useGovernanceStore } from '@/store';
-import { CredentialDefinitionSendRequest } from '@/types/acapyApi/acapyInterface';
+import { useGovernanceStore, useTenantStore } from '@/store';
+import {
+  CredDefPostRequest,
+  CredentialDefinitionSendRequest,
+} from '@/types/acapyApi/acapyInterface';
 
 const props = defineProps({
   schema: {
@@ -112,6 +116,12 @@ const governanceStore = useGovernanceStore();
 
 // use the loading state from the store to disable the button...
 const { loading, storedSchemas } = storeToRefs(useGovernanceStore());
+const { tenantWallet } = storeToRefs(useTenantStore());
+
+// Check if wallet is askar-anoncreds
+const isAskarAnoncredsWallet = computed(() => {
+  return tenantWallet.value?.settings?.['wallet.type'] === 'askar-anoncreds';
+});
 
 const emit = defineEmits(['closed', 'success']);
 
@@ -169,34 +179,91 @@ const handleSubmit = async (isFormValid: boolean) => {
     return;
   }
 
-  const payload: CredentialDefinitionSendRequest = {
-    tag: formFields.creddef_tag,
-    support_revocation: formFields.creddef_revocation_enabled,
-    schema_id: props.schema ? props.schema.schema_id : formFields.schema_id,
-  };
-  if (formFields.creddef_revocation_enabled) {
-    let rrs = 0;
-    try {
-      rrs = parseInt(formFields.creddef_revocation_registry_size) || 0;
-    } catch (_err) {
-      rrs = 0;
+  const schemaId = props.schema ? props.schema.schema_id : formFields.schema_id;
+  const activeSchema =
+    props.schema ||
+    storedSchemas.value.find((s: any) => s.schema_id === schemaId);
+
+  if (isAskarAnoncredsWallet.value) {
+    // For askar-anoncreds wallets, use CredDefPostRequest format
+    // Extract issuerId from the schema (anoncreds schemas have issuerId in schema.schema.issuerId)
+    const issuerId =
+      activeSchema?.schema?.issuerId || activeSchema?.schema_dict?.issuerId;
+
+    if (!issuerId) {
+      toast.error(
+        'Issuer ID not found in schema. Please ensure the schema has an issuerId.'
+      );
+      submitted.value = false;
+      return;
     }
-    payload.revocation_registry_size = rrs;
-  }
 
-  try {
-    await governanceStore.createCredentialDefinition(payload);
+    const payload: CredDefPostRequest = {
+      credential_definition: {
+        issuerId: issuerId,
+        schemaId: schemaId,
+        tag: formFields.creddef_tag,
+      },
+      options: {
+        support_revocation: formFields.creddef_revocation_enabled,
+      },
+    };
 
-    toast.success(t('configuration.credentialDefinitions.postStart'));
-    emit('success');
-    emit('closed', payload);
-  } catch (error: any) {
-    errorHandler({
-      error,
-      existsMessage: t('configuration.credentialDefinitions.alreadyExists'),
-    });
-  } finally {
-    submitted.value = false;
+    if (formFields.creddef_revocation_enabled) {
+      let rrs = 0;
+      try {
+        rrs = parseInt(formFields.creddef_revocation_registry_size) || 0;
+      } catch (_err) {
+        rrs = 0;
+      }
+      if (payload.options) {
+        payload.options.revocation_registry_size = rrs;
+      }
+    }
+
+    try {
+      await governanceStore.createAnoncredsCredentialDefinition(payload);
+      toast.success(t('configuration.credentialDefinitions.postStart'));
+      emit('success');
+      emit('closed', payload);
+    } catch (error: any) {
+      errorHandler({
+        error,
+        existsMessage: t('configuration.credentialDefinitions.alreadyExists'),
+      });
+    } finally {
+      submitted.value = false;
+    }
+  } else {
+    // For askar wallets, use CredentialDefinitionSendRequest format
+    const payload: CredentialDefinitionSendRequest = {
+      tag: formFields.creddef_tag,
+      support_revocation: formFields.creddef_revocation_enabled,
+      schema_id: schemaId,
+    };
+    if (formFields.creddef_revocation_enabled) {
+      let rrs = 0;
+      try {
+        rrs = parseInt(formFields.creddef_revocation_registry_size) || 0;
+      } catch (_err) {
+        rrs = 0;
+      }
+      payload.revocation_registry_size = rrs;
+    }
+
+    try {
+      await governanceStore.createCredentialDefinition(payload);
+      toast.success(t('configuration.credentialDefinitions.postStart'));
+      emit('success');
+      emit('closed', payload);
+    } catch (error: any) {
+      errorHandler({
+        error,
+        existsMessage: t('configuration.credentialDefinitions.alreadyExists'),
+      });
+    } finally {
+      submitted.value = false;
+    }
   }
 };
 
