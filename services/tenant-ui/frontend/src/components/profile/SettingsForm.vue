@@ -743,7 +743,8 @@ const formattedServerCfg = computed(() => {
 // Wallet upgrade functionality
 const confirmUpgrade = () => {
   confirm.require({
-    message: 'This will upgrade your wallet from askar to askar-anoncreds. This operation is NON-REVERSIBLE. Are you sure you want to proceed?',
+    message:
+      'This will upgrade your wallet from askar to askar-anoncreds. This operation is NON-REVERSIBLE. Are you sure you want to proceed?',
     header: 'Confirm Wallet Upgrade',
     icon: 'pi pi-exclamation-triangle',
     rejectClass: 'p-button-text',
@@ -769,7 +770,9 @@ const upgradeWallet = async () => {
       `${API_PATH.WALLET_UPGRADE}?wallet_name=${encodeURIComponent(walletName)}`,
       {}
     );
-    toast.success('Wallet upgrade has been triggered. The upgrade will complete in the background.');
+    toast.success(
+      'Wallet upgrade has been triggered. The upgrade will complete in the background.'
+    );
     // Reload settings to reflect the change
     setTimeout(() => {
       loadTenantSettings();
