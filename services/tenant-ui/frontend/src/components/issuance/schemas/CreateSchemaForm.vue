@@ -154,27 +154,6 @@ const formFields = reactive({
 
 const mustBeDecimal = (value: string) => /^\d+(\.\d+)(\.\d+)?$/.test(value);
 
-// Rules need to be computed to react to wallet type changes
-const rules = computed(() => {
-  const baseRules: { [key: string]: any } = {
-    name: { required },
-    version: {
-      required,
-      mustBeDecimal: helpers.withMessage(
-        t('configuration.schemas.mustBeDecimal'),
-        mustBeDecimal
-      ),
-    },
-  };
-
-  // Add issuer validation for askar-anoncreds wallets
-  if (isAskarAnoncredsWallet.value) {
-    baseRules.issuer = { required };
-  }
-
-  return baseRules;
-});
-
 const changedField = (field: string) => {
   if (field === 'name' || field === 'version')
     if (formFields[field] !== selectedSchema.value?.schema?.[field])
@@ -188,7 +167,18 @@ const isError = (v: any, field: string) => {
   return v[field].$error && submitted.value;
 };
 
-// Add copy rules if isCopy
+// Add copy rules if isCopy - need to modify rules before making it computed
+let baseRulesForCopy: { [key: string]: any } = {
+  name: { required },
+  version: {
+    required,
+    mustBeDecimal: helpers.withMessage(
+      t('configuration.schemas.mustBeDecimal'),
+      mustBeDecimal
+    ),
+  },
+};
+
 if (props.isCopy) {
   const validCopy = () => {
     if (
@@ -201,8 +191,8 @@ if (props.isCopy) {
 
   const setRule = (value: string | undefined, field: string) => {
     if (value)
-      rules[field] = {
-        ...rules[field],
+      baseRulesForCopy[field] = {
+        ...baseRulesForCopy[field],
         validCopy: helpers.withMessage(
           t('configuration.schemas.invalidCopy', {
             field,
@@ -217,9 +207,32 @@ if (props.isCopy) {
     setRule(selectedSchema.value.schema?.version, 'version');
   }
 
-  delete rules.name.required;
-  delete rules.version.required;
+  delete baseRulesForCopy.name.required;
+  delete baseRulesForCopy.version.required;
 }
+
+// Rules need to be computed to react to wallet type changes
+const rules = computed(() => {
+  const baseRules: { [key: string]: any } = props.isCopy
+    ? { ...baseRulesForCopy }
+    : {
+        name: { required },
+        version: {
+          required,
+          mustBeDecimal: helpers.withMessage(
+            t('configuration.schemas.mustBeDecimal'),
+            mustBeDecimal
+          ),
+        },
+      };
+
+  // Add issuer validation for askar-anoncreds wallets
+  if (isAskarAnoncredsWallet.value) {
+    baseRules.issuer = { required };
+  }
+
+  return baseRules;
+});
 
 const v$ = useVuelidate(rules, formFields);
 

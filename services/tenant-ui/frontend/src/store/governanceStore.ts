@@ -110,31 +110,32 @@ export const useGovernanceStore = defineStore('governance', () => {
 
     try {
       // Fetch list of schema IDs
-      const schemasResponse = await acapyApi.getHttp<GetSchemasResponse>(
+      const schemasResponse = await acapyApi.getHttp(
         API_PATH.ANONCREDS_SCHEMAS
       );
-      const schemaIds = schemasResponse.data.schema_ids || [];
+      const schemaIds =
+        (schemasResponse.data as GetSchemasResponse).schema_ids || [];
 
       // Fetch full schema details for each schema ID
       const schemaPromises = schemaIds.map(async (schemaId: string) => {
         try {
-          const schemaResponse = await acapyApi.getHttp<GetSchemaResult>(
+          const schemaResponse = await acapyApi.getHttp(
             API_PATH.ANONCREDS_SCHEMA(schemaId)
           );
-          const schemaData = schemaResponse.data;
+          const schemaData = schemaResponse.data as GetSchemaResult;
 
           // Map GetSchemaResult to SchemaStorageRecord format
           const mappedSchema: SchemaStorageRecord = {
             schema_id: schemaData.schema_id || schemaId,
             state: 'active',
             schema: schemaData.schema
-              ? {
+              ? ({
                   name: schemaData.schema.name,
                   version: schemaData.schema.version,
                   attrNames: schemaData.schema.attrNames,
-                  issuerId: schemaData.schema.issuerId,
-                }
-              : undefined,
+                  id: schemaData.schema_id || schemaId,
+                } as any)
+              : ({} as any),
             schema_dict: schemaData.schema,
             created_at: schemaData.schema_metadata?.created_at,
             updated_at: schemaData.schema_metadata?.updated_at,
