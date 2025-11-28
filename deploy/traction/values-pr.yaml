@@ -38,6 +38,7 @@ acapy:
         auto_issuer: true
     webvh:
       server_url: https://sandbox.bcvh.vonx.io
+      witness_id: did:key:z6Mktqm2pXW48BZzSNnDzaA3yxo3zhfCUzAktVzFmzZHbVNn
   
   resourcesPreset: micro
 

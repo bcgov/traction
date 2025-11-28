@@ -42,6 +42,12 @@
       </Column>
       <Column
         :sortable="true"
+        field="method"
+        header="Method"
+        style="min-width: 6rem"
+      />
+      <Column
+        :sortable="true"
         field="is_write"
         header="Writable"
         data-type="boolean"
@@ -99,6 +105,7 @@ import { TABLE_OPT } from '@/helpers/constants';
 import { storeToRefs } from 'pinia';
 // Other Components
 import EndorserConnect from './EndorserConnect.vue';
+import type { ServerConfig } from '@/types';
 
 const configStore = useConfigStore();
 const tenantStore = useTenantStore();
@@ -111,22 +118,59 @@ const {
   serverConfig,
 } = storeToRefs(tenantStore);
 
-const endorserList =
-  'config' in serverConfig.value
-    ? serverConfig.value.config['ledger.ledger_config_list'].map(
-        (config: any) => ({
-          ledger_id: config.id,
-          endorser_alias: config.endorser_alias,
-          is_write: config.is_write,
-        })
-      )
+const serverConfigValue = computed<ServerConfig | null>(() => {
+  const value = serverConfig.value as ServerConfig | undefined;
+  return value && 'config' in value ? value : null;
+});
+
+const webvhPluginConfig = computed(() => {
+  const pluginConfig = serverConfigValue.value?.config?.plugin_config;
+  if (!pluginConfig) {
+    return null;
+  }
+  const keyedConfig = pluginConfig as typeof pluginConfig & Record<string, any>;
+  return keyedConfig.webvh ?? keyedConfig['did-webvh'] ?? null;
+});
+
+const endorserList = computed(() => {
+  const ledgerList =
+    serverConfigValue.value?.config?.['ledger.ledger_config_list'];
+  const baseList = Array.isArray(ledgerList)
+    ? ledgerList.map((config: any) => ({
+        ledger_id: config.id,
+        endorser_alias: config.endorser_alias,
+        is_write: config.is_write,
+        type: 'indy',
+        method: 'indy',
+      }))
     : [];
+
+  if (webvhPluginConfig.value?.server_url) {
+    let identifier = webvhPluginConfig.value.server_url;
+    try {
+      const parsed = new URL(webvhPluginConfig.value.server_url);
+      identifier = parsed.hostname;
+    } catch (_error) {
+      // leave identifier as the raw server_url if parsing fails
+    }
+    baseList.push({
+      ledger_id: identifier,
+      endorser_alias: identifier,
+      is_write: true,
+      type: 'webvh',
+      method: 'webvh',
+    });
+  }
+
+  return baseList;
+});
 
 // Allowed to connect to endorser and register DID?
 const canBecomeIssuer = computed(
   () =>
-    tenantConfig.value?.connect_to_endorser?.length &&
-    tenantConfig.value?.create_public_did?.length
+    (tenantConfig.value?.connect_to_endorser?.length &&
+      tenantConfig.value?.create_public_did?.length) ||
+    Boolean(webvhPluginConfig.value?.server_url)
 );
 
 // Details about endorser connection

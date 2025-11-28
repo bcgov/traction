@@ -119,7 +119,7 @@
 
 <script setup lang="ts">
 // Vue
-import { reactive, ref } from 'vue';
+import { computed, reactive, ref } from 'vue';
 // PrimeVue / Validation / etc
 import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
@@ -134,6 +134,7 @@ import {
   useConnectionStore,
   useGovernanceStore,
   useIssuerStore,
+  useTenantStore,
 } from '@/store';
 // Other components
 import EnterCredentialValues from './EnterCredentialValues.vue';
@@ -150,7 +151,13 @@ const {
   storedSchemas,
 } = storeToRefs(useGovernanceStore());
 const { loading: issueLoading } = storeToRefs(useIssuerStore());
+const { tenantWallet } = storeToRefs(useTenantStore());
 const issuerStore = useIssuerStore();
+
+// Check if wallet is askar-anoncreds
+const isAskarAnoncredsWallet = computed(() => {
+  return tenantWallet.value?.settings?.['wallet.type'] === 'askar-anoncreds';
+});
 
 const emit = defineEmits(['closed', 'success']);
 
@@ -239,6 +246,9 @@ const handleSubmit = async (isFormValid: boolean) => {
     return;
   }
   try {
+    // Determine filter type based on wallet type
+    const filterType = isAskarAnoncredsWallet.value ? 'anoncreds' : 'indy';
+
     const payload = {
       auto_issue: true,
       auto_remove: false,
@@ -248,7 +258,7 @@ const handleSubmit = async (isFormValid: boolean) => {
         attributes: credentialValuesRaw.value,
       },
       filter: {
-        indy: {
+        [filterType]: {
           cred_def_id: formFields.selectedCred.value,
         },
       },

@@ -107,6 +107,22 @@ export function stringOrBooleanTruthy(value: string | boolean) {
   return value === 'true' || value === true;
 }
 
+/**
+ * Extract the last part of an ID after the last slash for display
+ * @param id - The ID to process
+ * @returns The part after the last slash, or the original ID if no slash found
+ */
+export function truncateId(id: string): string {
+  if (!id) {
+    return id;
+  }
+  const lastSlashIndex = id.lastIndexOf('/');
+  if (lastSlashIndex === -1) {
+    return id;
+  }
+  return id.substring(lastSlashIndex + 1);
+}
+
 export function configStringToObject(value: string) {
   // As config values come into the FE as strings, we need to convert them to objects
   try {

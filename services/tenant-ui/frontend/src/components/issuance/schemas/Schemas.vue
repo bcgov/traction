@@ -3,6 +3,7 @@
     :title="$t('configuration.schemas.stored')"
     :refresh-callback="loadTable"
   >
+    <!-- Show schemas for both wallet types, but fetch from different endpoints -->
     <DataTable
       v-model:selection="selectedSchema"
       v-model:expanded-rows="expandedRows"
@@ -81,6 +82,15 @@
         filter-field="schema_id"
         :show-filter-match-modes="false"
       >
+        <template #body="{ data }">
+          <span
+            v-tooltip="data.schema_id"
+            :title="data.schema_id"
+            class="truncated-id"
+          >
+            {{ truncateId(data.schema_id) }}
+          </span>
+        </template>
         <template #filter="{ filterModel, filterCallback }">
           <InputText
             v-model="filterModel.value"
@@ -179,10 +189,10 @@ import { useToast } from 'vue-toastification';
 import RowExpandData from '@/components/common/RowExpandData.vue';
 import NestedCredentialDefinition from '@/components/issuance/credentialDefinitions/NestedCredentialDefinition.vue';
 import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
-import { stringOrBooleanTruthy } from '@/helpers';
+import { stringOrBooleanTruthy, truncateId } from '@/helpers';
 import { API_PATH, TABLE_OPT } from '@/helpers/constants';
 import { formatSchemaList } from '@/helpers/tableFormatters';
-import { useGovernanceStore } from '@/store';
+import { useGovernanceStore, useTenantStore } from '@/store';
 import { useConfigStore } from '@/store/configStore';
 import { SchemaStorageRecord } from '@/types';
 import AddSchemaFromLedger from './AddSchemaFromLedger.vue';
@@ -194,18 +204,35 @@ const confirm = useConfirm();
 const toast = useToast();
 
 const { config } = storeToRefs(useConfigStore());
+const tenantStore = useTenantStore();
+const { tenantWallet } = storeToRefs(useTenantStore());
 const governanceStore = useGovernanceStore();
 const { loading, schemaList, selectedSchema } =
   storeToRefs(useGovernanceStore());
+
+// Wallet type check
+const walletType = computed(() => {
+  return tenantWallet?.value?.settings?.['wallet.type'] || 'unknown';
+});
+
+const isAskarAnoncredsWallet = computed(() => {
+  return walletType.value === 'askar-anoncreds';
+});
 
 const formattedSchemaList = computed(() => formatSchemaList(schemaList));
 
 // Loading the schema list and the stored cred defs
 const loadTable = async () => {
   try {
-    await governanceStore.listStoredSchemas();
-    // Wait til schemas are loaded so the getter can map together the schemas to creds
-    await governanceStore.listStoredCredentialDefinitions();
+    if (isAskarAnoncredsWallet.value) {
+      // For askar-anoncreds wallets, fetch from /anoncreds/schemas
+      await governanceStore.listAnoncredsSchemas();
+    } else {
+      // For askar wallets, use the regular schema storage
+      await governanceStore.listStoredSchemas();
+      // Wait til schemas are loaded so the getter can map together the schemas to creds
+      await governanceStore.listStoredCredentialDefinitions();
+    }
   } catch (err) {
     console.error(err);
     toast.error(`Failure: ${err}`);
@@ -261,6 +288,10 @@ const filter = ref({
 
 // Lifecycle hooks
 onMounted(async () => {
+  // Ensure tenant wallet is loaded to check wallet type
+  if (!tenantWallet?.value && tenantStore.getTenantSubWallet) {
+    await tenantStore.getTenantSubWallet();
+  }
   loadTable();
 });
 

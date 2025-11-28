@@ -57,6 +57,7 @@
     "createdAt": "Created At",
     "credentialId": "Credential ID",
     "credentials": "Credentials",
+    "cancel": "Cancel",
     "decodedJwt": "Decoded JWT",
     "developer": "Developer",
     "emailAddress": "Email Address",
@@ -76,6 +77,7 @@
     "protocol": "Protocol",
     "refreshTable": "Refresh Table",
     "request": "Request",
+    "required": "*",
     "searchByCreated": "Search By Created at Date",
     "searchByName": "Search By Name",
     "searchBySuspended": "Search By Suspended at Date",
@@ -148,6 +150,9 @@
       "postFinished": "The schema is now written to the ledger and can be used for credential definitions.",
       "postStart": "Schema posted to the ledger. This may take a few seconds.",
       "schema": "Schema",
+      "selectIssuer": "Select an issuer",
+      "issuer": "Issuer",
+      "notIssuer": "You must be an issuer to create schemas. Please register a public DID first.",
       "storage": "Schema Storage",
       "stored": "Stored Schemas"
     },
@@ -246,6 +251,42 @@
   },
   "holder": {
     "holder": "Holder"
+  },
+  "identifiers": {
+    "identifiers": "Identifiers",
+    "webvh": {
+      "title": "did:webvh Configuration",
+      "serverUrl": "Server URL",
+      "serverUrlMissing": "Not configured",
+      "witness": "Witness",
+      "witnessPresent": "Witness configured",
+      "witnessMissing": "Witness not configured",
+      "watchers": "Watchers",
+      "watchersMissing": "No watchers configured",
+      "didListTitle": "Existing did:webvh identifiers",
+      "statusHeader": "Status",
+      "statusActive": "Active",
+      "statusPending": "Pending",
+      "statusError": "Error",
+      "createdAt": "Created",
+      "didHeader": "DID",
+      "noDids": "No did:webvh identifiers found",
+      "createTitle": "Create did:webvh",
+      "alias": "Alias",
+      "namespace": "Namespace",
+      "createButton": "Create DID",
+      "createHelp": "Alias is the unique identifier within the namespace. Namespace defaults to 'default' if left blank.",
+      "createSuccess": "did:webvh creation request sent",
+      "createSuccessWithDid": "did:webvh creation request sent for {did}",
+      "configureDescription": "Configure the did:webvh plugin with your server URL and enable witnessing to manage identifiers.",
+      "configureButton": "Configure did:webvh",
+      "configureMissingUrl": "Please provide a server URL before configuring did:webvh",
+      "configureSuccess": "did:webvh configuration saved",
+      "autoConfigureFailed": "Automatic configuration failed. Please configure manually.",
+      "searchPlaceholder": "Search identifiers",
+      "createDialogTitle": "Create did:webvh",
+      "aliasRequired": "Alias is required"
+    }
   },
   "home": {
     "dashboard": "Dashboard",
@@ -440,7 +481,8 @@
       "title": "Storage",
       "walletStorageConfig": "Wallet Storage Config",
       "walletStorageType": "Wallet Storage Type",
-      "walletType": "Wallet Type"
+      "walletType": "Wallet Type",
+      "walletUpgradeWarning": "Upgrading to askar-anoncreds is a non-reversible operation. Make sure you have a backup before proceeding."
     },
     "tenants": {
       "reservation": "Reservation",

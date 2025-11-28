@@ -1,39 +1,51 @@
 <template>
-  <div v-if="showEndorserConnect">
+  <template v-if="isWebvhLedger">
     <Button
-      title="Connect to endorser"
+      title="Connect to webvh endorser"
       icon="pi pi-user-plus"
       class="p-button-rounded p-button-icon-only p-button-text"
       @click="connectToLedger()"
     />
-  </div>
-
-  <div v-if="showLedgerSwitch">
-    <Button
-      label="Switch Ledger"
-      icon="pi pi-arrow-right-arrow-left"
-      text
-      @click="switchLedger($event)"
-    />
-  </div>
-
-  <div
-    v-if="endorserConnection && props.ledgerInfo.ledger_id === currWriteLedger"
-    class="flex"
-  >
-    <div class="flex align-items-center mr-2">{{ $t('common.status') }}</div>
-    <div class="flex align-items-center mr-1">
-      <StatusChip :status="endorserConnection.state" />
-    </div>
-    <div v-if="canDeleteConnection" class="flex align-items-center">
+  </template>
+  <template v-else>
+    <div v-if="showEndorserConnect">
       <Button
-        title="Delete Connection"
-        icon="pi pi-trash"
+        title="Connect to endorser"
+        icon="pi pi-user-plus"
         class="p-button-rounded p-button-icon-only p-button-text"
-        @click="deleteConnection($event, endorserConnection.connection_id)"
+        @click="connectToLedger()"
       />
     </div>
-  </div>
+
+    <div v-if="showLedgerSwitch">
+      <Button
+        label="Switch Ledger"
+        icon="pi pi-arrow-right-arrow-left"
+        text
+        @click="switchLedger($event)"
+      />
+    </div>
+
+    <div
+      v-if="
+        endorserConnection && props.ledgerInfo.ledger_id === currWriteLedger
+      "
+      class="flex"
+    >
+      <div class="flex align-items-center mr-2">{{ $t('common.status') }}</div>
+      <div class="flex align-items-center mr-1">
+        <StatusChip :status="endorserConnection.state" />
+      </div>
+      <div v-if="canDeleteConnection" class="flex align-items-center">
+        <Button
+          title="Delete Connection"
+          icon="pi pi-trash"
+          class="p-button-rounded p-button-icon-only p-button-text"
+          @click="deleteConnection($event, endorserConnection.connection_id)"
+        />
+      </div>
+    </div>
+  </template>
 </template>
 
 <script setup lang="ts">
@@ -42,11 +54,13 @@ import { computed } from 'vue';
 import Button from 'primevue/button';
 import { useToast } from 'vue-toastification';
 import { useConfirm } from 'primevue/useconfirm';
+import { useI18n } from 'vue-i18n';
 // State
 import { useConfigStore, useConnectionStore, useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other Components
 import StatusChip from '@/components/common/StatusChip.vue';
+import type { ServerConfig } from '@/types';
 
 // Props
 const props = defineProps<{
@@ -55,17 +69,60 @@ const props = defineProps<{
 
 const confirm = useConfirm();
 const toast = useToast();
+const { t } = useI18n();
 
 // State
 const configStore = useConfigStore();
 const connectionStore = useConnectionStore();
 const tenantStore = useTenantStore();
 const { config } = storeToRefs(configStore);
-const { endorserConnection, publicDid, tenantConfig, writeLedger } =
-  storeToRefs(tenantStore);
+const {
+  endorserConnection,
+  publicDid,
+  tenantConfig,
+  writeLedger,
+  serverConfig,
+} = storeToRefs(tenantStore);
+
+const serverConfigValue = computed<ServerConfig | null>(() => {
+  const value = serverConfig.value as ServerConfig | undefined;
+  return value && 'config' in value ? value : null;
+});
+
+const webvhPluginConfig = computed(() => {
+  const pluginConfig = serverConfigValue.value?.config?.plugin_config;
+  if (!pluginConfig) {
+    return null;
+  }
+  const keyedConfig = pluginConfig as typeof pluginConfig & Record<string, any>;
+  return keyedConfig.webvh ?? keyedConfig['did-webvh'] ?? null;
+});
+
+const isWebvhLedger = computed(() => props.ledgerInfo?.type === 'webvh');
 
 // Set the write ledger and then connect to the relevant endorser
 const connectToLedger = async (switchLeger = false) => {
+  if (isWebvhLedger.value) {
+    try {
+      const result = await tenantStore.configureWebvhPlugin();
+      if (!result.success) {
+        const failureMessage =
+          'reason' in result && result.reason === 'missing_witness_id'
+            ? t('identifiers.webvh.witnessMissing')
+            : 'reason' in result && result.reason === 'missing_server_url'
+              ? t('identifiers.webvh.configureMissingUrl')
+              : t('identifiers.webvh.autoConfigureFailed');
+        toast.error(failureMessage as string);
+        return;
+      }
+      toast.success(t('identifiers.webvh.configureSuccess') as string);
+    } catch (error: any) {
+      toast.error(
+        `${t('identifiers.webvh.configureButton')}: ${error ?? 'Unknown error'}`
+      );
+    }
+    return;
+  }
   // Track the current connected to ledger (or undefined if none)
   const prevLedgerId = writeLedger?.value?.ledger_id;
   try {
@@ -120,6 +177,9 @@ const currWriteLedger = computed(() => writeLedger?.value?.ledger_id ?? null);
 
 // Show the endorser connection button when...
 const showEndorserConnect = computed(() => {
+  if (isWebvhLedger.value) {
+    return !webvhPluginConfig.value;
+  }
   //... no current write ledger or endorser conn is set
   if (!currWriteLedger.value || !endorserConnection.value) {
     return true;
@@ -137,12 +197,15 @@ const showEndorserConnect = computed(() => {
 
 // Show the ledger switch button when...
 const showLedgerSwitch = computed(() => {
+  if (isWebvhLedger.value) {
+    return false;
+  }
   // There is an active endorser connection
   // and we're looking at the row that's not the current ledger
   // and the DID is set (IE the issuer process is complete)
   // and the innkeeper has allowed you to swtich ledger
   if (
-    tenantConfig.value.enable_ledger_switch &&
+    tenantConfig.value?.enable_ledger_switch &&
     props.ledgerInfo.ledger_id !== currWriteLedger.value
   ) {
     return true;

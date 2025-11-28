@@ -4,7 +4,7 @@ import {
   EndorserInfo,
   TransactionRecord,
 } from '@/types/acapyApi/acapyInterface';
-import { ServerConfig } from '@/types/index';
+import type { ServerConfig } from '@/types';
 interface TransactionRecordEx extends TransactionRecord {
   meta_data?: {
     [key: string]: any;
@@ -364,6 +364,80 @@ export const useTenantStore = defineStore('tenant', () => {
     throw new TxTimeoutErr(`Transaction ${txnId} has not been completed`);
   }
 
+  async function configureWebvhPlugin(options: { auto?: boolean } = {}) {
+    const { auto = false } = options;
+    const value = serverConfig.value as ServerConfig | undefined;
+    const pluginConfig = value?.config?.plugin_config ?? {};
+    const keyedConfig = pluginConfig as Record<string, any>;
+    const configEntry = keyedConfig.webvh ?? keyedConfig['did-webvh'] ?? null;
+
+    if (!configEntry?.server_url) {
+      if (auto) {
+        return {
+          success: false as const,
+          reason: 'missing_server_url' as const,
+        };
+      }
+      throw Error('Webvh server_url missing from server configuration');
+    }
+
+    if (!configEntry?.witness_id) {
+      if (auto) {
+        return {
+          success: false as const,
+          reason: 'missing_witness_id' as const,
+        };
+      }
+      throw Error('Webvh witness_id missing from server configuration');
+    }
+
+    // Extract the key part from did:key:z6Mk...
+    const witnessKey = configEntry.witness_id.replace('did:key:', '');
+
+    // Construct the invitation URL
+    const invitationUrl = `${configEntry.server_url}/api/invitations?_oobid=${witnessKey}`;
+
+    // Fetch the invitation
+    let witnessInvitation: string;
+    try {
+      const response = await fetch(invitationUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch invitation: ${response.statusText}`);
+      }
+      const invitation = await response.json();
+
+      // Base64 encode the invitation JSON
+      const invitationJson = JSON.stringify(invitation);
+      const b64Invitation = btoa(invitationJson);
+
+      // Create the didcomm URL
+      witnessInvitation = `didcomm://?oob=${b64Invitation}`;
+    } catch (error) {
+      if (auto) {
+        return {
+          success: false as const,
+          reason: 'failed_to_fetch_invitation' as const,
+        };
+      }
+      throw Error(`Failed to fetch and encode witness invitation: ${error}`);
+    }
+
+    const payload: Record<string, any> = {
+      witness_invitation: witnessInvitation,
+    };
+
+    try {
+      await acapyApi.postHttp(API_PATH.DID_WEBVH_CONFIG, payload);
+      await getServerConfig();
+      return { success: true as const };
+    } catch (error: any) {
+      if (auto) {
+        return { success: false as const, error };
+      }
+      throw (error?.response?.data ?? error) as Error;
+    }
+  }
+
   async function waitForActiveEndorserConnection(maxRetries = 10) {
     const connId = endorserConnection.value.connection_id;
     let retries = 0;
@@ -684,6 +758,7 @@ export const useTenantStore = defineStore('tenant', () => {
     updateTenantSubWallet,
     updateTenantContact,
     waitForActiveEndorserConnection,
+    configureWebvhPlugin,
   };
 });
 
