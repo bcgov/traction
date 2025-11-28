@@ -201,21 +201,30 @@ const loadTable = async () => {
   });
 
   // Load credential definitions to get tags for display
-  const walletType = tenantWallet.value?.settings?.['wallet.type'];
+  const walletType = tenantWallet?.value?.settings?.['wallet.type'];
   const isAskarAnoncreds = walletType === 'askar-anoncreds';
+
+  // Skip loading credential definitions if tenantWallet is not available
+  if (!tenantWallet) {
+    return;
+  }
 
   if (isAskarAnoncreds) {
     // For askar-anoncreds wallets, use AnonCreds endpoints
-    await governanceStore.listAnoncredsCredentialDefinitions().catch((err) => {
+    try {
+      await governanceStore.listAnoncredsCredentialDefinitions();
+    } catch (err) {
       console.error(err);
       // Don't show error toast for credential definitions, just log it
-    });
+    }
   } else {
     // For askar wallets, use regular endpoints
-    await governanceStore.listStoredCredentialDefinitions().catch((err) => {
+    try {
+      await governanceStore.listStoredCredentialDefinitions();
+    } catch (err) {
       console.error(err);
       // Don't show error toast for credential definitions, just log it
-    });
+    }
   }
 
   // Load connections if not already there for display
@@ -229,7 +238,10 @@ const loadTable = async () => {
 
 onMounted(async () => {
   // Ensure tenant wallet is loaded to check wallet type
-  if (!tenantWallet?.value && tenantStore.getTenantSubWallet) {
+  if (
+    tenantStore.getTenantSubWallet &&
+    (!tenantWallet || !tenantWallet.value)
+  ) {
     await tenantStore.getTenantSubWallet();
   }
   await loadTable();

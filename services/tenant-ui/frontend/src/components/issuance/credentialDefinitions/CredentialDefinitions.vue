@@ -232,7 +232,7 @@ const { tenantWallet } = storeToRefs(useTenantStore());
 
 // Check if wallet is askar-anoncreds
 const isAskarAnoncredsWallet = computed(() => {
-  return tenantWallet.value?.settings?.['wallet.type'] === 'askar-anoncreds';
+  return tenantWallet?.value?.settings?.['wallet.type'] === 'askar-anoncreds';
 });
 
 const formattedstoredCredDefs = computed(() =>

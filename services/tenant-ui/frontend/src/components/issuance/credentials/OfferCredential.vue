@@ -48,6 +48,7 @@ const { isIssuer, tenantWallet } = storeToRefs(useTenantStore());
 
 // Check if wallet is askar-anoncreds
 const isAskarAnoncredsWallet = computed(() => {
+  if (!tenantWallet) return false;
   return tenantWallet.value?.settings?.['wallet.type'] === 'askar-anoncreds';
 });
 
@@ -76,7 +77,7 @@ const isOfferButtonDisabled = computed(() => {
   if (isAskarAnoncredsWallet.value) {
     return !isWebvhEndorserConnected.value;
   } else {
-    return !isIssuer.value;
+    return !isIssuer?.value;
   }
 });
 
@@ -122,7 +123,7 @@ defineEmits(['success']);
 const displayModal = ref(false);
 const openModal = async () => {
   // Check wallet type to determine which endpoints to use
-  const walletType = tenantWallet.value?.settings?.['wallet.type'];
+  const walletType = tenantWallet?.value?.settings?.['wallet.type'];
   const isAskarAnoncreds = walletType === 'askar-anoncreds';
 
   // Kick of the loading asyncs in the store to fetch connections/creds

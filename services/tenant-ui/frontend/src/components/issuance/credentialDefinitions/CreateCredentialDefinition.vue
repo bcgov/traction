@@ -57,6 +57,7 @@ const formattedSchemaList = computed(() => formatSchemaList(schemaList));
 
 // Check if wallet is askar-anoncreds
 const isAskarAnoncredsWallet = computed(() => {
+  if (!tenantWallet) return false;
   return tenantWallet.value?.settings?.['wallet.type'] === 'askar-anoncreds';
 });
 
@@ -89,7 +90,7 @@ const isCreateButtonDisabled = computed(() => {
   if (isAskarAnoncredsWallet.value) {
     return !isWebvhEndorserConnected.value;
   } else {
-    return !isIssuer.value;
+    return !isIssuer?.value;
   }
 });
 
