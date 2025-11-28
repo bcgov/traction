@@ -46,6 +46,12 @@ export interface ExtendedV20CredExRecordByFormat
       key_correctness_proof?: any;
       nonce?: string;
     };
+    anoncreds?: {
+      cred_def_id?: string;
+      schema_id?: string;
+      key_correctness_proof?: any;
+      nonce?: string;
+    };
   };
 }
 

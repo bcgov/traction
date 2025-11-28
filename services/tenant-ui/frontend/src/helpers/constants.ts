@@ -141,6 +141,7 @@ export const API_PATH = {
   ANONCREDS_SCHEMAS: '/anoncreds/schemas',
   ANONCREDS_SCHEMA: (id: string) => `/anoncreds/schema/${id}`,
   ANONCREDS_SCHEMA_POST: '/anoncreds/schema',
+  ANONCREDS_CREDENTIAL_DEFINITIONS: '/anoncreds/credential-definitions',
   ANONCREDS_CREDENTIAL_DEFINITION_POST: '/anoncreds/credential-definition',
 
   SCHEMA_STORAGE: '/schema-storage',

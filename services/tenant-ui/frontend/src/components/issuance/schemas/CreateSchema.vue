@@ -29,7 +29,7 @@
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 // Source
 import { API_PATH } from '@/helpers/constants';
@@ -63,11 +63,6 @@ const webvhConfigLoaded = ref(false);
 // Check if wallet is askar-anoncreds
 const isAskarAnoncredsWallet = computed(() => {
   const walletType = tenantWallet?.value?.settings?.['wallet.type'];
-  console.log('Wallet type check:', {
-    walletType,
-    isAskarAnoncreds: walletType === 'askar-anoncreds',
-    tenantWallet: tenantWallet?.value,
-  });
   return walletType === 'askar-anoncreds';
 });
 
@@ -80,19 +75,12 @@ const isWebvhEndorserConnected = computed(() => {
 
   // For askar-anoncreds wallets, check webvh configuration
   // Check if witnesses array exists and has entries (indicates connection)
-  const hasWitnesses = Boolean(
-    webvhConfig.value?.witnesses &&
-      Array.isArray(webvhConfig.value.witnesses) &&
-      webvhConfig.value.witnesses.length > 0
-  );
+  if (!webvhConfig.value) {
+    return false;
+  }
 
-  console.log('isWebvhEndorserConnected check:', {
-    isAskarAnoncreds: isAskarAnoncredsWallet.value,
-    hasWitnesses,
-    witnesses: webvhConfig.value?.witnesses,
-  });
-
-  return hasWitnesses;
+  const witnesses = webvhConfig.value.witnesses;
+  return Boolean(witnesses && Array.isArray(witnesses) && witnesses.length > 0);
 });
 
 // Disable button logic:
@@ -101,23 +89,10 @@ const isWebvhEndorserConnected = computed(() => {
 const isCreateButtonDisabled = computed(() => {
   if (isAskarAnoncredsWallet.value) {
     // For askar-anoncreds wallets, only check WebVH connection
-    const webvhNotConnected = !isWebvhEndorserConnected.value;
-    console.log('isCreateButtonDisabled check (askar-anoncreds):', {
-      isAskarAnoncreds: true,
-      isWebvhConnected: isWebvhEndorserConnected.value,
-      webvhNotConnected,
-      disabled: webvhNotConnected,
-    });
-    return webvhNotConnected;
+    return !isWebvhEndorserConnected.value;
   } else {
     // For askar wallets, require issuer status
-    const notIssuer = !isIssuer?.value;
-    console.log('isCreateButtonDisabled check (askar):', {
-      isAskarAnoncreds: false,
-      notIssuer,
-      disabled: notIssuer,
-    });
-    return notIssuer;
+    return !isIssuer?.value;
   }
 });
 
@@ -151,9 +126,6 @@ const loadWebvhConfig = async () => {
       !configData ||
       (typeof configData === 'object' && Object.keys(configData).length === 0);
     webvhConfig.value = isEmptyConfig ? null : configData;
-    console.log('WebVH Config:', webvhConfig.value);
-    console.log('Witnesses array:', webvhConfig.value?.witnesses);
-    console.log('Is connected:', isWebvhEndorserConnected.value);
   } catch (_error) {
     console.error('Error loading WebVH config:', _error);
     webvhConfig.value = null;
@@ -162,9 +134,22 @@ const loadWebvhConfig = async () => {
   }
 };
 
+// Load WebVH config when component mounts
 onMounted(() => {
   loadWebvhConfig();
 });
+
+// Also reload config when wallet type changes (in case wallet loads after mount)
+watch(
+  () => isAskarAnoncredsWallet.value,
+  (isAnoncreds) => {
+    if (isAnoncreds) {
+      // Reset loaded flag and reload config when wallet type becomes anoncreds
+      webvhConfigLoaded.value = false;
+      loadWebvhConfig();
+    }
+  }
+);
 
 //Modal
 const displayModal = ref(false);

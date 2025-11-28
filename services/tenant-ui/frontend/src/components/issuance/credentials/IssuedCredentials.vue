@@ -146,7 +146,12 @@
 // Vue
 import { computed, onMounted, ref } from 'vue';
 // State
-import { useConnectionStore, useIssuerStore } from '@/store';
+import {
+  useConnectionStore,
+  useGovernanceStore,
+  useIssuerStore,
+  useTenantStore,
+} from '@/store';
 import { storeToRefs } from 'pinia';
 import { useConfigStore } from '@/store/configStore';
 // PrimeVue/etc
@@ -176,12 +181,16 @@ const toast = useToast();
 const { listConnections, findConnectionName } = useConnectionStore();
 const { connections } = storeToRefs(useConnectionStore());
 const issuerStore = useIssuerStore();
+const tenantStore = useTenantStore();
+const governanceStore = useGovernanceStore();
 // use the loading state from the store to disable the button...
 const { loading, credentials, selectedCredential } =
   storeToRefs(useIssuerStore());
+const { tenantWallet } = storeToRefs(useTenantStore());
+const { storedCredDefs } = storeToRefs(useGovernanceStore());
 
 const formattedIssuedCredentials = computed(() =>
-  formatIssuedCredentials(credentials, findConnectionName)
+  formatIssuedCredentials(credentials, findConnectionName, storedCredDefs)
 );
 
 // Get the credentials
@@ -190,6 +199,24 @@ const loadTable = async () => {
     console.error(err);
     toast.error(`Failure: ${err}`);
   });
+
+  // Load credential definitions to get tags for display
+  const walletType = tenantWallet.value?.settings?.['wallet.type'];
+  const isAskarAnoncreds = walletType === 'askar-anoncreds';
+
+  if (isAskarAnoncreds) {
+    // For askar-anoncreds wallets, use AnonCreds endpoints
+    await governanceStore.listAnoncredsCredentialDefinitions().catch((err) => {
+      console.error(err);
+      // Don't show error toast for credential definitions, just log it
+    });
+  } else {
+    // For askar wallets, use regular endpoints
+    await governanceStore.listStoredCredentialDefinitions().catch((err) => {
+      console.error(err);
+      // Don't show error toast for credential definitions, just log it
+    });
+  }
 
   // Load connections if not already there for display
   if (!connections.value || !connections.value.length) {
@@ -201,6 +228,10 @@ const loadTable = async () => {
 };
 
 onMounted(async () => {
+  // Ensure tenant wallet is loaded to check wallet type
+  if (!tenantWallet?.value && tenantStore.getTenantSubWallet) {
+    await tenantStore.getTenantSubWallet();
+  }
   await loadTable();
 });
 

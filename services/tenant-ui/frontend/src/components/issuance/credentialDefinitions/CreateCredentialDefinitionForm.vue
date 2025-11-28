@@ -184,13 +184,25 @@ const handleSubmit = async (isFormValid: boolean) => {
     props.schema ||
     storedSchemas.value.find((s: any) => s.schema_id === schemaId);
 
+  if (!activeSchema) {
+    toast.error('Schema not found. Please try refreshing the page.');
+    submitted.value = false;
+    return;
+  }
+
   if (isAskarAnoncredsWallet.value) {
     // For askar-anoncreds wallets, use CredDefPostRequest format
-    // Extract issuerId from the schema (anoncreds schemas have issuerId in schema.schema.issuerId)
+    // Extract issuerId from the schema
+    // issuerId is stored in schema.issuerId (we added it when mapping the schema)
+    // Also check schema_dict as fallback (contains the full schema object from API)
     const issuerId =
-      activeSchema?.schema?.issuerId || activeSchema?.schema_dict?.issuerId;
+      (activeSchema.schema as any)?.issuerId ||
+      activeSchema.schema_dict?.issuerId;
 
     if (!issuerId) {
+      console.error('Schema structure:', activeSchema);
+      console.error('Schema.schema:', activeSchema.schema);
+      console.error('Schema.schema_dict:', activeSchema.schema_dict);
       toast.error(
         'Issuer ID not found in schema. Please ensure the schema has an issuerId.'
       );

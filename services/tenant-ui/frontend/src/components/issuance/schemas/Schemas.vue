@@ -82,6 +82,15 @@
         filter-field="schema_id"
         :show-filter-match-modes="false"
       >
+        <template #body="{ data }">
+          <span
+            v-tooltip="data.schema_id"
+            :title="data.schema_id"
+            class="truncated-id"
+          >
+            {{ truncateId(data.schema_id) }}
+          </span>
+        </template>
         <template #filter="{ filterModel, filterCallback }">
           <InputText
             v-model="filterModel.value"
@@ -180,7 +189,7 @@ import { useToast } from 'vue-toastification';
 import RowExpandData from '@/components/common/RowExpandData.vue';
 import NestedCredentialDefinition from '@/components/issuance/credentialDefinitions/NestedCredentialDefinition.vue';
 import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
-import { stringOrBooleanTruthy } from '@/helpers';
+import { stringOrBooleanTruthy, truncateId } from '@/helpers';
 import { API_PATH, TABLE_OPT } from '@/helpers/constants';
 import { formatSchemaList } from '@/helpers/tableFormatters';
 import { useGovernanceStore, useTenantStore } from '@/store';
