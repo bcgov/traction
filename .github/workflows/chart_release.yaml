@@ -15,7 +15,7 @@ jobs:
     if: github.repository_owner == 'bcgov'
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: gh-pages
       - name: Download remote index file and check equality
@@ -32,7 +32,7 @@ jobs:
     if: github.repository_owner == 'bcgov'
     needs: [ validate-chart-index ]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Configure Git
@@ -58,10 +58,10 @@ jobs:
     needs:
       - chart-release
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Checkout services directory from the trust-over-ip-configurations repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: bcgov/trust-over-ip-configurations
           ssh-key: ${{ secrets.DITP_CONFIGS_REPO_SECRET }}
