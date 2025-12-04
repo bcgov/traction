@@ -42,7 +42,13 @@
         :paginator="true"
         :rows="TABLE_OPT.ROWS_DEFAULT"
         :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
-        :global-filter-fields="['alias', 'namespace', 'did', 'status']"
+        :global-filter-fields="[
+          'alias',
+          'namespace',
+          'ledger',
+          'did',
+          'status',
+        ]"
         data-key="did"
         size="small"
         striped-rows
@@ -83,6 +89,11 @@
           sortable
         />
         <Column
+          field="ledger"
+          :header="$t('identifiers.webvh.ledger')"
+          sortable
+        />
+        <Column
           field="status"
           :header="$t('identifiers.webvh.statusHeader')"
           sortable
@@ -93,11 +104,6 @@
             </span>
           </template>
         </Column>
-        <Column
-          field="created"
-          :header="$t('identifiers.webvh.createdAt')"
-          sortable
-        />
         <Column field="did" :header="$t('identifiers.webvh.didHeader')">
           <template #body="{ data }">
             <code>{{ data.did }}</code>
@@ -131,6 +137,20 @@
             </small>
           </div>
           <div class="field">
+            <label for="dialog-namespace" class="required-label">
+              {{ $t('identifiers.webvh.namespace') }}
+            </label>
+            <InputText
+              id="dialog-namespace"
+              v-model.trim="newDidNamespace"
+              autocomplete="off"
+              :class="{ 'p-invalid': createFormTouched && !newDidNamespace }"
+            />
+            <small v-if="createFormTouched && !newDidNamespace" class="p-error">
+              {{ $t('identifiers.webvh.namespaceRequired') }}
+            </small>
+          </div>
+          <div class="field">
             <label for="dialog-alias" class="required-label">
               {{ $t('identifiers.webvh.alias') }}
             </label>
@@ -144,15 +164,16 @@
               {{ $t('identifiers.webvh.aliasRequired') }}
             </small>
           </div>
-          <div class="field">
-            <label for="dialog-namespace">{{
-              $t('identifiers.webvh.namespace')
+
+          <!-- DID Preview -->
+          <div v-if="didPreview" class="field">
+            <label class="font-semibold">{{
+              $t('identifiers.webvh.didPreview')
             }}</label>
-            <InputText
-              id="dialog-namespace"
-              v-model.trim="newDidNamespace"
-              autocomplete="off"
-            />
+            <div class="p-3 surface-100 border-round mt-2">
+              <!-- eslint-disable-next-line vue/no-v-html -->
+              <code class="text-sm" v-html="didPreviewFormatted"></code>
+            </div>
           </div>
         </div>
         <template #footer>
@@ -290,13 +311,18 @@ const webvhConfig = computed<any | null>(() => {
   };
 });
 
-const webvhWatchers = computed(() => {
+const webvhWitnesses = computed(() => {
   if (!webvhConfig.value) return [] as string[];
   const witnesses = webvhConfig.value.witnesses;
-  const watchers = webvhConfig.value.watchers;
   if (Array.isArray(witnesses) && witnesses.length) {
     return witnesses;
   }
+  return [] as string[];
+});
+
+const webvhWatchers = computed(() => {
+  if (!webvhConfig.value) return [] as string[];
+  const watchers = webvhConfig.value.watchers;
   if (Array.isArray(watchers) && watchers.length) {
     return watchers;
   }
@@ -327,8 +353,8 @@ const webvhDidRows = computed(() => {
       did: string;
       alias: string;
       namespace: string;
+      ledger: string;
       status: string;
-      created: string;
     }>;
   }
   const entries = Object.entries(scids as Record<string, string>);
@@ -337,13 +363,16 @@ const webvhDidRows = computed(() => {
     const alias = segments[segments.length - 1] ?? did;
     const namespace =
       segments.length > 2 ? segments[segments.length - 2] : 'default';
+    // Extract domain (ledger) - it's the part after {SCID} and before namespace
+    // Format: did:webvh:{SCID}:domain:namespace:alias
+    const ledger = segments.length >= 5 ? segments[3] : '';
     return {
       scid,
       did,
       alias,
       namespace,
+      ledger,
       status: 'active',
-      created: '—',
     };
   });
 });
@@ -355,15 +384,59 @@ const canCreateDid = computed(
   () =>
     !needsWebvhConfig.value &&
     selectedWebvhServer.value &&
+    newDidNamespace.value.trim().length > 0 &&
     newDidAlias.value.trim().length > 0 &&
     !creatingDid.value
 );
 
+// Computed property for DID preview
+const didPreview = computed(() => {
+  const namespace = newDidNamespace.value.trim() || '{namespace}';
+  const alias = newDidAlias.value.trim() || '{alias}';
+  const server = selectedWebvhServer.value;
+
+  if (!server) {
+    return '';
+  }
+
+  // Extract domain from server URL
+  let domain = '';
+  try {
+    const url = new URL(server);
+    domain = url.hostname;
+  } catch {
+    // If server is not a valid URL, use it as-is
+    domain = server.replace(/^https?:\/\//, '').split('/')[0];
+  }
+
+  return `did:webvh:{SCID}:${domain}:${namespace}:${alias}`;
+});
+
+// Formatted DID preview with bold namespace and alias
+const didPreviewFormatted = computed(() => {
+  const namespace = newDidNamespace.value.trim() || '{namespace}';
+  const alias = newDidAlias.value.trim() || '{alias}';
+  const server = selectedWebvhServer.value;
+
+  if (!server) {
+    return '';
+  }
+
+  // Extract domain from server URL
+  let domain = '';
+  try {
+    const url = new URL(server);
+    domain = url.hostname;
+  } catch {
+    // If server is not a valid URL, use it as-is
+    domain = server.replace(/^https?:\/\//, '').split('/')[0];
+  }
+
+  return `did:webvh:{SCID}:${domain}:<strong>${namespace}</strong>:<strong>${alias}</strong>`;
+});
+
 const openCreateDialog = () => {
   createFormTouched.value = false;
-  if (!newDidNamespace.value) {
-    newDidNamespace.value = 'default';
-  }
   showCreateDidDialog.value = true;
 };
 
@@ -379,7 +452,7 @@ const resetCreateForm = () => {
 
 const submitCreateDid = async () => {
   createFormTouched.value = true;
-  if (!newDidAlias.value.trim()) {
+  if (!newDidNamespace.value.trim() || !newDidAlias.value.trim()) {
     return;
   }
   await createDid();
@@ -473,17 +546,24 @@ const createDid = async () => {
       toast.error(t('identifiers.webvh.serverUrlMissing') as string);
       return;
     }
+    const namespace = newDidNamespace.value.trim();
     const alias = newDidAlias.value.trim();
-    const namespace = newDidNamespace.value.trim() || 'default';
 
     const options: Record<string, any> = {
       identifier: alias,
       namespace,
       server_url: selectedWebvhServer.value,
     };
+    // Set witnesses if configured
+    if (webvhWitnesses.value.length) {
+      options.witnesses = webvhWitnesses.value;
+      // Set witness threshold
+      options.witness = { threshold: 1 };
+    }
+
+    // Set watchers if configured (separate from witnesses)
     if (webvhWatchers.value.length) {
       options.watchers = webvhWatchers.value;
-      options.witnesses = webvhWatchers.value;
     }
 
     const response = await acapyApi.postHttp(API_PATH.DID_WEBVH_CREATE, {

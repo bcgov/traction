@@ -274,8 +274,10 @@
       "createTitle": "Create did:webvh",
       "alias": "Alias",
       "namespace": "Namespace",
+      "ledger": "Ledger",
+      "didPreview": "DID Placeholder",
       "createButton": "Create DID",
-      "createHelp": "Alias is the unique identifier within the namespace. Namespace defaults to 'default' if left blank.",
+      "createHelp": "Namespace and alias are the unique identifiers for your DID.",
       "createSuccess": "did:webvh creation request sent",
       "createSuccessWithDid": "did:webvh creation request sent for {did}",
       "configureDescription": "Configure the did:webvh plugin with your server URL and enable witnessing to manage identifiers.",
@@ -285,6 +287,7 @@
       "autoConfigureFailed": "Automatic configuration failed. Please configure manually.",
       "searchPlaceholder": "Search identifiers",
       "createDialogTitle": "Create did:webvh",
+      "namespaceRequired": "Namespace is required",
       "aliasRequired": "Alias is required"
     }
   },

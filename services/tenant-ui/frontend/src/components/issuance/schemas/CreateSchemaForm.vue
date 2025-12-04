@@ -330,8 +330,12 @@ const loadWebvhIdentifiers = async () => {
         const alias = segments[segments.length - 1] ?? did;
         const namespace =
           segments.length > 2 ? segments[segments.length - 2] : 'default';
+        // Extract domain (ledger) - Format: did:webvh:{SCID}:domain:namespace:alias
+        const domain = segments.length >= 5 ? segments[3] : '';
         return {
-          label: `${namespace} / ${alias}`,
+          label: domain
+            ? `${domain} : ${namespace} : ${alias}`
+            : `${namespace} : ${alias}`,
           value: did,
         };
       });
