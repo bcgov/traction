@@ -285,7 +285,8 @@
       "autoConfigureFailed": "Automatic configuration failed. Please configure manually. <JA>",
       "searchPlaceholder": "Search identifiers <JA>",
       "createDialogTitle": "Create did:webvh <JA>",
-      "aliasRequired": "Alias is required <JA>"
+      "aliasRequired": "Alias is required <JA>",
+      "namespaceRequired": "Namespace is required <JA>"
     }
   },
   "home": {
