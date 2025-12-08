@@ -71,7 +71,7 @@ export const useGovernanceStore = defineStore('governance', () => {
     if (item != null) {
       // For AnonCreds credential definitions, try to create a more readable label
       // Use tag if available, otherwise use truncated cred_def_id
-      let label = item.cred_def_id;
+      let label;
       if (item.tag) {
         // If tag exists, show tag with truncated ID in parentheses
         label = `${item.tag} (${truncateId(item.cred_def_id)})`;
