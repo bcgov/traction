@@ -285,7 +285,8 @@
       "autoConfigureFailed": "Automatic configuration failed. Please configure manually. <FR>",
       "searchPlaceholder": "Search identifiers <FR>",
       "createDialogTitle": "Create did:webvh <FR>",
-      "aliasRequired": "Alias is required <FR>"
+      "aliasRequired": "Alias is required <FR>",
+      "namespaceRequired": "Le namespace est requis <FR>"
     }
   },
   "home": {
