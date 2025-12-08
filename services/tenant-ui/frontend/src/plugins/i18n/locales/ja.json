@@ -561,7 +561,21 @@
       "acapyPublicInvites": "Send Invitations using public DID <JA>",
       "auto": "Auto Flags <JA>",
       "extraSettings": "Extra Settings (wording TBD) <JA>",
-      "tenantWalletSettings": "Tenant Wallet Settings <JA>"
+      "tenantWalletSettings": "Tenant Wallet Settings <JA>",
+      "walletType": "ウォレットタイプ <JA>",
+      "walletUpgradeWarning": "このウォレットは、AnonCredsサポートのためにaskar-anoncredsにアップグレードできます <JA>",
+      "upgradeWallet": "ウォレットをアップグレード <JA>",
+      "deleteWebhook": "このウェブフックを削除 <JA>",
+      "addWebhook": "別のウェブフックを追加 <JA>",
+      "saveChanges": "変更を保存 <JA>",
+      "tenantWalletDetails": "テナントウォレットの詳細 <JA>",
+      "walletUpgradeConfirmMessage": "これにより、ウォレットがaskarからaskar-anoncredsにアップグレードされます。この操作は元に戻せません。続行してもよろしいですか? <JA>",
+      "walletUpgradeConfirmHeader": "ウォレットのアップグレードを確認 <JA>",
+      "walletUpgradeLabel": "アップグレード <JA>",
+      "walletNameNotFound": "ウォレット名が見つかりません <JA>",
+      "walletUpgradeTriggered": "ウォレットのアップグレードがトリガーされました。アップグレードはバックグラウンドで完了します。 <JA>",
+      "walletUpgradeFailed": "ウォレットのアップグレードに失敗しました: {error} <JA>",
+      "settingsUpdated": "設定が更新されました <JA>"
     }
   },
   "tenants": {

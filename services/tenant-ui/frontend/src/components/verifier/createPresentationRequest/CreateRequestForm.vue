@@ -81,7 +81,7 @@ import {
 } from '@/types/acapyApi/acapyInterface';
 
 // Vue
-import { computed, reactive, ref } from 'vue';
+import { reactive, ref } from 'vue';
 // PrimeVue / Validation / etc
 import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
@@ -107,12 +107,7 @@ const { loading: connectionsLoading, connectionsDropdown } =
   storeToRefs(useConnectionStore());
 const verifierStore = useVerifierStore();
 const tenantStore = useTenantStore();
-const { tenantWallet } = storeToRefs(tenantStore);
-
-// Check if wallet is askar-anoncreds type
-const isAskarAnoncredsWallet = computed(() => {
-  return tenantWallet.value?.settings?.['wallet.type'] === 'askar-anoncreds';
-});
+const { isAskarAnoncredsWallet } = storeToRefs(tenantStore);
 
 // Props
 const props = defineProps<{
@@ -202,11 +197,6 @@ const handleSubmit = async (isFormValid: boolean) => {
         ? JSON.parse(proofRequestJson.value)
         : proofRequestJson.value;
 
-    // Debug: Check wallet type
-    console.log('tenantWallet:', tenantWallet.value);
-    console.log('wallet.type:', tenantWallet.value?.settings?.['wallet.type']);
-    console.log('isAskarAnoncredsWallet:', isAskarAnoncredsWallet.value);
-
     // Set up the body with the fields from the form
     const payload: V20PresSendRequestRequest = {
       connection_id: formFields.selectedConnection.value,
@@ -217,8 +207,6 @@ const handleSubmit = async (isFormValid: boolean) => {
         ? { anoncreds: proofRequest }
         : { indy: proofRequest },
     };
-
-    console.log('Sending presentation request with payload:', payload);
 
     await verifierStore.sendPresentationRequest(payload);
     toast.info('Request Sent');

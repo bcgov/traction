@@ -61,6 +61,9 @@ export const useTenantStore = defineStore('tenant', () => {
       (!taa.value?.taa_required || taa.value?.taa_accepted)
     );
   });
+  const isAskarAnoncredsWallet: Ref<boolean> = computed(() => {
+    return tenantWallet.value?.settings?.['wallet.type'] === 'askar-anoncreds';
+  });
   const pendingPublicDidTx = computed<TransactionRecordEx | null>(() => {
     // If they have a wallet DID but no public, check transactions to the endorser for a status
     let pending = null;
@@ -391,16 +394,44 @@ export const useTenantStore = defineStore('tenant', () => {
       throw Error('Webvh witness_id missing from server configuration');
     }
 
+    // Validate server_url is a valid URL
+    let baseUrl: URL;
+    try {
+      baseUrl = new URL(configEntry.server_url);
+    } catch (_error) {
+      if (auto) {
+        return {
+          success: false as const,
+          reason: 'invalid_server_url' as const,
+        };
+      }
+      throw Error('Webvh server_url is not a valid URL');
+    }
+
     // Extract the key part from did:key:z6Mk...
     const witnessKey = configEntry.witness_id.replace('did:key:', '');
 
-    // Construct the invitation URL
-    const invitationUrl = `${configEntry.server_url}/api/invitations?_oobid=${witnessKey}`;
+    // Validate witnessKey contains only safe characters (base58 characters: 1-9, A-H, J-N, P-Z, a-k, m-z)
+    // This prevents URL injection attacks
+    const base58Pattern = /^[1-9A-HJ-NP-Za-km-z]+$/;
+    if (!base58Pattern.test(witnessKey)) {
+      if (auto) {
+        return {
+          success: false as const,
+          reason: 'invalid_witness_key' as const,
+        };
+      }
+      throw Error('Webvh witness_id contains invalid characters');
+    }
+
+    // Construct the invitation URL using URL and URLSearchParams for proper encoding
+    const invitationUrl = new URL('/api/invitations', baseUrl);
+    invitationUrl.searchParams.set('_oobid', witnessKey);
 
     // Fetch the invitation
     let witnessInvitation: string;
     try {
-      const response = await fetch(invitationUrl);
+      const response = await fetch(invitationUrl.toString());
       if (!response.ok) {
         throw new Error(`Failed to fetch invitation: ${response.statusText}`);
       }
@@ -719,6 +750,7 @@ export const useTenantStore = defineStore('tenant', () => {
     endorserInfo,
     error,
     isIssuer,
+    isAskarAnoncredsWallet,
     loading,
     loadingIssuance,
     pendingPublicDidTx,

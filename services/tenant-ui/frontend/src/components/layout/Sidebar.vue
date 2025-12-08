@@ -34,11 +34,6 @@ const sidebarItems = [
     route: '/dashboard',
   },
   {
-    label: t('identifiers.identifiers'),
-    icon: 'pi pi-fw pi-key text-yellow-400',
-    route: '/identifiers',
-  },
-  {
     label: t('connect.connections.connections'),
     icon: 'pi pi-fw pi-users',
     items: [
@@ -78,6 +73,11 @@ const sidebarItems = [
     label: t('configuration.configuration'),
     icon: 'pi pi-fw pi-file',
     items: [
+      {
+        label: t('identifiers.identifiers'),
+        icon: 'pi pi-fw pi-key text-yellow-400',
+        route: '/identifiers',
+      },
       {
         label: t('configuration.schemas.storage'),
         icon: 'pi pi-fw pi-book',

@@ -559,7 +559,21 @@
       "acapyPublicInvites": "Send Invitations using public DID",
       "auto": "Auto Flags",
       "extraSettings": "Extra ACA-Py Settings",
-      "tenantWalletSettings": "Tenant Wallet Settings"
+      "tenantWalletSettings": "Tenant Wallet Settings",
+      "walletType": "Wallet Type",
+      "walletUpgradeWarning": "This wallet can be upgraded to askar-anoncreds for AnonCreds support",
+      "upgradeWallet": "Upgrade Wallet",
+      "deleteWebhook": "Delete this webhook",
+      "addWebhook": "Add another webhook",
+      "saveChanges": "Save Changes",
+      "tenantWalletDetails": "Tenant Wallet Details",
+      "walletUpgradeConfirmMessage": "This will upgrade your wallet from askar to askar-anoncreds. This operation is NON-REVERSIBLE. Are you sure you want to proceed?",
+      "walletUpgradeConfirmHeader": "Confirm Wallet Upgrade",
+      "walletUpgradeLabel": "Upgrade",
+      "walletNameNotFound": "Wallet name not found",
+      "walletUpgradeTriggered": "Wallet upgrade has been triggered. The upgrade will complete in the background.",
+      "walletUpgradeFailed": "Failed to upgrade wallet: {error}",
+      "settingsUpdated": "Your Settings have been Updated"
     }
   },
   "tenants": {

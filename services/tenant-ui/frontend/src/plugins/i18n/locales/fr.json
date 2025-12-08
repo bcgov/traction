@@ -561,7 +561,21 @@
       "acapyPublicInvites": "Send Invitations using public DID <FR>",
       "auto": "Auto Flags <FR>",
       "extraSettings": "Extra Settings (wording TBD) <FR>",
-      "tenantWalletSettings": "Tenant Wallet Settings <FR>"
+      "tenantWalletSettings": "Tenant Wallet Settings <FR>",
+      "walletType": "Type de portefeuille <FR>",
+      "walletUpgradeWarning": "Ce portefeuille peut être mis à niveau vers askar-anoncreds pour la prise en charge d'AnonCreds <FR>",
+      "upgradeWallet": "Mettre à niveau le portefeuille <FR>",
+      "deleteWebhook": "Supprimer ce webhook <FR>",
+      "addWebhook": "Ajouter un autre webhook <FR>",
+      "saveChanges": "Enregistrer les modifications <FR>",
+      "tenantWalletDetails": "Détails du portefeuille du locataire <FR>",
+      "walletUpgradeConfirmMessage": "Cela mettra à niveau votre portefeuille de askar vers askar-anoncreds. Cette opération est IRRÉVERSIBLE. Êtes-vous sûr de vouloir continuer? <FR>",
+      "walletUpgradeConfirmHeader": "Confirmer la mise à niveau du portefeuille <FR>",
+      "walletUpgradeLabel": "Mettre à niveau <FR>",
+      "walletNameNotFound": "Nom du portefeuille introuvable <FR>",
+      "walletUpgradeTriggered": "La mise à niveau du portefeuille a été déclenchée. La mise à niveau se terminera en arrière-plan. <FR>",
+      "walletUpgradeFailed": "Échec de la mise à niveau du portefeuille: {error} <FR>",
+      "settingsUpdated": "Vos paramètres ont été mis à jour <FR>"
     }
   },
   "tenants": {

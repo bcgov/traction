@@ -266,20 +266,6 @@ export const useGovernanceStore = defineStore('governance', () => {
           const credDefResponse = await acapyApi.getHttp(credDefUrl);
           const credDefData = credDefResponse?.data || credDefResponse;
 
-          // Debug: log the response structure
-          console.log(`CredDef ${credDefId} - Full response:`, credDefData);
-          console.log(
-            `CredDef ${credDefId} - credential_definition:`,
-            credDefData?.credential_definition
-          );
-          console.log(`CredDef ${credDefId} - tag location:`, {
-            'credDefData.credential_definition?.tag':
-              credDefData?.credential_definition?.tag,
-            'credDefData?.tag': credDefData?.tag,
-            'credDefData?.credential_definition':
-              credDefData?.credential_definition,
-          });
-
           // Map to CredDefStorageRecord format
           // Check for revocation support
           // In AnonCreds, revocation is indicated by the presence of a revocation object
@@ -299,8 +285,6 @@ export const useGovernanceStore = defineStore('governance', () => {
           // Extract tag from credential definition - check multiple possible locations
           const tag =
             credDefData?.credential_definition?.tag || credDefData?.tag || '';
-
-          console.log(`CredDef ${credDefId} - extracted tag:`, tag);
 
           return {
             cred_def_id: credDefId,

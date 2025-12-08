@@ -68,7 +68,7 @@
               </div>
 
               <Button
-                title="Delete this webhook"
+                :title="$t('tenant.settings.deleteWebhook')"
                 icon="pi pi-times"
                 text
                 rounded
@@ -76,7 +76,7 @@
               />
 
               <Button
-                title="Add another webhook"
+                :title="$t('tenant.settings.addWebhook')"
                 class="add"
                 icon="pi pi-plus-circle"
                 text
@@ -362,15 +362,10 @@
               {{ $t('tenant.settings.walletType') }}
             </label>
             <div class="flex align-items-center gap-2">
-              <InputText
-                id="walletType"
-                :value="walletTypeDisplay"
-                class="w-full"
-                readonly
-              />
+              <span>{{ walletTypeDisplay }}</span>
               <Button
                 v-if="isAskarWallet"
-                label="Upgrade Wallet"
+                :label="$t('tenant.settings.upgradeWallet')"
                 icon="pi pi-arrow-up"
                 severity="warning"
                 :loading="upgradingWallet"
@@ -395,7 +390,7 @@
 
         <div>
           <Accordion>
-            <AccordionTab header="Tenant Wallet Details">
+            <AccordionTab :header="$t('tenant.settings.tenantWalletDetails')">
               <vue-json-pretty :data="tenantWalletwithExtraSettings" />
             </AccordionTab>
           </Accordion>
@@ -404,7 +399,7 @@
           class="mt-6 mb-3"
           :disabled="loading"
           :loading="loading"
-          label="Save Changes"
+          :label="$t('tenant.settings.saveChanges')"
           type="submit"
         />
       </div>
@@ -431,6 +426,7 @@ import { useToast } from 'vue-toastification';
 import { useConfirm } from 'primevue/useconfirm';
 import { required, email, url } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
+import { useI18n } from 'vue-i18n';
 // State/etc
 import { storeToRefs } from 'pinia';
 import { useTenantStore } from '@/store';
@@ -439,6 +435,7 @@ import { API_PATH } from '@/helpers/constants';
 // Components
 import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
 
+const { t } = useI18n();
 const toast = useToast();
 const confirm = useConfirm();
 const acapyApi = useAcapyApi();
@@ -714,7 +711,7 @@ const handleSubmit = async (isFormValid: boolean) => {
     await tenantStore.updateTenantContact(new_email);
 
     loadTenantSettings();
-    toast.success('Your Settings have been Updated');
+    toast.success(t('tenant.settings.settingsUpdated'));
   } catch (error) {
     toast.error(`Failure: ${error}`);
   } finally {
@@ -741,14 +738,13 @@ const formattedServerCfg = computed(() => {
 // Wallet upgrade functionality
 const confirmUpgrade = () => {
   confirm.require({
-    message:
-      'This will upgrade your wallet from askar to askar-anoncreds. This operation is NON-REVERSIBLE. Are you sure you want to proceed?',
-    header: 'Confirm Wallet Upgrade',
+    message: t('tenant.settings.walletUpgradeConfirmMessage'),
+    header: t('tenant.settings.walletUpgradeConfirmHeader'),
     icon: 'pi pi-exclamation-triangle',
     rejectClass: 'p-button-text',
     acceptClass: 'p-button-danger',
-    acceptLabel: 'Upgrade',
-    rejectLabel: 'Cancel',
+    acceptLabel: t('tenant.settings.walletUpgradeLabel'),
+    rejectLabel: t('common.cancel'),
     accept: () => {
       upgradeWallet();
     },
@@ -757,7 +753,7 @@ const confirmUpgrade = () => {
 
 const upgradeWallet = async () => {
   if (!tenantWallet.value?.settings?.['wallet.name']) {
-    toast.error('Wallet name not found');
+    toast.error(t('tenant.settings.walletNameNotFound'));
     return;
   }
 
@@ -768,18 +764,16 @@ const upgradeWallet = async () => {
       `${API_PATH.WALLET_UPGRADE}?wallet_name=${encodeURIComponent(walletName)}`,
       {}
     );
-    toast.success(
-      'Wallet upgrade has been triggered. The upgrade will complete in the background.'
-    );
+    toast.success(t('tenant.settings.walletUpgradeTriggered'));
     // Reload settings to reflect the change
     setTimeout(() => {
       loadTenantSettings();
     }, 2000);
   } catch (error: any) {
+    const errorMessage =
+      error?.response?.data?.message ?? error?.message ?? 'Unknown error';
     toast.error(
-      `Failed to upgrade wallet: ${
-        error?.response?.data?.message ?? error?.message ?? 'Unknown error'
-      }`
+      t('tenant.settings.walletUpgradeFailed', { error: errorMessage })
     );
   } finally {
     upgradingWallet.value = false;
