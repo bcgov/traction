@@ -30,7 +30,7 @@
             <p>
               <strong>{{ $t('serverConfig.ledger.ledgerList') }}</strong>
             </p>
-            <DataTable :value="ledgerConfigList" size="small" striped-rows>
+            <DataTable :value="combinedLedgerList" size="small" striped-rows>
               <Column field="id" header="id" />
               <Column field="endorser_alias" header="endorser_alias" />
               <Column field="endorser_did" header="endorser_did" />
@@ -224,6 +224,45 @@ const ledgerConfigList = computed(() => {
     return serverConfig.value.config['ledger.ledger_config_list'];
   }
   return [];
+});
+
+const webvhLedgerList = computed(() => {
+  if (serverConfig.value?.config?.plugin_config) {
+    const pluginConfig = serverConfig.value.config.plugin_config;
+    const webvhConfig = pluginConfig.webvh || pluginConfig['did-webvh'];
+
+    if (webvhConfig) {
+      // Handle both single config object and array of configs
+      const configs = Array.isArray(webvhConfig) ? webvhConfig : [webvhConfig];
+
+      return configs
+        .filter((config: any) => config.witness_id && config.server_url)
+        .map((config: any) => {
+          // Extract domain from server_url
+          let ledgerId = config.ledger_id;
+          if (!ledgerId && config.server_url) {
+            try {
+              const url = new URL(config.server_url);
+              ledgerId = url.hostname;
+            } catch {
+              // If URL parsing fails, use the server_url as-is
+              ledgerId = config.server_url;
+            }
+          }
+
+          return {
+            id: ledgerId,
+            endorser_alias: config.witness_id,
+            endorser_did: config.witness_id,
+          };
+        });
+    }
+  }
+  return [];
+});
+
+const combinedLedgerList = computed(() => {
+  return [...ledgerConfigList.value, ...webvhLedgerList.value];
 });
 
 const swaggerUrl = computed(
