@@ -200,9 +200,6 @@ const handleSubmit = async (isFormValid: boolean) => {
       activeSchema.schema_dict?.issuerId;
 
     if (!issuerId) {
-      console.error('Schema structure:', activeSchema);
-      console.error('Schema.schema:', activeSchema.schema);
-      console.error('Schema.schema_dict:', activeSchema.schema_dict);
       toast.error(
         'Issuer ID not found in schema. Please ensure the schema has an issuerId.'
       );
