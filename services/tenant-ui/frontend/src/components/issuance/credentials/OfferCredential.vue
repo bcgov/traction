@@ -32,8 +32,6 @@ import {
   useTenantStore,
 } from '@/store';
 import { storeToRefs } from 'pinia';
-import { API_PATH } from '@/helpers/constants';
-import { useAcapyApi } from '@/store/acapyApi';
 // Custom Components
 import OfferCredentialForm from './OfferCredentialForm.vue';
 
@@ -42,77 +40,35 @@ const connectionStore = useConnectionStore();
 const governanceStore = useGovernanceStore();
 
 const toast = useToast();
-const acapyApi = useAcapyApi();
 
-const { isIssuer, tenantWallet } = storeToRefs(useTenantStore());
-
-// Check if wallet is askar-anoncreds
-const isAskarAnoncredsWallet = computed(() => {
-  if (!tenantWallet) return false;
-  return tenantWallet.value?.settings?.['wallet.type'] === 'askar-anoncreds';
-});
-
-// WebVH configuration state
-const webvhConfig = ref<any>(null);
-const webvhConfigLoaded = ref(false);
-
-// Check if webvh endorser is connected
-const isWebvhEndorserConnected = computed(() => {
-  if (!isAskarAnoncredsWallet.value) {
-    return true; // For non-askar-anoncreds wallets, always allow
-  }
-
-  if (!webvhConfig.value) {
-    return false;
-  }
-
-  const witnesses = webvhConfig.value.witnesses;
-  return Boolean(witnesses && Array.isArray(witnesses) && witnesses.length > 0);
-});
+const tenantStore = useTenantStore();
+const { isIssuer, isAskarAnoncredsWallet, isWebvhConnected, tenantWallet } =
+  storeToRefs(tenantStore);
 
 // Disable button logic:
 // - For askar wallets: require isIssuer to be true
 // - For askar-anoncreds wallets: only require WebVH endorser to be connected
 const isOfferButtonDisabled = computed(() => {
-  if (isAskarAnoncredsWallet.value) {
-    return !isWebvhEndorserConnected.value;
+  if (isAskarAnoncredsWallet?.value) {
+    return !isWebvhConnected?.value;
   } else {
     return !isIssuer?.value;
   }
 });
 
-// Load webvh configuration
-const loadWebvhConfig = async () => {
-  if (!isAskarAnoncredsWallet.value) {
-    webvhConfigLoaded.value = true;
-    return;
-  }
-
-  try {
-    const response = await acapyApi.getHttp(API_PATH.DID_WEBVH_CONFIG);
-    const configData = response?.data ?? response ?? null;
-    const isEmptyConfig =
-      !configData ||
-      (typeof configData === 'object' && Object.keys(configData).length === 0);
-    webvhConfig.value = isEmptyConfig ? null : configData;
-  } catch (_error) {
-    webvhConfig.value = null;
-  } finally {
-    webvhConfigLoaded.value = true;
-  }
-};
-
 onMounted(() => {
-  loadWebvhConfig();
+  // Load webvh config if using askar-anoncreds wallet
+  if (isAskarAnoncredsWallet?.value) {
+    tenantStore.getWebvhConfig();
+  }
 });
 
 // Also reload config when wallet type changes
 watch(
-  () => isAskarAnoncredsWallet.value,
+  () => isAskarAnoncredsWallet?.value,
   (isAnoncreds) => {
     if (isAnoncreds) {
-      webvhConfigLoaded.value = false;
-      loadWebvhConfig();
+      tenantStore.getWebvhConfig();
     }
   }
 );

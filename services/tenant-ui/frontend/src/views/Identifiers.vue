@@ -31,9 +31,6 @@
               {{ $t('identifiers.webvh.configureMissingUrl') }}
             </span>
           </div>
-          <p v-if="autoConfigureFailed" class="mt-2 config-warning-error">
-            {{ $t('identifiers.webvh.autoConfigureFailed') }}
-          </p>
         </div>
       </Message>
       <DataTable
@@ -64,6 +61,7 @@
                 icon="pi pi-plus"
                 :label="$t('identifiers.webvh.createButton')"
                 class="p-button"
+                :disabled="!webvhConfigLoaded || needsWebvhConfig"
                 @click="openCreateDialog"
               />
             </div>
@@ -224,7 +222,12 @@ const toast = useToast();
 const { t } = useI18n();
 const tenantStore = useTenantStore();
 const acapyApi = useAcapyApi();
-const { tenantWallet, loading, serverConfig } = storeToRefs(tenantStore);
+const {
+  tenantWallet,
+  loading,
+  serverConfig,
+  webvhConfig: tenantWebvhConfig,
+} = storeToRefs(tenantStore);
 const creatingDid = ref(false);
 const refreshingWebvh = ref(false);
 const showCreateDidDialog = ref(false);
@@ -232,14 +235,11 @@ const createFormTouched = ref(false);
 const newDidAlias = ref('');
 const newDidNamespace = ref('default');
 const selectedWebvhServer = ref<string | null>(null);
-const webvhConfigData = ref<any | null>(null);
 const webvhConfigLoaded = ref(false);
 const didTableFilters = ref({
   global: { value: '', matchMode: FilterMatchMode.CONTAINS },
 });
 const configuringWebvh = ref(false);
-const autoConfigureAttempted = ref(false);
-const autoConfigureFailed = ref(false);
 
 const serverConfigValue = computed<ServerConfig | null>(() => {
   const value = serverConfig.value as ServerConfig | undefined;
@@ -284,30 +284,25 @@ const pageLoading = computed(() => {
   if (loading.value) {
     return true;
   }
-  if (webvhConfigData.value) {
-    return false;
-  }
-  if (webvhConfigLoaded.value) {
-    return false;
-  }
-  if ('config' in (serverConfig.value ?? {})) {
+  // Don't wait for tenantWebvhConfig to be truthy - it may be null/empty if not configured
+  if (webvhConfigLoaded.value && 'config' in (serverConfig.value ?? {})) {
     return false;
   }
   return true;
 });
 
 const webvhConfig = computed<any | null>(() => {
-  const override = webvhConfigData.value;
+  const tenantConfig = tenantWebvhConfig.value;
   const base = serverWebvhConfig.value;
-  if (!override || Object.keys(override).length === 0) {
-    return base ?? override ?? null;
+  if (!tenantConfig || Object.keys(tenantConfig).length === 0) {
+    return base ?? tenantConfig ?? null;
   }
   if (!base) {
-    return override;
+    return tenantConfig;
   }
   return {
     ...base,
-    ...override,
+    ...tenantConfig,
   };
 });
 
@@ -459,29 +454,8 @@ const submitCreateDid = async () => {
 };
 
 const loadWebvhConfig = async () => {
-  webvhConfigLoaded.value = false;
-  try {
-    const response = await acapyApi.getHttp(API_PATH.DID_WEBVH_CONFIG);
-    const configData = response?.data ?? response ?? null;
-    const isEmptyConfig =
-      !configData ||
-      (typeof configData === 'object' && Object.keys(configData).length === 0);
-    webvhConfigData.value = isEmptyConfig ? null : configData;
-    if (needsWebvhConfig.value && !autoConfigureAttempted.value) {
-      autoConfigureAttempted.value = true;
-      const configured = await configureWebvh(true);
-      if (configured) {
-        await loadWebvhConfig();
-        return;
-      }
-    } else {
-      autoConfigureAttempted.value = true;
-    }
-  } catch (_error) {
-    webvhConfigData.value = null;
-  } finally {
-    webvhConfigLoaded.value = true;
-  }
+  await tenantStore.getWebvhConfig();
+  webvhConfigLoaded.value = true;
 };
 
 const configureWebvh = async (auto = false) => {
@@ -491,7 +465,6 @@ const configureWebvh = async (auto = false) => {
   try {
     const result = await tenantStore.configureWebvhPlugin({ auto });
     if (!result.success) {
-      autoConfigureFailed.value = true;
       if (!auto && 'reason' in result) {
         const failureMessage =
           result.reason === 'missing_witness_id'
@@ -503,14 +476,12 @@ const configureWebvh = async (auto = false) => {
       }
       return false;
     }
-    autoConfigureFailed.value = false;
     if (!auto) {
       toast.success(t('identifiers.webvh.configureSuccess') as string);
       await loadWebvhConfig();
     }
     return true;
   } catch (error: any) {
-    autoConfigureFailed.value = true;
     if (!auto) {
       toast.error(
         `Failed to configure webvh: ${

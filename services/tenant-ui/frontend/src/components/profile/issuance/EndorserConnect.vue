@@ -8,11 +8,22 @@
         @click="connectToLedger()"
       />
     </div>
+    <div v-else-if="webvhConnection" class="flex">
+      <div class="flex align-items-center mr-2">{{ $t('common.status') }}</div>
+      <div class="flex align-items-center mr-1">
+        <StatusChip :status="webvhConnection.state || 'unknown'" />
+      </div>
+      <div v-if="canDeleteConnection" class="flex align-items-center">
+        <Button
+          title="Delete Connection"
+          icon="pi pi-trash"
+          class="p-button-rounded p-button-icon-only p-button-text"
+          @click="deleteConnection($event, webvhConnection.connection_id)"
+        />
+      </div>
+    </div>
     <div v-else class="flex align-items-center">
-      <i
-        class="pi pi-check-circle text-green-500"
-        style="font-size: 1.5rem"
-      ></i>
+      <i class="pi pi-spin pi-spinner" style="font-size: 1.5rem"></i>
     </div>
   </template>
   <template v-else>
@@ -58,7 +69,7 @@
 
 <script setup lang="ts">
 // Vue/Primevue
-import { computed, inject, ref, type Ref } from 'vue';
+import { computed } from 'vue';
 import Button from 'primevue/button';
 import { useToast } from 'vue-toastification';
 import { useConfirm } from 'primevue/useconfirm';
@@ -83,17 +94,27 @@ const configStore = useConfigStore();
 const connectionStore = useConnectionStore();
 const tenantStore = useTenantStore();
 const { config } = storeToRefs(configStore);
-const { endorserConnection, publicDid, tenantConfig, writeLedger } =
-  storeToRefs(tenantStore);
-
-// Inject tenant-specific webvh config from parent
-const tenantWebvhConfig = inject<Ref<any>>('tenantWebvhConfig', ref(null));
-const reloadTenantWebvhConfig = inject<() => Promise<void>>(
-  'reloadTenantWebvhConfig',
-  async () => {}
-);
+const { connections: connectionList } = storeToRefs(connectionStore);
+const {
+  endorserConnection,
+  isWebvhConnected,
+  publicDid,
+  tenantConfig,
+  writeLedger,
+} = storeToRefs(tenantStore);
 
 const isWebvhLedger = computed(() => props.ledgerInfo?.type === 'webvh');
+
+// Find the WebVH connection by alias pattern: webvh:{server_domain}@witness
+const webvhConnection = computed(() => {
+  if (!isWebvhLedger.value) return null;
+
+  const serverDomain = props.ledgerInfo?.ledger_id;
+  if (!serverDomain) return null;
+
+  const aliasPattern = `webvh:${serverDomain}@witness`;
+  return connectionList.value.find((conn: any) => conn.alias === aliasPattern);
+});
 
 // Set the write ledger and then connect to the relevant endorser
 const connectToLedger = async (switchLeger = false) => {
@@ -111,9 +132,10 @@ const connectToLedger = async (switchLeger = false) => {
         return;
       }
       toast.success(t('identifiers.webvh.configureSuccess') as string);
-      // Reload configs to get the updated connection status
+      // Reload configs and connections to get the updated connection status
       await tenantStore.getServerConfig();
-      await reloadTenantWebvhConfig();
+      await tenantStore.getWebvhConfig();
+      await connectionStore.listConnections();
     } catch (error: any) {
       toast.error(
         `${t('identifiers.webvh.configureButton')}: ${error ?? 'Unknown error'}`
@@ -181,17 +203,6 @@ const hasEndorserPermissions = computed(() => {
   );
 });
 
-// Check if tenant has webvh configured
-const hasTenantWebvhConfig = computed(() => {
-  const cfg = tenantWebvhConfig.value;
-  if (!cfg) {
-    return false;
-  }
-  const witnesses = cfg.witnesses ?? cfg.watchers;
-  const hasWitnesses = Array.isArray(witnesses) && witnesses.length > 0;
-  return Boolean(cfg.server_url && hasWitnesses);
-});
-
 // Show the endorser connection button when...
 const showEndorserConnect = computed(() => {
   // Tenant must have permissions to connect to endorser (for both webvh and regular endorsers)
@@ -200,8 +211,8 @@ const showEndorserConnect = computed(() => {
   }
 
   if (isWebvhLedger.value) {
-    // For webvh, show the connect button if not yet configured
-    return !hasTenantWebvhConfig.value;
+    // For webvh, show the connect button if not yet connected
+    return !isWebvhConnected.value;
   }
   //... no current write ledger or endorser conn is set
   if (!currWriteLedger.value || !endorserConnection.value) {
@@ -252,9 +263,14 @@ const switchLedger = (event: any) => {
 
 // Can delete connection
 const hasPublicDid = computed(() => !!publicDid.value && !!publicDid.value.did);
-const canDeleteConnection = computed(
-  () => endorserConnection.value?.state !== 'active' || !hasPublicDid.value
-);
+const canDeleteConnection = computed(() => {
+  if (isWebvhLedger.value) {
+    // For webvh, disable deletion for now
+    return false;
+  }
+  // For Indy ledgers, allow deletion if connection is not active or no public DID
+  return endorserConnection.value?.state !== 'active' || !hasPublicDid.value;
+});
 
 // Delete endorser connection
 const deleteConnection = (event: any, id: string) => {
@@ -268,16 +284,18 @@ const deleteConnection = (event: any, id: string) => {
     },
   });
 };
-const doDelete = (id: string) => {
-  connectionStore
-    .deleteConnection(id)
-    .then(() => {
-      tenantStore.getEndorserConnection();
-      toast.success(`Endorser Connection Removed`);
-    })
-    .catch((err) => {
-      console.error(err);
-      toast.error(`Failure: ${err}`);
-    });
+const doDelete = async (id: string) => {
+  try {
+    await connectionStore.deleteConnection(id);
+    await tenantStore.getEndorserConnection();
+    if (isWebvhLedger.value) {
+      await tenantStore.getWebvhConfig();
+    }
+    await connectionStore.listConnections();
+    toast.success(`Connection Removed`);
+  } catch (err) {
+    console.error(err);
+    toast.error(`Failure: ${err}`);
+  }
 };
 </script>

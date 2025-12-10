@@ -46,6 +46,7 @@ export const useTenantStore = defineStore('tenant', () => {
   const tenantDefaultSettings: any = ref(null);
   const transactions: Ref<TransactionRecord[]> = ref([]);
   const walletDids: Ref<DID[]> = ref([]);
+  const webvhConfig: any = ref(null);
 
   const { token } = storeToRefs(useTokenStore());
   const acapyApi = useAcapyApi();
@@ -63,6 +64,15 @@ export const useTenantStore = defineStore('tenant', () => {
   });
   const isAskarAnoncredsWallet: Ref<boolean> = computed(() => {
     return tenantWallet.value?.settings?.['wallet.type'] === 'askar-anoncreds';
+  });
+  const isWebvhConnected: Ref<boolean> = computed(() => {
+    if (!webvhConfig.value) {
+      return false;
+    }
+    const witnesses = webvhConfig.value.witnesses ?? webvhConfig.value.watchers;
+    return Boolean(
+      witnesses && Array.isArray(witnesses) && witnesses.length > 0
+    );
   });
   const pendingPublicDidTx = computed<TransactionRecordEx | null>(() => {
     // If they have a wallet DID but no public, check transactions to the endorser for a status
@@ -367,6 +377,35 @@ export const useTenantStore = defineStore('tenant', () => {
     throw new TxTimeoutErr(`Transaction ${txnId} has not been completed`);
   }
 
+  async function getWebvhConfig() {
+    try {
+      const response = await acapyApi.getHttp(API_PATH.DID_WEBVH_CONFIG);
+      const configData = response?.data ?? response ?? null;
+
+      // Consider config empty if:
+      // 1. No data at all
+      // 2. Empty object
+      // 3. Has no witnesses/watchers or they're empty arrays
+      const isEmptyConfig =
+        !configData ||
+        (typeof configData === 'object' &&
+          Object.keys(configData).length === 0) ||
+        (configData &&
+          !(
+            (configData.witnesses &&
+              Array.isArray(configData.witnesses) &&
+              configData.witnesses.length > 0) ||
+            (configData.watchers &&
+              Array.isArray(configData.watchers) &&
+              configData.watchers.length > 0)
+          ));
+
+      webvhConfig.value = isEmptyConfig ? null : configData;
+    } catch (_error) {
+      webvhConfig.value = null;
+    }
+  }
+
   async function configureWebvhPlugin(options: { auto?: boolean } = {}) {
     const { auto = false } = options;
     const value = serverConfig.value as ServerConfig | undefined;
@@ -460,6 +499,7 @@ export const useTenantStore = defineStore('tenant', () => {
     try {
       await acapyApi.postHttp(API_PATH.DID_WEBVH_CONFIG, payload);
       await getServerConfig();
+      await getWebvhConfig();
       return { success: true as const };
     } catch (error: any) {
       if (auto) {
@@ -751,6 +791,7 @@ export const useTenantStore = defineStore('tenant', () => {
     error,
     isIssuer,
     isAskarAnoncredsWallet,
+    isWebvhConnected,
     loading,
     loadingIssuance,
     pendingPublicDidTx,
@@ -765,10 +806,13 @@ export const useTenantStore = defineStore('tenant', () => {
     tenantWallet,
     transactions,
     walletDids,
+    webvhConfig,
     writeLedger,
     acceptTaa,
     clearTenant,
+    configureWebvhPlugin,
     connectToEndorser,
+    deleteTenant,
     getEndorserConnection,
     getEndorserInfo,
     getIssuanceStatus,
@@ -781,16 +825,15 @@ export const useTenantStore = defineStore('tenant', () => {
     getTenantSubWallet,
     getTransactions,
     getWalletcDids,
+    getWebvhConfig,
     getWriteLedger,
-    deleteTenant,
-    softDeleteTenant,
     registerPublicDid,
     setTenantLoginDataFromLocalStorage,
     setWriteLedger,
-    updateTenantSubWallet,
+    softDeleteTenant,
     updateTenantContact,
+    updateTenantSubWallet,
     waitForActiveEndorserConnection,
-    configureWebvhPlugin,
   };
 });
 

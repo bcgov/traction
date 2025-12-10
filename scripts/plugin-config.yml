@@ -34,5 +34,6 @@ traction_innkeeper:
 basicmessage_storage:
   wallet_enabled: true
 
-did-webvh:
+webvh:
   server_url: https://sandbox.bcvh.vonx.io
+  witness_id: did:key:z6Mktqm2pXW48BZzSNnDzaA3yxo3zhfCUzAktVzFmzZHbVNn

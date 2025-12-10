@@ -114,7 +114,7 @@
 
 <script setup lang="ts">
 // Vue
-import { computed, ref, onMounted, provide } from 'vue';
+import { computed, onMounted } from 'vue';
 // PrimeVue
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -122,15 +122,15 @@ import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import VueJsonPretty from 'vue-json-pretty';
 // State
-import { useConfigStore, useTenantStore } from '@/store';
-import { useAcapyApi } from '@/store/acapyApi';
-import { TABLE_OPT, API_PATH } from '@/helpers/constants';
+import { useConfigStore, useConnectionStore, useTenantStore } from '@/store';
+import { TABLE_OPT } from '@/helpers/constants';
 import { storeToRefs } from 'pinia';
 // Other Components
 import EndorserConnect from './EndorserConnect.vue';
 import type { ServerConfig } from '@/types';
 
 const configStore = useConfigStore();
+const connectionStore = useConnectionStore();
 const tenantStore = useTenantStore();
 const { config } = storeToRefs(configStore);
 const {
@@ -140,35 +140,15 @@ const {
   loading,
   serverConfig,
 } = storeToRefs(tenantStore);
-const acapyApi = useAcapyApi();
-
-const tenantWebvhConfig = ref<any>(null);
 
 const serverConfigValue = computed<ServerConfig | null>(() => {
   const value = serverConfig.value as ServerConfig | undefined;
   return value && 'config' in value ? value : null;
 });
 
-// Load tenant-specific webvh configuration
-const loadTenantWebvhConfig = async () => {
-  try {
-    const response = await acapyApi.getHttp(API_PATH.DID_WEBVH_CONFIG);
-    const configData = response?.data ?? response ?? null;
-    const isEmptyConfig =
-      !configData ||
-      (typeof configData === 'object' && Object.keys(configData).length === 0);
-    tenantWebvhConfig.value = isEmptyConfig ? null : configData;
-  } catch (_error) {
-    tenantWebvhConfig.value = null;
-  }
-};
-
-// Provide the tenant webvh config and reload function to child components
-provide('tenantWebvhConfig', tenantWebvhConfig);
-provide('reloadTenantWebvhConfig', loadTenantWebvhConfig);
-
 onMounted(() => {
-  loadTenantWebvhConfig();
+  tenantStore.getWebvhConfig();
+  connectionStore.listConnections();
 });
 
 const endorserList = computed(() => {
