@@ -56,6 +56,11 @@ export const useTenantStore = defineStore('tenant', () => {
     return token.value != null;
   });
   const isIssuer: Ref<boolean> = computed(() => {
+    // For askar-anoncreds wallets, check WebVH connection instead of Indy ledger
+    if (isAskarAnoncredsWallet.value) {
+      return isWebvhConnected.value;
+    }
+    // For askar wallets, check Indy ledger endorser connection + public DID
     return (
       endorserConnection.value?.state === 'active' &&
       publicDid.value?.did &&

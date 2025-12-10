@@ -12,7 +12,7 @@
     ></div>
     <Button
       v-tooltip.top="$t('configuration.credentialDefinitions.create')"
-      :disabled="isCreateButtonDisabled"
+      :disabled="!isIssuer"
       icon="pi pi-plus"
       class="p-button-text"
       @click="openModal"
@@ -33,15 +33,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
-import { API_PATH } from '@/helpers/constants';
-import { useAcapyApi } from '@/store/acapyApi';
 import { useGovernanceStore, useTenantStore } from '@/store';
 import { CredentialDefinitionSendRequest } from '@/types/acapyApi/acapyInterface';
 import CreateCredentialDefinitionForm from './CreateCredentialDefinitionForm.vue';
@@ -63,77 +61,10 @@ defineEmits(['success']);
 
 const router = useRouter();
 const { t } = useI18n();
-const acapyApi = useAcapyApi();
 
-const { isIssuer, tenantWallet } = storeToRefs(useTenantStore());
+const { isIssuer } = storeToRefs(useTenantStore());
 const { selectedCredentialDefinition } = storeToRefs(useGovernanceStore());
 const governanceStore = useGovernanceStore();
-
-// Check if wallet is askar-anoncreds
-const isAskarAnoncredsWallet = computed(() => {
-  return tenantWallet.value?.settings?.['wallet.type'] === 'askar-anoncreds';
-});
-
-// WebVH configuration state
-const webvhConfig = ref<any>(null);
-const webvhConfigLoaded = ref(false);
-
-// Check if webvh endorser is connected
-const isWebvhEndorserConnected = computed(() => {
-  if (!isAskarAnoncredsWallet.value) {
-    // For non-askar-anoncreds wallets, always allow credential definition creation
-    return true;
-  }
-
-  // For askar-anoncreds wallets, check webvh configuration
-  // Check if witnesses array exists and has entries (indicates connection)
-  if (
-    webvhConfig.value?.witnesses &&
-    Array.isArray(webvhConfig.value.witnesses)
-  ) {
-    return webvhConfig.value.witnesses.length > 0;
-  }
-
-  return false;
-});
-
-// Disable button logic:
-// - For askar wallets: require isIssuer to be true
-// - For askar-anoncreds wallets: only require WebVH endorser to be connected
-const isCreateButtonDisabled = computed(() => {
-  if (isAskarAnoncredsWallet.value) {
-    // For askar-anoncreds wallets, only check WebVH connection
-    return !isWebvhEndorserConnected.value;
-  } else {
-    // For askar wallets, require issuer status
-    return !isIssuer.value;
-  }
-});
-
-// Load webvh configuration
-const loadWebvhConfig = async () => {
-  if (!isAskarAnoncredsWallet.value) {
-    webvhConfigLoaded.value = true;
-    return;
-  }
-
-  try {
-    const response = await acapyApi.getHttp(API_PATH.DID_WEBVH_CONFIG);
-    const configData = response?.data ?? response ?? null;
-    const isEmptyConfig =
-      !configData ||
-      (typeof configData === 'object' && Object.keys(configData).length === 0);
-    webvhConfig.value = isEmptyConfig ? null : configData;
-  } catch (_error) {
-    webvhConfig.value = null;
-  } finally {
-    webvhConfigLoaded.value = true;
-  }
-};
-
-onMounted(() => {
-  loadWebvhConfig();
-});
 
 const navigateToCredDef = (cred: any) => {
   selectedCredentialDefinition.value = cred;

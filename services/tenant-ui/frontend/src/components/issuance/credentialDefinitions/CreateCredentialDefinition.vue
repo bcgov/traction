@@ -1,7 +1,7 @@
 <template>
   <div>
     <Button
-      :disabled="isCreateButtonDisabled"
+      :disabled="!isIssuer"
       :label="$t('configuration.credentialDefinitions.create')"
       icon="pi pi-plus"
       @click="openModal"
@@ -47,24 +47,12 @@ defineEmits(['success']);
 const { t } = useI18n();
 
 const tenantStore = useTenantStore();
-const { isIssuer, isAskarAnoncredsWallet, isWebvhConnected } =
-  storeToRefs(tenantStore);
+const { isIssuer, isAskarAnoncredsWallet } = storeToRefs(tenantStore);
 const { schemaList, selectedCredentialDefinition } =
   storeToRefs(useGovernanceStore());
 const governanceStore = useGovernanceStore();
 
 const formattedSchemaList = computed(() => formatSchemaList(schemaList));
-
-// Disable button logic:
-// - For askar wallets: require isIssuer to be true
-// - For askar-anoncreds wallets: only require WebVH endorser to be connected
-const isCreateButtonDisabled = computed(() => {
-  if (isAskarAnoncredsWallet?.value) {
-    return !isWebvhConnected?.value;
-  } else {
-    return !isIssuer?.value;
-  }
-});
 
 onMounted(() => {
   // Load webvh config if using askar-anoncreds wallet

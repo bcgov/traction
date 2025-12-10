@@ -1,7 +1,7 @@
 <template>
   <div>
     <Button
-      :disabled="isOfferButtonDisabled"
+      :disabled="!isIssuer"
       :label="$t('issue.offer')"
       icon="pi pi-arrow-up-right"
       @click="openModal"
@@ -20,7 +20,7 @@
 
 <script setup lang="ts">
 // Vue
-import { computed, onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 // PrimeVue/ etc
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
@@ -42,19 +42,8 @@ const governanceStore = useGovernanceStore();
 const toast = useToast();
 
 const tenantStore = useTenantStore();
-const { isIssuer, isAskarAnoncredsWallet, isWebvhConnected, tenantWallet } =
+const { isIssuer, isAskarAnoncredsWallet, tenantWallet } =
   storeToRefs(tenantStore);
-
-// Disable button logic:
-// - For askar wallets: require isIssuer to be true
-// - For askar-anoncreds wallets: only require WebVH endorser to be connected
-const isOfferButtonDisabled = computed(() => {
-  if (isAskarAnoncredsWallet?.value) {
-    return !isWebvhConnected?.value;
-  } else {
-    return !isIssuer?.value;
-  }
-});
 
 onMounted(() => {
   // Load webvh config if using askar-anoncreds wallet
