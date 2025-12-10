@@ -1,5 +1,33 @@
 <template>
   <div v-if="canBecomeIssuer" class="my-1">
+    <!-- WebVH Servers Section -->
+    <div v-if="webvhList.length > 0" class="mb-4">
+      <h5 class="mb-2">{{ $t('profile.webvhServers') || 'WebVH Servers' }}</h5>
+      <DataTable
+        :value="webvhList"
+        :paginator="false"
+        :rows="TABLE_OPT.ROWS_DEFAULT"
+        :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
+        selection-mode="single"
+        data-key="ledger_id"
+        sort-field="ledger_id"
+        :sort-order="1"
+      >
+        <template #empty>{{ $t('common.noRecordsFound') }}</template>
+        <Column :sortable="false" header="Connect">
+          <template #body="{ data }">
+            <div v-if="data.is_write">
+              <EndorserConnect :ledger-info="data" />
+            </div>
+          </template>
+        </Column>
+        <Column :sortable="true" field="ledger_id" header="Server" />
+        <Column :sortable="true" field="endorser_alias" header="Witness ID" />
+      </DataTable>
+    </div>
+
+    <!-- Ledger Table (Indy only) -->
+    <h5 class="mb-2">{{ $t('profile.indyLedgers') || 'Indy Ledgers' }}</h5>
     <DataTable
       v-model:loading="loading"
       :value="endorserList"
@@ -40,12 +68,6 @@
           </span>
         </template>
       </Column>
-      <Column
-        :sortable="true"
-        field="method"
-        header="Method"
-        style="min-width: 6rem"
-      />
       <Column
         :sortable="true"
         field="is_write"
@@ -92,7 +114,7 @@
 
 <script setup lang="ts">
 // Vue
-import { computed } from 'vue';
+import { computed, ref, onMounted, provide } from 'vue';
 // PrimeVue
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -101,7 +123,8 @@ import AccordionTab from 'primevue/accordiontab';
 import VueJsonPretty from 'vue-json-pretty';
 // State
 import { useConfigStore, useTenantStore } from '@/store';
-import { TABLE_OPT } from '@/helpers/constants';
+import { useAcapyApi } from '@/store/acapyApi';
+import { TABLE_OPT, API_PATH } from '@/helpers/constants';
 import { storeToRefs } from 'pinia';
 // Other Components
 import EndorserConnect from './EndorserConnect.vue';
@@ -117,61 +140,100 @@ const {
   loading,
   serverConfig,
 } = storeToRefs(tenantStore);
+const acapyApi = useAcapyApi();
+
+const tenantWebvhConfig = ref<any>(null);
 
 const serverConfigValue = computed<ServerConfig | null>(() => {
   const value = serverConfig.value as ServerConfig | undefined;
   return value && 'config' in value ? value : null;
 });
 
-const webvhPluginConfig = computed(() => {
-  const pluginConfig = serverConfigValue.value?.config?.plugin_config;
-  if (!pluginConfig) {
-    return null;
+// Load tenant-specific webvh configuration
+const loadTenantWebvhConfig = async () => {
+  try {
+    const response = await acapyApi.getHttp(API_PATH.DID_WEBVH_CONFIG);
+    const configData = response?.data ?? response ?? null;
+    const isEmptyConfig =
+      !configData ||
+      (typeof configData === 'object' && Object.keys(configData).length === 0);
+    tenantWebvhConfig.value = isEmptyConfig ? null : configData;
+  } catch (_error) {
+    tenantWebvhConfig.value = null;
   }
-  const keyedConfig = pluginConfig as typeof pluginConfig & Record<string, any>;
-  return keyedConfig.webvh ?? keyedConfig['did-webvh'] ?? null;
+};
+
+// Provide the tenant webvh config and reload function to child components
+provide('tenantWebvhConfig', tenantWebvhConfig);
+provide('reloadTenantWebvhConfig', loadTenantWebvhConfig);
+
+onMounted(() => {
+  loadTenantWebvhConfig();
 });
 
 const endorserList = computed(() => {
   const ledgerList =
     serverConfigValue.value?.config?.['ledger.ledger_config_list'];
-  const baseList = Array.isArray(ledgerList)
+  return Array.isArray(ledgerList)
     ? ledgerList.map((config: any) => ({
         ledger_id: config.id,
         endorser_alias: config.endorser_alias,
         is_write: config.is_write,
         type: 'indy',
-        method: 'indy',
       }))
     : [];
+});
 
-  if (webvhPluginConfig.value?.server_url) {
-    let identifier = webvhPluginConfig.value.server_url;
-    try {
-      const parsed = new URL(webvhPluginConfig.value.server_url);
-      identifier = parsed.hostname;
-    } catch (_error) {
-      // leave identifier as the raw server_url if parsing fails
-    }
-    baseList.push({
-      ledger_id: identifier,
-      endorser_alias: identifier,
-      is_write: true,
-      type: 'webvh',
-      method: 'webvh',
-    });
+const webvhList = computed(() => {
+  // Get webvh config from server plugin configuration
+  const pluginConfig = serverConfigValue.value?.config?.plugin_config;
+  if (!pluginConfig) {
+    return [];
   }
 
-  return baseList;
+  const keyedConfig = pluginConfig as Record<string, any>;
+  const webvhConfig = keyedConfig.webvh ?? keyedConfig['did-webvh'];
+
+  if (!webvhConfig) {
+    return [];
+  }
+
+  // Handle both single config object and array of configs
+  const configs = Array.isArray(webvhConfig) ? webvhConfig : [webvhConfig];
+
+  return configs
+    .filter((config: any) => config.witness_id && config.server_url)
+    .map((config: any) => {
+      // Extract domain from server_url
+      let ledgerId = config.ledger_id;
+      if (!ledgerId && config.server_url) {
+        try {
+          const url = new URL(config.server_url);
+          ledgerId = url.hostname;
+        } catch {
+          // If URL parsing fails, use the server_url as-is
+          ledgerId = config.server_url;
+        }
+      }
+
+      return {
+        ledger_id: ledgerId || config.server_url,
+        endorser_alias: config.witness_id,
+        is_write: true,
+        type: 'webvh',
+      };
+    });
 });
 
 // Allowed to connect to endorser and register DID?
-const canBecomeIssuer = computed(
-  () =>
-    (tenantConfig.value?.connect_to_endorser?.length &&
-      tenantConfig.value?.create_public_did?.length) ||
-    Boolean(webvhPluginConfig.value?.server_url)
-);
+// Tenant must have permission to connect to endorser and create public DID
+// This applies to both regular endorsers AND webvh
+const canBecomeIssuer = computed(() => {
+  return (
+    tenantConfig.value?.connect_to_endorser?.length &&
+    tenantConfig.value?.create_public_did?.length
+  );
+});
 
 // Details about endorser connection
 const showNotActiveWarn = computed(

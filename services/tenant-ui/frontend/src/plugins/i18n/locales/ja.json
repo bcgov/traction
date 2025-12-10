@@ -401,6 +401,8 @@
     "webHookKey": "WebHook Key <JA>",
     "webhooks": "Webhooks <JA>",
     "webHookUrl": "WebHook URL <JA>",
+    "webvhServers": "WebVH Servers <JA>",
+    "indyLedgers": "Indy Ledgers <JA>",
     "writeLedger": "Current Ledger: {0} <JA>"
   },
   "qrCode": {
@@ -507,7 +509,11 @@
       "showWrite": "Show 'Write' Components: <JA>",
       "tenantUi": "Tenant UI <JA>"
     },
-    "tractionProxy": "Traction Proxy URL: <JA>"
+    "tractionProxy": "Traction Proxy URL: <JA>",
+    "webvh": {
+      "webvhServers": "WebVH Servers <JA>",
+      "serverList": "Server List <JA>"
+    }
   },
   "session": {
     "countdown": "You are going to be logged out in { seconds } seconds... <JA>",

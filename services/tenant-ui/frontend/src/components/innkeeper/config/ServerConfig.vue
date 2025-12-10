@@ -30,7 +30,7 @@
             <p>
               <strong>{{ $t('serverConfig.ledger.ledgerList') }}</strong>
             </p>
-            <DataTable :value="combinedLedgerList" size="small" striped-rows>
+            <DataTable :value="ledgerConfigList" size="small" striped-rows>
               <Column field="id" header="id" />
               <Column field="endorser_alias" header="endorser_alias" />
               <Column field="endorser_did" header="endorser_did" />
@@ -43,6 +43,24 @@
               :title="$t('serverConfig.ledger.default')"
               :content="serverConfig?.config['ledger.write_ledger']"
             />
+          </Fieldset>
+
+          <!-- WebVH Servers -->
+          <Fieldset
+            v-if="webvhLedgerList.length > 0"
+            class="mt-4"
+            :legend="$t('serverConfig.webvh.webvhServers') || 'WebVH Servers'"
+            :toggleable="true"
+          >
+            <p>
+              <strong>{{
+                $t('serverConfig.webvh.serverList') || 'Server List'
+              }}</strong>
+            </p>
+            <DataTable :value="webvhLedgerList" size="small" striped-rows>
+              <Column field="id" header="Server" />
+              <Column field="endorser_alias" header="Witness ID" />
+            </DataTable>
           </Fieldset>
 
           <!-- Traction cfg - storage -->
@@ -259,10 +277,6 @@ const webvhLedgerList = computed(() => {
     }
   }
   return [];
-});
-
-const combinedLedgerList = computed(() => {
-  return [...ledgerConfigList.value, ...webvhLedgerList.value];
 });
 
 const swaggerUrl = computed(

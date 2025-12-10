@@ -1,11 +1,19 @@
 <template>
   <template v-if="isWebvhLedger">
-    <Button
-      title="Connect to webvh endorser"
-      icon="pi pi-user-plus"
-      class="p-button-rounded p-button-icon-only p-button-text"
-      @click="connectToLedger()"
-    />
+    <div v-if="showEndorserConnect">
+      <Button
+        title="Connect to webvh endorser"
+        icon="pi pi-user-plus"
+        class="p-button-rounded p-button-icon-only p-button-text"
+        @click="connectToLedger()"
+      />
+    </div>
+    <div v-else class="flex align-items-center">
+      <i
+        class="pi pi-check-circle text-green-500"
+        style="font-size: 1.5rem"
+      ></i>
+    </div>
   </template>
   <template v-else>
     <div v-if="showEndorserConnect">
@@ -50,7 +58,7 @@
 
 <script setup lang="ts">
 // Vue/Primevue
-import { computed } from 'vue';
+import { computed, inject, ref, type Ref } from 'vue';
 import Button from 'primevue/button';
 import { useToast } from 'vue-toastification';
 import { useConfirm } from 'primevue/useconfirm';
@@ -60,7 +68,6 @@ import { useConfigStore, useConnectionStore, useTenantStore } from '@/store';
 import { storeToRefs } from 'pinia';
 // Other Components
 import StatusChip from '@/components/common/StatusChip.vue';
-import type { ServerConfig } from '@/types';
 
 // Props
 const props = defineProps<{
@@ -76,27 +83,15 @@ const configStore = useConfigStore();
 const connectionStore = useConnectionStore();
 const tenantStore = useTenantStore();
 const { config } = storeToRefs(configStore);
-const {
-  endorserConnection,
-  publicDid,
-  tenantConfig,
-  writeLedger,
-  serverConfig,
-} = storeToRefs(tenantStore);
+const { endorserConnection, publicDid, tenantConfig, writeLedger } =
+  storeToRefs(tenantStore);
 
-const serverConfigValue = computed<ServerConfig | null>(() => {
-  const value = serverConfig.value as ServerConfig | undefined;
-  return value && 'config' in value ? value : null;
-});
-
-const webvhPluginConfig = computed(() => {
-  const pluginConfig = serverConfigValue.value?.config?.plugin_config;
-  if (!pluginConfig) {
-    return null;
-  }
-  const keyedConfig = pluginConfig as typeof pluginConfig & Record<string, any>;
-  return keyedConfig.webvh ?? keyedConfig['did-webvh'] ?? null;
-});
+// Inject tenant-specific webvh config from parent
+const tenantWebvhConfig = inject<Ref<any>>('tenantWebvhConfig', ref(null));
+const reloadTenantWebvhConfig = inject<() => Promise<void>>(
+  'reloadTenantWebvhConfig',
+  async () => {}
+);
 
 const isWebvhLedger = computed(() => props.ledgerInfo?.type === 'webvh');
 
@@ -116,6 +111,9 @@ const connectToLedger = async (switchLeger = false) => {
         return;
       }
       toast.success(t('identifiers.webvh.configureSuccess') as string);
+      // Reload configs to get the updated connection status
+      await tenantStore.getServerConfig();
+      await reloadTenantWebvhConfig();
     } catch (error: any) {
       toast.error(
         `${t('identifiers.webvh.configureButton')}: ${error ?? 'Unknown error'}`
@@ -175,10 +173,35 @@ const registerPublicDid = async () => {
 // Details about current ledger from the store
 const currWriteLedger = computed(() => writeLedger?.value?.ledger_id ?? null);
 
+// Check if tenant has permission to connect to endorser
+const hasEndorserPermissions = computed(() => {
+  return (
+    tenantConfig.value?.connect_to_endorser?.length &&
+    tenantConfig.value?.create_public_did?.length
+  );
+});
+
+// Check if tenant has webvh configured
+const hasTenantWebvhConfig = computed(() => {
+  const cfg = tenantWebvhConfig.value;
+  if (!cfg) {
+    return false;
+  }
+  const witnesses = cfg.witnesses ?? cfg.watchers;
+  const hasWitnesses = Array.isArray(witnesses) && witnesses.length > 0;
+  return Boolean(cfg.server_url && hasWitnesses);
+});
+
 // Show the endorser connection button when...
 const showEndorserConnect = computed(() => {
+  // Tenant must have permissions to connect to endorser (for both webvh and regular endorsers)
+  if (!hasEndorserPermissions.value) {
+    return false;
+  }
+
   if (isWebvhLedger.value) {
-    return !webvhPluginConfig.value;
+    // For webvh, show the connect button if not yet configured
+    return !hasTenantWebvhConfig.value;
   }
   //... no current write ledger or endorser conn is set
   if (!currWriteLedger.value || !endorserConnection.value) {
