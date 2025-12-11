@@ -56,16 +56,27 @@ export const useTenantStore = defineStore('tenant', () => {
     return token.value != null;
   });
   const isIssuer: Ref<boolean> = computed(() => {
+    // Check if tenant has permission to issue (connect to endorser + create public DID)
+    const hasPermissions =
+      tenantConfig.value?.connect_to_endorser?.length &&
+      tenantConfig.value?.create_public_did?.length;
+
+    if (!hasPermissions) {
+      return false;
+    }
+
     // For askar-anoncreds wallets, check WebVH connection instead of Indy ledger
-    if (isAskarAnoncredsWallet.value) {
+    const isAnoncreds = isAskarAnoncredsWallet.value;
+    if (isAnoncreds) {
       return isWebvhConnected.value;
     }
-    // For askar wallets, check Indy ledger endorser connection + public DID
-    return (
-      endorserConnection.value?.state === 'active' &&
-      publicDid.value?.did &&
-      (!taa.value?.taa_required || taa.value?.taa_accepted)
-    );
+    // For askar wallets (default), check Indy ledger endorser connection + public DID
+    const hasActiveConnection = endorserConnection.value?.state === 'active';
+    const hasPublicDid = !!publicDid.value?.did;
+    const taaAccepted =
+      !taa.value?.taa_required || taa.value?.taa_accepted === true;
+
+    return hasActiveConnection && hasPublicDid && taaAccepted;
   });
   const isAskarAnoncredsWallet: Ref<boolean> = computed(() => {
     return tenantWallet.value?.settings?.['wallet.type'] === 'askar-anoncreds';

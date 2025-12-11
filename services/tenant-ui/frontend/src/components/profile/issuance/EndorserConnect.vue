@@ -95,13 +95,8 @@ const connectionStore = useConnectionStore();
 const tenantStore = useTenantStore();
 const { config } = storeToRefs(configStore);
 const { connections: connectionList } = storeToRefs(connectionStore);
-const {
-  endorserConnection,
-  isWebvhConnected,
-  publicDid,
-  tenantConfig,
-  writeLedger,
-} = storeToRefs(tenantStore);
+const { endorserConnection, isWebvhConnected, tenantConfig, writeLedger } =
+  storeToRefs(tenantStore);
 
 const isWebvhLedger = computed(() => props.ledgerInfo?.type === 'webvh');
 
@@ -262,14 +257,13 @@ const switchLedger = (event: any) => {
 };
 
 // Can delete connection
-const hasPublicDid = computed(() => !!publicDid.value && !!publicDid.value.did);
 const canDeleteConnection = computed(() => {
   if (isWebvhLedger.value) {
     // For webvh, disable deletion for now
     return false;
   }
-  // For Indy ledgers, allow deletion if connection is not active or no public DID
-  return endorserConnection.value?.state !== 'active' || !hasPublicDid.value;
+  // For Indy ledgers, allow deletion if there's a connection
+  return !!endorserConnection.value;
 });
 
 // Delete endorser connection
