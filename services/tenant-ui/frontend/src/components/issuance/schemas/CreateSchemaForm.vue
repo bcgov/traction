@@ -43,13 +43,13 @@
             <Dropdown
               id="issuer"
               v-model="formFields.issuer"
-              :options="webvhIdentifiers"
+              :options="issuerIdentifiers"
               option-label="label"
               option-value="value"
               :placeholder="t('configuration.schemas.selectIssuer')"
               class="w-full"
               :class="{ 'p-invalid': v$.issuer.$error && submitted }"
-              :loading="loadingWebvhIdentifiers"
+              :loading="loadingIssuerIdentifiers"
             />
             <small v-if="v$.issuer.$error && submitted" class="p-error">
               {{ v$.issuer.required.$message }}
@@ -90,9 +90,7 @@ import { useToast } from 'vue-toastification';
 // Source
 import ValidatedField from '@/components/common/ValidatedField.vue';
 import errorHandler from '@/helpers/errorHandler';
-import { API_PATH } from '@/helpers/constants';
 import { tryParseJson } from '@/helpers/jsonParsing';
-import { useAcapyApi } from '@/store/acapyApi';
 import { useGovernanceStore, useTenantStore } from '@/store';
 import { Attribute } from '@/types';
 import {
@@ -105,20 +103,23 @@ import ToggleJson from '@/components/common/ToggleJson.vue';
 
 const toast = useToast();
 const { t } = useI18n();
-const acapyApi = useAcapyApi();
 
 const governanceStore = useGovernanceStore();
 const { loading, selectedSchema } = storeToRefs(useGovernanceStore());
-const { tenantWallet } = storeToRefs(useTenantStore());
+
+const tenantStore = useTenantStore();
+const { tenantWallet } = storeToRefs(tenantStore);
 
 // Check if wallet is askar-anoncreds
 const isAskarAnoncredsWallet = computed(() => {
   return tenantWallet.value?.settings?.['wallet.type'] === 'askar-anoncreds';
 });
 
-// WebVH identifiers for issuer dropdown
-const webvhIdentifiers = ref<Array<{ label: string; value: string }>>([]);
-const loadingWebvhIdentifiers = ref(false);
+// Issuer identifiers for issuer dropdown (Indy + WebVH)
+const issuerIdentifiers = ref<
+  Array<{ label: string; value: string; type: 'indy' | 'webvh' }>
+>([]);
+const loadingIssuerIdentifiers = ref(false);
 
 const emit = defineEmits(['closed', 'success']);
 const attributes = ref<{ attributes: Array<Attribute> }>({ attributes: [] });
@@ -311,40 +312,64 @@ function jsonToSchema(
     }
   }
 }
-// Load WebVH identifiers for issuer dropdown
-const loadWebvhIdentifiers = async () => {
+// Load issuer identifiers (Indy public DID + WebVH DIDs) for issuer dropdown
+const loadIssuerIdentifiers = async () => {
   if (!isAskarAnoncredsWallet.value) {
     return;
   }
 
-  loadingWebvhIdentifiers.value = true;
+  loadingIssuerIdentifiers.value = true;
   try {
-    const response = await acapyApi.getHttp(API_PATH.DID_WEBVH_CONFIG);
-    const configData = response?.data ?? response ?? null;
-    const scids = configData?.scids;
+    // Fetch all DIDs from the wallet
+    await tenantStore.getWalletcDids();
+    const allDids = tenantStore.walletDids || [];
 
-    if (scids && typeof scids === 'object') {
-      const entries = Object.entries(scids as Record<string, string>);
-      webvhIdentifiers.value = entries.map(([_scid, did]) => {
-        const segments = (did as string).split(':');
-        const alias = segments[segments.length - 1] ?? did;
-        const namespace =
-          segments.length > 2 ? segments[segments.length - 2] : 'default';
-        // Extract domain (ledger) - Format: did:webvh:{SCID}:domain:namespace:alias
-        const domain = segments.length >= 5 ? segments[3] : '';
-        return {
-          label: domain
-            ? `${domain} : ${namespace} : ${alias}`
-            : `${namespace} : ${alias}`,
+    // Filter and format DIDs
+    const identifiers: Array<{
+      label: string;
+      value: string;
+      type: 'indy' | 'webvh';
+    }> = [];
+
+    allDids.forEach((didRecord: any) => {
+      const { did, method, posture } = didRecord;
+
+      // Include public Indy DIDs
+      if (method === 'sov' && posture === 'public') {
+        identifiers.push({
+          label: 'Public Indy DID',
           value: did,
-        };
-      });
-    }
+          type: 'indy',
+        });
+      }
+      // Include WebVH DIDs
+      else if (method === 'webvh') {
+        // Parse WebVH DID to extract domain, namespace, alias
+        // Format: did:webvh:{SCID}:domain:namespace:alias
+        const segments = did.split(':');
+        const alias = segments[segments.length - 1] || did;
+        const namespace =
+          segments.length > 4 ? segments[segments.length - 2] : 'default';
+        const domain = segments.length >= 6 ? segments[3] : '';
+
+        const label = domain
+          ? `${domain} : ${namespace} : ${alias}`
+          : `${namespace} : ${alias}`;
+
+        identifiers.push({
+          label,
+          value: did,
+          type: 'webvh',
+        });
+      }
+    });
+
+    issuerIdentifiers.value = identifiers;
   } catch (_error) {
-    console.error('Failed to load WebVH identifiers:', _error);
-    webvhIdentifiers.value = [];
+    console.error('Failed to load issuer identifiers:', _error);
+    issuerIdentifiers.value = [];
   } finally {
-    loadingWebvhIdentifiers.value = false;
+    loadingIssuerIdentifiers.value = false;
   }
 };
 
@@ -404,7 +429,7 @@ const handleSubmit = async (isFormValid: boolean) => {
 
 onMounted(() => {
   if (isAskarAnoncredsWallet.value) {
-    loadWebvhIdentifiers();
+    loadIssuerIdentifiers();
   }
 });
 </script>

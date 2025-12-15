@@ -55,18 +55,18 @@ const governanceStore = useGovernanceStore();
 const formattedSchemaList = computed(() => formatSchemaList(schemaList));
 
 onMounted(() => {
-  // Load webvh config if using askar-anoncreds wallet
+  // Load wallet DIDs if using askar-anoncreds wallet
   if (isAskarAnoncredsWallet?.value) {
-    tenantStore.getWebvhConfig();
+    tenantStore.getWalletcDids();
   }
 });
 
-// Also reload config when wallet type changes
+// Also reload DIDs when wallet type changes
 watch(
   () => isAskarAnoncredsWallet?.value,
   (isAnoncreds) => {
     if (isAnoncreds) {
-      tenantStore.getWebvhConfig();
+      tenantStore.getWalletcDids();
     }
   }
 );

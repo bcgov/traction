@@ -60,19 +60,19 @@ const disableReason = computed(() => {
   return null;
 });
 
-// Load WebVH config when component mounts
+// Load wallet DIDs when component mounts
 onMounted(() => {
   if (isAskarAnoncredsWallet?.value) {
-    tenantStore.getWebvhConfig();
+    tenantStore.getWalletcDids();
   }
 });
 
-// Also reload config when wallet type changes (in case wallet loads after mount)
+// Also reload DIDs when wallet type changes (in case wallet loads after mount)
 watch(
   () => isAskarAnoncredsWallet?.value,
   (isAnoncreds) => {
     if (isAnoncreds) {
-      tenantStore.getWebvhConfig();
+      tenantStore.getWalletcDids();
     }
   }
 );

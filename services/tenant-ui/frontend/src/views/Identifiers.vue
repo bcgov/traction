@@ -35,7 +35,7 @@
       </Message>
       <DataTable
         v-model:filters="didTableFilters"
-        :value="webvhDidRows"
+        :value="sortedDidRows"
         :paginator="true"
         :rows="TABLE_OPT.ROWS_DEFAULT"
         :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
@@ -45,13 +45,15 @@
           'ledger',
           'did',
           'status',
+          'type',
         ]"
         data-key="did"
         size="small"
         striped-rows
-        sort-field="alias"
         :loading="refreshingWebvh || !webvhConfigLoaded"
         removable-sort
+        :row-class="rowClass"
+        @sort="onSort"
       >
         <template #header>
           <div class="table-header">
@@ -227,6 +229,8 @@ const {
   loading,
   serverConfig,
   webvhConfig: tenantWebvhConfig,
+  walletDids,
+  publicDid,
 } = storeToRefs(tenantStore);
 const creatingDid = ref(false);
 const refreshingWebvh = ref(false);
@@ -341,39 +345,107 @@ const canConfigureWebvh = computed(() => {
 const needsWebvhConfig = computed(() => !hasWebvhConfig.value);
 
 const webvhDidRows = computed(() => {
-  const scids = webvhConfig.value?.scids;
-  if (!scids || typeof scids !== 'object') {
-    return [] as Array<{
-      scid: string;
-      did: string;
-      alias: string;
-      namespace: string;
-      ledger: string;
-      status: string;
-    }>;
-  }
-  const entries = Object.entries(scids as Record<string, string>);
-  return entries.map(([scid, did]) => {
-    const segments = (did as string).split(':');
-    const alias = segments[segments.length - 1] ?? did;
-    const namespace =
-      segments.length > 2 ? segments[segments.length - 2] : 'default';
-    // Extract domain (ledger) - it's the part after {SCID} and before namespace
-    // Format: did:webvh:{SCID}:domain:namespace:alias
-    const ledger = segments.length >= 5 ? segments[3] : '';
-    return {
-      scid,
-      did,
-      alias,
-      namespace,
-      ledger,
+  const rows: Array<{
+    scid?: string;
+    did: string;
+    alias: string;
+    namespace: string;
+    ledger: string;
+    status: string;
+    type: 'indy' | 'webvh';
+    isPublicIndy?: boolean;
+  }> = [];
+
+  // Add public Indy DID as first entry (sticky)
+  const indyPublicDid = publicDid.value?.did;
+  if (indyPublicDid) {
+    rows.push({
+      did: indyPublicDid,
+      alias: 'Public Indy DID',
+      namespace: '-',
+      ledger: '-',
       status: 'active',
-    };
+      type: 'indy',
+      isPublicIndy: true,
+    });
+  }
+
+  // Add WebVH DIDs from walletDids
+  const allDids = walletDids.value || [];
+  allDids.forEach((didRecord: any) => {
+    const { did, method, posture } = didRecord;
+
+    // Filter for WebVH DIDs only
+    if (method === 'webvh') {
+      // Parse WebVH DID to extract domain, namespace, alias
+      // Format: did:webvh:{SCID}:domain:namespace:alias
+      const segments = did.split(':');
+      const alias = segments[segments.length - 1] || did;
+      const namespace =
+        segments.length > 4 ? segments[segments.length - 2] : 'default';
+      const ledger = segments.length >= 6 ? segments[3] : '';
+
+      // Extract SCID (3rd segment after did:webvh:)
+      const scid = segments.length > 2 ? segments[2] : undefined;
+
+      rows.push({
+        scid,
+        did,
+        alias,
+        namespace,
+        ledger,
+        status: posture === 'public' ? 'active' : posture,
+        type: 'webvh',
+        isPublicIndy: false,
+      });
+    }
   });
+
+  return rows;
 });
 
 const statusLabel = (_status: string) =>
   t('identifiers.webvh.statusActive') as string;
+
+const rowClass = (data: any) => {
+  if (data.isPublicIndy) {
+    return 'public-indy-did-row';
+  }
+  return '';
+};
+
+// Custom sort function to keep Indy public DID always first
+const sortedDidRows = ref<typeof webvhDidRows.value>([]);
+
+watchEffect(() => {
+  sortedDidRows.value = webvhDidRows.value;
+});
+
+const onSort = (event: any) => {
+  const { sortField, sortOrder } = event;
+
+  if (!sortField) {
+    sortedDidRows.value = webvhDidRows.value;
+    return;
+  }
+
+  const rows = [...webvhDidRows.value];
+  const indyRow = rows.find((r) => r.isPublicIndy);
+  const otherRows = rows.filter((r) => !r.isPublicIndy);
+
+  // Sort the non-Indy rows
+  otherRows.sort((a: any, b: any) => {
+    const aVal = a[sortField];
+    const bVal = b[sortField];
+
+    if (aVal === bVal) return 0;
+    if (aVal < bVal) return sortOrder === 1 ? -1 : 1;
+    return sortOrder === 1 ? 1 : -1;
+  });
+
+  // Always put Indy row first
+  sortedDidRows.value = indyRow ? [indyRow, ...otherRows] : otherRows;
+};
 
 const canCreateDid = computed(
   () =>
@@ -504,6 +576,8 @@ const refreshWebvh = async () => {
   refreshingWebvh.value = true;
   try {
     await tenantStore.getServerConfig();
+    await tenantStore.getWalletcDids();
+    await tenantStore.getPublicDid();
     await loadWebvhConfig();
   } finally {
     refreshingWebvh.value = false;
@@ -571,6 +645,10 @@ onMounted(async () => {
   if (!('config' in (serverConfig.value ?? {}))) {
     tasks.push(tenantStore.getServerConfig());
   }
+  // Fetch wallet DIDs and public DID for Indy identifier display
+  tasks.push(tenantStore.getWalletcDids());
+  tasks.push(tenantStore.getPublicDid());
+
   if (tasks.length) {
     await Promise.allSettled(tasks);
   }
@@ -679,5 +757,19 @@ onMounted(async () => {
 .required-label::after {
   content: ' *';
   color: $tenant-ui-text-danger;
+}
+
+:deep(.public-indy-did-row) {
+  background-color: rgba(59, 130, 246, 0.08) !important;
+  font-weight: 500;
+  border-left: 3px solid rgba(59, 130, 246, 0.6);
+
+  &:hover {
+    background-color: rgba(59, 130, 246, 0.12) !important;
+  }
+
+  td {
+    font-weight: 500;
+  }
 }
 </style>
