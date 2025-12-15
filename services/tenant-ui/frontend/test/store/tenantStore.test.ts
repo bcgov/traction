@@ -54,6 +54,10 @@ describe('tenantStore', () => {
   });
 
   test('isIssuer is true when endorderConnection active and has did and TAA not required', () => {
+    store.tenantConfig = {
+      connect_to_endorser: ['ledger1'],
+      create_public_did: ['ledger1'],
+    };
     store.endorserConnection = {
       state: 'active',
     };
@@ -68,6 +72,10 @@ describe('tenantStore', () => {
   });
 
   test('isIssuer is true when endorderConnection active and has did and TAA accepted', () => {
+    store.tenantConfig = {
+      connect_to_endorser: ['ledger1'],
+      create_public_did: ['ledger1'],
+    };
     store.endorserConnection = {
       state: 'active',
     };

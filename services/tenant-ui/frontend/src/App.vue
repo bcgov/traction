@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import ConfirmPopup from 'primevue/confirmpopup';
+import ConfirmDialog from 'primevue/confirmdialog';
 import { onMounted } from 'vue';
 import {
   useConfigStore,
@@ -32,8 +32,8 @@ onMounted(() => {
 <template>
   <router-view />
 
-  <!-- Shared confirm popup  -->
-  <ConfirmPopup />
+  <!-- Shared confirm component  -->
+  <ConfirmDialog />
 </template>
 
 <style scoped>

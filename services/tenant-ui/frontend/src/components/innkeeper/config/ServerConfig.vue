@@ -45,6 +45,24 @@
             />
           </Fieldset>
 
+          <!-- WebVH Servers -->
+          <Fieldset
+            v-if="webvhLedgerList.length > 0"
+            class="mt-4"
+            :legend="$t('serverConfig.webvh.webvhServers') || 'WebVH Servers'"
+            :toggleable="true"
+          >
+            <p>
+              <strong>{{
+                $t('serverConfig.webvh.serverList') || 'Server List'
+              }}</strong>
+            </p>
+            <DataTable :value="webvhLedgerList" size="small" striped-rows>
+              <Column field="id" header="Server" />
+              <Column field="endorser_alias" header="Witness ID" />
+            </DataTable>
+          </Fieldset>
+
           <!-- Traction cfg - storage -->
           <Fieldset
             class="mt-4"
@@ -222,6 +240,41 @@ const loadConfig = async () => {
 const ledgerConfigList = computed(() => {
   if (serverConfig.value?.config) {
     return serverConfig.value.config['ledger.ledger_config_list'];
+  }
+  return [];
+});
+
+const webvhLedgerList = computed(() => {
+  if (serverConfig.value?.config?.plugin_config) {
+    const pluginConfig = serverConfig.value.config.plugin_config;
+    const webvhConfig = pluginConfig.webvh || pluginConfig['did-webvh'];
+
+    if (webvhConfig) {
+      // Handle both single config object and array of configs
+      const configs = Array.isArray(webvhConfig) ? webvhConfig : [webvhConfig];
+
+      return configs
+        .filter((config: any) => config.witness_id && config.server_url)
+        .map((config: any) => {
+          // Extract domain from server_url
+          let ledgerId = config.ledger_id;
+          if (!ledgerId && config.server_url) {
+            try {
+              const url = new URL(config.server_url);
+              ledgerId = url.hostname;
+            } catch {
+              // If URL parsing fails, use the server_url as-is
+              ledgerId = config.server_url;
+            }
+          }
+
+          return {
+            id: ledgerId,
+            endorser_alias: config.witness_id,
+            endorser_did: config.witness_id,
+          };
+        });
+    }
   }
   return [];
 });

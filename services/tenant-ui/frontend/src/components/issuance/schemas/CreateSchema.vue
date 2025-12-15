@@ -1,6 +1,11 @@
 <template>
   <div>
     <Button
+      v-tooltip="
+        disableReason === 'not_issuer'
+          ? $t('configuration.schemas.notIssuer')
+          : ''
+      "
       :disabled="!isIssuer"
       :label="$t('configuration.schemas.create')"
       icon="pi pi-plus"
@@ -22,7 +27,7 @@
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
-import { ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 // Source
 import { useGovernanceStore, useTenantStore } from '@/store';
@@ -42,9 +47,35 @@ defineEmits(['success']);
 
 const { t } = useI18n();
 
-const { isIssuer } = storeToRefs(useTenantStore());
+const tenantStore = useTenantStore();
+const { isIssuer, isAskarAnoncredsWallet } = storeToRefs(tenantStore);
 const { selectedSchema } = storeToRefs(useGovernanceStore());
 const governanceStore = useGovernanceStore();
+
+// Debug info for why button is disabled
+const disableReason = computed(() => {
+  if (!isIssuer?.value) {
+    return 'not_issuer';
+  }
+  return null;
+});
+
+// Load WebVH config when component mounts
+onMounted(() => {
+  if (isAskarAnoncredsWallet?.value) {
+    tenantStore.getWebvhConfig();
+  }
+});
+
+// Also reload config when wallet type changes (in case wallet loads after mount)
+watch(
+  () => isAskarAnoncredsWallet?.value,
+  (isAnoncreds) => {
+    if (isAnoncreds) {
+      tenantStore.getWebvhConfig();
+    }
+  }
+);
 
 //Modal
 const displayModal = ref(false);

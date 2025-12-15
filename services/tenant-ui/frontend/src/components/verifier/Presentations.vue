@@ -59,17 +59,24 @@
                 data.role === 'verifier' &&
                 stringOrBooleanTruthy(config.frontend.showWritableComponents)
               "
-              :existing-pres-req="data.by_format.pres_request.indy"
+              :existing-pres-req="
+                data.by_format?.pres_request?.anoncreds ||
+                data.by_format?.pres_request?.indy
+              "
               icon-display
             />
           </div>
         </template>
       </Column>
-      <Column
-        :sortable="true"
-        field="by_format.pres_request.indy.name"
-        header="Name"
-      />
+      <Column :sortable="true" header="Name">
+        <template #body="{ data }">
+          {{
+            data.by_format?.pres_request?.anoncreds?.name ||
+            data.by_format?.pres_request?.indy?.name ||
+            '-'
+          }}
+        </template>
+      </Column>
       <Column :sortable="true" field="role" header="Role" />
       <Column :sortable="true" field="connection_id" header="Connection">
         <template #body="{ data }">

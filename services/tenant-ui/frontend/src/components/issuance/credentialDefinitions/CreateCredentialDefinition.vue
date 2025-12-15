@@ -25,7 +25,7 @@
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { formatSchemaList } from '@/helpers/tableFormatters';
@@ -46,12 +46,30 @@ defineEmits(['success']);
 
 const { t } = useI18n();
 
-const { isIssuer } = storeToRefs(useTenantStore());
+const tenantStore = useTenantStore();
+const { isIssuer, isAskarAnoncredsWallet } = storeToRefs(tenantStore);
 const { schemaList, selectedCredentialDefinition } =
   storeToRefs(useGovernanceStore());
 const governanceStore = useGovernanceStore();
 
 const formattedSchemaList = computed(() => formatSchemaList(schemaList));
+
+onMounted(() => {
+  // Load webvh config if using askar-anoncreds wallet
+  if (isAskarAnoncredsWallet?.value) {
+    tenantStore.getWebvhConfig();
+  }
+});
+
+// Also reload config when wallet type changes
+watch(
+  () => isAskarAnoncredsWallet?.value,
+  (isAnoncreds) => {
+    if (isAnoncreds) {
+      tenantStore.getWebvhConfig();
+    }
+  }
+);
 
 // Modal
 const displayModal = ref(false);

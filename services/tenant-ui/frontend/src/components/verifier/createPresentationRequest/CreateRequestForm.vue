@@ -94,7 +94,7 @@ import { useVuelidate } from '@vuelidate/core';
 import { useToast } from 'vue-toastification';
 // State
 import { storeToRefs } from 'pinia';
-import { useConnectionStore, useVerifierStore } from '@/store';
+import { useConnectionStore, useTenantStore, useVerifierStore } from '@/store';
 // Other imports
 import JsonEditorVue from 'json-editor-vue';
 import { JSON_EDITOR_DEFAULTS } from '@/helpers/constants';
@@ -106,6 +106,8 @@ const { loading } = storeToRefs(useVerifierStore());
 const { loading: connectionsLoading, connectionsDropdown } =
   storeToRefs(useConnectionStore());
 const verifierStore = useVerifierStore();
+const tenantStore = useTenantStore();
+const { isAskarAnoncredsWallet } = storeToRefs(tenantStore);
 
 // Props
 const props = defineProps<{
@@ -194,14 +196,18 @@ const handleSubmit = async (isFormValid: boolean) => {
       typeof proofRequestJson.value === 'string'
         ? JSON.parse(proofRequestJson.value)
         : proofRequestJson.value;
+
     // Set up the body with the fields from the form
     const payload: V20PresSendRequestRequest = {
       connection_id: formFields.selectedConnection.value,
       auto_verify: false,
       comment: formFields.comment,
       trace: false,
-      presentation_request: { indy: proofRequest },
+      presentation_request: isAskarAnoncredsWallet.value
+        ? { anoncreds: proofRequest }
+        : { indy: proofRequest },
     };
+
     await verifierStore.sendPresentationRequest(payload);
     toast.info('Request Sent');
     emit('success');

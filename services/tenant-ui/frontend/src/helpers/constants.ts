@@ -138,6 +138,11 @@ export const API_PATH = {
   SCHEMA: (id: string) => `/schemas/${id}`,
   SCHEMAS_CREATED: '/schemas/created',
   SCHEMAS_WRITE_RECORD: (id: string) => `/schemas/${id}/write_record`,
+  ANONCREDS_SCHEMAS: '/anoncreds/schemas',
+  ANONCREDS_SCHEMA: (id: string) => `/anoncreds/schema/${id}`,
+  ANONCREDS_SCHEMA_POST: '/anoncreds/schema',
+  ANONCREDS_CREDENTIAL_DEFINITIONS: '/anoncreds/credential-definitions',
+  ANONCREDS_CREDENTIAL_DEFINITION_POST: '/anoncreds/credential-definition',
 
   SCHEMA_STORAGE: '/schema-storage',
   SCHEMA_STORAGE_SYNC: '/schema-storage/sync-created',
@@ -171,6 +176,9 @@ export const API_PATH = {
   WALLET_DID: '/wallet/did',
   WALLET_DID_PUBLIC: '/wallet/did/public',
   WALLET_DID_CREATE: '/wallet/did/create',
+  WALLET_UPGRADE: '/anoncreds/wallet/upgrade',
+  DID_WEBVH_CONFIG: '/did/webvh/configuration',
+  DID_WEBVH_CREATE: '/did/webvh/create',
 
   SERVER_PLUGINS: '/plugins',
   TRANSACTION_GET: (id: string) => `/transactions/${id}`,

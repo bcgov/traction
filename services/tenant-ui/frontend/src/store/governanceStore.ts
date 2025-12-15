@@ -1,8 +1,14 @@
 import {
   AddOcaRecordRequest,
+  CredDefPostRequest,
+  CredDefResult,
   CredDefStorageRecord,
   CredentialDefinitionSendRequest,
+  GetSchemaResult,
+  GetSchemasResponse,
   OcaRecord,
+  SchemaPostRequest,
+  SchemaResult,
   SchemaSendRequest,
 } from '@/types/acapyApi/acapyInterface';
 import { SchemaStorageRecord } from '@/types';
@@ -19,6 +25,7 @@ import {
   sortByLabelAscending,
 } from './utils';
 import { AddSchemaFromLedgerRequest, StoredSchemaWithCredDefs } from '@/types';
+import { truncateId } from '@/helpers';
 
 export const useGovernanceStore = defineStore('governance', () => {
   // state
@@ -62,8 +69,18 @@ export const useGovernanceStore = defineStore('governance', () => {
   const credDefLabelValue = (item: any) => {
     let result = null;
     if (item != null) {
+      // For AnonCreds credential definitions, try to create a more readable label
+      // Use tag if available, otherwise use truncated cred_def_id
+      let label;
+      if (item.tag) {
+        // If tag exists, show tag with truncated ID in parentheses
+        label = `${item.tag} (${truncateId(item.cred_def_id)})`;
+      } else {
+        // Otherwise just show truncated ID
+        label = truncateId(item.cred_def_id);
+      }
       result = {
-        label: `${item.cred_def_id}`,
+        label: label,
         value: item.cred_def_id,
         status: item.state,
       };
@@ -95,6 +112,92 @@ export const useGovernanceStore = defineStore('governance', () => {
   async function listStoredSchemas() {
     storedSchemas.value = [];
     return fetchList(API_PATH.SCHEMA_STORAGE, storedSchemas, error, loading);
+  }
+
+  async function listAnoncredsSchemas() {
+    storedSchemas.value = [];
+    error.value = null;
+    loading.value = true;
+
+    try {
+      // Fetch list of schema IDs
+      const schemasResponse = await acapyApi.getHttp(
+        API_PATH.ANONCREDS_SCHEMAS
+      );
+
+      // Handle both direct data and axios response structure
+      const responseData = schemasResponse?.data || schemasResponse;
+      const schemaIds = (responseData as GetSchemasResponse).schema_ids || [];
+
+      // Fetch full schema details for each schema ID
+      const schemaPromises = schemaIds.map(async (schemaId: string) => {
+        // URL encode the schema ID for use in the path parameter
+        // Schema IDs contain special characters like : and / that must be encoded
+        const encodedSchemaId = encodeURIComponent(schemaId);
+
+        // Manually construct the URL path with encoded ID to ensure encoding is preserved
+        const schemaUrl = `/anoncreds/schema/${encodedSchemaId}`;
+
+        const schemaResponse = await acapyApi.getHttp(schemaUrl);
+
+        // Handle both direct data and axios response structure
+        const schemaData = (schemaResponse?.data ||
+          schemaResponse) as GetSchemaResult;
+
+        // Check if schemaData exists and has the expected structure
+        if (!schemaData) {
+          throw new Error('Empty response from schema endpoint');
+        }
+
+        // Ensure schema object exists
+        if (!schemaData.schema) {
+          throw new Error('Schema object missing from response');
+        }
+
+        // Map GetSchemaResult to SchemaStorageRecord format
+        const schemaObj = schemaData.schema;
+        const mappedSchema: SchemaStorageRecord = {
+          schema_id: schemaData.schema_id || schemaId,
+          state: 'active',
+          schema: {
+            name: schemaObj.name || 'Unknown',
+            version: schemaObj.version || 'Unknown',
+            attrNames: Array.isArray(schemaObj.attrNames)
+              ? schemaObj.attrNames
+              : [],
+            // Add issuerId from AnonCreds schema response
+            issuerId: schemaObj.issuerId,
+          } as any, // Type assertion needed since issuerId is not in base Schema interface
+          schema_dict: schemaObj, // Store full schema including issuerId
+          created_at: schemaData.schema_metadata?.created_at,
+          updated_at: schemaData.schema_metadata?.updated_at,
+          ledger_id: schemaData.schema_id,
+        };
+
+        return mappedSchema;
+      });
+
+      // Use Promise.allSettled to handle individual failures without stopping all requests
+      const schemaResults = await Promise.allSettled(schemaPromises);
+
+      // Extract only successfully fetched schemas
+      const schemas = schemaResults
+        .filter(
+          (result): result is PromiseFulfilledResult<SchemaStorageRecord> =>
+            result.status === 'fulfilled'
+        )
+        .map((result) => result.value);
+
+      // Filter out null, undefined, and schemas without proper structure
+      storedSchemas.value = schemas.filter(
+        (s) => s !== null && s !== undefined && s.schema_id && s.schema
+      );
+    } catch (err) {
+      console.error(err);
+      error.value = err;
+    } finally {
+      loading.value = false;
+    }
   }
 
   async function getStoredSchemas(): Promise<
@@ -130,6 +233,97 @@ export const useGovernanceStore = defineStore('governance', () => {
     );
   }
 
+  async function listAnoncredsCredentialDefinitions() {
+    storedCredDefs.value = [];
+    error.value = null;
+    loading.value = true;
+
+    try {
+      // Fetch list of credential definition IDs
+      const credDefsResponse = await acapyApi.getHttp(
+        API_PATH.ANONCREDS_CREDENTIAL_DEFINITIONS
+      );
+
+      // Handle both direct data and axios response structure
+      const responseData = credDefsResponse?.data || credDefsResponse;
+      const credDefIds =
+        (responseData as { credential_definition_ids?: string[] })
+          ?.credential_definition_ids || [];
+
+      // If no credential definitions found, return early
+      if (!credDefIds || credDefIds.length === 0) {
+        storedCredDefs.value = [];
+        return;
+      }
+
+      // Fetch full credential definition details for each ID
+      const credDefPromises = credDefIds.map(async (credDefId: string) => {
+        try {
+          // URL encode the credential definition ID for use in the path parameter
+          const encodedCredDefId = encodeURIComponent(credDefId);
+          const credDefUrl = `/anoncreds/credential-definition/${encodedCredDefId}`;
+
+          const credDefResponse = await acapyApi.getHttp(credDefUrl);
+          const credDefData = credDefResponse?.data || credDefResponse;
+
+          // Map to CredDefStorageRecord format
+          // Check for revocation support
+          // In AnonCreds, revocation is indicated by the presence of a revocation object
+          // in credential_definition.value.revocation
+          const hasRevocationObject =
+            credDefData?.credential_definition?.value?.revocation !==
+              undefined &&
+            credDefData.credential_definition.value.revocation !== null;
+
+          // Also check other possible locations
+          const revocationSupport =
+            hasRevocationObject ||
+            credDefData?.credential_definition?.revocation !== undefined ||
+            credDefData?.options?.support_revocation === true ||
+            credDefData?.support_revocation === true;
+
+          // Extract tag from credential definition - check multiple possible locations
+          const tag =
+            credDefData?.credential_definition?.tag || credDefData?.tag || '';
+
+          return {
+            cred_def_id: credDefId,
+            schema_id: credDefData?.credential_definition?.schemaId || '',
+            tag: tag,
+            support_revocation: Boolean(revocationSupport),
+            created_at: credDefData?.credential_definition_metadata?.created_at,
+          } as CredDefStorageRecord;
+        } catch (_err) {
+          // Return minimal record if fetch fails
+          return {
+            cred_def_id: credDefId,
+            schema_id: '',
+            tag: '',
+            support_revocation: false,
+            created_at: undefined,
+          } as CredDefStorageRecord;
+        }
+      });
+
+      // Use Promise.allSettled to handle individual failures
+      const credDefResults = await Promise.allSettled(credDefPromises);
+
+      // Extract only successfully fetched credential definitions
+      storedCredDefs.value = credDefResults
+        .filter(
+          (result): result is PromiseFulfilledResult<CredDefStorageRecord> =>
+            result.status === 'fulfilled'
+        )
+        .map((result) => result.value)
+        .filter((cd) => cd.cred_def_id); // Filter out any invalid entries
+    } catch (err) {
+      console.error(err);
+      error.value = err;
+    } finally {
+      loading.value = false;
+    }
+  }
+
   async function listOcas() {
     ocas.value = [];
     return fetchList(API_PATH.OCAS, ocas, error, loading);
@@ -161,6 +355,40 @@ export const useGovernanceStore = defineStore('governance', () => {
         loading.value = false;
       });
     console.log('< governanceStore.createSchema');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return result;
+  }
+
+  async function createAnoncredsSchema(payload: SchemaPostRequest) {
+    console.log('> governanceStore.createAnoncredsSchema');
+    error.value = null;
+    loading.value = true;
+
+    let result: SchemaResult | null = null;
+
+    await acapyApi
+      .postHttp(API_PATH.ANONCREDS_SCHEMA_POST, payload)
+      .then((res) => {
+        result = res.data;
+        console.log(result);
+      })
+      .then(() => {
+        // Refresh the schema list
+        listAnoncredsSchemas();
+      })
+      .catch((err) => {
+        console.log(err);
+        error.value = err;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< governanceStore.createAnoncredsSchema');
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
@@ -231,6 +459,41 @@ export const useGovernanceStore = defineStore('governance', () => {
         loading.value = false;
       });
     console.log('< governanceStore.createCredentialDefinition');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return result;
+  }
+
+  async function createAnoncredsCredentialDefinition(
+    payload: CredDefPostRequest
+  ) {
+    console.log('> governanceStore.createAnoncredsCredentialDefinition');
+    error.value = null;
+    loading.value = true;
+
+    let result: CredDefResult | null = null;
+
+    await acapyApi
+      .postHttp(API_PATH.ANONCREDS_CREDENTIAL_DEFINITION_POST, payload)
+      .then((res) => {
+        result = res.data;
+        console.log(result);
+      })
+      .then(() => {
+        // Refresh the credential definition list
+        listStoredCredentialDefinitions();
+      })
+      .catch((err) => {
+        error.value = err;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< governanceStore.createAnoncredsCredentialDefinition');
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
@@ -418,6 +681,8 @@ export const useGovernanceStore = defineStore('governance', () => {
     storedSchemas,
     // getSchemaTemplate,
     addSchemaFromLedgerToStorage,
+    createAnoncredsCredentialDefinition,
+    createAnoncredsSchema,
     createCredentialDefinition,
     createOca,
     createSchema,
@@ -428,6 +693,8 @@ export const useGovernanceStore = defineStore('governance', () => {
     getCredentialTemplate,
     getOca,
     getStoredSchemas,
+    listAnoncredsCredentialDefinitions,
+    listAnoncredsSchemas,
     listOcas,
     listStoredCredentialDefinitions,
     listStoredSchemas,

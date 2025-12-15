@@ -9,6 +9,37 @@ const presentations = [
     trace: false,
     connection_id: '973a7f8d-7c37-4539-a6a0-83ea8b589103',
     presentation_exchange_id: 'aa0de458-c9b4-4e8e-949e-6216a1bab59f',
+    by_format: {
+      pres_request: {
+        indy: {
+          nonce: '1234567890',
+          name: 'proof-request',
+          version: '1.0',
+          requested_attributes: {
+            studentInfo: {
+              restrictions: [
+                {
+                  schema_name: 'student id',
+                },
+              ],
+              names: ['given_names', 'family_name'],
+            },
+          },
+          requested_predicates: {
+            not_expired: {
+              p_value: 20230527,
+              restrictions: [
+                {
+                  schema_name: 'student id',
+                },
+              ],
+              p_type: '>=',
+              name: 'expiry_dateint',
+            },
+          },
+        },
+      },
+    },
     presentation_request: {
       nonce: '1234567890',
       name: 'proof-request',

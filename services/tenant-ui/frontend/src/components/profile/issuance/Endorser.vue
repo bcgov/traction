@@ -1,5 +1,33 @@
 <template>
   <div v-if="canBecomeIssuer" class="my-1">
+    <!-- WebVH Servers Section -->
+    <div v-if="webvhList.length > 0" class="mb-4">
+      <h5 class="mb-2">{{ $t('profile.webvhServers') || 'WebVH Servers' }}</h5>
+      <DataTable
+        :value="webvhList"
+        :paginator="false"
+        :rows="TABLE_OPT.ROWS_DEFAULT"
+        :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
+        selection-mode="single"
+        data-key="ledger_id"
+        sort-field="ledger_id"
+        :sort-order="1"
+      >
+        <template #empty>{{ $t('common.noRecordsFound') }}</template>
+        <Column :sortable="false" header="Connect">
+          <template #body="{ data }">
+            <div v-if="data.is_write">
+              <EndorserConnect :ledger-info="data" />
+            </div>
+          </template>
+        </Column>
+        <Column :sortable="true" field="ledger_id" header="Server" />
+        <Column :sortable="true" field="endorser_alias" header="Witness ID" />
+      </DataTable>
+    </div>
+
+    <!-- Ledger Table (Indy only) -->
+    <h5 class="mb-2">{{ $t('profile.indyLedgers') || 'Indy Ledgers' }}</h5>
     <DataTable
       v-model:loading="loading"
       :value="endorserList"
@@ -86,7 +114,7 @@
 
 <script setup lang="ts">
 // Vue
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 // PrimeVue
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -94,13 +122,15 @@ import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import VueJsonPretty from 'vue-json-pretty';
 // State
-import { useConfigStore, useTenantStore } from '@/store';
+import { useConfigStore, useConnectionStore, useTenantStore } from '@/store';
 import { TABLE_OPT } from '@/helpers/constants';
 import { storeToRefs } from 'pinia';
 // Other Components
 import EndorserConnect from './EndorserConnect.vue';
+import type { ServerConfig } from '@/types';
 
 const configStore = useConfigStore();
+const connectionStore = useConnectionStore();
 const tenantStore = useTenantStore();
 const { config } = storeToRefs(configStore);
 const {
@@ -111,23 +141,79 @@ const {
   serverConfig,
 } = storeToRefs(tenantStore);
 
-const endorserList =
-  'config' in serverConfig.value
-    ? serverConfig.value.config['ledger.ledger_config_list'].map(
-        (config: any) => ({
-          ledger_id: config.id,
-          endorser_alias: config.endorser_alias,
-          is_write: config.is_write,
-        })
-      )
+const serverConfigValue = computed<ServerConfig | null>(() => {
+  const value = serverConfig.value as ServerConfig | undefined;
+  return value && 'config' in value ? value : null;
+});
+
+onMounted(() => {
+  tenantStore.getWebvhConfig();
+  connectionStore.listConnections();
+});
+
+const endorserList = computed(() => {
+  const ledgerList =
+    serverConfigValue.value?.config?.['ledger.ledger_config_list'];
+  return Array.isArray(ledgerList)
+    ? ledgerList.map((config: any) => ({
+        ledger_id: config.id,
+        endorser_alias: config.endorser_alias,
+        is_write: config.is_write,
+        type: 'indy',
+      }))
     : [];
+});
+
+const webvhList = computed(() => {
+  // Get webvh config from server plugin configuration
+  const pluginConfig = serverConfigValue.value?.config?.plugin_config;
+  if (!pluginConfig) {
+    return [];
+  }
+
+  const keyedConfig = pluginConfig as Record<string, any>;
+  const webvhConfig = keyedConfig.webvh ?? keyedConfig['did-webvh'];
+
+  if (!webvhConfig) {
+    return [];
+  }
+
+  // Handle both single config object and array of configs
+  const configs = Array.isArray(webvhConfig) ? webvhConfig : [webvhConfig];
+
+  return configs
+    .filter((config: any) => config.witness_id && config.server_url)
+    .map((config: any) => {
+      // Extract domain from server_url
+      let ledgerId = config.ledger_id;
+      if (!ledgerId && config.server_url) {
+        try {
+          const url = new URL(config.server_url);
+          ledgerId = url.hostname;
+        } catch {
+          // If URL parsing fails, use the server_url as-is
+          ledgerId = config.server_url;
+        }
+      }
+
+      return {
+        ledger_id: ledgerId || config.server_url,
+        endorser_alias: config.witness_id,
+        is_write: true,
+        type: 'webvh',
+      };
+    });
+});
 
 // Allowed to connect to endorser and register DID?
-const canBecomeIssuer = computed(
-  () =>
+// Tenant must have permission to connect to endorser and create public DID
+// This applies to both regular endorsers AND webvh
+const canBecomeIssuer = computed(() => {
+  return (
     tenantConfig.value?.connect_to_endorser?.length &&
     tenantConfig.value?.create_public_did?.length
-);
+  );
+});
 
 // Details about endorser connection
 const showNotActiveWarn = computed(

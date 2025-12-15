@@ -46,6 +46,12 @@ export interface ExtendedV20CredExRecordByFormat
       key_correctness_proof?: any;
       nonce?: string;
     };
+    anoncreds?: {
+      cred_def_id?: string;
+      schema_id?: string;
+      key_correctness_proof?: any;
+      nonce?: string;
+    };
   };
 }
 
@@ -82,6 +88,20 @@ export interface ServerConfig {
           expiry_minutes: number;
           auto_issuer: boolean;
         };
+      };
+      ['did-webvh']?: {
+        server_url?: string;
+        witness?: boolean;
+        witnesses?: string[];
+        watchers?: string[];
+        scids?: Record<string, string>;
+      };
+      webvh?: {
+        server_url?: string;
+        witness?: boolean;
+        witnesses?: string[];
+        watchers?: string[];
+        scids?: Record<string, string>;
       };
       basicmessage_storage: {
         wallet_enabled: boolean;

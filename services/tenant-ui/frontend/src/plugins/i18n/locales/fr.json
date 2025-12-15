@@ -57,6 +57,7 @@
     "createdAt": "Created At <FR>",
     "credentialId": "Credential ID <FR>",
     "credentials": "Credentials <FR>",
+    "cancel": "Cancel <FR>",
     "decodedJwt": "Decoded JWT <FR>",
     "deleted": "Deleted <FR>",
     "deletedAt": "Deleted At <FR>",
@@ -251,6 +252,43 @@
   "holder": {
     "holder": "Holder <FR>"
   },
+  "identifiers": {
+    "identifiers": "Identifiers <FR>",
+    "webvh": {
+      "title": "did:webvh Configuration <FR>",
+      "serverUrl": "Server URL <FR>",
+      "serverUrlMissing": "Not configured <FR>",
+      "witness": "Witness <FR>",
+      "witnessPresent": "Witness configured <FR>",
+      "witnessMissing": "Witness not configured <FR>",
+      "watchers": "Watchers <FR>",
+      "watchersMissing": "No watchers configured <FR>",
+      "didListTitle": "Existing did:webvh identifiers <FR>",
+      "statusHeader": "Status <FR>",
+      "statusActive": "Active <FR>",
+      "statusPending": "Pending <FR>",
+      "statusError": "Error <FR>",
+      "createdAt": "Created <FR>",
+      "didHeader": "DID <FR>",
+      "noDids": "No did:webvh identifiers found <FR>",
+      "createTitle": "Create did:webvh <FR>",
+      "alias": "Alias <FR>",
+      "namespace": "Namespace <FR>",
+      "createButton": "Create DID <FR>",
+      "createHelp": "Alias is the unique identifier within the namespace. Namespace defaults to 'default' if left blank. <FR>",
+      "createSuccess": "did:webvh creation request sent <FR>",
+      "createSuccessWithDid": "did:webvh creation request sent for {did} <FR>",
+      "configureDescription": "Configure the did:webvh plugin with your server URL and enable witnessing to manage identifiers. <FR>",
+      "configureButton": "Configure did:webvh <FR>",
+      "configureMissingUrl": "Please provide a server URL before configuring did:webvh <FR>",
+      "configureSuccess": "did:webvh configuration saved <FR>",
+      "autoConfigureFailed": "Automatic configuration failed. Please configure manually. <FR>",
+      "searchPlaceholder": "Search identifiers <FR>",
+      "createDialogTitle": "Create did:webvh <FR>",
+      "aliasRequired": "Alias is required <FR>",
+      "namespaceRequired": "Le namespace est requis <FR>"
+    }
+  },
   "home": {
     "dashboard": "Dashboard <FR>",
     "greeting": "Powered by Traction <FR>",
@@ -363,6 +401,8 @@
     "webHookKey": "WebHook Key <FR>",
     "webhooks": "Webhooks <FR>",
     "webHookUrl": "WebHook URL <FR>",
+    "webvhServers": "WebVH Servers <FR>",
+    "indyLedgers": "Indy Ledgers <FR>",
     "writeLedger": "Current Ledger: {0} <FR>"
   },
   "qrCode": {
@@ -469,7 +509,11 @@
       "showWrite": "Show 'Write' Components: <FR>",
       "tenantUi": "Tenant UI <FR>"
     },
-    "tractionProxy": "Traction Proxy URL: <FR>"
+    "tractionProxy": "Traction Proxy URL: <FR>",
+    "webvh": {
+      "webvhServers": "WebVH Servers <FR>",
+      "serverList": "Server List <FR>"
+    }
   },
   "session": {
     "countdown": "Vous allez être déconnecté dans { seconds } secondes...",
@@ -523,7 +567,21 @@
       "acapyPublicInvites": "Send Invitations using public DID <FR>",
       "auto": "Auto Flags <FR>",
       "extraSettings": "Extra Settings (wording TBD) <FR>",
-      "tenantWalletSettings": "Tenant Wallet Settings <FR>"
+      "tenantWalletSettings": "Tenant Wallet Settings <FR>",
+      "walletType": "Type de portefeuille <FR>",
+      "walletUpgradeWarning": "Ce portefeuille peut être mis à niveau vers askar-anoncreds pour la prise en charge d'AnonCreds <FR>",
+      "upgradeWallet": "Mettre à niveau le portefeuille <FR>",
+      "deleteWebhook": "Supprimer ce webhook <FR>",
+      "addWebhook": "Ajouter un autre webhook <FR>",
+      "saveChanges": "Enregistrer les modifications <FR>",
+      "tenantWalletDetails": "Détails du portefeuille du locataire <FR>",
+      "walletUpgradeConfirmMessage": "Cela mettra à niveau votre portefeuille de askar vers askar-anoncreds. Cette opération est IRRÉVERSIBLE. Êtes-vous sûr de vouloir continuer? <FR>",
+      "walletUpgradeConfirmHeader": "Confirmer la mise à niveau du portefeuille <FR>",
+      "walletUpgradeLabel": "Mettre à niveau <FR>",
+      "walletNameNotFound": "Nom du portefeuille introuvable <FR>",
+      "walletUpgradeTriggered": "La mise à niveau du portefeuille a été déclenchée. La mise à niveau se terminera en arrière-plan. <FR>",
+      "walletUpgradeFailed": "Échec de la mise à niveau du portefeuille: {error} <FR>",
+      "settingsUpdated": "Vos paramètres ont été mis à jour <FR>"
     }
   },
   "tenants": {

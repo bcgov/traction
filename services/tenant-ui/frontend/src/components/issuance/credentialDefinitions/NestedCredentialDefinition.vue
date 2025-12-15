@@ -33,10 +33,10 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
-import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
@@ -61,6 +61,7 @@ defineEmits(['success']);
 
 const router = useRouter();
 const { t } = useI18n();
+
 const { isIssuer } = storeToRefs(useTenantStore());
 const { selectedCredentialDefinition } = storeToRefs(useGovernanceStore());
 const governanceStore = useGovernanceStore();

@@ -4,7 +4,7 @@ import {
   EndorserInfo,
   TransactionRecord,
 } from '@/types/acapyApi/acapyInterface';
-import { ServerConfig } from '@/types/index';
+import type { ServerConfig } from '@/types';
 interface TransactionRecordEx extends TransactionRecord {
   meta_data?: {
     [key: string]: any;
@@ -46,6 +46,7 @@ export const useTenantStore = defineStore('tenant', () => {
   const tenantDefaultSettings: any = ref(null);
   const transactions: Ref<TransactionRecord[]> = ref([]);
   const walletDids: Ref<DID[]> = ref([]);
+  const webvhConfig: any = ref(null);
 
   const { token } = storeToRefs(useTokenStore());
   const acapyApi = useAcapyApi();
@@ -55,10 +56,38 @@ export const useTenantStore = defineStore('tenant', () => {
     return token.value != null;
   });
   const isIssuer: Ref<boolean> = computed(() => {
-    return (
-      endorserConnection.value?.state === 'active' &&
-      publicDid.value?.did &&
-      (!taa.value?.taa_required || taa.value?.taa_accepted)
+    // Check if tenant has permission to issue (connect to endorser + create public DID)
+    const hasPermissions =
+      tenantConfig.value?.connect_to_endorser?.length &&
+      tenantConfig.value?.create_public_did?.length;
+
+    if (!hasPermissions) {
+      return false;
+    }
+
+    // For askar-anoncreds wallets, check WebVH connection instead of Indy ledger
+    const isAnoncreds = isAskarAnoncredsWallet.value;
+    if (isAnoncreds) {
+      return isWebvhConnected.value;
+    }
+    // For askar wallets (default), check Indy ledger endorser connection + public DID
+    const hasActiveConnection = endorserConnection.value?.state === 'active';
+    const hasPublicDid = !!publicDid.value?.did;
+    const taaAccepted =
+      !taa.value?.taa_required || taa.value?.taa_accepted === true;
+
+    return hasActiveConnection && hasPublicDid && taaAccepted;
+  });
+  const isAskarAnoncredsWallet: Ref<boolean> = computed(() => {
+    return tenantWallet.value?.settings?.['wallet.type'] === 'askar-anoncreds';
+  });
+  const isWebvhConnected: Ref<boolean> = computed(() => {
+    if (!webvhConfig.value) {
+      return false;
+    }
+    const witnesses = webvhConfig.value.witnesses ?? webvhConfig.value.watchers;
+    return Boolean(
+      witnesses && Array.isArray(witnesses) && witnesses.length > 0
     );
   });
   const pendingPublicDidTx = computed<TransactionRecordEx | null>(() => {
@@ -364,6 +393,138 @@ export const useTenantStore = defineStore('tenant', () => {
     throw new TxTimeoutErr(`Transaction ${txnId} has not been completed`);
   }
 
+  async function getWebvhConfig() {
+    try {
+      const response = await acapyApi.getHttp(API_PATH.DID_WEBVH_CONFIG);
+      const configData = response?.data ?? response ?? null;
+
+      // Consider config empty if:
+      // 1. No data at all
+      // 2. Empty object
+      // 3. Has no witnesses/watchers or they're empty arrays
+      const isEmptyConfig =
+        !configData ||
+        (typeof configData === 'object' &&
+          Object.keys(configData).length === 0) ||
+        (configData &&
+          !(
+            (configData.witnesses &&
+              Array.isArray(configData.witnesses) &&
+              configData.witnesses.length > 0) ||
+            (configData.watchers &&
+              Array.isArray(configData.watchers) &&
+              configData.watchers.length > 0)
+          ));
+
+      webvhConfig.value = isEmptyConfig ? null : configData;
+    } catch (_error) {
+      webvhConfig.value = null;
+    }
+  }
+
+  async function configureWebvhPlugin(options: { auto?: boolean } = {}) {
+    const { auto = false } = options;
+    const value = serverConfig.value as ServerConfig | undefined;
+    const pluginConfig = value?.config?.plugin_config ?? {};
+    const keyedConfig = pluginConfig as Record<string, any>;
+    const configEntry = keyedConfig.webvh ?? keyedConfig['did-webvh'] ?? null;
+
+    if (!configEntry?.server_url) {
+      if (auto) {
+        return {
+          success: false as const,
+          reason: 'missing_server_url' as const,
+        };
+      }
+      throw Error('Webvh server_url missing from server configuration');
+    }
+
+    if (!configEntry?.witness_id) {
+      if (auto) {
+        return {
+          success: false as const,
+          reason: 'missing_witness_id' as const,
+        };
+      }
+      throw Error('Webvh witness_id missing from server configuration');
+    }
+
+    // Validate server_url is a valid URL
+    let baseUrl: URL;
+    try {
+      baseUrl = new URL(configEntry.server_url);
+    } catch (_error) {
+      if (auto) {
+        return {
+          success: false as const,
+          reason: 'invalid_server_url' as const,
+        };
+      }
+      throw Error('Webvh server_url is not a valid URL');
+    }
+
+    // Extract the key part from did:key:z6Mk...
+    const witnessKey = configEntry.witness_id.replace('did:key:', '');
+
+    // Validate witnessKey contains only safe characters (base58 characters: 1-9, A-H, J-N, P-Z, a-k, m-z)
+    // This prevents URL injection attacks
+    const base58Pattern = /^[1-9A-HJ-NP-Za-km-z]+$/;
+    if (!base58Pattern.test(witnessKey)) {
+      if (auto) {
+        return {
+          success: false as const,
+          reason: 'invalid_witness_key' as const,
+        };
+      }
+      throw Error('Webvh witness_id contains invalid characters');
+    }
+
+    // Construct the invitation URL using URL and URLSearchParams for proper encoding
+    const invitationUrl = new URL('/api/invitations', baseUrl);
+    invitationUrl.searchParams.set('_oobid', witnessKey);
+
+    // Fetch the invitation
+    let witnessInvitation: string;
+    try {
+      const response = await fetch(invitationUrl.toString());
+      if (!response.ok) {
+        throw new Error(`Failed to fetch invitation: ${response.statusText}`);
+      }
+      const invitation = await response.json();
+
+      // Base64 encode the invitation JSON
+      const invitationJson = JSON.stringify(invitation);
+      const b64Invitation = btoa(invitationJson);
+
+      // Create the didcomm URL
+      witnessInvitation = `didcomm://?oob=${b64Invitation}`;
+    } catch (error) {
+      if (auto) {
+        return {
+          success: false as const,
+          reason: 'failed_to_fetch_invitation' as const,
+        };
+      }
+      throw Error(`Failed to fetch and encode witness invitation: ${error}`);
+    }
+
+    const payload: Record<string, any> = {
+      witness_invitation: witnessInvitation,
+    };
+
+    try {
+      await acapyApi.postHttp(API_PATH.DID_WEBVH_CONFIG, payload);
+      await getServerConfig();
+      await getWebvhConfig();
+      return { success: true as const };
+    } catch (error: any) {
+      if (auto) {
+        return { success: false as const, error };
+      }
+      throw (error?.response?.data ?? error) as Error;
+    }
+  }
+
   async function waitForActiveEndorserConnection(maxRetries = 10) {
     const connId = endorserConnection.value.connection_id;
     let retries = 0;
@@ -645,6 +806,8 @@ export const useTenantStore = defineStore('tenant', () => {
     endorserInfo,
     error,
     isIssuer,
+    isAskarAnoncredsWallet,
+    isWebvhConnected,
     loading,
     loadingIssuance,
     pendingPublicDidTx,
@@ -659,10 +822,13 @@ export const useTenantStore = defineStore('tenant', () => {
     tenantWallet,
     transactions,
     walletDids,
+    webvhConfig,
     writeLedger,
     acceptTaa,
     clearTenant,
+    configureWebvhPlugin,
     connectToEndorser,
+    deleteTenant,
     getEndorserConnection,
     getEndorserInfo,
     getIssuanceStatus,
@@ -675,14 +841,14 @@ export const useTenantStore = defineStore('tenant', () => {
     getTenantSubWallet,
     getTransactions,
     getWalletcDids,
+    getWebvhConfig,
     getWriteLedger,
-    deleteTenant,
-    softDeleteTenant,
     registerPublicDid,
     setTenantLoginDataFromLocalStorage,
     setWriteLedger,
-    updateTenantSubWallet,
+    softDeleteTenant,
     updateTenantContact,
+    updateTenantSubWallet,
     waitForActiveEndorserConnection,
   };
 });

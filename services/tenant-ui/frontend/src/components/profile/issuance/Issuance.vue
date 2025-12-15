@@ -22,7 +22,6 @@
     </p>
   </div>
   <div v-else>
-    <h5 class="mb-0 mt-3">{{ $t('common.ledgers') }}</h5>
     <div v-if="endorserInfo">
       <Endorser />
 

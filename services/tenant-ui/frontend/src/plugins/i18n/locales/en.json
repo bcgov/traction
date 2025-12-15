@@ -57,6 +57,7 @@
     "createdAt": "Created At",
     "credentialId": "Credential ID",
     "credentials": "Credentials",
+    "cancel": "Cancel",
     "decodedJwt": "Decoded JWT",
     "developer": "Developer",
     "emailAddress": "Email Address",
@@ -76,6 +77,7 @@
     "protocol": "Protocol",
     "refreshTable": "Refresh Table",
     "request": "Request",
+    "required": "*",
     "searchByCreated": "Search By Created at Date",
     "searchByName": "Search By Name",
     "searchBySuspended": "Search By Suspended at Date",
@@ -148,6 +150,9 @@
       "postFinished": "The schema is now written to the ledger and can be used for credential definitions.",
       "postStart": "Schema posted to the ledger. This may take a few seconds.",
       "schema": "Schema",
+      "selectIssuer": "Select an issuer",
+      "issuer": "Issuer",
+      "notIssuer": "You must be an issuer to create schemas. Please register a public DID first.",
       "storage": "Schema Storage",
       "stored": "Stored Schemas"
     },
@@ -246,6 +251,45 @@
   },
   "holder": {
     "holder": "Holder"
+  },
+  "identifiers": {
+    "identifiers": "Identifiers",
+    "webvh": {
+      "title": "did:webvh Configuration",
+      "serverUrl": "Server URL",
+      "serverUrlMissing": "Not configured",
+      "witness": "Witness",
+      "witnessPresent": "Witness configured",
+      "witnessMissing": "Witness not configured",
+      "watchers": "Watchers",
+      "watchersMissing": "No watchers configured",
+      "didListTitle": "Existing did:webvh identifiers",
+      "statusHeader": "Status",
+      "statusActive": "Active",
+      "statusPending": "Pending",
+      "statusError": "Error",
+      "createdAt": "Created",
+      "didHeader": "DID",
+      "noDids": "No did:webvh identifiers found",
+      "createTitle": "Create did:webvh",
+      "alias": "Alias",
+      "namespace": "Namespace",
+      "ledger": "Ledger",
+      "didPreview": "DID Placeholder",
+      "createButton": "Create DID",
+      "createHelp": "Namespace and alias are the unique identifiers for your DID.",
+      "createSuccess": "did:webvh creation request sent",
+      "createSuccessWithDid": "did:webvh creation request sent for {did}",
+      "configureDescription": "Configure the did:webvh plugin with your server URL and enable witnessing to manage identifiers.",
+      "configureButton": "Configure did:webvh",
+      "configureMissingUrl": "Please provide a server URL before configuring did:webvh",
+      "configureSuccess": "did:webvh configuration saved",
+      "autoConfigureFailed": "Automatic configuration failed. Please configure manually.",
+      "searchPlaceholder": "Search identifiers",
+      "createDialogTitle": "Create did:webvh",
+      "namespaceRequired": "Namespace is required",
+      "aliasRequired": "Alias is required"
+    }
   },
   "home": {
     "dashboard": "Dashboard",
@@ -359,6 +403,8 @@
     "webHookKey": "WebHook Key",
     "webhooks": "Webhooks",
     "webHookUrl": "WebHook URL",
+    "webvhServers": "WebVH Servers",
+    "indyLedgers": "Indy Ledgers",
     "writeLedger": "Current Ledger: {0}"
   },
   "qrCode": {
@@ -440,7 +486,8 @@
       "title": "Storage",
       "walletStorageConfig": "Wallet Storage Config",
       "walletStorageType": "Wallet Storage Type",
-      "walletType": "Wallet Type"
+      "walletType": "Wallet Type",
+      "walletUpgradeWarning": "Upgrading to askar-anoncreds is a non-reversible operation. Make sure you have a backup before proceeding."
     },
     "tenants": {
       "reservation": "Reservation",
@@ -460,7 +507,11 @@
       "showWrite": "Show 'Write' Components",
       "tenantUi": "Tenant UI"
     },
-    "tractionProxy": "Traction Proxy URL"
+    "tractionProxy": "Traction Proxy URL",
+    "webvh": {
+      "webvhServers": "WebVH Servers",
+      "serverList": "Server List"
+    }
   },
   "session": {
     "countdown": "You are going to be logged out in { seconds } seconds...",
@@ -514,7 +565,21 @@
       "acapyPublicInvites": "Send Invitations using public DID",
       "auto": "Auto Flags",
       "extraSettings": "Extra ACA-Py Settings",
-      "tenantWalletSettings": "Tenant Wallet Settings"
+      "tenantWalletSettings": "Tenant Wallet Settings",
+      "walletType": "Wallet Type",
+      "walletUpgradeWarning": "This wallet can be upgraded to askar-anoncreds for AnonCreds support",
+      "upgradeWallet": "Upgrade Wallet",
+      "deleteWebhook": "Delete this webhook",
+      "addWebhook": "Add another webhook",
+      "saveChanges": "Save Changes",
+      "tenantWalletDetails": "Tenant Wallet Details",
+      "walletUpgradeConfirmMessage": "This will upgrade your wallet from askar to askar-anoncreds. This operation is NON-REVERSIBLE. Are you sure you want to proceed?",
+      "walletUpgradeConfirmHeader": "Confirm Wallet Upgrade",
+      "walletUpgradeLabel": "Upgrade",
+      "walletNameNotFound": "Wallet name not found",
+      "walletUpgradeTriggered": "Wallet upgrade has been triggered. The upgrade will complete in the background.",
+      "walletUpgradeFailed": "Failed to upgrade wallet: {error}",
+      "settingsUpdated": "Your Settings have been Updated"
     }
   },
   "tenants": {

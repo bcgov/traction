@@ -17,6 +17,8 @@ import CredentialDefinitions from '@/views/issuance/CredentialDefinitions.vue';
 import MyPresentations from '@/views/verification/MyPresentations.vue';
 // // Holder
 import MyHeldCredentials from '@/views/holder/MyHeldCredentials.vue';
+// Identifiers
+import Identifiers from '@/views/Identifiers.vue';
 // Messages
 import MyMessages from '@/views/messages/MyMessages.vue';
 // OCA
@@ -134,6 +136,13 @@ const tenantRoutes = [
             component: MyHeldCredentials,
           },
         ],
+      },
+
+      // Tenant - Identifiers
+      {
+        path: 'identifiers',
+        name: 'Identifiers',
+        component: Identifiers,
       },
 
       // Tenant - Messages
