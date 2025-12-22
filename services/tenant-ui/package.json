@@ -25,7 +25,7 @@
     "connect-history-api-fallback": "^2.0.0",
     "cors": "^2.8.5",
     "eta": "^4.4.1",
-    "express": "^5.1.0",
+    "express": "^5.2.0",
     "express-validator": "^7.3.1",
     "jose": "^6.1.2",
     "jsonwebtoken": "^9.0.2",
