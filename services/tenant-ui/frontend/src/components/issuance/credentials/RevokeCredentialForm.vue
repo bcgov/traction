@@ -126,8 +126,8 @@ const handleSubmit = async (isFormValid: boolean) => {
     const isAnonCredsCredential = credRecord.anoncreds
       ? true
       : credRecord.indy
-        ? false
-        : undefined;
+      ? false
+      : undefined;
 
     console.log('Credential format detection:', {
       hasAnoncreds: !!credRecord.anoncreds,
