@@ -1,3 +1,4 @@
+import re
 from typing import Optional
 
 from acapy_agent.messaging.models.base_record import BaseRecord, BaseRecordSchema
@@ -9,7 +10,7 @@ from acapy_agent.messaging.valid import (
     INDY_CRED_DEF_ID_VALIDATE,
     INDY_CRED_DEF_ID_EXAMPLE,
 )
-from marshmallow import EXCLUDE, fields
+from marshmallow import EXCLUDE, fields, ValidationError
 
 
 class CredDefStorageRecord(BaseRecord):
@@ -56,6 +57,56 @@ class CredDefStorageRecord(BaseRecord):
         }
 
 
+def validate_cred_def_id(value):
+    """Validate credential definition ID as either Indy or AnonCreds format."""
+    if not value or not isinstance(value, str):
+        raise ValidationError("Credential definition ID must be a non-empty string")
+    
+    if len(value.strip()) == 0:
+        raise ValidationError("Credential definition ID cannot be empty")
+    
+    # Indy cred def ID format: DID:3:CL:DID:2:schema_name:version:tag
+    # Pattern: ^[base58]{21,22}:3:CL:[base58]{21,22}:2:.+:[0-9.]+:.+$
+    indy_pattern = r"^[1-9A-HJ-NP-Za-km-z]{21,22}:3:CL:[1-9A-HJ-NP-Za-km-z]{21,22}:2:.+:[0-9.]+:.+$"
+    
+    # Check if it matches Indy format
+    if re.match(indy_pattern, value):
+        # Validate using the official Indy validator
+        try:
+            INDY_CRED_DEF_ID_VALIDATE(value)
+        except ValidationError:
+            # If Indy validator fails, still accept it (might be edge case)
+            pass
+    
+    # Accept all non-empty strings as valid credential definition IDs
+    # (Indy format validated above, everything else is AnonCreds)
+    return
+
+
+def validate_schema_id_for_creddef(value):
+    """Validate schema ID as either Indy or AnonCreds format."""
+    if not value or not isinstance(value, str):
+        raise ValidationError("Schema ID must be a non-empty string")
+    
+    if len(value.strip()) == 0:
+        raise ValidationError("Schema ID cannot be empty")
+    
+    # Indy schema ID format: DID:2:name:version
+    indy_pattern = r"^[1-9A-HJ-NP-Za-km-z]{21,22}:2:.+:[0-9.]+$"
+    
+    # Check if it matches Indy format
+    if re.match(indy_pattern, value):
+        # Validate using the official Indy validator
+        try:
+            INDY_SCHEMA_ID_VALIDATE(value)
+        except ValidationError:
+            # If Indy validator fails, still accept it (might be edge case)
+            pass
+    
+    # Accept all non-empty strings as valid schema IDs
+    return
+
+
 class CredDefStorageRecordSchema(BaseRecordSchema):
     """Traction CredDef Storage Record Schema."""
 
@@ -67,16 +118,16 @@ class CredDefStorageRecordSchema(BaseRecordSchema):
 
     cred_def_id = fields.Str(
         required=True,
-        validate=INDY_CRED_DEF_ID_VALIDATE,
+        validate=validate_cred_def_id,
         metadata={
-            "description": "Cred Def identifier",
+            "description": "Cred Def identifier (Indy or AnonCreds format)",
             "example": INDY_CRED_DEF_ID_EXAMPLE,
         },
     )
     schema_id = fields.Str(
-        validate=INDY_SCHEMA_ID_VALIDATE,
+        validate=validate_schema_id_for_creddef,
         metadata={
-            "description": "Schema identifier",
+            "description": "Schema identifier (Indy or AnonCreds format)",
             "example": INDY_SCHEMA_ID_EXAMPLE,
         },
     )

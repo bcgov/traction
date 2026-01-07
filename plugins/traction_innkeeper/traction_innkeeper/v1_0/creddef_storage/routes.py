@@ -2,7 +2,7 @@ import functools
 import logging
 
 from aiohttp import web
-from aiohttp_apispec import docs, response_schema, match_info_schema
+from aiohttp_apispec import docs, response_schema, match_info_schema, request_schema
 from acapy_agent.admin.request_context import AdminRequestContext
 
 from acapy_agent.messaging.models.base import BaseModelError
@@ -58,6 +58,12 @@ class CredDefIdMatchInfoSchema(OpenAPISchema):
     )
 
 
+class CredDefStorageAddSchema(OpenAPISchema):
+    cred_def_id = fields.Str(
+        metadata={"description": "Credential Definition identifier"}, required=True
+    )
+
+
 class CredDefStorageOperationResponseSchema(OpenAPISchema):
     """Response schema for simple operations."""
 
@@ -86,6 +92,24 @@ async def creddef_storage_list(request: web.BaseRequest):
     results = [record.serialize() for record in records]
 
     return web.json_response({"results": results})
+
+
+@docs(
+    tags=[SWAGGER_CATEGORY],
+)
+@request_schema(CredDefStorageAddSchema())
+@response_schema(CredDefStorageRecordSchema(), 200, description="")
+@error_handler
+@tenant_authentication
+async def creddef_storage_add(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+    profile = context.profile
+    storage_srv = context.inject_or(CredDefStorageService)
+    body = await request.json()
+
+    record = await storage_srv.add_item(profile, body)
+
+    return web.json_response(record.serialize())
 
 
 @docs(
@@ -134,6 +158,7 @@ async def register(app: web.Application):
                 creddef_storage_list,
                 allow_head=False,
             ),
+            web.post("/credential-definition-storage", creddef_storage_add),
             web.get(
                 "/credential-definition-storage/{cred_def_id}",
                 creddef_storage_get,

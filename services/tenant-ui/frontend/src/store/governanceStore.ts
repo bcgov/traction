@@ -674,6 +674,40 @@ export const useGovernanceStore = defineStore('governance', () => {
     return result;
   }
 
+  async function addCredDefFromLedgerToStorage(payload: {
+    cred_def_id: string;
+  }) {
+    console.log('> governanceStore.addCredDefFromLedgerToStorage');
+    error.value = null;
+    loading.value = true;
+
+    let result = null;
+
+    await acapyApi
+      .postHttp(API_PATH.CREDENTIAL_DEFINITION_STORAGE, payload)
+      .then((res) => {
+        result = res.data;
+        console.log(result);
+      })
+      .then(() => {
+        listStoredCredentialDefinitions();
+      })
+      .catch((err) => {
+        error.value = err;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< governanceStore.addCredDefFromLedgerToStorage');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return result;
+  }
+
   async function createCredentialDefinition(
     payload: CredentialDefinitionSendRequest
   ) {
@@ -724,9 +758,48 @@ export const useGovernanceStore = defineStore('governance', () => {
         result = res.data;
         console.log(result);
       })
-      .then(() => {
+      .then(async () => {
+        // Extract cred_def_id from response
+        const credDefId =
+          result?.credential_definition_state?.credential_definition_id;
+
+        if (!credDefId) {
+          console.warn(
+            'No cred_def_id found in response, cannot verify storage'
+          );
+          return;
+        }
+
+        // Wait a bit for event handler to complete (if it runs)
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+
         // Refresh the credential definition list
-        listStoredCredentialDefinitions();
+        await listStoredCredentialDefinitions();
+
+        // Check if credential definition is in storage after refresh
+        const storedCredDef = storedCredDefs.value.find(
+          (c: any) => c.cred_def_id === credDefId
+        );
+
+        if (!storedCredDef) {
+          // Cred def not in storage, manually add it via storage endpoint
+          console.log(
+            `Credential definition ${credDefId} not found in storage after event handler, manually adding...`
+          );
+          try {
+            await addCredDefFromLedgerToStorage({ cred_def_id: credDefId });
+            // Refresh again after manual add
+            await listStoredCredentialDefinitions();
+          } catch (err) {
+            console.error(
+              `Failed to manually add credential definition ${credDefId} to storage:`,
+              err
+            );
+            // Don't throw - cred def was created successfully, just storage failed
+          }
+        } else {
+          console.log(`Credential definition ${credDefId} found in storage`);
+        }
       })
       .catch((err) => {
         error.value = err;
@@ -921,6 +994,7 @@ export const useGovernanceStore = defineStore('governance', () => {
     storedCredDefs,
     storedSchemas,
     // getSchemaTemplate,
+    addCredDefFromLedgerToStorage,
     addSchemaFromLedgerToStorage,
     createAnoncredsCredentialDefinition,
     createAnoncredsSchema,
