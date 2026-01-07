@@ -1,22 +1,6 @@
 <template>
   <div>
     <form @submit.prevent="handleSubmit(!v$.$invalid)">
-      <!-- Filter Type -->
-      <div class="field">
-        <label for="filterType">
-          {{ $t('verify.filterType') || 'Filter Type' }}
-        </label>
-        <Dropdown
-          id="filterType"
-          v-model="formFields.filterType"
-          :options="filterTypeOptions"
-          option-label="label"
-          option-value="value"
-          class="w-full"
-          placeholder="Select filter type"
-        />
-      </div>
-
       <!-- Connection -->
       <div class="field mt-5">
         <label
@@ -97,11 +81,10 @@ import {
 } from '@/types/acapyApi/acapyInterface';
 
 // Vue
-import { reactive, ref } from 'vue';
+import { computed, reactive, ref } from 'vue';
 // PrimeVue / Validation / etc
 import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
-import Dropdown from 'primevue/dropdown';
 import InputSwitch from 'primevue/inputswitch';
 import ProgressSpinner from 'primevue/progressspinner';
 import Textarea from 'primevue/textarea';
@@ -133,11 +116,10 @@ const props = defineProps<{
 
 const emit = defineEmits(['closed', 'success']);
 
-// Filter type options
-const filterTypeOptions = [
-  { label: 'Indy', value: 'indy' },
-  { label: 'AnonCreds', value: 'anoncreds' },
-];
+// Auto-determine filter type based on wallet type
+const filterType = computed(() => {
+  return isAskarAnoncredsWallet.value ? 'anoncreds' : 'indy';
+});
 
 // The default placeholder JSON to start with for this form
 // (or supplied by parent component)
@@ -197,7 +179,6 @@ const formFields = reactive({
   // This is not good typescript but need an object with fields
   // in a dropdown that displays a string that can be blank. TODO
   selectedConnection: undefined as any,
-  filterType: isAskarAnoncredsWallet.value ? 'anoncreds' : 'indy',
 });
 const rules = {
   autoVerify: {},
@@ -222,17 +203,15 @@ const handleSubmit = async (isFormValid: boolean) => {
         : proofRequestJson.value;
 
     // Set up the body with the fields from the form
-    // Use selected filter type, defaulting to wallet type if not set
-    const filterType =
-      formFields.filterType ||
-      (isAskarAnoncredsWallet.value ? 'anoncreds' : 'indy');
+    // Auto-determine filter type based on wallet type
+    const filterTypeValue = filterType.value;
     const payload: V20PresSendRequestRequest = {
       connection_id: formFields.selectedConnection.value,
       auto_verify: false,
       comment: formFields.comment,
       trace: false,
       presentation_request: {
-        [filterType]: proofRequest,
+        [filterTypeValue]: proofRequest,
       },
     };
 

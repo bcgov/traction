@@ -29,22 +29,6 @@
           }}</small>
         </div>
 
-        <!-- Filter Type -->
-        <div class="field mt-5">
-          <label for="filterType">
-            {{ $t('issue.filterType') || 'Filter Type' }}
-          </label>
-          <Dropdown
-            id="filterType"
-            v-model="formFields.filterType"
-            :options="filterTypeOptions"
-            option-label="label"
-            option-value="value"
-            class="w-full"
-            placeholder="Select filter type"
-          />
-        </div>
-
         <!-- Connection -->
         <div class="field mt-5">
           <label
@@ -139,7 +123,6 @@ import { computed, reactive, ref } from 'vue';
 // PrimeVue / Validation / etc
 import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
-import Dropdown from 'primevue/dropdown';
 import Textarea from 'primevue/textarea';
 import ProgressSpinner from 'primevue/progressspinner';
 import { required } from '@vuelidate/validators';
@@ -181,18 +164,17 @@ const isAskarAnoncredsWallet = computed(() => {
 
 const emit = defineEmits(['closed', 'success']);
 
-// Filter type options
-const filterTypeOptions = [
-  { label: 'Indy', value: 'indy' },
-  { label: 'AnonCreds', value: 'anoncreds' },
-];
-
 // Form and Validation
 const credentialValuesRaw = ref([] as { name: string; value: string }[]);
 const filteredCreds = ref();
 const filteredConnections = ref();
 const schemaForSelectedCred = ref();
 const showEditCredValues = ref(false);
+// Auto-determine filter type based on wallet type
+const filterType = computed(() => {
+  return isAskarAnoncredsWallet.value ? 'anoncreds' : 'indy';
+});
+
 const formFields = reactive({
   credentialValuesEditing: '',
   credentialValuesPretty: '',
@@ -200,7 +182,6 @@ const formFields = reactive({
   // in a dropdown that displays a string that can be blank. TODO
   selectedConnection: undefined as any,
   selectedCred: undefined as any,
-  filterType: isAskarAnoncredsWallet.value ? 'anoncreds' : 'indy',
 });
 const rules = {
   credentialValuesEditing: {},
@@ -377,10 +358,8 @@ const handleSubmit = async (isFormValid: boolean) => {
     return;
   }
   try {
-    // Use selected filter type
-    const filterType =
-      formFields.filterType ||
-      (isAskarAnoncredsWallet.value ? 'anoncreds' : 'indy');
+    // Auto-determine filter type based on wallet type
+    const filterTypeValue = filterType.value;
 
     const payload = {
       auto_issue: true,
@@ -391,7 +370,7 @@ const handleSubmit = async (isFormValid: boolean) => {
         attributes: credentialValuesRaw.value,
       },
       filter: {
-        [filterType]: {
+        [filterTypeValue]: {
           cred_def_id: formFields.selectedCred.value,
         },
       },
