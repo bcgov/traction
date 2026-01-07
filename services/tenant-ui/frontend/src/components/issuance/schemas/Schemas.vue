@@ -215,7 +215,7 @@ const formattedSchemaList = computed(() => formatSchemaList(schemaList));
 // Loading the schema list and the stored cred defs
 const loadTable = async () => {
   try {
-    // For both wallet types, use schema storage (anoncreds schemas are now automatically stored)
+    // For both wallet types, use schema storage: anoncreds schemas are stored automatically when possible, with manual fallback supported
     await governanceStore.listStoredSchemas();
     // Wait til schemas are loaded so the getter can map together the schemas to creds
     await governanceStore.listStoredCredentialDefinitions();
