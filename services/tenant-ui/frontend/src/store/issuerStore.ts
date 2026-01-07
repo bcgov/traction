@@ -146,10 +146,20 @@ export const useIssuerStore = defineStore('issuer', () => {
           // For AnonCreds endpoint, verify the revocation actually succeeded
           // The endpoint might return success but not actually revoke (e.g., Indy credential in AnonCreds wallet)
           if (useAnonCredsEndpoint && isAnonCredsCredential === undefined) {
-            // Wait a moment for state to update, then verify
-            await new Promise((resolve) => setTimeout(resolve, 500));
-            await listCredentials();
+            // Best-effort polling: refresh credentials a few times with a short delay
+            const maxAttempts = 3;
+            const delayMs = 200;
 
+            for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+              await listCredentials();
+
+              // If additional verification logic becomes available (e.g., using a cred_ex_id),
+              // it can be added here to break early when revocation is confirmed.
+
+              if (attempt < maxAttempts) {
+                await new Promise((resolve) => setTimeout(resolve, delayMs));
+              }
+            }
             // Check if the credential was actually revoked by looking for it in the list
             // If credential format wasn't detected, the revocation might have failed silently
             console.log('Verifying revocation succeeded...');
