@@ -172,10 +172,10 @@ export const useGovernanceStore = defineStore('governance', () => {
               ledger_id: schemaData.schema_id,
             } as SchemaStorageRecord;
           } catch (err) {
-            console.error(
-              'Failed to fetch anoncreds schema',
-              { schemaId, error: err }
-            );
+            console.error('Failed to fetch anoncreds schema', {
+              schemaId,
+              error: err,
+            });
             return null;
           }
         });
@@ -398,10 +398,10 @@ export const useGovernanceStore = defineStore('governance', () => {
                   credDefData?.credential_definition_metadata?.created_at,
               } as CredDefStorageRecord;
             } catch (err) {
-              console.error(
-                'Failed to fetch anoncreds credential definition',
-                { cred_def_id: credDefId, error: err }
-              );
+              console.error('Failed to fetch anoncreds credential definition', {
+                cred_def_id: credDefId,
+                error: err,
+              });
               return null;
             }
           });
