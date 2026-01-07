@@ -321,7 +321,7 @@ const loadIssuerIdentifiers = async () => {
   loadingIssuerIdentifiers.value = true;
   try {
     // Fetch all DIDs from the wallet
-    await tenantStore.getWalletcDids();
+    await tenantStore.getWalletDids();
     const allDids = tenantStore.walletDids || [];
 
     // Filter and format DIDs
