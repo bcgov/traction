@@ -147,9 +147,6 @@ const handleSubmit = async (isFormValid: boolean) => {
 
     await issuerStore.revokeCredential(payload, isAnonCredsCredential);
 
-    // Wait a moment for state to update
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
     // If format couldn't be detected, show a warning message instead of success
     if (isAnonCredsCredential === undefined) {
       toast.warning(
