@@ -87,31 +87,51 @@ class SchemaStorageService:
 
             if is_anoncreds:
                 # Fetch anoncreds schema from registry
-                try:
-                    from acapy_agent.anoncreds.registry import AnonCredsRegistry
-                    anoncreds_registry = profile.inject(AnonCredsRegistry)
-                    schema_result = await anoncreds_registry.get_schema(profile, schema_id)
-                    
-                    # Convert anoncreds schema to storage format
-                    anoncreds_schema = schema_result.schema
-                    schema = {
-                        "id": schema_id,
-                        "name": anoncreds_schema.name,
-                        "version": anoncreds_schema.version,
-                        "attrNames": anoncreds_schema.attr_names,
-                        "issuerId": anoncreds_schema.issuer_id,
-                    }
-                    # Store the full schema_dict for anoncreds (serialized format)
-                    schema_dict = anoncreds_schema.serialize()
-                    
-                    # Extract ledger_id from resolution_metadata if available
-                    if schema_result.resolution_metadata:
-                        ledger_id = schema_result.resolution_metadata.get("ledger_id")
-                    
-                    self.logger.debug(f"anoncreds schema = {schema}")
-                except Exception as err:
-                    self.logger.error(f"Error fetching anoncreds schema: {err}")
-                    raise StorageNotFoundError(f"AnonCreds schema not found: {schema_id}") from err
+                # Retry logic: schema might not be immediately available after transaction
+                from acapy_agent.anoncreds.registry import AnonCredsRegistry
+                anoncreds_registry = profile.inject(AnonCredsRegistry)
+                
+                max_retries = 3
+                retry_delay = 1.0  # seconds
+                schema_result = None
+                last_error = None
+                
+                for attempt in range(max_retries):
+                    try:
+                        schema_result = await anoncreds_registry.get_schema(profile, schema_id)
+                        break  # Success, exit retry loop
+                    except Exception as err:
+                        last_error = err
+                        if attempt < max_retries - 1:
+                            self.logger.warning(
+                                f"Attempt {attempt + 1}/{max_retries} failed to fetch anoncreds schema {schema_id}, retrying in {retry_delay}s: {err}"
+                            )
+                            import asyncio
+                            await asyncio.sleep(retry_delay)
+                        else:
+                            self.logger.error(f"Error fetching anoncreds schema after {max_retries} attempts: {err}")
+                            raise StorageNotFoundError(f"AnonCreds schema not found: {schema_id}") from err
+                
+                if schema_result is None:
+                    raise StorageNotFoundError(f"AnonCreds schema not found: {schema_id}")
+                
+                # Convert anoncreds schema to storage format
+                anoncreds_schema = schema_result.schema
+                schema = {
+                    "id": schema_id,
+                    "name": anoncreds_schema.name,
+                    "version": anoncreds_schema.version,
+                    "attrNames": anoncreds_schema.attr_names,
+                    "issuerId": anoncreds_schema.issuer_id,
+                }
+                # Store the full schema_dict for anoncreds (serialized format)
+                schema_dict = anoncreds_schema.serialize()
+                
+                # Extract ledger_id from resolution_metadata if available
+                if schema_result.resolution_metadata:
+                    ledger_id = schema_result.resolution_metadata.get("ledger_id")
+                
+                self.logger.debug(f"anoncreds schema = {schema}")
             else:
                 # Fetch Indy schema from ledger
                 async with profile.session() as session:
@@ -207,10 +227,14 @@ async def schemas_event_handler(profile: Profile, event: Event):
     LOGGER.debug(f"profile = {profile}")
     LOGGER.debug(f"event = {event}")
 
-    schema_id = event.payload["context"]["schema_id"]
-    srv = profile.inject(SchemaStorageService)
-    # add_item will auto-detect if it's anoncreds based on wallet type
-    schema_storage_record = await srv.add_item(profile, schema_id)
-    LOGGER.debug(f"schema_storage_record = {schema_storage_record}")
+    try:
+        schema_id = event.payload["context"]["schema_id"]
+        srv = profile.inject(SchemaStorageService)
+        # add_item will auto-detect if it's anoncreds based on wallet type
+        schema_storage_record = await srv.add_item(profile, schema_id)
+        LOGGER.debug(f"schema_storage_record = {schema_storage_record}")
+    except Exception as err:
+        LOGGER.error(f"Error in schemas_event_handler for schema_id {event.payload.get('context', {}).get('schema_id', 'unknown')}: {err}", exc_info=True)
+        raise
 
     LOGGER.info("< schemas_event_handler")
