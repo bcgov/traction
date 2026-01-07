@@ -397,7 +397,11 @@ export const useGovernanceStore = defineStore('governance', () => {
                 created_at:
                   credDefData?.credential_definition_metadata?.created_at,
               } as CredDefStorageRecord;
-            } catch (_err) {
+            } catch (err) {
+              console.error(
+                'Failed to fetch anoncreds credential definition',
+                { cred_def_id: credDefId, error: err }
+              );
               return null;
             }
           });
