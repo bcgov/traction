@@ -648,7 +648,7 @@ onMounted(async () => {
     tasks.push(tenantStore.getServerConfig());
   }
   // Fetch wallet DIDs, public DID, and write ledger for Indy identifier display
-  tasks.push(tenantStore.getWalletcDids());
+  tasks.push(tenantStore.getWalletDids());
   tasks.push(tenantStore.getPublicDid());
   tasks.push(tenantStore.getWriteLedger());
 
