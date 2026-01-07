@@ -342,7 +342,7 @@ export const useTenantStore = defineStore('tenant', () => {
     return result;
   }
 
-  async function getWalletcDids() {
+  async function getWalletDids() {
     console.log('> tenantStore.getWalletDids');
     await fetchList(
       API_PATH.WALLET_DID,
@@ -641,7 +641,7 @@ export const useTenantStore = defineStore('tenant', () => {
       getWriteLedger();
       getPublicDid();
       getTransactions();
-      getWalletcDids();
+      getWalletDids();
       publicDidRegistrationProgress.value = '';
       loadingIssuance.value = false;
     }
@@ -854,7 +854,7 @@ export const useTenantStore = defineStore('tenant', () => {
     getTenantDefaultSettings,
     getTenantSubWallet,
     getTransactions,
-    getWalletcDids,
+    getWalletDids,
     getWebvhConfig,
     getWriteLedger,
     registerPublicDid,

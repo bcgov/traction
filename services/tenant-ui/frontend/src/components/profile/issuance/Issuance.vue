@@ -70,7 +70,7 @@ const loadIssuer = async () => {
     await Promise.all([
       tenantStore.getServerConfig(),
       tenantStore.getIssuanceStatus(),
-      tenantStore.getWalletcDids(),
+      tenantStore.getWalletDids(),
       tenantStore.getTransactions(),
     ]);
   } catch (error) {

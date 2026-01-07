@@ -63,7 +63,7 @@ const disableReason = computed(() => {
 // Load wallet DIDs when component mounts
 onMounted(() => {
   if (isAskarAnoncredsWallet?.value) {
-    tenantStore.getWalletcDids();
+    tenantStore.getWalletDids();
   }
 });
 
@@ -72,7 +72,7 @@ watch(
   () => isAskarAnoncredsWallet?.value,
   (isAnoncreds) => {
     if (isAnoncreds) {
-      tenantStore.getWalletcDids();
+      tenantStore.getWalletDids();
     }
   }
 );

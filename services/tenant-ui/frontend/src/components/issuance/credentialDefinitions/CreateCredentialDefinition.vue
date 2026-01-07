@@ -57,7 +57,7 @@ const formattedSchemaList = computed(() => formatSchemaList(schemaList));
 onMounted(() => {
   // Load wallet DIDs if using askar-anoncreds wallet
   if (isAskarAnoncredsWallet?.value) {
-    tenantStore.getWalletcDids();
+    tenantStore.getWalletDids();
   }
 });
 
@@ -66,7 +66,7 @@ watch(
   () => isAskarAnoncredsWallet?.value,
   (isAnoncreds) => {
     if (isAnoncreds) {
-      tenantStore.getWalletcDids();
+      tenantStore.getWalletDids();
     }
   }
 );
