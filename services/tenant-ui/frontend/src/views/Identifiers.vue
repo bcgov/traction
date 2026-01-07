@@ -577,7 +577,7 @@ const refreshWebvh = async () => {
   refreshingWebvh.value = true;
   try {
     await tenantStore.getServerConfig();
-    await tenantStore.getWalletcDids();
+    await tenantStore.getWalletDids();
     await tenantStore.getPublicDid();
     await tenantStore.getWriteLedger();
     await loadWebvhConfig();
