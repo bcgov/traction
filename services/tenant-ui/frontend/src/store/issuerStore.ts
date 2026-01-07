@@ -7,12 +7,14 @@ import {
 import { defineStore } from 'pinia';
 import { Ref, ref } from 'vue';
 import { useAcapyApi } from './acapyApi';
+import { useTenantStore } from './tenantStore';
 import { fetchItem } from './utils/fetchItem';
 import { fetchList } from './utils/fetchList.js';
 import { API_PATH } from '@/helpers/constants';
 
 export const useIssuerStore = defineStore('issuer', () => {
   const acapyApi = useAcapyApi();
+  const tenantStore = useTenantStore();
 
   // state
   const credentials: Ref<V20CredExRecordDetail[]> = ref([]);
@@ -77,27 +79,97 @@ export const useIssuerStore = defineStore('issuer', () => {
     );
   }
 
-  async function revokeCredential(payload: RevokeRequest) {
+  async function revokeCredential(
+    payload: RevokeRequest,
+    isAnonCredsCredential?: boolean
+  ) {
     console.log('> issuerStore.revokeCredential');
     error.value = null;
     loading.value = true;
 
+    // Determine which endpoint to use based on credential format
+    // If format is not specified, fall back to wallet type
+    let useAnonCredsEndpoint = isAnonCredsCredential;
+
+    // If credential format is not explicitly detected (undefined), check wallet type
+    if (useAnonCredsEndpoint === undefined) {
+      // Ensure wallet is loaded and get wallet type
+      let walletType: string | undefined;
+      if (!tenantStore.tenantWallet?.value) {
+        const wallet = await tenantStore.getTenantSubWallet();
+        walletType = wallet?.settings?.['wallet.type'];
+      } else {
+        walletType = tenantStore.tenantWallet.value?.settings?.['wallet.type'];
+      }
+
+      // For askar-anoncreds wallets, default to AnonCreds endpoint
+      // For other wallets, default to Indy endpoint
+      useAnonCredsEndpoint = walletType === 'askar-anoncreds';
+
+      console.log(
+        'Credential format not detected, using wallet type:',
+        walletType,
+        '-> useAnonCredsEndpoint:',
+        useAnonCredsEndpoint
+      );
+    } else {
+      console.log(
+        'Using explicit credential format detection:',
+        isAnonCredsCredential
+      );
+    }
+
+    const revocationEndpoint = useAnonCredsEndpoint
+      ? API_PATH.ANONCREDS_REVOCATION_REVOKE
+      : API_PATH.REVOCATION_REVOKE;
+
+    console.log(
+      'Using endpoint:',
+      revocationEndpoint,
+      'for AnonCreds credential:',
+      useAnonCredsEndpoint
+    );
+
     let result: RevocationModuleResponse | null = null;
 
     await acapyApi
-      .postHttp(API_PATH.REVOCATION_REVOKE, payload)
-      .then((res) => {
-        result = res.data.item;
-      })
-      .then(() => {
-        listCredentials();
+      .postHttp(revocationEndpoint, payload)
+      .then(async (res) => {
+        // AnonCreds endpoint returns {} (empty object), Indy returns { item: {...} }
+        result = res.data.item || res.data;
+
+        // Refresh credentials to get updated state
+        await listCredentials();
+
+        // For AnonCreds endpoint, verify the revocation actually succeeded
+        // The endpoint might return success but not actually revoke (e.g., Indy credential in AnonCreds wallet)
+        if (useAnonCredsEndpoint && isAnonCredsCredential === undefined) {
+          // Wait a moment for state to update, then verify
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          await listCredentials();
+
+          // Check if the credential was actually revoked by looking for it in the list
+          // If credential format wasn't detected, the revocation might have failed silently
+          console.log('Verifying revocation succeeded...');
+          // Note: We can't easily verify here without the cred_ex_id, but the refresh will show the state
+        }
       })
       .catch((err) => {
         error.value = err;
+        // If we got a 500 error, the revocation might have still succeeded
+        // (e.g., error in notification or response serialization after revocation)
+        // Refresh the credential list to check the actual state
+        if (err?.response?.status === 500) {
+          console.log(
+            'Got 500 error, refreshing credential list to check if revocation succeeded...'
+          );
+          listCredentials();
+        }
       })
       .finally(() => {
         loading.value = false;
       });
+
     console.log('< issuerStore.revokeCredential');
 
     if (error.value != null) {

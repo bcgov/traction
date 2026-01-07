@@ -210,29 +210,15 @@ const governanceStore = useGovernanceStore();
 const { loading, schemaList, selectedSchema } =
   storeToRefs(useGovernanceStore());
 
-// Wallet type check
-const walletType = computed(() => {
-  return tenantWallet?.value?.settings?.['wallet.type'] || 'unknown';
-});
-
-const isAskarAnoncredsWallet = computed(() => {
-  return walletType.value === 'askar-anoncreds';
-});
-
 const formattedSchemaList = computed(() => formatSchemaList(schemaList));
 
 // Loading the schema list and the stored cred defs
 const loadTable = async () => {
   try {
-    if (isAskarAnoncredsWallet.value) {
-      // For askar-anoncreds wallets, fetch from /anoncreds/schemas
-      await governanceStore.listAnoncredsSchemas();
-    } else {
-      // For askar wallets, use the regular schema storage
-      await governanceStore.listStoredSchemas();
-      // Wait til schemas are loaded so the getter can map together the schemas to creds
-      await governanceStore.listStoredCredentialDefinitions();
-    }
+    // For both wallet types, use schema storage (anoncreds schemas are now automatically stored)
+    await governanceStore.listStoredSchemas();
+    // Wait til schemas are loaded so the getter can map together the schemas to creds
+    await governanceStore.listStoredCredentialDefinitions();
   } catch (err) {
     console.error(err);
     toast.error(`Failure: ${err}`);

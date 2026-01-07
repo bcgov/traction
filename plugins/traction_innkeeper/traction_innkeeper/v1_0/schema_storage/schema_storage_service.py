@@ -68,36 +68,77 @@ class SchemaStorageService:
         self.logger.info(f"< list_items({tag_filter}, {post_filter}): {len(records)}")
         return records
 
-    async def add_item(self, profile: Profile, schema_id: str):
+    def _is_anoncreds_wallet(self, profile: Profile) -> bool:
+        """Check if the wallet is an anoncreds wallet."""
+        wallet_type = profile.settings.get("wallet.type", "askar")
+        return wallet_type in ("askar-anoncreds", "kanon-anoncreds")
+
+    async def add_item(self, profile: Profile, schema_id: str, is_anoncreds: Optional[bool] = None):
         self.logger.info(f"> add_item({schema_id})")
         # check if
         rec = await self.read_item(profile, schema_id)
         if not rec:
-            async with profile.session() as session:
-                multitenant_mgr = session.inject_or(BaseMultitenantManager)
-                if multitenant_mgr:
-                    ledger_exec_inst = IndyLedgerRequestsExecutor(profile)
-                else:
-                    ledger_exec_inst = session.inject(IndyLedgerRequestsExecutor)
-
-            ledger_id, ledger = await ledger_exec_inst.get_ledger_for_identifier(
-                schema_id,
-                txn_record_type=GET_SCHEMA,
-            )
             schema = None
-            self.logger.debug(f"ledger_id = {ledger_id}")
-            async with ledger:
-                try:
-                    schema = await ledger.get_schema(schema_id)
-                    self.logger.debug(f"schema = {schema}")
-                except LedgerError as err:
-                    self.logger.error(err)
+            ledger_id = None
 
-            if schema is None:
-                raise StorageNotFoundError(f"Schema not found on ledger: {schema_id}")
-            
+            # Auto-detect if anoncreds based on wallet type if not explicitly specified
+            if is_anoncreds is None:
+                is_anoncreds = self._is_anoncreds_wallet(profile)
+
+            if is_anoncreds:
+                # Fetch anoncreds schema from registry
+                try:
+                    from acapy_agent.anoncreds.registry import AnonCredsRegistry
+                    anoncreds_registry = profile.inject(AnonCredsRegistry)
+                    schema_result = await anoncreds_registry.get_schema(profile, schema_id)
+                    
+                    # Convert anoncreds schema to storage format
+                    anoncreds_schema = schema_result.schema
+                    schema = {
+                        "id": schema_id,
+                        "name": anoncreds_schema.name,
+                        "version": anoncreds_schema.version,
+                        "attrNames": anoncreds_schema.attr_names,
+                        "issuerId": anoncreds_schema.issuer_id,
+                    }
+                    # Store the full schema_dict for anoncreds (serialized format)
+                    schema_dict = anoncreds_schema.serialize()
+                    
+                    # Extract ledger_id from resolution_metadata if available
+                    if schema_result.resolution_metadata:
+                        ledger_id = schema_result.resolution_metadata.get("ledger_id")
+                    
+                    self.logger.debug(f"anoncreds schema = {schema}")
+                except Exception as err:
+                    self.logger.error(f"Error fetching anoncreds schema: {err}")
+                    raise StorageNotFoundError(f"AnonCreds schema not found: {schema_id}") from err
+            else:
+                # Fetch Indy schema from ledger
+                async with profile.session() as session:
+                    multitenant_mgr = session.inject_or(BaseMultitenantManager)
+                    if multitenant_mgr:
+                        ledger_exec_inst = IndyLedgerRequestsExecutor(profile)
+                    else:
+                        ledger_exec_inst = session.inject(IndyLedgerRequestsExecutor)
+
+                ledger_id, ledger = await ledger_exec_inst.get_ledger_for_identifier(
+                    schema_id,
+                    txn_record_type=GET_SCHEMA,
+                )
+                self.logger.debug(f"ledger_id = {ledger_id}")
+                async with ledger:
+                    try:
+                        schema = await ledger.get_schema(schema_id)
+                        self.logger.debug(f"indy schema = {schema}")
+                    except LedgerError as err:
+                        self.logger.error(err)
+
+                if schema is None:
+                    raise StorageNotFoundError(f"Schema not found on ledger: {schema_id}")
+                schema_dict = schema
+
             try:
-                data = {"schema_id": schema_id, "schema": schema}
+                data = {"schema_id": schema_id, "schema": schema, "schema_dict": schema_dict}
                 if ledger_id:
                     data["ledger_id"] = ledger_id
                 rec: SchemaStorageRecord = SchemaStorageRecord.deserialize(data)
@@ -168,6 +209,7 @@ async def schemas_event_handler(profile: Profile, event: Event):
 
     schema_id = event.payload["context"]["schema_id"]
     srv = profile.inject(SchemaStorageService)
+    # add_item will auto-detect if it's anoncreds based on wallet type
     schema_storage_record = await srv.add_item(profile, schema_id)
     LOGGER.debug(f"schema_storage_record = {schema_storage_record}")
 

@@ -133,6 +133,7 @@ export const API_PATH = {
   PRESENT_PROOF_20_SEND_REQUEST: '/present-proof-2.0/send-request',
 
   REVOCATION_REVOKE: '/revocation/revoke',
+  ANONCREDS_REVOCATION_REVOKE: '/anoncreds/revocation/revoke',
 
   SCHEMAS: '/schemas',
   SCHEMA: (id: string) => `/schemas/${id}`,

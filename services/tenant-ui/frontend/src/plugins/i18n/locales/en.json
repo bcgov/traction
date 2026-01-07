@@ -313,6 +313,7 @@
     "credentialFieldValues": "Credential Field Values",
     "credentials": "Issued/Offered Credentials",
     "credentialValue": "Credential Value",
+    "filterType": "Filter Type",
     "delete": {
       "confirm": "Are you sure you want to DELETE this credential exchange record?",
       "removeExchange": "Remove Credential Exchange Record",
@@ -626,6 +627,7 @@
     "autoVerifyHelp": "Verifier choice to auto-verify proof presentation",
     "comment": "Optional Comment",
     "connection": "Connection",
+    "filterType": "Filter Type",
     "copyRequest": "Copy Existing Presentation Request",
     "createRequest": "Create Presentation Request",
     "delete": "Delete Presentation Exchange Record",

@@ -61,7 +61,10 @@
 <script setup lang="ts">
 // Types
 import { FormattedIssuedCredentialRecord } from '@/helpers/tableFormatters';
-import { RevokeRequest } from '@/types/acapyApi/acapyInterface';
+import {
+  RevokeRequest,
+  V20CredExRecordDetail,
+} from '@/types/acapyApi/acapyInterface';
 
 // Vue/State
 import { reactive, ref } from 'vue';
@@ -114,7 +117,45 @@ const handleSubmit = async (isFormValid: boolean) => {
       publish: true,
       notify: true,
     };
-    await issuerStore.revokeCredential(payload);
+
+    // Determine if this is an AnonCreds credential by checking if anoncreds field exists
+    // FormattedIssuedCredentialRecord extends V20CredExRecordDetail which has indy/anoncreds fields
+    // If anoncreds field exists, it's an AnonCreds credential; if only indy exists, it's Indy
+    // If neither exists, pass undefined to let the store determine based on wallet type
+    const credRecord = props.credExchRecord as V20CredExRecordDetail;
+    const isAnonCredsCredential = credRecord.anoncreds
+      ? true
+      : credRecord.indy
+        ? false
+        : undefined;
+
+    console.log('Credential format detection:', {
+      hasAnoncreds: !!credRecord.anoncreds,
+      hasIndy: !!credRecord.indy,
+      isAnonCredsCredential,
+    });
+
+    // Warn if credential format can't be detected - revocation might fail silently
+    if (isAnonCredsCredential === undefined) {
+      toast.warning(
+        'Credential format could not be detected. Please verify the revocation succeeded by checking the credential list.'
+      );
+    }
+
+    await issuerStore.revokeCredential(payload, isAnonCredsCredential);
+
+    // Wait a moment for state to update
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // If format couldn't be detected, show a warning message instead of success
+    if (isAnonCredsCredential === undefined) {
+      toast.warning(
+        'Revocation request sent. Please verify the credential was actually revoked in the credential list.'
+      );
+      emit('closed');
+      return;
+    }
+
     emit('success');
     // close up on success
     emit('closed');

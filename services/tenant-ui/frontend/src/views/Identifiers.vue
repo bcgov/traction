@@ -40,9 +40,9 @@
         :rows="TABLE_OPT.ROWS_DEFAULT"
         :rows-per-page-options="TABLE_OPT.ROWS_OPTIONS"
         :global-filter-fields="[
+          'ledger',
           'alias',
           'namespace',
-          'ledger',
           'did',
           'status',
           'type',
@@ -79,8 +79,8 @@
         <template #empty>{{ $t('common.noRecordsFound') }}</template>
         <template #loading>{{ $t('common.loading') }}</template>
         <Column
-          field="namespace"
-          :header="$t('identifiers.webvh.namespace')"
+          field="ledger"
+          :header="$t('identifiers.webvh.ledger')"
           sortable
         />
         <Column
@@ -89,8 +89,8 @@
           sortable
         />
         <Column
-          field="ledger"
-          :header="$t('identifiers.webvh.ledger')"
+          field="namespace"
+          :header="$t('identifiers.webvh.namespace')"
           sortable
         />
         <Column
@@ -231,6 +231,7 @@ const {
   webvhConfig: tenantWebvhConfig,
   walletDids,
   publicDid,
+  writeLedger,
 } = storeToRefs(tenantStore);
 const creatingDid = ref(false);
 const refreshingWebvh = ref(false);
@@ -363,7 +364,7 @@ const webvhDidRows = computed(() => {
       did: indyPublicDid,
       alias: 'Public Indy DID',
       namespace: '-',
-      ledger: '-',
+      ledger: writeLedger.value?.ledger_id || '-',
       status: 'active',
       type: 'indy',
       isPublicIndy: true,
@@ -578,6 +579,7 @@ const refreshWebvh = async () => {
     await tenantStore.getServerConfig();
     await tenantStore.getWalletcDids();
     await tenantStore.getPublicDid();
+    await tenantStore.getWriteLedger();
     await loadWebvhConfig();
   } finally {
     refreshingWebvh.value = false;
@@ -645,9 +647,10 @@ onMounted(async () => {
   if (!('config' in (serverConfig.value ?? {}))) {
     tasks.push(tenantStore.getServerConfig());
   }
-  // Fetch wallet DIDs and public DID for Indy identifier display
+  // Fetch wallet DIDs, public DID, and write ledger for Indy identifier display
   tasks.push(tenantStore.getWalletcDids());
   tasks.push(tenantStore.getPublicDid());
+  tasks.push(tenantStore.getWriteLedger());
 
   if (tasks.length) {
     await Promise.allSettled(tasks);

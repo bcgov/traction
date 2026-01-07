@@ -1,4 +1,5 @@
 export { useConfigStore } from './configStore';
+export { useCommonStore } from './commonStore';
 
 // Tenant
 export { useConnectionStore } from './connectionStore';

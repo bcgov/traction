@@ -108,7 +108,7 @@ const governanceStore = useGovernanceStore();
 const { loading, selectedSchema } = storeToRefs(useGovernanceStore());
 
 const tenantStore = useTenantStore();
-const { tenantWallet } = storeToRefs(tenantStore);
+const { tenantWallet, publicDid } = storeToRefs(tenantStore);
 
 // Check if wallet is askar-anoncreds
 const isAskarAnoncredsWallet = computed(() => {
@@ -331,18 +331,34 @@ const loadIssuerIdentifiers = async () => {
       type: 'indy' | 'webvh';
     }> = [];
 
+    // First, add the public Indy DID if it exists (from publicDid store)
+    const indyPublicDid = publicDid.value?.did;
+    if (indyPublicDid) {
+      identifiers.push({
+        label: 'Public Indy DID',
+        value: indyPublicDid,
+        type: 'indy',
+      });
+    }
+
+    // Then, add DIDs from walletDids list
     allDids.forEach((didRecord: any) => {
       const { did, method, posture } = didRecord;
 
-      // Include public Indy DIDs
-      if (method === 'sov' && posture === 'public') {
+      // Skip if this DID is already added as the public Indy DID
+      if (indyPublicDid && did === indyPublicDid) {
+        return;
+      }
+
+      // Include public Indy DIDs (check by method field: 'sov' or 'indy')
+      if ((method === 'sov' || method === 'indy') && posture === 'public') {
         identifiers.push({
           label: 'Public Indy DID',
           value: did,
           type: 'indy',
         });
       }
-      // Include WebVH DIDs
+      // Include WebVH DIDs (check by method field)
       else if (method === 'webvh') {
         // Parse WebVH DID to extract domain, namespace, alias
         // Format: did:webvh:{SCID}:domain:namespace:alias
@@ -427,8 +443,13 @@ const handleSubmit = async (isFormValid: boolean) => {
   }
 };
 
-onMounted(() => {
+onMounted(async () => {
   if (isAskarAnoncredsWallet.value) {
+    // Ensure public DID is loaded before loading identifiers
+    if (!publicDid.value) {
+      await tenantStore.getPublicDid();
+    }
+    await tenantStore.getWalletcDids();
     loadIssuerIdentifiers();
   }
 });
