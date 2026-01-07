@@ -94,14 +94,12 @@ class SchemaStorageService:
                 max_retries = 3
                 retry_delay = 1.0  # seconds
                 schema_result = None
-                last_error = None
                 
                 for attempt in range(max_retries):
                     try:
                         schema_result = await anoncreds_registry.get_schema(profile, schema_id)
                         break  # Success, exit retry loop
                     except Exception as err:
-                        last_error = err
                         if attempt < max_retries - 1:
                             self.logger.warning(
                                 f"Attempt {attempt + 1}/{max_retries} failed to fetch anoncreds schema {schema_id}, retrying in {retry_delay}s: {err}"
