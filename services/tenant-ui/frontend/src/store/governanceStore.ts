@@ -171,7 +171,11 @@ export const useGovernanceStore = defineStore('governance', () => {
               updated_at: schemaData.schema_metadata?.updated_at,
               ledger_id: schemaData.schema_id,
             } as SchemaStorageRecord;
-          } catch (_err) {
+          } catch (err) {
+            console.error(
+              'Failed to fetch anoncreds schema',
+              { schemaId, error: err }
+            );
             return null;
           }
         });
