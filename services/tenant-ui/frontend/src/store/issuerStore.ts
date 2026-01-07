@@ -132,43 +132,40 @@ export const useIssuerStore = defineStore('issuer', () => {
 
     let result: RevocationModuleResponse | null = null;
 
-    await acapyApi
-      .postHttp(revocationEndpoint, payload)
-      .then(async (res) => {
-        // AnonCreds endpoint returns {} (empty object), Indy returns { item: {...} }
-        result = res.data.item || res.data;
+    try {
+      const res = await acapyApi.postHttp(revocationEndpoint, payload);
+      // AnonCreds endpoint returns {} (empty object), Indy returns { item: {...} }
+      result = res.data.item || res.data;
 
-        // Refresh credentials to get updated state
+      // Refresh credentials to get updated state
+      await listCredentials();
+
+      // For AnonCreds endpoint, verify the revocation actually succeeded
+      // The endpoint might return success but not actually revoke (e.g., Indy credential in AnonCreds wallet)
+      if (useAnonCredsEndpoint && isAnonCredsCredential === undefined) {
+        // Wait a moment for state to update, then verify
+        await new Promise((resolve) => setTimeout(resolve, 500));
         await listCredentials();
 
-        // For AnonCreds endpoint, verify the revocation actually succeeded
-        // The endpoint might return success but not actually revoke (e.g., Indy credential in AnonCreds wallet)
-        if (useAnonCredsEndpoint && isAnonCredsCredential === undefined) {
-          // Wait a moment for state to update, then verify
-          await new Promise((resolve) => setTimeout(resolve, 500));
-          await listCredentials();
-
-          // Check if the credential was actually revoked by looking for it in the list
-          // If credential format wasn't detected, the revocation might have failed silently
-          console.log('Verifying revocation succeeded...');
-          // Note: We can't easily verify here without the cred_ex_id, but the refresh will show the state
-        }
-      })
-      .catch((err) => {
-        error.value = err;
-        // If we got a 500 error, the revocation might have still succeeded
-        // (e.g., error in notification or response serialization after revocation)
-        // Refresh the credential list to check the actual state
-        if (err?.response?.status === 500) {
-          console.log(
-            'Got 500 error, refreshing credential list to check if revocation succeeded...'
-          );
-          listCredentials();
-        }
-      })
-      .finally(() => {
-        loading.value = false;
-      });
+        // Check if the credential was actually revoked by looking for it in the list
+        // If credential format wasn't detected, the revocation might have failed silently
+        console.log('Verifying revocation succeeded...');
+        // Note: We can't easily verify here without the cred_ex_id, but the refresh will show the state
+      }
+    } catch (err: any) {
+      error.value = err;
+      // If we got a 500 error, the revocation might have still succeeded
+      // (e.g., error in notification or response serialization after revocation)
+      // Refresh the credential list to check the actual state
+      if (err?.response?.status === 500) {
+        console.log(
+          'Got 500 error, refreshing credential list to check if revocation succeeded...'
+        );
+        listCredentials();
+      }
+    } finally {
+      loading.value = false;
+    }
 
     console.log('< issuerStore.revokeCredential');
 
