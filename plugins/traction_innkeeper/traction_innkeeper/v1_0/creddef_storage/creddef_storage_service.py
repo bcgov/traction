@@ -79,6 +79,13 @@ class CredDefStorageService:
         if not cred_def_id:
             raise ValueError("cred_def_id is required in data")
         
+        # Preserve rev_reg_size from original data before we potentially overwrite it
+        original_rev_reg_size = data.get("rev_reg_size")
+        if original_rev_reg_size is None and "options" in data:
+            options = data.get("options", {})
+            if isinstance(options, dict):
+                original_rev_reg_size = options.get("revocation_registry_size")
+        
         rec = await self.read_item(profile, cred_def_id)
         if not rec:
             # Check if we need to fetch from anoncreds registry or ledger
@@ -105,13 +112,18 @@ class CredDefStorageService:
                         if hasattr(cred_def.value, 'revocation'):
                             support_revocation = cred_def.value.revocation is not None
                     
-                    # Extract rev_reg_size from options if available in the original data
-                    rev_reg_size = data.get("rev_reg_size")
-                    if rev_reg_size is None and "options" in data:
-                        options = data.get("options", {})
-                        rev_reg_size = options.get("revocation_registry_size")
+                    # Use the preserved rev_reg_size from original data, or try to extract it
+                    rev_reg_size = original_rev_reg_size
+                    if rev_reg_size is None:
+                        # Try to get it from data (in case it wasn't preserved)
+                        rev_reg_size = data.get("rev_reg_size")
+                        if rev_reg_size is None and "options" in data:
+                            options = data.get("options", {})
+                            if isinstance(options, dict):
+                                rev_reg_size = options.get("revocation_registry_size")
                     
                     # Update data with anoncreds credential definition info
+                    # Preserve rev_reg_size if it was in the original data
                     data = {
                         "cred_def_id": cred_def_id,
                         "schema_id": cred_def.schema_id,
