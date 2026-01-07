@@ -449,7 +449,7 @@ onMounted(async () => {
     if (!publicDid.value) {
       await tenantStore.getPublicDid();
     }
-    await tenantStore.getWalletcDids();
+    await tenantStore.getWalletDids();
     loadIssuerIdentifiers();
   }
 });
