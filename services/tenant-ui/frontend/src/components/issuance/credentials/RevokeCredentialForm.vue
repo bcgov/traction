@@ -118,20 +118,23 @@ const handleSubmit = async (isFormValid: boolean) => {
       notify: true,
     };
 
-    // Determine if this is an AnonCreds credential by checking if anoncreds field exists
+    // Determine if this is an AnonCreds credential by checking if anoncreds/indy fields exist
     // FormattedIssuedCredentialRecord extends V20CredExRecordDetail which has indy/anoncreds fields
-    // If anoncreds field exists, it's an AnonCreds credential; if only indy exists, it's Indy
-    // If neither exists, pass undefined to let the store determine based on wallet type
+    // If only anoncreds exists, it's an AnonCreds credential; if only indy exists, it's Indy
+    // If both or neither exist, pass undefined to let the store determine based on wallet type
     const credRecord = props.credExchRecord as V20CredExRecordDetail;
-    const isAnonCredsCredential = credRecord.anoncreds
-      ? true
-      : credRecord.indy
-      ? false
-      : undefined;
+    const hasAnoncreds = !!credRecord.anoncreds;
+    const hasIndy = !!credRecord.indy;
+    const isAnonCredsCredential =
+      hasAnoncreds && !hasIndy
+        ? true
+        : hasIndy && !hasAnoncreds
+          ? false
+          : undefined;
 
     console.log('Credential format detection:', {
-      hasAnoncreds: !!credRecord.anoncreds,
-      hasIndy: !!credRecord.indy,
+      hasAnoncreds,
+      hasIndy,
       isAnonCredsCredential,
     });
 
