@@ -147,7 +147,8 @@ export const API_PATH = {
 
   SCHEMA_STORAGE: '/schema-storage',
   SCHEMA_STORAGE_SYNC: '/schema-storage/sync-created',
-  SCHEMA_STORAGE_ITEM: (id: string) => `/schema-storage/${encodeURIComponent(id)}`,
+  SCHEMA_STORAGE_ITEM: (id: string) =>
+    `/schema-storage/${encodeURIComponent(id)}`,
 
   TENANT_SELF: '/tenant',
   TENANT_DELETE: '/tenant/hard',

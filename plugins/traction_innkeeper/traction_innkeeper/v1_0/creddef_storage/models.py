@@ -65,9 +65,16 @@ def validate_cred_def_id(value):
     if len(value.strip()) == 0:
         raise ValidationError("Credential definition ID cannot be empty")
     
-    # Indy cred def ID format: DID:3:CL:DID:2:schema_name:version:tag
-    # Pattern: ^[base58]{21,22}:3:CL:[base58]{21,22}:2:.+:[0-9.]+:.+$
-    indy_pattern = r"^[1-9A-HJ-NP-Za-km-z]{21,22}:3:CL:[1-9A-HJ-NP-Za-km-z]{21,22}:2:.+:[0-9.]+:.+$"
+    # Indy cred def ID format: DID:3:CL:(seq_no|schema_id):tag
+    # Pattern: ^[base58]{21,22}:3:CL:(([1-9][0-9]*)|([base58]{21,22}:2:.+:[0-9.]+)):(.+)?$
+    # Schema reference can be either a sequence number or full schema ID
+    indy_pattern = (
+        r"^[1-9A-HJ-NP-Za-km-z]{21,22}"  # issuer DID
+        r":3"  # cred def id marker
+        r":CL"  # sig alg
+        r":(([1-9][0-9]*)|([1-9A-HJ-NP-Za-km-z]{21,22}:2:.+:[0-9.]+))"  # schema txn/id
+        r":(.+)?$"  # optional tag
+    )
     
     # Check if it matches Indy format
     if re.match(indy_pattern, value):
