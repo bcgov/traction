@@ -598,7 +598,7 @@ export const useGovernanceStore = defineStore('governance', () => {
         // Wait a bit for event handler to complete (if it runs)
         await new Promise((resolve) => setTimeout(resolve, 1500));
 
-        // Refresh the schema list
+        // Refresh the stored schema list
         await listStoredSchemas();
 
         // Check if schema is in storage after refresh
