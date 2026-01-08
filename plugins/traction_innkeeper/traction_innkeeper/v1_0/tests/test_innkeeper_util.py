@@ -452,9 +452,11 @@ async def test_refresh_registration_token_save_fails():
         ReservationRecord, "retrieve_by_reservation_id", return_value=mock_rec
     ):
         # Use patches for token generation primitives like in success case
-        with patch("traction_innkeeper.v1_0.innkeeper.utils.uuid"), patch(
-            "traction_innkeeper.v1_0.innkeeper.utils.bcrypt"
-        ), patch("traction_innkeeper.v1_0.innkeeper.utils.datetime"):
+        with (
+            patch("traction_innkeeper.v1_0.innkeeper.utils.uuid"),
+            patch("traction_innkeeper.v1_0.innkeeper.utils.bcrypt"),
+            patch("traction_innkeeper.v1_0.innkeeper.utils.datetime"),
+        ):
             # 4. Call and assert exception
             with pytest.raises(
                 ReservationException, match="Could not update reservation record."

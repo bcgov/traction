@@ -162,7 +162,9 @@ async def test_creddef_storage_list(
     # Check service was injected and called
     mock_context.inject_or.assert_called_once_with(CredDefStorageService)
     mock_creddef_storage_service.list_items.assert_awaited_once_with(
-        profile, {}, {}  # Default filters
+        profile,
+        {},
+        {},  # Default filters
     )
 
     # Check response

@@ -8,9 +8,7 @@ from acapy_agent.protocols.issue_credential.v1_0 import V10CredentialExchange
 from acapy_agent.storage.error import StorageError, StorageNotFoundError
 
 LOGGER = logging.getLogger(__name__)
-REVOCATION_NOTIFICATION_EVENT_PATTERN = re.compile(
-    "acapy::revocation-notification::.*"
-)
+REVOCATION_NOTIFICATION_EVENT_PATTERN = re.compile("acapy::revocation-notification::.*")
 
 
 class HolderRevocationService:

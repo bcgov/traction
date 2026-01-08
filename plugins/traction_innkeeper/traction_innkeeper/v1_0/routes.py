@@ -15,7 +15,7 @@ def load_routes(module_name):
     except Exception as err:
         LOGGER.warning(f"Error loading routes for {module_name}: {err}")
         routes = None
-        
+
     LOGGER.info(f"< load_routes({module_name}): {routes}")
     return routes
 

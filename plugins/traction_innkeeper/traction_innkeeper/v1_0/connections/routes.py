@@ -7,11 +7,14 @@ from acapy_agent.messaging.models.base import BaseModelError
 from acapy_agent.storage.error import StorageNotFoundError
 from aiohttp import web
 from aiohttp_apispec import docs, match_info_schema, response_schema
-from connections.v1_0.routes import (ConnectionsConnIdMatchInfoSchema,
-                                     InvitationResultSchema)
+from connections.v1_0.routes import (
+    ConnectionsConnIdMatchInfoSchema,
+    InvitationResultSchema,
+)
 from marshmallow import fields
 
 LOGGER = logging.getLogger(__name__)
+
 
 class InvitationResponseSchema(InvitationResultSchema):
     """Response schema for a previous connection invitation."""
@@ -21,6 +24,7 @@ class InvitationResponseSchema(InvitationResultSchema):
         allow_none=True,
         metadata={"description": "Optional alias for the connection", "example": "Bob"},
     )
+
 
 @docs(tags=["connection"], summary="Fetch connection invitation")
 @match_info_schema(ConnectionsConnIdMatchInfoSchema())
@@ -71,13 +75,13 @@ async def connections_invitation(request: web.BaseRequest):
         except BaseModelError as err:
             raise web.HTTPBadRequest(reason=err.roll_up) from err
 
-    invitation_url = invitation.to_url(base_url) # Let's see what to_url produces
+    invitation_url = invitation.to_url(base_url)  # Let's see what to_url produces
 
     # Always prepend base_url if to_url returns only query params
-    if invitation_url.startswith("?"): # Check if to_url returned only query params
+    if invitation_url.startswith("?"):  # Check if to_url returned only query params
         constructed_invitation_url = f"{base_url}{invitation_url}"
     else:
-        constructed_invitation_url = invitation_url # Assume to_url worked correctly
+        constructed_invitation_url = invitation_url  # Assume to_url worked correctly
 
     result = {
         "connection_id": connection_id,

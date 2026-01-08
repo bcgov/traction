@@ -73,7 +73,9 @@ class SchemaStorageService:
         wallet_type = profile.settings.get("wallet.type", "askar")
         return wallet_type in ("askar-anoncreds", "kanon-anoncreds")
 
-    async def add_item(self, profile: Profile, schema_id: str, is_anoncreds: Optional[bool] = None):
+    async def add_item(
+        self, profile: Profile, schema_id: str, is_anoncreds: Optional[bool] = None
+    ):
         self.logger.info(f"> add_item({schema_id})")
         # check if
         rec = await self.read_item(profile, schema_id)
@@ -90,32 +92,40 @@ class SchemaStorageService:
                 # Retry logic: schema might not be immediately available after transaction
                 from acapy_agent.anoncreds.registry import AnonCredsRegistry
                 import asyncio
-                
+
                 anoncreds_registry = profile.inject(AnonCredsRegistry)
-                
+
                 max_retries = 3
                 base_delay = 1.0  # seconds - base delay for exponential backoff
                 schema_result = None
-                
+
                 for attempt in range(max_retries):
                     try:
-                        schema_result = await anoncreds_registry.get_schema(profile, schema_id)
+                        schema_result = await anoncreds_registry.get_schema(
+                            profile, schema_id
+                        )
                         break  # Success, exit retry loop
                     except Exception as err:
                         if attempt < max_retries - 1:
                             # Exponential backoff: delay = base_delay * (2 ^ attempt)
-                            delay = base_delay * (2 ** attempt)
+                            delay = base_delay * (2**attempt)
                             self.logger.warning(
                                 f"Attempt {attempt + 1}/{max_retries} failed to fetch anoncreds schema {schema_id}, retrying in {delay}s: {err}"
                             )
                             await asyncio.sleep(delay)
                         else:
-                            self.logger.error(f"Error fetching anoncreds schema after {max_retries} attempts: {err}")
-                            raise StorageNotFoundError(f"AnonCreds schema not found: {schema_id}") from err
-                
+                            self.logger.error(
+                                f"Error fetching anoncreds schema after {max_retries} attempts: {err}"
+                            )
+                            raise StorageNotFoundError(
+                                f"AnonCreds schema not found: {schema_id}"
+                            ) from err
+
                 if schema_result is None:
-                    raise StorageNotFoundError(f"AnonCreds schema not found: {schema_id}")
-                
+                    raise StorageNotFoundError(
+                        f"AnonCreds schema not found: {schema_id}"
+                    )
+
                 # Convert anoncreds schema to storage format
                 anoncreds_schema = schema_result.schema
                 schema = {
@@ -127,11 +137,11 @@ class SchemaStorageService:
                 }
                 # Store the full schema_dict for anoncreds (serialized format)
                 schema_dict = anoncreds_schema.serialize()
-                
+
                 # Extract ledger_id from resolution_metadata if available
                 if schema_result.resolution_metadata:
                     ledger_id = schema_result.resolution_metadata.get("ledger_id")
-                
+
                 self.logger.debug(f"anoncreds schema = {schema}")
             else:
                 # Fetch Indy schema from ledger
@@ -155,11 +165,17 @@ class SchemaStorageService:
                         self.logger.error(err)
 
                 if schema is None:
-                    raise StorageNotFoundError(f"Schema not found on ledger: {schema_id}")
+                    raise StorageNotFoundError(
+                        f"Schema not found on ledger: {schema_id}"
+                    )
                 schema_dict = schema
 
             try:
-                data = {"schema_id": schema_id, "schema": schema, "schema_dict": schema_dict}
+                data = {
+                    "schema_id": schema_id,
+                    "schema": schema,
+                    "schema_dict": schema_dict,
+                }
                 if ledger_id:
                     data["ledger_id"] = ledger_id
                 rec: SchemaStorageRecord = SchemaStorageRecord.deserialize(data)
@@ -235,7 +251,10 @@ async def schemas_event_handler(profile: Profile, event: Event):
         schema_storage_record = await srv.add_item(profile, schema_id)
         LOGGER.debug(f"schema_storage_record = {schema_storage_record}")
     except Exception as err:
-        LOGGER.error(f"Error in schemas_event_handler for schema_id {event.payload.get('context', {}).get('schema_id', 'unknown')}: {err}", exc_info=True)
+        LOGGER.error(
+            f"Error in schemas_event_handler for schema_id {event.payload.get('context', {}).get('schema_id', 'unknown')}: {err}",
+            exc_info=True,
+        )
         raise
 
     LOGGER.info("< schemas_event_handler")

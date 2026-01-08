@@ -61,10 +61,10 @@ def validate_cred_def_id(value):
     """Validate credential definition ID as either Indy or AnonCreds format."""
     if not value or not isinstance(value, str):
         raise ValidationError("Credential definition ID must be a non-empty string")
-    
+
     if len(value.strip()) == 0:
         raise ValidationError("Credential definition ID cannot be empty")
-    
+
     # Indy cred def ID format: DID:3:CL:(seq_no|schema_id):tag
     # Pattern: ^[base58]{21,22}:3:CL:(([1-9][0-9]*)|([base58]{21,22}:2:.+:[0-9.]+)):(.+)?$
     # Schema reference can be either a sequence number or full schema ID
@@ -75,7 +75,7 @@ def validate_cred_def_id(value):
         r":(([1-9][0-9]*)|([1-9A-HJ-NP-Za-km-z]{21,22}:2:.+:[0-9.]+))"  # schema txn/id
         r":(.+)?$"  # optional tag
     )
-    
+
     # Check if it matches Indy format
     if re.match(indy_pattern, value):
         # Validate using the official Indy validator
@@ -84,7 +84,7 @@ def validate_cred_def_id(value):
         except ValidationError:
             # If Indy validator fails, still accept it (might be edge case)
             pass
-    
+
     # Accept all non-empty strings as valid credential definition IDs
     # (Indy format validated above, everything else is AnonCreds)
     return
@@ -94,13 +94,13 @@ def validate_schema_id_for_creddef(value):
     """Validate schema ID as either Indy or AnonCreds format."""
     if not value or not isinstance(value, str):
         raise ValidationError("Schema ID must be a non-empty string")
-    
+
     if len(value.strip()) == 0:
         raise ValidationError("Schema ID cannot be empty")
-    
+
     # Indy schema ID format: DID:2:name:version
     indy_pattern = r"^[1-9A-HJ-NP-Za-km-z]{21,22}:2:.+:[0-9.]+$"
-    
+
     # Check if it matches Indy format
     if re.match(indy_pattern, value):
         # Validate using the official Indy validator
@@ -109,7 +109,7 @@ def validate_schema_id_for_creddef(value):
         except ValidationError:
             # If Indy validator fails, still accept it (might be edge case)
             pass
-    
+
     # Accept all non-empty strings as valid schema IDs
     return
 
