@@ -684,6 +684,7 @@ export const useGovernanceStore = defineStore('governance', () => {
 
   async function addCredDefFromLedgerToStorage(payload: {
     cred_def_id: string;
+    schema_id: string;
   }) {
     console.log('> governanceStore.addCredDefFromLedgerToStorage');
     error.value = null;
@@ -795,7 +796,21 @@ export const useGovernanceStore = defineStore('governance', () => {
             `Credential definition ${credDefId} not found in storage after event handler, manually adding...`
           );
           try {
-            await addCredDefFromLedgerToStorage({ cred_def_id: credDefId });
+            // Extract schema_id from the original payload
+            const schemaId =
+              payload.credential_definition?.schemaId ||
+              result?.credential_definition_state?.credential_definition
+                ?.schemaId;
+            if (!schemaId) {
+              console.warn(
+                'No schema_id found, cannot manually add credential definition to storage'
+              );
+              return;
+            }
+            await addCredDefFromLedgerToStorage({
+              cred_def_id: credDefId,
+              schema_id: schemaId,
+            });
             // Refresh again after manual add
             await listStoredCredentialDefinitions();
           } catch (err) {
