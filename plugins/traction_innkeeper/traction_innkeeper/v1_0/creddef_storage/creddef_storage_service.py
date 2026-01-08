@@ -69,60 +69,6 @@ class CredDefStorageService:
         wallet_type = profile.settings.get("wallet.type", "askar")
         return wallet_type in ("askar-anoncreds", "kanon-anoncreds")
 
-    def _extract_rev_reg_size(self, data: dict) -> Optional[int]:
-        """Extract rev_reg_size from data dict.
-
-        For AnonCreds events: rev_reg_size is always set during normalization (from max_cred_num).
-        For Indy events: rev_reg_size may be in data directly or in options.
-        """
-        rev_reg_size = data.get("rev_reg_size")
-        if rev_reg_size is None and "options" in data:
-            options = data.get("options", {})
-            if isinstance(options, dict):
-                rev_reg_size = options.get("revocation_registry_size")
-        return rev_reg_size
-
-    def _supports_revocation(self, revocation: any) -> bool:
-        """Check if revocation is supported based on revocation value."""
-        return revocation is not None and bool(revocation)
-
-    async def _fetch_cred_def_from_registry(
-        self, profile: Profile, cred_def_id: str, original_rev_reg_size: Optional[int]
-    ) -> dict:
-        """Fetch credential definition from AnonCredsRegistry (supports both AnonCreds and Indy)."""
-        from acapy_agent.anoncreds.registry import AnonCredsRegistry
-        from acapy_agent.anoncreds.base import AnonCredsResolutionError
-
-        try:
-            anoncreds_registry = profile.inject(AnonCredsRegistry)
-            cred_def_result = await anoncreds_registry.get_credential_definition(
-                profile, cred_def_id
-            )
-
-            cred_def = cred_def_result.credential_definition
-
-            # Determine support_revocation from the credential definition value
-            support_revocation = False
-            if hasattr(cred_def, "value") and cred_def.value:
-                if hasattr(cred_def.value, "revocation"):
-                    support_revocation = self._supports_revocation(
-                        cred_def.value.revocation
-                    )
-
-            return {
-                "cred_def_id": cred_def_id,
-                "schema_id": cred_def.schema_id,
-                "tag": cred_def.tag or "default",
-                "support_revocation": support_revocation,
-                "rev_reg_size": original_rev_reg_size,
-            }
-        except AnonCredsResolutionError as err:
-            # Registry doesn't support this identifier or failed to resolve
-            self.logger.debug(
-                f"AnonCredsRegistry could not resolve {cred_def_id}: {err}"
-            )
-            raise
-
     async def _fetch_tag(
         self,
         profile: Profile,
@@ -184,22 +130,12 @@ class CredDefStorageService:
             self.logger.info(f"< add_item({cred_def_id}): {rec}")
             return rec
 
-        # Preserve rev_reg_size from original data before we potentially overwrite it
-        # For AnonCreds events: rev_reg_size is always set during normalization (from max_cred_num)
-        # For Indy events: rev_reg_size may be in data or options
-        original_rev_reg_size = self._extract_rev_reg_size(data)
-
         # Fetch tag from registry for AnonCreds credential definitions
         # AnonCreds events never include tag, so we must fetch it
         if self._is_anoncreds_wallet(profile):
             tag = await self._fetch_tag(profile, cred_def_id)
             if tag:
                 data["tag"] = tag
-
-        # Ensure rev_reg_size is preserved if it was in original data
-        # This is mainly for Indy events where rev_reg_size might be in options
-        if original_rev_reg_size is not None and "rev_reg_size" not in data:
-            data["rev_reg_size"] = original_rev_reg_size
 
         # Create and save the storage record
         try:
