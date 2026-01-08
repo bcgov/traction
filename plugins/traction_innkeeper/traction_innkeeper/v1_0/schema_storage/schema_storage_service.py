@@ -89,10 +89,12 @@ class SchemaStorageService:
                 # Fetch anoncreds schema from registry
                 # Retry logic: schema might not be immediately available after transaction
                 from acapy_agent.anoncreds.registry import AnonCredsRegistry
+                import asyncio
+                
                 anoncreds_registry = profile.inject(AnonCredsRegistry)
                 
                 max_retries = 3
-                retry_delay = 1.0  # seconds
+                base_delay = 1.0  # seconds - base delay for exponential backoff
                 schema_result = None
                 
                 for attempt in range(max_retries):
@@ -101,11 +103,12 @@ class SchemaStorageService:
                         break  # Success, exit retry loop
                     except Exception as err:
                         if attempt < max_retries - 1:
+                            # Exponential backoff: delay = base_delay * (2 ^ attempt)
+                            delay = base_delay * (2 ** attempt)
                             self.logger.warning(
-                                f"Attempt {attempt + 1}/{max_retries} failed to fetch anoncreds schema {schema_id}, retrying in {retry_delay}s: {err}"
+                                f"Attempt {attempt + 1}/{max_retries} failed to fetch anoncreds schema {schema_id}, retrying in {delay}s: {err}"
                             )
-                            import asyncio
-                            await asyncio.sleep(retry_delay)
+                            await asyncio.sleep(delay)
                         else:
                             self.logger.error(f"Error fetching anoncreds schema after {max_retries} attempts: {err}")
                             raise StorageNotFoundError(f"AnonCreds schema not found: {schema_id}") from err

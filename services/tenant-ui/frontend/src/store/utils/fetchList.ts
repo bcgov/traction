@@ -28,22 +28,30 @@ export async function fetchListFromAPI<T>(
   error.value = null;
   loading.value = true;
   params = { ...params };
-  await api
-    .getHttp(url, params, options)
-    .then((res: AxiosRequestConfig): void => {
-      if (res.data.results) {
-        list.value = res.data.results;
-      } else if (res.data.result) {
-        // Some lists have it singular
-        list.value = res.data.result;
-      }
-    })
-    .catch((err: string): void => {
-      error.value = err;
-    })
-    .finally((): void => {
-      loading.value = false;
-    });
+  try {
+    await api
+      .getHttp(url, params, options)
+      .then((res: AxiosRequestConfig): void => {
+        if (res.data.results) {
+          list.value = res.data.results;
+        } else if (res.data.result) {
+          // Some lists have it singular
+          list.value = res.data.result;
+        }
+      })
+      .catch((err: any): void => {
+        error.value = err;
+        // Return undefined to prevent unhandled rejection
+        return undefined;
+      })
+      .finally((): void => {
+        loading.value = false;
+      });
+  } catch (err) {
+    // Catch any errors that might escape the promise chain
+    error.value = err;
+    loading.value = false;
+  }
   console.log(`< fetchList(${url})`);
   if (error.value != null) {
     // throw error so $onAction.onError listeners can add their own handler

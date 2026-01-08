@@ -97,8 +97,21 @@ export const useIssuerStore = defineStore('issuer', () => {
         // Ensure wallet is loaded and get wallet type
         let walletType: string | undefined;
         if (!tenantStore.tenantWallet?.value) {
-          const wallet = await tenantStore.getTenantSubWallet();
-          walletType = wallet?.settings?.['wallet.type'];
+          try {
+            const wallet = await tenantStore.getTenantSubWallet();
+            walletType = wallet?.settings?.['wallet.type'];
+            if (!walletType && wallet) {
+              console.warn(
+                'Wallet retrieved but wallet.type setting not found, defaulting to Indy endpoint'
+              );
+            }
+          } catch (err) {
+            console.error(
+              'Failed to retrieve tenant wallet, defaulting to Indy endpoint:',
+              err
+            );
+            walletType = undefined;
+          }
         } else {
           walletType =
             tenantStore.tenantWallet.value?.settings?.['wallet.type'];
@@ -134,50 +147,65 @@ export const useIssuerStore = defineStore('issuer', () => {
 
       let result: RevocationModuleResponse | null = null;
 
-      await acapyApi
-        .postHttp(revocationEndpoint, payload)
-        .then(async (res) => {
-          // AnonCreds endpoint returns {} (empty object), Indy returns { item: {...} }
-          result = res.data.item || res.data;
+      try {
+        await acapyApi
+          .postHttp(revocationEndpoint, payload)
+          .then(async (res) => {
+            // AnonCreds endpoint returns {} (empty object), Indy returns { item: {...} }
+            result = res.data.item || res.data;
 
-          // Refresh credentials to get updated state
-          await listCredentials();
+            // Refresh credentials to get updated state
+            await listCredentials();
 
-          // For AnonCreds endpoint, verify the revocation actually succeeded
-          // The endpoint might return success but not actually revoke (e.g., Indy credential in AnonCreds wallet)
-          if (useAnonCredsEndpoint && isAnonCredsCredential === undefined) {
-            // Best-effort polling: refresh credentials a few times with a short delay
-            const maxAttempts = 3;
-            const delayMs = 200;
+            // For AnonCreds endpoint, verify the revocation actually succeeded
+            // The endpoint might return success but not actually revoke (e.g., Indy credential in AnonCreds wallet)
+            if (useAnonCredsEndpoint && isAnonCredsCredential === undefined) {
+              // Best-effort polling: refresh credentials a few times with a short delay
+              const maxAttempts = 3;
+              const delayMs = 200;
 
-            for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-              await listCredentials();
+              for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+                await listCredentials();
 
-              // If additional verification logic becomes available (e.g., using a cred_ex_id),
-              // it can be added here to break early when revocation is confirmed.
+                // If additional verification logic becomes available (e.g., using a cred_ex_id),
+                // it can be added here to break early when revocation is confirmed.
 
-              if (attempt < maxAttempts) {
-                await new Promise((resolve) => setTimeout(resolve, delayMs));
+                if (attempt < maxAttempts) {
+                  await new Promise((resolve) => setTimeout(resolve, delayMs));
+                }
               }
+              // Check if the credential was actually revoked by looking for it in the list
+              // If credential format wasn't detected, the revocation might have failed silently
+              console.log('Verifying revocation succeeded...');
+              // Note: We can't easily verify here without the cred_ex_id, but the refresh will show the state
             }
-            // Check if the credential was actually revoked by looking for it in the list
-            // If credential format wasn't detected, the revocation might have failed silently
-            console.log('Verifying revocation succeeded...');
-            // Note: We can't easily verify here without the cred_ex_id, but the refresh will show the state
-          }
-        })
-        .catch((err) => {
+          })
+          .catch((err) => {
+            error.value = err;
+            // If we got a 500 error, the revocation might have still succeeded
+            // (e.g., error in notification or response serialization after revocation)
+            // Refresh the credential list to check the actual state
+            // Note: We don't await this to avoid overwriting the original error
+            if (err?.response?.status === 500) {
+              console.log(
+                'Got 500 error, refreshing credential list to check if revocation succeeded...'
+              );
+              // Fire-and-forget: don't await to preserve the original error
+              listCredentials().catch(() => {
+                // Silently ignore errors from listCredentials to preserve original error
+              });
+            }
+            // Re-throw to ensure the promise chain rejects
+            throw err;
+          });
+      } catch (err) {
+        // Catch any errors that escape the promise chain
+        if (error.value == null) {
           error.value = err;
-          // If we got a 500 error, the revocation might have still succeeded
-          // (e.g., error in notification or response serialization after revocation)
-          // Refresh the credential list to check the actual state
-          if (err?.response?.status === 500) {
-            console.log(
-              'Got 500 error, refreshing credential list to check if revocation succeeded...'
-            );
-            listCredentials();
-          }
-        });
+        }
+        // Re-throw to be caught by outer catch block
+        throw err;
+      }
 
       console.log('< issuerStore.revokeCredential');
 
