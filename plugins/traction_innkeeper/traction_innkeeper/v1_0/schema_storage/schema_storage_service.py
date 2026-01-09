@@ -18,6 +18,16 @@ from acapy_agent.messaging.schemas.util import (
     EVENT_LISTENER_PATTERN as SCHEMAS_EVENT_LISTENER_PATTERN,
 )
 
+# Try to import SCHEMA_FINISHED_EVENT, but handle the case where it doesn't exist
+# (e.g., if using an older version of acapy that doesn't have this event yet)
+try:
+    from acapy_agent.anoncreds.events import (
+        SCHEMA_FINISHED_EVENT,
+    )
+except (ImportError, AttributeError):
+    # If the event doesn't exist, we'll only subscribe to Indy events
+    SCHEMA_FINISHED_EVENT = None
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -236,23 +246,54 @@ class SchemaStorageService:
 
 
 def subscribe(bus: EventBus):
+    # Subscribe to Indy schema events
     bus.subscribe(SCHEMAS_EVENT_LISTENER_PATTERN, schemas_event_handler)
+    # Subscribe to AnonCreds schema events if available
+    if SCHEMA_FINISHED_EVENT:
+        bus.subscribe(SCHEMA_FINISHED_EVENT, schemas_event_handler)
+
+
+def _normalize_schema_event_payload(event: Event) -> str:
+    """Extract schema_id from either Indy (dict with context) or AnonCreds (NamedTuple) event format.
+
+    AnonCreds events use SchemaFinishedPayload NamedTuple (not a dict), so we check for
+    NamedTuple attributes and extract schema_id directly.
+    """
+    payload = event.payload
+
+    # Check if it's an AnonCreds event (NamedTuple)
+    # AnonCreds events are SchemaFinishedPayload NamedTuples, not dicts
+    if hasattr(payload, "schema_id"):
+        # AnonCreds event: SchemaFinishedPayload NamedTuple
+        return payload.schema_id
+    elif isinstance(payload, dict) and "context" in payload:
+        # Indy event: dict with "context" key
+        return payload["context"].get("schema_id")
+    else:
+        # Fallback: assume it's already a schema_id string or in the right format
+        if isinstance(payload, str):
+            return payload
+        return None
 
 
 async def schemas_event_handler(profile: Profile, event: Event):
     LOGGER.info("> schemas_event_handler")
     LOGGER.debug(f"profile = {profile}")
     LOGGER.debug(f"event = {event}")
+    LOGGER.debug(f"event.payload = {event.payload}")
 
     try:
-        schema_id = event.payload["context"]["schema_id"]
+        schema_id = _normalize_schema_event_payload(event)
+        if not schema_id:
+            raise ValueError("Could not extract schema_id from event payload")
+
         srv = profile.inject(SchemaStorageService)
         # add_item will auto-detect if it's anoncreds based on wallet type
         schema_storage_record = await srv.add_item(profile, schema_id)
         LOGGER.debug(f"schema_storage_record = {schema_storage_record}")
     except Exception as err:
         LOGGER.error(
-            f"Error in schemas_event_handler for schema_id {event.payload.get('context', {}).get('schema_id', 'unknown')}: {err}",
+            f"Error in schemas_event_handler for event {event}: {err}",
             exc_info=True,
         )
         raise
