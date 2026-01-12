@@ -286,7 +286,9 @@ async def test_add_item_existing(
     profile, _ = mock_profile
     mock_read_item.return_value = mock_schema_storage_record  # Simulate exists
 
-    result = await schema_storage_service.add_item(profile, TEST_SCHEMA_ID)
+    result = await schema_storage_service.add_item(
+        profile, {"schema_id": TEST_SCHEMA_ID}
+    )
 
     assert result == mock_schema_storage_record
     mock_read_item.assert_awaited_once_with(profile, TEST_SCHEMA_ID)
@@ -338,7 +340,9 @@ async def test_add_item_new_success_with_multitenant(
     mock_deserialize.return_value = mock_schema_storage_record
 
     # Execute the test
-    result = await schema_storage_service.add_item(profile, TEST_SCHEMA_ID)
+    result = await schema_storage_service.add_item(
+        profile, {"schema_id": TEST_SCHEMA_ID}
+    )
 
     # Assertions
     assert result == mock_schema_storage_record
@@ -392,7 +396,7 @@ async def test_add_item_ledger_schema_not_found(
     # Or mock_ledger.get_schema.side_effect = LedgerError("Not found")
 
     with pytest.raises(StorageNotFoundError, match="Schema not found on ledger"):
-        await schema_storage_service.add_item(profile, TEST_SCHEMA_ID)
+        await schema_storage_service.add_item(profile, {"schema_id": TEST_SCHEMA_ID})
 
     mock_read_item.assert_awaited_once_with(profile, TEST_SCHEMA_ID)
     mock_ledger.get_schema.assert_awaited_once_with(TEST_SCHEMA_ID)
@@ -430,7 +434,7 @@ async def test_add_item_deserialize_error(
     mock_deserialize.side_effect = TypeError("Bad data")  # Simulate deserialize failure
 
     with pytest.raises(TypeError, match="Bad data"):
-        await schema_storage_service.add_item(profile, TEST_SCHEMA_ID)
+        await schema_storage_service.add_item(profile, {"schema_id": TEST_SCHEMA_ID})
 
     mock_deserialize.assert_called_once()
     # Ensure save wasn't called
@@ -472,7 +476,7 @@ async def test_add_item_save_error(
     mock_schema_storage_record.save.side_effect = StorageError("DB write failed")
 
     with pytest.raises(StorageError, match="DB write failed"):
-        await schema_storage_service.add_item(profile, TEST_SCHEMA_ID)
+        await schema_storage_service.add_item(profile, {"schema_id": TEST_SCHEMA_ID})
 
     mock_deserialize.assert_called_once()
     mock_schema_storage_record.save.assert_awaited_once()
@@ -679,4 +683,8 @@ async def test_schemas_event_handler(
     await schemas_event_handler(profile, mock_event)
 
     profile.inject.assert_called_once_with(SchemaStorageService)
-    schema_storage_service.add_item.assert_awaited_once_with(profile, TEST_SCHEMA_ID)
+    # Event handler normalizes event payload to dict format
+    schema_storage_service.add_item.assert_awaited_once()
+    call_args = schema_storage_service.add_item.call_args
+    assert call_args[0][0] == profile
+    assert call_args[0][1].get("schema_id") == TEST_SCHEMA_ID

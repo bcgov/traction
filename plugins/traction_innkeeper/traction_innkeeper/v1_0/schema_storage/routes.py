@@ -99,7 +99,8 @@ async def schema_storage_add(request: web.BaseRequest):
     storage_srv = context.inject_or(SchemaStorageService)
     body = await request.json()
 
-    record = await storage_srv.add_item(profile, body["schema_id"])
+    # Schema validation ensures body is a dict with schema_id
+    record = await storage_srv.add_item(profile, body)
 
     return web.json_response(record.serialize())
 
