@@ -1,4 +1,5 @@
 import logging
+import re
 from typing import Optional
 
 from acapy_agent.core.event_bus import EventBus, Event
@@ -8,10 +9,10 @@ from acapy_agent.storage.error import StorageNotFoundError
 from .models import CredDefStorageRecord
 
 from acapy_agent.messaging.credential_definitions.util import (
-    EVENT_LISTENER_PATTERN as CREDDEF_EVENT_LISTENER_PATTERN,
+    EVENT_LISTENER_PATTERN as INDY_CREDDEF_EVENT_PATTERN,
 )
 from acapy_agent.anoncreds.events import (
-    CRED_DEF_FINISHED_EVENT,
+    CRED_DEF_FINISHED_EVENT as ANONCREDS_CREDDEF_FINISHED_EVENT,
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -174,8 +175,11 @@ class CredDefStorageService:
 
 def subscribe(bus: EventBus):
     # Subscribe to both Indy and AnonCreds credential definition events
-    bus.subscribe(CREDDEF_EVENT_LISTENER_PATTERN, creddef_event_handler)
-    bus.subscribe(CRED_DEF_FINISHED_EVENT, creddef_event_handler)
+    bus.subscribe(INDY_CREDDEF_EVENT_PATTERN, creddef_event_handler)
+    # Explicitly compile as literal pattern to ensure it's a Pattern object, not a string
+    bus.subscribe(
+        re.compile(re.escape(ANONCREDS_CREDDEF_FINISHED_EVENT)), creddef_event_handler
+    )
 
 
 def _normalize_creddef_event_payload(event: Event) -> dict:

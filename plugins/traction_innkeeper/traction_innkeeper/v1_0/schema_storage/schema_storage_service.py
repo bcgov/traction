@@ -1,4 +1,5 @@
 import logging
+import re
 from typing import Optional, Tuple
 
 from acapy_agent.core.event_bus import Event, EventBus
@@ -15,18 +16,18 @@ from acapy_agent.storage.error import StorageNotFoundError
 
 from .models import SchemaStorageRecord
 from acapy_agent.messaging.schemas.util import (
-    EVENT_LISTENER_PATTERN as SCHEMAS_EVENT_LISTENER_PATTERN,
+    EVENT_LISTENER_PATTERN as INDY_SCHEMA_EVENT_PATTERN,
 )
 
-# Try to import SCHEMA_FINISHED_EVENT, but handle the case where it doesn't exist
+# Try to import ANONCREDS_SCHEMA_FINISHED_EVENT, but handle the case where it doesn't exist
 # (e.g., if using an older version of acapy that doesn't have this event yet)
 try:
     from acapy_agent.anoncreds.events import (
-        SCHEMA_FINISHED_EVENT,
+        SCHEMA_FINISHED_EVENT as ANONCREDS_SCHEMA_FINISHED_EVENT,
     )
 except (ImportError, AttributeError):
     # If the event doesn't exist, we'll only subscribe to Indy events
-    SCHEMA_FINISHED_EVENT = None
+    ANONCREDS_SCHEMA_FINISHED_EVENT = None
 
 LOGGER = logging.getLogger(__name__)
 
@@ -272,10 +273,14 @@ class SchemaStorageService:
 
 def subscribe(bus: EventBus):
     # Subscribe to Indy schema events
-    bus.subscribe(SCHEMAS_EVENT_LISTENER_PATTERN, schemas_event_handler)
+    bus.subscribe(INDY_SCHEMA_EVENT_PATTERN, schemas_event_handler)
     # Subscribe to AnonCreds schema events if available
-    if SCHEMA_FINISHED_EVENT:
-        bus.subscribe(SCHEMA_FINISHED_EVENT, schemas_event_handler)
+    # Explicitly compile as literal pattern to ensure it's a Pattern object, not a string
+    if ANONCREDS_SCHEMA_FINISHED_EVENT:
+        bus.subscribe(
+            re.compile(re.escape(ANONCREDS_SCHEMA_FINISHED_EVENT)),
+            schemas_event_handler,
+        )
 
 
 def _normalize_schema_event_payload(event: Event) -> dict:
@@ -287,7 +292,10 @@ def _normalize_schema_event_payload(event: Event) -> dict:
     payload = event.payload
 
     # Check event topic to determine if it's AnonCreds or Indy
-    if SCHEMA_FINISHED_EVENT and event.topic == SCHEMA_FINISHED_EVENT:
+    if (
+        ANONCREDS_SCHEMA_FINISHED_EVENT
+        and event.topic == ANONCREDS_SCHEMA_FINISHED_EVENT
+    ):
         # AnonCreds event: SchemaFinishedPayload NamedTuple
         if hasattr(payload, "schema_id"):
             return {

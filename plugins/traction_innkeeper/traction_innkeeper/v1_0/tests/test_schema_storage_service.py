@@ -14,7 +14,7 @@ from traction_innkeeper.v1_0.schema_storage.schema_storage_service import (
     SchemaStorageService,
     schemas_event_handler,
     subscribe,
-    SCHEMAS_EVENT_LISTENER_PATTERN,  # Import logger to potentially disable it if needed
+    INDY_SCHEMA_EVENT_PATTERN,  # Import logger to potentially disable it if needed
 )
 
 # Import mocked dependencies
@@ -661,8 +661,11 @@ async def test_sync_created_no_schemas_found(
 def test_subscribe(mock_event_bus: MagicMock):
     """Test the subscribe function registers the handler."""
     subscribe(mock_event_bus)
-    mock_event_bus.subscribe.assert_called_once_with(
-        SCHEMAS_EVENT_LISTENER_PATTERN, schemas_event_handler
+    # Should subscribe to both Indy and AnonCreds events (if available)
+    assert mock_event_bus.subscribe.call_count >= 1
+    # Check that Indy pattern is subscribed
+    mock_event_bus.subscribe.assert_any_call(
+        INDY_SCHEMA_EVENT_PATTERN, schemas_event_handler
     )
 
 
