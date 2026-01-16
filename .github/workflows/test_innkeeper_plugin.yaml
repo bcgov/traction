@@ -30,7 +30,7 @@ jobs:
           python-version: "3.13"
           cache: "poetry"
       - name: Configure poetry to use Python 3.13
-        run: poetry env use 3.13
+        run: poetry env use python3
       #----------------------------------------------
       #       Install dependencies
       #----------------------------------------------
