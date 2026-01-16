@@ -8,7 +8,12 @@ from acapy_agent.storage.error import StorageError, StorageNotFoundError
 from acapy_agent.messaging.models.base import BaseModelError
 
 # Assuming models and service are importable like this
-from acapy_agent.protocols.issue_credential.v1_0 import V10CredentialExchange
+from acapy_agent.protocols.issue_credential.v2_0.models.cred_ex_record import (
+    V20CredExRecord,
+)
+from acapy_agent.protocols.issue_credential.v2_0.models.detail.indy import (
+    V20CredExRecordIndy,
+)
 
 # Import the module containing the service and handler to be tested
 from traction_innkeeper.v1_0.tenant.holder_revocation_service import (
@@ -58,16 +63,24 @@ def holder_revocation_service():
 
 
 @pytest.fixture
-def mock_v10_cred_ex_record():
-    """Provides a mocked V10CredentialExchange instance."""
-    record = AsyncMock(spec=V10CredentialExchange)
-    record.credential_exchange_id = TEST_CRED_EX_ID
-    record.state = V10CredentialExchange.STATE_ISSUED  # Initial state
+def mock_v20_cred_ex_record():
+    """Provides a mocked V20CredExRecord instance."""
+    record = AsyncMock(spec=V20CredExRecord)
+    record.cred_ex_id = TEST_CRED_EX_ID
+    record.state = V20CredExRecord.STATE_DONE  # Initial state
     record.error_msg = None
-    record.revoc_reg_id = TEST_REV_REG_ID
-    record.revocation_id = TEST_REVOCATION_ID
     record.save = AsyncMock()
     return record
+
+
+@pytest.fixture
+def mock_v20_cred_ex_indy_detail():
+    """Provides a mocked V20CredExRecordIndy detail record."""
+    detail = AsyncMock(spec=V20CredExRecordIndy)
+    detail.cred_ex_id = TEST_CRED_EX_ID
+    detail.rev_reg_id = TEST_REV_REG_ID
+    detail.cred_rev_id = TEST_REVOCATION_ID
+    return detail
 
 
 @pytest.fixture
@@ -107,117 +120,128 @@ def test_parse_thread_id_invalid_format(
         holder_revocation_service.parse_thread_id("invalid-thread-id")
 
 
-# Test find_credential_exchange_v10
+# Test find_credential_exchange_v20
 @pytest.mark.asyncio
 @patch(
-    "traction_innkeeper.v1_0.tenant.holder_revocation_service.V10CredentialExchange.query",
+    "traction_innkeeper.v1_0.tenant.holder_revocation_service.V20CredExRecordIndy.query",
     new_callable=AsyncMock,
 )
-async def test_find_credential_exchange_v10_success(
-    mock_query: AsyncMock,
+@patch(
+    "traction_innkeeper.v1_0.tenant.holder_revocation_service.V20CredExRecord.retrieve_by_id",
+    new_callable=AsyncMock,
+)
+async def test_find_credential_exchange_v20_success(
+    mock_retrieve: AsyncMock,
+    mock_indy_query: AsyncMock,
     holder_revocation_service: HolderRevocationService,
     mock_profile: tuple,
-    mock_v10_cred_ex_record: AsyncMock,
+    mock_v20_cred_ex_record: AsyncMock,
+    mock_v20_cred_ex_indy_detail: AsyncMock,
 ):
-    """Test finding a V10 credential exchange successfully."""
+    """Test finding a V20 credential exchange successfully."""
     profile, session, _ = mock_profile
-    mock_query.return_value = [mock_v10_cred_ex_record]
+    mock_indy_query.return_value = [mock_v20_cred_ex_indy_detail]
+    mock_retrieve.return_value = mock_v20_cred_ex_record
 
-    result = await holder_revocation_service.find_credential_exchange_v10(
+    result = await holder_revocation_service.find_credential_exchange_v20(
         profile, TEST_REV_REG_ID, TEST_REVOCATION_ID
     )
 
-    assert result == mock_v10_cred_ex_record
+    assert result == mock_v20_cred_ex_record
     profile.session.assert_called_once()
+    expected_tag_filter = {}
     expected_post_filter = {
-        "revoc_reg_id": TEST_REV_REG_ID,
-        "revocation_id": TEST_REVOCATION_ID,
+        "rev_reg_id": TEST_REV_REG_ID,
+        "cred_rev_id": TEST_REVOCATION_ID,
     }
-    mock_query.assert_awaited_once_with(
-        session=session, tag_filter={}, post_filter_positive=expected_post_filter
+    mock_indy_query.assert_awaited_once_with(
+        session=session,
+        tag_filter=expected_tag_filter,
+        post_filter_positive=expected_post_filter,
     )
+    mock_retrieve.assert_awaited_once_with(session, TEST_CRED_EX_ID)
 
 
 @pytest.mark.asyncio
 @patch(
-    "traction_innkeeper.v1_0.tenant.holder_revocation_service.V10CredentialExchange.query",
+    "traction_innkeeper.v1_0.tenant.holder_revocation_service.V20CredExRecordIndy.query",
     new_callable=AsyncMock,
 )
-async def test_find_credential_exchange_v10_not_found(
-    mock_query: AsyncMock,
+async def test_find_credential_exchange_v20_not_found(
+    mock_indy_query: AsyncMock,
     holder_revocation_service: HolderRevocationService,
     mock_profile: tuple,
 ):
-    """Test finding V10 credential exchange when none exists."""
+    """Test finding V20 credential exchange when none exists."""
     profile, session, _ = mock_profile
-    mock_query.return_value = []  # No records found
+    mock_indy_query.return_value = []  # No records found
 
-    # Expect IndexError because code accesses records[0]
-    with pytest.raises(IndexError):
-        await holder_revocation_service.find_credential_exchange_v10(
-            profile, TEST_REV_REG_ID, TEST_REVOCATION_ID
-        )
+    # Service should handle empty results
+    result = await holder_revocation_service.find_credential_exchange_v20(
+        profile, TEST_REV_REG_ID, TEST_REVOCATION_ID
+    )
 
+    assert result is None
     profile.session.assert_called_once()
-    mock_query.assert_awaited_once_with(
+    mock_indy_query.assert_awaited_once_with(
         session=session, tag_filter=ANY, post_filter_positive=ANY
     )
 
 
 @pytest.mark.asyncio
 @patch(
-    "traction_innkeeper.v1_0.tenant.holder_revocation_service.V10CredentialExchange.query",
+    "traction_innkeeper.v1_0.tenant.holder_revocation_service.V20CredExRecordIndy.query",
     new_callable=AsyncMock,
 )
 @pytest.mark.parametrize("error_cls", [StorageError, BaseModelError])
-async def test_find_credential_exchange_v10_query_error(
-    mock_query: AsyncMock,
+async def test_find_credential_exchange_v20_query_error(
+    mock_indy_query: AsyncMock,
     error_cls: type,
     holder_revocation_service: HolderRevocationService,
     mock_profile: tuple,
 ):
-    """Test finding V10 credential exchange with storage/model errors."""
+    """Test finding V20 credential exchange with storage/model errors."""
     profile, session, _ = mock_profile
-    mock_query.side_effect = error_cls("Query failed")
+    mock_indy_query.side_effect = error_cls("Query failed")
 
-    result = await holder_revocation_service.find_credential_exchange_v10(
+    result = await holder_revocation_service.find_credential_exchange_v20(
         profile, TEST_REV_REG_ID, TEST_REVOCATION_ID
     )
 
     # Service catches the error and returns None
     assert result is None
     profile.session.assert_called_once()
-    mock_query.assert_awaited_once_with(
+    mock_indy_query.assert_awaited_once_with(
         session=session, tag_filter=ANY, post_filter_positive=ANY
     )
 
 
-# Test set_credential_exchange_revoked_v10
+# Test set_credential_exchange_revoked_v20
 @pytest.mark.asyncio
 @patch(
-    "traction_innkeeper.v1_0.tenant.holder_revocation_service.V10CredentialExchange.retrieve_by_id",
+    "traction_innkeeper.v1_0.tenant.holder_revocation_service.V20CredExRecord.retrieve_by_id",
     new_callable=AsyncMock,
 )
-async def test_set_credential_exchange_revoked_v10_success(
+async def test_set_credential_exchange_revoked_v20_success(
     mock_retrieve: AsyncMock,
     holder_revocation_service: HolderRevocationService,
     mock_profile: tuple,
-    mock_v10_cred_ex_record: AsyncMock,
+    mock_v20_cred_ex_record: AsyncMock,
 ):
     """Test successfully setting a credential exchange to revoked state."""
     profile, _, txn = mock_profile
-    mock_retrieve.return_value = mock_v10_cred_ex_record
+    mock_retrieve.return_value = mock_v20_cred_ex_record
 
-    result = await holder_revocation_service.set_credential_exchange_revoked_v10(
+    result = await holder_revocation_service.set_credential_exchange_revoked_v20(
         profile, TEST_CRED_EX_ID, TEST_COMMENT
     )
 
-    assert result == mock_v10_cred_ex_record
-    assert result.state == V10CredentialExchange.STATE_CREDENTIAL_REVOKED
+    assert result == mock_v20_cred_ex_record
+    assert result.state == V20CredExRecord.STATE_CREDENTIAL_REVOKED
     assert result.error_msg == TEST_COMMENT
     profile.transaction.assert_called_once()
     mock_retrieve.assert_awaited_once_with(txn, TEST_CRED_EX_ID, for_update=True)
-    mock_v10_cred_ex_record.save.assert_awaited_once_with(
+    mock_v20_cred_ex_record.save.assert_awaited_once_with(
         txn, reason="revoke credential"
     )
     txn.commit.assert_awaited_once()
@@ -226,10 +250,10 @@ async def test_set_credential_exchange_revoked_v10_success(
 
 @pytest.mark.asyncio
 @patch(
-    "traction_innkeeper.v1_0.tenant.holder_revocation_service.V10CredentialExchange.retrieve_by_id",
+    "traction_innkeeper.v1_0.tenant.holder_revocation_service.V20CredExRecord.retrieve_by_id",
     new_callable=AsyncMock,
 )
-async def test_set_credential_exchange_revoked_v10_not_found(
+async def test_set_credential_exchange_revoked_v20_not_found(
     mock_retrieve: AsyncMock,
     holder_revocation_service: HolderRevocationService,
     mock_profile: tuple,
@@ -238,7 +262,7 @@ async def test_set_credential_exchange_revoked_v10_not_found(
     profile, _, txn = mock_profile
     mock_retrieve.side_effect = StorageNotFoundError("Record not found")
 
-    result = await holder_revocation_service.set_credential_exchange_revoked_v10(
+    result = await holder_revocation_service.set_credential_exchange_revoked_v20(
         profile, TEST_CRED_EX_ID, TEST_COMMENT
     )
 
@@ -252,29 +276,29 @@ async def test_set_credential_exchange_revoked_v10_not_found(
 
 @pytest.mark.asyncio
 @patch(
-    "traction_innkeeper.v1_0.tenant.holder_revocation_service.V10CredentialExchange.retrieve_by_id",
+    "traction_innkeeper.v1_0.tenant.holder_revocation_service.V20CredExRecord.retrieve_by_id",
     new_callable=AsyncMock,
 )
-async def test_set_credential_exchange_revoked_v10_save_error(
+async def test_set_credential_exchange_revoked_v20_save_error(
     mock_retrieve: AsyncMock,
     holder_revocation_service: HolderRevocationService,
     mock_profile: tuple,
-    mock_v10_cred_ex_record: AsyncMock,
+    mock_v20_cred_ex_record: AsyncMock,
 ):
     """Test setting revoked state when save fails."""
     profile, _, txn = mock_profile
-    mock_retrieve.return_value = mock_v10_cred_ex_record
-    mock_v10_cred_ex_record.save.side_effect = StorageError("Save failed")
+    mock_retrieve.return_value = mock_v20_cred_ex_record
+    mock_v20_cred_ex_record.save.side_effect = StorageError("Save failed")
 
     # The service doesn't explicitly catch this, expect StorageError propagation
     with pytest.raises(StorageError, match="Save failed"):
-        await holder_revocation_service.set_credential_exchange_revoked_v10(
+        await holder_revocation_service.set_credential_exchange_revoked_v20(
             profile, TEST_CRED_EX_ID, TEST_COMMENT
         )
 
     profile.transaction.assert_called_once()
     mock_retrieve.assert_awaited_once_with(txn, TEST_CRED_EX_ID, for_update=True)
-    mock_v10_cred_ex_record.save.assert_awaited_once_with(
+    mock_v20_cred_ex_record.save.assert_awaited_once_with(
         txn, reason="revoke credential"
     )
     txn.commit.assert_not_called()  # Commit shouldn't happen
@@ -298,7 +322,7 @@ async def test_revocation_notification_handler_success(
     mock_profile: tuple,
     holder_revocation_service: HolderRevocationService,  # Use fixture
     mock_event: MagicMock,
-    mock_v10_cred_ex_record: AsyncMock,
+    mock_v20_cred_ex_record: AsyncMock,
 ):
     """Test the revocation_notification_handler successfully finds and updates."""
     profile, _, _ = mock_profile
@@ -310,21 +334,21 @@ async def test_revocation_notification_handler_success(
     holder_revocation_service.parse_thread_id = MagicMock(
         return_value=(TEST_REV_REG_ID, TEST_REVOCATION_ID)
     )
-    holder_revocation_service.find_credential_exchange_v10 = AsyncMock(
-        return_value=mock_v10_cred_ex_record
+    holder_revocation_service.find_credential_exchange_v20 = AsyncMock(
+        return_value=mock_v20_cred_ex_record
     )
-    holder_revocation_service.set_credential_exchange_revoked_v10 = AsyncMock(
-        return_value=mock_v10_cred_ex_record  # Simulate successful update
+    holder_revocation_service.set_credential_exchange_revoked_v20 = AsyncMock(
+        return_value=mock_v20_cred_ex_record  # Simulate successful update
     )
 
     await revocation_notification_handler(profile, mock_event)
 
     profile.inject.assert_called_once_with(HolderRevocationService)
     holder_revocation_service.parse_thread_id.assert_called_once_with(TEST_THREAD_ID)
-    holder_revocation_service.find_credential_exchange_v10.assert_awaited_once_with(
+    holder_revocation_service.find_credential_exchange_v20.assert_awaited_once_with(
         profile, TEST_REV_REG_ID, TEST_REVOCATION_ID
     )
-    holder_revocation_service.set_credential_exchange_revoked_v10.assert_awaited_once_with(
+    holder_revocation_service.set_credential_exchange_revoked_v20.assert_awaited_once_with(
         profile, TEST_CRED_EX_ID, TEST_COMMENT
     )
 
@@ -341,18 +365,18 @@ async def test_revocation_notification_handler_record_not_found(
     holder_revocation_service.parse_thread_id = MagicMock(
         return_value=(TEST_REV_REG_ID, TEST_REVOCATION_ID)
     )
-    # Simulate find returning None (or raising IndexError which is caught)
-    holder_revocation_service.find_credential_exchange_v10 = AsyncMock(
+    # Simulate find returning None
+    holder_revocation_service.find_credential_exchange_v20 = AsyncMock(
         return_value=None
     )
-    holder_revocation_service.set_credential_exchange_revoked_v10 = AsyncMock()
+    holder_revocation_service.set_credential_exchange_revoked_v20 = AsyncMock()
 
     await revocation_notification_handler(profile, mock_event)
 
     profile.inject.assert_called_once_with(HolderRevocationService)
     holder_revocation_service.parse_thread_id.assert_called_once_with(TEST_THREAD_ID)
-    holder_revocation_service.find_credential_exchange_v10.assert_awaited_once_with(
+    holder_revocation_service.find_credential_exchange_v20.assert_awaited_once_with(
         profile, TEST_REV_REG_ID, TEST_REVOCATION_ID
     )
-    # Ensure set_credential_exchange_revoked_v10 was NOT called
-    holder_revocation_service.set_credential_exchange_revoked_v10.assert_not_awaited()
+    # Ensure set_credential_exchange_revoked_v20 was NOT called
+    holder_revocation_service.set_credential_exchange_revoked_v20.assert_not_awaited()
