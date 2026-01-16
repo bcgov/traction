@@ -20,11 +20,8 @@ bcrypt = "^4.2.1"
 mergedeep = "^1.3.4"
 typing-extensions = "4.15.0"
 anoncreds = "^0.2.3"
-aiohttp = ">=3.13.3"
-urllib3 = ">=2.6.3"
 multitenant-provider = {git = "https://github.com/openwallet-foundation/acapy-plugins", rev = "1.4.0", subdirectory = "multitenant_provider"}
 connections = {git = "https://github.com/openwallet-foundation/acapy-plugins", rev = "1.4.0", subdirectory = "connections"}
-issue-credential = {git = "https://github.com/openwallet-foundation/acapy-plugins", rev = "1.4.0", subdirectory = "issue_credential"}
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.14.5"
