@@ -26,14 +26,12 @@ jobs:
         id: setup-python
         with:
           python-version: "3.13"
-          cache: "poetry"
-      - name: Install pipx
-        run: python3 -m pip install --user pipx
-      - name: Add pipx to PATH
-        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
       - name: Install poetry
-        run: pipx install poetry==2.1.1
-        id: setup-poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 2.1.1
+          virtualenvs-create: true
+          virtualenvs-in-project: false
       - name: Configure poetry to use Python 3.13
         run: poetry env use "${{ env.pythonLocation }}/bin/python3"
       #----------------------------------------------
