@@ -4,7 +4,7 @@ import re
 from acapy_agent.core.event_bus import EventBus, Event
 from acapy_agent.core.profile import Profile
 from acapy_agent.messaging.models.base import BaseModelError
-from acapy_agent.protocols.issue_credential.v1_0 import V10CredentialExchange
+from issue_credential.v1_0.models.credential_exchange import V10CredentialExchange
 from acapy_agent.storage.error import StorageError, StorageNotFoundError
 
 LOGGER = logging.getLogger(__name__)

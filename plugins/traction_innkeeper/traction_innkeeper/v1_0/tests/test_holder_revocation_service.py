@@ -8,7 +8,7 @@ from acapy_agent.storage.error import StorageError, StorageNotFoundError
 from acapy_agent.messaging.models.base import BaseModelError
 
 # Assuming models and service are importable like this
-from acapy_agent.protocols.issue_credential.v1_0 import V10CredentialExchange
+from issue_credential.v1_0.models.credential_exchange import V10CredentialExchange
 
 # Import the module containing the service and handler to be tested
 from traction_innkeeper.v1_0.tenant.holder_revocation_service import (
