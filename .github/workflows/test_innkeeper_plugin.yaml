@@ -26,11 +26,17 @@ jobs:
         id: setup-python
         with:
           python-version: "3.13"
+          cache: "poetry"
       - name: Install poetry
         run: pipx install poetry==2.1.1
         id: setup-poetry
-      - name: Configure poetry to use Python 3.13
-        run: poetry env use "${{ env.pythonLocation }}/bin/python3"
+      - name: Verify Python version and configure poetry
+        run: |
+          echo "System python3: $(which python3)"
+          echo "System python3 version: $(python3 --version)"
+          echo "Setup-python location: ${{ env.pythonLocation }}"
+          poetry env use "${{ env.pythonLocation }}/bin/python3"
+          poetry env info
       #----------------------------------------------
       #       Install dependencies
       #----------------------------------------------
