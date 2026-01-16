@@ -33,7 +33,7 @@
         />
       </div>
     </ToggleJson>
-    <div class="flex justify-content-end">
+    <div v-if="schemaForSelectedCred?.schema" class="flex justify-content-end">
       <small>
         <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
         {{ $t('issue.schema') }}: {{ schemaForSelectedCred.schema.name }}
@@ -109,16 +109,31 @@ const saveCredValues = () => {
 // When the component is initialized set up the fields and raw JSON based
 // on the supplied schema and if there is existing values already
 onMounted(() => {
+  // Check if schema is available
+  if (!props.schemaForSelectedCred?.schema) {
+    toast.error('Schema information not available');
+    return;
+  }
+
   // Populate cred editor if it's not already been edited
   if (!props.existingCredentialValues?.length) {
-    const schemaFillIn = props.schemaForSelectedCred.schema.attrNames.map(
-      (a: string) => {
-        return {
-          name: `${a}`,
-          value: '',
-        };
-      }
-    );
+    // Handle both Indy format (attributes) and AnonCreds format (attrNames)
+    const attrNames =
+      props.schemaForSelectedCred.schema.attrNames ||
+      props.schemaForSelectedCred.schema.attributes ||
+      [];
+
+    if (!attrNames || attrNames.length === 0) {
+      toast.error('No attributes found in schema');
+      return;
+    }
+
+    const schemaFillIn = attrNames.map((a: string) => {
+      return {
+        name: `${a}`,
+        value: '',
+      };
+    });
 
     console.log(schemaFillIn);
     credentialValuesRaw.value = schemaFillIn;

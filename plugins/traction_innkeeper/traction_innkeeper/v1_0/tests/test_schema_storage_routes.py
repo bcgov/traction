@@ -180,7 +180,9 @@ async def test_schema_storage_list(
     # Check service was injected and called
     mock_context.inject_or.assert_called_once_with(SchemaStorageService)
     mock_schema_storage_service.list_items.assert_awaited_once_with(
-        profile, {}, {}  # Default filters
+        profile,
+        {},
+        {},  # Default filters
     )
 
     # Check response
@@ -247,9 +249,7 @@ async def test_schema_storage_add_success(
 
     mock_context.inject_or.assert_called_once_with(SchemaStorageService)
     mock_request.json.assert_awaited_once()
-    mock_schema_storage_service.add_item.assert_awaited_once_with(
-        profile, TEST_SCHEMA_ID
-    )
+    mock_schema_storage_service.add_item.assert_awaited_once_with(profile, add_body)
     assert response.status == 200
     assert (
         json.loads(response.body) == mock_schema_storage_record.serialize.return_value
@@ -287,9 +287,7 @@ async def test_schema_storage_add_errors(
     if expected_exception is not Exception:
         assert error_message in str(excinfo.value)
 
-    mock_schema_storage_service.add_item.assert_awaited_once_with(
-        profile, TEST_SCHEMA_ID
-    )
+    mock_schema_storage_service.add_item.assert_awaited_once_with(profile, add_body)
 
 
 # Test Get Schema (GET /schema-storage/{schema_id})
@@ -590,9 +588,7 @@ async def test_schema_storage_add_generic_error(
 
     mock_context.inject_or.assert_called_once_with(SchemaStorageService)
     mock_request.json.assert_awaited_once()
-    mock_schema_storage_service.add_item.assert_awaited_once_with(
-        profile, TEST_SCHEMA_ID
-    )
+    mock_schema_storage_service.add_item.assert_awaited_once_with(profile, add_body)
 
 
 @pytest.mark.asyncio

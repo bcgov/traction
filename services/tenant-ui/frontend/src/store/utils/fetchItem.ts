@@ -13,7 +13,9 @@ export async function fetchItem<T>(
   let dataUrl = url;
   if (id) {
     // Normalize if the caller supplies a trailing slash or not
-    dataUrl = `${dataUrl.replace(/\/$/, '')}/${id}`;
+    // URL encode the ID to handle special characters like colons and slashes
+    const encodedId = encodeURIComponent(id);
+    dataUrl = `${dataUrl.replace(/\/$/, '')}/${encodedId}`;
   }
   console.log(` > fetchItem(${dataUrl})`);
   error.value = null;

@@ -43,7 +43,7 @@ export const API_PATH = {
 
   CREDENTIAL_DEFINITION_STORAGE: '/credential-definition-storage',
   CREDENTIAL_DEFINITION_STORAGE_ITEM: (id: string) =>
-    `/credential-definition-storage/${id}`,
+    `/credential-definition-storage/${encodeURIComponent(id)}`,
 
   DID_EXCHANGE_CREATE_REQUEST: '/didexchange/create-request',
   DID_EXCHANGE_RECIEVE_REQUEST: '/didexchange/recieve-request',
@@ -133,6 +133,7 @@ export const API_PATH = {
   PRESENT_PROOF_20_SEND_REQUEST: '/present-proof-2.0/send-request',
 
   REVOCATION_REVOKE: '/revocation/revoke',
+  ANONCREDS_REVOCATION_REVOKE: '/anoncreds/revocation/revoke',
 
   SCHEMAS: '/schemas',
   SCHEMA: (id: string) => `/schemas/${id}`,
@@ -146,7 +147,8 @@ export const API_PATH = {
 
   SCHEMA_STORAGE: '/schema-storage',
   SCHEMA_STORAGE_SYNC: '/schema-storage/sync-created',
-  SCHEMA_STORAGE_ITEM: (id: string) => `/schema-storage/${id}`,
+  SCHEMA_STORAGE_ITEM: (id: string) =>
+    `/schema-storage/${encodeURIComponent(id)}`,
 
   TENANT_SELF: '/tenant',
   TENANT_DELETE: '/tenant/hard',

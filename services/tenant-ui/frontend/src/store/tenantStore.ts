@@ -65,11 +65,25 @@ export const useTenantStore = defineStore('tenant', () => {
       return false;
     }
 
-    // For askar-anoncreds wallets, check WebVH connection instead of Indy ledger
     const isAnoncreds = isAskarAnoncredsWallet.value;
+
+    // For askar-anoncreds wallets, check EITHER Indy endorser OR WebVH witness (or both)
     if (isAnoncreds) {
-      return isWebvhConnected.value;
+      // Check Indy endorser connection (for Indy-based schemas/cred defs)
+      const hasActiveIndyConnection =
+        endorserConnection.value?.state === 'active';
+      const hasPublicDid = !!publicDid.value?.did;
+      const taaAccepted =
+        !taa.value?.taa_required || taa.value?.taa_accepted === true;
+      const indyReady = hasActiveIndyConnection && hasPublicDid && taaAccepted;
+
+      // Check WebVH witness connection (for WebVH-based schemas/cred defs)
+      const webvhReady = isWebvhConnected.value;
+
+      // Can issue if connected to Indy OR WebVH (or both)
+      return indyReady || webvhReady;
     }
+
     // For askar wallets (default), check Indy ledger endorser connection + public DID
     const hasActiveConnection = endorserConnection.value?.state === 'active';
     const hasPublicDid = !!publicDid.value?.did;
@@ -328,7 +342,7 @@ export const useTenantStore = defineStore('tenant', () => {
     return result;
   }
 
-  async function getWalletcDids() {
+  async function getWalletDids() {
     console.log('> tenantStore.getWalletDids');
     await fetchList(
       API_PATH.WALLET_DID,
@@ -627,7 +641,7 @@ export const useTenantStore = defineStore('tenant', () => {
       getWriteLedger();
       getPublicDid();
       getTransactions();
-      getWalletcDids();
+      getWalletDids();
       publicDidRegistrationProgress.value = '';
       loadingIssuance.value = false;
     }
@@ -840,7 +854,7 @@ export const useTenantStore = defineStore('tenant', () => {
     getTenantDefaultSettings,
     getTenantSubWallet,
     getTransactions,
-    getWalletcDids,
+    getWalletDids,
     getWebvhConfig,
     getWriteLedger,
     registerPublicDid,

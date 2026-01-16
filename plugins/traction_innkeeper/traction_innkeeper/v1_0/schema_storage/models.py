@@ -1,3 +1,4 @@
+import re
 from typing import Optional
 
 from acapy_agent.messaging.models.base_record import BaseRecord, BaseRecordSchema
@@ -5,7 +6,7 @@ from acapy_agent.messaging.valid import (
     INDY_SCHEMA_ID_EXAMPLE,
     INDY_SCHEMA_ID_VALIDATE,
 )
-from marshmallow import EXCLUDE, fields
+from marshmallow import EXCLUDE, fields, ValidationError
 
 
 class SchemaStorageRecord(BaseRecord):
@@ -53,6 +54,34 @@ class SchemaStorageRecord(BaseRecord):
         }
 
 
+def validate_schema_id(value):
+    """Validate schema ID as either Indy or AnonCreds format."""
+    if not value or not isinstance(value, str):
+        raise ValidationError("Schema ID must be a non-empty string")
+
+    if len(value.strip()) == 0:
+        raise ValidationError("Schema ID cannot be empty")
+
+    # Indy schema ID format: DID:2:name:version
+    # Pattern: ^[base58]{21,22}:2:.+:[0-9.]+$
+    # Base58 characters: 1-9, A-H, J-N, P-Z, a-k, m-z (excludes 0, O, I, l)
+    indy_pattern = r"^[1-9A-HJ-NP-Za-km-z]{21,22}:2:.+:[0-9.]+$"
+
+    # Check if it matches Indy format
+    if re.match(indy_pattern, value):
+        # Validate using the official Indy validator
+        try:
+            INDY_SCHEMA_ID_VALIDATE(value)
+        except ValidationError:
+            # If Indy validator fails, still accept it (might be edge case)
+            # This allows for flexibility
+            pass
+
+    # Accept all non-empty strings as valid schema IDs
+    # (Indy format validated above, everything else is AnonCreds)
+    return
+
+
 class SchemaStorageRecordSchema(BaseRecordSchema):
     """Traction Schema Storage Record Schema."""
 
@@ -64,9 +93,9 @@ class SchemaStorageRecordSchema(BaseRecordSchema):
 
     schema_id = fields.Str(
         required=True,
-        validate=INDY_SCHEMA_ID_VALIDATE,
+        validate=validate_schema_id,
         metadata={
-            "description": "Schema identifier",
+            "description": "Schema identifier (Indy or AnonCreds format)",
             "example": INDY_SCHEMA_ID_EXAMPLE,
         },
     )

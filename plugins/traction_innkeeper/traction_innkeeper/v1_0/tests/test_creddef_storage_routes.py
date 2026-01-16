@@ -162,7 +162,9 @@ async def test_creddef_storage_list(
     # Check service was injected and called
     mock_context.inject_or.assert_called_once_with(CredDefStorageService)
     mock_creddef_storage_service.list_items.assert_awaited_once_with(
-        profile, {}, {}  # Default filters
+        profile,
+        {},
+        {},  # Default filters
     )
 
     # Check response
@@ -383,10 +385,14 @@ async def test_register():
     # Check that add_routes was called once with a list containing the expected routes
     assert len(calls) == 1
     registered_routes = calls[0][0][0]  # Get the list of web.RouteDef objects
-    assert len(registered_routes) == 3
+    assert len(registered_routes) == 4
     # Check paths and methods (can be more specific if needed)
     assert any(
         r.method == "GET" and r.path == "/credential-definition-storage"
+        for r in registered_routes
+    )
+    assert any(
+        r.method == "POST" and r.path == "/credential-definition-storage"
         for r in registered_routes
     )
     assert any(

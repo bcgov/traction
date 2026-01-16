@@ -136,6 +136,8 @@ import {
   useIssuerStore,
   useTenantStore,
 } from '@/store';
+import { useAcapyApi } from '@/store/acapyApi';
+import { API_PATH } from '@/helpers/constants';
 // Other components
 import EnterCredentialValues from './EnterCredentialValues.vue';
 
@@ -153,6 +155,7 @@ const {
 const { loading: issueLoading } = storeToRefs(useIssuerStore());
 const { tenantWallet } = storeToRefs(useTenantStore());
 const issuerStore = useIssuerStore();
+const acapyApi = useAcapyApi();
 
 // Check if wallet is askar-anoncreds
 const isAskarAnoncredsWallet = computed(() => {
@@ -167,6 +170,11 @@ const filteredCreds = ref();
 const filteredConnections = ref();
 const schemaForSelectedCred = ref();
 const showEditCredValues = ref(false);
+// Auto-determine filter type based on wallet type
+const filterType = computed(() => {
+  return isAskarAnoncredsWallet.value ? 'anoncreds' : 'indy';
+});
+
 const formFields = reactive({
   credentialValuesEditing: '',
   credentialValuesPretty: '',
@@ -211,12 +219,116 @@ const searchCreds = (event: any) => {
 };
 
 // Editing the credential
-const editCredentialValues = () => {
+const editCredentialValues = async () => {
   // Get the specific schema to edit values for
-  const schemaId = storedCredDefs.value.find(
+  const selectedCredDef = storedCredDefs.value.find(
     (cd: any) => cd.cred_def_id === formFields.selectedCred.value
-  )?.schema_id;
-  const schema = storedSchemas.value.find((s: any) => s.schema_id === schemaId);
+  );
+
+  if (!selectedCredDef) {
+    toast.error('Credential definition not found');
+    return;
+  }
+
+  const schemaId = selectedCredDef.schema_id;
+
+  if (!schemaId) {
+    toast.error('Schema ID not found for selected credential definition');
+    console.error('Cred def:', selectedCredDef);
+    console.error(
+      'Available schemas:',
+      storedSchemas.value.map((s: any) => s.schema_id)
+    );
+    return;
+  }
+
+  // Try exact match first
+  let schema = storedSchemas.value.find((s: any) => s.schema_id === schemaId);
+
+  // If not found, try to match by sequence number (for migrated Indy schemas)
+  // Indy schema IDs format: did:sov:...:2:schema_name:1.0
+  // The sequence number is the part after the last colon before the schema name
+  if (!schema && schemaId && !schemaId.includes(':')) {
+    // schemaId might be a sequence number, try to find schema by extracting seq from Indy schema IDs
+    schema = storedSchemas.value.find((s: any) => {
+      const sId = s.schema_id || '';
+      // Extract sequence number from Indy schema ID format: did:sov:...:2:schema_name:1.0
+      // Sequence is the 4th segment (index 3) when split by ':'
+      const parts = sId.split(':');
+      if (parts.length >= 4) {
+        const seqNum = parts[3];
+        return seqNum === schemaId;
+      }
+      return false;
+    });
+  }
+
+  // If still not found, try reverse lookup - extract seq from schemaId and match
+  if (!schema && schemaId && schemaId.includes(':')) {
+    // schemaId is a full Indy schema ID, extract sequence number
+    const parts = schemaId.split(':');
+    if (parts.length >= 4) {
+      const seqNum = parts[3];
+      // Try to find by sequence number in stored schemas
+      schema = storedSchemas.value.find((s: any) => {
+        const sId = s.schema_id || '';
+        return sId === seqNum || sId === schemaId;
+      });
+    }
+  }
+
+  // If still not found and we're using askar-anoncreds wallet, try fetching from AnonCreds endpoint
+  if (!schema && isAskarAnoncredsWallet.value) {
+    try {
+      const encodedSchemaId = encodeURIComponent(schemaId);
+      const schemaUrl = API_PATH.ANONCREDS_SCHEMA(encodedSchemaId);
+      const schemaResponse = await acapyApi.getHttp(schemaUrl);
+      const schemaData = schemaResponse?.data || schemaResponse;
+
+      if (schemaData?.schema) {
+        const schemaObj = schemaData.schema;
+        // Map to SchemaStorageRecord format
+        schema = {
+          schema_id: schemaData.schema_id || schemaId,
+          state: 'active',
+          schema: {
+            name: schemaObj.name || 'Unknown',
+            version: schemaObj.version || 'Unknown',
+            attrNames: Array.isArray(schemaObj.attrNames)
+              ? schemaObj.attrNames
+              : [],
+            issuerId: schemaObj.issuerId,
+          } as any,
+          schema_dict: schemaObj,
+          created_at: schemaData.schema_metadata?.created_at,
+          updated_at: schemaData.schema_metadata?.updated_at,
+          ledger_id: schemaData.schema_id,
+        };
+
+        // Add to stored schemas for future use
+        storedSchemas.value.push(schema);
+      }
+    } catch (fetchError) {
+      console.error(
+        'Failed to fetch schema from AnonCreds endpoint:',
+        fetchError
+      );
+    }
+  }
+
+  if (!schema) {
+    console.error('Schema lookup failed:', {
+      schemaId,
+      credDefId: formFields.selectedCred.value,
+      availableSchemaIds: storedSchemas.value.map((s: any) => s.schema_id),
+      selectedCredDef,
+    });
+    toast.error(
+      `Schema not found for ID: ${schemaId}. Please check console for details.`
+    );
+    return;
+  }
+
   schemaForSelectedCred.value = schema;
 
   // Open the editor
@@ -246,8 +358,8 @@ const handleSubmit = async (isFormValid: boolean) => {
     return;
   }
   try {
-    // Determine filter type based on wallet type
-    const filterType = isAskarAnoncredsWallet.value ? 'anoncreds' : 'indy';
+    // Auto-determine filter type based on wallet type
+    const filterTypeValue = filterType.value;
 
     const payload = {
       auto_issue: true,
@@ -258,7 +370,7 @@ const handleSubmit = async (isFormValid: boolean) => {
         attributes: credentialValuesRaw.value,
       },
       filter: {
-        [filterType]: {
+        [filterTypeValue]: {
           cred_def_id: formFields.selectedCred.value,
         },
       },

@@ -114,6 +114,109 @@ export const useGovernanceStore = defineStore('governance', () => {
     return fetchList(API_PATH.SCHEMA_STORAGE, storedSchemas, error, loading);
   }
 
+  async function listAllSchemasForAnoncredsWallet() {
+    // For askar-anoncreds wallets, load from BOTH sources and merge
+    error.value = null;
+    loading.value = true;
+
+    try {
+      // Load from both endpoints in parallel
+      const [indySchemasResult, anoncredsSchemasResult] =
+        await Promise.allSettled([
+          acapyApi.getHttp(API_PATH.SCHEMA_STORAGE),
+          acapyApi.getHttp(API_PATH.ANONCREDS_SCHEMAS),
+        ]);
+
+      const indySchemas: SchemaStorageRecord[] = [];
+      if (indySchemasResult.status === 'fulfilled') {
+        const indyData =
+          indySchemasResult.value?.data || indySchemasResult.value;
+        indySchemas.push(...(indyData?.results || []));
+      }
+
+      // Process AnonCreds schemas
+      const anoncredsSchemas: SchemaStorageRecord[] = [];
+      if (anoncredsSchemasResult.status === 'fulfilled') {
+        const anoncredsData =
+          anoncredsSchemasResult.value?.data || anoncredsSchemasResult.value;
+        const schemaIds =
+          (anoncredsData as GetSchemasResponse).schema_ids || [];
+
+        const schemaPromises = schemaIds.map(async (schemaId: string) => {
+          try {
+            const encodedSchemaId = encodeURIComponent(schemaId);
+            const schemaUrl = `/anoncreds/schema/${encodedSchemaId}`;
+            const schemaResponse = await acapyApi.getHttp(schemaUrl);
+            const schemaData = (schemaResponse?.data ||
+              schemaResponse) as GetSchemaResult;
+
+            if (!schemaData?.schema) {
+              return null;
+            }
+
+            const schemaObj = schemaData.schema;
+            return {
+              schema_id: schemaData.schema_id || schemaId,
+              state: 'active',
+              schema: {
+                name: schemaObj.name || 'Unknown',
+                version: schemaObj.version || 'Unknown',
+                attrNames: Array.isArray(schemaObj.attrNames)
+                  ? schemaObj.attrNames
+                  : [],
+                issuerId: schemaObj.issuerId,
+              } as any,
+              schema_dict: schemaObj,
+              created_at: schemaData.schema_metadata?.created_at,
+              updated_at: schemaData.schema_metadata?.updated_at,
+              ledger_id: schemaData.schema_id,
+            } as SchemaStorageRecord;
+          } catch (err) {
+            console.error('Failed to fetch anoncreds schema', {
+              schemaId,
+              error: err,
+            });
+            return null;
+          }
+        });
+
+        const schemaResults = await Promise.allSettled(schemaPromises);
+        anoncredsSchemas.push(
+          ...schemaResults
+            .filter(
+              (result): result is PromiseFulfilledResult<SchemaStorageRecord> =>
+                result.status === 'fulfilled' && result.value !== null
+            )
+            .map((result) => result.value)
+        );
+      }
+
+      // Merge and deduplicate by schema_id
+      const schemaMap = new Map<string, SchemaStorageRecord>();
+
+      // Add Indy schemas first
+      indySchemas.forEach((schema) => {
+        if (schema?.schema_id) {
+          schemaMap.set(schema.schema_id, schema);
+        }
+      });
+
+      // Add AnonCreds schemas (will overwrite if duplicate, but that's okay)
+      anoncredsSchemas.forEach((schema) => {
+        if (schema?.schema_id) {
+          schemaMap.set(schema.schema_id, schema);
+        }
+      });
+
+      storedSchemas.value = Array.from(schemaMap.values());
+    } catch (err) {
+      console.error(err);
+      error.value = err;
+    } finally {
+      loading.value = false;
+    }
+  }
+
   async function listAnoncredsSchemas() {
     storedSchemas.value = [];
     error.value = null;
@@ -231,6 +334,116 @@ export const useGovernanceStore = defineStore('governance', () => {
       error,
       loading
     );
+  }
+
+  async function listAllCredDefsForAnoncredsWallet() {
+    // For askar-anoncreds wallets, load from BOTH sources and merge
+    error.value = null;
+    loading.value = true;
+
+    try {
+      // Load from both endpoints in parallel
+      const [indyCredDefsResult, anoncredsCredDefsResult] =
+        await Promise.allSettled([
+          acapyApi.getHttp(API_PATH.CREDENTIAL_DEFINITION_STORAGE),
+          acapyApi.getHttp(API_PATH.ANONCREDS_CREDENTIAL_DEFINITIONS),
+        ]);
+
+      const indyCredDefs: CredDefStorageRecord[] = [];
+      if (indyCredDefsResult.status === 'fulfilled') {
+        const indyData =
+          indyCredDefsResult.value?.data || indyCredDefsResult.value;
+        indyCredDefs.push(...(indyData?.results || []));
+      }
+
+      // Process AnonCreds credential definitions
+      const anoncredsCredDefs: CredDefStorageRecord[] = [];
+      if (anoncredsCredDefsResult.status === 'fulfilled') {
+        const anoncredsData =
+          anoncredsCredDefsResult.value?.data || anoncredsCredDefsResult.value;
+        const credDefIds =
+          (anoncredsData as { credential_definition_ids?: string[] })
+            ?.credential_definition_ids || [];
+
+        if (credDefIds && credDefIds.length > 0) {
+          const credDefPromises = credDefIds.map(async (credDefId: string) => {
+            try {
+              const encodedCredDefId = encodeURIComponent(credDefId);
+              const credDefUrl = `/anoncreds/credential-definition/${encodedCredDefId}`;
+              const credDefResponse = await acapyApi.getHttp(credDefUrl);
+              const credDefData = credDefResponse?.data || credDefResponse;
+
+              const hasRevocationObject =
+                credDefData?.credential_definition?.value?.revocation !==
+                  undefined &&
+                credDefData.credential_definition.value.revocation !== null;
+
+              const revocationSupport =
+                hasRevocationObject ||
+                credDefData?.credential_definition?.revocation !== undefined ||
+                credDefData?.options?.support_revocation === true ||
+                credDefData?.support_revocation === true;
+
+              const tag =
+                credDefData?.credential_definition?.tag ||
+                credDefData?.tag ||
+                '';
+
+              return {
+                cred_def_id: credDefId,
+                schema_id: credDefData?.credential_definition?.schemaId || '',
+                tag: tag,
+                support_revocation: Boolean(revocationSupport),
+                created_at:
+                  credDefData?.credential_definition_metadata?.created_at,
+              } as CredDefStorageRecord;
+            } catch (err) {
+              console.error('Failed to fetch anoncreds credential definition', {
+                cred_def_id: credDefId,
+                error: err,
+              });
+              return null;
+            }
+          });
+
+          const credDefResults = await Promise.allSettled(credDefPromises);
+          anoncredsCredDefs.push(
+            ...credDefResults
+              .filter(
+                (
+                  result
+                ): result is PromiseFulfilledResult<CredDefStorageRecord> =>
+                  result.status === 'fulfilled' && result.value !== null
+              )
+              .map((result) => result.value)
+          );
+        }
+      }
+
+      // Merge and deduplicate by cred_def_id
+      const credDefMap = new Map<string, CredDefStorageRecord>();
+
+      // Add Indy cred defs first
+      indyCredDefs.forEach((credDef) => {
+        if (credDef?.cred_def_id) {
+          credDefMap.set(credDef.cred_def_id, credDef);
+        }
+      });
+
+      // Add AnonCreds cred defs (will overwrite if duplicate)
+      anoncredsCredDefs.forEach((credDef) => {
+        if (credDef?.cred_def_id) {
+          credDefMap.set(credDef.cred_def_id, credDef);
+        }
+      });
+
+      storedCredDefs.value = Array.from(credDefMap.values());
+    } catch (err) {
+      console.error(err);
+      error.value = err;
+    } finally {
+      loading.value = false;
+    }
   }
 
   async function listAnoncredsCredentialDefinitions() {
@@ -377,9 +590,45 @@ export const useGovernanceStore = defineStore('governance', () => {
         result = res.data;
         console.log(result);
       })
-      .then(() => {
-        // Refresh the schema list
-        listAnoncredsSchemas();
+      .then(async () => {
+        // Extract schema_id from response
+        const schemaId = result?.schema_state?.schema_id;
+
+        if (!schemaId) {
+          console.warn('No schema_id found in response, cannot verify storage');
+          return;
+        }
+
+        // Wait a bit for event handler to complete (if it runs)
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+
+        // Refresh the stored schema list
+        await listStoredSchemas();
+
+        // Check if schema is in storage after refresh
+        const storedSchema = storedSchemas.value.find(
+          (s: any) => s.schema_id === schemaId
+        );
+
+        if (!storedSchema) {
+          // Schema not in storage, manually add it via storage endpoint
+          console.log(
+            `Schema ${schemaId} not found in storage after event handler, manually adding...`
+          );
+          try {
+            await addSchemaFromLedgerToStorage({ schema_id: schemaId });
+            // Refresh again after manual add
+            await listStoredSchemas();
+          } catch (err) {
+            console.error(
+              `Failed to manually add schema ${schemaId} to storage:`,
+              err
+            );
+            // Don't throw - schema was created successfully, just storage failed
+          }
+        } else {
+          console.log(`Schema ${schemaId} found in storage`);
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -424,6 +673,41 @@ export const useGovernanceStore = defineStore('governance', () => {
         loading.value = false;
       });
     console.log('< governanceStore.copySchema');
+
+    if (error.value != null) {
+      // throw error so $onAction.onError listeners can add their own handler
+      throw error.value;
+    }
+    // return data so $onAction.after listeners can add their own handler
+    return result;
+  }
+
+  async function addCredDefFromLedgerToStorage(payload: {
+    cred_def_id: string;
+    schema_id: string;
+  }) {
+    console.log('> governanceStore.addCredDefFromLedgerToStorage');
+    error.value = null;
+    loading.value = true;
+
+    let result = null;
+
+    await acapyApi
+      .postHttp(API_PATH.CREDENTIAL_DEFINITION_STORAGE, payload)
+      .then((res) => {
+        result = res.data;
+        console.log(result);
+      })
+      .then(() => {
+        listStoredCredentialDefinitions();
+      })
+      .catch((err) => {
+        error.value = err;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+    console.log('< governanceStore.addCredDefFromLedgerToStorage');
 
     if (error.value != null) {
       // throw error so $onAction.onError listeners can add their own handler
@@ -483,9 +767,62 @@ export const useGovernanceStore = defineStore('governance', () => {
         result = res.data;
         console.log(result);
       })
-      .then(() => {
+      .then(async () => {
+        // Extract cred_def_id from response
+        const credDefId =
+          result?.credential_definition_state?.credential_definition_id;
+
+        if (!credDefId) {
+          console.warn(
+            'No cred_def_id found in response, cannot verify storage'
+          );
+          return;
+        }
+
+        // Wait a bit for event handler to complete (if it runs)
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+
         // Refresh the credential definition list
-        listStoredCredentialDefinitions();
+        await listStoredCredentialDefinitions();
+
+        // Check if credential definition is in storage after refresh
+        const storedCredDef = storedCredDefs.value.find(
+          (c: any) => c.cred_def_id === credDefId
+        );
+
+        if (!storedCredDef) {
+          // Cred def not in storage, manually add it via storage endpoint
+          console.log(
+            `Credential definition ${credDefId} not found in storage after event handler, manually adding...`
+          );
+          try {
+            // Extract schema_id from the original payload
+            const schemaId =
+              payload.credential_definition?.schemaId ||
+              result?.credential_definition_state?.credential_definition
+                ?.schemaId;
+            if (!schemaId) {
+              console.warn(
+                'No schema_id found, cannot manually add credential definition to storage'
+              );
+              return;
+            }
+            await addCredDefFromLedgerToStorage({
+              cred_def_id: credDefId,
+              schema_id: schemaId,
+            });
+            // Refresh again after manual add
+            await listStoredCredentialDefinitions();
+          } catch (err) {
+            console.error(
+              `Failed to manually add credential definition ${credDefId} to storage:`,
+              err
+            );
+            // Don't throw - cred def was created successfully, just storage failed
+          }
+        } else {
+          console.log(`Credential definition ${credDefId} found in storage`);
+        }
       })
       .catch((err) => {
         error.value = err;
@@ -680,6 +1017,7 @@ export const useGovernanceStore = defineStore('governance', () => {
     storedCredDefs,
     storedSchemas,
     // getSchemaTemplate,
+    addCredDefFromLedgerToStorage,
     addSchemaFromLedgerToStorage,
     createAnoncredsCredentialDefinition,
     createAnoncredsSchema,
@@ -693,6 +1031,8 @@ export const useGovernanceStore = defineStore('governance', () => {
     getCredentialTemplate,
     getOca,
     getStoredSchemas,
+    listAllCredDefsForAnoncredsWallet,
+    listAllSchemasForAnoncredsWallet,
     listAnoncredsCredentialDefinitions,
     listAnoncredsSchemas,
     listOcas,

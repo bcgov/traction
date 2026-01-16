@@ -28,7 +28,8 @@ TEST_CONTEXT = {
     "schema_id": TEST_SCHEMA_ID,
     "tag": TEST_TAG,
     "support_revocation": TEST_SUPPORT_REVOCATION,
-    "cred_def": {"some": "details"},  # Example cred def structure
+    "rev_reg_size": None,
+    "options": {},
 }
 
 
@@ -439,4 +440,17 @@ async def test_creddef_event_handler(
     await creddef_event_handler(profile, mock_event)
 
     profile.inject.assert_called_once_with(CredDefStorageService)
-    creddef_storage_service.add_item.assert_awaited_once_with(profile, TEST_CONTEXT)
+    # The normalization function transforms the event payload
+    # Expected normalized data structure
+    expected_normalized_data = {
+        "cred_def_id": TEST_CRED_DEF_ID,
+        "schema_id": TEST_SCHEMA_ID,
+        "tag": TEST_TAG,
+        "support_revocation": TEST_SUPPORT_REVOCATION,
+        "rev_reg_size": None,
+        "issuer_did": TEST_ISSUER_DID,
+        "options": {},
+    }
+    creddef_storage_service.add_item.assert_awaited_once_with(
+        profile, expected_normalized_data
+    )

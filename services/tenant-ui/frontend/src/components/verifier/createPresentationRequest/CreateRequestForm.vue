@@ -2,7 +2,7 @@
   <div>
     <form @submit.prevent="handleSubmit(!v$.$invalid)">
       <!-- Connection -->
-      <div class="field">
+      <div class="field mt-5">
         <label
           for="selectedConnection"
           :class="{ 'p-error': v$.selectedConnection.$invalid && submitted }"
@@ -81,7 +81,7 @@ import {
 } from '@/types/acapyApi/acapyInterface';
 
 // Vue
-import { reactive, ref } from 'vue';
+import { computed, reactive, ref } from 'vue';
 // PrimeVue / Validation / etc
 import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
@@ -115,6 +115,11 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits(['closed', 'success']);
+
+// Auto-determine filter type based on wallet type
+const filterType = computed(() => {
+  return isAskarAnoncredsWallet.value ? 'anoncreds' : 'indy';
+});
 
 // The default placeholder JSON to start with for this form
 // (or supplied by parent component)
@@ -198,14 +203,16 @@ const handleSubmit = async (isFormValid: boolean) => {
         : proofRequestJson.value;
 
     // Set up the body with the fields from the form
+    // Auto-determine filter type based on wallet type
+    const filterTypeValue = filterType.value;
     const payload: V20PresSendRequestRequest = {
       connection_id: formFields.selectedConnection.value,
       auto_verify: false,
       comment: formFields.comment,
       trace: false,
-      presentation_request: isAskarAnoncredsWallet.value
-        ? { anoncreds: proofRequest }
-        : { indy: proofRequest },
+      presentation_request: {
+        [filterTypeValue]: proofRequest,
+      },
     };
 
     await verifierStore.sendPresentationRequest(payload);

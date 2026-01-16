@@ -208,7 +208,7 @@ import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
 import { stringOrBooleanTruthy, truncateId } from '@/helpers';
 import { API_PATH, TABLE_OPT } from '@/helpers/constants';
 import { formatStoredCredDefs } from '@/helpers/tableFormatters';
-import { useGovernanceStore, useTenantStore } from '@/store';
+import { useGovernanceStore } from '@/store';
 import { useConfigStore } from '@/store/configStore';
 import {
   CredDefStorageRecord,
@@ -225,16 +225,8 @@ const { t } = useI18n();
 
 const { config } = storeToRefs(useConfigStore());
 const governanceStore = useGovernanceStore();
-const tenantStore = useTenantStore();
 const { loading, storedCredDefs, selectedCredentialDefinition } =
   storeToRefs(useGovernanceStore());
-const { tenantWallet } = storeToRefs(useTenantStore());
-
-// Check if wallet is askar-anoncreds
-const isAskarAnoncredsWallet = computed(() => {
-  return tenantWallet?.value?.settings?.['wallet.type'] === 'askar-anoncreds';
-});
-
 const formattedstoredCredDefs = computed(() =>
   formatStoredCredDefs(storedCredDefs)
 );
@@ -242,16 +234,10 @@ const formattedstoredCredDefs = computed(() =>
 // LOADING the schema list and the stored cred defs
 const loadTable = async () => {
   try {
-    if (isAskarAnoncredsWallet.value) {
-      // For askar-anoncreds wallets, use AnonCreds endpoints
-      await governanceStore.listAnoncredsSchemas();
-      await governanceStore.listAnoncredsCredentialDefinitions();
-    } else {
-      // For askar wallets, use regular endpoints
-      await governanceStore.listStoredSchemas();
-      // Wait til schemas are loaded so the getter can map together the schems to creds
-      await governanceStore.listStoredCredentialDefinitions();
-    }
+    // For both wallet types, use schema storage (anoncreds schemas are now automatically stored)
+    await governanceStore.listStoredSchemas();
+    // For both wallet types, use credential definition storage (anoncreds cred defs are now automatically stored)
+    await governanceStore.listStoredCredentialDefinitions();
   } catch (err) {
     console.error(err);
     toast.error(`Failure: ${err}`);
@@ -259,10 +245,6 @@ const loadTable = async () => {
 };
 
 onMounted(async () => {
-  // Ensure tenant wallet is loaded to check wallet type
-  if (!tenantWallet?.value && tenantStore.getTenantSubWallet) {
-    await tenantStore.getTenantSubWallet();
-  }
   loadTable();
 });
 

@@ -73,7 +73,7 @@ const reloadProfileDetails = async () => {
       tenantStore.getTenantConfig(),
       tenantStore.getWriteLedger(),
       tenantStore.getIssuanceStatus(),
-      tenantStore.getWalletcDids(),
+      tenantStore.getWalletDids(),
       tenantStore.getTransactions(),
     ]);
   } catch (error) {
