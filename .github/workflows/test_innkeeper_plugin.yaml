@@ -23,11 +23,14 @@ jobs:
       #       Install python and poetry with cache
       #----------------------------------------------
       - uses: actions/setup-python@v6
+        id: setup-python
         with:
           python-version: "3.13"
       - name: Install poetry
         run: pipx install poetry==2.1.1
         id: setup-poetry
+      - name: Configure poetry to use Python 3.13
+        run: poetry env use "${{ env.pythonLocation }}/bin/python3"
       #----------------------------------------------
       #       Install dependencies
       #----------------------------------------------
