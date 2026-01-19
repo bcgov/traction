@@ -37,8 +37,7 @@ export interface SchemaStorageRecord extends AcapySchemaStorageRecord {
   schema: Schema;
 }
 // The Types in the cred exchange format are just "object"
-export interface ExtendedV20CredExRecordByFormat
-  extends V20CredExRecordByFormat {
+export interface ExtendedV20CredExRecordByFormat extends V20CredExRecordByFormat {
   cred_offer?: {
     indy?: {
       cred_def_id?: string;
