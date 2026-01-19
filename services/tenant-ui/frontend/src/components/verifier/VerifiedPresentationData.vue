@@ -27,7 +27,7 @@
         v-for="(item, index) in props.presentation.acapy.presentation_exchange
           .presentation.identifiers"
         :key="index"
-        :header="`Identifier_${index + 1}`"
+        :header="`Identifier_${Number(index) + 1}`"
       >
         <ul>
           <li v-for="(val, attr_name) in item" :key="attr_name">
