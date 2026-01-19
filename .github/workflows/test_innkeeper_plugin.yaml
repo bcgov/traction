@@ -22,13 +22,18 @@ jobs:
       #----------------------------------------------
       #       Install python and poetry with cache
       #----------------------------------------------
-      - name: Install poetry
-        run: pipx install poetry==2.1.1
-        id: setup-poetry
       - uses: actions/setup-python@v6
+        id: setup-python
         with:
-          python-version: "3.12"
-          cache: "poetry"
+          python-version: "3.13"
+      - name: Install poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 2.1.1
+          virtualenvs-create: true
+          virtualenvs-in-project: false
+      - name: Configure poetry to use Python 3.13
+        run: poetry env use "${{ env.pythonLocation }}/bin/python3"
       #----------------------------------------------
       #       Install dependencies
       #----------------------------------------------
