@@ -37,7 +37,7 @@ RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.4.0
 RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.4.0#subdirectory=connections
 RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.4.0#subdirectory=webvh
 
-# TODO: Remove this once the issue_credential plugin is released
+# TODO: Update main tag once the present_proof and issue_credential plugins are released
 RUN pip install --no-deps git+https://github.com/openwallet-foundation/acapy-plugins@main#subdirectory=present_proof
 RUN pip install --no-deps git+https://github.com/openwallet-foundation/acapy-plugins@main#subdirectory=issue_credential
 
