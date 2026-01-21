@@ -160,20 +160,18 @@ acapy:
     wallet-type: askar
     webhook-url: ""
     plugin:
-      - aries_cloudagent.messaging.jsonld
-      - traction_plugins.traction_innkeeper.v1_0
-      - multitenant_provider.v1_0
-      - basicmessage_storage.v1_0
-      - connections
-      - connection_update.v1_0
-      - rpc.v1_0
-      - webvh
-      - present_proof.v1_0
-      - issue_credential.v1_0
-    plugin-config-value:
-      - webvh.server_url=https://sandbox.bcvh.vonx.io
-      - traction_innkeeper.innkeeper_wallet.tenant_id=\"$(INNKEEPER_WALLET_TENANT_ID)\"
-      - traction_innkeeper.innkeeper_wallet.wallet_key=\"$(INNKEEPER_WALLET_WALLET_KEY)\"
+    - --plugin 'aries_cloudagent.messaging.jsonld'
+    - --plugin traction_plugins.traction_innkeeper.v1_0
+    - --plugin-config-value traction_innkeeper.innkeeper_wallet.tenant_id=\"$(INNKEEPER_WALLET_TENANT_ID)\"
+    - --plugin-config-value traction_innkeeper.innkeeper_wallet.wallet_key=\"$(INNKEEPER_WALLET_WALLET_KEY)\"
+    - --plugin multitenant_provider.v1_0
+    - --plugin basicmessage_storage.v1_0
+    - --plugin connections
+    - --plugin connection_update.v1_0
+    - --plugin rpc.v1_0
+    - --plugin webvh
+    - --plugin present_proof.v1_0
+    - --plugin issue_credential.v1_0
 
   ## ACA-Py ingress configuration (disabled - using Traction's ingress instead)
   ##
@@ -210,7 +208,17 @@ acapy:
 
   ## Additional arguments for ACA-Py
   ## @param acapy.extraArgs Additional CLI args appended to the aca-py start command
-  # extraArgs:
+  extraArgs:
+    - --plugin 'aries_cloudagent.messaging.jsonld'
+    - --plugin traction_plugins.traction_innkeeper.v1_0
+    - --plugin-config-value traction_innkeeper.innkeeper_wallet.tenant_id=\"$(INNKEEPER_WALLET_TENANT_ID)\"
+    - --plugin-config-value traction_innkeeper.innkeeper_wallet.wallet_key=\"$(INNKEEPER_WALLET_WALLET_KEY)\"
+    - --plugin multitenant_provider.v1_0
+    - --plugin basicmessage_storage.v1_0
+    - --plugin connections
+    - --plugin connection_update.v1_0
+    - --plugin rpc.v1_0
+    - --plugin webvh
 
   ## Init containers
   ## @param acapy.initContainers Extra init containers to add to the pod (array of objects)

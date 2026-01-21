@@ -9,9 +9,6 @@ acapy:
   argfile.yml:
     tails-server-base-url: https://tails-dev.vonx.io
     tails-server-upload-url: https://tails-dev.vonx.io
-    plugin:
-      - present_proof.v1_0
-      - issue_credential.v1_0
 
   ledgers.yml:
     - id: bcovrin-test
