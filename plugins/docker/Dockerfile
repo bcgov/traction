@@ -37,6 +37,9 @@ RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.4.0
 RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.4.0#subdirectory=connections
 RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.4.0#subdirectory=webvh
 
+# TODO: Remove this once the issue_credential plugin is released
+RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@main#subdirectory=issue_credential
+
 
 ENTRYPOINT ["/bin/bash", "-c", "aca-py \"$@\"", "--"]
 CMD ["start", "--arg-file", "default.yml"]
