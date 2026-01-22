@@ -159,19 +159,6 @@ acapy:
     wallet-storage-type: postgres_storage
     wallet-type: askar
     webhook-url: ""
-    plugin:
-    - --plugin 'aries_cloudagent.messaging.jsonld'
-    - --plugin traction_plugins.traction_innkeeper.v1_0
-    - --plugin-config-value traction_innkeeper.innkeeper_wallet.tenant_id=\"$(INNKEEPER_WALLET_TENANT_ID)\"
-    - --plugin-config-value traction_innkeeper.innkeeper_wallet.wallet_key=\"$(INNKEEPER_WALLET_WALLET_KEY)\"
-    - --plugin multitenant_provider.v1_0
-    - --plugin basicmessage_storage.v1_0
-    - --plugin connections
-    - --plugin connection_update.v1_0
-    - --plugin rpc.v1_0
-    - --plugin webvh
-    - --plugin present_proof.v1_0
-    - --plugin issue_credential.v1_0
 
   ## ACA-Py ingress configuration (disabled - using Traction's ingress instead)
   ##
