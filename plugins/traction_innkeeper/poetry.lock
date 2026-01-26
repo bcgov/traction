@@ -2,14 +2,14 @@
 
 [[package]]
 name = "acapy-agent"
-version = "1.5.0rc0"
+version = "1.5.0rc1"
 description = "(ACA-Py) A Cloud Agent Python is a foundation for building decentralized identity applications and services running in non-mobile environments. "
 optional = false
 python-versions = "<4.0,>=3.13"
 groups = ["main"]
 files = [
-    {file = "acapy_agent-1.5.0rc0-py3-none-any.whl", hash = "sha256:a6b8fcd822f77153876042fb4e771fb118bd9a2208efd5d4fd5c96f6e49583a0"},
-    {file = "acapy_agent-1.5.0rc0.tar.gz", hash = "sha256:d8bffeb6ccae40879b59636478712a69e8ca1e7e6d5e8bd5f6102865442b7765"},
+    {file = "acapy_agent-1.5.0rc1-py3-none-any.whl", hash = "sha256:cabd1d48e9a06d6533734f2ad2332cda29242606117281fd8e428220c7b48a01"},
+    {file = "acapy_agent-1.5.0rc1.tar.gz", hash = "sha256:12134bf7300da497064a2cf0fe508c5d6fb40fcc728c875cae142a68d8a44f8c"},
 ]
 
 [package.dependencies]
@@ -49,7 +49,7 @@ requests = ">=2.32.3,<2.33.0"
 rlp = ">=4.1.0,<5.0.0"
 sd-jwt = ">=0.10.3,<0.11.0"
 unflatten = ">=0.2,<0.3"
-uuid_utils = ">=0.10,<0.13"
+uuid_utils = ">=0.10,<0.14"
 
 [package.extras]
 bbs = ["ursa-bbs-signatures (>=1.0.1,<1.1.0)"]
@@ -3482,4 +3482,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.13"
-content-hash = "024aac753f331a472168a6728498439ac628acfbd558f57aba9fd64ae1a58551"
+content-hash = "e435fe4ac0b8d979651bf42dd980ccf4763b2e83ded0d7ed8e275d580b8f4d20"
