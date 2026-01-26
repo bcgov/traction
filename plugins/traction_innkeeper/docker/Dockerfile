@@ -1,4 +1,4 @@
-FROM python:3.13-slim AS base
+FROM python:3.14-slim AS base
 WORKDIR /usr/src/app
 
 # Install and configure poetry
@@ -18,7 +18,7 @@ COPY pyproject.toml poetry.lock README.md ./
 ARG install_flags=--no-dev
 RUN poetry install ${install_flags}
 
-FROM python:3.13-slim
+FROM python:3.14-slim
 WORKDIR /usr/src/app
 COPY --from=base /usr/src/app/.venv /usr/src/app/.venv
 ENV PATH="/usr/src/app/.venv/bin:$PATH"
