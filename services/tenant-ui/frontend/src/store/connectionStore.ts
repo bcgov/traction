@@ -42,11 +42,14 @@ export const useConnectionStore = defineStore('connection', () => {
 
   const findConnectionName = computed(() => (connectionId: string) => {
     if (loading.value) return undefined;
-    // Find the connection alias for an ID
+    // Find the connection alias for an ID, fallback to their_label
     const connection = connections.value?.find((c: any) => {
       return c.connection_id === connectionId;
     });
-    return connection && connection.alias ? connection.alias : '';
+    if (connection) {
+      return connection.alias || connection.their_label || '';
+    }
+    return '';
   });
 
   // actions

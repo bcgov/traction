@@ -19,15 +19,10 @@ from acapy_agent.messaging.schemas.util import (
     EVENT_LISTENER_PATTERN as INDY_SCHEMA_EVENT_PATTERN,
 )
 
-# Try to import ANONCREDS_SCHEMA_FINISHED_EVENT, but handle the case where it doesn't exist
-# (e.g., if using an older version of acapy that doesn't have this event yet)
-try:
-    from acapy_agent.anoncreds.events import (
-        SCHEMA_FINISHED_EVENT as ANONCREDS_SCHEMA_FINISHED_EVENT,
-    )
-except (ImportError, AttributeError):
-    # If the event doesn't exist, we'll only subscribe to Indy events
-    ANONCREDS_SCHEMA_FINISHED_EVENT = None
+# Import the AnonCreds schema finished event
+from acapy_agent.anoncreds.events import (
+    SCHEMA_FINISHED_EVENT as ANONCREDS_SCHEMA_FINISHED_EVENT,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -274,13 +269,12 @@ class SchemaStorageService:
 def subscribe(bus: EventBus):
     # Subscribe to Indy schema events
     bus.subscribe(INDY_SCHEMA_EVENT_PATTERN, schemas_event_handler)
-    # Subscribe to AnonCreds schema events if available
-    # Explicitly compile as literal pattern to ensure it's a Pattern object, not a string
-    if ANONCREDS_SCHEMA_FINISHED_EVENT:
-        bus.subscribe(
-            re.compile(re.escape(ANONCREDS_SCHEMA_FINISHED_EVENT)),
-            schemas_event_handler,
-        )
+    # Subscribe to AnonCreds schema finished events
+    # Use exact match pattern - escape special chars and anchor to start/end
+    bus.subscribe(
+        re.compile(f"^{re.escape(ANONCREDS_SCHEMA_FINISHED_EVENT)}$"),
+        schemas_event_handler,
+    )
 
 
 def _normalize_schema_event_payload(event: Event) -> dict:
@@ -292,10 +286,7 @@ def _normalize_schema_event_payload(event: Event) -> dict:
     payload = event.payload
 
     # Check event topic to determine if it's AnonCreds or Indy
-    if (
-        ANONCREDS_SCHEMA_FINISHED_EVENT
-        and event.topic == ANONCREDS_SCHEMA_FINISHED_EVENT
-    ):
+    if event.topic == ANONCREDS_SCHEMA_FINISHED_EVENT:
         # AnonCreds event: SchemaFinishedPayload NamedTuple
         if hasattr(payload, "schema_id"):
             return {

@@ -79,60 +79,44 @@ export const useIssuerStore = defineStore('issuer', () => {
     );
   }
 
-  async function revokeCredential(
-    payload: RevokeRequest,
-    isAnonCredsCredential?: boolean
-  ) {
+  async function revokeCredential(payload: RevokeRequest) {
     console.log('> issuerStore.revokeCredential');
     error.value = null;
     loading.value = true;
 
     try {
-      // Determine which endpoint to use based on credential format
-      // If format is not specified, fall back to wallet type
-      let useAnonCredsEndpoint = isAnonCredsCredential;
-
-      // If credential format is not explicitly detected (undefined), check wallet type
-      if (useAnonCredsEndpoint === undefined) {
-        // Ensure wallet is loaded and get wallet type
-        let walletType: string | undefined;
-        if (!tenantStore.tenantWallet?.value) {
-          try {
-            const wallet = await tenantStore.getTenantSubWallet();
-            walletType = wallet?.settings?.['wallet.type'];
-            if (!walletType && wallet) {
-              console.warn(
-                'Wallet retrieved but wallet.type setting not found, defaulting to Indy endpoint'
-              );
-            }
-          } catch (err) {
-            console.error(
-              'Failed to retrieve tenant wallet, defaulting to Indy endpoint:',
-              err
+      // Determine which endpoint to use based on wallet type
+      let walletType: string | undefined;
+      if (!tenantStore.tenantWallet?.value) {
+        try {
+          const wallet = await tenantStore.getTenantSubWallet();
+          walletType = wallet?.settings?.['wallet.type'];
+          if (!walletType && wallet) {
+            console.warn(
+              'Wallet retrieved but wallet.type setting not found, defaulting to Indy endpoint'
             );
-            walletType = undefined;
           }
-        } else {
-          walletType =
-            tenantStore.tenantWallet.value?.settings?.['wallet.type'];
+        } catch (err) {
+          console.error(
+            'Failed to retrieve tenant wallet, defaulting to Indy endpoint:',
+            err
+          );
+          walletType = undefined;
         }
-
-        // For askar-anoncreds wallets, default to AnonCreds endpoint
-        // For other wallets, default to Indy endpoint
-        useAnonCredsEndpoint = walletType === 'askar-anoncreds';
-
-        console.log(
-          'Credential format not detected, using wallet type:',
-          walletType,
-          '-> useAnonCredsEndpoint:',
-          useAnonCredsEndpoint
-        );
       } else {
-        console.log(
-          'Using explicit credential format detection:',
-          isAnonCredsCredential
-        );
+        walletType = tenantStore.tenantWallet.value?.settings?.['wallet.type'];
       }
+
+      // For askar-anoncreds wallets, use AnonCreds endpoint
+      // For other wallets (askar, etc.), use Indy endpoint
+      const useAnonCredsEndpoint = walletType === 'askar-anoncreds';
+
+      console.log(
+        'Using wallet type:',
+        walletType,
+        '-> useAnonCredsEndpoint:',
+        useAnonCredsEndpoint
+      );
 
       const revocationEndpoint = useAnonCredsEndpoint
         ? API_PATH.ANONCREDS_REVOCATION_REVOKE
@@ -154,31 +138,15 @@ export const useIssuerStore = defineStore('issuer', () => {
             // AnonCreds endpoint returns {} (empty object), Indy returns { item: {...} }
             result = res.data.item || res.data;
 
-            // Refresh credentials to get updated state
+            // The backend event handler should update the credential state to "credential-revoked"
+            // Wait for the event handler to process, then refresh
+            // The event handler processes asynchronously, so we wait and refresh
+            await new Promise((resolve) => setTimeout(resolve, 2000));
             await listCredentials();
-
-            // For AnonCreds endpoint, verify the revocation actually succeeded
-            // The endpoint might return success but not actually revoke (e.g., Indy credential in AnonCreds wallet)
-            if (useAnonCredsEndpoint && isAnonCredsCredential === undefined) {
-              // Best-effort polling: refresh credentials a few times with a short delay
-              const maxAttempts = 3;
-              const delayMs = 200;
-
-              for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-                await listCredentials();
-
-                // If additional verification logic becomes available (e.g., using a cred_ex_id),
-                // it can be added here to break early when revocation is confirmed.
-
-                if (attempt < maxAttempts) {
-                  await new Promise((resolve) => setTimeout(resolve, delayMs));
-                }
-              }
-              // Check if the credential was actually revoked by looking for it in the list
-              // If credential format wasn't detected, the revocation might have failed silently
-              console.log('Verifying revocation succeeded...');
-              // Note: We can't easily verify here without the cred_ex_id, but the refresh will show the state
-            }
+            
+            // Refresh once more after a delay to catch the state update
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            await listCredentials();
           })
           .catch((err) => {
             error.value = err;

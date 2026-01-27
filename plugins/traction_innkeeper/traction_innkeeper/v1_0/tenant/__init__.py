@@ -6,6 +6,10 @@ from acapy_agent.core.plugin_registry import PluginRegistry
 from acapy_agent.core.protocol_registry import ProtocolRegistry
 
 from .holder_revocation_service import subscribe, HolderRevocationService
+from .issuer_revocation_service import (
+    subscribe as subscribe_issuer_revocation,
+    IssuerRevocationService,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -73,6 +77,12 @@ async def setup(context: InjectionContext):
     context.injector.bind_instance(HolderRevocationService, srv)
 
     subscribe(bus)
+
+    # Subscribe to issuer revocation events
+    issuer_srv = IssuerRevocationService()
+    context.injector.bind_instance(IssuerRevocationService, issuer_srv)
+
+    subscribe_issuer_revocation(bus)
 
     setup_multitenant_logging()
 
