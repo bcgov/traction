@@ -138,14 +138,45 @@ export const useIssuerStore = defineStore('issuer', () => {
             // AnonCreds endpoint returns {} (empty object), Indy returns { item: {...} }
             result = res.data.item || res.data;
 
-            // The backend event handler should update the credential state to "credential-revoked"
-            // Wait for the event handler to process, then refresh
-            // The event handler processes asynchronously, so we wait and refresh
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-            await listCredentials();
-            
-            // Refresh once more after a delay to catch the state update
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            // Directly update the credential state in the store
+            // Find the credential by cred_ex_id or rev_reg_id/cred_rev_id
+            const credExId = payload.cred_ex_id;
+            const revRegId = payload.rev_reg_id;
+            const credRevId = payload.cred_rev_id;
+
+            if (credExId) {
+              // Update by credential exchange ID
+              const credentialIndex = credentials.value.findIndex(
+                (cred) => cred.cred_ex_record?.cred_ex_id === credExId
+              );
+              if (credentialIndex !== -1) {
+                // Update the state directly
+                if (credentials.value[credentialIndex].cred_ex_record) {
+                  credentials.value[credentialIndex].cred_ex_record.state =
+                    'credential-revoked';
+                }
+              }
+            } else if (revRegId && credRevId) {
+              // Update by revocation registry ID and credential revocation ID
+              const credentialIndex = credentials.value.findIndex((cred) => {
+                const indyMatch =
+                  cred.indy?.rev_reg_id === revRegId &&
+                  cred.indy?.cred_rev_id === credRevId;
+                const anoncredsMatch =
+                  cred.anoncreds?.rev_reg_id === revRegId &&
+                  cred.anoncreds?.cred_rev_id === credRevId;
+                return indyMatch || anoncredsMatch;
+              });
+              if (credentialIndex !== -1) {
+                // Update the state directly
+                if (credentials.value[credentialIndex].cred_ex_record) {
+                  credentials.value[credentialIndex].cred_ex_record.state =
+                    'credential-revoked';
+                }
+              }
+            }
+
+            // Refresh the list to ensure we have the latest data from the backend
             await listCredentials();
           })
           .catch((err) => {
