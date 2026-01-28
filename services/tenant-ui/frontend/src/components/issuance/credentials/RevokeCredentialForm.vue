@@ -61,10 +61,7 @@
 <script setup lang="ts">
 // Types
 import { FormattedIssuedCredentialRecord } from '@/helpers/tableFormatters';
-import {
-  RevokeRequest,
-  V20CredExRecordDetail,
-} from '@/types/acapyApi/acapyInterface';
+import { RevokeRequest } from '@/types/acapyApi/acapyInterface';
 
 // Vue/State
 import { reactive, ref } from 'vue';

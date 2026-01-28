@@ -79,7 +79,7 @@ export const useIssuerStore = defineStore('issuer', () => {
     );
   }
 
-  async function revokeCredential(payload: RevokeRequest) {
+  async function revokeCredential(payload?: RevokeRequest) {
     console.log('> issuerStore.revokeCredential');
     error.value = null;
     loading.value = true;
@@ -140,38 +140,40 @@ export const useIssuerStore = defineStore('issuer', () => {
 
             // Directly update the credential state in the store
             // Find the credential by cred_ex_id or rev_reg_id/cred_rev_id
-            const credExId = payload.cred_ex_id;
-            const revRegId = payload.rev_reg_id;
-            const credRevId = payload.cred_rev_id;
+            if (payload) {
+              const credExId = payload.cred_ex_id;
+              const revRegId = payload.rev_reg_id;
+              const credRevId = payload.cred_rev_id;
 
-            if (credExId) {
-              // Update by credential exchange ID
-              const credentialIndex = credentials.value.findIndex(
-                (cred) => cred.cred_ex_record?.cred_ex_id === credExId
-              );
-              if (credentialIndex !== -1) {
-                // Update the state directly
-                if (credentials.value[credentialIndex].cred_ex_record) {
-                  credentials.value[credentialIndex].cred_ex_record.state =
-                    'credential-revoked';
+              if (credExId) {
+                // Update by credential exchange ID
+                const credentialIndex = credentials.value.findIndex(
+                  (cred) => cred.cred_ex_record?.cred_ex_id === credExId
+                );
+                if (credentialIndex !== -1) {
+                  // Update the state directly
+                  if (credentials.value[credentialIndex].cred_ex_record) {
+                    credentials.value[credentialIndex].cred_ex_record.state =
+                      'credential-revoked';
+                  }
                 }
-              }
-            } else if (revRegId && credRevId) {
-              // Update by revocation registry ID and credential revocation ID
-              const credentialIndex = credentials.value.findIndex((cred) => {
-                const indyMatch =
-                  cred.indy?.rev_reg_id === revRegId &&
-                  cred.indy?.cred_rev_id === credRevId;
-                const anoncredsMatch =
-                  cred.anoncreds?.rev_reg_id === revRegId &&
-                  cred.anoncreds?.cred_rev_id === credRevId;
-                return indyMatch || anoncredsMatch;
-              });
-              if (credentialIndex !== -1) {
-                // Update the state directly
-                if (credentials.value[credentialIndex].cred_ex_record) {
-                  credentials.value[credentialIndex].cred_ex_record.state =
-                    'credential-revoked';
+              } else if (revRegId && credRevId) {
+                // Update by revocation registry ID and credential revocation ID
+                const credentialIndex = credentials.value.findIndex((cred) => {
+                  const indyMatch =
+                    cred.indy?.rev_reg_id === revRegId &&
+                    cred.indy?.cred_rev_id === credRevId;
+                  const anoncredsMatch =
+                    cred.anoncreds?.rev_reg_id === revRegId &&
+                    cred.anoncreds?.cred_rev_id === credRevId;
+                  return indyMatch || anoncredsMatch;
+                });
+                if (credentialIndex !== -1) {
+                  // Update the state directly
+                  if (credentials.value[credentialIndex].cred_ex_record) {
+                    credentials.value[credentialIndex].cred_ex_record.state =
+                      'credential-revoked';
+                  }
                 }
               }
             }
