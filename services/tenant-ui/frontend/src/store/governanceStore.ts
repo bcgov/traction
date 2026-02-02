@@ -589,46 +589,14 @@ export const useGovernanceStore = defineStore('governance', () => {
       .then((res) => {
         result = res.data;
         console.log(result);
+        // Schema finished event will be handled by the backend event handler
+        // which will automatically add it to storage
       })
       .then(async () => {
-        // Extract schema_id from response
-        const schemaId = result?.schema_state?.schema_id;
-
-        if (!schemaId) {
-          console.warn('No schema_id found in response, cannot verify storage');
-          return;
-        }
-
-        // Wait a bit for event handler to complete (if it runs)
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-
-        // Refresh the stored schema list
+        // Wait a moment for the backend event handler to process and store the schema
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        // Refresh the schema list to show the newly created schema
         await listStoredSchemas();
-
-        // Check if schema is in storage after refresh
-        const storedSchema = storedSchemas.value.find(
-          (s: any) => s.schema_id === schemaId
-        );
-
-        if (!storedSchema) {
-          // Schema not in storage, manually add it via storage endpoint
-          console.log(
-            `Schema ${schemaId} not found in storage after event handler, manually adding...`
-          );
-          try {
-            await addSchemaFromLedgerToStorage({ schema_id: schemaId });
-            // Refresh again after manual add
-            await listStoredSchemas();
-          } catch (err) {
-            console.error(
-              `Failed to manually add schema ${schemaId} to storage:`,
-              err
-            );
-            // Don't throw - schema was created successfully, just storage failed
-          }
-        } else {
-          console.log(`Schema ${schemaId} found in storage`);
-        }
       })
       .catch((err) => {
         console.log(err);

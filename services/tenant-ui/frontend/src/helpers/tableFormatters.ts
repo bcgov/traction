@@ -34,6 +34,7 @@ export interface FormattedIssuedCredentialRecord extends V20CredExRecordDetail {
   created: string;
   cred_rev_id?: string;
   rev_reg_id?: string;
+  credential_exchange_id?: string;
   state: V20CredExRecord['state'];
 }
 
@@ -185,12 +186,23 @@ export const formatIssuedCredentials = (
       }
     }
 
+    const connectionId = ce.cred_ex_record?.connection_id ?? '';
+    // findConnectionName is a function that takes connectionId and returns the connection name
+    // It should use alias first, then their_label as fallback
+    const connectionName =
+      connectionId && findConnectionName
+        ? findConnectionName(connectionId) || ''
+        : '';
+
     return {
+      // Preserve the full V20CredExRecordDetail structure for format detection
+      ...ce,
+      // Explicitly set all formatted values to ensure they override any spread properties
       state: ce.cred_ex_record?.state,
       cred_rev_id: credRevId,
       rev_reg_id: revRegId,
-      connection_id: ce.cred_ex_record?.connection_id,
-      connection: findConnectionName(ce.cred_ex_record?.connection_id ?? ''),
+      connection_id: connectionId,
+      connection: connectionName,
       credential_definition_id: credentialDefinitionDisplay,
       credential_exchange_id: ce.cred_ex_record?.cred_ex_id,
       created: formatDateLong(ce.cred_ex_record?.created_at),
