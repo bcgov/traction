@@ -90,7 +90,7 @@ export const useIssuerStore = defineStore('issuer', () => {
         try {
           const wallet = await tenantStore.getTenantSubWallet();
           walletType = wallet?.settings?.['wallet.type'];
-        } catch (err) {
+        } catch (_err) {
           walletType = undefined;
         }
       } else {
