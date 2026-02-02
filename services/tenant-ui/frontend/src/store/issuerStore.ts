@@ -80,7 +80,6 @@ export const useIssuerStore = defineStore('issuer', () => {
   }
 
   async function revokeCredential(payload?: RevokeRequest) {
-    console.log('> issuerStore.revokeCredential');
     error.value = null;
     loading.value = true;
 
@@ -91,16 +90,7 @@ export const useIssuerStore = defineStore('issuer', () => {
         try {
           const wallet = await tenantStore.getTenantSubWallet();
           walletType = wallet?.settings?.['wallet.type'];
-          if (!walletType && wallet) {
-            console.warn(
-              'Wallet retrieved but wallet.type setting not found, defaulting to Indy endpoint'
-            );
-          }
         } catch (err) {
-          console.error(
-            'Failed to retrieve tenant wallet, defaulting to Indy endpoint:',
-            err
-          );
           walletType = undefined;
         }
       } else {
@@ -111,121 +101,35 @@ export const useIssuerStore = defineStore('issuer', () => {
       // For other wallets (askar, etc.), use Indy endpoint
       const useAnonCredsEndpoint = walletType === 'askar-anoncreds';
 
-      console.log(
-        'Using wallet type:',
-        walletType,
-        '-> useAnonCredsEndpoint:',
-        useAnonCredsEndpoint
-      );
-
       const revocationEndpoint = useAnonCredsEndpoint
         ? API_PATH.ANONCREDS_REVOCATION_REVOKE
         : API_PATH.REVOCATION_REVOKE;
 
-      console.log(
-        'Using endpoint:',
-        revocationEndpoint,
-        'for AnonCreds credential:',
-        useAnonCredsEndpoint
-      );
-
       let result: RevocationModuleResponse | null = null;
 
       try {
-        await acapyApi
-          .postHttp(revocationEndpoint, payload)
-          .then(async (res) => {
-            // AnonCreds endpoint returns {} (empty object), Indy returns { item: {...} }
-            result = res.data.item || res.data;
+        const res = await acapyApi.postHttp(revocationEndpoint, payload);
+        // AnonCreds endpoint returns {} (empty object), Indy returns { item: {...} }
+        result = res.data.item || res.data;
 
-            // Directly update the credential state in the store
-            // Find the credential by cred_ex_id or rev_reg_id/cred_rev_id
-            if (payload) {
-              const credExId = payload.cred_ex_id;
-              const revRegId = payload.rev_reg_id;
-              const credRevId = payload.cred_rev_id;
-
-              if (credExId) {
-                // Update by credential exchange ID
-                const credentialIndex = credentials.value.findIndex(
-                  (cred) => cred.cred_ex_record?.cred_ex_id === credExId
-                );
-                if (credentialIndex !== -1) {
-                  // Update the state directly
-                  if (credentials.value[credentialIndex].cred_ex_record) {
-                    credentials.value[credentialIndex].cred_ex_record.state =
-                      'credential-revoked';
-                  }
-                }
-              } else if (revRegId && credRevId) {
-                // Update by revocation registry ID and credential revocation ID
-                const credentialIndex = credentials.value.findIndex((cred) => {
-                  const indyMatch =
-                    cred.indy?.rev_reg_id === revRegId &&
-                    cred.indy?.cred_rev_id === credRevId;
-                  const anoncredsMatch =
-                    cred.anoncreds?.rev_reg_id === revRegId &&
-                    cred.anoncreds?.cred_rev_id === credRevId;
-                  return indyMatch || anoncredsMatch;
-                });
-                if (credentialIndex !== -1) {
-                  // Update the state directly
-                  if (credentials.value[credentialIndex].cred_ex_record) {
-                    credentials.value[credentialIndex].cred_ex_record.state =
-                      'credential-revoked';
-                  }
-                }
-              }
-            }
-
-            // Refresh the list to ensure we have the latest data from the backend
-            await listCredentials();
-          })
-          .catch((err) => {
-            error.value = err;
-            // If we got a 500 error, the revocation might have still succeeded
-            // (e.g., error in notification or response serialization after revocation)
-            // Refresh the credential list to check the actual state
-            // Note: We don't await this to avoid overwriting the original error
-            if (err?.response?.status === 500) {
-              console.log(
-                'Got 500 error, refreshing credential list to check if revocation succeeded...'
-              );
-              // Fire-and-forget: don't await to preserve the original error
-              listCredentials().catch(() => {
-                // Silently ignore errors from listCredentials to preserve original error
-              });
-            }
-            // Re-throw to ensure the promise chain rejects
-            throw err;
-          });
+        // Refresh the list to get the updated state from the backend
+        await listCredentials();
       } catch (err) {
-        // Catch any errors that escape the promise chain
-        if (error.value == null) {
-          error.value = err;
-        }
-        // Re-throw to be caught by outer catch block
+        error.value = err;
         throw err;
       }
 
-      console.log('< issuerStore.revokeCredential');
-
       if (error.value != null) {
-        // throw error so $onAction.onError listeners can add their own handler
         const errToThrow = error.value;
         throw errToThrow;
       }
-      // return data so $onAction.after listeners can add their own handler
       return result;
     } catch (err) {
-      // Catch any errors that occur outside the promise chain (e.g., in wallet type check)
-      // or when re-throwing error.value from the promise chain
       if (error.value == null) {
         error.value = err as any;
       }
       throw err;
     } finally {
-      // Always reset loading, regardless of success or error
       loading.value = false;
     }
   }

@@ -2,14 +2,14 @@
 
 [[package]]
 name = "acapy-agent"
-version = "1.5.0rc1"
+version = "1.5.0"
 description = "(ACA-Py) A Cloud Agent Python is a foundation for building decentralized identity applications and services running in non-mobile environments. "
 optional = false
 python-versions = "<4.0,>=3.13"
 groups = ["main"]
 files = [
-    {file = "acapy_agent-1.5.0rc1-py3-none-any.whl", hash = "sha256:cabd1d48e9a06d6533734f2ad2332cda29242606117281fd8e428220c7b48a01"},
-    {file = "acapy_agent-1.5.0rc1.tar.gz", hash = "sha256:12134bf7300da497064a2cf0fe508c5d6fb40fcc728c875cae142a68d8a44f8c"},
+    {file = "acapy_agent-1.5.0-py3-none-any.whl", hash = "sha256:2ec2c1ead6f826ac04df5daed9c4d447276ff3d76d994bb8cc9f653abbd0016c"},
+    {file = "acapy_agent-1.5.0.tar.gz", hash = "sha256:271caa0679ede758b89652dd1de45803b10c44d67ac2fd14bef208d50f08e0ec"},
 ]
 
 [package.dependencies]
@@ -33,7 +33,7 @@ Markdown = ">=3.7,<3.11"
 markupsafe = ">=3.0.2,<4.0.0"
 marshmallow = ">=3.26.1,<3.27.0"
 nest_asyncio = ">=1.6.0,<1.7.0"
-packaging = ">=24.2,<26.0"
+packaging = ">=24.2,<27.0"
 portalocker = ">=3.1.1,<4.0.0"
 prompt_toolkit = ">=3.0,<3.1"
 psycopg = {version = ">=3.2.1,<4.0.0", extras = ["binary", "pool"]}
@@ -49,7 +49,7 @@ requests = ">=2.32.3,<2.33.0"
 rlp = ">=4.1.0,<5.0.0"
 sd-jwt = ">=0.10.3,<0.11.0"
 unflatten = ">=0.2,<0.3"
-uuid_utils = ">=0.10,<0.14"
+uuid_utils = ">=0.10,<0.15"
 
 [package.extras]
 bbs = ["ursa-bbs-signatures (>=1.0.1,<1.1.0)"]
@@ -3482,4 +3482,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.13"
-content-hash = "e435fe4ac0b8d979651bf42dd980ccf4763b2e83ded0d7ed8e275d580b8f4d20"
+content-hash = "4f2bccfc28e45c8073b69420c673d04ff4edd050587530d0d048a18ff89f4302"
