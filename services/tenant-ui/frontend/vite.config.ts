@@ -15,7 +15,13 @@ const proxyObject = {
 // https://vitetest.dev/config/
 export default defineConfig({
   plugins: [
-    vue(),
+    vue({
+      template: {
+        transformAssetUrls: {
+          includeAbsolute: false,
+        },
+      },
+    }),
     VueI18nPlugin({
       include: path.resolve(__dirname, './src/plugins/i18n/locales/**'),
       strictMessage: false,
@@ -50,5 +56,10 @@ export default defineConfig({
     globals: true,
     setupFiles: ['/test/setupGlobalMocks.ts', '/test/setupApi.ts'],
     environment: 'jsdom',
+    environmentOptions: {
+      jsdom: {
+        url: 'http://localhost/',
+      },
+    },
   },
 });
