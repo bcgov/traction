@@ -11,7 +11,10 @@
       </p>
     </div>
     <div class="col-12 md:col-6 flex justify-content-end pt-0">
-      <img src="/img/logo/aries-logo-color.png" class="logo-acapy" />
+      <img
+        src="/img/logo/openwallet-foundation-logo-color.svg"
+        class="logo-acapy"
+      />
     </div>
   </div>
 
