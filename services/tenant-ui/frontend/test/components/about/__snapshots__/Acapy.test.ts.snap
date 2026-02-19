@@ -5,7 +5,7 @@ exports[`Acapy > mount matches snapshot with expected values 1`] = `
   <div data-v-59165757="" class="col-12 md:col-6"><strong data-v-59165757="">about.acaPy.info</strong>
     <p data-v-59165757="" class="mt-0">about.acaPy.acapyVersion</p>
   </div>
-  <div data-v-59165757="" class="col-12 md:col-6 flex justify-content-end pt-0"><img data-v-59165757="" src="/img/logo/aries-logo-color.png" class="logo-acapy"></div>
+  <div data-v-59165757="" class="col-12 md:col-6 flex justify-content-end pt-0"><img data-v-59165757="" src="/img/logo/openwallet-foundation-logo-color.svg" class="logo-acapy"></div>
 </div>
 <div data-v-59165757="" class="grid">
   <div data-v-59165757="" class="col-12 md:col-6 lg:col-4">
