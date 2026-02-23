@@ -1,22 +1,20 @@
-## @param global.imageRegistry Global Docker image registry
-## @param global.imagePullSecrets Global Docker registry secret names as an array
-## @param global.defaultStorageClass Global default StorageClass for Persistent Volume(s)
 ##
 global:
+  # global.imageRegistry -- Global Docker image registry
   imageRegistry: ""
   ## E.g.
   ## imagePullSecrets:
   ##   - myRegistryKeySecretName
   ##
   imagePullSecrets: []
-  ## @param global.ingressSuffix Domain suffix to be used for default hostpaths in ingress
+  # global.ingressSuffix -- Domain suffix to be used for default hostpaths in ingress
   ingressSuffix: -dev.example.com
-  ## @param global.defaultStorageClass Default StorageClass for Persistent Volume Claim
+  # global.defaultStorageClass -- Default StorageClass for Persistent Volume Claim
   defaultStorageClass: ""
   ## Security parameters
   ##
   security:
-    ## @param global.security.allowInsecureImages Allows skipping image verification
+    # global.security.allowInsecureImages -- Allows skipping image verification
     allowInsecureImages: false
   ## Compatibility adaptations for Kubernetes platforms
   ##
@@ -24,177 +22,169 @@ global:
     ## Compatibility adaptations for Openshift
     ##
     openshift:
-      ## @param global.compatibility.openshift.adaptSecurityContext Adapt the securityContext sections of the deployment to make them compatible with Openshift restricted-v2 SCC: remove runAsUser, runAsGroup and fsGroup and let the platform use their allowed default IDs. Possible values: auto (apply if the detected running cluster is Openshift), force (perform the adaptation always), disabled (do not perform adaptation)
       ##
+      # global.compatibility.openshift.adaptSecurityContext -- Adapt the securityContext sections of the deployment to make them compatible with Openshift restricted-v2 SCC: remove runAsUser, runAsGroup and fsGroup and let the platform use their allowed default IDs. Possible values: auto (apply if the detected running cluster is Openshift), force (perform the adaptation always), disabled (do not perform adaptation)
       adaptSecurityContext: auto
-## @param nameOverride String to override the helm chart name, second part of the prefix
+# nameOverride -- String to override the helm chart name, second part of the prefix
 nameOverride: ""
-## @param fullnameOverride String to fully override the helm chart name, full prefix. *Must be provided if using a custom release name that does not include the word traction.*
+# fullnameOverride -- String to fully override the helm chart name, full prefix. *Must be provided if using a custom release name that does not include the word traction.*
 fullnameOverride: ""
 
 acapy:
-  ## @param acapy.image.registry
-  ## @param acapy.image.repository
-  ## @param acapy.image.pullPolicy
-  ## @param acapy.image.pullSecrets
-  ## @param acapy.image.tag Overrides the image tag which defaults to the chart appVersion.
-  ## @param acapy.image.digest Overrides the image digest which is used instead of the tag.
   ##
   image:
     registry: ghcr.io
     repository: bcgov/traction-plugins-acapy
     pullPolicy: IfNotPresent
     pullSecrets: []
+    # acapy.image.tag -- Overrides the image tag which defaults to the chart appVersion.
     tag: 1.3.1
+    # acapy.image.digest -- Overrides the image digest which is used instead of the tag.
     digest: ""
 
   ## ServiceAccount configuration
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
-  ## @param acapy.serviceAccount.create Specifies whether a ServiceAccount should be created
-  ## @param acapy.serviceAccount.annotations Annotations for service account. Evaluated as a template. Only used if `create` is `true`.
-  ## @param acapy.serviceAccount.automountServiceAccountToken Automount service account token for the server service account
-  ## @param acapy.serviceAccount.name Name of the service account to use. If not set and create is true, a name is generated using the fullname template.
   ##
   serviceAccount:
+    # acapy.serviceAccount.create -- Specifies whether a ServiceAccount should be created
     create: false
     annotations: {}
+    # acapy.serviceAccount.automountServiceAccountToken -- Automount service account token for the server service account
     automountServiceAccountToken: true
+    # acapy.serviceAccount.name -- Name of the service account to use. If not set and create is true, a name is generated using the fullname template.
     name: ""
 
-  ## @param acapy.replicaCount Number of ACA-Py replicas to deploy
   ##
+  # acapy.replicaCount -- Number of ACA-Py replicas to deploy
   replicaCount: 1
 
   ## ACA-Py Autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
-  ## @param acapy.autoscaling.enabled Enable Horizontal POD autoscaling for ACA-Py
-  ## @param acapy.autoscaling.minReplicas Minimum number of ACA-Py replicas
-  ## @param acapy.autoscaling.maxReplicas Maximum number of ACA-Py replicas
-  ## @param acapy.autoscaling.targetCPUUtilizationPercentage Target CPU utilization percentage
-  ## @param acapy.autoscaling.targetMemoryUtilizationPercentage Target Memory utilization percentage
-  ## @param acapy.autoscaling.stabilizationWindowSeconds Stabilization window in seconds
   ##
   autoscaling:
+    # acapy.autoscaling.enabled -- Enable Horizontal POD autoscaling for ACA-Py
     enabled: false
+    # acapy.autoscaling.minReplicas -- Minimum number of ACA-Py replicas
     minReplicas: 1
+    # acapy.autoscaling.maxReplicas -- Maximum number of ACA-Py replicas
     maxReplicas: 3
+    # acapy.autoscaling.targetCPUUtilizationPercentage -- Target CPU utilization percentage
     targetCPUUtilizationPercentage: 80
+    # acapy.autoscaling.targetMemoryUtilizationPercentage -- Target Memory utilization percentage
     targetMemoryUtilizationPercentage: 80
+    # acapy.autoscaling.stabilizationWindowSeconds -- Stabilization window in seconds
     stabilizationWindowSeconds: 300
 
-  ## @section ACA-Py configuration file
   ##
-  ## @param acapy.argfile.yml.auto-accept-invites Automatically accept invites without firing a webhook event or waiting for an admin request. Default: false.
-  ## @param acapy.argfile.yml.auto-accept-requests Automatically accept connection requests without firing a webhook event or waiting for an admin request. Default: false.
-  ## @param acapy.argfile.yml.auto-create-revocation-transactions For Authors, specify whether to automatically create transactions for a cred def's revocation registry. (If not specified, the controller must invoke the endpoints required to create the revocation registry and assign to the cred def.)
-  ## @param acapy.argfile.yml.auto-ping-connection Automatically send a trust ping immediately after a connection response is accepted. Some agents require this before marking a connection as 'active'. Default: false.
-  ## @param acapy.argfile.yml.auto-promote-author-did For authors, specify whether to automatically promote a DID to the wallet public DID after writing to the ledger.``
-  ## @param acapy.argfile.yml.auto-provision If the requested profile does not exist, initialize it with the given parameters.
-  ## @param acapy.argfile.yml.auto-request-endorsement For Authors, specify whether to automatically request endorsement for all transactions. (If not specified, the controller must invoke the request endorse operation for each transaction.)
-  ## @param acapy.argfile.yml.auto-respond-credential-offer Automatically respond to Indy credential offers with a credential request. Default: false
-  ## @param acapy.argfile.yml.auto-respond-credential-proposal Auto-respond to credential proposals with corresponding credential offers.
-  ## @param acapy.argfile.yml.auto-respond-credential-request Auto-respond to credential requests with corresponding credentials.
-  ## @param acapy.argfile.yml.auto-respond-messages Automatically respond to basic messages indicating the message was received. Default: false.
-  ## @param acapy.argfile.yml.auto-respond-presentation-proposal Auto-respond to presentation proposals with corresponding presentation requests.
-  ## @param acapy.argfile.yml.auto-respond-presentation-request Automatically respond to Indy presentation requests with a constructed presentation if a corresponding credential can be retrieved for every referent in the presentation request. Default: false.
-  ## @param acapy.argfile.yml.auto-store-credential Automatically store an issued credential upon receipt. Default: false.
-  ## @param acapy.argfile.yml.auto-verify-presentation Automatically verify a presentation when it is received. Default: false.
-  ## @param acapy.argfile.yml.auto-write-transactions For Authors, specify whether to automatically write any endorsed transactions. (If not specified, the controller must invoke the write transaction operation for each transaction.)
-  ## @param acapy.argfile.yml.emit-new-didcomm-mime-type Send packed agent messages with the DIDComm MIME type as of RFC 0044; i.e., 'application/didcomm-envelope-enc' instead of 'application/ssi-agent-wire'.
-  ## @param acapy.argfile.yml.emit-new-didcomm-prefix Emit protocol messages with new DIDComm prefix; i.e., 'https://didcomm.org/' instead of (default) prefix 'did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/'.
-  ## @param acapy.argfile.yml.endorser-alias For transaction Authors, specify the alias of the Endorser connection that will be used to endorse transactions.
-  ## @param acapy.argfile.yml.endorser-protocol-role Specify the role ('author' or 'endorser') which this agent will participate. Authors will request transaction endorement from an Endorser. Endorsers will endorse transactions from Authors, and may write their own  transactions to the ledger. If no role (or 'none') is specified then the endorsement protocol will not be used and this agent will write transactions to the ledger directly.
-  ## @param acapy.argfile.yml.log-level Specifies a custom logging level as one of: ('debug', 'info', 'warning', 'error', 'critical')
-  ## @param acapy.argfile.yml.monitor-ping Send a webhook when a ping is sent or received.
-  ## @param acapy.argfile.yml.monitor-revocation-notification Specifies that aca-py will emit webhooks on notification of revocation received.
-  ## @param acapy.argfile.yml.multitenant-admin Specify whether to enable the multitenant admin api.
-  ## @param acapy.argfile.yml.multitenant Enable multitenant mode.
-  ## @param acapy.argfile.yml.multitenancy-config [array] Multitenancy configuration parameters. Possible values: wallet_name, wallet_key, cache_size, key_derivation_method. "wallet_name" is only used when `wallet_type` is `single-wallet-askar`
-  ## @param acapy.argfile.yml.notify-revocation Specifies that aca-py will notify credential recipients when revoking a credential it issued.
-  ## @param acapy.argfile.yml.preserve-exchange-records Keep credential exchange records after exchange has completed.
-  ## @param acapy.argfile.yml.public-invites Send invitations out using the public DID for the agent, and receive connection requests solicited by invitations which use the public DID. Default: false.
-  ## @param acapy.argfile.yml.read-only-ledger Sets ledger to read-only to prevent updates. Default: false.
-  ## @param acapy.argfile.yml.tails-server-base-url Sets the base url of the tails server in use.
-  ## @param acapy.argfile.yml.tails-server-upload-url Sets the base url of the tails server for upload, defaulting to the tails server base url.
-  ## @param acapy.argfile.yml.wallet-name Specifies the wallet name to be used by the agent. This is useful if your deployment has multiple wallets.
-  ## @param acapy.argfile.yml.wallet-storage-type Specifies the type of Indy wallet backend to use. Supported internal storage types are 'basic' (memory), 'default' (sqlite), and 'postgres_storage'.  The default, if not specified, is 'default'.
-  ## @param acapy.argfile.yml.wallet-type Specifies the type of Indy wallet provider to use. Supported internal storage types are 'basic' (memory) and 'indy'. The default (if not specified) is 'basic'.
-  ## @param acapy.argfile.yml.webhook-url Send webhooks containing internal state changes to the specified URL. Optional API key to be passed in the request body can be appended using a hash separator [#]. This is useful for a controller to monitor agent events and respond to those events using the admin API. If not specified, webhooks are not published by the agent.
   argfile.yml:
+    # @section ACA-Py configuration file
+    # acapy."argfile.yml".auto-accept-invites -- Automatically accept invites without firing a webhook event or waiting for an admin request. Default: false.
     auto-accept-invites: true
+    # acapy."argfile.yml".auto-accept-requests -- Automatically accept connection requests without firing a webhook event or waiting for an admin request. Default: false.
     auto-accept-requests: true
+    # acapy."argfile.yml".auto-create-revocation-transactions -- For Authors, specify whether to automatically create transactions for a cred def's revocation registry. (If not specified, the controller must invoke the endpoints required to create the revocation registry and assign to the cred def.)
     auto-create-revocation-transactions: true
+    # acapy."argfile.yml".auto-ping-connection -- Automatically send a trust ping immediately after a connection response is accepted. Some agents require this before marking a connection as 'active'. Default: false.
     auto-ping-connection: true
+    # acapy."argfile.yml".auto-promote-author-did -- For authors, specify whether to automatically promote a DID to the wallet public DID after writing to the ledger.``
     auto-promote-author-did: true
+    # acapy."argfile.yml".auto-provision -- If the requested profile does not exist, initialize it with the given parameters.
     auto-provision: true
+    # acapy."argfile.yml".auto-request-endorsement -- For Authors, specify whether to automatically request endorsement for all transactions. (If not specified, the controller must invoke the request endorse operation for each transaction.)
     auto-request-endorsement: true
+    # acapy."argfile.yml".auto-respond-credential-offer -- Automatically respond to Indy credential offers with a credential request. Default: false
     auto-respond-credential-offer: false
+    # acapy."argfile.yml".auto-respond-credential-proposal -- Auto-respond to credential proposals with corresponding credential offers.
     auto-respond-credential-proposal: false
+    # acapy."argfile.yml".auto-respond-credential-request -- Auto-respond to credential requests with corresponding credentials.
     auto-respond-credential-request: true
+    # acapy."argfile.yml".auto-respond-messages -- Automatically respond to basic messages indicating the message was received. Default: false.
     auto-respond-messages: true
+    # acapy."argfile.yml".auto-respond-presentation-proposal -- Auto-respond to presentation proposals with corresponding presentation requests.
     auto-respond-presentation-proposal: true
+    # acapy."argfile.yml".auto-respond-presentation-request -- Automatically respond to Indy presentation requests with a constructed presentation if a corresponding credential can be retrieved for every referent in the presentation request. Default: false.
     auto-respond-presentation-request: false
+    # acapy."argfile.yml".auto-store-credential -- Automatically store an issued credential upon receipt. Default: false.
     auto-store-credential: true
+    # acapy."argfile.yml".auto-verify-presentation -- Automatically verify a presentation when it is received. Default: false.
     auto-verify-presentation: true
+    # acapy."argfile.yml".auto-write-transactions -- For Authors, specify whether to automatically write any endorsed transactions. (If not specified, the controller must invoke the write transaction operation for each transaction.)
     auto-write-transactions: true
+    # acapy."argfile.yml".emit-new-didcomm-mime-type -- Send packed agent messages with the DIDComm MIME type as of RFC 0044; i.e., 'application/didcomm-envelope-enc' instead of 'application/ssi-agent-wire'.
     emit-new-didcomm-mime-type: true
+    # acapy."argfile.yml".emit-new-didcomm-prefix -- Emit protocol messages with new DIDComm prefix; i.e., 'https://didcomm.org/' instead of (default) prefix 'did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/'.
     emit-new-didcomm-prefix: true
+    # acapy."argfile.yml".endorser-alias -- For transaction Authors, specify the alias of the Endorser connection that will be used to endorse transactions.
     endorser-alias: endorser
+    # acapy."argfile.yml".endorser-protocol-role -- Specify the role ('author' or 'endorser') which this agent will participate. Authors will request transaction endorement from an Endorser. Endorsers will endorse transactions from Authors, and may write their own  transactions to the ledger. If no role (or 'none') is specified then the endorsement protocol will not be used and this agent will write transactions to the ledger directly.
     endorser-protocol-role: author
+    # acapy."argfile.yml".log-level -- Specifies a custom logging level as one of: ('debug', 'info', 'warning', 'error', 'critical')
     log-level: info
+    # acapy."argfile.yml".monitor-ping -- Send a webhook when a ping is sent or received.
     monitor-ping: true
+    # acapy."argfile.yml".monitor-revocation-notification -- Specifies that aca-py will emit webhooks on notification of revocation received.
     monitor-revocation-notification: true
+    # acapy."argfile.yml".multitenant-admin -- Specify whether to enable the multitenant admin api.
     multitenant-admin: true
+    # acapy."argfile.yml".multitenant -- Enable multitenant mode.
     multitenant: true
     multitenancy-config:
       - wallet_type=single-wallet-askar
+    # acapy."argfile.yml".notify-revocation -- Specifies that aca-py will notify credential recipients when revoking a credential it issued.
     notify-revocation: true
+    # acapy."argfile.yml".preserve-exchange-records -- Keep credential exchange records after exchange has completed.
     preserve-exchange-records: true
     debug-webhooks: true
+    # acapy."argfile.yml".public-invites -- Send invitations out using the public DID for the agent, and receive connection requests solicited by invitations which use the public DID. Default: false.
     public-invites: true
+    # acapy."argfile.yml".read-only-ledger -- Sets ledger to read-only to prevent updates. Default: false.
     read-only-ledger: false
+    # acapy."argfile.yml".tails-server-base-url -- Sets the base url of the tails server in use.
     tails-server-base-url: https://tails-test.vonx.io
+    # acapy."argfile.yml".tails-server-upload-url -- Sets the base url of the tails server for upload, defaulting to the tails server base url.
     tails-server-upload-url: https://tails-test.vonx.io
+    # acapy."argfile.yml".wallet-name -- Specifies the wallet name to be used by the agent. This is useful if your deployment has multiple wallets.
     wallet-name: askar-wallet
+    # acapy."argfile.yml".wallet-storage-type -- Specifies the type of Indy wallet backend to use. Supported internal storage types are 'basic' (memory), 'default' (sqlite), and 'postgres_storage'.  The default, if not specified, is 'default'.
     wallet-storage-type: postgres_storage
+    # acapy."argfile.yml".wallet-type -- Specifies the type of Indy wallet provider to use. Supported internal storage types are 'basic' (memory) and 'indy'. The default (if not specified) is 'basic'.
     wallet-type: askar
+    # acapy."argfile.yml".webhook-url -- Send webhooks containing internal state changes to the specified URL. Optional API key to be passed in the request body can be appended using a hash separator [#]. This is useful for a controller to monitor agent events and respond to those events using the admin API. If not specified, webhooks are not published by the agent.
     webhook-url: ""
 
   ## ACA-Py ingress configuration (disabled - using Traction's ingress instead)
   ##
-  ## @param acapy.ingress.agent.enabled Enable ingress for the agent endpoint
-  ## @param acapy.ingress.agent.hostname Hostname to expose the agent endpoint
-  ## @param acapy.ingress.admin.enabled Enable ingress for the admin endpoint
-  ## @param acapy.ingress.admin.hostname Hostname to expose the admin endpoint
   ingress:
     agent:
+      # acapy.ingress.agent.enabled -- Enable ingress for the agent endpoint
       enabled: false
+      # acapy.ingress.agent.hostname -- Hostname to expose the agent endpoint
       hostname: ""
     admin:
+      # acapy.ingress.admin.enabled -- Enable ingress for the admin endpoint
       enabled: false
+      # acapy.ingress.admin.hostname -- Hostname to expose the admin endpoint
       hostname: ""
 
   ## ACA-Py agent and admin URLs (will be set by Traction ingress)
-  ## @param acapy.agentUrl Override the agent URL advertised by ACA-Py
-  ## @param acapy.adminUrl Override the admin URL for internal access
+  # acapy.agentUrl -- Override the agent URL advertised by ACA-Py
   agentUrl: ""
+  # acapy.adminUrl -- Override the admin URL for internal access
   adminUrl: ""
 
   ## Environment variables configuration
-  ## @param acapy.extraEnvVars Extra environment variables to add to the container (array of objects)
   extraEnvVars: []
-  ## @param acapy.extraEnvVarsCM Name of an existing ConfigMap with extra env vars
+  # acapy.extraEnvVarsCM -- Name of an existing ConfigMap with extra env vars
   extraEnvVarsCM: ""
-  ## @param acapy.extraEnvVarsSecret Name of an existing Secret with extra env vars (required for innkeeper plugin)
+  # acapy.extraEnvVarsSecret -- Name of an existing Secret with extra env vars (required for innkeeper plugin)
   extraEnvVarsSecret: '{{- printf "%s-%s" (include "common.names.fullname" .) "plugin-innkeeper" }}'
 
   ## Websockets configuration
-  ## @param acapy.websockets.enabled Enable WebSocket transport for ACA-Py
   websockets:
+    # acapy.websockets.enabled -- Enable WebSocket transport for ACA-Py
     enabled: false
 
   ## Additional arguments for ACA-Py
-  ## @param acapy.extraArgs Additional CLI args appended to the aca-py start command
   extraArgs:
     - --plugin 'aries_cloudagent.messaging.jsonld'
     - --plugin traction_plugins.traction_innkeeper.v1_0
@@ -210,53 +200,44 @@ acapy:
     - --plugin webvh
 
   ## Init containers
-  ## @param acapy.initContainers Extra init containers to add to the pod (array of objects)
   initContainers: []
 
   ## Extra volumes and volume mounts
-  ## @param acapy.extraVolumes Extra volumes to add to the pod
-  ## @param acapy.extraVolumeMounts Extra volumeMounts to add to the main container
   extraVolumes: []
   extraVolumeMounts: []
 
   ## Update strategy
-  ## @param acapy.updateStrategy Custom update strategy for the Deployment
   updateStrategy: {}
 
   ## Common labels and annotations
-  ## @param acapy.commonLabels Additional common labels to add to all ACA-Py resources
-  ## @param acapy.commonAnnotations Additional common annotations to add to all ACA-Py resources
   commonLabels: {}
   commonAnnotations: {}
 
   ## Service account token
-  ## @param acapy.automountServiceAccountToken Automount service account token for the ACA-Py pod
+  # acapy.automountServiceAccountToken -- Automount service account token for the ACA-Py pod
   automountServiceAccountToken: false
 
   ## Node selection and pod affinity
-  ## @param acapy.nodeAffinityPreset.type Node affinity preset type (soft|hard|empty)
-  ## @param acapy.nodeAffinityPreset.key Node label key for node affinity preset
-  ## @param acapy.nodeAffinityPreset.values Node label values for node affinity preset
   nodeAffinityPreset:
+    # acapy.nodeAffinityPreset.type -- Node affinity preset type (soft|hard|empty)
     type: ""
+    # acapy.nodeAffinityPreset.key -- Node label key for node affinity preset
     key: ""
     values: []
 
-  ## @param acapy.podAffinityPreset Pod affinity preset (soft|hard|empty)
+  # acapy.podAffinityPreset -- Pod affinity preset (soft|hard|empty)
   podAffinityPreset: ""
-  ## @param acapy.podAntiAffinityPreset Pod anti-affinity preset (soft|hard|empty)
+  # acapy.podAntiAffinityPreset -- Pod anti-affinity preset (soft|hard|empty)
   podAntiAffinityPreset: ""
 
   ## Topology spread constraints
-  ## @param acapy.topologySpreadConstraints Pod topology spread constraints
   topologySpreadConstraints: []
 
   ## Existing configmap
-  ## @param acapy.existingConfigmap Name of an existing ConfigMap providing argfile.yml and other config
+  # acapy.existingConfigmap -- Name of an existing ConfigMap providing argfile.yml and other config
   existingConfigmap: ""
 
   ## ACA-Py multiledger configuration file
-  ## @param acapy.ledgers.yml [object] YAML configuration for connecting to multiple HyperLedger
   ##
   ledgers.yml:
     - id: bcovrin-test
@@ -266,28 +247,14 @@ acapy:
       endorser_did: "DfQetNSm7gGEHuzfUvpfPn"
       endorser_alias: "bcovrin-test-endorser"
 
-  ## @section ACA-Py Plugin Configuration
   ## Specify configuration values for each plugin.
   ## Configuration values are plugin specific, and are rendered as is into the plugin-config.yml file.
   ##
-  ## @param acapy.plugin-config.yml.multitenant_provider.manager.class_name
-  ## @param acapy.plugin-config.yml.multitenant_provider.manager.always_check_provided_wallet_key
-  ## @param acapy.plugin-config.yml.multitenant_provider.errors.on_unneeded_wallet_key
-  ## @param acapy.plugin-config.yml.multitenant_provider.token_expiry.units
-  ## @param acapy.plugin-config.yml.multitenant_provider.token_expiry.amount
-  ## @param acapy.plugin-config.yml.traction_innkeeper.innkeeper_wallet.wallet_name
-  ## @param acapy.plugin-config.yml.traction_innkeeper.innkeeper_wallet.print_key
-  ## @param acapy.plugin-config.yml.traction_innkeeper.innkeeper_wallet.print_token
-  ## @param acapy.plugin-config.yml.traction_innkeeper.innkeeper_wallet.connect_to_endorser [array]
-  ## @param acapy.plugin-config.yml.traction_innkeeper.innkeeper_wallet.create_public_did [array]
-  ## @param acapy.plugin-config.yml.traction_innkeeper.reservation.expiry_minutes
-  ## @param acapy.plugin-config.yml.traction_innkeeper.reservation.auto_approve
-  ## @param acapy.plugin-config.yml.traction_innkeeper.reservation.auto_issuer
-  ## @param acapy.plugin-config.yml.basicmessage_storage.wallet_enabled
   ##
   plugin-config.yml:
     multitenant_provider:
       manager:
+        # @section ACA-Py Plugin Configuration
         class_name: multitenant_provider.v1_0.manager.AskarMultitokenMultitenantManager
         always_check_provided_wallet_key: true
       errors:
@@ -314,123 +281,112 @@ acapy:
     did-webvh:
       server_url: ""
 
-  ## @section ACA-Py common configurations
   ## ACA-Py resource requests and limits
   ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param acapy.resources.requests.memory The requested memory for the ACA-Py containers
-  ## @param acapy.resources.requests.cpu The requested cpu for the ACA-Py containers
   ##
   resources:
     requests:
+      # @section ACA-Py common configurations
+      # acapy.resources.requests.cpu -- The requested cpu for the ACA-Py containers
       cpu: 120m
+      # acapy.resources.requests.memory -- The requested memory for the ACA-Py containers
       memory: 200Mi
 
   ## ACA-Py service configuration
   ##
   service:
-    ## @param acapy.service.ports.http Port to expose for http service
-    ## @param acapy.service.ports.admin Port to expose for admin service
-    ## @param acapy.service.ports.ws Port to expose for websocket service
     ##
     ports:
+      # acapy.service.ports.http -- Port to expose for http service
       http: 8021
+      # acapy.service.ports.admin -- Port to expose for admin service
       admin: 8022
+      # acapy.service.ports.ws -- Port to expose for websocket service
       ws: 8023
 
-  ## @param acapy.secrets.api.retainOnUninstall When true, adds helm.sh/resource-policy: keep to generated api secret
-  ## @param acapy.secrets.api.existingSecret Name of an existing Secret providing API related keys. If set, the chart will NOT create the api secret.
-  ## @param acapy.secrets.api.secretKeys.adminApiKey Key in the API secret holding the admin API key.
-  ## @param acapy.secrets.api.secretKeys.jwtKey Key in the API secret holding the multitenant JWT signing secret.
-  ## @param acapy.secrets.api.secretKeys.walletKey Key in the API secret holding the wallet key.
-  ## @param acapy.secrets.api.secretKeys.webhookapiKey Key in the API secret holding the webhook API key (used when embedding in webhook-url).
-  ## @param acapy.secrets.seed.enabled Disabled by default, turning this on will cause the Traction agent to NOT start unless additional setup steps are completed (refer to ACA-Py chart docs).
   secrets:
     api:
+      # acapy.secrets.api.retainOnUninstall -- When true, adds helm.sh/resource-policy: keep to generated api secret
       retainOnUninstall: true
+      # acapy.secrets.api.existingSecret -- Name of an existing Secret providing API related keys. If set, the chart will NOT create the api secret.
       existingSecret: ""
       secretKeys:
+        # acapy.secrets.api.secretKeys.adminApiKey -- Key in the API secret holding the admin API key.
         adminApiKey: adminApiKey
+        # acapy.secrets.api.secretKeys.jwtKey -- Key in the API secret holding the multitenant JWT signing secret.
         jwtKey: jwt
+        # acapy.secrets.api.secretKeys.walletKey -- Key in the API secret holding the wallet key.
         walletKey: walletKey
+        # acapy.secrets.api.secretKeys.webhookapiKey -- Key in the API secret holding the webhook API key (used when embedding in webhook-url).
         webhookapiKey: webhookapi
     seed:
+      # acapy.secrets.seed.enabled -- Disabled by default, turning this on will cause the Traction agent to NOT start unless additional setup steps are completed (refer to ACA-Py chart docs).
       enabled: false
 
-  ## @section ACA-Py NetworkPolicy parameters
   ##
   networkPolicy:
-    ## @param acapy.networkPolicy.enabled Enable network policies
     ##
+    # @section -- ACA-Py NetworkPolicy parameters
+    # acapy.networkPolicy.enabled -- Enable network policies
     enabled: false
-    ## @param acapy.networkPolicy.allowExternal Allow ingress from any source (disables from selectors when true)
+    # acapy.networkPolicy.allowExternal -- Allow ingress from any source (disables from selectors when true)
     allowExternal: false
-    ## @param acapy.networkPolicy.allowExternalEgress Allow all egress traffic (when false, only DNS and extraEgress are applied)
+    # acapy.networkPolicy.allowExternalEgress -- Allow all egress traffic (when false, only DNS and extraEgress are applied)
     allowExternalEgress: true
-    ## @param acapy.networkPolicy.extraIngress Extra ingress rules to append (raw NetworkPolicy rule objects)
     extraIngress: []
-    ## @param acapy.networkPolicy.extraEgress Extra egress rules to append (raw NetworkPolicy rule objects)
     extraEgress: []
-    ## @param acapy.networkPolicy.ingressPodMatchLabels Additional pod matchLabels to allow ingress from (merged with common labels)
     ingressPodMatchLabels: {}
-    ## @param acapy.networkPolicy.ingressNSMatchLabels Additional namespace matchLabels to allow ingress from
     ingressNSMatchLabels: {}
       # network.openshift.io/policy-group: ingress
 
-## @section Tenant Proxy configuration
 ##
 tenant_proxy:
-  ## @param tenant_proxy.image.repository
-  ## @param tenant_proxy.image.pullPolicy
-  ## @param tenant_proxy.image.pullSecrets
-  ## @param tenant_proxy.image.tag Overrides the image tag which defaults to the chart appVersion.
   ##
   image:
+    # @section -- Tenant Proxy configuration
     repository: ghcr.io/bcgov/traction-tenant-proxy
     pullPolicy: IfNotPresent
     pullSecrets: []
+    # tenant_proxy.image.tag -- Overrides the image tag which defaults to the chart appVersion.
     tag: ""
   ## ServiceAccount configuration
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
-  ## @param tenant_proxy.serviceAccount.create Specifies whether a ServiceAccount should be created
-  ## @param tenant_proxy.serviceAccount.annotations Annotations for service account. Evaluated as a template. Only used if `create` is `true`.
-  ## @param tenant_proxy.serviceAccount.automountServiceAccountToken Automount service account token for the server service account
-  ## @param tenant_proxy.serviceAccount.name Name of the service account to use. If not set and create is true, a name is generated using the fullname template.
   ##
   serviceAccount:
+    # tenant_proxy.serviceAccount.create -- Specifies whether a ServiceAccount should be created
     create: false
     annotations: {}
+    # tenant_proxy.serviceAccount.automountServiceAccountToken -- Automount service account token for the server service account
     automountServiceAccountToken: true
+    # tenant_proxy.serviceAccount.name -- Name of the service account to use. If not set and create is true, a name is generated using the fullname template.
     name: ""
-  ## @param tenant_proxy.replicaCount Number of Tenant proxy replicas to deploy. Ignored if autoscaling is enabled.
   ##
+  # tenant_proxy.replicaCount -- Number of Tenant proxy replicas to deploy. Ignored if autoscaling is enabled.
   replicaCount: 1
   ## Tenant proxy Autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
-  ## @param tenant_proxy.autoscaling.enabled Enable Horizontal POD autoscaling for Tenant proxy
-  ## @param tenant_proxy.autoscaling.minReplicas Minimum number of Tenant proxy replicas
-  ## @param tenant_proxy.autoscaling.maxReplicas Maximum number of Tenant proxy replicas
-  ## @param tenant_proxy.autoscaling.targetCPUUtilizationPercentage Target CPU utilization percentage
-  ## @param tenant_proxy.autoscaling.targetMemoryUtilizationPercentage Target Memory utilization percentage
-  ## @param tenant_proxy.autoscaling.stabilizationWindowSeconds Stabilization window in seconds
   ##
   autoscaling:
+    # tenant_proxy.autoscaling.enabled -- Enable Horizontal POD autoscaling for Tenant proxy
     enabled: false
+    # tenant_proxy.autoscaling.minReplicas -- Minimum number of Tenant proxy replicas
     minReplicas: 1
+    # tenant_proxy.autoscaling.maxReplicas -- Maximum number of Tenant proxy replicas
     maxReplicas: 3
+    # tenant_proxy.autoscaling.targetCPUUtilizationPercentage -- Target CPU utilization percentage
     targetCPUUtilizationPercentage: 80
+    # tenant_proxy.autoscaling.targetMemoryUtilizationPercentage -- Target Memory utilization percentage
     targetMemoryUtilizationPercentage: 80
+    # tenant_proxy.autoscaling.stabilizationWindowSeconds -- Stabilization window in seconds
     stabilizationWindowSeconds: 300
 
-  ## @param tenant_proxy.podAnnotations Map of annotations to add to the Tenant proxy pods
   ##
   podAnnotations: {}
-  ## @param tenant_proxy.podSecurityContext Pod Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   ##
   podSecurityContext:
     {}
     # fsGroup: 2000
-  ## @param tenant_proxy.containerSecurityContext Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   ##
   containerSecurityContext:
@@ -444,223 +400,201 @@ tenant_proxy:
   ## Tenant proxy service configuration
   ##
   service:
-    ## @param tenant_proxy.service.type Kubernetes Service type
     ##
+    # tenant_proxy.service.type -- Kubernetes Service type
     type: ClusterIP
-    ## @param tenant_proxy.service.port Port to expose for http services
+    # tenant_proxy.service.port -- Port to expose for http services
     port: 8032
 
-  ## @section Tenant proxy OpenShift Route parameters
   ## ref: https://docs.openshift.com/container-platform/4.11/networking/routes/route-configuration.html
   ##
   ## Not required if ingress is enabled
   openshift:
     route:
-      ## @param tenant_proxy.openshift.route.enabled Create OpenShift Route resource for Tenant proxy
       ##
+      # @section Tenant proxy OpenShift Route parameters
+      # tenant_proxy.openshift.route.enabled -- Create OpenShift Route resource for Tenant proxy
       enabled: false
-      ## @param tenant_proxy.openshift.route.path Path that the router watches for, to route traffic to the service
       ##
+      # tenant_proxy.openshift.route.path -- Path that the router watches for, to route traffic to the service
       path: "/"
-      ## @param tenant_proxy.openshift.route.targetPort Target port for the service
       ##
+      # tenant_proxy.openshift.route.targetPort -- Target port for the service
       targetPort: http
-      ## @param tenant_proxy.openshift.route.timeout Timeout in seconds for a route to return
       ##
+      # tenant_proxy.openshift.route.timeout -- Timeout in seconds for a route to return
       timeout: 2m
       tls:
-        ## @param tenant_proxy.openshift.route.tls.enabled Enable TLS termination
         ##
+        # tenant_proxy.openshift.route.tls.enabled -- Enable TLS termination
         enabled: true
-        ## @param tenant_proxy.openshift.route.tls.insecureEdgeTerminationPolicy TLS termination policy
         ##
+        # tenant_proxy.openshift.route.tls.insecureEdgeTerminationPolicy -- TLS termination policy
         insecureEdgeTerminationPolicy: None
-        ## @param tenant_proxy.openshift.route.tls.termination TLS termination type
         ##
+        # tenant_proxy.openshift.route.tls.termination -- TLS termination type
         termination: edge
-      ## @param tenant_proxy.openshift.route.wildcardPolicy Wildcard policy for the route
+      # tenant_proxy.openshift.route.wildcardPolicy -- Wildcard policy for the route
       wildcardPolicy: None
   ## Tenant proxy resource requests and limits
   ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param tenant_proxy.resources.requests.memory The requested memory for the Tenant proxy containers
-  ## @param tenant_proxy.resources.requests.cpu The requested cpu for the Tenant proxy containers
   ##
   resources:
     requests:
+      # tenant_proxy.resources.requests.cpu -- The requested cpu for the Tenant proxy containers
       cpu: 10m
+      # tenant_proxy.resources.requests.memory -- The requested memory for the Tenant proxy containers
       memory: 50Mi
 
-  ## @section Tenant Proxy NetworkPolicy parameters
 
   ## Add networkpolicies
   ##
   networkPolicy:
-    ## @param tenant_proxy.networkPolicy.enabled Enable network policies
     ##
+    # @section Tenant Proxy NetworkPolicy parameters
+    # tenant_proxy.networkPolicy.enabled -- Enable network policies
     enabled: false
-    ## @param tenant_proxy.networkPolicy.ingress.enabled Enable ingress rules
-    ## @param tenant_proxy.networkPolicy.ingress.namespaceSelector [object] Namespace selector label that is allowed to access the Tenant proxy pods.
-    ## @param tenant_proxy.networkPolicy.ingress.podSelector [object] Pod selector label that is allowed to access the Tenant proxy pods.
     ingress:
+      # tenant_proxy.networkPolicy.ingress.enabled -- Enable ingress rules
       enabled: true
       namespaceSelector:
         {}
         # network.openshift.io/policy-group: ingress
       podSelector: {}
 
-  ## @param tenant_proxy.affinity Affinity for ACA-Py pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
   ##
   affinity: {}
-  ## @param tenant_proxy.nodeSelector Node labels for ACA-Py pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector: {}
-  ## @param tenant_proxy.tolerations Tolerations for ACA-Py pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
   tolerations: []
 
-## @section Tenant-UI Configuration
 ##
 ui:
-  ## @param ui.enabled Deploy tenant-ui
+  # @section Tenant-UI Configuration
+  # ui.enabled -- Deploy tenant-ui
   enabled: true
-  ## @param ui.showOIDCReservationLogin OIDC reservation login
+  # ui.showOIDCReservationLogin -- OIDC reservation login
   showOIDCReservationLogin: false
-  ## @param ui.quickConnectEndorserName A ledger that has endorser auto-accept/transact enabled
+  # ui.quickConnectEndorserName -- A ledger that has endorser auto-accept/transact enabled
   quickConnectEndorserName: ""
-  ## @param ui.requireEmailForReservation Whether the Email field is needed for a tenant reservation
   ## If false will default not.applicable@example.com to API
+  # ui.requireEmailForReservation -- Whether the Email field is needed for a tenant reservation
   requireEmailForReservation: true
-  ## @param ui.lokiUrl The endpoint to stream loki logs from for the Tenant UI
+  # ui.lokiUrl -- The endpoint to stream loki logs from for the Tenant UI
   lokiUrl: ""
   image:
-    ## @param ui.image.repository
     repository: ghcr.io/bcgov/traction-tenant-ui
-    ## @param ui.image.pullPolicy
     pullPolicy: IfNotPresent
-    ## @param ui.image.pullSecrets
     pullSecrets: []
-    ## @param ui.image.tag Overrides the image tag which defaults to the chart appVersion.
+    # ui.image.tag -- Overrides the image tag which defaults to the chart appVersion.
     tag: ""
 
-  ## @param ui.pluginInnkeeper.existingSecret Name of an existing Secret providing INNKEEPER_WALLET_TENANT_ID and INNKEEPER_WALLET_WALLET_KEY
   pluginInnkeeper:
+    # ui.pluginInnkeeper.existingSecret -- Name of an existing Secret providing INNKEEPER_WALLET_TENANT_ID and INNKEEPER_WALLET_WALLET_KEY
     existingSecret: ""
 
   ##  Frontend Configuration
   ##
   ux:
-    ## @param ui.ux.appTitle Title of the application
+    # ui.ux.appTitle -- Title of the application
     appTitle: "Traction Tenant Console"
-    ## @param ui.ux.appInnkeeperTitle Title of the Innkeeper Console
+    # ui.ux.appInnkeeperTitle -- Title of the Innkeeper Console
     appInnkeeperTitle: "Traction Innkeeper Console"
-    ## @param ui.ux.sidebarTitle Sidebar title
+    # ui.ux.sidebarTitle -- Sidebar title
     sidebarTitle: "Traction"
-    ## @param ui.ux.copyright
     copyright: ""
-    ## @param ui.ux.owner
     owner: ""
-    ## @param ui.ux.coverImageCopyright
     coverImageCopyright: "Photo by Kristoffer Fredriksson on StockSnap"
 
     ## About Business page settings
     ##
     aboutBusiness:
-      ## @param ui.ux.aboutBusiness.title
       title: "Government of British Columbia"
-      ## @param ui.ux.aboutBusiness.linkTitle
       linkTitle: "BC Digital Trust Service Agreement"
-      ## @param ui.ux.aboutBusiness.link
       link: "https://github.com/bcgov/bc-vcpedia/blob/main/agents/bc-gov-agent-service.md"
-      ## @param ui.ux.aboutBusiness.imageUrl
       imageUrl: "/img/bc/bc_logo.png"
 
     ## Information banner settings
     ##
     infoBanner:
-      ## @param ui.ux.infoBanner.message
       message: ""
-      ## @param ui.ux.infoBanner.messageLevel <info|warn|error|success>
+      # ui.ux.infoBanner.messageLevel -- <info|warn|error|success>
       messageLevel: info
-      ## @param ui.ux.infoBanner.showMessage Show the info banner <boolean>
+      # ui.ux.infoBanner.showMessage -- Show the info banner <boolean>
       showMessage: false
 
   ##  Backend Configuration
   ##
   oidc:
-    ## @param ui.oidc.showInnkeeperAdminLogin Show Innkeeper Admin Login
+    # ui.oidc.showInnkeeperAdminLogin -- Show Innkeeper Admin Login
     showInnkeeperAdminLogin: true
-    ## @param ui.oidc.showWritableComponents Show writable components
+    # ui.oidc.showWritableComponents -- Show writable components
     showWritableComponents: true
-    ## @param ui.oidc.active Enable OIDC authentication
+    # ui.oidc.active -- Enable OIDC authentication
     active: true
-    ## @param ui.oidc.authority OIDC authority
+    # ui.oidc.authority -- OIDC authority
     authority: ""
-    ## @param ui.oidc.client OIDC client
+    # ui.oidc.client -- OIDC client
     client: "innkeeper-frontend"
-    ## @param ui.oidc.label OIDC label
+    # ui.oidc.label -- OIDC label
     label: "IDIR"
-    ## @param ui.oidc.jwksUri OIDC jwksUri
+    # ui.oidc.jwksUri -- OIDC jwksUri
     jwksUri: ""
-    ## @param ui.oidc.realm OIDC realm
+    # ui.oidc.realm -- OIDC realm
     realm: "Traction"
-    ## @param ui.oidc.roleName OIDC role name
+    # ui.oidc.roleName -- OIDC role name
     roleName: "innkeeper"
-    ## @param ui.oidc.session.timeoutSeconds OIDC session timeout seconds
-    ## @param ui.oidc.session.countdownSeconds OIDC session countdown seconds
     session:
+      # ui.oidc.session.timeoutSeconds -- OIDC session timeout seconds
       timeoutSeconds: 600
+      # ui.oidc.session.countdownSeconds -- OIDC session countdown seconds
       countdownSeconds: 30
-    ## @param ui.oidc.reservationForm
     reservationForm: >-
       {}
-    ## @param ui.oidc.extraQueryParams
     extraQueryParams: "{}"
 
   ## SMTP Configuration
   smtp:
-    ## @param ui.smtp.server SMTP server
+    # ui.smtp.server -- SMTP server
     server: ""
-    ## @param ui.smtp.port SMTP port
+    # ui.smtp.port -- SMTP port
     port: 25
-    ## @param ui.smtp.secure if true the connection will use TLS when connecting to server. If false (the default) then TLS is used if server supports the STARTTLS extension. In most cases set this value to true if you are connecting to port 465. For port 587 or 25 keep it false
+    # ui.smtp.secure -- if true the connection will use TLS when connecting to server. If false (the default) then TLS is used if server supports the STARTTLS extension. In most cases set this value to true if you are connecting to port 465. For port 587 or 25 keep it false
     secure: false
-    ## @param ui.smtp.user SMTP user (use ui.smtp.existingSecret to provide SERVER_SMTP_PASSWORD)
+    # ui.smtp.user -- SMTP user (use ui.smtp.existingSecret to provide SERVER_SMTP_PASSWORD)
     user: ""
-    ## @param ui.smtp.senderAddress SMTP sender address
+    # ui.smtp.senderAddress -- SMTP sender address
     senderAddress: ""
-    ## @param ui.smtp.innkeeperInbox innkeeper notification inbox
+    # ui.smtp.innkeeperInbox -- innkeeper notification inbox
     innkeeperInbox: ""
-    ## @param ui.smtp.existingSecret Name of an existing secret to be mounted as environment variables
     ## A key named SERVER_SMTP_PASSWORD is required if smtp.secure is true
+    # ui.smtp.existingSecret -- Name of an existing secret to be mounted as environment variables
     existingSecret: ""
 
   ## ServiceAccount configuration
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
   ##
   serviceAccount:
-    ## @param ui.serviceAccount.create Specifies whether a ServiceAccount should be created
+    # ui.serviceAccount.create -- Specifies whether a ServiceAccount should be created
     create: false
-    ## @param ui.serviceAccount.annotations Annotations for service account. Evaluated as a template. Only used if `create` is `true`.
     annotations:
       {}
       # network.openshift.io/policy-group: ingress
-    ## @param ui.serviceAccount.automountServiceAccountToken Automount service account token for the server service account
+    # ui.serviceAccount.automountServiceAccountToken -- Automount service account token for the server service account
     automountServiceAccountToken: true
-    ## @param ui.serviceAccount.name Name of the service account to use. If not set and create is true, a name is generated using the fullname template.
+    # ui.serviceAccount.name -- Name of the service account to use. If not set and create is true, a name is generated using the fullname template.
     name: ""
-  ## @param ui.podAnnotations Map of annotations to add to the pods
   ##
   podAnnotations: {}
-  ## @param ui.podSecurityContext Pod Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   ##
   podSecurityContext:
     {}
     # fsGroup: 2000
-  ## @param ui.containerSecurityContext Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   ##
   containerSecurityContext:
@@ -674,112 +608,105 @@ ui:
   ## Service configuration
   ##
   service:
-    ## @param ui.service.type Kubernetes Service type
     ##
+    # ui.service.type -- Kubernetes Service type
     type: ClusterIP
-    ## @param ui.service.httpPort Port to expose for http service
     ##
+    # ui.service.httpPort -- Port to expose for http service
     httpPort: 8080
   ## Add networkpolicies
   ##
   networkPolicy:
-    ## @param ui.networkPolicy.enabled Enable network policies
     ##
+    # ui.networkPolicy.enabled -- Enable network policies
     enabled: false
-    ## @param ui.networkPolicy.ingress.enabled Enable ingress rules
-    ## @param ui.networkPolicy.ingress.namespaceSelector [object] Namespace selector label that is allowed to access the tenant-ui pods.
-    ## @param ui.networkPolicy.ingress.podSelector [object] Pod selector label that is allowed to access the tenant-ui pods.
     ingress:
+      # ui.networkPolicy.ingress.enabled -- Enable ingress rules
       enabled: false
       namespaceSelector: {}
       podSelector: {}
   ##Resource requests and limits
   ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param ui.resources.requests.memory The requested memory for the tenant-ui containers
-  ## @param ui.resources.requests.cpu The requested cpu for the tenant-ui containers
   ##
   resources:
     requests:
+      # ui.resources.requests.cpu -- The requested cpu for the tenant-ui containers
       cpu: 10m
+      # ui.resources.requests.memory -- The requested memory for the tenant-ui containers
       memory: 80Mi
-  ## @param ui.replicaCount Number of tenant-ui replicas to deploy. Ignored if autoscaling is enabled.
   ##
+  # ui.replicaCount -- Number of tenant-ui replicas to deploy. Ignored if autoscaling is enabled.
   replicaCount: 1
   ## tenant-ui Autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
-  ## @param ui.autoscaling.enabled Enable Horizontal POD autoscaling for tenant-ui
-  ## @param ui.autoscaling.minReplicas Minimum number of tenant-ui replicas
-  ## @param ui.autoscaling.maxReplicas Maximum number of tenant-ui replicas
-  ## @param ui.autoscaling.targetCPUUtilizationPercentage Target CPU utilization percentage
-  ## @param ui.autoscaling.targetMemoryUtilizationPercentage Target Memory utilization percentage
   ##
   autoscaling:
+    # ui.autoscaling.enabled -- Enable Horizontal POD autoscaling for tenant-ui
     enabled: false
+    # ui.autoscaling.minReplicas -- Minimum number of tenant-ui replicas
     minReplicas: 1
+    # ui.autoscaling.maxReplicas -- Maximum number of tenant-ui replicas
     maxReplicas: 3
+    # ui.autoscaling.targetCPUUtilizationPercentage -- Target CPU utilization percentage
     targetCPUUtilizationPercentage: 80
+    # ui.autoscaling.targetMemoryUtilizationPercentage -- Target Memory utilization percentage
     targetMemoryUtilizationPercentage: 80
-  ## @param ui.nodeSelector Node labels for tenant-ui pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector: {}
-  ## @param ui.tolerations Tolerations for tenant-ui pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
   tolerations: []
-  ## @param ui.affinity Affinity for tenant-ui pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
   ##
   affinity: {}
-  ## @section Tenant-UI OpenShift Route parameters
   ## ref: https://docs.openshift.com/container-platform/4.11/networking/routes/route-configuration.html
   ##
   ## Not required if ingress is enabled
   openshift:
     route:
-      ## @param ui.openshift.route.enabled Create OpenShift Route resource for tenant-ui
       ##
+      # @section Tenant-UI OpenShift Route parameters
+      # ui.openshift.route.enabled -- Create OpenShift Route resource for tenant-ui
       enabled: false
-      ## @param ui.openshift.route.path Path that the router watches for, to route traffic to the service
       ##
+      # ui.openshift.route.path -- Path that the router watches for, to route traffic to the service
       path: "/"
-      ## @param ui.openshift.route.targetPort Target port for the service
       ##
+      # ui.openshift.route.targetPort -- Target port for the service
       targetPort: http
-      ## @param ui.openshift.route.timeout Timeout in seconds for a route to return
       ##
+      # ui.openshift.route.timeout -- Timeout in seconds for a route to return
       timeout: 2m
       tls:
-        ## @param ui.openshift.route.tls.enabled Enable TLS termination
         ##
+        # ui.openshift.route.tls.enabled -- Enable TLS termination
         enabled: true
-        ## @param ui.openshift.route.tls.insecureEdgeTerminationPolicy TLS termination policy
         ##
+        # ui.openshift.route.tls.insecureEdgeTerminationPolicy -- TLS termination policy
         insecureEdgeTerminationPolicy: None
-        ## @param ui.openshift.route.tls.termination TLS termination type
         ##
+        # ui.openshift.route.tls.termination -- TLS termination type
         termination: edge
-      ## @param ui.openshift.route.wildcardPolicy Wildcard policy for the route
+      # ui.openshift.route.wildcardPolicy -- Wildcard policy for the route
       wildcardPolicy: None
 
-## @section Ingress Configuration
 ## Configure the ingress resource that allows you to access the traction installation
 ## ref: https://kubernetes.io/docs/user-guide/ingress/
 ##
 ingress:
-  ## @param ingress.enabled Enable ingress record generation for traction
   ##
+  # @section Ingress Configuration
+  # ingress.enabled -- Enable ingress record generation for traction
   enabled: false
-  ## @param ingress.className IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
   ## This is supported in Kubernetes 1.18+ and required if you have more than one IngressClass marked as the default for your cluster .
   ## ref: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
   ##
+  # ingress.className -- IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
   className: ""
-  ## @param ingress.annotations Additional annotations for the Ingress resource.
   ##
   annotations: {}
   #  route.openshift.io/termination: edge
-  ## @param ingress.tls Enable TLS configuration for the host defined at ingress.
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
