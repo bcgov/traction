@@ -384,3 +384,205 @@ postgresql:
 ```
 
 </details>
+
+## 0.5.0
+
+The Traction Helm chart has been updated to use version `1.0.0` of the [ACA-Py Helm chart](https://github.com/openwallet-foundation/helm-charts/tree/main/charts/acapy). The primary breaking change is the replacement of the Bitnami `postgresql` sub-dependency with the [CloudPirates `postgres` chart](https://github.com/CloudPirates-io/helm-charts).
+
+### What Changed
+
+| | Traction 0.4.x (acapy 0.2.3) | Traction 0.5.0 (acapy 1.0.0) |
+| --- | --- | --- |
+| Postgres provider | Bitnami `postgresql` | CloudPirates `postgres` |
+| Values key | `acapy.postgresql.*` | `acapy.postgres.*` |
+| Postgres service name | `<release>-acapy-postgresql` | `<release>-acapy-postgres` |
+| Consolidated DB secret | `<release>-acapy-postgresql` | `<release>-acapy-postgres` |
+| Postgres version | 16 | 18 |
+| OpenShift compatibility | Manual (`podSecurityContext.enabled: false`) | Auto-detected via `route.openshift.io/v1` API group |
+
+### Values Migration
+
+#### Disabling the Embedded Postgres (External Database)
+
+**Before:**
+
+```yaml
+acapy:
+  postgresql:
+    enabled: false
+```
+
+**After:**
+
+```yaml
+acapy:
+  postgres:
+    enabled: false
+```
+
+#### Customising the Embedded Postgres
+
+If you were overriding Bitnami postgres settings such as storage size or resources:
+
+**Before:**
+
+```yaml
+acapy:
+  postgresql:
+    primary:
+      persistence:
+        size: 5Gi
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+      extendedConfiguration: |
+        max_connections = 500
+```
+
+**After:**
+
+```yaml
+acapy:
+  postgres:
+    persistence:
+      size: 5Gi
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+    config:
+      postgresql:
+        max_connections: 500
+```
+
+#### OpenShift Security Context
+
+The CloudPirates postgres chart supports an explicit `targetPlatform` parameter. Set it to `openshift` to automatically omit `runAsUser`, `runAsGroup`, and `fsGroup` from the pod and container security contexts, which is required for OpenShift's restricted SCC.
+
+```yaml
+acapy:
+  postgres:
+    targetPlatform: openshift
+```
+
+Any previous manual Bitnami security context overrides can be removed:
+
+**Remove (no longer needed):**
+
+```yaml
+acapy:
+  postgresql:
+    primary:
+      podSecurityContext:
+        enabled: false
+      containerSecurityContext:
+        enabled: false
+```
+
+### Data Migration (Embedded Bitnami → CloudPirates Postgres)
+
+> [!WARNING]
+> Only follow this section if your deployment was using the **embedded Bitnami postgres** (`acapy.postgresql.enabled: true`, which was the default in 0.4.x). If you are using an external database, skip to [Disabling the Embedded Postgres](#disabling-the-embedded-postgres-external-database) above and update the values key.
+> Back up your data before proceeding and test this procedure in a non-production environment first.
+
+The Helm chart upgrade replaces the Bitnami postgres `StatefulSet` with a new CloudPirates postgres `StatefulSet` that starts with an **empty database**. Wallet data must be migrated manually using a dump-and-restore approach. The `pg_dumpall` logical format is used here, which is forward-compatible from Postgres 16 to Postgres 18.
+
+#### Step 1: Scale Down ACA-Py
+
+Stop ACA-Py to prevent writes during migration:
+
+```bash
+kubectl scale deployment <release>-acapy --replicas=0 -n <namespace>
+# Wait for the pod to terminate
+kubectl get pods -n <namespace> -w
+```
+
+#### Step 2: Dump All Databases from the Bitnami Pod
+
+The Bitnami pod will be named `<release>-acapy-postgresql-0`. Use `pg_dumpall` to capture the full cluster. The `--no-role-passwords` flag is used because role passwords will be managed by the new chart’s secrets.
+
+```bash
+kubectl exec -n <namespace> <release>-acapy-postgresql-0 -- \
+  pg_dumpall -U postgres --no-role-passwords \
+  > /tmp/traction-wallet-backup.sql
+```
+
+Verify the dump is non-empty before proceeding:
+
+```bash
+wc -l /tmp/traction-wallet-backup.sql
+```
+
+#### Step 3: Upgrade the Helm Chart
+
+```bash
+helm upgrade <release> charts/traction \
+  -f <your-values-file>.yaml \
+  -n <namespace>
+```
+
+This deploys the CloudPirates postgres `StatefulSet` with an empty database. ACA-Py remains at 0 replicas.
+
+#### Step 4: Wait for the New Postgres Pod to Be Ready
+
+```bash
+kubectl rollout status statefulset/<release>-acapy-postgres -n <namespace>
+```
+
+#### Step 5: Restore the Dump into the New Postgres Pod
+
+Copy the backup into the new pod and restore it:
+
+```bash
+kubectl cp /tmp/traction-wallet-backup.sql \
+  <namespace>/<release>-acapy-postgres-0:/tmp/traction-wallet-backup.sql
+
+kubectl exec -n <namespace> <release>-acapy-postgres-0 -- \
+  psql -U postgres -f /tmp/traction-wallet-backup.sql
+```
+
+> [!NOTE]
+> `CREATE ROLE` statements may produce errors for roles that already exist (e.g. `acapy`). These errors are expected and safe to ignore — the role was pre-created by the CloudPirates chart’s init scripts.
+
+#### Step 6: Ensure the `acapy` Role Has `CREATEDB`
+
+ACA-Py uses the `DatabasePerWallet` scheme and creates a new database for each wallet at runtime. The `acapy` role must have the `CREATEDB` privilege:
+
+```bash
+kubectl exec -n <namespace> <release>-acapy-postgres-0 -- \
+  psql -U postgres -c "ALTER ROLE acapy CREATEDB;"
+```
+
+Confirm the restored databases are visible:
+
+```bash
+kubectl exec -n <namespace> <release>-acapy-postgres-0 -- \
+  psql -U postgres -c "\l"
+```
+
+#### Step 7: Scale ACA-Py Back Up
+
+```bash
+kubectl scale deployment <release>-acapy --replicas=1 -n <namespace>
+```
+
+Monitor the logs to confirm a successful database connection:
+
+```bash
+kubectl logs -n <namespace> -l app.kubernetes.io/component=agent -f
+```
+
+#### Step 8: Clean Up the Old Bitnami PVC
+
+Once ACA-Py is confirmed operational, delete the PVC that was used by the old Bitnami pod:
+
+```bash
+# Identify the old PVC (typically named data-<release>-acapy-postgresql-0)
+kubectl get pvc -n <namespace>
+
+kubectl delete pvc data-<release>-acapy-postgresql-0 -n <namespace>
+```
+
+> [!CAUTION]
+> Do not delete the old PVC until you have fully validated that ACA-Py is operating correctly against the restored data on the new postgres instance.
