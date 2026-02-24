@@ -75,9 +75,9 @@ acapy:
     # acapy.autoscaling.stabilizationWindowSeconds -- Stabilization window in seconds
     stabilizationWindowSeconds: 300
 
+  ## ACA-Py configuration file
   ##
   argfile.yml:
-    # @section ACA-Py configuration file
     # acapy."argfile.yml".auto-accept-invites -- Automatically accept invites without firing a webhook event or waiting for an admin request. Default: false.
     auto-accept-invites: true
     # acapy."argfile.yml".auto-accept-requests -- Automatically accept connection requests without firing a webhook event or waiting for an admin request. Default: false.
@@ -254,7 +254,6 @@ acapy:
   plugin-config.yml:
     multitenant_provider:
       manager:
-        # @section ACA-Py Plugin Configuration
         class_name: multitenant_provider.v1_0.manager.AskarMultitokenMultitenantManager
         always_check_provided_wallet_key: true
       errors:
@@ -286,7 +285,6 @@ acapy:
   ##
   resources:
     requests:
-      # @section ACA-Py common configurations
       # acapy.resources.requests.cpu -- The requested cpu for the ACA-Py containers
       cpu: 120m
       # acapy.resources.requests.memory -- The requested memory for the ACA-Py containers
@@ -323,10 +321,7 @@ acapy:
       # acapy.secrets.seed.enabled -- Disabled by default, turning this on will cause the Traction agent to NOT start unless additional setup steps are completed (refer to ACA-Py chart docs).
       enabled: false
 
-  ##
   networkPolicy:
-    ##
-    # @section -- ACA-Py NetworkPolicy parameters
     # acapy.networkPolicy.enabled -- Enable network policies
     enabled: false
     # acapy.networkPolicy.allowExternal -- Allow ingress from any source (disables from selectors when true)
@@ -339,11 +334,8 @@ acapy:
     ingressNSMatchLabels: {}
       # network.openshift.io/policy-group: ingress
 
-##
 tenant_proxy:
-  ##
   image:
-    # @section -- Tenant Proxy configuration
     repository: ghcr.io/bcgov/traction-tenant-proxy
     pullPolicy: IfNotPresent
     pullSecrets: []
@@ -412,7 +404,6 @@ tenant_proxy:
   openshift:
     route:
       ##
-      # @section Tenant proxy OpenShift Route parameters
       # tenant_proxy.openshift.route.enabled -- Create OpenShift Route resource for Tenant proxy
       enabled: false
       ##
@@ -451,7 +442,6 @@ tenant_proxy:
   ##
   networkPolicy:
     ##
-    # @section Tenant Proxy NetworkPolicy parameters
     # tenant_proxy.networkPolicy.enabled -- Enable network policies
     enabled: false
     ingress:
@@ -472,9 +462,9 @@ tenant_proxy:
   ##
   tolerations: []
 
+## Tenant-UI Configuration
 ##
 ui:
-  # @section Tenant-UI Configuration
   # ui.enabled -- Deploy tenant-ui
   enabled: true
   # ui.showOIDCReservationLogin -- OIDC reservation login
@@ -666,7 +656,7 @@ ui:
   openshift:
     route:
       ##
-      # @section Tenant-UI OpenShift Route parameters
+      # Tenant-UI OpenShift Route parameters
       # ui.openshift.route.enabled -- Create OpenShift Route resource for tenant-ui
       enabled: false
       ##
@@ -696,7 +686,6 @@ ui:
 ##
 ingress:
   ##
-  # @section Ingress Configuration
   # ingress.enabled -- Enable ingress record generation for traction
   enabled: false
   ## This is supported in Kubernetes 1.18+ and required if you have more than one IngressClass marked as the default for your cluster .
