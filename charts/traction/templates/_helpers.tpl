@@ -121,7 +121,7 @@ Create the name of the tenant-ui service account to use
 {{- end }}
 
 {{/*
-Generate tenant-ui host if not overriden
+Generate tenant-ui host if not overridden
 */}}
 {{- define "tenant-ui.host" -}}
 {{- include "tenant-ui.fullname" . }}{{ .Values.global.ingressSuffix -}}
@@ -165,7 +165,7 @@ Create the name of the tenant proxy service account to use
 {{- end }}
 
 {{/*
-Generate tenant proxy hosts if not overriden
+Generate tenant proxy hosts if not overridden
 */}}
 {{- define "tenant_proxy.host" -}}
 {{- include "tenant_proxy.fullname" . }}{{ .Values.global.ingressSuffix -}}
