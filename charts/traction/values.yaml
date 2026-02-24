@@ -6,6 +6,7 @@ global:
   ## imagePullSecrets:
   ##   - myRegistryKeySecretName
   ##
+  # global.imagePullSecrets -- Global Docker registry secret names as an array
   imagePullSecrets: []
   # global.ingressSuffix -- Domain suffix to be used for default hostpaths in ingress
   ingressSuffix: -dev.example.com

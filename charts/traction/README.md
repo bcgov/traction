@@ -188,7 +188,7 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | fullnameOverride | string | `""` | String to fully override the helm chart name, full prefix. *Must be provided if using a custom release name that does not include the word traction.* |
 | global.compatibility.openshift.adaptSecurityContext | string | `"auto"` | Adapt the securityContext sections of the deployment to make them compatible with Openshift restricted-v2 SCC: remove runAsUser, runAsGroup and fsGroup and let the platform use their allowed default IDs. Possible values: auto (apply if the detected running cluster is Openshift), force (perform the adaptation always), disabled (do not perform adaptation) |
 | global.defaultStorageClass | string | `""` | Default StorageClass for Persistent Volume Claim |
-| global.imagePullSecrets | list | `[]` |  |
+| global.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array |
 | global.imageRegistry | string | `""` | Global Docker image registry |
 | global.ingressSuffix | string | `"-dev.example.com"` | Domain suffix to be used for default hostpaths in ingress |
 | global.security.allowInsecureImages | bool | `false` | Allows skipping image verification |
