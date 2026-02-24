@@ -28,7 +28,7 @@ helm repo add traction https://bcgov.github.io/traction
 helm install my-release traction/traction
 ```
 
-The command deploys Traction and PostgreSQL on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
+The command deploys Traction and PostgreSQL on the Kubernetes cluster in the default configuration. The [Values](#values) section lists the parameters that can be configured during installation.
 
 > **Tip**: List all releases using `helm list`
 
@@ -58,7 +58,7 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | acapy."argfile.yml".auto-accept-requests | bool | `true` | Automatically accept connection requests without firing a webhook event or waiting for an admin request. Default: false. |
 | acapy."argfile.yml".auto-create-revocation-transactions | bool | `true` | For Authors, specify whether to automatically create transactions for a cred def's revocation registry. (If not specified, the controller must invoke the endpoints required to create the revocation registry and assign to the cred def.) |
 | acapy."argfile.yml".auto-ping-connection | bool | `true` | Automatically send a trust ping immediately after a connection response is accepted. Some agents require this before marking a connection as 'active'. Default: false. |
-| acapy."argfile.yml".auto-promote-author-did | bool | `true` | For authors, specify whether to automatically promote a DID to the wallet public DID after writing to the ledger.`` |
+| acapy."argfile.yml".auto-promote-author-did | bool | `true` | For authors, specify whether to automatically promote a DID to the wallet public DID after writing to the ledger. |
 | acapy."argfile.yml".auto-provision | bool | `true` | If the requested profile does not exist, initialize it with the given parameters. |
 | acapy."argfile.yml".auto-request-endorsement | bool | `true` | For Authors, specify whether to automatically request endorsement for all transactions. (If not specified, the controller must invoke the request endorse operation for each transaction.) |
 | acapy."argfile.yml".auto-respond-credential-offer | bool | `false` | Automatically respond to Indy credential offers with a credential request. Default: false |
@@ -74,7 +74,7 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | acapy."argfile.yml".emit-new-didcomm-mime-type | bool | `true` | Send packed agent messages with the DIDComm MIME type as of RFC 0044; i.e., 'application/didcomm-envelope-enc' instead of 'application/ssi-agent-wire'. |
 | acapy."argfile.yml".emit-new-didcomm-prefix | bool | `true` | Emit protocol messages with new DIDComm prefix; i.e., 'https://didcomm.org/' instead of (default) prefix 'did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/'. |
 | acapy."argfile.yml".endorser-alias | string | `"endorser"` | For transaction Authors, specify the alias of the Endorser connection that will be used to endorse transactions. |
-| acapy."argfile.yml".endorser-protocol-role | string | `"author"` | Specify the role ('author' or 'endorser') which this agent will participate. Authors will request transaction endorement from an Endorser. Endorsers will endorse transactions from Authors, and may write their own  transactions to the ledger. If no role (or 'none') is specified then the endorsement protocol will not be used and this agent will write transactions to the ledger directly. |
+| acapy."argfile.yml".endorser-protocol-role | string | `"author"` | Specify the role ('author' or 'endorser') which this agent will participate. Authors will request transaction endorsement from an Endorser. Endorsers will endorse transactions from Authors, and may write their own  transactions to the ledger. If no role (or 'none') is specified then the endorsement protocol will not be used and this agent will write transactions to the ledger directly. |
 | acapy."argfile.yml".log-level | string | `"info"` | Specifies a custom logging level as one of: ('debug', 'info', 'warning', 'error', 'critical') |
 | acapy."argfile.yml".monitor-ping | bool | `true` | Send a webhook when a ping is sent or received. |
 | acapy."argfile.yml".monitor-revocation-notification | bool | `true` | Specifies that aca-py will emit webhooks on notification of revocation received. |
@@ -93,7 +93,7 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | acapy."argfile.yml".webhook-url | string | `""` | Send webhooks containing internal state changes to the specified URL. Optional API key to be passed in the request body can be appended using a hash separator [#]. This is useful for a controller to monitor agent events and respond to those events using the admin API. If not specified, webhooks are not published by the agent. |
 | acapy."ledgers.yml"[0].endorser_alias | string | `"bcovrin-test-endorser"` |  |
 | acapy."ledgers.yml"[0].endorser_did | string | `"DfQetNSm7gGEHuzfUvpfPn"` |  |
-| acapy."ledgers.yml"[0].genesis_url | string | `"http://test.bcovrin.vonx.io/genesis"` |  |
+| acapy."ledgers.yml"[0].genesis_url | string | `"https://test.bcovrin.vonx.io/genesis"` |  |
 | acapy."ledgers.yml"[0].id | string | `"bcovrin-test"` |  |
 | acapy."ledgers.yml"[0].is_production | bool | `true` |  |
 | acapy."ledgers.yml"[0].is_write | bool | `true` |  |
@@ -155,7 +155,7 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | acapy.initContainers | list | `[]` |  |
 | acapy.networkPolicy.allowExternal | bool | `false` | Allow ingress from any source (disables from selectors when true) |
 | acapy.networkPolicy.allowExternalEgress | bool | `true` | Allow all egress traffic (when false, only DNS and extraEgress are applied) |
-| acapy.networkPolicy.enabled | bool | `false` |  |
+| acapy.networkPolicy.enabled | bool | `false` | Enable network policies |
 | acapy.networkPolicy.extraEgress | list | `[]` |  |
 | acapy.networkPolicy.extraIngress | list | `[]` |  |
 | acapy.networkPolicy.ingressNSMatchLabels | object | `{}` |  |

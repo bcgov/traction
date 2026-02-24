@@ -86,7 +86,7 @@ acapy:
     auto-create-revocation-transactions: true
     # acapy."argfile.yml".auto-ping-connection -- Automatically send a trust ping immediately after a connection response is accepted. Some agents require this before marking a connection as 'active'. Default: false.
     auto-ping-connection: true
-    # acapy."argfile.yml".auto-promote-author-did -- For authors, specify whether to automatically promote a DID to the wallet public DID after writing to the ledger.``
+    # acapy."argfile.yml".auto-promote-author-did -- For authors, specify whether to automatically promote a DID to the wallet public DID after writing to the ledger.
     auto-promote-author-did: true
     # acapy."argfile.yml".auto-provision -- If the requested profile does not exist, initialize it with the given parameters.
     auto-provision: true
@@ -116,7 +116,7 @@ acapy:
     emit-new-didcomm-prefix: true
     # acapy."argfile.yml".endorser-alias -- For transaction Authors, specify the alias of the Endorser connection that will be used to endorse transactions.
     endorser-alias: endorser
-    # acapy."argfile.yml".endorser-protocol-role -- Specify the role ('author' or 'endorser') which this agent will participate. Authors will request transaction endorement from an Endorser. Endorsers will endorse transactions from Authors, and may write their own  transactions to the ledger. If no role (or 'none') is specified then the endorsement protocol will not be used and this agent will write transactions to the ledger directly.
+    # acapy."argfile.yml".endorser-protocol-role -- Specify the role ('author' or 'endorser') which this agent will participate. Authors will request transaction endorsement from an Endorser. Endorsers will endorse transactions from Authors, and may write their own  transactions to the ledger. If no role (or 'none') is specified then the endorsement protocol will not be used and this agent will write transactions to the ledger directly.
     endorser-protocol-role: author
     # acapy."argfile.yml".log-level -- Specifies a custom logging level as one of: ('debug', 'info', 'warning', 'error', 'critical')
     log-level: info
@@ -243,7 +243,7 @@ acapy:
     - id: bcovrin-test
       is_production: true
       is_write: true
-      genesis_url: "http://test.bcovrin.vonx.io/genesis"
+      genesis_url: "https://test.bcovrin.vonx.io/genesis"
       endorser_did: "DfQetNSm7gGEHuzfUvpfPn"
       endorser_alias: "bcovrin-test-endorser"
 
