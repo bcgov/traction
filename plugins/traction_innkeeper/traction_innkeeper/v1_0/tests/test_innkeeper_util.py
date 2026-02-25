@@ -10,6 +10,7 @@ from traction_innkeeper.v1_0.innkeeper.models import (
 )
 from traction_innkeeper.v1_0.innkeeper.tenant_manager import TenantManager
 
+from traction_innkeeper.v1_0.innkeeper.bcrypt_compat import limit_for_bcrypt
 from traction_innkeeper.v1_0.innkeeper.utils import (
     ReservationException,
     approve_reservation,
@@ -18,6 +19,17 @@ from traction_innkeeper.v1_0.innkeeper.utils import (
     generate_reservation_token_data,
     refresh_registration_token,
 )
+
+
+def test_limit_for_bcrypt_long_password():
+    """Bcrypt 5.x compatibility: >72 byte passwords are truncated, hashpw does not raise."""
+    long_pwd = b"x" * 100
+    limited = limit_for_bcrypt(long_pwd)
+    assert len(limited) == 72
+    salt = bcrypt.gensalt()
+    # bcrypt 5.x would raise ValueError for 100 bytes without truncation
+    _hash = bcrypt.hashpw(limited, salt)
+    assert bcrypt.checkpw(limited, _hash) is True
 
 
 # Mock the TenantRecord states if not easily importable or for isolation

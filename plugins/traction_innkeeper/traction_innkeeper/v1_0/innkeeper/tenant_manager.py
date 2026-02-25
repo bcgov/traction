@@ -2,6 +2,8 @@ import bcrypt
 import logging
 from typing import List, Optional
 
+from .bcrypt_compat import limit_for_bcrypt
+
 from acapy_agent.core.error import BaseError
 from acapy_agent.core.profile import Profile
 from acapy_agent.messaging.models.base import BaseModelError
@@ -240,19 +242,20 @@ class TenantManager:
             return None
 
         # make a hash from passed in value with saved salt...
+        pwd_bytes = limit_for_bcrypt(reservation_pwd.encode("utf-8"))
         reservation_token = bcrypt.hashpw(
-            reservation_pwd.encode("utf-8"),
+            pwd_bytes,
             reservation.reservation_token_salt.encode("utf-8"),
         )
         # check the passed in value/hash against the calculated hash.
-        checkpw = bcrypt.checkpw(reservation_pwd.encode("utf-8"), reservation_token)
+        checkpw = bcrypt.checkpw(pwd_bytes, reservation_token)
         self._logger.debug(
             f"bcrypt.checkpw(reservation_pwd.encode('utf-8'), reservation_token) = {checkpw}"
         )
 
         # check the passed in value against the saved hash
         checkpw2 = bcrypt.checkpw(
-            reservation_pwd.encode("utf-8"),
+            pwd_bytes,
             reservation.reservation_token_hash.encode("utf-8"),
         )
         self._logger.debug(
@@ -315,19 +318,20 @@ class TenantManager:
             return None
 
         # make a hash from passed in value with saved salt...
+        key_bytes = limit_for_bcrypt(api_key.encode("utf-8"))
         key_token = bcrypt.hashpw(
-            api_key.encode("utf-8"),
+            key_bytes,
             apiRecord.api_key_token_salt.encode("utf-8"),
         )
         # check the passed in value/hash against the calculated hash.
-        checkpw = bcrypt.checkpw(api_key.encode("utf-8"), key_token)
+        checkpw = bcrypt.checkpw(key_bytes, key_token)
         self._logger.debug(
             f"bcrypt.checkpw(api_key.encode('utf-8'), key_token) = {checkpw}"
         )
 
         # check the passed in value against the saved hash
         checkpw2 = bcrypt.checkpw(
-            api_key.encode("utf-8"),
+            key_bytes,
             apiRecord.api_key_token_hash.encode("utf-8"),
         )
         self._logger.debug(
