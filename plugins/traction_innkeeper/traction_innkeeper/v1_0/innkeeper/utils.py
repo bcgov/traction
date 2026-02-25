@@ -3,6 +3,8 @@ import logging
 import uuid
 from datetime import datetime, timedelta, UTC
 
+from .bcrypt_compat import limit_for_bcrypt
+
 from acapy_agent.messaging.models.openapi import OpenAPISchema
 from marshmallow import fields
 
@@ -80,7 +82,7 @@ def generate_reservation_token_data(expiry_minutes: int):
     _salt = bcrypt.gensalt()
     LOGGER.info(f"_salt = {_salt}")
 
-    _hash = bcrypt.hashpw(_pwd.encode("utf-8"), _salt)
+    _hash = bcrypt.hashpw(limit_for_bcrypt(_pwd.encode("utf-8")), _salt)
     LOGGER.info(f"_hash = {_hash}")
 
     minutes = expiry_minutes
@@ -139,7 +141,7 @@ async def refresh_registration_token(reservation_id: str, manager: TenantManager
         # Generate new token data
         _pwd = str(uuid.uuid4().hex)  # This generates a new token
         _salt = bcrypt.gensalt()
-        _hash = bcrypt.hashpw(_pwd.encode("utf-8"), _salt)
+        _hash = bcrypt.hashpw(limit_for_bcrypt(_pwd.encode("utf-8")), _salt)
 
         minutes = manager._config.reservation.expiry_minutes
         _expiry = datetime.utcnow() + timedelta(minutes=minutes)
@@ -167,7 +169,7 @@ def generate_api_key_data():
     _salt = bcrypt.gensalt()
     LOGGER.info(f"_salt = {_salt}")
 
-    _hash = bcrypt.hashpw(_key.encode("utf-8"), _salt)
+    _hash = bcrypt.hashpw(limit_for_bcrypt(_key.encode("utf-8")), _salt)
     LOGGER.info(f"_hash = {_hash}")
 
     return _key, _salt, _hash
