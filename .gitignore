@@ -13,3 +13,7 @@ plugins/poetry.lock
 .idea
 **/.idea
 .python-version
+
+# pytest-cov
+.coverage
+**/.coverage
