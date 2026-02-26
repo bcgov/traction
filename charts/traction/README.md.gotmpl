@@ -1,0 +1,55 @@
+# {{ template "chart.name" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+## TL;DR
+
+```console
+helm repo add traction https://bcgov.github.io/traction
+helm install my-release traction/traction
+```
+
+## Prerequisites
+
+- Kubernetes 1.19+
+- Helm 3.2.0+
+- PV provisioner support in the underlying infrastructure
+
+## Installing the Chart
+
+To install the chart with the release name `my-release`:
+
+```console
+helm repo add traction https://bcgov.github.io/traction
+helm install my-release traction/traction
+```
+
+The command deploys Traction and PostgreSQL on the Kubernetes cluster in the default configuration. The [Values](#values) section lists the parameters that can be configured during installation.
+
+> **Tip**: List all releases using `helm list`
+
+## Uninstalling the Chart
+
+To uninstall/delete the `my-release` deployment:
+
+```console
+helm delete my-release
+```
+
+The command removes all the Kubernetes components but secrets and PVC's associated with the chart and deletes the release.
+
+To delete the secrets and PVC's associated with `my-release`:
+
+```console
+kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
+```
+
+> **Note**: Deleting the PVC's will delete PostgreSQL data as well. Please be cautious before doing it.
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}
