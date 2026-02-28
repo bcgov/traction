@@ -20,25 +20,6 @@ export interface ActionMenuFetchResult {
 
 export type ActionMenuModulesResult = object;
 
-export interface AddOcaRecordRequest {
-  /** OCA Bundle */
-  bundle?: Record<string, any>;
-  /**
-   * Cred Def identifier
-   * @pattern ^([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}):3:CL:(([1-9][0-9]*)|([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}:2:.+:[0-9.]+)):(.+)?$
-   * @example "WgWxqztrNooG92RXvxSTWv:3:CL:20:tag"
-   */
-  cred_def_id?: string;
-  /**
-   * Schema identifier
-   * @pattern ^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}:2:.+:[0-9.]+$
-   * @example "WgWxqztrNooG92RXvxSTWv:2:schema_name:1.0"
-   */
-  schema_id?: string;
-  /** (Public) Url for OCA Bundle */
-  url?: string;
-}
-
 export interface AddProof {
   /** @example {"hello":"world"} */
   document: Record<string, any>;
@@ -3741,59 +3722,6 @@ export interface MenuOption {
 }
 
 export type MultitenantModuleResponse = object;
-
-export interface OcaRecord {
-  /** OCA Bundle */
-  bundle?: Record<string, any>;
-  /**
-   * Time of record creation
-   * @pattern ^\d{4}-\d\d-\d\d[T ]\d\d:\d\d(?:\:(?:\d\d(?:\.\d{1,6})?))?(?:[+-]\d\d:?\d\d|Z|)$
-   * @example "2021-12-31T23:59:59Z"
-   */
-  created_at?: string;
-  /**
-   * Cred Def identifier
-   * @pattern ^([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}):3:CL:(([1-9][0-9]*)|([123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}:2:.+:[0-9.]+)):(.+)?$
-   * @example "WgWxqztrNooG92RXvxSTWv:3:CL:20:tag"
-   */
-  cred_def_id?: string;
-  /**
-   * OCA Record identifier
-   * @example "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-   */
-  oca_id: string;
-  /** Public DID of OCA record owner */
-  owner_did?: string;
-  /**
-   * Schema identifier
-   * @pattern ^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{21,22}:2:.+:[0-9.]+$
-   * @example "WgWxqztrNooG92RXvxSTWv:2:schema_name:1.0"
-   */
-  schema_id?: string;
-  /**
-   * Current record state
-   * @example "active"
-   */
-  state?: string;
-  /**
-   * Time of last record update
-   * @pattern ^\d{4}-\d\d-\d\d[T ]\d\d:\d\d(?:\:(?:\d\d(?:\.\d{1,6})?))?(?:[+-]\d\d:?\d\d|Z|)$
-   * @example "2021-12-31T23:59:59Z"
-   */
-  updated_at?: string;
-  /** (Public) Url for OCA Bundle */
-  url?: string;
-}
-
-export interface OcaRecordList {
-  /** List of OCA records */
-  results?: OcaRecord[];
-}
-
-export interface OcaRecordOperationResponse {
-  /** True if operation successful, false if otherwise */
-  success: boolean;
-}
 
 export interface OobRecord {
   /**

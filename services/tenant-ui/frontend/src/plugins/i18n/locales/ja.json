@@ -121,15 +121,6 @@
       "tagRequired": "Tag is required <JA>",
       "title": "Credential Definition(s) <JA>"
     },
-    "oca": {
-      "bundleAssociationType": "OCA Bundle association type <JA>",
-      "bundleJson": "OCA Bundle JSON <JA>",
-      "bundleUrl": "OCA Bundle URL* <JA>",
-      "disclaimer": "OCA Card View for Credentials in the Tenant UI is an experimental feature. <JA>",
-      "oca": "OCA <JA>",
-      "storedBundleJson": "Stored Bundle JSON <JA>",
-      "url": "URL <JA>"
-    },
     "schemas": {
       "add": "Add Schema <JA>",
       "addedFromLedger": "The schema [{schemaId}] has been added from the ledger. <JA>",
@@ -235,12 +226,8 @@
         "credential": "Credential <JA>",
         "lastUpdate": "Last Update <JA>"
       },
-      "viewCard": "View in Card format <JA>",
-      "viewTable": "View in Table format <JA>"
     },
     "wallet": {
-      "noOca": "There is no OCA associated with this credential definition <JA>",
-      "noOcaNotImpl": "Cannot display card view for Credentials without OCA at this time. <JA>",
       "notFound": "There are no credentials in your Wallet <JA>"
     }
   },
