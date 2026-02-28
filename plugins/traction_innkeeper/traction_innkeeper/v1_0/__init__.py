@@ -15,11 +15,9 @@ from . import (
     connections,
     tenant,
     innkeeper,
-    oca,
 )
 
 MODULES = [
-    oca,
     innkeeper,
     tenant,
     connections,
