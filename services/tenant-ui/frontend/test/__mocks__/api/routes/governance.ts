@@ -16,12 +16,6 @@ export const successHandlers = [
     fullPathWithProxyTenant(API_PATH.CREDENTIAL_DEFINITIONS) + '/:id',
     () => HttpResponse.json(governanceResponse.createCredentialDefinition)
   ),
-  http.get(fullPathWithProxyTenant(API_PATH.OCAS), () =>
-    HttpResponse.json(governanceResponse.ocas)
-  ),
-  http.get(fullPathWithProxyTenant(API_PATH.OCAS) + '/:id', () =>
-    HttpResponse.json(governanceResponse.oca)
-  ),
   http.post(fullPathWithProxyTenant(API_PATH.SCHEMAS), () =>
     HttpResponse.json(governanceResponse.createSchema)
   ),
@@ -30,9 +24,6 @@ export const successHandlers = [
   ),
   http.post(fullPathWithProxyTenant(API_PATH.CREDENTIAL_DEFINITIONS), () =>
     HttpResponse.json(governanceResponse.createCredentialDefinition)
-  ),
-  http.post(fullPathWithProxyTenant(API_PATH.OCAS), () =>
-    HttpResponse.json(governanceResponse.createOca)
   ),
   http.delete(
     fullPathWithProxyTenant(API_PATH.SCHEMA_STORAGE_ITEM('test-uuid')),
@@ -43,9 +34,6 @@ export const successHandlers = [
       API_PATH.CREDENTIAL_DEFINITION_STORAGE_ITEM('test-uuid')
     ),
     () => HttpResponse.json(governanceResponse.deleteResponse)
-  ),
-  http.delete(fullPathWithProxyTenant(API_PATH.OCA('test-uuid')), () =>
-    HttpResponse.json(governanceResponse.deleteResponse)
   ),
 ];
 
@@ -63,12 +51,6 @@ export const unknownErrorHandlers = [
       HttpResponse.json({}, { status: 500 });
     }
   ),
-  http.get(fullPathWithProxyTenant(API_PATH.OCAS), () =>
-    HttpResponse.json({}, { status: 500 })
-  ),
-  http.get(fullPathWithProxyTenant(API_PATH.OCAS) + '/:id', () =>
-    HttpResponse.json({}, { status: 500 })
-  ),
   http.post(fullPathWithProxyTenant(API_PATH.SCHEMAS), () =>
     HttpResponse.json({}, { status: 500 })
   ),
@@ -76,9 +58,6 @@ export const unknownErrorHandlers = [
     HttpResponse.json({}, { status: 500 })
   ),
   http.post(fullPathWithProxyTenant(API_PATH.CREDENTIAL_DEFINITIONS), () =>
-    HttpResponse.json({}, { status: 500 })
-  ),
-  http.post(fullPathWithProxyTenant(API_PATH.OCAS), () =>
     HttpResponse.json({}, { status: 500 })
   ),
   http.delete(
@@ -90,8 +69,5 @@ export const unknownErrorHandlers = [
       API_PATH.CREDENTIAL_DEFINITION_STORAGE_ITEM('test-uuid')
     ),
     () => HttpResponse.json({}, { status: 500 })
-  ),
-  http.delete(fullPathWithProxyTenant(API_PATH.OCA('test-uuid')), () =>
-    HttpResponse.json({}, { status: 500 })
   ),
 ];

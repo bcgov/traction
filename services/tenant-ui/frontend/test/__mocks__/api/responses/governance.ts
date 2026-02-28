@@ -207,50 +207,12 @@ const credentialDefinition = {
   },
 };
 
-const ocas = {
-  results: [
-    {
-      bundle: {},
-      created_at: '2021-12-31T23:59:59Z',
-      cred_def_id: 'WgWxqztrNooG92RXvxSTWv:3:CL:20:tag',
-      oca_id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-      owner_did: 'string',
-      schema_id: 'WgWxqztrNooG92RXvxSTWv:2:schema_name:1.0',
-      state: 'active',
-      updated_at: '2021-12-31T23:59:59Z',
-      url: 'string',
-    },
-  ],
-};
-
-const oca = {
-  bundle: {},
-  created_at: '2021-12-31T23:59:59Z',
-  cred_def_id: 'WgWxqztrNooG92RXvxSTWv:3:CL:20:tag',
-  oca_id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-  owner_did: 'string',
-  schema_id: 'WgWxqztrNooG92RXvxSTWv:2:schema_name:1.0',
-  state: 'active',
-  updated_at: '2021-12-31T23:59:59Z',
-  url: 'string',
-};
-
-const createOca = {
-  bundle: {},
-  cred_def_id: 'WgWxqztrNooG92RXvxSTWv:3:CL:20:tag',
-  schema_id: 'WgWxqztrNooG92RXvxSTWv:2:schema_name:1.0',
-  url: 'string',
-};
-
 export default {
   copySchema,
   createCredentialDefinition,
-  createOca,
   createSchema,
   credentialDefinition,
   credentialDefinitions,
   deleteResponse,
-  oca,
-  ocas,
   schemas,
 };

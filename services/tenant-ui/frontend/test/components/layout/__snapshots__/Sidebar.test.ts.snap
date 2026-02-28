@@ -98,7 +98,7 @@ exports[`Sidebar > mount matches snapshot with expected values 1`] = `
         <div id="undefined_5_content" class="p-toggleable-content" role="region" aria-labelledby="undefined_5_header" data-pc-section="toggleablecontent" style="display: none;">
           <div class="p-panelmenu-content" data-pc-section="menucontent">
             <ul class="p-submenu-list p-panelmenu-root-list" tabindex="-1" id="undefined_5_list" role="tree" data-pc-section="menu">
-              <li id="undefined_5_0" class="p-menuitem" role="treeitem" aria-label="identifiers.identifiers" aria-level="1" aria-setsize="4" aria-posinset="1" data-pc-section="menuitem" data-p-focused="false">
+              <li id="undefined_5_0" class="p-menuitem" role="treeitem" aria-label="identifiers.identifiers" aria-level="1" aria-setsize="3" aria-posinset="1" data-pc-section="menuitem" data-p-focused="false">
                 <div class="p-menuitem-content" data-pc-section="content">
                   <router-link-stub to="/identifiers" custom=""></router-link-stub>
                 </div>
@@ -109,7 +109,7 @@ exports[`Sidebar > mount matches snapshot with expected values 1`] = `
                 </transition-stub>
               </li>
               <!---->
-              <li id="undefined_5_1" class="p-menuitem" role="treeitem" aria-label="configuration.schemas.storage" aria-level="1" aria-setsize="4" aria-posinset="2" data-pc-section="menuitem" data-p-focused="false">
+              <li id="undefined_5_1" class="p-menuitem" role="treeitem" aria-label="configuration.schemas.storage" aria-level="1" aria-setsize="3" aria-posinset="2" data-pc-section="menuitem" data-p-focused="false">
                 <div class="p-menuitem-content" data-pc-section="content">
                   <router-link-stub to="/schemas" custom=""></router-link-stub>
                 </div>
@@ -120,20 +120,9 @@ exports[`Sidebar > mount matches snapshot with expected values 1`] = `
                 </transition-stub>
               </li>
               <!---->
-              <li id="undefined_5_2" class="p-menuitem" role="treeitem" aria-label="configuration.credentialDefinitions.storage" aria-level="1" aria-setsize="4" aria-posinset="3" data-pc-section="menuitem" data-p-focused="false">
+              <li id="undefined_5_2" class="p-menuitem" role="treeitem" aria-label="configuration.credentialDefinitions.storage" aria-level="1" aria-setsize="3" aria-posinset="3" data-pc-section="menuitem" data-p-focused="false">
                 <div class="p-menuitem-content" data-pc-section="content">
                   <router-link-stub to="/credentialDefinitions" custom=""></router-link-stub>
-                </div>
-                <transition-stub name="p-toggleable-content" appear="false" persisted="false" css="true">
-                  <div class="p-toggleable-content" data-pc-section="toggleablecontent" style="display: none;">
-                    <!---->
-                  </div>
-                </transition-stub>
-              </li>
-              <!---->
-              <li id="undefined_5_3" class="p-menuitem" role="treeitem" aria-label="configuration.oca.oca" aria-level="1" aria-setsize="4" aria-posinset="4" data-pc-section="menuitem" data-p-focused="false">
-                <div class="p-menuitem-content" data-pc-section="content">
-                  <router-link-stub to="/oca" custom=""></router-link-stub>
                 </div>
                 <transition-stub name="p-toggleable-content" appear="false" persisted="false" css="true">
                   <div class="p-toggleable-content" data-pc-section="toggleablecontent" style="display: none;">

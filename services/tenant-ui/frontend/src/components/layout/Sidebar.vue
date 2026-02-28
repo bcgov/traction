@@ -88,11 +88,6 @@ const sidebarItems = [
         icon: 'pi pi-fw pi-id-card',
         route: '/credentialDefinitions',
       },
-      {
-        label: t('configuration.oca.oca'),
-        icon: 'pi pi-fw pi-compass',
-        route: '/oca',
-      },
     ],
   },
 
