@@ -1,6 +1,5 @@
 import {
   IndyCredInfo,
-  OcaRecord,
   V20CredExRecordDetail,
 } from '@/types/acapyApi/acapyInterface';
 
@@ -19,9 +18,6 @@ export const useHolderStore = defineStore('holder', () => {
   const credentialExchanges: Ref<V20CredExRecordDetail[]> = ref([]);
   const selectedCredential: any = ref(null);
 
-  const ocas: Ref<OcaRecord[]> = ref([]);
-  const loadingOca: any = ref(false);
-
   const presentations: any = ref(null);
   const selectedPresentation: any = ref(null);
 
@@ -32,14 +28,6 @@ export const useHolderStore = defineStore('holder', () => {
 
   async function listCredentials() {
     return fetchList(API_PATH.CREDENTIALS, credentials, error, loading);
-  }
-
-  async function listOcas(fetchPublic?: boolean) {
-    // If getting public, don't use the default auth token from the axios instance
-    const options = fetchPublic
-      ? { headers: { Authorization: '' } }
-      : undefined;
-    return fetchList(API_PATH.OCAS, ocas, error, loadingOca, {}, options);
   }
 
   async function listHolderCredentialExchanges() {
@@ -65,11 +53,6 @@ export const useHolderStore = defineStore('holder', () => {
   async function getCredential(id: string, params: any = {}) {
     const getloading: any = ref(false);
     return fetchItem(API_PATH.CREDENTIALS, id, error, getloading, params);
-  }
-
-  async function getCredentialOca(credDefId: string, params: any = {}) {
-    loadingOca.value = true;
-    return fetchItem(API_PATH.OCAS, credDefId, error, loadingOca, params);
   }
 
   async function getPresentation(id: string, params: any = {}) {
@@ -162,19 +145,15 @@ export const useHolderStore = defineStore('holder', () => {
     credentials,
     error,
     loading,
-    loadingOca,
-    ocas,
     presentations,
     selectedCredential,
     selectedPresentation,
     acceptCredentialOffer,
     deleteCredentialExchange,
     getCredential,
-    getCredentialOca,
     getPresentation,
     listCredentials,
     listHolderCredentialExchanges,
-    listOcas,
     listPresentations,
     sendProblemReport,
   };

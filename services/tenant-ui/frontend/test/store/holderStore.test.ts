@@ -17,8 +17,6 @@ describe('holderStore', () => {
     expect(store.credentials).toEqual([]);
     expect(store.credentialExchanges).toEqual([]);
     expect(store.selectedCredential).toBeNull();
-    expect(store.ocas).toEqual([]);
-    expect(store.loadingOca).toEqual(false);
     expect(store.presentations).toBeNull();
     expect(store.selectedPresentation).toBeNull();
     expect(store.loading).toEqual(false);
@@ -53,8 +51,6 @@ describe('holderStore', () => {
     // TODO: This doesn't seem to be used anywhere
     test.todo('getCredential');
     // TODO: This doesn't seem to be used anywhere
-    test.todo('getCredentialOca');
-    // TODO: This doesn't seem to be used anywhere
     test.todo('getPresentation');
 
     test('listCredentials gets a response', async () => {
@@ -63,7 +59,6 @@ describe('holderStore', () => {
     });
 
     test.todo('listHolderCredentialExchanges');
-    test.todo('listOcas');
     test.todo('listPresentations');
   });
 
@@ -97,7 +92,6 @@ describe('holderStore', () => {
     });
 
     test.todo('listHolderCredentialExchanges');
-    test.todo('listOcas');
     test.todo('listPresentations');
   });
 });
