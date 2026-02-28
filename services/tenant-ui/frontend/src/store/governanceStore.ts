@@ -1,12 +1,10 @@
 import {
-  AddOcaRecordRequest,
   CredDefPostRequest,
   CredDefResult,
   CredDefStorageRecord,
   CredentialDefinitionSendRequest,
   GetSchemaResult,
   GetSchemasResponse,
-  OcaRecord,
   SchemaPostRequest,
   SchemaResult,
   SchemaSendRequest,
@@ -35,8 +33,6 @@ export const useGovernanceStore = defineStore('governance', () => {
   const storedCredDefs: Ref<CredDefStorageRecord[]> = ref([]);
   const selectedCredentialDefinition: Ref<CredDefStorageRecord | undefined> =
     ref(undefined);
-
-  const ocas: Ref<OcaRecord[]> = ref([]);
 
   const loading: Ref<boolean> = ref(false);
   const error: any = ref(null);
@@ -537,11 +533,6 @@ export const useGovernanceStore = defineStore('governance', () => {
     }
   }
 
-  async function listOcas() {
-    ocas.value = [];
-    return fetchList(API_PATH.OCAS, ocas, error, loading);
-  }
-
   async function createSchema(payload: SchemaSendRequest) {
     console.log('> governanceStore.createSchema');
     error.value = null;
@@ -930,74 +921,6 @@ export const useGovernanceStore = defineStore('governance', () => {
     return result;
   }
 
-  async function getOca(id: string, params: any = {}) {
-    const getloading: any = ref(false);
-    return fetchItem(API_PATH.OCAS, id, error, getloading, params);
-  }
-
-  async function createOca(payload: AddOcaRecordRequest) {
-    console.log('> governanceStore.createOca');
-    error.value = null;
-    loading.value = true;
-
-    let result = null;
-
-    await acapyApi
-      .postHttp(API_PATH.OCAS, payload)
-      .then((res) => {
-        result = res.data.item;
-        console.log(result);
-        listOcas(); // Refresh table
-      })
-      .catch((err) => {
-        error.value = err;
-        // console.log(error.value);
-      })
-      .finally(() => {
-        loading.value = false;
-      });
-    console.log('< governanceStore.createOca');
-
-    if (error.value != null) {
-      // throw error so $onAction.onError listeners can add their own handler
-      throw error.value;
-    }
-    // return data so $onAction.after listeners can add their own handler
-    return result;
-  }
-
-  async function deleteOca(ocaId: string) {
-    console.log('> governanceStore.deleteOca');
-    error.value = null;
-    loading.value = true;
-
-    let result = null;
-
-    await acapyApi
-      .deleteHttp(API_PATH.OCA(ocaId), {})
-      .then((res) => {
-        result = res.data.item;
-      })
-      .then(() => {
-        console.log('oca record deleted.');
-        listOcas(); // Refresh table
-      })
-      .catch((err) => {
-        error.value = err;
-      })
-      .finally(() => {
-        loading.value = false;
-      });
-    console.log('< governanceStore.deleteOca');
-
-    if (error.value != null) {
-      // throw error so $onAction.onError listeners can add their own handler
-      throw error.value;
-    }
-    // return data so $onAction.after listeners can add their own handler
-    return result;
-  }
-
   const setSelectedSchemaById = async (id: string) => {
     await getStoredSchemas();
     selectedSchema.value = storedSchemas.value.find(
@@ -1009,7 +932,6 @@ export const useGovernanceStore = defineStore('governance', () => {
     credentialDropdown,
     error,
     loading,
-    ocas,
     schemaList,
     schemaTemplateDropdown,
     selectedCredentialDefinition,
@@ -1022,20 +944,16 @@ export const useGovernanceStore = defineStore('governance', () => {
     createAnoncredsCredentialDefinition,
     createAnoncredsSchema,
     createCredentialDefinition,
-    createOca,
     createSchema,
-    deleteOca,
     deleteSchema,
     deleteStoredCredentialDefinition,
     getStoredCredDefs,
     getCredentialTemplate,
-    getOca,
     getStoredSchemas,
     listAllCredDefsForAnoncredsWallet,
     listAllSchemasForAnoncredsWallet,
     listAnoncredsCredentialDefinitions,
     listAnoncredsSchemas,
-    listOcas,
     listStoredCredentialDefinitions,
     listStoredSchemas,
     setSelectedSchemaById,

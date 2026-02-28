@@ -20,7 +20,6 @@ describe('connectionStore', () => {
     expect(store.selectedSchema).toBeUndefined();
     expect(store.storedCredDefs).toEqual([]);
     expect(store.selectedCredentialDefinition).toBeUndefined();
-    expect(store.ocas).toEqual([]);
     expect(store.loading).toEqual(false);
     expect(store.error).toBeNull();
   });
@@ -96,28 +95,6 @@ describe('connectionStore', () => {
         'loading'
       );
     });
-
-    test('listOcas does not throw error and sets loading correctly', async () => {
-      const response = store.listOcas();
-      await testSuccessResponse(store, response, 'loading');
-      expect(await response).toHaveLength(1);
-      expect(store.ocas).toHaveLength(1);
-    });
-
-    test('getOca does not throw error and sets loading correctly', async () => {
-      const response = await store.getOca('test-id');
-
-      expect(response).not.toBeNull();
-      expect(store.error).toBeNull();
-    });
-
-    test('createOca does not throw error and sets loading correctly', async () => {
-      await testSuccessResponse(store, store.createOca(), 'loading');
-    });
-
-    test('deleteOca does not throw error and sets loading correctly', async () => {
-      await testSuccessResponse(store, store.deleteOca('test-uuid'), 'loading');
-    });
   });
 
   describe('Unsuccessful API calls', async () => {
@@ -171,23 +148,6 @@ describe('connectionStore', () => {
         store.deleteStoredCredentialDefinition('test-uuid'),
         'loading'
       );
-    });
-
-    test('listOcas throws error and sets loading correctly', async () => {
-      await testErrorResponse(store, store.listOcas(), 'loading');
-    });
-
-    test('getOca does not throw error and sets loading correctly', async () => {
-      await expect(store.getOca('test-id')).rejects.toThrow();
-      expect(store.error).not.toBeNull();
-    });
-
-    test('createOca throws error and sets loading correctly', async () => {
-      await testErrorResponse(store, store.createOca(), 'loading');
-    });
-
-    test('deleteStoredCredentialDefinition throws error and sets loading correctly', async () => {
-      await testErrorResponse(store, store.deleteOca('test-uuid'), 'loading');
     });
   });
 });

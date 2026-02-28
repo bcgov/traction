@@ -106,9 +106,6 @@ export const API_PATH = {
   MULTITENANCY_WALLET_TOKEN: (tenantId: string) =>
     `/multitenancy/wallet/${tenantId}/token`,
 
-  OCAS: '/oca',
-  OCA: (id: string) => `/oca/${id}`,
-
   OUT_OF_BAND_CREATE: '/out-of-band/create-invitation',
   OUT_OF_BAND_RECIEVE: '/out-of-band/receive-invitation',
 

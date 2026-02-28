@@ -1,39 +1,9 @@
 <template>
   <MainCardContent
-    :title="
-      cardView
-        ? $t('common.credentials')
-        : $t('credentials.exchanges.exchanges')
-    "
+    :title="$t('credentials.exchanges.exchanges')"
     :refresh-callback="loadCredentials"
   >
-    <template #buttons>
-      <Button
-        v-if="cardView"
-        icon="pi pi-table"
-        :title="$t('credentials.exchanges.viewTable')"
-        text
-        rounded
-        @click="cardView = false"
-      />
-      <Button
-        v-else
-        icon="pi pi-th-large"
-        :title="$t('credentials.exchanges.viewCard')"
-        text
-        rounded
-        @click="cardView = true"
-      />
-    </template>
-
-    <CredentialsCards
-      v-if="cardView"
-      @accept="acceptOffer"
-      @delete="deleteCredential"
-      @reject="rejectOffer"
-    />
     <CredentialsTable
-      v-else
       @accept="acceptOffer"
       @delete="deleteCredential"
       @reject="rejectOffer"
@@ -45,16 +15,12 @@
 // Types
 import { FormattedHeldCredentialRecord } from '@/helpers/tableFormatters';
 
-// Vue
-import { ref } from 'vue';
 // PrimeVue etc
-import Button from 'primevue/button';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'vue-toastification';
 // State
 import { useHolderStore } from '@/store';
 // Other components
-import CredentialsCards from './CredentialsCards.vue';
 import CredentialsTable from './CredentialsTable.vue';
 import MainCardContent from '@/components/layout/mainCard/MainCardContent.vue';
 
@@ -63,9 +29,6 @@ const confirm = useConfirm();
 
 // State
 const holderStore = useHolderStore();
-
-// Table/card view toggle
-const cardView = ref(false);
 
 // Actions for a cred row/card
 const acceptOffer = (event: any, data: FormattedHeldCredentialRecord) => {
