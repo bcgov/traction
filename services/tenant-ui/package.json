@@ -21,7 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^1.13.5",
-    "config": "^4.3.0",
+    "config": "^4.4.0",
     "connect-history-api-fallback": "^2.0.0",
     "cors": "^2.8.6",
     "eta": "^4.5.1",
