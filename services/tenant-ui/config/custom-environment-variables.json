@@ -12,7 +12,6 @@
       "timeoutSeconds": "FRONTEND_SESSION_TIMEOUT_SECONDS",
       "countdownSeconds": "FRONTEND_SESSION_COUNTDOWN_SECONDS"
     },
-    "matomoUrl": "FRONTEND_MATOMO_URL",
     "oidc": {
       "active": "FRONTEND_INNKEEPER_OIDC_ACTIVE",
       "authority": "FRONTEND_INNKEEPER_OIDC_AUTHORITY",
