@@ -138,15 +138,6 @@ To view the emails being sent open http://localhost:1080/ in your web browser
 By default this is already configured in the docker-compose file. For
 local use you will need to start `maildev` manually.
 
-## Configuring Matomo
-
-If you would like to use Matomo for tracking you can set the FRONTEND_MATOMO_URL environment variable as exposed in [custom-environment-variables.json](../config/custom-environment-variables.json)
-
-If no value is set using either of these methods MATOMO tracker code will never be loaded.
-
-For more information on configuration settings see
-[Set up your configuration](https://github.com/bcgov/traction/tree/main/services/tenant-ui#set-up-your-configuration)
-
 ## Log Streaming
 
 The Tenant UI can display streamed logs from a Loki aggregator. For details on setup, see ["Optional Local Log Streaming Setup" in the scripts README](../../scripts/README.md)
