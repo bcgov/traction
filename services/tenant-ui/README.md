@@ -137,7 +137,3 @@ To view the emails being sent open http://localhost:1080/ in your web browser
 
 By default this is already configured in the docker-compose file. For
 local use you will need to start `maildev` manually.
-
-## Log Streaming
-
-The Tenant UI can display streamed logs from a Loki aggregator. For details on setup, see ["Optional Local Log Streaming Setup" in the scripts README](../../scripts/README.md)

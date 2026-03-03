@@ -16,10 +16,8 @@
 import PanelMenu from 'primevue/panelmenu';
 import { useI18n } from 'vue-i18n';
 import PanelMenuItemLink from '@/components/common/PanelMenuItemLink.vue';
-import { useConfigStore } from '../../../store';
 
 const { t } = useI18n();
-const { config } = useConfigStore();
 
 const ROOT = '/innkeeper/';
 const items = [
@@ -61,14 +59,6 @@ const items = [
     route: ROOT + 'about',
   },
 ];
-
-if (config?.frontend?.logStreamUrl) {
-  items.push({
-    label: t('log.log'),
-    icon: 'pi pi-fw pi-file',
-    route: ROOT + 'log',
-  });
-}
 </script>
 <style scoped lang="scss">
 .sidebar-app-title.small {

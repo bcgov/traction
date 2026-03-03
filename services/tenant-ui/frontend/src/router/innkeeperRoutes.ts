@@ -1,5 +1,4 @@
 import About from '@/views/About.vue';
-import Log from '@/views/Log.vue';
 // Innkeeper
 import InnkeeperUi from '@/views/InnkeeperUi.vue';
 import InnkeeperApiKeys from '@/views/innkeeper/InnkeeperApiKeys.vue';
@@ -53,13 +52,6 @@ const innkeeperRoutes = [
         name: 'InnkeeperAbout',
         component: About,
         meta: { isInnkeeper: true },
-      },
-
-      // Log
-      {
-        path: 'log',
-        name: 'InnkeeperLog',
-        component: Log,
       },
     ],
   },

@@ -623,8 +623,5 @@
     "presentationRequestBody": "Proof Request",
     "verification": "Verification",
     "verifications": "Verifications"
-  },
-  "log": {
-    "log": "Log"
   }
 }

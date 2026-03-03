@@ -42,31 +42,4 @@ describe("startbanner", () => {
 
     expect(consoleSpy).toHaveBeenCalledWith("- Mode:               production");
   });
-
-  it("should accept lokiUrl and include it in output", () => {
-    process.env.NODE_ENV = "test";
-
-    logStartupBanner({
-      port: 3000,
-      apiRoot: "/api",
-      staticPath: "/static",
-      lokiUrl: "http://loki.example.com",
-    });
-
-    expect(consoleSpy).toHaveBeenCalledWith(
-      "- Loki URL:           http://loki.example.com"
-    );
-  });
-
-  it("should not log Loki URL when not provided", () => {
-    logStartupBanner({
-      port: 3000,
-      apiRoot: "/api",
-      staticPath: "/static",
-    });
-
-    expect(consoleSpy).not.toHaveBeenCalledWith(
-      expect.stringContaining("Loki URL")
-    );
-  });
 });

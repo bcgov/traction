@@ -24,19 +24,13 @@ generate_traction_ascii_art() {
 
 # Global variable to hold Docker Compose command
 compose_cmd=""
-compose_files_opt=""
-include_loki_services=false
-if [ "$2" == "loki" ]; then
-  include_loki_services=true
-  compose_files_opt="-f docker-compose.logs.yml -f docker-compose.yml"
-fi
 
 # Function to determine the correct Docker Compose command
 get_docker_compose_command() {
   if command -v "docker" > /dev/null && docker compose version > /dev/null 2>&1; then
-    compose_cmd="docker compose $compose_files_opt"
+    compose_cmd="docker compose"
   elif command -v docker-compose > /dev/null 2>&1; then
-    compose_cmd="docker-compose $compose_files_opt"
+    compose_cmd="docker-compose"
   else
     echo "Error: Neither 'docker compose' nor 'docker-compose' is installed." >&2
     exit 1
