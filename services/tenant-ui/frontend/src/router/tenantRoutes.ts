@@ -23,8 +23,6 @@ import Identifiers from '@/views/Identifiers.vue';
 import MyMessages from '@/views/messages/MyMessages.vue';
 // API Keys
 import ApiKeys from '@/views/ApiKeys.vue';
-// Log
-import Log from '@/views/Log.vue';
 // Const
 import { RESERVATION_STATUS_ROUTE } from '@/helpers/constants';
 
@@ -154,13 +152,6 @@ const tenantRoutes = [
         path: 'authentications/keys',
         name: 'ApiKeys',
         component: ApiKeys,
-      },
-
-      // Tenant - Log
-      {
-        path: 'log',
-        name: 'Log',
-        component: Log,
       },
     ],
   },

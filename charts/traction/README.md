@@ -246,7 +246,6 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | ui.image.pullSecrets | list | `[]` |  |
 | ui.image.repository | string | `"ghcr.io/bcgov/traction-tenant-ui"` |  |
 | ui.image.tag | string | `""` | Overrides the image tag which defaults to the chart appVersion. |
-| ui.lokiUrl | string | `""` | The endpoint to stream loki logs from for the Tenant UI |
 | ui.networkPolicy.enabled | bool | `false` | Enable network policies |
 | ui.networkPolicy.ingress.enabled | bool | `false` | Enable ingress rules |
 | ui.networkPolicy.ingress.namespaceSelector | object | `{}` |  |

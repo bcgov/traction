@@ -368,7 +368,6 @@ ui:
 ```yaml
 ui:
   showOIDCReservationLogin: false # NEW: OIDC reservation login
-  lokiUrl: "" # NEW: Loki logging endpoint
 ```
 
 ### 4. PostgreSQL Removal

@@ -475,8 +475,6 @@ ui:
   ## If false will default not.applicable@example.com to API
   # ui.requireEmailForReservation -- Whether the Email field is needed for a tenant reservation
   requireEmailForReservation: true
-  # ui.lokiUrl -- The endpoint to stream loki logs from for the Tenant UI
-  lokiUrl: ""
   image:
     repository: ghcr.io/bcgov/traction-tenant-ui
     pullPolicy: IfNotPresent

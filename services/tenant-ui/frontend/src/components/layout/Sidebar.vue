@@ -20,10 +20,9 @@ import PanelMenuItemLink from '../common/PanelMenuItemLink.vue';
 import ProgressSpinner from 'primevue/progressspinner';
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
-import { useConfigStore, useTenantStore } from '../../store';
+import { useTenantStore } from '../../store';
 
 const { t } = useI18n();
-const { config } = useConfigStore();
 // tenant should be loaded by login...
 const { tenant, loading } = storeToRefs(useTenantStore());
 
@@ -103,12 +102,4 @@ const sidebarItems = [
     route: '/about',
   },
 ];
-
-if (config?.frontend?.logStreamUrl) {
-  sidebarItems.push({
-    label: t('log.log'),
-    icon: 'pi pi-fw pi-file',
-    route: '/log',
-  });
-}
 </script>
