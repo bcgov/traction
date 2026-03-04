@@ -178,7 +178,7 @@ const connectToEndorser = async (quickConnect = false) => {
     await tenantStore.connectToEndorser(quickConnect);
     toast.success('Endorser connection request sent');
   } catch (error) {
-    throw Error(`Failure while connecting: ${error}`);
+    throw new Error(`Failure while connecting: ${error}`, { cause: error });
   }
 };
 

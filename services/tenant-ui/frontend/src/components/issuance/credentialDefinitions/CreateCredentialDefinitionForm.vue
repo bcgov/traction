@@ -219,12 +219,7 @@ const handleSubmit = async (isFormValid: boolean) => {
     };
 
     if (formFields.creddef_revocation_enabled) {
-      let rrs = 0;
-      try {
-        rrs = parseInt(formFields.creddef_revocation_registry_size) || 0;
-      } catch (_err) {
-        rrs = 0;
-      }
+      const rrs = parseInt(formFields.creddef_revocation_registry_size) || 0;
       if (payload.options) {
         payload.options.revocation_registry_size = rrs;
       }
@@ -251,12 +246,7 @@ const handleSubmit = async (isFormValid: boolean) => {
       schema_id: schemaId,
     };
     if (formFields.creddef_revocation_enabled) {
-      let rrs = 0;
-      try {
-        rrs = parseInt(formFields.creddef_revocation_registry_size) || 0;
-      } catch (_err) {
-        rrs = 0;
-      }
+      const rrs = parseInt(formFields.creddef_revocation_registry_size) || 0;
       payload.revocation_registry_size = rrs;
     }
 

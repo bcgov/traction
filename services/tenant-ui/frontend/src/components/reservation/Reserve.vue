@@ -157,36 +157,16 @@ const formUISchema: any = ref({});
  * @param response Axios response object
  */
 const compileForm = (response: any) => {
-  /**
-   * If there is a custom properties object,
-   * then merge it with the mandatory properties.
-   */
-  let mergedProperties = {};
-  if (response.data?.formDataSchema?.properties) {
-    mergedProperties = {
-      ...manProperties,
-      ...response.data.formDataSchema.properties,
-    };
-    /**
-     * Otherwise, just use the mandatory properties.
-     */
-  } else {
-    mergedProperties = manProperties;
-  }
-
-  /**
-   * If there is a custom required array,
-   * then merge it with the mandatory required array.
-   */
-  let mergedRequired = [];
-  if (response.data?.formDataSchema?.required) {
-    mergedRequired = [...manRequired, ...response.data.formDataSchema.required];
-    /**
-     * Otherwise, just use the mandatory required array.
-     */
-  } else {
-    mergedRequired = manRequired;
-  }
+  // If there is a custom properties or array, merge with mandatory.
+  const mergedProperties = response.data?.formDataSchema?.properties
+    ? { ...manProperties, ...response.data.formDataSchema.properties }
+    : manProperties;
+  const mergedRequired = response.data?.formDataSchema?.required
+    ? [...manRequired, ...response.data.formDataSchema.required]
+    : manRequired;
+  const mergedElements = response.data?.formUISchema?.elements
+    ? [...manElements, ...response.data.formUISchema.elements]
+    : manElements;
 
   /**
    * Build the final form data schema object,
@@ -197,14 +177,6 @@ const compileForm = (response: any) => {
     properties: { ...mergedProperties },
     required: [...mergedRequired],
   };
-
-  let mergedElements = [];
-  if (response.data?.formUISchema?.elements) {
-    mergedElements = [...manElements, ...response.data.formUISchema.elements];
-  } else {
-    mergedElements = manElements;
-  }
-
   formUISchema.value = {
     type: 'VerticalLayout',
     elements: [...mergedElements],

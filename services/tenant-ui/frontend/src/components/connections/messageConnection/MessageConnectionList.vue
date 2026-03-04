@@ -125,29 +125,11 @@ const displayTime = (
   const dateB = new Date(wholeArray[index + 1].sent_time); // Next message
   const now = new Date(); // Now
 
-  // If older then a day then set the flag
-  let old = false;
-  if (now.valueOf() - dateA.valueOf() > MESSAGES.TIME_LONG) {
-    old = true;
-  } else {
-    old = false;
-  }
-
-  /**
-   * If this message is older then a day and the next
-   * message is yet another day ahead then display the time.
-   */
-  if (old && dateB.valueOf() - dateA.valueOf() > MESSAGES.TIME_LONG) {
-    message.displayTime = true;
-  }
-
-  /**
-   * If the message is not older then a day yet the next
-   * message is more then 10 minutes ahead then display the time.
-   */
-  if (!old && dateB.valueOf() - dateA.valueOf() > MESSAGES.TIME_SHORT) {
-    message.displayTime = true;
-  }
+  // Is the current message older than a day?
+  const old = now.valueOf() - dateA.valueOf() > MESSAGES.TIME_LONG;
+  // Gap to the next message; threshold depends on age
+  const gap = dateB.valueOf() - dateA.valueOf();
+  message.displayTime = gap > (old ? MESSAGES.TIME_LONG : MESSAGES.TIME_SHORT);
 
   return message;
 };

@@ -467,14 +467,14 @@ export const useTenantStore = defineStore('tenant', () => {
     let baseUrl: URL;
     try {
       baseUrl = new URL(configEntry.server_url);
-    } catch (_error) {
+    } catch (error) {
       if (auto) {
         return {
           success: false as const,
           reason: 'invalid_server_url' as const,
         };
       }
-      throw Error('Webvh server_url is not a valid URL');
+      throw new Error('Webvh server_url is not a valid URL', { cause: error });
     }
 
     // Extract the key part from did:key:z6Mk...
@@ -519,7 +519,10 @@ export const useTenantStore = defineStore('tenant', () => {
           reason: 'failed_to_fetch_invitation' as const,
         };
       }
-      throw Error(`Failed to fetch and encode witness invitation: ${error}`);
+      throw new Error(
+        `Failed to fetch and encode witness invitation: ${error}`,
+        { cause: error }
+      );
     }
 
     const payload: Record<string, any> = {
@@ -567,7 +570,7 @@ export const useTenantStore = defineStore('tenant', () => {
     let registrationError: any = null;
     loadingIssuance.value = true;
     publicDidRegistrationProgress.value = '';
-    let postedDID: any = null;
+    let postedDID: any;
     try {
       let did = ackedTxDid;
       // Can jump in with a previously acked transaction DID if done previously
