@@ -21,6 +21,14 @@ export default tseslint.config(
     ],
   },
   {
+    settings: {
+      'vue-i18n': {
+        localeDir: './src/locales/*.json',
+        messageSyntaxVersion: '^9.2.2',
+      },
+    },
+  },
+  {
     files: ['**/*.{js,mjs,cjs,vue,ts}'],
     languageOptions: {
       globals: {
@@ -30,12 +38,6 @@ export default tseslint.config(
       parserOptions: {
         parser: tseslint.parser,
         sourceType: 'module',
-      },
-    },
-    settings: {
-      'vue-i18n': {
-        localeDir: './src/locales/*.json',
-        messageSyntaxVersion: '^9.2.2',
       },
     },
     rules: {

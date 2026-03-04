@@ -476,15 +476,13 @@ const loadTenantSettings = async () => {
   ])
     .then(() => {
       // set the local form settings (don't bind controls directly to state for this)
-      let settingMap: any = {};
-      if (tenantWallet.value.settings) {
-        settingMap = Object.assign(
-          tenantDefaultSettings.value,
-          tenantWallet.value.settings
-        );
-      } else {
-        settingMap = tenantDefaultSettings.value;
-      }
+      const settingMap: any = tenantWallet.value.settings
+        ? Object.assign(
+            tenantDefaultSettings.value,
+            tenantWallet.value.settings
+          )
+        : tenantDefaultSettings.value;
+
       tenantWalletwithExtraSettings.value = JSON.parse(
         JSON.stringify(tenantWallet.value)
       );
