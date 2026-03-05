@@ -118,19 +118,15 @@ const handleSubmit = async (isFormValid: boolean) => {
   if (!isFormValid) {
     return;
   }
-  let connect_to_endorser_payload = [];
-  let create_public_did_payload = [];
-  if (tenantConfig.value?.connect_to_endorser?.length) {
-    connect_to_endorser_payload = tenantConfig.value.connect_to_endorser;
-  } else {
-    connect_to_endorser_payload =
-      defaultConfigValues.value.connected_to_endorsers;
-  }
-  if (tenantConfig.value?.create_public_did?.length) {
-    create_public_did_payload = tenantConfig.value.create_public_did;
-  } else {
-    create_public_did_payload = defaultConfigValues.value.created_public_did;
-  }
+  const connect_to_endorser_payload = tenantConfig.value?.connect_to_endorser
+    ?.length
+    ? tenantConfig.value.connect_to_endorser
+    : defaultConfigValues.value.connected_to_endorsers;
+  const create_public_did_payload = tenantConfig.value?.create_public_did
+    ?.length
+    ? tenantConfig.value.create_public_did
+    : defaultConfigValues.value.created_public_did;
+
   try {
     await innkeeperTenantsStore.updateTenantConfig(props.tenant.tenant_id, {
       connect_to_endorser: formFields.canBecomeIssuer

@@ -468,7 +468,7 @@ const didPreview = computed(() => {
   }
 
   // Extract domain from server URL
-  let domain = '';
+  let domain;
   try {
     const url = new URL(server);
     domain = url.hostname;
@@ -491,7 +491,7 @@ const didPreviewFormatted = computed(() => {
   }
 
   // Extract domain from server URL
-  let domain = '';
+  let domain;
   try {
     const url = new URL(server);
     domain = url.hostname;
