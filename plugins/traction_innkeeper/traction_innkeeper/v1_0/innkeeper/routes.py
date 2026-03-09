@@ -195,9 +195,7 @@ class CheckinResponseSchema(OpenAPISchema):
         required=True,
         metadata={"description": "Subwallet identifier", "example": UUIDFour.EXAMPLE},
     )
-    wallet_key = fields.Str(
-        metadata={"description": "Subwallet identifier", "example": UUIDFour.EXAMPLE}
-    )
+    wallet_key = fields.Str(metadata={"description": "Subwallet identifier", "example": UUIDFour.EXAMPLE})
     token = fields.Str(
         metadata={
             "description": "Master key used for key derivation.",
@@ -327,9 +325,7 @@ class TenantListQuerySchema(OpenAPISchema):
             "description": "The state of the tenants to filter by.",
             "example": TenantRecord.STATE_ACTIVE,
         },
-        validate=validate.OneOf(
-            [TenantRecord.STATE_ACTIVE, TenantRecord.STATE_DELETED, "all"]
-        ),
+        validate=validate.OneOf([TenantRecord.STATE_ACTIVE, TenantRecord.STATE_DELETED, "all"]),
     )
 
 
@@ -391,9 +387,7 @@ async def tenant_reservation(request: web.BaseRequest):
         LOGGER.info("Tenant auto-approve is on, approving newly created tenant")
         try:
             _pwd = await approve_reservation(rec.reservation_id, rec.state_notes, mgr)
-            return web.json_response(
-                {"reservation_id": rec.reservation_id, "reservation_pwd": _pwd}
-            )
+            return web.json_response({"reservation_id": rec.reservation_id, "reservation_pwd": _pwd})
         except ReservationException as err:
             raise web.HTTPConflict(reason=str(err))
 
@@ -416,9 +410,7 @@ async def tenant_reservation_get(request: web.BaseRequest):
     reservation_id = request.match_info["reservation_id"]
 
     async with profile.session() as session:
-        rec = await ReservationRecord.retrieve_by_reservation_id(
-            session, reservation_id
-        )
+        rec = await ReservationRecord.retrieve_by_reservation_id(session, reservation_id)
         LOGGER.info(rec)
 
     return web.json_response(rec.serialize())
@@ -443,9 +435,7 @@ async def tenant_checkin(request: web.BaseRequest):
     reservation_id = request.match_info["reservation_id"]
 
     async with profile.session() as session:
-        res_rec = await ReservationRecord.retrieve_by_reservation_id(
-            session, reservation_id
-        )
+        res_rec = await ReservationRecord.retrieve_by_reservation_id(session, reservation_id)
         reservation_pwd = body.get("reservation_pwd")
 
         if res_rec.expired:
@@ -522,16 +512,12 @@ async def tenant_create_token(request: web.BaseRequest):
 
     # If both wallet_key and api_key provided raise an error
     if wallet_key and api_key:
-        raise web.HTTPUnprocessableEntity(
-            reason="Wallet Key and API Key cannot be provided together"
-        )
+        raise web.HTTPUnprocessableEntity(reason="Wallet Key and API Key cannot be provided together")
 
     # if an API key is provided verify it is valid
     if api_key:
         async with profile.session() as session:
-            tenant_keys = await TenantAuthenticationApiRecord.query_by_tenant_id(
-                session, tenant_id
-            )
+            tenant_keys = await TenantAuthenticationApiRecord.query_by_tenant_id(session, tenant_id)
             LOGGER.warning(f"tenant_keys = {tenant_keys}")
             # if no keys found raise an error
             if not tenant_keys:
@@ -554,9 +540,7 @@ async def tenant_create_token(request: web.BaseRequest):
         wallet_record = await WalletRecord.retrieve_by_id(session, wallet_id)
 
     if (not wallet_record.requires_external_key) and wallet_key:
-        LOGGER.warning(
-            f"Wallet {wallet_id} doesn't require the wallet key but one was provided"
-        )
+        LOGGER.warning(f"Wallet {wallet_id} doesn't require the wallet key but one was provided")
 
     # Wallet key access use suppled, API key access used looked up key
     key = wallet_key if wallet_key else wallet_record.wallet_key
@@ -614,8 +598,7 @@ async def tenant_default_config_settings(request: web.BaseRequest):
     return web.json_response(
         {
             "connected_to_endorsers": list(
-                endorser_config.serialize()
-                for endorser_config in innkeeper_wallet_config.connect_to_endorser
+                endorser_config.serialize() for endorser_config in innkeeper_wallet_config.connect_to_endorser
             ),
             "created_public_did": innkeeper_wallet_config.create_public_did,
         }
@@ -671,9 +654,7 @@ async def innkeeper_tenant_res_update(request: web.BaseRequest):
     profile = mgr.profile
     reservation_id = request.match_info["reservation_id"]
     async with profile.session() as session:
-        res_rec = await ReservationRecord.retrieve_by_reservation_id(
-            session, reservation_id
-        )
+        res_rec = await ReservationRecord.retrieve_by_reservation_id(session, reservation_id)
         if connect_to_endorser:
             res_rec.connect_to_endorsers = connect_to_endorser
         if create_public_did:
@@ -778,9 +759,7 @@ async def innkeeper_reservations_deny(request: web.BaseRequest):
 
     async with profile.session() as session:
         # innkeeper can access all reservation records.
-        rec = await ReservationRecord.retrieve_by_reservation_id(
-            session, reservation_id, for_update=True
-        )
+        rec = await ReservationRecord.retrieve_by_reservation_id(session, reservation_id, for_update=True)
         if rec.state == ReservationRecord.STATE_REQUESTED:
             rec.state_notes = state_notes
             rec.state = ReservationRecord.STATE_DENIED
@@ -1002,9 +981,7 @@ async def innkeeper_authentications_api_get(request: web.BaseRequest):
 
     async with profile.session() as session:
         # innkeeper can access all tenants..
-        rec = await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(
-            session, tenant_authentication_api_id
-        )
+        rec = await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(session, tenant_authentication_api_id)
         LOGGER.info(rec)
 
     return web.json_response(rec.serialize())
@@ -1025,16 +1002,12 @@ async def innkeeper_authentications_api_delete(request: web.BaseRequest):
 
     result = False
     async with profile.session() as session:
-        rec = await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(
-            session, tenant_authentication_api_id
-        )
+        rec = await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(session, tenant_authentication_api_id)
 
         await rec.delete_record(session)
 
         try:
-            await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(
-                session, tenant_authentication_api_id
-            )
+            await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(session, tenant_authentication_api_id)
         except StorageNotFoundError:
             # this is to be expected... do nothing, do not log
             result = True
@@ -1067,13 +1040,9 @@ async def innkeeper_config_handler(request: web.BaseRequest):
         ]
     }
     try:
-        del config["plugin_config"]["traction_innkeeper"]["innkeeper_wallet"][
-            "wallet_key"
-        ]
+        del config["plugin_config"]["traction_innkeeper"]["innkeeper_wallet"]["wallet_key"]
     except KeyError as e:
-        LOGGER.warn(
-            f"The key to be removed: '{e.args[0]}' is missing from the dictionary."
-        )
+        LOGGER.warn(f"The key to be removed: '{e.args[0]}' is missing from the dictionary.")
     config["version"] = __version__
 
     return web.json_response({"config": config})
@@ -1091,26 +1060,17 @@ async def register(app: web.Application):
                 tenant_reservation_get,
                 allow_head=False,
             ),
-            web.post(
-                "/multitenancy/reservations/{reservation_id}/check-in", tenant_checkin
-            ),
+            web.post("/multitenancy/reservations/{reservation_id}/check-in", tenant_checkin),
             web.post("/multitenancy/tenant/{tenant_id}/token", tenant_create_token),
-            web.post(
-                "/multitenancy/wallet/{wallet_id}/token", tenant_wallet_create_token
-            ),
+            web.post("/multitenancy/wallet/{wallet_id}/token", tenant_wallet_create_token),
         ]
     )
     # Find the endpoint for token creation that already exists and
     # override it
     for r in app.router.routes():
         if r.method == "POST":
-            if (
-                r.resource
-                and r.resource.canonical == "/multitenancy/wallet/{wallet_id}/token"
-            ):
-                LOGGER.info(
-                    f"found route: {r.method} {r.resource.canonical} ({r.handler})"
-                )
+            if r.resource and r.resource.canonical == "/multitenancy/wallet/{wallet_id}/token":
+                LOGGER.info(f"found route: {r.method} {r.resource.canonical} ({r.handler})")
                 LOGGER.info(f"... replacing current handler: {r.handler}")
                 r._handler = tenant_wallet_create_token
                 LOGGER.info(f"... with new handler: {r.handler}")
@@ -1141,14 +1101,10 @@ async def register(app: web.Application):
                 innkeeper_reservations_refresh_password,
             ),
             web.get("/innkeeper/tenants/", innkeeper_tenants_list, allow_head=False),
-            web.get(
-                "/innkeeper/tenants/{tenant_id}", innkeeper_tenant_get, allow_head=False
-            ),
+            web.get("/innkeeper/tenants/{tenant_id}", innkeeper_tenant_get, allow_head=False),
             web.put("/innkeeper/tenants/{tenant_id}/config", tenant_config_update),
             web.delete("/innkeeper/tenants/{tenant_id}", innkeeper_tenant_delete),
-            web.delete(
-                "/innkeeper/tenants/{tenant_id}/hard", innkeeper_tenant_hard_delete
-            ),
+            web.delete("/innkeeper/tenants/{tenant_id}/hard", innkeeper_tenant_hard_delete),
             web.put("/innkeeper/tenants/{tenant_id}/restore", innkeeper_tenant_restore),
             web.get(
                 "/innkeeper/default-config",

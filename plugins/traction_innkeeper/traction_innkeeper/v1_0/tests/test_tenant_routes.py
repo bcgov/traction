@@ -295,9 +295,7 @@ async def test_tenant_wallet_update(
         "traction.some_setting": "value",
     }
     # Assert call on the specific mock instance
-    mock_multitenant_mgr.update_wallet.assert_awaited_once_with(
-        TEST_WALLET_ID, expected_settings_update
-    )
+    mock_multitenant_mgr.update_wallet.assert_awaited_once_with(TEST_WALLET_ID, expected_settings_update)
     mock_format_wallet_record.assert_called_once_with(mock_wallet_rec)
     assert response.status == 200
     assert json.loads(response.body) == {
@@ -373,9 +371,7 @@ async def test_tenant_api_key_create(
     MockTenantRecordCls.query_by_wallet_id.assert_awaited_once_with(ANY, TEST_WALLET_ID)
     mock_request.json.assert_awaited_once()
     # Assert constructor was called with correct data
-    MockTenantAuthApiRecordCls.assert_called_once_with(
-        alias=alias, tenant_id=TEST_TENANT_ID
-    )
+    MockTenantAuthApiRecordCls.assert_called_once_with(alias=alias, tenant_id=TEST_TENANT_ID)
     # Assert helper was called with the constructed record instance and manager instance (injected)
     mock_create_api_key.assert_awaited_once_with(mock_auth_rec_instance, ANY)
     assert response.status == 200
@@ -405,25 +401,19 @@ async def test_tenant_api_key_get_record(
     MockTenantRecordCls.query_by_wallet_id = AsyncMock(return_value=mock_tenant_rec)
 
     # Mock TenantAuthenticationApiRecord retrieval and serialize
-    mock_auth_rec = MagicMock(
-        spec=TenantAuthenticationApiRecord, tenant_id=TEST_TENANT_ID
-    )
+    mock_auth_rec = MagicMock(spec=TenantAuthenticationApiRecord, tenant_id=TEST_TENANT_ID)
     mock_auth_rec.serialize.return_value = {
         "tenant_authentication_api_id": auth_api_id_to_get,
         "tenant_id": TEST_TENANT_ID,
         "alias": "Test Key",
     }
-    MockTenantAuthApiRecordCls.retrieve_by_auth_api_id = AsyncMock(
-        return_value=mock_auth_rec
-    )
+    MockTenantAuthApiRecordCls.retrieve_by_auth_api_id = AsyncMock(return_value=mock_auth_rec)
 
     response = await test_module.tenant_api_key_get(mock_request)
 
     # Assert
     MockTenantRecordCls.query_by_wallet_id.assert_awaited_once_with(ANY, TEST_WALLET_ID)
-    MockTenantAuthApiRecordCls.retrieve_by_auth_api_id.assert_awaited_once_with(
-        ANY, auth_api_id_to_get
-    )
+    MockTenantAuthApiRecordCls.retrieve_by_auth_api_id.assert_awaited_once_with(ANY, auth_api_id_to_get)
     mock_auth_rec.serialize.assert_called_once()
     assert response.status == 200
     assert json.loads(response.body) == {
@@ -454,21 +444,15 @@ async def test_tenant_api_key_get_record_not_found_wrong_tenant(
     MockTenantRecordCls.query_by_wallet_id = AsyncMock(return_value=mock_tenant_rec)
 
     # Mock TenantAuthenticationApiRecord retrieval - return record belonging to different tenant
-    mock_auth_rec = MagicMock(
-        spec=TenantAuthenticationApiRecord, tenant_id=other_tenant_id
-    )
-    MockTenantAuthApiRecordCls.retrieve_by_auth_api_id = AsyncMock(
-        return_value=mock_auth_rec
-    )
+    mock_auth_rec = MagicMock(spec=TenantAuthenticationApiRecord, tenant_id=other_tenant_id)
+    MockTenantAuthApiRecordCls.retrieve_by_auth_api_id = AsyncMock(return_value=mock_auth_rec)
 
     with pytest.raises(web.HTTPNotFound):
         await test_module.tenant_api_key_get(mock_request)
 
     # Assert mocks called
     MockTenantRecordCls.query_by_wallet_id.assert_awaited_once_with(ANY, TEST_WALLET_ID)
-    MockTenantAuthApiRecordCls.retrieve_by_auth_api_id.assert_awaited_once_with(
-        ANY, auth_api_id_to_get
-    )
+    MockTenantAuthApiRecordCls.retrieve_by_auth_api_id.assert_awaited_once_with(ANY, auth_api_id_to_get)
 
 
 @pytest.mark.asyncio
@@ -496,17 +480,13 @@ async def test_tenant_api_key_list_records(
         "tenant_authentication_api_id": "id2",
         "alias": "Key 2",
     }
-    MockTenantAuthApiRecordCls.query_by_tenant_id = AsyncMock(
-        return_value=[mock_auth_rec_1, mock_auth_rec_2]
-    )
+    MockTenantAuthApiRecordCls.query_by_tenant_id = AsyncMock(return_value=[mock_auth_rec_1, mock_auth_rec_2])
 
     response = await test_module.tenant_api_key_list(mock_request)
 
     # Assert
     MockTenantRecordCls.query_by_wallet_id.assert_awaited_once_with(ANY, TEST_WALLET_ID)
-    MockTenantAuthApiRecordCls.query_by_tenant_id.assert_awaited_once_with(
-        ANY, TEST_TENANT_ID
-    )
+    MockTenantAuthApiRecordCls.query_by_tenant_id.assert_awaited_once_with(ANY, TEST_TENANT_ID)
     assert response.status == 200
     assert json.loads(response.body) == {
         "results": [
@@ -536,9 +516,7 @@ async def test_tenant_api_key_delete_record(
     MockTenantRecordCls.query_by_wallet_id = AsyncMock(return_value=mock_tenant_rec)
 
     # Mock TenantAuthenticationApiRecord retrieval and delete
-    mock_auth_rec = AsyncMock(
-        spec=TenantAuthenticationApiRecord, tenant_id=TEST_TENANT_ID
-    )
+    mock_auth_rec = AsyncMock(spec=TenantAuthenticationApiRecord, tenant_id=TEST_TENANT_ID)
     # Simulate retrieve succeeding the first time, failing the second time (after delete)
     MockTenantAuthApiRecordCls.retrieve_by_auth_api_id.side_effect = [
         mock_auth_rec,
@@ -551,9 +529,7 @@ async def test_tenant_api_key_delete_record(
     MockTenantRecordCls.query_by_wallet_id.assert_awaited_once_with(ANY, TEST_WALLET_ID)
     # Assert retrieve was called twice
     assert MockTenantAuthApiRecordCls.retrieve_by_auth_api_id.await_count == 2
-    MockTenantAuthApiRecordCls.retrieve_by_auth_api_id.assert_any_await(
-        ANY, auth_api_id_to_delete
-    )
+    MockTenantAuthApiRecordCls.retrieve_by_auth_api_id.assert_any_await(ANY, auth_api_id_to_delete)
     # Assert delete was called on the instance
     mock_auth_rec.delete_record.assert_awaited_once_with(ANY)
     assert response.status == 200
@@ -571,9 +547,7 @@ async def test_tenant_delete_hard(
 ):
     """Test DELETE /tenant/hard endpoint."""
     # Mock TenantRecord query and delete
-    mock_tenant_rec = AsyncMock(
-        spec=TenantRecord, tenant_id=TEST_TENANT_ID, wallet_id=TEST_WALLET_ID
-    )
+    mock_tenant_rec = AsyncMock(spec=TenantRecord, tenant_id=TEST_TENANT_ID, wallet_id=TEST_WALLET_ID)
     mock_tenant_rec.serialize.return_value = {
         "tenant_id": TEST_TENANT_ID,
         "wallet_id": TEST_WALLET_ID,
@@ -615,6 +589,4 @@ async def test_tenant_delete_soft(
     MockTenantRecordCls.query_by_wallet_id.assert_awaited_once_with(ANY, TEST_WALLET_ID)
     mock_tenant_rec.soft_delete.assert_awaited_once_with(ANY)
     assert response.status == 200
-    assert json.loads(response.body) == {
-        "success": f"Tenant {TEST_TENANT_ID} soft deleted."
-    }
+    assert json.loads(response.body) == {"success": f"Tenant {TEST_TENANT_ID} soft deleted."}

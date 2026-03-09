@@ -49,8 +49,6 @@ async def on_startup(profile: Profile, event: Event):
         await mgr.create_innkeeper()
     else:
         # what type of error should this throw?
-        raise ValueError(
-            "'multitenant' is not enabled, cannot load 'traction_innkeeper' plugin"
-        )
+        raise ValueError("'multitenant' is not enabled, cannot load 'traction_innkeeper' plugin")
 
     LOGGER.info("< on_startup")

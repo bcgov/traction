@@ -99,14 +99,10 @@ class SchemaStorageRecordSchema(BaseRecordSchema):
             "example": INDY_SCHEMA_ID_EXAMPLE,
         },
     )
-    ledger_id = fields.Str(
-        required=False, metadata={"description": "Schema identifier"}
-    )
+    ledger_id = fields.Str(required=False, metadata={"description": "Schema identifier"})
 
     schema = fields.Dict(
         required=False,
         metadata={"description": "(Indy) schema"},
     )
-    schema_dict = fields.Dict(
-        required=False, metadata={"description": "Serialized schema"}
-    )
+    schema_dict = fields.Dict(required=False, metadata={"description": "Serialized schema"})

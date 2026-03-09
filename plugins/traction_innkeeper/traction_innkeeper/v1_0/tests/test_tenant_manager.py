@@ -65,9 +65,7 @@ def mock_traction_config(mock_innkeeper_wallet_config, mock_reservation_config):
 def mock_bcrypt(mocker):
     """Mocks bcrypt functions."""
     # Use mocker fixture provided by pytest-mock
-    mocked_bcrypt = mocker.patch(
-        "traction_innkeeper.v1_0.innkeeper.tenant_manager.bcrypt", autospec=True
-    )
+    mocked_bcrypt = mocker.patch("traction_innkeeper.v1_0.innkeeper.tenant_manager.bcrypt", autospec=True)
     return mocked_bcrypt
 
 
@@ -144,9 +142,7 @@ async def test_create_tenant_success(
     mock_wallet_rec_instance = MagicMock(spec=WalletRecord)
     mock_wallet_rec_instance.wallet_id = wallet_id
     mock_wallet_rec_instance.wallet_name = "actual_wallet_name"  # Underlying name
-    mock_wallet_rec_instance.settings = {
-        "default_label": wallet_name
-    }  # Label used for tenant_name
+    mock_wallet_rec_instance.settings = {"default_label": wallet_name}  # Label used for tenant_name
     MockWalletRecord.retrieve_by_id = AsyncMock(return_value=mock_wallet_rec_instance)
 
     # Setup mock TenantRecord instance methods (save, query)
@@ -175,16 +171,12 @@ async def test_create_tenant_success(
         auto_issuer=False,  # Default if not passed
     )
     mock_tenant_rec_instance.save.assert_awaited_once_with(session, reason="New tenant")
-    mock_tenant_rec_instance.query.assert_awaited_once_with(
-        session
-    )  # Query is called after save
+    mock_tenant_rec_instance.query.assert_awaited_once_with(session)  # Query is called after save
     assert result_tenant == mock_tenant_rec_instance
 
 
 @pytest.mark.asyncio
-async def test_create_tenant_wallet_not_found(
-    tenant_manager: TenantManager, mock_profile
-):
+async def test_create_tenant_wallet_not_found(tenant_manager: TenantManager, mock_profile):
     """Test create_tenant failure when wallet is not found."""
     profile, session = mock_profile
     wallet_id = "non-existent-wallet-id"
@@ -195,9 +187,7 @@ async def test_create_tenant_wallet_not_found(
         AsyncMock(side_effect=StorageNotFoundError("Not Found")),
     ):
         with pytest.raises(StorageNotFoundError):
-            await tenant_manager.create_tenant(
-                wallet_id=wallet_id, email="test@fail.com"
-            )
+            await tenant_manager.create_tenant(wallet_id=wallet_id, email="test@fail.com")
 
 
 @pytest.mark.asyncio
@@ -224,9 +214,7 @@ async def test_create_wallet_success(
 
     # Setup mock return values
     mock_get_unique_wallet_name.return_value = unique_wallet_name
-    mock_wallet_record = MagicMock(
-        spec=WalletRecord, wallet_id="new-wallet-id", wallet_name=unique_wallet_name
-    )
+    mock_wallet_record = MagicMock(spec=WalletRecord, wallet_id="new-wallet-id", wallet_name=unique_wallet_name)
     mock_multitenant_mgr.create_wallet = AsyncMock(return_value=mock_wallet_record)
     mock_get_token.return_value = mock_token
     mock_tenant_record = MagicMock(spec=TenantRecord, tenant_id=tenant_id)
@@ -260,9 +248,7 @@ async def test_create_wallet_success(
     mock_get_token.assert_awaited_once_with(mock_wallet_record, wallet_key)
 
     # Check call to create_tenant (verify defaults from config are handled)
-    expected_connect_endorser = (
-        mock_traction_config.innkeeper_wallet.connect_to_endorser
-    )
+    expected_connect_endorser = mock_traction_config.innkeeper_wallet.connect_to_endorser
     expected_public_did = mock_traction_config.innkeeper_wallet.create_public_did
     expected_auto_issuer = mock_traction_config.reservation.auto_issuer
     expected_ledger_switch = mock_traction_config.innkeeper_wallet.enable_ledger_switch
@@ -397,9 +383,7 @@ async def test_get_token_success(
     token = await tenant_manager.get_token(mock_wallet_record, wallet_key)
 
     assert token == expected_token
-    mock_multitenant_mgr.create_auth_token.assert_awaited_once_with(
-        mock_wallet_record, wallet_key
-    )
+    mock_multitenant_mgr.create_auth_token.assert_awaited_once_with(mock_wallet_record, wallet_key)
 
 
 @pytest.mark.asyncio
@@ -412,16 +396,12 @@ async def test_get_token_failure(
 
     mock_wallet_record = MagicMock(spec=WalletRecord, wallet_name="test-wallet")
     wallet_key = "test_key"
-    mock_multitenant_mgr.create_auth_token = AsyncMock(
-        side_effect=BaseError("Token generation failed")
-    )
+    mock_multitenant_mgr.create_auth_token = AsyncMock(side_effect=BaseError("Token generation failed"))
 
     with pytest.raises(BaseError, match="Token generation failed"):
         await tenant_manager.get_token(mock_wallet_record, wallet_key)
 
-    mock_multitenant_mgr.create_auth_token.assert_awaited_once_with(
-        mock_wallet_record, wallet_key
-    )
+    mock_multitenant_mgr.create_auth_token.assert_awaited_once_with(mock_wallet_record, wallet_key)
 
 
 # --- Tests for check_tables_for_wallet_name ---
@@ -545,9 +525,7 @@ async def test_get_unique_wallet_name_needs_multiple_suffixes(
 # --- Tests for check_reservation_password ---
 
 
-def test_check_reservation_password_null_input(
-    tenant_manager: TenantManager, mock_bcrypt
-):
+def test_check_reservation_password_null_input(tenant_manager: TenantManager, mock_bcrypt):
     """Test check_reservation_password with null inputs."""
     mock_reservation = MagicMock(spec=ReservationRecord)
     assert tenant_manager.check_reservation_password(None, mock_reservation) is None
@@ -587,9 +565,7 @@ def test_check_reservation_password_correct(tenant_manager: TenantManager, mock_
     )
 
 
-def test_check_reservation_password_incorrect(
-    tenant_manager: TenantManager, mock_bcrypt
-):
+def test_check_reservation_password_incorrect(tenant_manager: TenantManager, mock_bcrypt):
     """Test check_reservation_password with incorrect password."""
     pwd = "wrong_password"
     salt = b"salt_value"
@@ -612,9 +588,7 @@ def test_check_reservation_password_incorrect(
     mock_bcrypt.checkpw.assert_has_calls(
         [
             call(pwd.encode("utf-8"), wrong_hash),  # Check against re-hashed (fails)
-            call(
-                pwd.encode("utf-8"), correct_hash
-            ),  # Check against stored hash (fails)
+            call(pwd.encode("utf-8"), correct_hash),  # Check against stored hash (fails)
         ]
     )
 
@@ -690,9 +664,7 @@ async def test_create_wallet_multitenant_error(
     profile, _ = mock_profile
     unique_wallet_name = "UniqueName"
     mock_get_unique_wallet_name.return_value = unique_wallet_name
-    mock_multitenant_mgr.create_wallet = AsyncMock(
-        side_effect=BaseError("Wallet creation failed")
-    )
+    mock_multitenant_mgr.create_wallet = AsyncMock(side_effect=BaseError("Wallet creation failed"))
 
     with pytest.raises(BaseError, match="Wallet creation failed"):
         await tenant_manager.create_wallet(
@@ -950,9 +922,7 @@ async def test_create_innkeeper_does_not_exist(
     # Mock create_wallet return values
     mock_tenant_rec.tenant_id = tenant_id
     mock_tenant_rec.wallet_id = "new_wallet_id"
-    mock_wallet_rec = MagicMock(
-        spec=WalletRecord, wallet_id="new_wallet_id", wallet_name=wallet_name
-    )
+    mock_wallet_rec = MagicMock(spec=WalletRecord, wallet_id="new_wallet_id", wallet_name=wallet_name)
     mock_create_wallet.return_value = (mock_tenant_rec, mock_wallet_rec, expected_token)
 
     await tenant_manager.create_innkeeper()

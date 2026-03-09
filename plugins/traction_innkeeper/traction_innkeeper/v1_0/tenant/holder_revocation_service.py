@@ -28,12 +28,8 @@ class HolderRevocationService:
         self._logger.info(f"< parse_thread_id() = `{revoc_reg_id}`, `{revocation_id}`")
         return revoc_reg_id, revocation_id
 
-    async def find_credential_exchange_v20(
-        self, profile, revoc_reg_id, revocation_id
-    ) -> V20CredExRecord:
-        self._logger.info(
-            f"> find_credential_exchange_v20(revoc_reg_id={revoc_reg_id}, revocation_id={revocation_id})"
-        )
+    async def find_credential_exchange_v20(self, profile, revoc_reg_id, revocation_id) -> V20CredExRecord:
+        self._logger.info(f"> find_credential_exchange_v20(revoc_reg_id={revoc_reg_id}, revocation_id={revocation_id})")
         result = None
         tag_filter = {}
         post_filter = {"rev_reg_id": revoc_reg_id, "cred_rev_id": revocation_id}
@@ -59,36 +55,26 @@ class HolderRevocationService:
         )
         return result
 
-    async def set_credential_exchange_revoked_v20(
-        self, profile, cred_ex_id, comment
-    ) -> V20CredExRecord:
+    async def set_credential_exchange_revoked_v20(self, profile, cred_ex_id, comment) -> V20CredExRecord:
         self._logger.info(f"> set_credential_exchange_revoked_v20({cred_ex_id})")
         result = None
         revoked = False
         async with profile.transaction() as txn:
             try:
-                result = await V20CredExRecord.retrieve_by_id(
-                    txn, cred_ex_id, for_update=True
-                )
+                result = await V20CredExRecord.retrieve_by_id(txn, cred_ex_id, for_update=True)
                 result.state = V20CredExRecord.STATE_CREDENTIAL_REVOKED
                 result.error_msg = comment
                 await result.save(txn, reason="revoke credential")
                 await txn.commit()
                 revoked = result.state == V20CredExRecord.STATE_CREDENTIAL_REVOKED
             except StorageNotFoundError as err:
-                self._logger.warning(
-                    "error finding or updating credential exchange (v2.0)", err
-                )
-        self._logger.info(
-            f"< set_credential_exchange_revoked_v20({cred_ex_id}): revoked = {revoked}"
-        )
+                self._logger.warning("error finding or updating credential exchange (v2.0)", err)
+        self._logger.info(f"< set_credential_exchange_revoked_v20({cred_ex_id}): revoked = {revoked}")
         return result
 
 
 def subscribe(bus: EventBus):
-    bus.subscribe(
-        REVOCATION_NOTIFICATION_EVENT_PATTERN, revocation_notification_handler
-    )
+    bus.subscribe(REVOCATION_NOTIFICATION_EVENT_PATTERN, revocation_notification_handler)
 
 
 async def revocation_notification_handler(profile: Profile, event: Event):
@@ -98,13 +84,9 @@ async def revocation_notification_handler(profile: Profile, event: Event):
     srv = profile.inject(HolderRevocationService)
     revoc_reg_id, revocation_id = srv.parse_thread_id(thread_id)
     # find it...
-    record = await srv.find_credential_exchange_v20(
-        profile, revoc_reg_id, revocation_id
-    )
+    record = await srv.find_credential_exchange_v20(profile, revoc_reg_id, revocation_id)
     if record:
         # mark as revoked...
-        await srv.set_credential_exchange_revoked_v20(
-            profile, record.cred_ex_id, comment
-        )
+        await srv.set_credential_exchange_revoked_v20(profile, record.cred_ex_id, comment)
 
     LOGGER.info("< revocation_notification_handler")

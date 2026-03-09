@@ -110,9 +110,7 @@ class ReservationRecord(BaseRecord):
             record_id: the reservation_id (may or may not have dashes) by which to filter
         """
         reservation_id = cls.transform_reservation_id(record_id)
-        record = await cls.retrieve_by_id(
-            session, reservation_id, for_update=for_update
-        )
+        record = await cls.retrieve_by_id(session, reservation_id, for_update=for_update)
         return record
 
     @property
@@ -128,9 +126,7 @@ class ReservationRecord(BaseRecord):
         if not self._reservation_token_expiry:
             return False
         else:
-            return datetime.now(tz=timezone.utc) > str_to_datetime(
-                self._reservation_token_expiry
-            )
+            return datetime.now(tz=timezone.utc) > str_to_datetime(self._reservation_token_expiry)
 
     @property
     def record_value(self) -> dict:
@@ -257,9 +253,7 @@ class ReservationRecordSchema(BaseRecordSchema):
     )
 
     connect_to_endorser = fields.List(
-        fields.Dict(
-            metadata={"description": "Endorser and ledger config"}, required=False
-        ),
+        fields.Dict(metadata={"description": "Endorser and ledger config"}, required=False),
         metadata={
             "example": json.dumps(ENDORSER_LEDGER_CONFIG_EXAMPLE),
         },
@@ -370,9 +364,7 @@ class TenantRecord(BaseRecord):
 
         result = await cls.query(session, tag_filter)
         if len(result) > 1:
-            raise StorageDuplicateError(
-                "More than one TenantRecord was found for the given wallet_id"
-            )
+            raise StorageDuplicateError("More than one TenantRecord was found for the given wallet_id")
         if not result:
             raise StorageNotFoundError("No TenantRecord found for the given wallet_id")
         return result[0]
@@ -383,9 +375,7 @@ class TenantRecord(BaseRecord):
         Note: This method should be called on an instance of the TenantRecord.
         """
         # Delete api records
-        recs = await TenantAuthenticationApiRecord.query_by_tenant_id(
-            session, self.tenant_id
-        )
+        recs = await TenantAuthenticationApiRecord.query_by_tenant_id(session, self.tenant_id)
         for rec in recs:
             if rec.tenant_id == self.tenant_id:
                 await rec.delete_record(session)
@@ -461,9 +451,7 @@ class TenantRecordSchema(BaseRecordSchema):
     )
 
     connect_to_endorser = fields.List(
-        fields.Dict(
-            metadata={"description": "Endorser and ledger config"}, required=False
-        ),
+        fields.Dict(metadata={"description": "Endorser and ledger config"}, required=False),
         metadata={
             "example": json.dumps(ENDORSER_LEDGER_CONFIG_EXAMPLE),
         },
@@ -556,9 +544,7 @@ class TenantAuthenticationApiRecord(BaseRecord):
             session: the profile session to use
             tenant_authentication_api_id: the tenant_authentication_api_id by which to filter
         """
-        record = await cls.retrieve_by_id(
-            session, tenant_authentication_api_id, for_update=for_update
-        )
+        record = await cls.retrieve_by_id(session, tenant_authentication_api_id, for_update=for_update)
         return record
 
     @classmethod

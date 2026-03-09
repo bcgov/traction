@@ -36,9 +36,7 @@ class CredDefStorageService:
             # this is to be expected... do nothing, do not log
             rec = None
         except Exception as err:
-            self.logger.error(
-                f"Error fetching cred def storage record for id {cred_def_id}", err
-            )
+            self.logger.error(f"Error fetching cred def storage record for id {cred_def_id}", err)
             rec = None
 
         self.logger.info(f"< read_item({cred_def_id}): {rec}")
@@ -87,9 +85,7 @@ class CredDefStorageService:
 
         try:
             anoncreds_registry = profile.inject(AnonCredsRegistry)
-            cred_def_result = await anoncreds_registry.get_credential_definition(
-                profile, cred_def_id
-            )
+            cred_def_result = await anoncreds_registry.get_credential_definition(profile, cred_def_id)
 
             cred_def = cred_def_result.credential_definition
             tag = cred_def.tag or "default"
@@ -98,20 +94,14 @@ class CredDefStorageService:
             return tag
         except AnonCredsResolutionError:
             # Registry doesn't support this identifier
-            self.logger.error(
-                f"Registry could not resolve credential definition: {cred_def_id}"
-            )
+            self.logger.error(f"Registry could not resolve credential definition: {cred_def_id}")
             return None
         except Exception as err:
             # Other errors from registry (e.g., network issues, injection errors)
-            self.logger.error(
-                f"Error fetching credential definition from registry: {err}"
-            )
+            self.logger.error(f"Error fetching credential definition from registry: {err}")
             return None
 
-    async def _create_storage_record(
-        self, profile: Profile, data: dict
-    ) -> CredDefStorageRecord:
+    async def _create_storage_record(self, profile: Profile, data: dict) -> CredDefStorageRecord:
         """Create and save a credential definition storage record."""
         rec: CredDefStorageRecord = CredDefStorageRecord.deserialize(data)
         self.logger.debug(f"cred_def_storage_rec = {rec}")
@@ -165,9 +155,7 @@ class CredDefStorageService:
             # this is to be expected... do nothing, do not log
             result = True
         except Exception as err:
-            self.logger.error(
-                f"Error removing cred def storage record for id {cred_def_id}", err
-            )
+            self.logger.error(f"Error removing cred def storage record for id {cred_def_id}", err)
 
         self.logger.info(f"< remove_item({cred_def_id}): {result}")
         return result
@@ -177,9 +165,7 @@ def subscribe(bus: EventBus):
     # Subscribe to both Indy and AnonCreds credential definition events
     bus.subscribe(INDY_CREDDEF_EVENT_PATTERN, creddef_event_handler)
     # Explicitly compile as literal pattern to ensure it's a Pattern object, not a string
-    bus.subscribe(
-        re.compile(re.escape(ANONCREDS_CREDDEF_FINISHED_EVENT)), creddef_event_handler
-    )
+    bus.subscribe(re.compile(re.escape(ANONCREDS_CREDDEF_FINISHED_EVENT)), creddef_event_handler)
 
 
 def _normalize_creddef_event_payload(event: Event) -> dict:

@@ -92,18 +92,12 @@ def generate_reservation_token_data(expiry_minutes: int):
     return _pwd, _salt, _hash, _expiry
 
 
-async def approve_reservation(
-    reservation_id: str, state_notes: str, manager: TenantManager
-):
+async def approve_reservation(reservation_id: str, state_notes: str, manager: TenantManager):
     async with manager.profile.session() as session:
         # find reservation records.
-        rec = await ReservationRecord.retrieve_by_reservation_id(
-            session, reservation_id, for_update=True
-        )
+        rec = await ReservationRecord.retrieve_by_reservation_id(session, reservation_id, for_update=True)
         if rec.state == ReservationRecord.STATE_REQUESTED:
-            _pwd, _salt, _hash, _expiry = generate_reservation_token_data(
-                manager._config.reservation.expiry_minutes
-            )
+            _pwd, _salt, _hash, _expiry = generate_reservation_token_data(manager._config.reservation.expiry_minutes)
             rec.reservation_token_salt = _salt.decode("utf-8")
             rec.reservation_token_hash = _hash.decode("utf-8")
             rec.reservation_token_expiry = _expiry
@@ -126,14 +120,10 @@ async def refresh_registration_token(reservation_id: str, manager: TenantManager
     """
     async with manager.profile.session() as session:
         try:
-            reservation = await ReservationRecord.retrieve_by_reservation_id(
-                session, reservation_id, for_update=True
-            )
+            reservation = await ReservationRecord.retrieve_by_reservation_id(session, reservation_id, for_update=True)
         except Exception as err:
             LOGGER.error("Failed to retrieve reservation: %s", err)
-            raise ReservationException(
-                "Could not retrieve reservation record."
-            ) from err
+            raise ReservationException("Could not retrieve reservation record.") from err
 
         if reservation.state != ReservationRecord.STATE_APPROVED:
             raise ReservationException("Only approved reservations can refresh tokens.")

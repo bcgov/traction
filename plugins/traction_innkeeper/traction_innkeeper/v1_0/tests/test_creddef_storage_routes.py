@@ -38,9 +38,7 @@ def mock_profile_inject():
 
     def _injector(cls_to_inject, *args, **kwargs):
         # Handle inject_or by checking if cls_to_inject is a type
-        target_cls = (
-            cls_to_inject if isinstance(cls_to_inject, type) else type(cls_to_inject)
-        )
+        target_cls = cls_to_inject if isinstance(cls_to_inject, type) else type(cls_to_inject)
 
         mock_instance = injectables.get(target_cls)
         if not mock_instance:
@@ -204,9 +202,7 @@ async def test_creddef_storage_list_storage_error(
     mock_creddef_storage_service: AsyncMock,
 ):
     """Test GET /credential-definition-storage endpoint with StorageError."""
-    mock_creddef_storage_service.list_items.side_effect = StorageError(
-        "DB connection lost"
-    )
+    mock_creddef_storage_service.list_items.side_effect = StorageError("DB connection lost")
 
     with pytest.raises(web.HTTPBadRequest) as excinfo:
         await test_module.creddef_storage_list(mock_request)
@@ -236,9 +232,7 @@ async def test_creddef_storage_get(
 
     # Check service was injected and called
     mock_context.inject_or.assert_called_once_with(CredDefStorageService)
-    mock_creddef_storage_service.read_item.assert_awaited_once_with(
-        profile, TEST_CRED_DEF_ID
-    )
+    mock_creddef_storage_service.read_item.assert_awaited_once_with(profile, TEST_CRED_DEF_ID)
 
     # Check response
     assert response.status == 200
@@ -257,17 +251,13 @@ async def test_creddef_storage_get_not_found(
 ):
     """Test GET /credential-definition-storage/{cred_def_id} not found."""
     mock_request._set_match_info("cred_def_id", TEST_CRED_DEF_ID)
-    mock_creddef_storage_service.read_item.side_effect = StorageNotFoundError(
-        "Record not found"
-    )
+    mock_creddef_storage_service.read_item.side_effect = StorageNotFoundError("Record not found")
 
     with pytest.raises(web.HTTPNotFound) as excinfo:
         await test_module.creddef_storage_get(mock_request)
     assert "Record not found" in str(excinfo.value)
 
-    mock_creddef_storage_service.read_item.assert_awaited_once_with(
-        mock_context.profile, TEST_CRED_DEF_ID
-    )
+    mock_creddef_storage_service.read_item.assert_awaited_once_with(mock_context.profile, TEST_CRED_DEF_ID)
 
 
 @pytest.mark.asyncio
@@ -303,9 +293,7 @@ async def test_creddef_storage_remove_success(
 
     # Check service was injected and called
     mock_context.inject_or.assert_called_once_with(CredDefStorageService)
-    mock_creddef_storage_service.remove_item.assert_awaited_once_with(
-        profile, TEST_CRED_DEF_ID
-    )
+    mock_creddef_storage_service.remove_item.assert_awaited_once_with(profile, TEST_CRED_DEF_ID)
 
     # Check response
     assert response.status == 200
@@ -326,9 +314,7 @@ async def test_creddef_storage_remove_failure_from_service(
     response = await test_module.creddef_storage_remove(mock_request)
 
     mock_context.inject_or.assert_called_once_with(CredDefStorageService)
-    mock_creddef_storage_service.remove_item.assert_awaited_once_with(
-        profile, TEST_CRED_DEF_ID
-    )
+    mock_creddef_storage_service.remove_item.assert_awaited_once_with(profile, TEST_CRED_DEF_ID)
     assert response.status == 200
     assert json.loads(response.body) == {"success": False}
 
@@ -341,17 +327,13 @@ async def test_creddef_storage_remove_not_found(
 ):
     """Test DELETE /credential-definition-storage/{cred_def_id} not found."""
     mock_request._set_match_info("cred_def_id", TEST_CRED_DEF_ID)
-    mock_creddef_storage_service.remove_item.side_effect = StorageNotFoundError(
-        "Cannot find to remove"
-    )
+    mock_creddef_storage_service.remove_item.side_effect = StorageNotFoundError("Cannot find to remove")
 
     with pytest.raises(web.HTTPNotFound) as excinfo:
         await test_module.creddef_storage_remove(mock_request)
     assert "Cannot find to remove" in str(excinfo.value)
 
-    mock_creddef_storage_service.remove_item.assert_awaited_once_with(
-        mock_context.profile, TEST_CRED_DEF_ID
-    )
+    mock_creddef_storage_service.remove_item.assert_awaited_once_with(mock_context.profile, TEST_CRED_DEF_ID)
 
 
 @pytest.mark.asyncio
@@ -387,22 +369,13 @@ async def test_register():
     registered_routes = calls[0][0][0]  # Get the list of web.RouteDef objects
     assert len(registered_routes) == 4
     # Check paths and methods (can be more specific if needed)
+    assert any(r.method == "GET" and r.path == "/credential-definition-storage" for r in registered_routes)
+    assert any(r.method == "POST" and r.path == "/credential-definition-storage" for r in registered_routes)
     assert any(
-        r.method == "GET" and r.path == "/credential-definition-storage"
-        for r in registered_routes
+        r.method == "GET" and r.path == "/credential-definition-storage/{cred_def_id}" for r in registered_routes
     )
     assert any(
-        r.method == "POST" and r.path == "/credential-definition-storage"
-        for r in registered_routes
-    )
-    assert any(
-        r.method == "GET" and r.path == "/credential-definition-storage/{cred_def_id}"
-        for r in registered_routes
-    )
-    assert any(
-        r.method == "DELETE"
-        and r.path == "/credential-definition-storage/{cred_def_id}"
-        for r in registered_routes
+        r.method == "DELETE" and r.path == "/credential-definition-storage/{cred_def_id}" for r in registered_routes
     )
 
 
@@ -415,10 +388,7 @@ def test_post_process_routes():
 
     assert "tags" in mock_app._state["swagger_dict"]
     assert len(mock_app._state["swagger_dict"]["tags"]) == 1
-    assert (
-        mock_app._state["swagger_dict"]["tags"][0]["name"]
-        == test_module.SWAGGER_CATEGORY
-    )
+    assert mock_app._state["swagger_dict"]["tags"][0]["name"] == test_module.SWAGGER_CATEGORY
     assert "description" in mock_app._state["swagger_dict"]["tags"][0]
 
 
@@ -431,7 +401,4 @@ def test_post_process_routes_existing_tags():
 
     assert len(mock_app._state["swagger_dict"]["tags"]) == 2
     assert mock_app._state["swagger_dict"]["tags"][0]["name"] == "existing_tag"
-    assert (
-        mock_app._state["swagger_dict"]["tags"][1]["name"]
-        == test_module.SWAGGER_CATEGORY
-    )
+    assert mock_app._state["swagger_dict"]["tags"][1]["name"] == test_module.SWAGGER_CATEGORY

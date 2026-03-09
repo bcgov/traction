@@ -57,11 +57,14 @@ async def test_setup_success():
         await setup(ctx)
 
 
-@pytest.mark.parametrize("inject_map,match", [
-    ({}, "ProtocolRegistry"),
-    ({ProtocolRegistry: MagicMock()}, "PluginRegistry"),
-    ({ProtocolRegistry: MagicMock(), PluginRegistry: MagicMock()}, "EventBus"),
-])
+@pytest.mark.parametrize(
+    "inject_map,match",
+    [
+        ({}, "ProtocolRegistry"),
+        ({ProtocolRegistry: MagicMock()}, "PluginRegistry"),
+        ({ProtocolRegistry: MagicMock(), PluginRegistry: MagicMock()}, "EventBus"),
+    ],
+)
 async def test_setup_missing_dep(inject_map, match):
     ctx = MagicMock()
     ctx.inject.side_effect = inject_map.get
