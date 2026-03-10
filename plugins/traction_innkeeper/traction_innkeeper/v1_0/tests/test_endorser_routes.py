@@ -44,19 +44,13 @@ def mock_profile_inject():
 
     def _injector(cls_to_inject, *args, **kwargs):
         # Handle inject_or by checking if cls_to_inject is a type
-        target_cls = (
-            cls_to_inject if isinstance(cls_to_inject, type) else type(cls_to_inject)
-        )
+        target_cls = cls_to_inject if isinstance(cls_to_inject, type) else type(cls_to_inject)
         mock_instance = injectables.get(target_cls)
         if not mock_instance:
             if args:
                 return args[0]  # inject_or default
             # Create a default mock if not found for inject
-            return (
-                MagicMock(spec=target_cls)
-                if isinstance(cls_to_inject, type)
-                else MagicMock()
-            )
+            return MagicMock(spec=target_cls) if isinstance(cls_to_inject, type) else MagicMock()
         return mock_instance
 
     return MagicMock(side_effect=_injector), injectables
@@ -205,14 +199,10 @@ async def test_endorser_connection_set_success(
     mock_context.inject.assert_any_call(EndorserConnectionService)
     # Check TenantRecord query
     mock_root_profile.session.assert_called_once()  # Called within handler
-    MockTenantRecordCls.query_by_wallet_id.assert_awaited_once_with(
-        ANY, TEST_TENANT_WALLET_ID
-    )
+    MockTenantRecordCls.query_by_wallet_id.assert_awaited_once_with(ANY, TEST_TENANT_WALLET_ID)
     # Check service calls
     mock_endorser_service.endorser_info.assert_called_once_with(profile)
-    mock_endorser_service.connect_with_endorser.assert_awaited_once_with(
-        profile, mock_context.injector
-    )
+    mock_endorser_service.connect_with_endorser.assert_awaited_once_with(profile, mock_context.injector)
     # Check response
     assert response.status == 200
     assert json.loads(response.body) == {
@@ -252,9 +242,7 @@ async def test_endorser_connection_set_tenant_not_issuer(
 
     assert "Tenant is not configured as an issuer" in str(excinfo.value)
     mock_context.inject.assert_called_once_with(TenantManager)
-    MockTenantRecordCls.query_by_wallet_id.assert_awaited_once_with(
-        ANY, TEST_TENANT_WALLET_ID
-    )
+    MockTenantRecordCls.query_by_wallet_id.assert_awaited_once_with(ANY, TEST_TENANT_WALLET_ID)
 
 
 @pytest.mark.asyncio
@@ -302,9 +290,7 @@ async def test_endorser_connection_set_connect_error(
     mock_tenant_rec.created_public_did = ["some_did"]
     MockTenantRecordCls.query_by_wallet_id = AsyncMock(return_value=mock_tenant_rec)
     mock_endorser_service.endorser_info.return_value = {"did": "...", "name": "..."}
-    mock_endorser_service.connect_with_endorser.side_effect = DIDXManagerError(
-        "Failed to connect"
-    )
+    mock_endorser_service.connect_with_endorser.side_effect = DIDXManagerError("Failed to connect")
 
     with pytest.raises(web.HTTPBadRequest) as excinfo:  # Check error_handler mapping
         await test_module.endorser_connection_set(mock_request)
@@ -349,9 +335,7 @@ async def test_endorser_connection_get_not_found(
 ):
     """Test GET /tenant/endorser-connection not found."""
     profile = mock_context.profile
-    mock_endorser_service.endorser_connection.return_value = (
-        None  # Service returns None
-    )
+    mock_endorser_service.endorser_connection.return_value = None  # Service returns None
 
     with pytest.raises(web.HTTPNotFound) as excinfo:
         await test_module.endorser_connection_get(mock_request)
@@ -368,9 +352,7 @@ async def test_endorser_connection_get_storage_error(
 ):
     """Test GET /tenant/endorser-connection with storage error."""
     profile = mock_context.profile
-    mock_endorser_service.endorser_connection.side_effect = StorageError(
-        "DB read failed"
-    )
+    mock_endorser_service.endorser_connection.side_effect = StorageError("DB read failed")
 
     with pytest.raises(web.HTTPBadRequest) as excinfo:
         await test_module.endorser_connection_get(mock_request)

@@ -59,9 +59,7 @@ class CredDefIdMatchInfoSchema(OpenAPISchema):
 
 
 class CredDefStorageAddSchema(OpenAPISchema):
-    cred_def_id = fields.Str(
-        metadata={"description": "Credential Definition identifier"}, required=True
-    )
+    cred_def_id = fields.Str(metadata={"description": "Credential Definition identifier"}, required=True)
     schema_id = fields.Str(
         metadata={"description": "Schema identifier (Indy or AnonCreds format)"},
         required=True,

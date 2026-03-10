@@ -75,9 +75,7 @@ class TenantManager:
                 enable_ledger_switch = extra_settings.get("tenant.enable_ledger_switch")
                 del extra_settings["tenant.enable_ledger_switch"]
             else:
-                enable_ledger_switch = (
-                    self._config.innkeeper_wallet.enable_ledger_switch
-                )
+                enable_ledger_switch = self._config.innkeeper_wallet.enable_ledger_switch
             # we must stick with managed until AcaPy has full support for unmanaged.
             # transport/inbound/session.py only deals with managed.
             key_management_mode = WalletRecord.MODE_MANAGED
@@ -104,9 +102,7 @@ class TenantManager:
 
             multitenant_mgr = self._profile.inject(BaseMultitenantManager)
 
-            wallet_record = await multitenant_mgr.create_wallet(
-                settings, key_management_mode
-            )
+            wallet_record = await multitenant_mgr.create_wallet(settings, key_management_mode)
             token = await self.get_token(wallet_record, wallet_key)
         except BaseError as err:
             self._logger.error(f"Error creating wallet ('{wallet_name}').", err)
@@ -134,9 +130,7 @@ class TenantManager:
             multitenant_mgr = self._profile.inject(BaseMultitenantManager)
             token = await multitenant_mgr.create_auth_token(wallet_record, wallet_key)
         except BaseError as err:
-            self._logger.error(
-                f"Error getting token for wallet ('{wallet_record.wallet_name}').", err
-            )
+            self._logger.error(f"Error getting token for wallet ('{wallet_record.wallet_name}').", err)
             raise err
         return token
 
@@ -165,8 +159,7 @@ class TenantManager:
                     wallet_id=wallet_record.wallet_id,
                     new_with_id=tenant_id is not None,
                     connected_to_endorsers=list(
-                        endorser_config.serialize()
-                        for endorser_config in connected_to_endorsers
+                        endorser_config.serialize() for endorser_config in connected_to_endorsers
                     ),
                     created_public_did=created_public_did,
                     enable_ledger_switch=enable_ledger_switch,
@@ -195,9 +188,7 @@ class TenantManager:
         try:
             async with self._profile.session() as session:
                 tenant_record = await TenantRecord.retrieve_by_id(session, tenant_id)
-                wallet_record = await WalletRecord.retrieve_by_id(
-                    session, tenant_record.wallet_id
-                )
+                wallet_record = await WalletRecord.retrieve_by_id(session, tenant_record.wallet_id)
         except (StorageError, BaseModelError):
             self._logger.info(f"Tenant not found with ID '{tenant_id}'")
 
@@ -227,17 +218,13 @@ class TenantManager:
         print(f"tenant.endorser_config = {tenant_record.connected_to_endorsers}")
         print(f"tenant.public_did_config = {tenant_record.created_public_did}")
         print(f"tenant.auto_issuer = {str(tenant_record.auto_issuer)}")
-        print(
-            f"tenant.enable_ledger_switch = {str(tenant_record.enable_ledger_switch)}"
-        )
+        print(f"tenant.enable_ledger_switch = {str(tenant_record.enable_ledger_switch)}")
         _key = wallet_record.wallet_key if config.print_key else "********"
         print(f"wallet.wallet_key = {_key}\n")
         if config.print_token:
             print(f"Bearer {token}\n")
 
-    def check_reservation_password(
-        self, reservation_pwd: str, reservation: ReservationRecord
-    ):
+    def check_reservation_password(self, reservation_pwd: str, reservation: ReservationRecord):
         if reservation_pwd is None or reservation is None:
             return None
 
@@ -249,9 +236,7 @@ class TenantManager:
         )
         # check the passed in value/hash against the calculated hash.
         checkpw = bcrypt.checkpw(pwd_bytes, reservation_token)
-        self._logger.debug(
-            f"bcrypt.checkpw(reservation_pwd.encode('utf-8'), reservation_token) = {checkpw}"
-        )
+        self._logger.debug(f"bcrypt.checkpw(reservation_pwd.encode('utf-8'), reservation_token) = {checkpw}")
 
         # check the passed in value against the saved hash
         checkpw2 = bcrypt.checkpw(
@@ -281,9 +266,7 @@ class TenantManager:
                 w = await self.check_tables_for_wallet_name(session, unique_wallet_name)
                 idx += 1
         # return a unique wallet/tenant name, either the input or calculated...
-        self._logger.info(
-            f"< get_unique_wallet_name('{wallet_name}') = '{unique_wallet_name}'"
-        )
+        self._logger.info(f"< get_unique_wallet_name('{wallet_name}') = '{unique_wallet_name}'")
         return unique_wallet_name
 
     async def check_tables_for_wallet_name(self, session, wallet_name: str):
@@ -300,9 +283,7 @@ class TenantManager:
         try:
             async with self._profile.session() as session:
                 wallet_record = await WalletRecord.retrieve_by_id(session, wallet_id)
-                tenant_record = await TenantRecord.query_by_wallet_id(
-                    session, wallet_id
-                )
+                tenant_record = await TenantRecord.query_by_wallet_id(session, wallet_id)
         except (StorageError, BaseModelError):
             self._logger.warning(f"Tenant not found with wallet_id '{wallet_id}'")
 
@@ -325,9 +306,7 @@ class TenantManager:
         )
         # check the passed in value/hash against the calculated hash.
         checkpw = bcrypt.checkpw(key_bytes, key_token)
-        self._logger.debug(
-            f"bcrypt.checkpw(api_key.encode('utf-8'), key_token) = {checkpw}"
-        )
+        self._logger.debug(f"bcrypt.checkpw(api_key.encode('utf-8'), key_token) = {checkpw}")
 
         # check the passed in value against the saved hash
         checkpw2 = bcrypt.checkpw(

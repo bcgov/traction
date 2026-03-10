@@ -124,9 +124,7 @@ async def test_connections_invitation_direct(
         "@type": "did:sov:...",
         "recipientKeys": ["key1"],
     }
-    mock_invitation.to_url.return_value = (
-        f"{TEST_BASE_URL}?c_i=ey..."  # Returns full URL
-    )
+    mock_invitation.to_url.return_value = f"{TEST_BASE_URL}?c_i=ey..."  # Returns full URL
 
     mock_conn_rec.retrieve_invitation = AsyncMock(return_value=mock_invitation)
     MockConnRecordCls.retrieve_by_id = AsyncMock(return_value=mock_conn_rec)
@@ -160,12 +158,8 @@ async def test_connections_invitation_multi_use(
     mock_profile.settings["default_endpoint"] = TEST_DEFAULT_ENDPOINT
 
     # Mock primary ConnectionRecord (no alias, direct invite fails)
-    mock_conn_rec = AsyncMock(
-        spec=ConnRecord, alias=None, invitation_key=TEST_INVITATION_KEY
-    )
-    mock_conn_rec.retrieve_invitation = AsyncMock(
-        side_effect=StorageNotFoundError("Direct invite not found")
-    )
+    mock_conn_rec = AsyncMock(spec=ConnRecord, alias=None, invitation_key=TEST_INVITATION_KEY)
+    mock_conn_rec.retrieve_invitation = AsyncMock(side_effect=StorageNotFoundError("Direct invite not found"))
     MockConnRecordCls.retrieve_by_id = AsyncMock(return_value=mock_conn_rec)
 
     # Mock Multi-use ConnectionRecord and its invitation
@@ -178,32 +172,20 @@ async def test_connections_invitation_multi_use(
     # Simulate to_url returning only query params
     mock_multi_use_invitation.to_url.return_value = "?c_i=ey..."
 
-    mock_multi_use_conn.retrieve_invitation = AsyncMock(
-        return_value=mock_multi_use_invitation
-    )
-    MockConnRecordCls.retrieve_by_invitation_key = AsyncMock(
-        return_value=mock_multi_use_conn
-    )
+    mock_multi_use_conn.retrieve_invitation = AsyncMock(return_value=mock_multi_use_invitation)
+    MockConnRecordCls.retrieve_by_invitation_key = AsyncMock(return_value=mock_multi_use_conn)
 
     response = await test_module.connections_invitation(mock_request)
 
     MockConnRecordCls.retrieve_by_id.assert_awaited_once_with(ANY, TEST_CONN_ID)
-    mock_conn_rec.retrieve_invitation.assert_awaited_once_with(
-        ANY
-    )  # First attempt (failed)
-    MockConnRecordCls.retrieve_by_invitation_key.assert_awaited_once_with(
-        ANY, TEST_INVITATION_KEY
-    )
-    mock_multi_use_conn.retrieve_invitation.assert_awaited_once_with(
-        ANY
-    )  # Second attempt (success)
+    mock_conn_rec.retrieve_invitation.assert_awaited_once_with(ANY)  # First attempt (failed)
+    MockConnRecordCls.retrieve_by_invitation_key.assert_awaited_once_with(ANY, TEST_INVITATION_KEY)
+    mock_multi_use_conn.retrieve_invitation.assert_awaited_once_with(ANY)  # Second attempt (success)
     mock_multi_use_invitation.to_url.assert_called_once_with(TEST_DEFAULT_ENDPOINT)
     mock_multi_use_invitation.serialize.assert_called_once()
 
     assert response.status == 200
-    expected_invitation_url = (
-        f"{TEST_DEFAULT_ENDPOINT}{mock_multi_use_invitation.to_url.return_value}"
-    )
+    expected_invitation_url = f"{TEST_DEFAULT_ENDPOINT}{mock_multi_use_invitation.to_url.return_value}"
     expected_body = {
         "connection_id": TEST_CONN_ID,
         "invitation": mock_multi_use_invitation.serialize.return_value,
@@ -220,9 +202,7 @@ async def test_connections_invitation_conn_not_found(
 ):
     """Test GET /connections/{conn_id}/invitation - Connection not found."""
     mock_request._set_match_info("conn_id", TEST_CONN_ID)
-    MockConnRecordCls.retrieve_by_id = AsyncMock(
-        side_effect=StorageNotFoundError("Conn not found")
-    )
+    MockConnRecordCls.retrieve_by_id = AsyncMock(side_effect=StorageNotFoundError("Conn not found"))
 
     with pytest.raises(web.HTTPNotFound) as excinfo:
         await test_module.connections_invitation(mock_request)
@@ -240,18 +220,12 @@ async def test_connections_invitation_direct_and_multi_use_not_found(
     mock_request._set_match_info("conn_id", TEST_CONN_ID)
 
     # Mock primary ConnectionRecord (direct invite fails)
-    mock_conn_rec = AsyncMock(
-        spec=ConnRecord, alias=None, invitation_key=TEST_INVITATION_KEY
-    )
-    mock_conn_rec.retrieve_invitation = AsyncMock(
-        side_effect=StorageNotFoundError("Direct invite not found")
-    )
+    mock_conn_rec = AsyncMock(spec=ConnRecord, alias=None, invitation_key=TEST_INVITATION_KEY)
+    mock_conn_rec.retrieve_invitation = AsyncMock(side_effect=StorageNotFoundError("Direct invite not found"))
     MockConnRecordCls.retrieve_by_id = AsyncMock(return_value=mock_conn_rec)
 
     # Mock multi-use retrieval failure
-    MockConnRecordCls.retrieve_by_invitation_key = AsyncMock(
-        side_effect=StorageNotFoundError("Multi-use not found")
-    )
+    MockConnRecordCls.retrieve_by_invitation_key = AsyncMock(side_effect=StorageNotFoundError("Multi-use not found"))
 
     with pytest.raises(web.HTTPNotFound) as excinfo:
         await test_module.connections_invitation(mock_request)
@@ -259,9 +233,7 @@ async def test_connections_invitation_direct_and_multi_use_not_found(
 
     MockConnRecordCls.retrieve_by_id.assert_awaited_once_with(ANY, TEST_CONN_ID)
     mock_conn_rec.retrieve_invitation.assert_awaited_once_with(ANY)
-    MockConnRecordCls.retrieve_by_invitation_key.assert_awaited_once_with(
-        ANY, TEST_INVITATION_KEY
-    )
+    MockConnRecordCls.retrieve_by_invitation_key.assert_awaited_once_with(ANY, TEST_INVITATION_KEY)
 
 
 @pytest.mark.asyncio
@@ -271,9 +243,7 @@ async def test_connections_invitation_base_model_error(
 ):
     """Test GET /connections/{conn_id}/invitation - BaseModelError during retrieval."""
     mock_request._set_match_info("conn_id", TEST_CONN_ID)
-    MockConnRecordCls.retrieve_by_id = AsyncMock(
-        side_effect=BaseModelError("Invalid record data")
-    )
+    MockConnRecordCls.retrieve_by_id = AsyncMock(side_effect=BaseModelError("Invalid record data"))
 
     with pytest.raises(web.HTTPBadRequest) as excinfo:
         await test_module.connections_invitation(mock_request)

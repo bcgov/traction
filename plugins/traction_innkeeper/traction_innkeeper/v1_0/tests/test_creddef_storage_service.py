@@ -193,9 +193,7 @@ async def test_list_items_no_filters(
     "traction_innkeeper.v1_0.creddef_storage.creddef_storage_service.CredDefStorageService.read_item",
     new_callable=AsyncMock,
 )
-@patch(
-    "traction_innkeeper.v1_0.creddef_storage.models.CredDefStorageRecord.deserialize"
-)
+@patch("traction_innkeeper.v1_0.creddef_storage.models.CredDefStorageRecord.deserialize")
 async def test_add_item_new(
     mock_deserialize: MagicMock,
     mock_read_item: AsyncMock,
@@ -207,9 +205,7 @@ async def test_add_item_new(
     profile, session = mock_profile
     mock_read_item.return_value = None  # Simulate record doesn't exist
     mock_deserialize.return_value = mock_creddef_storage_record
-    mock_creddef_storage_record.save = (
-        AsyncMock()
-    )  # Mock the save method on the instance
+    mock_creddef_storage_record.save = AsyncMock()  # Mock the save method on the instance
 
     data = TEST_CONTEXT.copy()
     result = await creddef_storage_service.add_item(profile, data)
@@ -218,9 +214,7 @@ async def test_add_item_new(
     mock_read_item.assert_awaited_once_with(profile, TEST_CRED_DEF_ID)
     mock_deserialize.assert_called_once_with(data)
     profile.session.assert_called_once()  # Called by save
-    mock_creddef_storage_record.save.assert_awaited_once_with(
-        session, reason="New cred def storage record"
-    )
+    mock_creddef_storage_record.save.assert_awaited_once_with(session, reason="New cred def storage record")
 
 
 @pytest.mark.asyncio
@@ -228,9 +222,7 @@ async def test_add_item_new(
     "traction_innkeeper.v1_0.creddef_storage.creddef_storage_service.CredDefStorageService.read_item",
     new_callable=AsyncMock,
 )
-@patch(
-    "traction_innkeeper.v1_0.creddef_storage.models.CredDefStorageRecord.deserialize"
-)
+@patch("traction_innkeeper.v1_0.creddef_storage.models.CredDefStorageRecord.deserialize")
 async def test_add_item_existing(
     mock_deserialize: MagicMock,
     mock_read_item: AsyncMock,
@@ -256,9 +248,7 @@ async def test_add_item_existing(
     "traction_innkeeper.v1_0.creddef_storage.creddef_storage_service.CredDefStorageService.read_item",
     new_callable=AsyncMock,
 )
-@patch(
-    "traction_innkeeper.v1_0.creddef_storage.models.CredDefStorageRecord.deserialize"
-)
+@patch("traction_innkeeper.v1_0.creddef_storage.models.CredDefStorageRecord.deserialize")
 async def test_add_item_deserialize_error(
     mock_deserialize: MagicMock,
     mock_read_item: AsyncMock,
@@ -284,9 +274,7 @@ async def test_add_item_deserialize_error(
     "traction_innkeeper.v1_0.creddef_storage.creddef_storage_service.CredDefStorageService.read_item",
     new_callable=AsyncMock,
 )
-@patch(
-    "traction_innkeeper.v1_0.creddef_storage.models.CredDefStorageRecord.deserialize"
-)
+@patch("traction_innkeeper.v1_0.creddef_storage.models.CredDefStorageRecord.deserialize")
 async def test_add_item_save_error(
     mock_deserialize: MagicMock,
     mock_read_item: AsyncMock,
@@ -298,9 +286,7 @@ async def test_add_item_save_error(
     profile, session = mock_profile
     mock_read_item.return_value = None
     mock_deserialize.return_value = mock_creddef_storage_record
-    mock_creddef_storage_record.save = AsyncMock(
-        side_effect=Exception("DB write failed")
-    )
+    mock_creddef_storage_record.save = AsyncMock(side_effect=Exception("DB write failed"))
 
     data = TEST_CONTEXT.copy()
     with pytest.raises(Exception, match="DB write failed"):
@@ -403,9 +389,7 @@ async def test_remove_item_delete_error(
     """Test error during delete_record when removing."""
     profile, session = mock_profile
     mock_retrieve.return_value = mock_creddef_storage_record
-    mock_creddef_storage_record.delete_record = AsyncMock(
-        side_effect=Exception("DB write failed")
-    )
+    mock_creddef_storage_record.delete_record = AsyncMock(side_effect=Exception("DB write failed"))
 
     result = await creddef_storage_service.remove_item(profile, TEST_CRED_DEF_ID)
 
@@ -430,9 +414,7 @@ async def test_creddef_event_handler(
     mock_event.payload = {"context": TEST_CONTEXT}
 
     # Mock the service's add_item method specifically for this test
-    creddef_storage_service.add_item = AsyncMock(
-        return_value=mock_creddef_storage_record
-    )
+    creddef_storage_service.add_item = AsyncMock(return_value=mock_creddef_storage_record)
 
     # Mock profile.inject to return our service instance
     profile.inject.return_value = creddef_storage_service
@@ -451,6 +433,4 @@ async def test_creddef_event_handler(
         "issuer_did": TEST_ISSUER_DID,
         "options": {},
     }
-    creddef_storage_service.add_item.assert_awaited_once_with(
-        profile, expected_normalized_data
-    )
+    creddef_storage_service.add_item.assert_awaited_once_with(profile, expected_normalized_data)

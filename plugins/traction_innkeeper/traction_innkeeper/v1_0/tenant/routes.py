@@ -237,9 +237,7 @@ async def tenant_wallet_update(request: web.BaseRequest):
     image_url = body.get("image_url")
     extra_settings = body.get("extra_settings") or {}
 
-    if all(
-        v is None for v in (wallet_webhook_urls, wallet_dispatch_type, label, image_url)
-    ):
+    if all(v is None for v in (wallet_webhook_urls, wallet_dispatch_type, label, image_url)):
         raise web.HTTPBadRequest(reason="At least one parameter is required.")
 
     # adjust wallet_dispatch_type according to wallet_webhook_urls
@@ -359,9 +357,7 @@ async def tenant_api_key_get(request: web.BaseRequest):
         LOGGER.debug(rec)
         tenant_id = rec.tenant_id
 
-        rec = await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(
-            session, tenant_authentication_api_id
-        )
+        rec = await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(session, tenant_authentication_api_id)
         LOGGER.debug(rec)
 
         # if rec tenant_id does not match the tenant_id from the wallet, raise 404
@@ -389,9 +385,7 @@ async def tenant_api_key_list(request: web.BaseRequest):
         LOGGER.debug(rec)
         tenant_id = rec.tenant_id
 
-        records = await TenantAuthenticationApiRecord.query_by_tenant_id(
-            session, tenant_id
-        )
+        records = await TenantAuthenticationApiRecord.query_by_tenant_id(session, tenant_id)
     results = [record.serialize() for record in records]
 
     return web.json_response({"results": results})
@@ -418,9 +412,7 @@ async def tenant_api_key_delete(request: web.BaseRequest):
         LOGGER.debug(rec)
         tenant_id = rec.tenant_id
 
-        rec = await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(
-            session, tenant_authentication_api_id
-        )
+        rec = await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(session, tenant_authentication_api_id)
         LOGGER.debug(rec)
 
         # if rec tenant_id does not match the tenant_id from the wallet, raise 404
@@ -430,9 +422,7 @@ async def tenant_api_key_delete(request: web.BaseRequest):
         await rec.delete_record(session)
 
         try:
-            await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(
-                session, tenant_authentication_api_id
-            )
+            await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(session, tenant_authentication_api_id)
         except StorageNotFoundError:
             # this is to be expected... do nothing, do not log
             result = True
@@ -482,9 +472,7 @@ async def tenant_server_config_handler(request: web.BaseRequest):
             for d in config["config"]["ledger.ledger_config_list"]
         ]
     except KeyError as e:
-        LOGGER.warn(
-            f"The key to be removed: '{e.args[0]}' is missing from the dictionary."
-        )
+        LOGGER.warn(f"The key to be removed: '{e.args[0]}' is missing from the dictionary.")
     config["version"] = __version__
 
     return web.json_response({"config": config})
@@ -506,9 +494,7 @@ async def tenant_delete_soft(request: web.BaseRequest):
         if rec:
             await rec.soft_delete(session)
             LOGGER.info("Tenant %s soft deleted.", rec.tenant_id)
-            return web.json_response(
-                {"success": f"Tenant {rec.tenant_id} soft deleted."}
-            )
+            return web.json_response({"success": f"Tenant {rec.tenant_id} soft deleted."})
         else:
             raise web.HTTPNotFound(reason="Tenant not found.")
 
@@ -534,9 +520,7 @@ async def tenant_delete(request: web.BaseRequest):
             LOGGER.info("Tenant %s rd deleted.", rec.tenant_id)
             return web.json_response(rec.serialize())
         else:
-            raise web.HTTPNotFound(
-                reason=f"Tenant with wallet id {wallet_id} not found."
-            )
+            raise web.HTTPNotFound(reason=f"Tenant with wallet id {wallet_id} not found.")
 
 
 async def register(app: web.Application):
@@ -556,9 +540,7 @@ async def register(app: web.Application):
             web.get("/tenant/config", tenant_config_get, allow_head=False),
             web.put("/tenant/config/set-ledger-id", tenant_config_ledger_id_set),
             web.post("/tenant/authentications/api", tenant_api_key),
-            web.get(
-                "/tenant/authentications/api/", tenant_api_key_list, allow_head=False
-            ),
+            web.get("/tenant/authentications/api/", tenant_api_key_list, allow_head=False),
             web.get(
                 "/tenant/authentications/api/{tenant_authentication_api_id}",
                 tenant_api_key_get,

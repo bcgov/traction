@@ -115,9 +115,7 @@ async def test_create_api_key_success():
     # Configure the async context manager mock
     mock_profile.session = MagicMock()
     mock_profile.session.return_value.__aenter__.return_value = mock_session
-    mock_profile.session.return_value.__aexit__.return_value = (
-        None  # Or AsyncMock() if needed
-    )
+    mock_profile.session.return_value.__aexit__.return_value = None  # Or AsyncMock() if needed
     mock_manager.profile = mock_profile
 
     # 3. Call the function under test
@@ -135,9 +133,7 @@ async def test_create_api_key_success():
     # Verify the generated key matches the hash stored on the mock record
     assert bcrypt.checkpw(
         generated_key.encode("utf-8"),
-        mock_rec.api_key_token_hash.encode(
-            "utf-8"
-        ),  # Assuming stored hash is str, adjust if bytes
+        mock_rec.api_key_token_hash.encode("utf-8"),  # Assuming stored hash is str, adjust if bytes
     )
 
     # Check that save was called within the session context
@@ -148,9 +144,7 @@ async def test_create_api_key_success():
 async def test_create_api_key_deleted_tenant():
     """Test API key creation fails for a deleted tenant."""
     # 1. Mock the TenantAuthenticationApiRecord instance
-    mock_rec = MagicMock(
-        spec=TenantAuthenticationApiRecord
-    )  # No async methods needed here
+    mock_rec = MagicMock(spec=TenantAuthenticationApiRecord)  # No async methods needed here
     mock_rec.state = MockTenantRecord.STATE_DELETED  # Set state to deleted
 
     # 2. Mock the TenantManager (profile not strictly needed as it should fail early)
@@ -173,18 +167,14 @@ class MockReservationRecord:
 
 
 @pytest.mark.asyncio
-@patch(
-    "traction_innkeeper.v1_0.innkeeper.utils.generate_reservation_token_data"
-)  # Patch the helper function
+@patch("traction_innkeeper.v1_0.innkeeper.utils.generate_reservation_token_data")  # Patch the helper function
 async def test_approve_reservation_success(mock_generate_token_data):
     """Test successful reservation approval."""
     # 1. Configure Mock for generate_reservation_token_data
     test_pwd = "test-password-123"
     test_salt = bcrypt.gensalt()
     test_hash = bcrypt.hashpw(test_pwd.encode("utf-8"), test_salt)
-    test_expiry = datetime.datetime.now(datetime.timezone.utc).replace(
-        tzinfo=None
-    ) + datetime.timedelta(minutes=60)
+    test_expiry = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None) + datetime.timedelta(minutes=60)
     mock_generate_token_data.return_value = (
         test_pwd,
         test_salt,
@@ -215,20 +205,14 @@ async def test_approve_reservation_success(mock_generate_token_data):
     mock_manager.profile = mock_profile
 
     # 4. Mock ReservationRecord class method retrieve_by_reservation_id
-    with patch.object(
-        ReservationRecord, "retrieve_by_reservation_id", return_value=mock_rec
-    ) as mock_retrieve:
+    with patch.object(ReservationRecord, "retrieve_by_reservation_id", return_value=mock_rec) as mock_retrieve:
         # 5. Call the function
         reservation_id = "res-123"
         state_notes = "Approved by test"
-        returned_pwd = await approve_reservation(
-            reservation_id, state_notes, mock_manager
-        )
+        returned_pwd = await approve_reservation(reservation_id, state_notes, mock_manager)
 
         # 6. Assertions
-        mock_retrieve.assert_awaited_once_with(
-            mock_session, reservation_id, for_update=True
-        )
+        mock_retrieve.assert_awaited_once_with(mock_session, reservation_id, for_update=True)
         mock_generate_token_data.assert_called_once_with(60)  # Check expiry used
 
         # Check record attributes were updated before save
@@ -263,9 +247,7 @@ async def test_approve_reservation_wrong_state():
     mock_manager.profile = mock_profile
 
     # 3. Mock ReservationRecord retrieval
-    with patch.object(
-        ReservationRecord, "retrieve_by_reservation_id", return_value=mock_rec
-    ):
+    with patch.object(ReservationRecord, "retrieve_by_reservation_id", return_value=mock_rec):
         # 4. Call and assert exception
         with pytest.raises(
             ReservationException,
@@ -278,18 +260,10 @@ async def test_approve_reservation_wrong_state():
 
 
 @pytest.mark.asyncio
-@patch(
-    "traction_innkeeper.v1_0.innkeeper.utils.uuid"
-)  # Patch uuid module used inside refresh function
-@patch(
-    "traction_innkeeper.v1_0.innkeeper.utils.bcrypt"
-)  # Patch bcrypt module used inside refresh function
-@patch(
-    "traction_innkeeper.v1_0.innkeeper.utils.datetime"
-)  # Patch datetime module used inside refresh function
-async def test_refresh_registration_token_success(
-    mock_datetime, mock_bcrypt, mock_uuid
-):
+@patch("traction_innkeeper.v1_0.innkeeper.utils.uuid")  # Patch uuid module used inside refresh function
+@patch("traction_innkeeper.v1_0.innkeeper.utils.bcrypt")  # Patch bcrypt module used inside refresh function
+@patch("traction_innkeeper.v1_0.innkeeper.utils.datetime")  # Patch datetime module used inside refresh function
+async def test_refresh_registration_token_success(mock_datetime, mock_bcrypt, mock_uuid):
     """Test successful token refresh."""
     # 1. Configure mocks for token generation primitives
     test_new_pwd_uuid = "new-uuid-pwd-456"
@@ -298,15 +272,11 @@ async def test_refresh_registration_token_success(
     test_new_salt = b"$2b$12$abcdefghijklmnopqrstuvwx."  # Example salt bytes
     mock_bcrypt.gensalt.return_value = test_new_salt
 
-    test_new_hash = (
-        b"$2b$12$abcdefghijklmnopqrstuvwx.hashedpasswordvalue"  # Example hash bytes
-    )
+    test_new_hash = b"$2b$12$abcdefghijklmnopqrstuvwx.hashedpasswordvalue"  # Example hash bytes
     mock_bcrypt.hashpw.return_value = test_new_hash
 
     fixed_now = datetime.datetime(2023, 10, 27, 12, 0, 0, tzinfo=datetime.timezone.utc)
-    mock_datetime.utcnow.return_value = fixed_now.replace(
-        tzinfo=None
-    )  # utcnow returns naive
+    mock_datetime.utcnow.return_value = fixed_now.replace(tzinfo=None)  # utcnow returns naive
     mock_datetime.now.return_value = fixed_now  # If needed elsewhere
     # Keep timedelta available
     mock_datetime.timedelta = datetime.timedelta
@@ -317,9 +287,7 @@ async def test_refresh_registration_token_success(
     mock_rec.state = MockReservationRecord.STATE_APPROVED  # Correct initial state
     mock_rec.reservation_token_salt = "old_salt"
     mock_rec.reservation_token_hash = "old_hash"
-    mock_rec.reservation_token_expiry = fixed_now - datetime.timedelta(
-        days=1
-    )  # Old expiry
+    mock_rec.reservation_token_expiry = fixed_now - datetime.timedelta(days=1)  # Old expiry
     mock_rec.save = AsyncMock()
 
     # 3. Mock TenantManager and session/config
@@ -334,30 +302,22 @@ async def test_refresh_registration_token_success(
     mock_manager.profile = mock_profile
 
     # 4. Mock ReservationRecord retrieval
-    with patch.object(
-        ReservationRecord, "retrieve_by_reservation_id", return_value=mock_rec
-    ) as mock_retrieve:
+    with patch.object(ReservationRecord, "retrieve_by_reservation_id", return_value=mock_rec) as mock_retrieve:
         # 5. Call the function
         reservation_id = "res-789"
         returned_pwd = await refresh_registration_token(reservation_id, mock_manager)
 
         # 6. Assertions
-        mock_retrieve.assert_awaited_once_with(
-            mock_session, reservation_id, for_update=True
-        )
+        mock_retrieve.assert_awaited_once_with(mock_session, reservation_id, for_update=True)
 
         # Check token generation calls
         mock_uuid.uuid4.assert_called_once()
         mock_bcrypt.gensalt.assert_called_once()
-        mock_bcrypt.hashpw.assert_called_once_with(
-            test_new_pwd_uuid.encode("utf-8"), test_new_salt
-        )
+        mock_bcrypt.hashpw.assert_called_once_with(test_new_pwd_uuid.encode("utf-8"), test_new_salt)
         mock_datetime.utcnow.assert_called_once()  # Used for expiry calculation
 
         # Check record attributes were updated
-        expected_expiry = fixed_now.replace(tzinfo=None) + datetime.timedelta(
-            minutes=45
-        )
+        expected_expiry = fixed_now.replace(tzinfo=None) + datetime.timedelta(minutes=45)
         assert mock_rec.reservation_token_salt == test_new_salt.decode("utf-8")
         assert mock_rec.reservation_token_hash == test_new_hash.decode("utf-8")
         assert mock_rec.reservation_token_expiry == expected_expiry
@@ -391,13 +351,9 @@ async def test_refresh_registration_token_wrong_state():
     mock_manager.profile = mock_profile
 
     # 3. Mock ReservationRecord retrieval
-    with patch.object(
-        ReservationRecord, "retrieve_by_reservation_id", return_value=mock_rec
-    ):
+    with patch.object(ReservationRecord, "retrieve_by_reservation_id", return_value=mock_rec):
         # 4. Call and assert exception
-        with pytest.raises(
-            ReservationException, match="Only approved reservations can refresh tokens"
-        ):
+        with pytest.raises(ReservationException, match="Only approved reservations can refresh tokens"):
             await refresh_registration_token("res-111", mock_manager)
 
         # 5. Assert save was not called
@@ -425,9 +381,7 @@ async def test_refresh_registration_token_retrieval_fails():
         side_effect=Exception("DB error"),
     ) as mock_retrieve:
         # 3. Call and assert exception
-        with pytest.raises(
-            ReservationException, match="Could not retrieve reservation record."
-        ):
+        with pytest.raises(ReservationException, match="Could not retrieve reservation record."):
             await refresh_registration_token("res-222", mock_manager)
 
         # Check retrieval was attempted
@@ -460,9 +414,7 @@ async def test_refresh_registration_token_save_fails():
     mock_manager.profile = mock_profile
 
     # 3. Mock ReservationRecord retrieval
-    with patch.object(
-        ReservationRecord, "retrieve_by_reservation_id", return_value=mock_rec
-    ):
+    with patch.object(ReservationRecord, "retrieve_by_reservation_id", return_value=mock_rec):
         # Use patches for token generation primitives like in success case
         with (
             patch("traction_innkeeper.v1_0.innkeeper.utils.uuid"),
@@ -470,9 +422,7 @@ async def test_refresh_registration_token_save_fails():
             patch("traction_innkeeper.v1_0.innkeeper.utils.datetime"),
         ):
             # 4. Call and assert exception
-            with pytest.raises(
-                ReservationException, match="Could not update reservation record."
-            ):
+            with pytest.raises(ReservationException, match="Could not update reservation record."):
                 await refresh_registration_token("res-333", mock_manager)
 
             # 5. Assert save was attempted

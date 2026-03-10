@@ -47,9 +47,7 @@ def mock_profile_inject():
 
     def _injector(cls_to_inject, *args, **kwargs):
         # Handle inject_or by checking if cls_to_inject is a type
-        target_cls = (
-            cls_to_inject if isinstance(cls_to_inject, type) else type(cls_to_inject)
-        )
+        target_cls = cls_to_inject if isinstance(cls_to_inject, type) else type(cls_to_inject)
         mock_instance = injectables.get(target_cls)
         if not mock_instance:
             if args:
@@ -87,9 +85,7 @@ def mock_profile(mock_session: AsyncMock, mock_profile_inject: tuple):
     profile.context.settings = profile.settings
     profile.session = MagicMock(return_value=mock_session)
     profile.inject, profile._injectables = mock_profile_inject
-    profile.inject_or = (
-        profile.inject
-    )  # Assume inject_or behaves like inject for simplicity
+    profile.inject_or = profile.inject  # Assume inject_or behaves like inject for simplicity
     return profile
 
 
@@ -222,9 +218,7 @@ async def test_schema_storage_list_storage_error(
     mock_schema_storage_service: AsyncMock,
 ):
     """Test GET /schema-storage endpoint with StorageError."""
-    mock_schema_storage_service.list_items.side_effect = StorageError(
-        "DB connection lost"
-    )
+    mock_schema_storage_service.list_items.side_effect = StorageError("DB connection lost")
 
     with pytest.raises(web.HTTPBadRequest) as excinfo:
         await test_module.schema_storage_list(mock_request)
@@ -251,9 +245,7 @@ async def test_schema_storage_add_success(
     mock_request.json.assert_awaited_once()
     mock_schema_storage_service.add_item.assert_awaited_once_with(profile, add_body)
     assert response.status == 200
-    assert (
-        json.loads(response.body) == mock_schema_storage_record.serialize.return_value
-    )
+    assert json.loads(response.body) == mock_schema_storage_record.serialize.return_value
     mock_schema_storage_record.serialize.assert_called_once()
 
 
@@ -306,13 +298,9 @@ async def test_schema_storage_get_success(
     response = await test_module.schema_storage_get(mock_request)
 
     mock_context.inject_or.assert_called_once_with(SchemaStorageService)
-    mock_schema_storage_service.read_item.assert_awaited_once_with(
-        profile, TEST_SCHEMA_ID
-    )
+    mock_schema_storage_service.read_item.assert_awaited_once_with(profile, TEST_SCHEMA_ID)
     assert response.status == 200
-    assert (
-        json.loads(response.body) == mock_schema_storage_record.serialize.return_value
-    )
+    assert json.loads(response.body) == mock_schema_storage_record.serialize.return_value
     mock_schema_storage_record.serialize.assert_called_once()
 
 
@@ -325,17 +313,13 @@ async def test_schema_storage_get_not_found(
     """Test GET /schema-storage/{schema_id} not found."""
     profile = mock_context.profile
     mock_request._set_match_info("schema_id", TEST_SCHEMA_ID)
-    mock_schema_storage_service.read_item.side_effect = StorageNotFoundError(
-        "Record not found"
-    )
+    mock_schema_storage_service.read_item.side_effect = StorageNotFoundError("Record not found")
 
     with pytest.raises(web.HTTPNotFound) as excinfo:
         await test_module.schema_storage_get(mock_request)
     assert "Record not found" in str(excinfo.value)
 
-    mock_schema_storage_service.read_item.assert_awaited_once_with(
-        profile, TEST_SCHEMA_ID
-    )
+    mock_schema_storage_service.read_item.assert_awaited_once_with(profile, TEST_SCHEMA_ID)
 
 
 @pytest.mark.asyncio
@@ -377,9 +361,7 @@ async def test_schema_storage_remove_success(
     response = await test_module.schema_storage_remove(mock_request)
 
     mock_context.inject_or.assert_called_once_with(SchemaStorageService)
-    mock_schema_storage_service.remove_item.assert_awaited_once_with(
-        profile, TEST_SCHEMA_ID
-    )
+    mock_schema_storage_service.remove_item.assert_awaited_once_with(profile, TEST_SCHEMA_ID)
     assert response.status == 200
     assert json.loads(response.body) == {"success": expected_success}
 
@@ -393,17 +375,13 @@ async def test_schema_storage_remove_not_found(
     """Test DELETE /schema-storage/{schema_id} not found."""
     profile = mock_context.profile
     mock_request._set_match_info("schema_id", TEST_SCHEMA_ID)
-    mock_schema_storage_service.remove_item.side_effect = StorageNotFoundError(
-        "Cannot find to remove"
-    )
+    mock_schema_storage_service.remove_item.side_effect = StorageNotFoundError("Cannot find to remove")
 
     with pytest.raises(web.HTTPNotFound) as excinfo:
         await test_module.schema_storage_remove(mock_request)
     assert "Cannot find to remove" in str(excinfo.value)
 
-    mock_schema_storage_service.remove_item.assert_awaited_once_with(
-        profile, TEST_SCHEMA_ID
-    )
+    mock_schema_storage_service.remove_item.assert_awaited_once_with(profile, TEST_SCHEMA_ID)
 
 
 @pytest.mark.asyncio
@@ -528,10 +506,7 @@ def test_post_process_routes():
 
     assert "tags" in mock_app._state["swagger_dict"]
     assert len(mock_app._state["swagger_dict"]["tags"]) == 1
-    assert (
-        mock_app._state["swagger_dict"]["tags"][0]["name"]
-        == test_module.SWAGGER_CATEGORY
-    )
+    assert mock_app._state["swagger_dict"]["tags"][0]["name"] == test_module.SWAGGER_CATEGORY
     assert "description" in mock_app._state["swagger_dict"]["tags"][0]
 
 
@@ -544,10 +519,7 @@ def test_post_process_routes_existing_tags():
 
     assert len(mock_app._state["swagger_dict"]["tags"]) == 2
     assert mock_app._state["swagger_dict"]["tags"][0]["name"] == "existing_tag"
-    assert (
-        mock_app._state["swagger_dict"]["tags"][1]["name"]
-        == test_module.SWAGGER_CATEGORY
-    )
+    assert mock_app._state["swagger_dict"]["tags"][1]["name"] == test_module.SWAGGER_CATEGORY
 
 
 @pytest.mark.asyncio
@@ -608,9 +580,7 @@ async def test_schema_storage_get_generic_error(
         await test_module.schema_storage_get(mock_request)
 
     mock_context.inject_or.assert_called_once_with(SchemaStorageService)
-    mock_schema_storage_service.read_item.assert_awaited_once_with(
-        profile, TEST_SCHEMA_ID
-    )
+    mock_schema_storage_service.read_item.assert_awaited_once_with(profile, TEST_SCHEMA_ID)
 
 
 @pytest.mark.asyncio
@@ -630,9 +600,7 @@ async def test_schema_storage_remove_generic_error(
         await test_module.schema_storage_remove(mock_request)
 
     mock_context.inject_or.assert_called_once_with(SchemaStorageService)
-    mock_schema_storage_service.remove_item.assert_awaited_once_with(
-        profile, TEST_SCHEMA_ID
-    )
+    mock_schema_storage_service.remove_item.assert_awaited_once_with(profile, TEST_SCHEMA_ID)
 
 
 @pytest.mark.asyncio

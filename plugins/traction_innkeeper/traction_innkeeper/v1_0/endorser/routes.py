@@ -96,17 +96,11 @@ async def endorser_connection_set(request: web.BaseRequest):
     if (
         not tenant_record.connected_to_endorsers
         or not tenant_record.created_public_did
-        or (
-            tenant_record.connected_to_endorsers
-            and tenant_record.connected_to_endorsers == []
-        )
+        or (tenant_record.connected_to_endorsers and tenant_record.connected_to_endorsers == [])
         or (tenant_record.created_public_did and tenant_record.created_public_did == [])
     ):
         raise web.HTTPBadRequest(
-            reason=(
-                "Tenant is not configured as an issuer, cannot "
-                "connect with endorser or create public did"
-            )
+            reason=("Tenant is not configured as an issuer, cannot connect with endorser or create public did")
         )
     endorser_srv = context.inject(EndorserConnectionService)
     info = endorser_srv.endorser_info(profile)
@@ -164,9 +158,7 @@ async def register(app: web.Application):
     app.add_routes(
         [
             web.post("/tenant/endorser-connection", endorser_connection_set),
-            web.get(
-                "/tenant/endorser-connection", endorser_connection_get, allow_head=False
-            ),
+            web.get("/tenant/endorser-connection", endorser_connection_get, allow_head=False),
             web.get("/tenant/endorser-info", endorser_info_get, allow_head=False),
         ]
     )

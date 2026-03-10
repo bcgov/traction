@@ -62,9 +62,7 @@ class EndorserConnectionService:
         result = None
         if info:
             async with profile.session() as session:
-                conn_recs = await ConnRecord.retrieve_by_alias(
-                    session, alias=info["endorser_name"]
-                )
+                conn_recs = await ConnRecord.retrieve_by_alias(session, alias=info["endorser_name"])
                 if len(conn_recs):
                     result = conn_recs[0]
 
@@ -81,15 +79,11 @@ class EndorserConnectionService:
                 self.logger.info("no connection to endorser, initiate one...")
                 wallet_id = profile.settings.get("wallet.id")
                 tenant_mgr = context.inject(TenantManager)
-                wallet_rec, tenant_rec = await tenant_mgr.get_wallet_and_tenant(
-                    wallet_id
-                )
+                wallet_rec, tenant_rec = await tenant_mgr.get_wallet_and_tenant(wallet_id)
                 self.logger.info(f"wallet id = {wallet_id}")
                 self.logger.info(f"wallet_rec = {wallet_rec}")
                 self.logger.info(f"tenant_rec = {tenant_rec}")
-                my_label = (
-                    tenant_rec.tenant_name if tenant_rec else wallet_rec.wallet_name
-                )
+                my_label = tenant_rec.tenant_name if tenant_rec else wallet_rec.wallet_name
                 self.logger.info(f"my_label = {my_label}")
 
                 # this call is lifted from:
@@ -145,19 +139,13 @@ async def connections_event_handler(profile: Profile, event: Event):
                     LOGGER.debug(f"jobs = {jobs}")
 
                     # set endorser metadata on connection...
-                    endorser_public_did = profile.settings.get(
-                        "endorser.endorser_public_did"
-                    )
+                    endorser_public_did = profile.settings.get("endorser.endorser_public_did")
                     value = {
                         "endorser_did": endorser_public_did,
                         "endorser_name": endorser_alias,
                     }
-                    await conn_rec.metadata_set(
-                        session, key="endorser_info", value=value
-                    )
-                    endorser_info = await conn_rec.metadata_get(
-                        session, "endorser_info"
-                    )
+                    await conn_rec.metadata_set(session, key="endorser_info", value=value)
+                    endorser_info = await conn_rec.metadata_get(session, "endorser_info")
                     LOGGER.info(f"added endorser metadata = {endorser_info}")
 
     LOGGER.info("< connections_event_handler")

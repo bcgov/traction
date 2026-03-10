@@ -45,8 +45,6 @@ def post_process_routes(app: web.Application):
             try:
                 routes.post_process_routes(app)
             except Exception as err:
-                LOGGER.warning(
-                    f"error post processing routes for {mod.__name__}: {err}"
-                )
+                LOGGER.warning(f"error post processing routes for {mod.__name__}: {err}")
 
     LOGGER.info("< post-process routes")

@@ -286,9 +286,7 @@ async def test_add_item_existing(
     profile, _ = mock_profile
     mock_read_item.return_value = mock_schema_storage_record  # Simulate exists
 
-    result = await schema_storage_service.add_item(
-        profile, {"schema_id": TEST_SCHEMA_ID}
-    )
+    result = await schema_storage_service.add_item(profile, {"schema_id": TEST_SCHEMA_ID})
 
     assert result == mock_schema_storage_record
     mock_read_item.assert_awaited_once_with(profile, TEST_SCHEMA_ID)
@@ -325,9 +323,7 @@ async def test_add_item_new_success_with_multitenant(
 
     # Mock executor instance
     mock_executor_instance = MockExecutorCls.return_value
-    mock_executor_instance.get_ledger_for_identifier = AsyncMock(
-        return_value=(TEST_LEDGER_ID, mock_ledger)
-    )
+    mock_executor_instance.get_ledger_for_identifier = AsyncMock(return_value=(TEST_LEDGER_ID, mock_ledger))
 
     # Mock ledger.get_schema
     mock_ledger.get_schema = AsyncMock(return_value=TEST_SCHEMA_DATA)
@@ -340,9 +336,7 @@ async def test_add_item_new_success_with_multitenant(
     mock_deserialize.return_value = mock_schema_storage_record
 
     # Execute the test
-    result = await schema_storage_service.add_item(
-        profile, {"schema_id": TEST_SCHEMA_ID}
-    )
+    result = await schema_storage_service.add_item(profile, {"schema_id": TEST_SCHEMA_ID})
 
     # Assertions
     assert result == mock_schema_storage_record
@@ -360,9 +354,7 @@ async def test_add_item_new_success_with_multitenant(
     )
     mock_ledger.get_schema.assert_awaited_once_with(TEST_SCHEMA_ID)
     mock_deserialize.assert_called_once()
-    mock_schema_storage_record.save.assert_awaited_once_with(
-        session, reason="New schema storage record"
-    )
+    mock_schema_storage_record.save.assert_awaited_once_with(session, reason="New schema storage record")
 
 
 @pytest.mark.asyncio
@@ -386,9 +378,7 @@ async def test_add_item_ledger_schema_not_found(
     mock_read_item.return_value = None
     session.inject_or.return_value = None  # No multitenant
     mock_executor_instance = MagicMock()
-    mock_executor_instance.get_ledger_for_identifier = AsyncMock(
-        return_value=(TEST_LEDGER_ID, mock_ledger)
-    )
+    mock_executor_instance.get_ledger_for_identifier = AsyncMock(return_value=(TEST_LEDGER_ID, mock_ledger))
     session.inject.return_value = mock_executor_instance
     MockExecutorCls.return_value = mock_executor_instance  # Instance from class mock
     # Simulate ledger error or returning None
@@ -427,9 +417,7 @@ async def test_add_item_deserialize_error(
     mock_executor_instance = AsyncMock()
     session.inject.return_value = mock_executor_instance
     MockExecutorCls.return_value = mock_executor_instance  # Instance from class mock
-    mock_executor_instance.get_ledger_for_identifier = AsyncMock(
-        return_value=(TEST_LEDGER_ID, mock_ledger)
-    )
+    mock_executor_instance.get_ledger_for_identifier = AsyncMock(return_value=(TEST_LEDGER_ID, mock_ledger))
     mock_ledger.get_schema.return_value = TEST_SCHEMA_DATA
     mock_deserialize.side_effect = TypeError("Bad data")  # Simulate deserialize failure
 
@@ -464,9 +452,7 @@ async def test_add_item_save_error(
     mock_read_item.return_value = None
     session.inject_or.return_value = None
     mock_executor_instance = MagicMock()
-    mock_executor_instance.get_ledger_for_identifier = AsyncMock(
-        return_value=(TEST_LEDGER_ID, mock_ledger)
-    )
+    mock_executor_instance.get_ledger_for_identifier = AsyncMock(return_value=(TEST_LEDGER_ID, mock_ledger))
 
     session.inject.return_value = mock_executor_instance
     MockExecutorCls.return_value = mock_executor_instance  # Instance from class mock
@@ -510,9 +496,7 @@ async def test_remove_item_success(
     profile.session.assert_called_once()  # Only one session context used
     # Check retrieve was called twice
     assert mock_retrieve.await_count == 2
-    mock_retrieve.assert_has_awaits(
-        [call(session, TEST_SCHEMA_ID), call(session, TEST_SCHEMA_ID)]
-    )
+    mock_retrieve.assert_has_awaits([call(session, TEST_SCHEMA_ID), call(session, TEST_SCHEMA_ID)])
     mock_schema_storage_record.delete_record.assert_awaited_once_with(session)
 
 
@@ -552,9 +536,7 @@ async def test_remove_item_delete_error(
     """Test error during delete_record when removing."""
     profile, session = mock_profile
     mock_retrieve.return_value = mock_schema_storage_record
-    mock_schema_storage_record.delete_record.side_effect = StorageError(
-        "DB write failed"
-    )
+    mock_schema_storage_record.delete_record.side_effect = StorageError("DB write failed")
 
     # Service catches the error and returns False
     result = await schema_storage_service.remove_item(profile, TEST_SCHEMA_ID)
@@ -577,9 +559,7 @@ async def test_remove_item_delete_error(
     "traction_innkeeper.v1_0.schema_storage.schema_storage_service.SchemaStorageService.list_items",
     new_callable=AsyncMock,
 )
-@pytest.mark.skip(
-    "TODO: AttributeError: 'coroutine' object has no attribute 'find_all_records'"
-)
+@pytest.mark.skip("TODO: AttributeError: 'coroutine' object has no attribute 'find_all_records'")
 async def test_sync_created_success(
     mock_list_items: AsyncMock,
     mock_add_item: AsyncMock,
@@ -664,9 +644,7 @@ def test_subscribe(mock_event_bus: MagicMock):
     # Should subscribe to both Indy and AnonCreds events (if available)
     assert mock_event_bus.subscribe.call_count >= 1
     # Check that Indy pattern is subscribed
-    mock_event_bus.subscribe.assert_any_call(
-        INDY_SCHEMA_EVENT_PATTERN, schemas_event_handler
-    )
+    mock_event_bus.subscribe.assert_any_call(INDY_SCHEMA_EVENT_PATTERN, schemas_event_handler)
 
 
 @pytest.mark.asyncio

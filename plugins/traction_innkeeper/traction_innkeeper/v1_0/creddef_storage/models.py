@@ -51,10 +51,7 @@ class CredDefStorageRecord(BaseRecord):
     @property
     def record_value(self) -> dict:
         """Return record value."""
-        return {
-            prop: getattr(self, prop)
-            for prop in ("schema_id", "support_revocation", "tag", "rev_reg_size")
-        }
+        return {prop: getattr(self, prop) for prop in ("schema_id", "support_revocation", "tag", "rev_reg_size")}
 
 
 def validate_cred_def_id(value):
@@ -138,9 +135,7 @@ class CredDefStorageRecordSchema(BaseRecordSchema):
             "example": INDY_SCHEMA_ID_EXAMPLE,
         },
     )
-    support_revocation = fields.Boolean(
-        required=False, metadata={"description": "Revocation supported flag"}
-    )
+    support_revocation = fields.Boolean(required=False, metadata={"description": "Revocation supported flag"})
     rev_reg_size = fields.Int(
         required=False,
         strict=True,

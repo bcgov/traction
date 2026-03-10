@@ -50,9 +50,7 @@ class SchemaStorageService:
             # this is to be expected... do nothing, do not log
             rec = None
         except Exception as err:
-            self.logger.error(
-                f"Error fetching schema storage record for id {schema_id}", err
-            )
+            self.logger.error(f"Error fetching schema storage record for id {schema_id}", err)
             rec = None
 
         self.logger.info(f"< read_item({schema_id}): {rec}")
@@ -84,9 +82,7 @@ class SchemaStorageService:
         wallet_type = profile.settings.get("wallet.type", "askar")
         return wallet_type in ("askar-anoncreds", "kanon-anoncreds")
 
-    async def _fetch_schema_from_registry(
-        self, profile: Profile, schema_id: str
-    ) -> Tuple[dict, dict, Optional[str]]:
+    async def _fetch_schema_from_registry(self, profile: Profile, schema_id: str) -> Tuple[dict, dict, Optional[str]]:
         """Fetch AnonCreds schema from registry.
 
         Returns:
@@ -125,13 +121,9 @@ class SchemaStorageService:
         except Exception as err:
             # Other errors from registry (e.g., network issues, injection errors)
             self.logger.error(f"Error fetching schema from registry: {err}")
-            raise StorageNotFoundError(
-                f"AnonCreds schema not found: {schema_id}"
-            ) from err
+            raise StorageNotFoundError(f"AnonCreds schema not found: {schema_id}") from err
 
-    async def _fetch_schema_from_ledger(
-        self, profile: Profile, schema_id: str
-    ) -> Tuple[dict, dict, Optional[str]]:
+    async def _fetch_schema_from_ledger(self, profile: Profile, schema_id: str) -> Tuple[dict, dict, Optional[str]]:
         """Fetch Indy schema from ledger.
 
         Returns:
@@ -162,9 +154,7 @@ class SchemaStorageService:
 
         return schema, schema, ledger_id
 
-    async def _create_storage_record(
-        self, profile: Profile, data: dict
-    ) -> SchemaStorageRecord:
+    async def _create_storage_record(self, profile: Profile, data: dict) -> SchemaStorageRecord:
         """Create and save a schema storage record."""
         rec: SchemaStorageRecord = SchemaStorageRecord.deserialize(data)
         self.logger.debug(f"schema_storage_rec = {rec}")
@@ -190,13 +180,9 @@ class SchemaStorageService:
         # Fetch schema from registry or ledger if schema_dict is not provided
         if "schema_dict" not in data:
             if is_anoncreds:
-                schema, schema_dict, ledger_id = await self._fetch_schema_from_registry(
-                    profile, schema_id
-                )
+                schema, schema_dict, ledger_id = await self._fetch_schema_from_registry(profile, schema_id)
             else:
-                schema, schema_dict, ledger_id = await self._fetch_schema_from_ledger(
-                    profile, schema_id
-                )
+                schema, schema_dict, ledger_id = await self._fetch_schema_from_ledger(profile, schema_id)
 
             # Update data with fetched information
             data["schema"] = schema
@@ -242,9 +228,7 @@ class SchemaStorageService:
             # this is to be expected... do nothing, do not log
             result = True
         except Exception as err:
-            self.logger.error(
-                f"Error removing schema storage record for id {schema_id}", err
-            )
+            self.logger.error(f"Error removing schema storage record for id {schema_id}", err)
 
         self.logger.info(f"< remove_item({schema_id}): {result}")
         return result
@@ -292,10 +276,7 @@ def _normalize_schema_event_payload(event: Event) -> dict:
     payload = event.payload
 
     # Check event topic to determine if it's AnonCreds or Indy
-    if (
-        ANONCREDS_SCHEMA_FINISHED_EVENT
-        and event.topic == ANONCREDS_SCHEMA_FINISHED_EVENT
-    ):
+    if ANONCREDS_SCHEMA_FINISHED_EVENT and event.topic == ANONCREDS_SCHEMA_FINISHED_EVENT:
         # AnonCreds event: SchemaFinishedPayload NamedTuple
         if hasattr(payload, "schema_id"):
             return {

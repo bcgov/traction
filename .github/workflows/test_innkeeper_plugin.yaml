@@ -44,6 +44,9 @@ jobs:
       #----------------------------------------------
       #       Lint plugins
       #----------------------------------------------
+      - name: Format check
+        id: format-check
+        run: poetry run ruff format --check .
       - name: Lint plugins
         id: lint-plugins
         run: poetry run ruff check .
