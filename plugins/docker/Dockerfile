@@ -38,8 +38,8 @@ RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.5.1
 RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.5.1#subdirectory=webvh
 
 # TODO: Update main tag once the present_proof and issue_credential plugins are released
-RUN pip install --no-deps git+https://github.com/openwallet-foundation/acapy-plugins@main#subdirectory=present_proof
-RUN pip install --no-deps git+https://github.com/openwallet-foundation/acapy-plugins@main#subdirectory=issue_credential
+RUN pip install --no-deps git+https://github.com/openwallet-foundation/acapy-plugins@1.5.1n#subdirectory=present_proof
+RUN pip install --no-deps git+https://github.com/openwallet-foundation/acapy-plugins@1.5.1#subdirectory=issue_credential
 
 
 ENTRYPOINT ["/bin/bash", "-c", "aca-py \"$@\"", "--"]
