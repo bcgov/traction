@@ -20,6 +20,9 @@ New functionality is being added daily, so stay tuned as the Tenant UI grows. Ke
 ### API Proxy
 For tenants to perform all their Aca-Py calls, access is done through an NGINX proxy. This allows tenants to call most all endpoints found in Aca-Py Admin plus enhancements added through the Traction Plugins. This is the API your controllers and line of business apps will call. See [NGINX Template](../plugins/docker/tenant-proxy.conf.template)
 
+### WebVH end-to-end harness
+Automated checks against the tenant proxy for **did:webvh** configuration and DID creation live under [webvh-e2e/](webvh-e2e/README.md) (see that README for env vars and phases).
+
 ## Caveats and Cautions
 
 ### Endorser
