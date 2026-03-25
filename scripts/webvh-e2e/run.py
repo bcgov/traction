@@ -32,6 +32,8 @@ class Context:
     webvh_server_url: str | None = None
     webvh_witnesses: list[str] = field(default_factory=list)
     plugin_webvh: dict[str, Any] | None = None
+    #: When True, POST /did/webvh/create includes witnesses + witness threshold (Tenant UI style).
+    use_witness: bool = False
 
 
 def _normalize_base(url: str) -> str:
@@ -236,12 +238,17 @@ def phase_webvh_create(ctx: Context) -> bool:
         "namespace": namespace,
         "server_url": server_url,
     }
-    if ctx.webvh_witnesses:
+    if ctx.use_witness and ctx.webvh_witnesses:
         options["witnesses"] = ctx.webvh_witnesses
         options["witness"] = {"threshold": 1}
 
     body = {"options": options}
-    LOG.info("POST /did/webvh/create alias=%r namespace=%r", alias, namespace)
+    LOG.info(
+        "POST /did/webvh/create alias=%r namespace=%r witness=%s",
+        alias,
+        namespace,
+        ctx.use_witness,
+    )
     r = ctx.session.post(
         f"{ctx.base_url}/did/webvh/create",
         json=body,
@@ -314,6 +321,14 @@ def main() -> int:
         action="store_true",
         help="Debug logging",
     )
+    parser.add_argument(
+        "--witness",
+        action="store_true",
+        help=(
+            "Include witnesses and witness threshold in POST /did/webvh/create "
+            "(default: omit them for a no-witness create payload)"
+        ),
+    )
     args = parser.parse_args()
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
@@ -321,6 +336,7 @@ def main() -> int:
     )
 
     ctx = build_context()
+    ctx.use_witness = bool(args.witness)
     to_run: tuple[str, ...]
     if args.phase == "all":
         to_run = ALL_DEFAULT

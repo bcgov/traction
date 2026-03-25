@@ -27,8 +27,10 @@ cp .env.example .env
 Run the harness via Poetry’s env:
 
 ```bash
-poetry run python run.py --phase all
+poetry run python3 run.py --phase all
 ```
+
+**`--witness`** — include `witnesses` and `witness: {threshold: 1}` in `POST /did/webvh/create` (Tenant UI style). **Default is off** (create omits witness fields).
 
 ## Phases
 
@@ -37,7 +39,7 @@ poetry run python run.py --phase all
 | `smoke` | `GET /status/live`; optional tenant config fetch if token set |
 | `webvh-plugin` | `GET /tenant/server/status/config` — assert `webvh` / `did-webvh` plugin defaults exist |
 | `webvh-configure` | `POST /did/webvh/configuration` (witness invitation or simple server/witness payload) |
-| `webvh-create` | `POST /did/webvh/create` — create a did:webvh identifier (witness attestation may lag) |
+| `webvh-create` | `POST /did/webvh/create` — create a did:webvh identifier; use **`--witness`** to send witness fields (default: omit) |
 | `issue-webvh` | *Planned* — schema / cred-def / issue / revoke on WebVH issuer |
 | `issue-indy` | *Planned* — Indy issuance while WebVH is enabled |
 | `verify` | *Planned* — presentation verification |
