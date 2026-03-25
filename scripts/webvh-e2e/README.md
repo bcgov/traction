@@ -80,7 +80,7 @@ Phase names use a **`-webvh`** suffix when the step is part of the WebVH AnonCre
 
 **`.env.example`** only lists what you must set for a typical run: proxy base URL and **two tenant JWTs**. Phases, defaults (schema name, OOB aliases, revocation on cred-def, proof `non_revoked`, etc.) come from the harness and the **profile** you choose—no extra env required.
 
-Optional **`WEBVH_*`** overrides (re-run helpers, witness URL, soft-fail on registry poll, etc.) can be set in `.env` or the shell when you need them; scan **`phases.py`** / phase docstrings for names, or extend the README if you document a common override.
+Optional **`WEBVH_*`** overrides (re-run helpers, witness URL, soft-fail on registry poll, etc.) can be set in `.env` or the shell when you need them; scan **`phases.py`** / phase docstrings for names, or extend the README if you document a common override. For log line length, **`WEBVH_LOG_WRAP`** sets the max width for wrapped DID/URL values (digits only; default derives from terminal width).
 
 | Variable | Description |
 |----------|-------------|

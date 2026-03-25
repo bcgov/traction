@@ -61,15 +61,49 @@ def detail_field_line(label: str, value: str, *, emphasis: bool = False) -> str:
     return f"{col} {shown}"
 
 
-def wrap_dim_block(label: str, value: str, *, chunk_width: int = 72) -> str:
+def _value_wrap_width(label_col_len: int) -> int:
+    """Usable width for wrapped values: terminal minus label gutter, or ``WEBVH_LOG_WRAP``."""
+    raw = (os.environ.get("WEBVH_LOG_WRAP") or "").strip()
+    if raw.isdigit():
+        return max(40, int(raw))
+    try:
+        cols = os.get_terminal_size(sys.stderr.fileno()).columns
+    except OSError:
+        cols = 100
+    return max(52, min(cols - label_col_len - 3, 120))
+
+
+def _wrap_long_value(value: str, width: int) -> list[str]:
+    """Prefer breaks at ``/`` or ``:`` (DID path segments) so hostnames are not split mid-token."""
+    if len(value) <= width:
+        return [value]
+    lines: list[str] = []
+    i = 0
+    n = len(value)
+    min_seg = max(12, width // 5)
+    while i < n:
+        if n - i <= width:
+            lines.append(value[i:])
+            break
+        chunk_end = i + width
+        window = value[i:chunk_end]
+        best = -1
+        for sep in ("/", ":"):
+            p = window.rfind(sep)
+            if p >= min_seg:
+                best = max(best, p + 1)
+        if best > 0:
+            chunk_end = i + best
+        lines.append(value[i:chunk_end])
+        i = chunk_end
+    return lines
+
+
+def wrap_dim_block(label: str, value: str, *, chunk_width: int | None = None) -> str:
     col = _detail_label_column(label)
     sep = " "
-    chunks = textwrap.wrap(
-        value,
-        width=chunk_width,
-        break_long_words=True,
-        break_on_hyphens=False,
-    ) or [value]
+    w = chunk_width if chunk_width is not None else _value_wrap_width(len(col) + len(sep))
+    chunks = _wrap_long_value(value, w)
     pad = " " * (len(col) + len(sep))
     lines = [f"{col}{sep}{dim(chunks[0])}"]
     lines.extend(f"{pad}{dim(c)}" for c in chunks[1:])
