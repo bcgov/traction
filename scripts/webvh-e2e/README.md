@@ -19,9 +19,11 @@ cd scripts/webvh-e2e
 python3 -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-export TRACTION_TENANT_PROXY_BASE=http://localhost:8032
-export TRACTION_TENANT_TOKEN='eyJ...'   # from Swagger or check-in flow
+cp .env.example .env
+# Edit .env: set TRACTION_TENANT_TOKEN or TRACTION_TENANT_API_KEY (and proxy URL if needed)
 ```
+
+`run.py` loads **`.env`** from this directory automatically (via `python-dotenv`). Values already set in your shell are not overwritten. **Do not commit `.env`** — it is listed in `.gitignore`.
 
 ## Phases
 
@@ -64,4 +66,4 @@ python run.py --phase all
 
 ## Sandbox / CI
 
-Point `TRACTION_TENANT_PROXY_BASE` at your sandbox URL and supply a short-lived tenant token. Do not commit tokens or keys.
+Point `TRACTION_TENANT_PROXY_BASE` at your sandbox URL and supply a short-lived tenant token (in `.env` or the environment). Do not commit tokens or keys.

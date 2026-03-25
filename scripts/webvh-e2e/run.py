@@ -15,9 +15,11 @@ import os
 import sys
 import uuid
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any
 
 import requests
+from dotenv import load_dotenv
 
 DEFAULT_BASE = "http://localhost:8032"
 LOG = logging.getLogger("webvh-e2e")
@@ -290,7 +292,15 @@ ALL_DEFAULT = (
 )
 
 
+def _load_local_env() -> None:
+    """Load ``scripts/webvh-e2e/.env`` if present (does not override existing OS env)."""
+    env_file = Path(__file__).resolve().parent / ".env"
+    if env_file.is_file():
+        load_dotenv(env_file, override=False)
+
+
 def main() -> int:
+    _load_local_env()
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--phase",
