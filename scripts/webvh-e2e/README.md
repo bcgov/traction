@@ -39,7 +39,7 @@ cp .env.example .env
 
 `run.py` loads **`.env`** from this directory automatically (via `python-dotenv`). Values already set in your shell are not overwritten. **Do not commit `.env`** — it is listed in `.gitignore`.
 
-**Poetry:** only **`pyproject.toml`** is tracked; **`poetry.lock`** is gitignored for this script bundle. Run **`poetry install`** as usual. For a reproducible lockfile locally, run **`poetry lock`** (optional).
+**Poetry:** only **`pyproject.toml`** is tracked; **`poetry.lock`** is gitignored for this script bundle. Run **`poetry install`** as usual. For a reproducible lockfile locally, run **`poetry lock`** (optional). Dependencies include **[Rich](https://github.com/Textualize/rich)** for log lines and phase banners (replaces hand-rolled ANSI).
 
 ```bash
 poetry run python3 run.py                              # default: profile all
