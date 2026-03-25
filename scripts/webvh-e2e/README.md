@@ -34,7 +34,7 @@ Tracks [bcgov/DITP#136](https://github.com/bcgov/DITP/issues/136) (comprehensive
 cd scripts/webvh-e2e
 poetry install
 cp .env.example .env
-# Edit .env: set TRACTION_ISSUER_TENANT_TOKEN (and holder token if needed)
+# Edit .env: set base URL and both tenant tokens (see .env.example)
 ```
 
 `run.py` loads **`.env`** from this directory automatically (via `python-dotenv`). Values already set in your shell are not overwritten. **Do not commit `.env`** — it is listed in `.gitignore`.
@@ -74,9 +74,11 @@ Phase names use a **`-webvh`** suffix when the step is part of the WebVH AnonCre
 | `verify-webvh-post-revoke` | Second present-proof round (again with **`non_revoked`**) — verifier must end **done** with **not verified** (revoked credential) |
 | `issue-indy` | Placeholder — Indy issuance E2E **TBD** (use `issue-webvh` today); runs only under profile **`all`** |
 
-## Configuration env vars
+## Configuration
 
-See **`.env.example`** for the full list (schema, cred-def, OOB, issue, verify, revoke, post-revoke verify, etc.).
+**`.env.example`** only lists what you must set for a typical run: proxy base URL and **two tenant JWTs**. Phases, defaults (schema name, OOB aliases, revocation on cred-def, proof `non_revoked`, etc.) come from the harness and the **profile** you choose—no extra env required.
+
+Optional **`WEBVH_*`** overrides (re-run helpers, witness URL, soft-fail on registry poll, etc.) can be set in `.env` or the shell when you need them; scan **`run.py`** / phase docstrings for names, or extend the README if you document a common override.
 
 | Variable | Description |
 |----------|-------------|
