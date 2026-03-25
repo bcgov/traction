@@ -262,7 +262,20 @@ def phase_webvh_create(ctx: Context) -> bool:
     except json.JSONDecodeError:
         data = {}
     did = data.get("did") or (data.get("did_document") or {}).get("id")
-    LOG.info("Create accepted; did=%s (may be pending until witness attests)", did)
+    if did:
+        LOG.info("Create accepted; did=%s", did)
+    elif ctx.use_witness:
+        LOG.info(
+            "Create accepted; did not appear in response yet "
+            "(may be pending until a witness attests — check Identifiers UI or ACA-Py logs)"
+        )
+    else:
+        LOG.info(
+            "Create accepted; did not appear in expected JSON fields "
+            "(response shape may differ; try -v, or check Identifiers UI — not related to omitting witness on this request)"
+        )
+    if not did and LOG.isEnabledFor(logging.DEBUG):
+        LOG.debug("create response JSON keys: %s", list(data) if isinstance(data, dict) else type(data))
     return True
 
 
