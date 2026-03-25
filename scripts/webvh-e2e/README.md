@@ -39,6 +39,8 @@ cp .env.example .env
 
 `run.py` loads **`.env`** from this directory automatically (via `python-dotenv`). Values already set in your shell are not overwritten. **Do not commit `.env`** — it is listed in `.gitignore`.
 
+**Poetry:** only **`pyproject.toml`** is tracked; **`poetry.lock`** is gitignored for this script bundle. Run **`poetry install`** as usual. For a reproducible lockfile locally, run **`poetry lock`** (optional).
+
 ```bash
 poetry run python3 run.py                              # default: profile all
 poetry run python3 run.py --profile new-issuer-webvh   # WebVH new-issuer path only
@@ -53,7 +55,7 @@ poetry run python3 run.py --profile new-issuer-webvh   # WebVH new-issuer path o
 | **`all`** (default) | Same as **`new-issuer-webvh`**, then **`issue-indy`** — i.e. every row in **Phases** below, top to bottom. |
 | **`new-issuer-webvh`** | `smoke` → `upgrade-anoncreds-wallet` → `configure-webvh-plugin` → `webvh-create` → `publish-schema-webvh` → `publish-cred-def-webvh` → `oob-didexchange-webvh-didcomm` → `issue-webvh` → `verify-webvh` → `revoke-webvh` → `verify-webvh-post-revoke` |
 
-There is no **`--phase`** flag; pick a **profile** only. To run a single step during development, call the corresponding function from `run.py` / `PHASES` in Python.
+There is no **`--phase`** flag; pick a **profile** only. To run a single step during development, import the phase from **`phases`** (same names as the **`PHASES`** keys) in Python.
 
 ## Phases
 
@@ -78,7 +80,7 @@ Phase names use a **`-webvh`** suffix when the step is part of the WebVH AnonCre
 
 **`.env.example`** only lists what you must set for a typical run: proxy base URL and **two tenant JWTs**. Phases, defaults (schema name, OOB aliases, revocation on cred-def, proof `non_revoked`, etc.) come from the harness and the **profile** you choose—no extra env required.
 
-Optional **`WEBVH_*`** overrides (re-run helpers, witness URL, soft-fail on registry poll, etc.) can be set in `.env` or the shell when you need them; scan **`run.py`** / phase docstrings for names, or extend the README if you document a common override.
+Optional **`WEBVH_*`** overrides (re-run helpers, witness URL, soft-fail on registry poll, etc.) can be set in `.env` or the shell when you need them; scan **`phases.py`** / phase docstrings for names, or extend the README if you document a common override.
 
 | Variable | Description |
 |----------|-------------|

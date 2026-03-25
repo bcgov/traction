@@ -38,7 +38,8 @@ def holder_tenant_token() -> str:
     return tok
 
 
-def auth_headers() -> dict[str, str]:
+def issuer_auth_headers() -> dict[str, str]:
+    """HTTP headers for the **issuer** tenant session only (not the holder)."""
     return {"Authorization": f"Bearer {issuer_tenant_token()}"}
 
 
@@ -86,7 +87,7 @@ def build_context() -> Context:
         {
             "Accept": "application/json",
             "Content-Type": "application/json",
-            **auth_headers(),
+            **issuer_auth_headers(),
         }
     )
     return Context(base_url=base, session=session)
