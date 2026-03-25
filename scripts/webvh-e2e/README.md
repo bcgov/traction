@@ -7,6 +7,7 @@ Tracks [bcgov/DITP#136](https://github.com/bcgov/DITP/issues/136) (comprehensive
 ## Prerequisites
 
 - Python 3.10+
+- [Poetry](https://python-poetry.org/docs/#installation) 1.8+ (uses `package-mode = false` for a script-only project)
 - Tenant proxy reachable (default `http://localhost:8032`)
 - **Authentication** (one of):
   - `TRACTION_TENANT_TOKEN` — wallet JWT used as `Authorization: Bearer …` (same as Tenant UI), **or**
@@ -16,14 +17,18 @@ Tracks [bcgov/DITP#136](https://github.com/bcgov/DITP/issues/136) (comprehensive
 
 ```bash
 cd scripts/webvh-e2e
-python3 -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+poetry install
 cp .env.example .env
 # Edit .env: set TRACTION_TENANT_TOKEN or TRACTION_TENANT_API_KEY (and proxy URL if needed)
 ```
 
 `run.py` loads **`.env`** from this directory automatically (via `python-dotenv`). Values already set in your shell are not overwritten. **Do not commit `.env`** — it is listed in `.gitignore`.
+
+Run the harness via Poetry’s env:
+
+```bash
+poetry run python run.py --phase all
+```
 
 ## Phases
 
@@ -55,13 +60,13 @@ cp .env.example .env
 
 ```bash
 # Liveness only (no token)
-python run.py --phase smoke
+poetry run python run.py --phase smoke
 
 # Confirm plugin defaults are published
-python run.py --phase webvh-plugin
+poetry run python run.py --phase webvh-plugin
 
 # Full automated path to create a WebVH DID
-python run.py --phase all
+poetry run python run.py --phase all
 ```
 
 ## Sandbox / CI
