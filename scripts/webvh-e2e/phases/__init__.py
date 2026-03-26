@@ -16,7 +16,7 @@ from .verify_revoke import (
     phase_verify_webvh,
     phase_verify_webvh_post_revoke,
 )
-from .publish import phase_publish_cred_def, phase_publish_schema
+from .setup import phase_publish_cred_def, phase_publish_schema
 from .common import phase_upgrade_anoncreds_wallet
 
 PHASES: dict[str, Any] = {
