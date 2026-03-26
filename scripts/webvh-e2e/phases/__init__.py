@@ -10,9 +10,8 @@ from .connect import (
     phase_smoke,
     phase_webvh_create,
 )
-from .issue_verify import (
-    phase_issue_indy,
-    phase_issue_webvh,
+from .issue import phase_issue_indy, phase_issue_webvh
+from .verify_revoke import (
     phase_revoke_webvh,
     phase_verify_webvh,
     phase_verify_webvh_post_revoke,
