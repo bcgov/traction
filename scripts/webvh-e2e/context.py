@@ -80,14 +80,14 @@ class Context:
 
 
 def build_context() -> Context:
-    issuer_tenant_token()
+    issuer_token = issuer_tenant_token()
+    holder_tenant_token()
     base = normalize_base(os.environ.get("TRACTION_TENANT_PROXY_BASE", DEFAULT_BASE).strip())
     session = requests.Session()
-    session.headers.update(
-        {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            **issuer_auth_headers(),
-        }
-    )
+    headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {issuer_token}",
+    }
+    session.headers.update(headers)
     return Context(base_url=base, session=session)

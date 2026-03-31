@@ -4,8 +4,8 @@ Traction WebVH E2E harness — HTTP checks against the tenant proxy.
 
 See README.md for environment variables, phases, and profiles.
 
-Default run: ``--profile all`` (every registered phase, including the Indy placeholder).
-Use ``--profile new-issuer-webvh`` for the new-issuer WebVH path only.
+Default run: ``--profile all`` (all registered phases).
+Use ``--profile new-issuer-webvh`` for the WebVH-named phase path.
 """
 
 from __future__ import annotations
@@ -46,9 +46,8 @@ def main() -> int:
         choices=tuple(PROFILES.keys()),
         default="all",
         help=(
-            "Phase bundle: ``all`` = every registered phase (default; includes ``issue-indy`` "
-            "placeholder). ``new-issuer-webvh`` = smoke through revocation check "
-            "(``verify-webvh-post-revoke``)."
+            "Phase bundle: ``all`` = every registered phase (default). "
+            "``new-issuer-webvh`` = smoke through ``verify-webvh-post-revoke``."
         ),
     )
     parser.add_argument(

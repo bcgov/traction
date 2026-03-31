@@ -11,12 +11,9 @@ from .connect import (
     phase_webvh_create,
 )
 from .issue import phase_issue_indy, phase_issue_webvh
-from .verify_revoke import (
-    phase_revoke_webvh,
-    phase_verify_webvh,
-    phase_verify_webvh_post_revoke,
-)
+from .revoke import phase_revoke_webvh
 from .setup import phase_publish_cred_def, phase_publish_schema
+from .verify import phase_verify_webvh, phase_verify_webvh_post_revoke
 from .common import phase_upgrade_anoncreds_wallet
 
 PHASES: dict[str, Any] = {
