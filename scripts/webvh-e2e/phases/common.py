@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import logging
+
 from context import Context
-from harness_log import LOG
+
+LOG = logging.getLogger("webvh-e2e")
 
 
 def phase_upgrade_anoncreds_wallet(_ctx: Context) -> bool:

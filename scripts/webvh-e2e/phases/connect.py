@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import logging
+
 from context import Context
-from harness_log import LOG, headline_request
+
+LOG = logging.getLogger("webvh-e2e")
 
 
 def phase_smoke(ctx: Context) -> bool:
@@ -16,7 +19,7 @@ def phase_smoke(ctx: Context) -> bool:
             live.text[:160].replace("\n", " "),
         )
         return True
-    LOG.info("%s", headline_request("GET", "/status/live", subtitle="smoke check"))
+    LOG.info("GET /status/live (smoke check)")
     return True
 
 

@@ -11,6 +11,7 @@ Use ``--profile new-issuer-webvh`` for the WebVH-named phase path.
 from __future__ import annotations
 
 import argparse
+import logging
 import sys
 import time
 from pathlib import Path
@@ -19,16 +20,38 @@ import requests
 from dotenv import load_dotenv
 
 from context import build_context
-from harness_log import (
-    LOG,
-    bold,
-    detail_field_line,
-    phase_banner,
-    run_summary_standout,
-    setup_logging,
-    wrap_dim_block,
-)
 from phases import PHASES, PROFILES
+
+LOG = logging.getLogger("webvh-e2e")
+
+
+def setup_logging(*, verbose: bool) -> None:
+    level = logging.DEBUG if verbose else logging.INFO
+    logging.basicConfig(level=level, format="%(message)s")
+
+
+def phase_banner(name: str) -> None:
+    LOG.info("\n== %s ==", name)
+
+
+def run_summary(
+    *,
+    ok: bool,
+    n_done: int,
+    n_plan: int,
+    elapsed_s: float,
+    failed_phase: str | None,
+) -> None:
+    status = "ok" if ok else "failed"
+    LOG.info(
+        "\n== summary ==\n%s  %s/%s phases  %.1fs",
+        status,
+        n_done,
+        n_plan,
+        elapsed_s,
+    )
+    if failed_phase:
+        LOG.info("stopped: %s", failed_phase)
 
 
 def _load_local_env() -> None:
@@ -56,14 +79,6 @@ def main() -> int:
         action="store_true",
         help="Debug logging",
     )
-    parser.add_argument(
-        "--witness",
-        action="store_true",
-        help=(
-            "Include witnesses and witness threshold in POST /did/webvh/create "
-            "(default: omit them for a no-witness create payload)"
-        ),
-    )
     args = parser.parse_args()
     setup_logging(verbose=args.verbose)
 
@@ -72,20 +87,13 @@ def main() -> int:
     except RuntimeError as e:
         LOG.error("%s", e)
         return 1
-    ctx.use_witness = bool(args.witness)
     to_run = PROFILES[args.profile]
     run_desc = f"profile {args.profile}"
 
     LOG.info(
-        "%s\n%s\n%s\n%s",
-        bold("Run target"),
-        wrap_dim_block("base_url", ctx.base_url),
-        detail_field_line(
-            "witness",
-            "on" if ctx.use_witness else "off",
-            emphasis=ctx.use_witness,
-        ),
-        detail_field_line("run", run_desc),
+        "Run target\nbase_url=%s\nrun=%s",
+        ctx.base_url,
+        run_desc,
     )
 
     ok = True
@@ -112,15 +120,12 @@ def main() -> int:
             break
         completed.append(name)
 
-    run_summary_standout(
+    run_summary(
         ok=ok,
-        base_url=ctx.base_url,
-        witness=ctx.use_witness,
         n_done=len(completed),
         n_plan=len(to_run),
         elapsed_s=time.perf_counter() - t0,
         failed_phase=failed_phase,
-        completed_phases=tuple(completed),
     )
     return 0 if ok else 1
 
