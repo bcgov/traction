@@ -13,7 +13,7 @@ const store: { [key: string]: any } = {
   serverConfig: {
     value: {
       config: {
-        version: '1.2.2',
+        version: '1.4.0',
       },
     },
   },
