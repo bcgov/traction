@@ -37,10 +37,10 @@ class TractionClient:
 
     def post_anoncreds_wallet_upgrade(self, wallet_name: str, *, timeout: float = 120) -> requests.Response:
         """POST /anoncreds/wallet/upgrade?wallet_name=…"""
-        q = quote(wallet_name, safe="")
+        encoded_wallet_name = quote(wallet_name, safe="")
         return self._session.post(
             f"{self._base}/anoncreds/wallet/upgrade",
-            params={"wallet_name": q},
+            params={"wallet_name": encoded_wallet_name},
             json={},
             timeout=timeout,
         )

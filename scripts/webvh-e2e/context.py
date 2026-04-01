@@ -43,9 +43,9 @@ def _session_headers(bearer_token: str) -> dict[str, str]:
 
 def get_plugin_webvh(config_json: dict[str, Any]) -> dict[str, Any] | None:
     """``plugin_config.webvh`` or ``plugin_config.did-webvh`` from tenant server config."""
-    cfg = (config_json or {}).get("config") or {}
-    plugin = cfg.get("plugin_config") or {}
-    return plugin.get("webvh") or plugin.get("did-webvh")
+    config_section = (config_json or {}).get("config") or {}
+    plugin_config = config_section.get("plugin_config") or {}
+    return plugin_config.get("webvh") or plugin_config.get("did-webvh")
 
 
 @dataclass

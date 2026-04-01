@@ -11,13 +11,13 @@ from context import Context
 LOG = logging.getLogger("webvh-e2e")
 
 
-def _smoke_status_live(client_label: str, live: requests.Response) -> None:
-    if not live.ok:
+def _smoke_status_live(client_label: str, live_response: requests.Response) -> None:
+    if not live_response.ok:
         LOG.warning(
             "[%s] GET /status/live returned HTTP %s; continuing (response snippet: %s)",
             client_label,
-            live.status_code,
-            live.text[:160].replace("\n", " "),
+            live_response.status_code,
+            live_response.text[:160].replace("\n", " "),
         )
     else:
         LOG.info("[%s] GET /status/live ok", client_label)
