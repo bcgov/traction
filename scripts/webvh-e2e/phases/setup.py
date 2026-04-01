@@ -121,14 +121,201 @@ def phase_upgrade_anoncreds_wallet(ctx: Context) -> bool:
     return False
 
 
-def _placeholder_phase(phase_name: str) -> bool:
-    LOG.info("%s phase is not implemented yet.", phase_name)
+def _schema_attr_names_from_env() -> list[str]:
+    raw = os.environ.get("WEBVH_E2E_SCHEMA_ATTRS", "name,score")
+    return [part.strip() for part in raw.split(",") if part.strip()]
+
+
+def _e2e_schema_name() -> str:
+    return (os.environ.get("WEBVH_E2E_SCHEMA_NAME") or "WebVHE2EHarness").strip()
+
+
+def _e2e_schema_version() -> str:
+    return (os.environ.get("WEBVH_E2E_SCHEMA_VERSION") or "1.0").strip()
+
+
+def _e2e_cred_def_tag() -> str:
+    return (os.environ.get("WEBVH_E2E_CRED_DEF_TAG") or _e2e_schema_name()).strip()
+
+
+def _revocation_registry_size() -> int:
+    try:
+        return max(1, int(os.environ.get("WEBVH_E2E_REVOCATION_REGISTRY_SIZE", "4")))
+    except ValueError:
+        return 4
+
+
+def _extract_schema_id_from_post(body: dict[str, Any]) -> str | None:
+    state = body.get("schema_state") or body.get("sent") or {}
+    sid = state.get("schema_id")
+    return str(sid) if sid else None
+
+
+def _extract_cred_def_id_from_post(body: dict[str, Any]) -> str | None:
+    state = body.get("credential_definition_state") or body.get("sent") or {}
+    cid = state.get("credential_definition_id")
+    return str(cid) if cid else None
+
+
+def phase_publish_schema(ctx: Context) -> bool:
+    """
+    POST /anoncreds/schema for the WebVH issuer DID (``ctx.webvh_last_created_did``).
+
+    Idempotent: if a matching schema exists (name, version, issuer), reuse it.
+    """
+    issuer_did = ctx.webvh_last_created_did
+    if not issuer_did:
+        LOG.error("No did:webvh on context; run webvh-create first")
+        return False
+
+    name = _e2e_schema_name()
+    version = _e2e_schema_version()
+    attr_names = _schema_attr_names_from_env()
+    client = ctx.issuer_client()
+
+    list_response = client.get_anoncreds_schemas(
+        params={
+            "schema_name": name,
+            "schema_version": version,
+            "schema_issuer_id": issuer_did,
+        }
+    )
+    if list_response.ok:
+        try:
+            data = list_response.json()
+        except json.JSONDecodeError:
+            data = {}
+        ids = data.get("schema_ids") or []
+        if ids:
+            ctx.webvh_schema_id = str(ids[0])
+            LOG.info("Reusing existing schema_id=%s", ctx.webvh_schema_id)
+            return True
+
+    post_body = {
+        "schema": {
+            "attrNames": attr_names,
+            "issuerId": issuer_did,
+            "name": name,
+            "version": version,
+        },
+        "options": {},
+    }
+    create_response = client.post_anoncreds_schema(post_body)
+    if not create_response.ok:
+        text = create_response.text or ""
+        if create_response.status_code == 400 and "already exists" in text.lower():
+            list_response = client.get_anoncreds_schemas(
+                params={
+                    "schema_name": name,
+                    "schema_version": version,
+                    "schema_issuer_id": issuer_did,
+                }
+            )
+            if list_response.ok:
+                data = list_response.json()
+                ids = data.get("schema_ids") or []
+                if ids:
+                    ctx.webvh_schema_id = str(ids[0])
+                    LOG.info("Schema already exists; schema_id=%s", ctx.webvh_schema_id)
+                    return True
+        LOG.error(
+            "POST /anoncreds/schema failed: %s %s",
+            create_response.status_code,
+            text[:800],
+        )
+        return False
+
+    try:
+        created = create_response.json()
+    except json.JSONDecodeError:
+        LOG.error("POST /anoncreds/schema returned non-JSON")
+        return False
+
+    schema_id = _extract_schema_id_from_post(created)
+    if not schema_id:
+        LOG.error("Schema create response missing schema_id: %s", created)
+        return False
+    ctx.webvh_schema_id = schema_id
+    LOG.info("Published schema_id=%s", schema_id)
     return True
 
 
-def phase_publish_schema(_ctx: Context) -> bool:
-    return _placeholder_phase("publish-schema-webvh")
+def phase_publish_cred_def(ctx: Context) -> bool:
+    """
+    POST /anoncreds/credential-definition with revocation (default registry size 4).
 
+    Requires ``ctx.webvh_schema_id`` and WebVH issuer DID.
+    """
+    issuer_did = ctx.webvh_last_created_did
+    schema_id = ctx.webvh_schema_id
+    if not issuer_did or not schema_id:
+        LOG.error("Missing issuer DID or schema_id; run publish-schema-webvh first")
+        return False
 
-def phase_publish_cred_def(_ctx: Context) -> bool:
-    return _placeholder_phase("publish-cred-def-webvh")
+    tag = _e2e_cred_def_tag()
+    reg_size = _revocation_registry_size()
+    client = ctx.issuer_client()
+
+    list_response = client.get_anoncreds_credential_definitions(
+        params={"schema_id": schema_id, "issuer_id": issuer_did}
+    )
+    if list_response.ok:
+        try:
+            data = list_response.json()
+        except json.JSONDecodeError:
+            data = {}
+        ids = data.get("credential_definition_ids") or []
+        if ids:
+            ctx.webvh_cred_def_id = str(ids[0])
+            LOG.info("Reusing existing credential_definition_id=%s", ctx.webvh_cred_def_id)
+            return True
+
+    body = {
+        "credential_definition": {
+            "issuerId": issuer_did,
+            "schemaId": schema_id,
+            "tag": tag,
+        },
+        "options": {
+            "support_revocation": True,
+            "revocation_registry_size": reg_size,
+        },
+    }
+
+    deadline = time.monotonic() + 120.0
+    attempt = 0
+    while time.monotonic() < deadline:
+        create_response = client.post_anoncreds_credential_definition(body)
+        if create_response.ok:
+            try:
+                created = create_response.json()
+            except json.JSONDecodeError:
+                LOG.error("POST /anoncreds/credential-definition returned non-JSON")
+                return False
+            cred_def_id = _extract_cred_def_id_from_post(created)
+            if not cred_def_id:
+                LOG.error("Cred def create missing id: %s", created)
+                return False
+            ctx.webvh_cred_def_id = cred_def_id
+            LOG.info(
+                "Published credential_definition_id=%s (revocation_registry_size=%s)",
+                cred_def_id,
+                reg_size,
+            )
+            return True
+
+        err_text = (create_response.text or "").lower()
+        if "resolving resource" in err_text:
+            attempt += 1
+            time.sleep(min(2.0 ** min(attempt, 5), 20.0))
+            continue
+
+        LOG.error(
+            "POST /anoncreds/credential-definition failed: %s %s",
+            create_response.status_code,
+            (create_response.text or "")[:800],
+        )
+        return False
+
+    LOG.error("Timed out publishing credential definition (WebVH resource lag)")
+    return False
