@@ -105,7 +105,7 @@ jobs:
         run: |
           cp trust-over-ip-configurations/services/traction/charts/dev/values.yaml ./dev-values.yaml
           yq e -i 'del(.traction) | . *= load("trust-over-ip-configurations/services/traction/charts/dev/values.yaml").traction' ./dev-values.yaml
-          helm upgrade --install traction -f ./dev-values.yaml --set acapy.image.tag=${{ needs.build_acapy.outputs.image_version }} --set tenant_proxy.image.tag=${{ needs.build_acapy.outputs.image_version }} --set ui.image.tag=${{ needs.build_ui.outputs.image_version }} ./charts/traction --wait
+          helm upgrade --install traction -f ./dev-values.yaml --set acapy.image.tag=${{ needs.build_acapy.outputs.image_version }} --set tenant_proxy.image.tag=${{ needs.build_acapy.outputs.image_version }} --set ui.image.tag=${{ needs.build_ui.outputs.image_version }} ./charts/traction --wait --timeout 10m
 
       - name: Restart Deployments
         run: |
