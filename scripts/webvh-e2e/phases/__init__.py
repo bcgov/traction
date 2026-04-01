@@ -4,17 +4,17 @@ from __future__ import annotations
 
 from typing import Any
 
-from .connect import (
-    phase_configure_webvh_plugin,
-    phase_oob_didexchange_webvh_didcomm,
-    phase_smoke,
-    phase_webvh_create,
-)
+from .connect import phase_oob_didexchange_webvh_didcomm
+from .smoke import phase_smoke
+from .webvh import phase_configure_webvh_plugin, phase_webvh_create
 from .issue import phase_issue_indy, phase_issue_webvh
 from .revoke import phase_revoke_webvh
-from .setup import phase_publish_cred_def, phase_publish_schema
+from .setup import (
+    phase_publish_cred_def,
+    phase_publish_schema,
+    phase_upgrade_anoncreds_wallet,
+)
 from .verify import phase_verify_webvh, phase_verify_webvh_post_revoke
-from .common import phase_upgrade_anoncreds_wallet
 
 PHASES: dict[str, Any] = {
     "smoke": phase_smoke,
@@ -33,6 +33,7 @@ PHASES: dict[str, Any] = {
 
 PROFILE_NEW_ISSUER_WEBVH: tuple[str, ...] = (
     "smoke",
+    # Issuer wallet setup (askar-anoncreds); not part of WebVH plugin configuration.
     "upgrade-anoncreds-wallet",
     "configure-webvh-plugin",
     "webvh-create",
