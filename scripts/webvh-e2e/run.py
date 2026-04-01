@@ -11,10 +11,53 @@ import click
 import requests
 from dotenv import load_dotenv
 
-from context import build_context
+from context import Context, build_context
+from helpers import (
+    webvh_explorer_dids_url,
+    webvh_scid_from_did,
+    webvh_server_base_for_explorer,
+)
 from phases import PHASES, PROFILES
 
 LOG = logging.getLogger("webvh-e2e")
+
+_SUMMARY_LABEL_W = 22
+
+
+def _log_summary_kv(indent: str, label: str, value: object) -> None:
+    LOG.info("%s%-*s  %s", indent, _SUMMARY_LABEL_W, label, value)
+
+
+def _log_run_summary(ctx: Context, stop: str | None, plan: tuple[str, ...] | list[str]) -> None:
+    LOG.info("")
+    LOG.info("=== summary ===")
+    LOG.info("")
+    LOG.info("  run")
+    _log_summary_kv("    ", "traction_url", ctx.base_url)
+
+    if ctx.webvh_last_create_namespace is not None:
+        LOG.info("")
+        LOG.info("  webvh (create)")
+        if ctx.webvh_last_created_did:
+            did_s = ctx.webvh_last_created_did
+            _log_summary_kv("    ", "did", did_s)
+            scid = webvh_scid_from_did(did_s)
+            explorer_base = webvh_server_base_for_explorer(
+                ctx.webvh_last_create_server_url, did_s
+            )
+            if scid and explorer_base:
+                _log_summary_kv(
+                    "    ",
+                    "explorer",
+                    webvh_explorer_dids_url(explorer_base, scid),
+                )
+        elif stop is None:
+            _log_summary_kv("    ", "did", "(not in create response yet)")
+
+    elif ctx.webvh_server_url and "configure-webvh-plugin" in plan:
+        LOG.info("")
+        LOG.info("  webvh (controller)")
+        _log_summary_kv("    ", "server_url", ctx.webvh_server_url)
 
 
 @click.command(context_settings={"help_option_names": ["-h", "--help"]})
@@ -26,19 +69,25 @@ LOG = logging.getLogger("webvh-e2e")
     help="Phase bundle to run.",
 )
 @click.option("-v", "--verbose", is_flag=True, help="Enable debug logging.")
-def main(profile: str, verbose: bool) -> int:
+@click.option(
+    "--witness",
+    is_flag=True,
+    help="Include endorsement in POST /did/webvh/configuration (endorser-style flow).",
+)
+def main(profile: str, verbose: bool, witness: bool) -> int:
     """Run WebVH E2E phases against the Traction tenant proxy."""
     load_dotenv()
     logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO, format="%(message)s")
 
     try:
         ctx = build_context()
+        ctx.use_witness = witness
     except RuntimeError as e:
         LOG.error("%s", e)
         return 1
 
     plan = PROFILES[profile]
-    LOG.info("base_url=%s profile=%s", ctx.base_url, profile)
+    LOG.info("traction_url=%s profile=%s", ctx.base_url, profile)
     LOG.info("")
 
     t0 = time.perf_counter()
@@ -67,6 +116,7 @@ def main(profile: str, verbose: bool) -> int:
         len(plan),
         time.perf_counter() - t0,
     )
+    _log_run_summary(ctx, stop, plan)
     return 0 if stop is None else 1
 
 

@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Any
 
 import requests
 
@@ -40,11 +41,26 @@ def _session_headers(bearer_token: str) -> dict[str, str]:
     }
 
 
+def get_plugin_webvh(config_json: dict[str, Any]) -> dict[str, Any] | None:
+    """``plugin_config.webvh`` or ``plugin_config.did-webvh`` from tenant server config."""
+    cfg = (config_json or {}).get("config") or {}
+    plugin = cfg.get("plugin_config") or {}
+    return plugin.get("webvh") or plugin.get("did-webvh")
+
+
 @dataclass
 class Context:
     base_url: str
     issuer_session: requests.Session
     holder_session: requests.Session
+    plugin_webvh: dict[str, Any] | None = None
+    webvh_server_url: str | None = None
+    webvh_witnesses: list[str] = field(default_factory=list)
+    use_witness: bool = False
+    webvh_last_created_did: str | None = None
+    webvh_last_create_namespace: str | None = None
+    webvh_last_create_alias: str | None = None
+    webvh_last_create_server_url: str | None = None
 
     def issuer_client(self) -> TractionClient:
         return TractionClient(self.base_url, self.issuer_session)
