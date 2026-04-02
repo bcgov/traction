@@ -147,7 +147,7 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | acapy.image.pullSecrets | list | `[]` |  |
 | acapy.image.registry | string | `"ghcr.io"` |  |
 | acapy.image.repository | string | `"bcgov/traction-plugins-acapy"` |  |
-| acapy.image.tag | string | `"1.4.0"` | Overrides the image tag which defaults to the chart appVersion. |
+| acapy.image.tag | string | `"1.6.0"` | Overrides the image tag which defaults to the chart appVersion. |
 | acapy.ingress.admin.enabled | bool | `false` | Enable ingress for the admin endpoint |
 | acapy.ingress.admin.hostname | string | `""` | Hostname to expose the admin endpoint |
 | acapy.ingress.agent.enabled | bool | `false` | Enable ingress for the agent endpoint |

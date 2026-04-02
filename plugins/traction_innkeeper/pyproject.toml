@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "traction-innkeeper"
-version = "1.5.1"
+version = "1.6.0"
 description = "The Innkeeper plugin for Traction, providing core tenant management capabilities."
 authors = [
     "Lucas O'Neil <lucasoneil@gmail.com>",
@@ -14,14 +14,14 @@ packages = [{include = "traction_innkeeper"}]
 
 [tool.poetry.dependencies]
 python = "^3.13"
-acapy-agent = { version = "1.5.1" }
+acapy-agent = { version = "1.6.0" }
 python-dateutil = "^2.9.0"
 bcrypt = "^5.0.0"
 mergedeep = "^1.3.4"
 typing-extensions = "4.15.0"
 anoncreds = "^0.2.3"
-multitenant-provider = {git = "https://github.com/openwallet-foundation/acapy-plugins", rev = "1.5.1", subdirectory = "multitenant_provider"}
-connections = {git = "https://github.com/openwallet-foundation/acapy-plugins", rev = "1.5.1", subdirectory = "connections"}
+multitenant-provider = {git = "https://github.com/openwallet-foundation/acapy-plugins", rev = "1.6.0", subdirectory = "multitenant_provider"}
+connections = {git = "https://github.com/openwallet-foundation/acapy-plugins", rev = "1.6.0", subdirectory = "connections"}
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.15.7"
