@@ -27,9 +27,7 @@ def issuer_tenant_token() -> str:
 def holder_tenant_token() -> str:
     token = os.environ.get("TRACTION_HOLDER_TENANT_TOKEN", "").strip()
     if not token:
-        raise RuntimeError(
-            "Holder tenant token required for this phase: set TRACTION_HOLDER_TENANT_TOKEN."
-        )
+        raise RuntimeError("Holder tenant token required: set TRACTION_HOLDER_TENANT_TOKEN.")
     return token
 
 
@@ -61,6 +59,14 @@ class Context:
     webvh_last_create_namespace: str | None = None
     webvh_last_create_alias: str | None = None
     webvh_last_create_server_url: str | None = None
+    # AnonCreds governance (WebVH issuer DID)
+    webvh_schema_id: str | None = None
+    webvh_cred_def_id: str | None = None
+    # DIDComm (issuer ↔ holder; IDs differ per tenant)
+    issuer_connection_id: str | None = None
+    holder_connection_id: str | None = None
+    # Issue-credential-2.0 (issuer role record after offer / issue)
+    issuer_cred_ex_id: str | None = None
 
     def issuer_client(self) -> TractionClient:
         return TractionClient(self.base_url, self.issuer_session)
