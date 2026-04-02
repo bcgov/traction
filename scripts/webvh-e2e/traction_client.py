@@ -36,7 +36,7 @@ class TractionClient:
         self,
         path: str,
         *,
-        json_body: Any = None,
+        json_body: Any | None = None,
         params: dict[str, Any] | None = None,
         timeout: float = 60,
         log_payload: Any | None = None,
@@ -48,8 +48,9 @@ class TractionClient:
         outgoing ``json_body`` is logged (they can differ, e.g. sanitized WebVH configure).
         """
         url = f"{self._base}{path}" if path.startswith("/") else f"{self._base}/{path}"
-        payload = {} if json_body is None else json_body
-        shown = payload if log_payload is None else log_payload
+        if json_body is None:
+            json_body = {}
+        shown = json_body if log_payload is None else log_payload
         LOG.info(
             "POST %s\nrequest body:\n%s",
             path,
@@ -57,7 +58,7 @@ class TractionClient:
         )
         return self._session.post(
             url,
-            json=payload,
+            json=json_body,
             params=params or {},
             timeout=timeout,
         )
@@ -287,7 +288,7 @@ class TractionClient:
         encoded = quote(pres_ex_id, safe="")
         return self._post_json(
             f"/present-proof-2.0/records/{encoded}/send-presentation",
-            json_body=body if body is not None else {},
+            json_body=body,
             timeout=timeout,
         )
 
