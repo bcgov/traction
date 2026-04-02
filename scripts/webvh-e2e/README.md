@@ -16,11 +16,11 @@ Current runtime behavior:
 - `upgrade-anoncreds-wallet`: `GET /tenant/wallet` for `settings.wallet.name` and type (ACA-Py `GET /settings` omits `wallet.name`), optional `POST /anoncreds/wallet/upgrade`, poll until `askar-anoncreds`
 - `configure-webvh-plugin`: `GET /tenant/server/status/config` (controller defaults only), optional `WEBVH_WITNESS_INVITATION` or fetch `/api/invitations` on the WebVH server, `POST /did/webvh/configuration` (INFO logs the sanitized **request** body; full **responses** and other HTTP bodies only with `run.py -v` / debug logging). Merges stored `parameter_options` from `GET /did/webvh/configuration`; sets `witness_threshold` only when `WEBVH_WITNESS_THRESHOLD` is positive, and **drops** any merged `witness_threshold` when it is not (avoids echoing an old stored value)
 - `webvh-create`: `POST /did/webvh/create` with `options` (`namespace`, `identifier` for the path segment, **`didcomm: true`**, optional `witness_threshold` when env is positive, optional `server_url` from stored config or context). Default identifier is **8** random `[a-z0-9]` characters (env `WEBVH_CREATE_ALIAS` / `WEBVH_CREATE_IDENTIFIER`). Sends **`apply_policy: true`** by default (merge with WebVH server identifier policy; matches ACA-Py). Set `WEBVH_CREATE_APPLY_POLICY=false` to skip policy merge. Sets `ctx.webvh_last_created_did` when the response includes a `did:webvh` id
-- `publish-schema-webvh` / `publish-cred-def-webvh`: `POST /anoncreds/schema` then `POST /anoncreds/credential-definition` with **`support_revocation: true`** and **`revocation_registry_size`** (default **4**, env `WEBVH_E2E_REVOCATION_REGISTRY_SIZE`). Idempotent when the same schema/cred-def already exists for the WebVH issuer DID. Schema/cred-def **responses** are debug-only (`-v`); INFO logs HTTP status lines and published ids
+- `publish-schema-webvh` / `publish-cred-def-webvh`: `POST /anoncreds/schema` then `POST /anoncreds/credential-definition` with **`support_revocation: true`** and **`revocation_registry_size`** (default **4** in `e2e_constants.py`). Idempotent when the same schema/cred-def already exists for the WebVH issuer DID. Schema/cred-def **responses** are debug-only (`-v`); INFO logs HTTP status lines and published ids
 - `oob-didexchange-webvh-didcomm`: issuer `POST /out-of-band/create-invitation` with **`use_did`** set to the wallet’s **`did:webvh`** (no `POST /wallet/did/public` — that is Indy public-DID/endorser, not this flow) and DID Exchange 1.1; holder `POST /out-of-band/receive-invitation` (`auto_accept`); polls until issuer has a new **active** connection
 - `issue-webvh`: `POST /issue-credential-2.0/send-offer` (anoncreds filter, `auto_issue`); holder `POST …/send-request`; polls until issuer exchange is **done**
 - `verify-webvh` / `verify-webvh-post-revoke`: `POST /present-proof-2.0/send-request` with anoncreds **non-revocation interval**, holder `POST …/send-presentation`; first round expects **verified**; after `revoke-webvh`, second round expects **not verified** (or **abandoned**)
-- `revoke-webvh`: `POST /anoncreds/revocation/revoke` with **`cred_ex_id`** from issuance and **`publish: true`**
+- `revoke-webvh`: `POST /anoncreds/revocation/revoke` with **`rev_reg_id` / `cred_rev_id`** when present (else **`cred_ex_id`**); **`publish`** / **`notify`** from `e2e_constants.py` (defaults: publish on, holder notify off)
 - context loading from `.env` and shell env
 - required issuer/holder token validation at startup
 - profile execution and end-of-run **summary** (indented `run` + `webvh` sections: `traction_url`; after create, full `did:webvh:…` and BCVH-style **explorer** links `{server_url}/api/explorer/dids?scid=…` and `{server_url}/api/explorer/resources?scid=…` when a DID is present — e.g. [resources for an SCID](https://sandbox.bcvh.vonx.io/api/explorer/resources?scid=QmRZdh2ivaQNv9YkEnSqDsbk2Vhz6TQJWSbCF95zCVfNnb))
@@ -50,7 +50,9 @@ Run commands from this directory (`scripts/webvh-e2e`) so `python-dotenv` picks 
 
 ## Environment variables
 
-The checked-in **`.env.example`** only comments `WEBVH_CREATE_ALIAS` under optional WebVH settings; all other optional variables below are still supported when set in `.env` or the shell.
+The checked-in **`.env.example`** comments optional WebVH create settings; other optional variables below work when set in `.env` or the shell.
+
+**Tuning** (schema/cred-def, preview attributes, polling intervals, revoke flags, wallet-upgrade wait): edit **`e2e_constants.py`** — not environment variables.
 
 Required:
 
@@ -58,31 +60,14 @@ Required:
 - `TRACTION_ISSUER_TENANT_TOKEN`
 - `TRACTION_HOLDER_TENANT_TOKEN`
 
-Optional (WebVH / wallet upgrade):
+Optional (WebVH):
 
-- `WEBVH_WALLET_UPGRADE_POLL_SEC` (default `2`) — poll interval after `POST /anoncreds/wallet/upgrade`
-- `WEBVH_WALLET_UPGRADE_TIMEOUT_SEC` (default `120`) — max wait for `askar-anoncreds`
 - `WEBVH_WITNESS_INVITATION` — full `witness_invitation` string for `POST /did/webvh/configuration` (skips unauthenticated fetch from the WebVH server)
 - `WEBVH_CREATE_NAMESPACE` (default `traction-e2e`) — `POST /did/webvh/create` `options.namespace`
 - `WEBVH_CREATE_ALIAS` — fixed `options.identifier` (default: random 8-char value when unset)
 - `WEBVH_CREATE_IDENTIFIER` — same as `WEBVH_CREATE_ALIAS` (fixed `options.identifier`)
 - `WEBVH_WITNESS_THRESHOLD` (default `0`, omitted from requests) — when set to a **positive** integer, adds `options.witness_threshold` on create and `parameter_options.witness_threshold` on configure
 - `WEBVH_CREATE_APPLY_POLICY` — set to `0` / `false` / `no` / `off` to send `apply_policy: false` (omit server policy merge; default in harness is **on** / `true`)
-
-Optional (full issuance / proof flow — see phases above):
-
-- `WEBVH_E2E_SCHEMA_NAME` (default `WebVHE2EHarness`) — AnonCreds schema name
-- `WEBVH_E2E_SCHEMA_VERSION` (default `1.0`)
-- `WEBVH_E2E_SCHEMA_ATTRS` (default `name,score`) — comma-separated attribute names (must match preview + proof request)
-- `WEBVH_E2E_CRED_DEF_TAG` (defaults to schema name) — cred-def tag
-- `WEBVH_E2E_REVOCATION_REGISTRY_SIZE` (default `4`) — AnonCreds revocation registry size on cred-def
-- `WEBVH_E2E_CRED_VALUES` — optional JSON object of attribute values for the offer, e.g. `{"name":"Alice","score":"99"}` (defaults: `name` / `score` sample strings)
-- `WEBVH_E2E_HOLDER_CONNECTION_ALIAS` (default `webvh-e2e-holder`) — holder alias for `receive-invitation`
-- `WEBVH_E2E_CONNECTION_POLL_SEC` / `WEBVH_E2E_CONNECTION_TIMEOUT_SEC` — DID Exchange polling (defaults `2` / `120`)
-- `WEBVH_E2E_ISSUE_POLL_SEC` / `WEBVH_E2E_ISSUE_TIMEOUT_SEC` — credential issue polling (defaults `2` / `300`)
-- `WEBVH_E2E_PROOF_POLL_SEC` / `WEBVH_E2E_PROOF_TIMEOUT_SEC` — presentation polling (defaults `2` / `180`)
-- `WEBVH_E2E_REVOKE_PUBLISH` (default `true`) — `POST /anoncreds/revocation/revoke` `publish` flag; set `false` if immediate publish returns 400 (e.g. registry/endorser constraints), then rely on pending revocation + later publish per your ops
-- `WEBVH_E2E_REVOKE_NOTIFY` (default off) — set `true` / `1` / `on` to send a holder revocation notification (`notify: true`); requires `connection_id` and `thread_id` on the exchange (or `issuer_connection_id` on context plus thread on the record). If unset, the harness sends **`notify: false`** so sandboxes with `--notify-revocation` do not require `connection_id`
 
 ## Profiles
 

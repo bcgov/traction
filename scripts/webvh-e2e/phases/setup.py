@@ -4,12 +4,20 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 import time
 
 from typing import Any
 
 from context import Context
+from e2e_constants import (
+    E2E_CRED_DEF_TAG,
+    E2E_REVOCATION_REGISTRY_SIZE,
+    E2E_SCHEMA_ATTR_NAMES,
+    E2E_SCHEMA_NAME,
+    E2E_SCHEMA_VERSION,
+    WALLET_UPGRADE_POLL_SEC,
+    WALLET_UPGRADE_TIMEOUT_SEC,
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -83,14 +91,6 @@ def _wallet_type_from_response(wallet: dict[str, Any]) -> str | None:
     return from_settings if isinstance(from_settings, str) else None
 
 
-def _wallet_upgrade_poll_sec() -> float:
-    return float(os.environ.get("WEBVH_WALLET_UPGRADE_POLL_SEC", "2"))
-
-
-def _wallet_upgrade_timeout_sec() -> float:
-    return float(os.environ.get("WEBVH_WALLET_UPGRADE_TIMEOUT_SEC", "120"))
-
-
 def phase_upgrade_anoncreds_wallet(ctx: Context) -> bool:
     """
     Ensure issuer wallet is upgraded to askar-anoncreds (POST /anoncreds/wallet/upgrade, poll GET /tenant/wallet).
@@ -138,8 +138,8 @@ def phase_upgrade_anoncreds_wallet(ctx: Context) -> bool:
         )
         return False
 
-    deadline = time.monotonic() + _wallet_upgrade_timeout_sec()
-    poll_interval_sec = _wallet_upgrade_poll_sec()
+    deadline = time.monotonic() + WALLET_UPGRADE_TIMEOUT_SEC
+    poll_interval_sec = WALLET_UPGRADE_POLL_SEC
     while time.monotonic() < deadline:
         poll_wallet_response = client.get_tenant_wallet()
         if not poll_wallet_response.ok:
@@ -161,30 +161,6 @@ def phase_upgrade_anoncreds_wallet(ctx: Context) -> bool:
 
     LOG.error("Timed out waiting for wallet type askar-anoncreds")
     return False
-
-
-def _schema_attr_names_from_env() -> list[str]:
-    raw = os.environ.get("WEBVH_E2E_SCHEMA_ATTRS", "name,score")
-    return [part.strip() for part in raw.split(",") if part.strip()]
-
-
-def _e2e_schema_name() -> str:
-    return (os.environ.get("WEBVH_E2E_SCHEMA_NAME") or "WebVHE2EHarness").strip()
-
-
-def _e2e_schema_version() -> str:
-    return (os.environ.get("WEBVH_E2E_SCHEMA_VERSION") or "1.0").strip()
-
-
-def _e2e_cred_def_tag() -> str:
-    return (os.environ.get("WEBVH_E2E_CRED_DEF_TAG") or _e2e_schema_name()).strip()
-
-
-def _revocation_registry_size() -> int:
-    try:
-        return max(1, int(os.environ.get("WEBVH_E2E_REVOCATION_REGISTRY_SIZE", "4")))
-    except ValueError:
-        return 4
 
 
 def _extract_schema_id_from_post(body: dict[str, Any]) -> str | None:
@@ -210,9 +186,9 @@ def phase_publish_schema(ctx: Context) -> bool:
         LOG.error("No did:webvh on context; run webvh-create first")
         return False
 
-    name = _e2e_schema_name()
-    version = _e2e_schema_version()
-    attr_names = _schema_attr_names_from_env()
+    name = E2E_SCHEMA_NAME
+    version = E2E_SCHEMA_VERSION
+    attr_names = list(E2E_SCHEMA_ATTR_NAMES)
     client = ctx.issuer_client()
 
     list_query = {
@@ -302,8 +278,8 @@ def phase_publish_cred_def(ctx: Context) -> bool:
         LOG.error("Missing issuer DID or schema_id; run publish-schema-webvh first")
         return False
 
-    tag = _e2e_cred_def_tag()
-    reg_size = _revocation_registry_size()
+    tag = E2E_CRED_DEF_TAG
+    reg_size = E2E_REVOCATION_REGISTRY_SIZE
     client = ctx.issuer_client()
 
     list_query = {"schema_id": schema_id, "issuer_id": issuer_did}

@@ -4,11 +4,15 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 import time
 from typing import Any
 
 from context import Context
+from e2e_constants import (
+    E2E_CREDENTIAL_PREVIEW_ATTRIBUTES,
+    E2E_ISSUE_POLL_SEC,
+    E2E_ISSUE_TIMEOUT_SEC,
+)
 from helpers import poll_until
 
 LOG = logging.getLogger("webvh-e2e")
@@ -53,23 +57,6 @@ def _placeholder_phase(phase_name: str) -> bool:
     return True
 
 
-def _credential_preview_attributes() -> list[dict[str, str]]:
-    raw = (os.environ.get("WEBVH_E2E_CRED_VALUES") or "").strip()
-    if raw:
-        try:
-            data = json.loads(raw)
-        except json.JSONDecodeError:
-            LOG.error("WEBVH_E2E_CRED_VALUES must be JSON object of attr -> value")
-            return []
-        if not isinstance(data, dict):
-            return []
-        return [{"name": str(k), "value": str(v)} for k, v in data.items()]
-    return [
-        {"name": "name", "value": "WebVH E2E"},
-        {"name": "score", "value": "42"},
-    ]
-
-
 def phase_issue_webvh(ctx: Context) -> bool:
     """
     Issuer: POST /issue-credential-2.0/send-offer (anoncreds, auto_issue).
@@ -83,9 +70,6 @@ def phase_issue_webvh(ctx: Context) -> bool:
 
     issuer = ctx.issuer_client()
     holder = ctx.holder_client()
-    attrs = _credential_preview_attributes()
-    if not attrs:
-        return False
 
     offer_body = {
         "auto_issue": True,
@@ -93,7 +77,7 @@ def phase_issue_webvh(ctx: Context) -> bool:
         "connection_id": ctx.issuer_connection_id,
         "credential_preview": {
             "@type": "issue-credential/2.0/credential-preview",
-            "attributes": attrs,
+            "attributes": E2E_CREDENTIAL_PREVIEW_ATTRIBUTES,
         },
         "filter": {"anoncreds": {"cred_def_id": ctx.webvh_cred_def_id}},
         "trace": False,
@@ -131,8 +115,8 @@ def phase_issue_webvh(ctx: Context) -> bool:
     if thread_id:
         LOG.info("Credential exchange thread_id=%s (for holder correlation)", thread_id)
 
-    poll_sec = float(os.environ.get("WEBVH_E2E_ISSUE_POLL_SEC", "2"))
-    timeout_sec = float(os.environ.get("WEBVH_E2E_ISSUE_TIMEOUT_SEC", "300"))
+    poll_sec = E2E_ISSUE_POLL_SEC
+    timeout_sec = E2E_ISSUE_TIMEOUT_SEC
     diag_interval = 30.0
     last_diag = time.monotonic()
 

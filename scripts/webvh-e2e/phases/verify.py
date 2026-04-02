@@ -4,22 +4,21 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 import time
 from typing import Any
 
 from context import Context
+from e2e_constants import (
+    E2E_PROOF_POLL_SEC,
+    E2E_PROOF_TIMEOUT_SEC,
+    E2E_SCHEMA_ATTR_NAMES,
+)
 from helpers import poll_until
 
 LOG = logging.getLogger("webvh-e2e")
 
 # Must match ``requested_attributes`` key in ``presentation_request.anoncreds`` below.
 _E2E_PROOF_ATTR_REFERENT = "e2e_attrs"
-
-
-def _schema_attr_names() -> list[str]:
-    raw = os.environ.get("WEBVH_E2E_SCHEMA_ATTRS", "name,score")
-    return [part.strip() for part in raw.split(",") if part.strip()]
 
 
 def _verified_is_true(value: Any) -> bool:
@@ -37,10 +36,7 @@ def _present_proof_round(ctx: Context, *, expect_verified: bool) -> bool:
 
     issuer = ctx.issuer_client()
     holder = ctx.holder_client()
-    attr_names = _schema_attr_names()
-    if not attr_names:
-        LOG.error("No schema attribute names for proof request")
-        return False
+    attr_names = list(E2E_SCHEMA_ATTR_NAMES)
 
     now = int(time.time())
     proof_body = {
@@ -87,8 +83,8 @@ def _present_proof_round(ctx: Context, *, expect_verified: bool) -> bool:
         return False
     pres_ex_id_verifier = str(pres_ex_id_verifier)
 
-    poll_sec = float(os.environ.get("WEBVH_E2E_PROOF_POLL_SEC", "2"))
-    timeout_sec = float(os.environ.get("WEBVH_E2E_PROOF_TIMEOUT_SEC", "180"))
+    poll_sec = E2E_PROOF_POLL_SEC
+    timeout_sec = E2E_PROOF_TIMEOUT_SEC
 
     def holder_pres_ex_id() -> str | None:
         records = holder.get_present_proof_v2_records(

@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 from typing import Any
 
 from context import Context
+from e2e_constants import E2E_REVOKE_NOTIFY, E2E_REVOKE_PUBLISH
 
 LOG = logging.getLogger("webvh-e2e")
 
@@ -56,40 +56,11 @@ def phase_revoke_webvh(ctx: Context) -> bool:
         return False
 
     rev_reg_id, cred_rev_id = _revocation_ids_from_cred_ex_detail(detail)
-    publish = os.environ.get("WEBVH_E2E_REVOKE_PUBLISH", "true").strip().lower() not in (
-        "0",
-        "false",
-        "no",
-        "off",
-    )
 
-    # Agents started with --notify-revocation default notify=true; that requires connection_id +
-    # thread_id. E2E revokes locally without DIDComm revocation notification unless opted in.
-    notify = os.environ.get("WEBVH_E2E_REVOKE_NOTIFY", "").strip().lower() in (
-        "1",
-        "true",
-        "yes",
-        "on",
-    )
-
-    def _cred_ex_core(d: dict[str, Any]) -> dict[str, Any]:
-        cr = d.get("cred_ex_record")
-        return cr if isinstance(cr, dict) else {}
-
-    body: dict[str, Any] = {"publish": publish, "notify": notify}
-
-    if notify:
-        core = _cred_ex_core(detail)
-        conn = core.get("connection_id") or ctx.issuer_connection_id
-        tid = core.get("thread_id") or core.get("parent_thread_id")
-        if not conn or not tid:
-            LOG.error(
-                "WEBVH_E2E_REVOKE_NOTIFY enabled but missing connection_id or thread_id "
-                "(need them on the cred exchange or issuer_connection_id + thread on record)"
-            )
-            return False
-        body["connection_id"] = str(conn)
-        body["thread_id"] = str(tid)
+    body: dict[str, Any] = {
+        "publish": E2E_REVOKE_PUBLISH,
+        "notify": E2E_REVOKE_NOTIFY,
+    }
 
     if rev_reg_id and cred_rev_id:
         body["rev_reg_id"] = rev_reg_id
