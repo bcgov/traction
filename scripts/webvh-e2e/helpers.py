@@ -1,16 +1,33 @@
-"""Small helpers for WebVH harness (unauthenticated WebVH server calls)."""
+"""Small helpers for WebVH harness (WebVH server calls, explorer URLs, polling)."""
 
 from __future__ import annotations
 
 import base64
 import json
 import logging
-from typing import Any
+import time
+from collections.abc import Callable
+from typing import Any, TypeVar
 from urllib.parse import quote, urlsplit
 
 import requests
 
 LOG = logging.getLogger(__name__)
+
+T = TypeVar("T")
+
+
+def v20_cred_ex_record_core(row: Any) -> dict[str, Any]:
+    """
+    ACA-Py often wraps the v2.0 credential exchange in ``cred_ex_record`` (``V20CredExRecordDetail``):
+    applies to **list** ``GET /issue-credential-2.0/records`` and **single-record** GET by id.
+    """
+    if not isinstance(row, dict):
+        return {}
+    inner = row.get("cred_ex_record")
+    if isinstance(inner, dict):
+        return inner
+    return row
 
 
 def fetch_witness_invitation_json(server_url: str, witness_did_fragment: str) -> dict[str, Any]:
@@ -40,6 +57,20 @@ def build_witness_invitation_didcomm(server_url: str, witness_did_fragment: str)
     return witness_invitation_to_didcomm(invitation_payload)
 
 
+def sanitized_webvh_config_for_log(cfg: dict[str, Any]) -> dict[str, Any]:
+    """
+    Copy WebVH configuration JSON for logging only: shorten ``witness_invitation``;
+    clear ``scids`` (SCID → DID can be sensitive / noisy in CI logs).
+    """
+    out: dict[str, Any] = dict(cfg)
+    witness_invitation_value = out.get("witness_invitation")
+    if isinstance(witness_invitation_value, str) and witness_invitation_value:
+        out["witness_invitation"] = f"<set, {len(witness_invitation_value)} chars>"
+    if "scids" in out:
+        out["scids"] = {}
+    return out
+
+
 def _webvh_did_segments(did: str) -> tuple[str, str, str, str] | None:
     """``(scid, host, namespace, path_segment)`` for ``did:webvh:…`` or ``None``."""
     parts = did.split(":")
@@ -65,6 +96,17 @@ def webvh_explorer_dids_url(server_url: str, scid: str) -> str:
     return f"{base}/api/explorer/dids?scid={encoded_scid}"
 
 
+def webvh_explorer_resources_url(server_url: str, scid: str) -> str:
+    """
+    BCVH-style attested resources explorer (schemas, cred defs, revocation, status lists).
+
+    Path: ``/api/explorer/resources?scid=…`` on the WebVH server base.
+    """
+    base = server_url.strip().rstrip("/")
+    encoded_scid = quote(scid, safe="")
+    return f"{base}/api/explorer/resources?scid={encoded_scid}"
+
+
 def webvh_server_base_for_explorer(server_url: str | None, did: str | None) -> str | None:
     """Prefer configured ``server_url``; else ``https://<host>`` from ``did`` if parseable."""
     if server_url and server_url.strip():
@@ -76,4 +118,27 @@ def webvh_server_base_for_explorer(server_url: str | None, did: str | None) -> s
         segments = _webvh_did_segments(did)
         if segments:
             return f"https://{segments[1]}"
+    return None
+
+
+def poll_until(
+    fetch: Callable[[], T | None],
+    *,
+    timeout_sec: float,
+    interval_sec: float,
+    description: str,
+) -> T | None:
+    """
+    Call ``fetch()`` until it returns a non-None value or timeout.
+
+    ``fetch`` should return None while waiting (e.g. ACA-Py / DIDComm not ready yet).
+    """
+    e2e_log = logging.getLogger("webvh-e2e")
+    deadline = time.monotonic() + timeout_sec
+    while time.monotonic() < deadline:
+        result = fetch()
+        if result is not None:
+            return result
+        time.sleep(interval_sec)
+    e2e_log.error("Timeout waiting for: %s", description)
     return None
