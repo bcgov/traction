@@ -8,7 +8,7 @@ import time
 from typing import Any
 
 from context import Context
-from e2e_constants import (
+from constants import (
     E2E_CREDENTIAL_PREVIEW_ATTRIBUTES,
     E2E_ISSUE_POLL_SEC,
     E2E_ISSUE_TIMEOUT_SEC,

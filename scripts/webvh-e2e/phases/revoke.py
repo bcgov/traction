@@ -7,7 +7,7 @@ import logging
 from typing import Any
 
 from context import Context
-from e2e_constants import E2E_REVOKE_NOTIFY, E2E_REVOKE_PUBLISH
+from constants import E2E_REVOKE_NOTIFY, E2E_REVOKE_PUBLISH
 
 LOG = logging.getLogger("webvh-e2e")
 

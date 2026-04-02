@@ -9,7 +9,7 @@ import time
 from typing import Any
 
 from context import Context
-from e2e_constants import (
+from constants import (
     E2E_CRED_DEF_TAG,
     E2E_REVOCATION_REGISTRY_SIZE,
     E2E_SCHEMA_ATTR_NAMES,

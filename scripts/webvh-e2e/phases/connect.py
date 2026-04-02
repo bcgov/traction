@@ -8,7 +8,7 @@ import time
 from typing import Any
 
 from context import Context
-from e2e_constants import (
+from constants import (
     E2E_CONNECTION_POLL_SEC,
     E2E_CONNECTION_TIMEOUT_SEC,
     E2E_HOLDER_CONNECTION_ALIAS,

@@ -16,11 +16,11 @@ Current runtime behavior:
 - `upgrade-anoncreds-wallet`: `GET /tenant/wallet` for `settings.wallet.name` and type (ACA-Py `GET /settings` omits `wallet.name`), optional `POST /anoncreds/wallet/upgrade`, poll until `askar-anoncreds`
 - `configure-webvh-plugin`: `GET /tenant/server/status/config` (controller defaults only), optional `WEBVH_WITNESS_INVITATION` or fetch `/api/invitations` on the WebVH server, `POST /did/webvh/configuration` (INFO logs the sanitized **request** body; full **responses** and other HTTP bodies only with `run.py -v` / debug logging). Merges stored `parameter_options` from `GET /did/webvh/configuration`; sets `witness_threshold` only when `WEBVH_WITNESS_THRESHOLD` is positive, and **drops** any merged `witness_threshold` when it is not (avoids echoing an old stored value)
 - `webvh-create`: `POST /did/webvh/create` with `options` (`namespace`, `identifier` for the path segment, **`didcomm: true`**, optional `witness_threshold` when env is positive, optional `server_url` from stored config or context). Default identifier is **8** random `[a-z0-9]` characters (env `WEBVH_CREATE_ALIAS` / `WEBVH_CREATE_IDENTIFIER`). Sends **`apply_policy: true`** by default (merge with WebVH server identifier policy; matches ACA-Py). Set `WEBVH_CREATE_APPLY_POLICY=false` to skip policy merge. Sets `ctx.webvh_last_created_did` when the response includes a `did:webvh` id
-- `publish-schema-webvh` / `publish-cred-def-webvh`: `POST /anoncreds/schema` then `POST /anoncreds/credential-definition` with **`support_revocation: true`** and **`revocation_registry_size`** (default **4** in `e2e_constants.py`). Idempotent when the same schema/cred-def already exists for the WebVH issuer DID. Schema/cred-def **responses** are debug-only (`-v`); INFO logs HTTP status lines and published ids
+- `publish-schema-webvh` / `publish-cred-def-webvh`: `POST /anoncreds/schema` then `POST /anoncreds/credential-definition` with **`support_revocation: true`** and **`revocation_registry_size`** (default **4** in `constants.py`). Idempotent when the same schema/cred-def already exists for the WebVH issuer DID. Schema/cred-def **responses** are debug-only (`-v`); INFO logs HTTP status lines and published ids
 - `oob-didexchange-webvh-didcomm`: issuer `POST /out-of-band/create-invitation` with **`use_did`** set to the wallet’s **`did:webvh`** (no `POST /wallet/did/public` — that is Indy public-DID/endorser, not this flow) and DID Exchange 1.1; holder `POST /out-of-band/receive-invitation` (`auto_accept`); polls until issuer has a new **active** connection
 - `issue-webvh`: `POST /issue-credential-2.0/send-offer` (anoncreds filter, `auto_issue`); holder `POST …/send-request`; polls until issuer exchange is **done**
 - `verify-webvh` / `verify-webvh-post-revoke`: `POST /present-proof-2.0/send-request` with anoncreds **non-revocation interval**, holder `POST …/send-presentation`; first round expects **verified**; after `revoke-webvh`, second round expects **not verified** (or **abandoned**)
-- `revoke-webvh`: `POST /anoncreds/revocation/revoke` with **`rev_reg_id` / `cred_rev_id`** when present (else **`cred_ex_id`**); **`publish`** / **`notify`** from `e2e_constants.py` (defaults: publish on, holder notify off)
+- `revoke-webvh`: `POST /anoncreds/revocation/revoke` with **`rev_reg_id` / `cred_rev_id`** when present (else **`cred_ex_id`**); **`publish`** / **`notify`** from `constants.py` (defaults: publish on, holder notify off)
 - context loading from `.env` and shell env
 - required issuer/holder token validation at startup
 - profile execution and end-of-run **summary** (indented `run` + `webvh` sections: `traction_url`; after create, full `did:webvh:…` and BCVH-style **explorer** links `{server_url}/api/explorer/dids?scid=…` and `{server_url}/api/explorer/resources?scid=…` when a DID is present — e.g. [resources for an SCID](https://sandbox.bcvh.vonx.io/api/explorer/resources?scid=QmRZdh2ivaQNv9YkEnSqDsbk2Vhz6TQJWSbCF95zCVfNnb))
@@ -52,7 +52,7 @@ Run commands from this directory (`scripts/webvh-e2e`) so `python-dotenv` picks 
 
 The checked-in **`.env.example`** comments optional WebVH create settings; other optional variables below work when set in `.env` or the shell.
 
-**Tuning** (schema/cred-def, preview attributes, polling intervals, revoke flags, wallet-upgrade wait): edit **`e2e_constants.py`** — not environment variables.
+**Tuning** (schema/cred-def, preview attributes, polling intervals, revoke flags, wallet-upgrade wait): edit **`constants.py`** — not environment variables.
 
 Required:
 

@@ -8,7 +8,7 @@ import time
 from typing import Any
 
 from context import Context
-from e2e_constants import (
+from constants import (
     E2E_PROOF_POLL_SEC,
     E2E_PROOF_TIMEOUT_SEC,
     E2E_SCHEMA_ATTR_NAMES,
