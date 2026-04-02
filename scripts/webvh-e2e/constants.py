@@ -5,7 +5,7 @@ from __future__ import annotations
 # AnonCreds schema / cred-def (must match credential preview + proof request)
 E2E_SCHEMA_NAME = "WebVHE2EHarness"
 E2E_SCHEMA_VERSION = "1.0"
-E2E_SCHEMA_ATTR_NAMES: tuple[str, ...] = ("name", "score")
+E2E_SCHEMA_ATTR_NAMES: list[str] = ["name", "score"]
 E2E_CRED_DEF_TAG = E2E_SCHEMA_NAME
 E2E_REVOCATION_REGISTRY_SIZE = 4
 

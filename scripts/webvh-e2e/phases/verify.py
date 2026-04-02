@@ -36,7 +36,7 @@ def _present_proof_round(ctx: Context, *, expect_verified: bool) -> bool:
 
     issuer = ctx.issuer_client()
     holder = ctx.holder_client()
-    attr_names = list(E2E_SCHEMA_ATTR_NAMES)
+    attr_names = E2E_SCHEMA_ATTR_NAMES
 
     now = int(time.time())
     proof_body = {

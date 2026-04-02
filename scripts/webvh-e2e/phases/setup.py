@@ -188,7 +188,7 @@ def phase_publish_schema(ctx: Context) -> bool:
 
     name = E2E_SCHEMA_NAME
     version = E2E_SCHEMA_VERSION
-    attr_names = list(E2E_SCHEMA_ATTR_NAMES)
+    attr_names = E2E_SCHEMA_ATTR_NAMES
     client = ctx.issuer_client()
 
     list_query = {
