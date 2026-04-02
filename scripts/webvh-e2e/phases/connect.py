@@ -9,7 +9,7 @@ import time
 from typing import Any
 
 from context import Context
-from polling import poll_until
+from helpers import poll_until
 
 LOG = logging.getLogger("webvh-e2e")
 

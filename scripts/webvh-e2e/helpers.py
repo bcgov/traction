@@ -1,16 +1,20 @@
-"""Small helpers for WebVH harness (unauthenticated WebVH server calls)."""
+"""Small helpers for WebVH harness (WebVH server calls, explorer URLs, polling)."""
 
 from __future__ import annotations
 
 import base64
 import json
 import logging
-from typing import Any
+import time
+from collections.abc import Callable
+from typing import Any, TypeVar
 from urllib.parse import quote, urlsplit
 
 import requests
 
 LOG = logging.getLogger(__name__)
+
+T = TypeVar("T")
 
 
 def fetch_witness_invitation_json(server_url: str, witness_did_fragment: str) -> dict[str, Any]:
@@ -101,4 +105,27 @@ def webvh_server_base_for_explorer(server_url: str | None, did: str | None) -> s
         segments = _webvh_did_segments(did)
         if segments:
             return f"https://{segments[1]}"
+    return None
+
+
+def poll_until(
+    fetch: Callable[[], T | None],
+    *,
+    timeout_sec: float,
+    interval_sec: float,
+    description: str,
+) -> T | None:
+    """
+    Call ``fetch()`` until it returns a non-None value or timeout.
+
+    ``fetch`` should return None while waiting (e.g. ACA-Py / DIDComm not ready yet).
+    """
+    e2e_log = logging.getLogger("webvh-e2e")
+    deadline = time.monotonic() + timeout_sec
+    while time.monotonic() < deadline:
+        result = fetch()
+        if result is not None:
+            return result
+        time.sleep(interval_sec)
+    e2e_log.error("Timeout waiting for: %s", description)
     return None
