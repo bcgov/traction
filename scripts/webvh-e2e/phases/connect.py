@@ -80,7 +80,6 @@ def _holder_receive_oob_and_connection_id(
     recv = holder.post_out_of_band_receive_invitation(
         invitation,
         alias=holder_alias,
-        auto_accept=True,
     )
     if not recv.ok:
         LOG.error(

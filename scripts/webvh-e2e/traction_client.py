@@ -153,14 +153,13 @@ class TractionClient:
         invitation: dict[str, Any],
         *,
         alias: str,
-        auto_accept: bool = True,
         timeout: float = 120,
     ) -> requests.Response:
-        """POST /out-of-band/receive-invitation (body is the invitation message)."""
+        """POST /out-of-band/receive-invitation (body is the invitation message; auto_accept=true)."""
         return self._post_json(
             "/out-of-band/receive-invitation",
             json_body=invitation,
-            params={"alias": alias, "auto_accept": "true" if auto_accept else "false"},
+            params={"alias": alias, "auto_accept": "true"},
             timeout=timeout,
         )
 
