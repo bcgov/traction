@@ -32,6 +32,9 @@ class TractionClient:
         self._base = base_url.rstrip("/")
         self._session = session
 
+    def _url(self, path: str) -> str:
+        return f"{self._base}{path}" if path.startswith("/") else f"{self._base}/{path}"
+
     def _post_json(
         self,
         path: str,
@@ -39,22 +42,15 @@ class TractionClient:
         json_body: Any | None = None,
         params: dict[str, Any] | None = None,
         timeout: float = 60,
-        log_payload: Any | None = None,
     ) -> requests.Response:
-        """
-        POST JSON to ``{base}{path}``. Logs at INFO before send.
-
-        If ``log_payload`` is set, that value is formatted for the log line; otherwise the
-        outgoing ``json_body`` is logged (they can differ, e.g. sanitized WebVH configure).
-        """
-        url = f"{self._base}{path}" if path.startswith("/") else f"{self._base}/{path}"
+        """POST JSON to ``{base}{path}``. Logs the outgoing body at INFO before send."""
+        url = self._url(path)
         if json_body is None:
             json_body = {}
-        shown = json_body if log_payload is None else log_payload
         LOG.info(
             "POST %s\nrequest body:\n%s",
             path,
-            _format_request_body_for_log(shown),
+            _format_request_body_for_log(json_body),
         )
         return self._session.post(
             url,
@@ -94,13 +90,19 @@ class TractionClient:
         return self._session.get(f"{self._base}/did/webvh/configuration", timeout=timeout)
 
     def post_did_webvh_configuration(self, body: dict[str, Any], *, timeout: float = 120) -> requests.Response:
-        """POST /did/webvh/configuration (logs a sanitized copy of ``body``)."""
-        log_payload = sanitized_webvh_config_for_log(body) if isinstance(body, dict) else body
-        return self._post_json(
-            "/did/webvh/configuration",
-            json_body=body,
+        """POST /did/webvh/configuration. INFO log is redacted; the request sends ``body`` unchanged."""
+        path = "/did/webvh/configuration"
+        for_log = sanitized_webvh_config_for_log(body) if isinstance(body, dict) else body
+        LOG.info(
+            "POST %s\nrequest body:\n%s",
+            path,
+            _format_request_body_for_log(for_log),
+        )
+        return self._session.post(
+            self._url(path),
+            json=body,
+            params={},
             timeout=timeout,
-            log_payload=log_payload,
         )
 
     def post_did_webvh_create(self, body: dict[str, Any], *, timeout: float = 180) -> requests.Response:
