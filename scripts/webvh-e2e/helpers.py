@@ -65,6 +65,17 @@ def webvh_explorer_dids_url(server_url: str, scid: str) -> str:
     return f"{base}/api/explorer/dids?scid={encoded_scid}"
 
 
+def webvh_explorer_resources_url(server_url: str, scid: str) -> str:
+    """
+    BCVH-style attested resources explorer (schemas, cred defs, revocation, status lists).
+
+    Path: ``/api/explorer/resources?scid=…`` on the WebVH server base.
+    """
+    base = server_url.strip().rstrip("/")
+    encoded_scid = quote(scid, safe="")
+    return f"{base}/api/explorer/resources?scid={encoded_scid}"
+
+
 def webvh_server_base_for_explorer(server_url: str | None, did: str | None) -> str | None:
     """Prefer configured ``server_url``; else ``https://<host>`` from ``did`` if parseable."""
     if server_url and server_url.strip():

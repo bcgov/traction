@@ -6,10 +6,22 @@ Add methods as phases need them; each public method should map to one REST call.
 
 from __future__ import annotations
 
+import json
+import logging
 from typing import Any
 from urllib.parse import quote
 
 import requests
+
+LOG = logging.getLogger("webvh-e2e")
+_LOG_BODY_DEFAULT = object()
+
+
+def _format_request_body_for_log(data: Any) -> str:
+    try:
+        return json.dumps(data, indent=2, ensure_ascii=False, default=str)
+    except TypeError:
+        return str(data)
 
 
 class TractionClient:
@@ -18,6 +30,31 @@ class TractionClient:
     def __init__(self, base_url: str, session: requests.Session) -> None:
         self._base = base_url.rstrip("/")
         self._session = session
+
+    def _post_json(
+        self,
+        path: str,
+        *,
+        json_body: Any = None,
+        log_body: Any = _LOG_BODY_DEFAULT,
+        params: dict[str, Any] | None = None,
+        timeout: float = 60,
+    ) -> requests.Response:
+        """
+        POST JSON to ``{base}{path}``. Logs the request body at INFO immediately before send.
+
+        Pass ``log_body`` to log a redacted/sanitized variant while still sending ``json_body``.
+        """
+        url = f"{self._base}{path}" if path.startswith("/") else f"{self._base}/{path}"
+        payload = {} if json_body is None else json_body
+        to_log = payload if log_body is _LOG_BODY_DEFAULT else log_body
+        LOG.info("POST %s\nrequest body:\n%s", path, _format_request_body_for_log(to_log))
+        return self._session.post(
+            url,
+            json=payload,
+            params=params or {},
+            timeout=timeout,
+        )
 
     def get_status_live(self, *, timeout: float = 30) -> requests.Response:
         """GET /status/live"""
@@ -38,10 +75,10 @@ class TractionClient:
     def post_anoncreds_wallet_upgrade(self, wallet_name: str, *, timeout: float = 120) -> requests.Response:
         """POST /anoncreds/wallet/upgrade?wallet_name=…"""
         encoded_wallet_name = quote(wallet_name, safe="")
-        return self._session.post(
-            f"{self._base}/anoncreds/wallet/upgrade",
+        return self._post_json(
+            "/anoncreds/wallet/upgrade",
+            json_body={},
             params={"wallet_name": encoded_wallet_name},
-            json={},
             timeout=timeout,
         )
 
@@ -49,20 +86,42 @@ class TractionClient:
         """GET /did/webvh/configuration (tenant-stored WebVH config)."""
         return self._session.get(f"{self._base}/did/webvh/configuration", timeout=timeout)
 
-    def post_did_webvh_configuration(self, body: dict[str, Any], *, timeout: float = 120) -> requests.Response:
-        """POST /did/webvh/configuration"""
-        return self._session.post(f"{self._base}/did/webvh/configuration", json=body, timeout=timeout)
+    def post_did_webvh_configuration(
+        self,
+        body: dict[str, Any],
+        *,
+        timeout: float = 120,
+        log_body: Any = _LOG_BODY_DEFAULT,
+    ) -> requests.Response:
+        """POST /did/webvh/configuration (optional ``log_body`` for sanitized logs)."""
+        return self._post_json(
+            "/did/webvh/configuration",
+            json_body=body,
+            log_body=log_body,
+            timeout=timeout,
+        )
 
-    def post_did_webvh_create(self, body: dict[str, Any], *, timeout: float = 180) -> requests.Response:
-        """POST /did/webvh/create (body includes ``options`` for namespace, identifier, etc.)."""
-        return self._session.post(f"{self._base}/did/webvh/create", json=body, timeout=timeout)
+    def post_did_webvh_create(
+        self,
+        body: dict[str, Any],
+        *,
+        timeout: float = 180,
+        log_body: Any = _LOG_BODY_DEFAULT,
+    ) -> requests.Response:
+        """POST /did/webvh/create (optional ``log_body`` for sanitized logs)."""
+        return self._post_json(
+            "/did/webvh/create",
+            json_body=body,
+            log_body=log_body,
+            timeout=timeout,
+        )
 
     def post_wallet_did_public(self, did: str, *, timeout: float = 60) -> requests.Response:
-        """POST /wallet/did/public?did=… (set tenant public DID, e.g. did:webvh:…)."""
+        """POST /wallet/did/public?did=… (Indy-style public DID; requires endorser where enforced)."""
         encoded_did = quote(did, safe="")
-        return self._session.post(
-            f"{self._base}/wallet/did/public?did={encoded_did}",
-            json={},
+        return self._post_json(
+            f"/wallet/did/public?did={encoded_did}",
+            json_body={},
             timeout=timeout,
         )
 
@@ -85,10 +144,10 @@ class TractionClient:
         timeout: float = 120,
     ) -> requests.Response:
         """POST /out-of-band/create-invitation"""
-        return self._session.post(
-            f"{self._base}/out-of-band/create-invitation",
+        return self._post_json(
+            "/out-of-band/create-invitation",
+            json_body=body,
             params={"multi_use": "true" if multi_use else "false"},
-            json=body,
             timeout=timeout,
         )
 
@@ -101,16 +160,16 @@ class TractionClient:
         timeout: float = 120,
     ) -> requests.Response:
         """POST /out-of-band/receive-invitation (body is the invitation message)."""
-        return self._session.post(
-            f"{self._base}/out-of-band/receive-invitation",
+        return self._post_json(
+            "/out-of-band/receive-invitation",
+            json_body=invitation,
             params={"alias": alias, "auto_accept": "true" if auto_accept else "false"},
-            json=invitation,
             timeout=timeout,
         )
 
     def post_anoncreds_schema(self, body: dict[str, Any], *, timeout: float = 120) -> requests.Response:
         """POST /anoncreds/schema"""
-        return self._session.post(f"{self._base}/anoncreds/schema", json=body, timeout=timeout)
+        return self._post_json("/anoncreds/schema", json_body=body, timeout=timeout)
 
     def get_anoncreds_schemas(self, *, params: dict[str, Any] | None = None, timeout: float = 60) -> requests.Response:
         """GET /anoncreds/schemas"""
@@ -125,9 +184,9 @@ class TractionClient:
         self, body: dict[str, Any], *, timeout: float = 120
     ) -> requests.Response:
         """POST /anoncreds/credential-definition"""
-        return self._session.post(
-            f"{self._base}/anoncreds/credential-definition",
-            json=body,
+        return self._post_json(
+            "/anoncreds/credential-definition",
+            json_body=body,
             timeout=timeout,
         )
 
@@ -145,9 +204,9 @@ class TractionClient:
         self, body: dict[str, Any], *, timeout: float = 120
     ) -> requests.Response:
         """POST /issue-credential-2.0/send-offer"""
-        return self._session.post(
-            f"{self._base}/issue-credential-2.0/send-offer",
-            json=body,
+        return self._post_json(
+            "/issue-credential-2.0/send-offer",
+            json_body=body,
             timeout=timeout,
         )
 
@@ -165,16 +224,18 @@ class TractionClient:
         self, cred_ex_id: str, *, timeout: float = 120
     ) -> requests.Response:
         """POST /issue-credential-2.0/records/{cred_ex_id}/send-request"""
-        return self._session.post(
-            f"{self._base}/issue-credential-2.0/records/{cred_ex_id}/send-request",
-            json={},
+        encoded = quote(cred_ex_id, safe="")
+        return self._post_json(
+            f"/issue-credential-2.0/records/{encoded}/send-request",
+            json_body={},
             timeout=timeout,
         )
 
     def get_issue_credential_v2_record(self, cred_ex_id: str, *, timeout: float = 60) -> requests.Response:
         """GET /issue-credential-2.0/records/{cred_ex_id}"""
+        encoded = quote(cred_ex_id, safe="")
         return self._session.get(
-            f"{self._base}/issue-credential-2.0/records/{cred_ex_id}",
+            f"{self._base}/issue-credential-2.0/records/{encoded}",
             timeout=timeout,
         )
 
@@ -182,9 +243,9 @@ class TractionClient:
         self, body: dict[str, Any], *, timeout: float = 120
     ) -> requests.Response:
         """POST /present-proof-2.0/send-request"""
-        return self._session.post(
-            f"{self._base}/present-proof-2.0/send-request",
-            json=body,
+        return self._post_json(
+            "/present-proof-2.0/send-request",
+            json_body=body,
             timeout=timeout,
         )
 
@@ -200,8 +261,24 @@ class TractionClient:
 
     def get_present_proof_v2_record(self, pres_ex_id: str, *, timeout: float = 60) -> requests.Response:
         """GET /present-proof-2.0/records/{pres_ex_id}"""
+        encoded = quote(pres_ex_id, safe="")
         return self._session.get(
-            f"{self._base}/present-proof-2.0/records/{pres_ex_id}",
+            f"{self._base}/present-proof-2.0/records/{encoded}",
+            timeout=timeout,
+        )
+
+    def get_present_proof_v2_credentials(
+        self,
+        pres_ex_id: str,
+        *,
+        params: dict[str, Any] | None = None,
+        timeout: float = 60,
+    ) -> requests.Response:
+        """GET /present-proof-2.0/records/{pres_ex_id}/credentials (wallet creds matching the proof request)."""
+        encoded = quote(pres_ex_id, safe="")
+        return self._session.get(
+            f"{self._base}/present-proof-2.0/records/{encoded}/credentials",
+            params=params or {},
             timeout=timeout,
         )
 
@@ -213,9 +290,10 @@ class TractionClient:
         timeout: float = 120,
     ) -> requests.Response:
         """POST /present-proof-2.0/records/{pres_ex_id}/send-presentation"""
-        return self._session.post(
-            f"{self._base}/present-proof-2.0/records/{pres_ex_id}/send-presentation",
-            json=body if body is not None else {},
+        encoded = quote(pres_ex_id, safe="")
+        return self._post_json(
+            f"/present-proof-2.0/records/{encoded}/send-presentation",
+            json_body=body if body is not None else {},
             timeout=timeout,
         )
 
@@ -223,8 +301,8 @@ class TractionClient:
         self, body: dict[str, Any], *, timeout: float = 120
     ) -> requests.Response:
         """POST /anoncreds/revocation/revoke"""
-        return self._session.post(
-            f"{self._base}/anoncreds/revocation/revoke",
-            json=body,
+        return self._post_json(
+            "/anoncreds/revocation/revoke",
+            json_body=body,
             timeout=timeout,
         )

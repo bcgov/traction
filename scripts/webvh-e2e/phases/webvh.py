@@ -180,21 +180,23 @@ def _post_webvh_configuration(ctx: Context) -> bool:
         if isinstance(body, dict)
         else body
     )
-    LOG.info(
-        "POST /did/webvh/configuration\nrequest:\n%s",
-        _format_webvh_config_json(request_body_for_log),
-    )
 
-    post_configuration_response = ctx.issuer_client().post_did_webvh_configuration(body)
+    post_configuration_response = ctx.issuer_client().post_did_webvh_configuration(
+        body,
+        log_body=request_body_for_log,
+    )
     if not post_configuration_response.ok:
         response_text = post_configuration_response.text or ""
+        LOG.error(
+            "POST /did/webvh/configuration failed (HTTP %s)",
+            post_configuration_response.status_code,
+        )
         try:
             formatted_response_body = _format_webvh_config_json(json.loads(response_text))
         except (json.JSONDecodeError, TypeError):
             formatted_response_body = response_text[:2000] if response_text else "(empty body)"
-        LOG.error(
-            "POST /did/webvh/configuration (HTTP %s)\nresponse:\n%s",
-            post_configuration_response.status_code,
+        LOG.debug(
+            "POST /did/webvh/configuration error response:\n%s",
             formatted_response_body,
         )
         return False
@@ -202,15 +204,17 @@ def _post_webvh_configuration(ctx: Context) -> bool:
     try:
         response_body = post_configuration_response.json()
     except json.JSONDecodeError:
-        LOG.error(
-            "POST /did/webvh/configuration\nresponse (non-JSON):\n%s",
-            (post_configuration_response.text or "")[:2000],
+        LOG.error("POST /did/webvh/configuration returned non-JSON (HTTP 200)")
+        LOG.debug(
+            "POST /did/webvh/configuration raw text:\n%s",
+            (post_configuration_response.text or "")[:4000],
         )
         return False
 
     if isinstance(response_body, dict) and response_body.get("status") == "error":
-        LOG.error(
-            "POST /did/webvh/configuration\nresponse:\n%s",
+        LOG.error("POST /did/webvh/configuration returned status=error in JSON body")
+        LOG.debug(
+            "POST /did/webvh/configuration error body:\n%s",
             _format_webvh_config_json(response_body),
         )
         return False
@@ -221,7 +225,11 @@ def _post_webvh_configuration(ctx: Context) -> bool:
         else response_body
     )
     LOG.info(
-        "POST /did/webvh/configuration\nresponse:\n%s",
+        "POST /did/webvh/configuration succeeded (HTTP %s)",
+        post_configuration_response.status_code,
+    )
+    LOG.debug(
+        "POST /did/webvh/configuration response:\n%s",
         _format_webvh_config_json(response_body_for_log),
     )
     return True
@@ -299,21 +307,20 @@ def phase_webvh_create(ctx: Context) -> bool:
     ctx.webvh_last_create_server_url = options.get("server_url")
 
     body = {"options": options}
-    LOG.info(
-        "POST /did/webvh/create\nrequest:\n%s",
-        _format_webvh_config_json(body),
-    )
 
     create_response = ctx.issuer_client().post_did_webvh_create(body)
     if not create_response.ok:
         response_text = create_response.text or ""
+        LOG.error(
+            "POST /did/webvh/create failed (HTTP %s)",
+            create_response.status_code,
+        )
         try:
             formatted_response_body = _format_webvh_config_json(json.loads(response_text))
         except (json.JSONDecodeError, TypeError):
             formatted_response_body = response_text[:2000] if response_text else "(empty body)"
-        LOG.error(
-            "POST /did/webvh/create (HTTP %s)\nresponse:\n%s",
-            create_response.status_code,
+        LOG.debug(
+            "POST /did/webvh/create error response:\n%s",
             formatted_response_body,
         )
         return False
@@ -321,25 +328,31 @@ def phase_webvh_create(ctx: Context) -> bool:
     try:
         create_response_body = create_response.json()
     except json.JSONDecodeError:
-        LOG.error(
-            "POST /did/webvh/create\nresponse (non-JSON):\n%s",
-            (create_response.text or "")[:2000],
+        LOG.error("POST /did/webvh/create returned non-JSON (HTTP 200)")
+        LOG.debug(
+            "POST /did/webvh/create raw text:\n%s",
+            (create_response.text or "")[:4000],
         )
         return False
 
     if create_response_body is None:
-        LOG.info("POST /did/webvh/create\nresponse:\nnull")
+        LOG.info("POST /did/webvh/create succeeded (empty JSON body)")
         return True
 
     if isinstance(create_response_body, dict) and create_response_body.get("status") == "error":
-        LOG.error(
-            "POST /did/webvh/create\nresponse:\n%s",
+        LOG.error("POST /did/webvh/create returned status=error in JSON body")
+        LOG.debug(
+            "POST /did/webvh/create error body:\n%s",
             _format_webvh_config_json(create_response_body),
         )
         return False
 
     LOG.info(
-        "POST /did/webvh/create\nresponse:\n%s",
+        "POST /did/webvh/create succeeded (HTTP %s)",
+        create_response.status_code,
+    )
+    LOG.debug(
+        "POST /did/webvh/create response:\n%s",
         _format_webvh_config_json(create_response_body),
     )
 

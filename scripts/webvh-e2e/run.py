@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 from context import Context, build_context
 from helpers import (
     webvh_explorer_dids_url,
+    webvh_explorer_resources_url,
     webvh_scid_from_did,
     webvh_server_base_for_explorer,
 )
@@ -48,8 +49,13 @@ def _log_run_summary(ctx: Context, stop: str | None, plan: tuple[str, ...] | lis
             if scid and explorer_base:
                 _log_summary_kv(
                     "    ",
-                    "explorer",
+                    "explorer (dids)",
                     webvh_explorer_dids_url(explorer_base, scid),
+                )
+                _log_summary_kv(
+                    "    ",
+                    "explorer (resources)",
+                    webvh_explorer_resources_url(explorer_base, scid),
                 )
         elif stop is None:
             _log_summary_kv("    ", "did", "(not in create response yet)")

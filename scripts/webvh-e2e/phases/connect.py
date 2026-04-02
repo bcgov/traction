@@ -24,12 +24,15 @@ def _connection_ids_before(client_response_json: dict[str, Any]) -> set[str]:
 
 def phase_oob_didexchange_webvh_didcomm(ctx: Context) -> bool:
     """
-    Establish DIDComm between issuer (public ``did:webvh`` + service from create) and holder via OOB.
+    Establish DIDComm between issuer (wallet ``did:webvh`` from create, with DIDComm service) and holder via OOB.
 
-    1. Issuer: POST /wallet/did/public with the WebVH DID.
-    2. Issuer: POST /out-of-band/create-invitation with ``use_public_did: true`` and DID Exchange 1.1.
-    3. Holder: POST /out-of-band/receive-invitation with the invitation (``auto_accept``).
-    4. Resolve issuer-side ``connection_id`` by polling GET /connections until a new active connection appears.
+    Uses ACA-Py ``use_did`` so the invitation is from the WebVH DID. We intentionally **do not** call
+    ``POST /wallet/did/public`` — that path is for Indy ledger “public DID” / endorser flows and fails
+    without an endorser connection.
+
+    1. Issuer: POST /out-of-band/create-invitation with ``use_did`` = WebVH DID, DID Exchange 1.1.
+    2. Holder: POST /out-of-band/receive-invitation (``auto_accept``).
+    3. Resolve issuer-side ``connection_id`` by polling GET /connections until a new active connection appears.
     """
     webvh_did = ctx.webvh_last_created_did
     if not webvh_did:
@@ -38,16 +41,6 @@ def phase_oob_didexchange_webvh_didcomm(ctx: Context) -> bool:
 
     issuer = ctx.issuer_client()
     holder = ctx.holder_client()
-
-    pub_response = issuer.post_wallet_did_public(webvh_did)
-    if not pub_response.ok:
-        LOG.error(
-            "POST /wallet/did/public failed: %s %s",
-            pub_response.status_code,
-            (pub_response.text or "")[:600],
-        )
-        return False
-    LOG.info("Set issuer public DID to %s", webvh_did)
 
     issuer_conns = issuer.get_connections()
     if not issuer_conns.ok:
@@ -64,14 +57,18 @@ def phase_oob_didexchange_webvh_didcomm(ctx: Context) -> bool:
         "handshake_protocols": ["https://didcomm.org/didexchange/1.1"],
         "my_label": "WebVH E2E Issuer",
         "protocol_version": "1.1",
-        "use_public_did": True,
+        "use_did": webvh_did,
+        "use_public_did": False,
     }
     create_oob = issuer.post_out_of_band_create_invitation(oob_body, multi_use=False)
     if not create_oob.ok:
         LOG.error(
-            "POST /out-of-band/create-invitation failed: %s %s",
+            "POST /out-of-band/create-invitation failed (HTTP %s)",
             create_oob.status_code,
-            (create_oob.text or "")[:800],
+        )
+        LOG.debug(
+            "OOB create error body:\n%s",
+            (create_oob.text or "")[:4000],
         )
         return False
     try:
@@ -82,7 +79,8 @@ def phase_oob_didexchange_webvh_didcomm(ctx: Context) -> bool:
 
     invitation = oob_data.get("invitation")
     if not isinstance(invitation, dict):
-        LOG.error("OOB create response missing invitation: %s", oob_data)
+        LOG.error("OOB create response missing invitation object")
+        LOG.debug("OOB create body:\n%s", json.dumps(oob_data, indent=2, default=str))
         return False
 
     holder_alias = (
@@ -96,9 +94,12 @@ def phase_oob_didexchange_webvh_didcomm(ctx: Context) -> bool:
     )
     if not recv.ok:
         LOG.error(
-            "Holder POST /out-of-band/receive-invitation failed: %s %s",
+            "Holder POST /out-of-band/receive-invitation failed (HTTP %s)",
             recv.status_code,
-            (recv.text or "")[:800],
+        )
+        LOG.debug(
+            "receive-invitation error body:\n%s",
+            (recv.text or "")[:4000],
         )
         return False
     try:
@@ -109,7 +110,8 @@ def phase_oob_didexchange_webvh_didcomm(ctx: Context) -> bool:
 
     holder_conn = oob_recv.get("connection_id")
     if not holder_conn:
-        LOG.error("Holder OOB response missing connection_id: %s", oob_recv)
+        LOG.error("Holder OOB response missing connection_id")
+        LOG.debug("receive-invitation body:\n%s", json.dumps(oob_recv, indent=2, default=str))
         return False
     ctx.holder_connection_id = str(holder_conn)
     LOG.info("Holder connection_id=%s", ctx.holder_connection_id)

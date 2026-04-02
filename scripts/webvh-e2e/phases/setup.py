@@ -1,4 +1,4 @@
-"""Setup phases: issuer wallet upgrade and AnonCreds publish placeholders."""
+"""Setup phases: issuer wallet upgrade and AnonCreds schema / credential-definition publish."""
 
 from __future__ import annotations
 
@@ -12,6 +12,48 @@ from typing import Any
 from context import Context
 
 LOG = logging.getLogger(__name__)
+
+
+def _format_json_log(data: Any) -> str:
+    """Pretty JSON for logs (matches ``webvh._format_webvh_config_json`` style)."""
+    return json.dumps(data, indent=2, ensure_ascii=False, default=str)
+
+
+_CRED_DEF_LOG_OMIT_KEYS = frozenset({"value"})
+
+
+def _omit_json_keys(data: Any, omit: frozenset[str]) -> Any:
+    """Deep-copy JSON-like structures, dropping selected keys (e.g. cred-def ``value`` blobs)."""
+    if isinstance(data, dict):
+        return {
+            k: _omit_json_keys(v, omit) for k, v in data.items() if k not in omit
+        }
+    if isinstance(data, list):
+        return [_omit_json_keys(item, omit) for item in data]
+    return data
+
+
+def _log_http_response(
+    label: str,
+    status_code: int,
+    text: str,
+    *,
+    redact_keys: frozenset[str] | None = None,
+) -> None:
+    """Log HTTP status at info/error; full body only at debug (default run stays quiet)."""
+    raw = text or ""
+    if status_code >= 400:
+        LOG.error("%s (HTTP %s)", label, status_code)
+    else:
+        LOG.info("%s (HTTP %s)", label, status_code)
+    try:
+        parsed = json.loads(raw)
+        if redact_keys:
+            parsed = _omit_json_keys(parsed, redact_keys)
+        LOG.debug("%s response body:\n%s", label, _format_json_log(parsed))
+    except (json.JSONDecodeError, TypeError):
+        snippet = raw[:2000] if raw else "(empty body)"
+        LOG.debug("%s response text:\n%s", label, snippet)
 
 
 def _wallet_settings_blob(wallet: dict[str, Any]) -> dict[str, Any]:
@@ -173,13 +215,18 @@ def phase_publish_schema(ctx: Context) -> bool:
     attr_names = _schema_attr_names_from_env()
     client = ctx.issuer_client()
 
-    list_response = client.get_anoncreds_schemas(
-        params={
-            "schema_name": name,
-            "schema_version": version,
-            "schema_issuer_id": issuer_did,
-        }
+    list_query = {
+        "schema_name": name,
+        "schema_version": version,
+        "schema_issuer_id": issuer_did,
+    }
+    list_response = client.get_anoncreds_schemas(params=list_query)
+    LOG.info(
+        "GET /anoncreds/schemas\nquery:\n%s",
+        _format_json_log(list_query),
     )
+    _log_http_response("GET /anoncreds/schemas", list_response.status_code, list_response.text or "")
+
     if list_response.ok:
         try:
             data = list_response.json()
@@ -203,13 +250,17 @@ def phase_publish_schema(ctx: Context) -> bool:
     create_response = client.post_anoncreds_schema(post_body)
     if not create_response.ok:
         text = create_response.text or ""
+        _log_http_response("POST /anoncreds/schema", create_response.status_code, text)
         if create_response.status_code == 400 and "already exists" in text.lower():
-            list_response = client.get_anoncreds_schemas(
-                params={
-                    "schema_name": name,
-                    "schema_version": version,
-                    "schema_issuer_id": issuer_did,
-                }
+            list_response = client.get_anoncreds_schemas(params=list_query)
+            LOG.info(
+                "GET /anoncreds/schemas (after already-exists)\nquery:\n%s",
+                _format_json_log(list_query),
+            )
+            _log_http_response(
+                "GET /anoncreds/schemas",
+                list_response.status_code,
+                list_response.text or "",
             )
             if list_response.ok:
                 data = list_response.json()
@@ -218,11 +269,7 @@ def phase_publish_schema(ctx: Context) -> bool:
                     ctx.webvh_schema_id = str(ids[0])
                     LOG.info("Schema already exists; schema_id=%s", ctx.webvh_schema_id)
                     return True
-        LOG.error(
-            "POST /anoncreds/schema failed: %s %s",
-            create_response.status_code,
-            text[:800],
-        )
+        LOG.error("POST /anoncreds/schema failed")
         return False
 
     try:
@@ -231,9 +278,12 @@ def phase_publish_schema(ctx: Context) -> bool:
         LOG.error("POST /anoncreds/schema returned non-JSON")
         return False
 
+    LOG.debug("POST /anoncreds/schema response:\n%s", _format_json_log(created))
+
     schema_id = _extract_schema_id_from_post(created)
     if not schema_id:
-        LOG.error("Schema create response missing schema_id: %s", created)
+        LOG.error("Schema create response missing schema_id")
+        LOG.debug("Schema create body:\n%s", _format_json_log(created))
         return False
     ctx.webvh_schema_id = schema_id
     LOG.info("Published schema_id=%s", schema_id)
@@ -256,9 +306,19 @@ def phase_publish_cred_def(ctx: Context) -> bool:
     reg_size = _revocation_registry_size()
     client = ctx.issuer_client()
 
-    list_response = client.get_anoncreds_credential_definitions(
-        params={"schema_id": schema_id, "issuer_id": issuer_did}
+    list_query = {"schema_id": schema_id, "issuer_id": issuer_did}
+    list_response = client.get_anoncreds_credential_definitions(params=list_query)
+    LOG.info(
+        "GET /anoncreds/credential-definitions\nquery:\n%s",
+        _format_json_log(list_query),
     )
+    _log_http_response(
+        "GET /anoncreds/credential-definitions",
+        list_response.status_code,
+        list_response.text or "",
+        redact_keys=_CRED_DEF_LOG_OMIT_KEYS,
+    )
+
     if list_response.ok:
         try:
             data = list_response.json()
@@ -292,9 +352,17 @@ def phase_publish_cred_def(ctx: Context) -> bool:
             except json.JSONDecodeError:
                 LOG.error("POST /anoncreds/credential-definition returned non-JSON")
                 return False
+            LOG.debug(
+                "POST /anoncreds/credential-definition response:\n%s",
+                _format_json_log(_omit_json_keys(created, _CRED_DEF_LOG_OMIT_KEYS)),
+            )
             cred_def_id = _extract_cred_def_id_from_post(created)
             if not cred_def_id:
-                LOG.error("Cred def create missing id: %s", created)
+                LOG.error("Cred def create response missing credential_definition_id")
+                LOG.debug(
+                    "Cred def create body:\n%s",
+                    _format_json_log(_omit_json_keys(created, _CRED_DEF_LOG_OMIT_KEYS)),
+                )
                 return False
             ctx.webvh_cred_def_id = cred_def_id
             LOG.info(
@@ -305,16 +373,22 @@ def phase_publish_cred_def(ctx: Context) -> bool:
             return True
 
         err_text = (create_response.text or "").lower()
+        _log_http_response(
+            "POST /anoncreds/credential-definition",
+            create_response.status_code,
+            create_response.text or "",
+            redact_keys=_CRED_DEF_LOG_OMIT_KEYS,
+        )
         if "resolving resource" in err_text:
             attempt += 1
+            LOG.info(
+                "Cred-def create retry (attempt %s) after WebVH resource lag…",
+                attempt,
+            )
             time.sleep(min(2.0 ** min(attempt, 5), 20.0))
             continue
 
-        LOG.error(
-            "POST /anoncreds/credential-definition failed: %s %s",
-            create_response.status_code,
-            (create_response.text or "")[:800],
-        )
+        LOG.error("POST /anoncreds/credential-definition failed")
         return False
 
     LOG.error("Timed out publishing credential definition (WebVH resource lag)")
