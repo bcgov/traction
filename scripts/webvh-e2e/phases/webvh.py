@@ -12,7 +12,7 @@ from typing import Any
 import requests
 
 from context import Context, get_plugin_webvh
-from helpers import build_witness_invitation_didcomm
+from helpers import build_witness_invitation_didcomm, sanitized_webvh_config_for_log
 
 LOG = logging.getLogger("webvh-e2e")
 
@@ -82,20 +82,6 @@ def _read_webvh_plugin(ctx: Context) -> bool:
         ctx.webvh_witnesses,
     )
     return True
-
-
-def _sanitized_webvh_config_for_log(cfg: dict[str, Any]) -> dict[str, Any]:
-    """
-    Copy WebVH config for logging only: shorten ``witness_invitation``; clear ``scids`` mapping
-    (SCID → DID can be sensitive / noisy in CI logs).
-    """
-    out: dict[str, Any] = dict(cfg)
-    witness_invitation_value = out.get("witness_invitation")
-    if isinstance(witness_invitation_value, str) and witness_invitation_value:
-        out["witness_invitation"] = f"<set, {len(witness_invitation_value)} chars>"
-    if "scids" in out:
-        out["scids"] = {}
-    return out
 
 
 def _format_webvh_config_json(data: Any) -> str:
@@ -175,16 +161,7 @@ def _post_webvh_configuration(ctx: Context) -> bool:
     if parameter_options:
         body["parameter_options"] = parameter_options
 
-    request_body_for_log = (
-        _sanitized_webvh_config_for_log(body)
-        if isinstance(body, dict)
-        else body
-    )
-
-    post_configuration_response = ctx.issuer_client().post_did_webvh_configuration(
-        body,
-        log_body=request_body_for_log,
-    )
+    post_configuration_response = ctx.issuer_client().post_did_webvh_configuration(body)
     if not post_configuration_response.ok:
         response_text = post_configuration_response.text or ""
         LOG.error(
@@ -220,7 +197,7 @@ def _post_webvh_configuration(ctx: Context) -> bool:
         return False
 
     response_body_for_log = (
-        _sanitized_webvh_config_for_log(response_body)
+        sanitized_webvh_config_for_log(response_body)
         if isinstance(response_body, dict)
         else response_body
     )

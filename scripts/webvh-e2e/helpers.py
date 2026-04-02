@@ -40,6 +40,20 @@ def build_witness_invitation_didcomm(server_url: str, witness_did_fragment: str)
     return witness_invitation_to_didcomm(invitation_payload)
 
 
+def sanitized_webvh_config_for_log(cfg: dict[str, Any]) -> dict[str, Any]:
+    """
+    Copy WebVH configuration JSON for logging only: shorten ``witness_invitation``;
+    clear ``scids`` (SCID → DID can be sensitive / noisy in CI logs).
+    """
+    out: dict[str, Any] = dict(cfg)
+    witness_invitation_value = out.get("witness_invitation")
+    if isinstance(witness_invitation_value, str) and witness_invitation_value:
+        out["witness_invitation"] = f"<set, {len(witness_invitation_value)} chars>"
+    if "scids" in out:
+        out["scids"] = {}
+    return out
+
+
 def _webvh_did_segments(did: str) -> tuple[str, str, str, str] | None:
     """``(scid, host, namespace, path_segment)`` for ``did:webvh:…`` or ``None``."""
     parts = did.split(":")
