@@ -27,9 +27,7 @@ def issuer_tenant_token() -> str:
 def holder_tenant_token() -> str:
     token = os.environ.get("TRACTION_HOLDER_TENANT_TOKEN", "").strip()
     if not token:
-        raise RuntimeError(
-            "Holder tenant token required for this phase: set TRACTION_HOLDER_TENANT_TOKEN."
-        )
+        raise RuntimeError("Holder tenant token required: set TRACTION_HOLDER_TENANT_TOKEN.")
     return token
 
 

@@ -54,6 +54,8 @@ The checked-in **`.env.example`** comments optional WebVH create settings; other
 
 **Tuning** (schema/cred-def, preview attributes, polling intervals, revoke flags, wallet-upgrade wait): edit **`constants.py`** — not environment variables.
 
+**Logging:** At INFO, `TractionClient` logs the full JSON body of each POST except `POST /did/webvh/configuration` (that one is sanitized). Issue and proof requests can include attribute values—treat default logs as potentially sensitive in shared CI or support channels.
+
 Required:
 
 - `TRACTION_TENANT_PROXY_BASE` (default: `https://traction-sandbox-tenant-proxy.apps.silver.devops.gov.bc.ca`; use `http://localhost:8032` for a local stack)

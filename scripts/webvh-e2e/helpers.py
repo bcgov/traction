@@ -17,6 +17,19 @@ LOG = logging.getLogger(__name__)
 T = TypeVar("T")
 
 
+def v20_cred_ex_record_core(row: Any) -> dict[str, Any]:
+    """
+    ACA-Py often wraps the v2.0 credential exchange in ``cred_ex_record`` (``V20CredExRecordDetail``):
+    applies to **list** ``GET /issue-credential-2.0/records`` and **single-record** GET by id.
+    """
+    if not isinstance(row, dict):
+        return {}
+    inner = row.get("cred_ex_record")
+    if isinstance(inner, dict):
+        return inner
+    return row
+
+
 def fetch_witness_invitation_json(server_url: str, witness_did_fragment: str) -> dict[str, Any]:
     """
     GET the OOB invitation JSON from the WebVH server (unauthenticated).

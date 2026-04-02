@@ -87,6 +87,7 @@ def _present_proof_round(ctx: Context, *, expect_verified: bool) -> bool:
     timeout_sec = E2E_PROOF_TIMEOUT_SEC
 
     def holder_pres_ex_id() -> str | None:
+        # First matching exchange only; fine for this linear harness (no concurrent proofs).
         records = holder.get_present_proof_v2_records(
             params={
                 "role": "prover",

@@ -13,7 +13,7 @@ from constants import (
     E2E_ISSUE_POLL_SEC,
     E2E_ISSUE_TIMEOUT_SEC,
 )
-from helpers import poll_until
+from helpers import poll_until, v20_cred_ex_record_core
 
 LOG = logging.getLogger("webvh-e2e")
 
@@ -28,25 +28,12 @@ def _issuer_thread_id(offer_record: dict[str, Any]) -> str | None:
     return str(tid) if tid else None
 
 
-def _v20_cred_ex_record_core(row: Any) -> dict[str, Any]:
-    """
-    ACA-Py often wraps the v2.0 credential exchange in ``cred_ex_record`` (``V20CredExRecordDetail``):
-    applies to **list** ``GET /issue-credential-2.0/records`` and **single-record** GET by id.
-    """
-    if not isinstance(row, dict):
-        return {}
-    inner = row.get("cred_ex_record")
-    if isinstance(inner, dict):
-        return inner
-    return row
-
-
 def _holder_rows_match_thread(rows: list[dict[str, Any]], thread_id: str | None) -> list[dict[str, Any]]:
     if not thread_id:
         return list(rows)
     out: list[dict[str, Any]] = []
     for row in rows:
-        core = _v20_cred_ex_record_core(row)
+        core = v20_cred_ex_record_core(row)
         if core.get("thread_id") == thread_id or core.get("parent_thread_id") == thread_id:
             out.append(row)
     return out
@@ -104,7 +91,7 @@ def phase_issue_webvh(ctx: Context) -> bool:
         _format_json_log(offer_record),
     )
 
-    offer_core = _v20_cred_ex_record_core(offer_record)
+    offer_core = v20_cred_ex_record_core(offer_record)
     raw_cred_ex_id = offer_record.get("cred_ex_id") or offer_core.get("cred_ex_id")
     if not raw_cred_ex_id:
         LOG.error("send-offer response missing cred_ex_id")
@@ -151,7 +138,7 @@ def phase_issue_webvh(ctx: Context) -> bool:
             last_diag = time.monotonic()
             summary = []
             for r in candidates[:8]:
-                c = _v20_cred_ex_record_core(r)
+                c = v20_cred_ex_record_core(r)
                 summary.append(
                     (c.get("cred_ex_id"), (c.get("state") or "").lower(), c.get("thread_id"))
                 )
@@ -163,7 +150,7 @@ def phase_issue_webvh(ctx: Context) -> bool:
             )
 
         for row in candidates:
-            core = _v20_cred_ex_record_core(row)
+            core = v20_cred_ex_record_core(row)
             state = (core.get("state") or "").lower()
             cid = core.get("cred_ex_id")
             if not cid:
@@ -248,7 +235,7 @@ def phase_issue_webvh(ctx: Context) -> bool:
             row = response.json()
         except json.JSONDecodeError:
             return None
-        core = _v20_cred_ex_record_core(row)
+        core = v20_cred_ex_record_core(row)
         state = (core.get("state") or "").lower()
         if state in issuer_terminal:
             LOG.info("Issuer cred_ex_id=%s state=%s (terminal)", issuer_cred_ex_id, state)
@@ -278,7 +265,7 @@ def phase_issue_webvh(ctx: Context) -> bool:
         if snap.ok:
             try:
                 snap_row = snap.json()
-                snap_core = _v20_cred_ex_record_core(snap_row)
+                snap_core = v20_cred_ex_record_core(snap_row)
                 st = (snap_core.get("state") or "") if snap_core else ""
                 LOG.error(
                     "Issuer exchange still not terminal (cred_ex_id=%s state=%s)",

@@ -8,17 +8,15 @@ from typing import Any
 
 from context import Context
 from constants import E2E_REVOKE_NOTIFY, E2E_REVOKE_PUBLISH
+from helpers import v20_cred_ex_record_core
 
 LOG = logging.getLogger("webvh-e2e")
 
 
-def _revocation_ids_from_cred_ex_detail(detail: dict[str, Any]) -> tuple[str | None, str | None]:
-    """
-    ``GET /issue-credential-2.0/records/{id}`` returns ``V20CredExRecordDetail``:
-    ``rev_reg_id`` / ``cred_rev_id`` sit under ``anoncreds`` or ``indy`` (not on ``cred_ex_id`` alone).
-    """
+def _revocation_ids_from_flat_cred_ex(d: dict[str, Any]) -> tuple[str | None, str | None]:
+    """``rev_reg_id`` / ``cred_rev_id`` under ``anoncreds`` or ``indy`` on one record object."""
     for key in ("anoncreds", "indy"):
-        block = detail.get(key)
+        block = d.get(key)
         if not isinstance(block, dict):
             continue
         rev_reg_id = block.get("rev_reg_id")
@@ -26,6 +24,23 @@ def _revocation_ids_from_cred_ex_detail(detail: dict[str, Any]) -> tuple[str | N
         if rev_reg_id is None or cred_rev_id is None or cred_rev_id == "":
             continue
         return str(rev_reg_id), str(cred_rev_id)
+    return None, None
+
+
+def _revocation_ids_from_cred_ex_payload(detail: dict[str, Any]) -> tuple[str | None, str | None]:
+    """
+    Same unwrapping as issue phase: try outer ``V20CredExRecordDetail``, then ``cred_ex_record`` core.
+    Revocation fields may live only on the inner object.
+    """
+    seen: set[int] = set()
+    for cand in (detail, v20_cred_ex_record_core(detail)):
+        cid = id(cand)
+        if cid in seen:
+            continue
+        seen.add(cid)
+        rev_reg_id, cred_rev_id = _revocation_ids_from_flat_cred_ex(cand)
+        if rev_reg_id and cred_rev_id:
+            return rev_reg_id, cred_rev_id
     return None, None
 
 
@@ -55,7 +70,7 @@ def phase_revoke_webvh(ctx: Context) -> bool:
         LOG.error("Issuer credential exchange record is not an object")
         return False
 
-    rev_reg_id, cred_rev_id = _revocation_ids_from_cred_ex_detail(detail)
+    rev_reg_id, cred_rev_id = _revocation_ids_from_cred_ex_payload(detail)
 
     body: dict[str, Any] = {
         "publish": E2E_REVOKE_PUBLISH,
