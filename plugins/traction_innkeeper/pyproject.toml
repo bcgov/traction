@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "traction-innkeeper"
-version = "1.6.0"
+version = "1.4.1"
 description = "The Innkeeper plugin for Traction, providing core tenant management capabilities."
 authors = [
     "Lucas O'Neil <lucasoneil@gmail.com>",
