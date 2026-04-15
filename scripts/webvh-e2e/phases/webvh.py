@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import logging
 import os
 import secrets
 import string
@@ -12,9 +11,13 @@ from typing import Any
 import requests
 
 from context import Context, get_plugin_webvh
-from helpers import build_witness_invitation_didcomm, sanitized_webvh_config_for_log
-
-LOG = logging.getLogger("webvh-e2e")
+from helpers import (
+    LOG,
+    build_witness_invitation_didcomm,
+    format_json_for_log,
+    log_http_failed,
+    sanitized_webvh_config_for_log,
+)
 
 
 def _witness_threshold_from_env() -> int:
@@ -44,13 +47,11 @@ def _witness_oob_id(plugin: dict[str, Any]) -> str | None:
     return None
 
 
-def _read_webvh_plugin(ctx: Context) -> bool:
-    status_config_response = ctx.issuer_client().get_tenant_server_status_config()
+def _read_webvh_plugin(context: Context) -> bool:
+    status_config_response = context.issuer_client().get_tenant_server_status_config()
     if not status_config_response.ok:
-        LOG.error(
-            "GET /tenant/server/status/config failed: %s %s",
-            status_config_response.status_code,
-            status_config_response.text[:500],
+        log_http_failed(
+            "GET /tenant/server/status/config failed", status_config_response, max_body=500
         )
         return False
     try:
@@ -66,32 +67,27 @@ def _read_webvh_plugin(ctx: Context) -> bool:
         )
         return False
 
-    ctx.plugin_webvh = plugin
-    ctx.webvh_server_url = plugin.get("server_url")
+    context.plugin_webvh = plugin
+    context.webvh_server_url = plugin.get("server_url")
     witnesses = plugin.get("witnesses")
     if isinstance(witnesses, list):
-        ctx.webvh_witnesses = [
+        context.webvh_witnesses = [
             witness_did for witness_did in witnesses if isinstance(witness_did, str)
         ]
 
     # Controller plugin_config only — tenant-stored config is logged on POST /did/webvh/configuration response.
     LOG.debug(
         "WebVH controller plugin_config (defaults): server_url=%s witness_id=%s witnesses=%s",
-        ctx.webvh_server_url,
+        context.webvh_server_url,
         plugin.get("witness_id"),
-        ctx.webvh_witnesses,
+        context.webvh_witnesses,
     )
     return True
 
 
-def _format_webvh_config_json(data: Any) -> str:
-    """Pretty JSON for logs (double quotes, indented)."""
-    return json.dumps(data, indent=2, ensure_ascii=False, default=str)
-
-
-def _fetch_stored_webvh_config(ctx: Context) -> dict[str, Any] | None:
+def _fetch_stored_webvh_config(context: Context) -> dict[str, Any] | None:
     """GET /did/webvh/configuration (tenant-stored WebVH config)."""
-    configuration_response = ctx.issuer_client().get_did_webvh_configuration()
+    configuration_response = context.issuer_client().get_did_webvh_configuration()
     if not configuration_response.ok:
         LOG.warning(
             "GET /did/webvh/configuration failed: %s %s",
@@ -107,13 +103,13 @@ def _fetch_stored_webvh_config(ctx: Context) -> dict[str, Any] | None:
     return stored_config if isinstance(stored_config, dict) else None
 
 
-def _post_webvh_configuration(ctx: Context) -> bool:
-    plugin = ctx.plugin_webvh
+def _post_webvh_configuration(context: Context) -> bool:
+    plugin = context.plugin_webvh
     if not plugin:
         LOG.error("Internal error: plugin_webvh not set")
         return False
 
-    server_url = (ctx.webvh_server_url or plugin.get("server_url") or "").strip()
+    server_url = (context.webvh_server_url or plugin.get("server_url") or "").strip()
     if not server_url:
         LOG.error("WebVH server_url missing from plugin config")
         return False
@@ -142,12 +138,12 @@ def _post_webvh_configuration(ctx: Context) -> bool:
         "witness": False,
         "witness_invitation": witness_invitation,
     }
-    if ctx.use_witness:
+    if context.use_witness:
         body["endorsement"] = True
 
     # Optional: persist witness_threshold under parameter_options when > 0 (merge with existing).
     parameter_options: dict[str, Any] = {}
-    prior_stored_config = _fetch_stored_webvh_config(ctx)
+    prior_stored_config = _fetch_stored_webvh_config(context)
     if isinstance(prior_stored_config, dict):
         existing_parameter_options = prior_stored_config.get("parameter_options")
         if isinstance(existing_parameter_options, dict):
@@ -161,20 +157,10 @@ def _post_webvh_configuration(ctx: Context) -> bool:
     if parameter_options:
         body["parameter_options"] = parameter_options
 
-    post_configuration_response = ctx.issuer_client().post_did_webvh_configuration(body)
+    post_configuration_response = context.issuer_client().post_did_webvh_configuration(body)
     if not post_configuration_response.ok:
-        response_text = post_configuration_response.text or ""
-        LOG.error(
-            "POST /did/webvh/configuration failed (HTTP %s)",
-            post_configuration_response.status_code,
-        )
-        try:
-            formatted_response_body = _format_webvh_config_json(json.loads(response_text))
-        except (json.JSONDecodeError, TypeError):
-            formatted_response_body = response_text[:2000] if response_text else "(empty body)"
-        LOG.debug(
-            "POST /did/webvh/configuration error response:\n%s",
-            formatted_response_body,
+        log_http_failed(
+            "POST /did/webvh/configuration failed", post_configuration_response
         )
         return False
 
@@ -192,7 +178,7 @@ def _post_webvh_configuration(ctx: Context) -> bool:
         LOG.error("POST /did/webvh/configuration returned status=error in JSON body")
         LOG.debug(
             "POST /did/webvh/configuration error body:\n%s",
-            _format_webvh_config_json(response_body),
+            format_json_for_log(response_body),
         )
         return False
 
@@ -207,16 +193,16 @@ def _post_webvh_configuration(ctx: Context) -> bool:
     )
     LOG.debug(
         "POST /did/webvh/configuration response:\n%s",
-        _format_webvh_config_json(response_body_for_log),
+        format_json_for_log(response_body_for_log),
     )
     return True
 
 
-def phase_configure_webvh_plugin(ctx: Context) -> bool:
+def phase_configure_webvh_plugin(context: Context) -> bool:
     """Load WebVH defaults from server config and POST /did/webvh/configuration (issuer)."""
-    if not _read_webvh_plugin(ctx):
+    if not _read_webvh_plugin(context):
         return False
-    return _post_webvh_configuration(ctx)
+    return _post_webvh_configuration(context)
 
 
 def _webvh_did_from_create_response(response_data: Any) -> str | None:
@@ -236,7 +222,7 @@ def _webvh_did_from_create_response(response_data: Any) -> str | None:
     return None
 
 
-def phase_webvh_create(ctx: Context) -> bool:
+def phase_webvh_create(context: Context) -> bool:
     """
     ``POST /did/webvh/create`` with ``options`` (issuer).
 
@@ -271,35 +257,23 @@ def phase_webvh_create(ctx: Context) -> bool:
     if witness_threshold > 0:
         options["witness_threshold"] = witness_threshold
 
-    stored_webvh_config = _fetch_stored_webvh_config(ctx)
+    stored_webvh_config = _fetch_stored_webvh_config(context)
     if stored_webvh_config:
         stored_server_url = stored_webvh_config.get("server_url")
         if isinstance(stored_server_url, str) and stored_server_url.strip():
             options["server_url"] = stored_server_url.strip()
-    if "server_url" not in options and ctx.webvh_server_url:
-        options["server_url"] = ctx.webvh_server_url.strip()
+    if "server_url" not in options and context.webvh_server_url:
+        options["server_url"] = context.webvh_server_url.strip()
 
-    ctx.webvh_last_create_namespace = namespace
-    ctx.webvh_last_create_alias = alias
-    ctx.webvh_last_create_server_url = options.get("server_url")
+    context.webvh_last_create_namespace = namespace
+    context.webvh_last_create_alias = alias
+    context.webvh_last_create_server_url = options.get("server_url")
 
     body = {"options": options}
 
-    create_response = ctx.issuer_client().post_did_webvh_create(body)
+    create_response = context.issuer_client().post_did_webvh_create(body)
     if not create_response.ok:
-        response_text = create_response.text or ""
-        LOG.error(
-            "POST /did/webvh/create failed (HTTP %s)",
-            create_response.status_code,
-        )
-        try:
-            formatted_response_body = _format_webvh_config_json(json.loads(response_text))
-        except (json.JSONDecodeError, TypeError):
-            formatted_response_body = response_text[:2000] if response_text else "(empty body)"
-        LOG.debug(
-            "POST /did/webvh/create error response:\n%s",
-            formatted_response_body,
-        )
+        log_http_failed("POST /did/webvh/create failed", create_response)
         return False
 
     try:
@@ -320,7 +294,7 @@ def phase_webvh_create(ctx: Context) -> bool:
         LOG.error("POST /did/webvh/create returned status=error in JSON body")
         LOG.debug(
             "POST /did/webvh/create error body:\n%s",
-            _format_webvh_config_json(create_response_body),
+            format_json_for_log(create_response_body),
         )
         return False
 
@@ -330,12 +304,12 @@ def phase_webvh_create(ctx: Context) -> bool:
     )
     LOG.debug(
         "POST /did/webvh/create response:\n%s",
-        _format_webvh_config_json(create_response_body),
+        format_json_for_log(create_response_body),
     )
 
     created_webvh_did = _webvh_did_from_create_response(create_response_body)
     if created_webvh_did:
-        ctx.webvh_last_created_did = created_webvh_did
+        context.webvh_last_created_did = created_webvh_did
     else:
         LOG.debug(
             "No did:webvh id in create response yet (e.g. pending witness); see run summary"

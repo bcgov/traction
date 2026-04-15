@@ -3,67 +3,15 @@
 
 from __future__ import annotations
 
-import logging
-import sys
 import time
 
 import click
 import requests
 from dotenv import load_dotenv
 
-from context import Context, build_context
-from helpers import (
-    webvh_explorer_dids_url,
-    webvh_explorer_resources_url,
-    webvh_scid_from_did,
-    webvh_server_base_for_explorer,
-)
+from context import build_context
+from helpers import HarnessLogger
 from phases import PHASES, PROFILES
-
-LOG = logging.getLogger("webvh-e2e")
-
-_SUMMARY_LABEL_WIDTH = 22
-
-
-def _log_summary_kv(indent: str, label: str, value: object) -> None:
-    LOG.info("%s%-*s  %s", indent, _SUMMARY_LABEL_WIDTH, label, value)
-
-
-def _log_run_summary(ctx: Context, stop: str | None, plan: tuple[str, ...] | list[str]) -> None:
-    LOG.info("")
-    LOG.info("=== summary ===")
-    LOG.info("")
-    LOG.info("  run")
-    _log_summary_kv("    ", "traction_url", ctx.base_url)
-
-    if ctx.webvh_last_create_namespace is not None:
-        LOG.info("")
-        LOG.info("  webvh (create)")
-        if ctx.webvh_last_created_did:
-            last_created_did = ctx.webvh_last_created_did
-            _log_summary_kv("    ", "did", last_created_did)
-            scid = webvh_scid_from_did(last_created_did)
-            explorer_base = webvh_server_base_for_explorer(
-                ctx.webvh_last_create_server_url, last_created_did
-            )
-            if scid and explorer_base:
-                _log_summary_kv(
-                    "    ",
-                    "explorer (dids)",
-                    webvh_explorer_dids_url(explorer_base, scid),
-                )
-                _log_summary_kv(
-                    "    ",
-                    "explorer (resources)",
-                    webvh_explorer_resources_url(explorer_base, scid),
-                )
-        elif stop is None:
-            _log_summary_kv("    ", "did", "(not in create response yet)")
-
-    elif ctx.webvh_server_url and "configure-webvh-plugin" in plan:
-        LOG.info("")
-        LOG.info("  webvh (controller)")
-        _log_summary_kv("    ", "server_url", ctx.webvh_server_url)
 
 
 @click.command(context_settings={"help_option_names": ["-h", "--help"]})
@@ -83,46 +31,40 @@ def _log_run_summary(ctx: Context, stop: str | None, plan: tuple[str, ...] | lis
 def main(profile: str, verbose: bool, witness: bool) -> int:
     """Run WebVH E2E phases against the Traction tenant proxy."""
     load_dotenv()
-    logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO, format="%(message)s")
+    HarnessLogger.configure_cli_logging(verbose=verbose)
 
     try:
-        ctx = build_context()
-        ctx.use_witness = witness
+        context = build_context(use_witness=witness)
     except RuntimeError as err:
-        LOG.error("%s", err)
+        HarnessLogger.log_context_init_failed(str(err))
         return 1
 
     plan = PROFILES[profile]
-    LOG.info("traction_url=%s profile=%s", ctx.base_url, profile)
-    LOG.info("")
+    HarnessLogger.log_run_start(context.base_url, profile)
 
     run_started_at_monotonic = time.perf_counter()
     phases_completed = 0
     stop: str | None = None
 
     for phase_index, name in enumerate(plan):
-        if phase_index:
-            LOG.info("")
-        LOG.info("-- %s --", name)
+        HarnessLogger.log_phase_begin(name, is_first_phase=(phase_index == 0))
         try:
-            if not PHASES[name](ctx):
+            if not PHASES[name](context):
                 stop = name
                 break
         except (RuntimeError, requests.RequestException) as phase_error:
-            LOG.error("%s: %s", name, phase_error)
+            HarnessLogger.log_phase_uncaught_exception(name, phase_error)
             stop = name
             break
         phases_completed += 1
 
-    LOG.info("")
-    LOG.info(
-        "%s  %s/%s phases  %.1fs",
-        "ok" if stop is None else "failed",
-        phases_completed,
-        len(plan),
-        time.perf_counter() - run_started_at_monotonic,
+    HarnessLogger.log_run_footer(
+        success=(stop is None),
+        phases_completed=phases_completed,
+        phase_count=len(plan),
+        elapsed_seconds=time.perf_counter() - run_started_at_monotonic,
     )
-    _log_run_summary(ctx, stop, plan)
+    HarnessLogger.log_run_summary(context, stop, plan)
     return 0 if stop is None else 1
 
 

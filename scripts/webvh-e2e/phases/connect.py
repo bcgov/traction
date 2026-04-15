@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import logging
 import time
 from typing import Any
 
@@ -12,24 +11,33 @@ from constants import (
     E2E_CONNECTION_POLL_SEC,
     E2E_CONNECTION_TIMEOUT_SEC,
     E2E_HOLDER_CONNECTION_ALIAS,
+    E2E_INDY_CONNECTION_POLL_SEC,
+    E2E_INDY_CONNECTION_TIMEOUT_SEC,
+    E2E_INDY_HOLDER_CONNECTION_ALIAS,
+    E2E_INDY_ISSUER_OOB_ALIAS,
 )
-from helpers import poll_until
-
-LOG = logging.getLogger("webvh-e2e")
+from helpers import LOG, format_json_for_log, log_http_failed, poll_until
 
 _CONNECTION_ALIAS_ISSUER = "webvh-e2e-issuer"
+
+# ACA-Py DID Exchange / connection records may report ``active`` or ``completed`` when ready.
+_DIDEXCHANGE_READY_STATES = frozenset({"active", "completed"})
 
 
 def _connection_ids_from_list_payload(payload: dict[str, Any]) -> set[str]:
     results = payload.get("results") or []
-    return {str(r.get("connection_id")) for r in results if r.get("connection_id")}
+    return {
+        str(connection_row.get("connection_id"))
+        for connection_row in results
+        if connection_row.get("connection_id")
+    }
 
 
 def _issuer_connection_ids_snapshot(issuer: Any) -> set[str] | None:
     """Return connection IDs before OOB; ``None`` if GET /connections failed."""
     issuer_conns = issuer.get_connections()
     if not issuer_conns.ok:
-        LOG.error("Issuer GET /connections failed: %s", issuer_conns.status_code)
+        log_http_failed("Issuer GET /connections failed", issuer_conns, max_body=800)
         return None
     try:
         return _connection_ids_from_list_payload(issuer_conns.json())
@@ -37,27 +45,40 @@ def _issuer_connection_ids_snapshot(issuer: Any) -> set[str] | None:
         return set()
 
 
-def _oob_invitation_for_didexchange(issuer: Any, webvh_did: str) -> dict[str, Any] | None:
-    """POST OOB create-invitation; return embedded ``invitation`` dict or ``None``."""
-    oob_body = {
+def _oob_invitation_for_didexchange(
+    issuer: Any,
+    *,
+    issuer_oob_alias: str,
+    my_label: str,
+    use_did: str | None = None,
+    use_wallet_public_did: bool = False,
+) -> tuple[dict[str, Any], str | None] | None:
+    """
+    POST OOB create-invitation; return ``(invitation, oob_id)`` or ``None``.
+
+    **WebVH / arbitrary DID:** pass ``use_did`` (e.g. ``did:webvh:…``) and ``use_wallet_public_did=False``.
+
+    **Indy ledger public DID:** set ``use_wallet_public_did=True`` and omit ``use_did`` (ACA-Py uses the
+    wallet public DID; a short ``use_did`` produces invitations the holder rejects with **422**).
+    """
+    oob_body: dict[str, Any] = {
         "accept": ["didcomm/aip1", "didcomm/aip2;env=rfc19"],
-        "alias": _CONNECTION_ALIAS_ISSUER,
+        "alias": issuer_oob_alias,
         "handshake_protocols": ["https://didcomm.org/didexchange/1.1"],
-        "my_label": "WebVH E2E Issuer",
+        "my_label": my_label,
         "protocol_version": "1.1",
-        "use_did": webvh_did,
-        "use_public_did": False,
     }
+    if use_wallet_public_did:
+        oob_body["use_public_did"] = True
+    else:
+        if not use_did:
+            LOG.error("OOB create-invitation requires use_did when not using wallet public DID")
+            return None
+        oob_body["use_did"] = use_did
+        oob_body["use_public_did"] = False
     create_oob = issuer.post_out_of_band_create_invitation(oob_body, multi_use=False)
     if not create_oob.ok:
-        LOG.error(
-            "POST /out-of-band/create-invitation failed (HTTP %s)",
-            create_oob.status_code,
-        )
-        LOG.debug(
-            "OOB create error body:\n%s",
-            (create_oob.text or "")[:4000],
-        )
+        log_http_failed("POST /out-of-band/create-invitation failed", create_oob)
         return None
     try:
         oob_data = create_oob.json()
@@ -68,74 +89,129 @@ def _oob_invitation_for_didexchange(issuer: Any, webvh_did: str) -> dict[str, An
     invitation = oob_data.get("invitation")
     if not isinstance(invitation, dict):
         LOG.error("OOB create response missing invitation object")
-        LOG.debug("OOB create body:\n%s", json.dumps(oob_data, indent=2, default=str))
+        LOG.debug("OOB create body:\n%s", format_json_for_log(oob_data))
         return None
-    return invitation
+    oob_id = oob_data.get("oob_id")
+    if oob_id is not None:
+        oob_id = str(oob_id)
+    return invitation, oob_id
 
 
 def _holder_receive_oob_and_connection_id(
     holder: Any, invitation: dict[str, Any], holder_alias: str
 ) -> str | None:
     """POST receive-invitation; return holder ``connection_id`` or ``None``."""
-    recv = holder.post_out_of_band_receive_invitation(
+    receive_invitation_response = holder.post_out_of_band_receive_invitation(
         invitation,
         alias=holder_alias,
     )
-    if not recv.ok:
-        LOG.error(
-            "Holder POST /out-of-band/receive-invitation failed (HTTP %s)",
-            recv.status_code,
-        )
-        LOG.debug(
-            "receive-invitation error body:\n%s",
-            (recv.text or "")[:4000],
+    if not receive_invitation_response.ok:
+        log_http_failed(
+            "Holder POST /out-of-band/receive-invitation failed", receive_invitation_response
         )
         return None
     try:
-        oob_recv = recv.json()
+        receive_invitation_payload = receive_invitation_response.json()
     except json.JSONDecodeError:
         LOG.error("Holder receive-invitation returned non-JSON")
         return None
 
-    holder_conn = oob_recv.get("connection_id")
-    if not holder_conn:
+    holder_connection_id = receive_invitation_payload.get("connection_id")
+    if not holder_connection_id:
         LOG.error("Holder OOB response missing connection_id")
-        LOG.debug("receive-invitation body:\n%s", json.dumps(oob_recv, indent=2, default=str))
+        LOG.debug("receive-invitation body:\n%s", format_json_for_log(receive_invitation_payload))
         return None
-    return str(holder_conn)
+    return str(holder_connection_id)
 
 
-def _poll_issuer_new_active_connection(
+def _issuer_connection_id_if_ready(issuer: Any, connection_id: str) -> str | None:
+    """Return ``connection_id`` if GET /connections/{id} is ``active`` or ``completed``."""
+    connection_response = issuer.get_connection(connection_id)
+    if not connection_response.ok:
+        return None
+    try:
+        connection_record = connection_response.json()
+    except json.JSONDecodeError:
+        return None
+    connection_state = (connection_record.get("state") or "").lower()
+    if connection_state in _DIDEXCHANGE_READY_STATES:
+        return connection_id
+    return None
+
+
+def _poll_issuer_didexchange_connection(
     issuer: Any,
     issuer_conns_before: set[str],
     *,
+    oob_id: str | None,
+    invitation_msg_id: str | None,
     poll_sec: float,
     timeout_sec: float,
 ) -> str | None:
-    """Poll until issuer has a new connection in ``active`` state."""
+    """
+    Resolve issuer-side connection after holder receive-invitation.
+
+    Prefer, in order: OOB record ``connection_id``; list row matching ``invitation_msg_id``; any new
+    connection id (not in the pre-OOB snapshot) in a ready state. Some deployments report **completed**
+    instead of **active**; Indy public-DID OOB may also update an existing connection row (same id as
+    before), so the snapshot-only heuristic is not enough.
+    """
 
     def issuer_connection_ready() -> str | None:
-        response = issuer.get_connections()
-        if not response.ok:
+        if oob_id:
+            oob_record_response = issuer.get_out_of_band_record(oob_id)
+            if oob_record_response.ok:
+                try:
+                    oob_record = oob_record_response.json()
+                except json.JSONDecodeError:
+                    oob_record = {}
+                oob_connection_id = oob_record.get("connection_id")
+                if oob_connection_id:
+                    ready_id = _issuer_connection_id_if_ready(issuer, str(oob_connection_id))
+                    if ready_id:
+                        return ready_id
+
+        list_response = issuer.get_connections()
+        if not list_response.ok:
             return None
         try:
-            payload = response.json()
+            list_payload = list_response.json()
         except json.JSONDecodeError:
             return None
-        for row in payload.get("results") or []:
-            cid = row.get("connection_id")
-            if not cid or str(cid) in issuer_conns_before:
+        connection_results = list_payload.get("results") or []
+
+        if invitation_msg_id:
+            for connection_row in connection_results:
+                if str(connection_row.get("invitation_msg_id") or "") != invitation_msg_id:
+                    continue
+                row_connection_id = connection_row.get("connection_id")
+                if not row_connection_id:
+                    continue
+                row_state = (connection_row.get("state") or "").lower()
+                if row_state in _DIDEXCHANGE_READY_STATES:
+                    return str(row_connection_id)
+                ready_id = _issuer_connection_id_if_ready(issuer, str(row_connection_id))
+                if ready_id:
+                    return ready_id
+
+        for connection_row in connection_results:
+            row_connection_id = connection_row.get("connection_id")
+            if not row_connection_id or str(row_connection_id) in issuer_conns_before:
                 continue
-            state = (row.get("state") or "").lower()
-            if state == "active":
-                return str(cid)
+            row_state = (connection_row.get("state") or "").lower()
+            if row_state in _DIDEXCHANGE_READY_STATES:
+                return str(row_connection_id)
+            ready_id = _issuer_connection_id_if_ready(issuer, str(row_connection_id))
+            if ready_id:
+                return ready_id
+
         return None
 
     return poll_until(
         issuer_connection_ready,
         timeout_sec=timeout_sec,
         interval_sec=poll_sec,
-        description="issuer active DIDExchange connection",
+        description="issuer DIDExchange connection (active or completed)",
     )
 
 
@@ -149,14 +225,14 @@ def _wait_holder_connection_active(
     """Best-effort wait for holder connection ``active``; warn on timeout."""
     deadline = time.monotonic() + timeout_sec
     while time.monotonic() < deadline:
-        check = holder.get_connection(holder_connection_id)
-        if check.ok:
+        holder_connection_check = holder.get_connection(holder_connection_id)
+        if holder_connection_check.ok:
             try:
-                row = check.json()
+                holder_connection_record = holder_connection_check.json()
             except json.JSONDecodeError:
-                row = {}
-            st = (row.get("state") or "").lower()
-            if st == "active":
+                holder_connection_record = {}
+            holder_state = (holder_connection_record.get("state") or "").lower()
+            if holder_state in _DIDEXCHANGE_READY_STATES:
                 return
         time.sleep(poll_sec)
     LOG.warning(
@@ -165,54 +241,124 @@ def _wait_holder_connection_active(
     )
 
 
-def phase_oob_didexchange_webvh_didcomm(ctx: Context) -> bool:
+def _oob_didexchange_with_issuer_did(
+    context: Context,
+    *,
+    issuer_oob_alias: str,
+    holder_alias: str,
+    my_label: str,
+    log_label: str,
+    use_did: str | None = None,
+    use_wallet_public_did: bool = False,
+    poll_sec: float = E2E_CONNECTION_POLL_SEC,
+    timeout_sec: float = E2E_CONNECTION_TIMEOUT_SEC,
+) -> bool:
     """
-    Issuer (WebVH DID) ↔ holder via OOB + DID Exchange 1.1.
+    Issuer ↔ holder via OOB + DID Exchange 1.1.
 
-    Uses ``use_did`` on the invitation (no ``POST /wallet/did/public`` / Indy public DID).
+    Either ``use_did`` (WebVH ``did:webvh:…``) or ``use_wallet_public_did`` (Indy public DID on ledger).
 
     Steps: snapshot issuer connections → OOB create → holder receive → poll issuer new active
     connection → optionally wait for holder active.
     """
-    webvh_did = ctx.webvh_last_created_did
-    if not webvh_did:
-        LOG.error("No did:webvh on context; run webvh-create first")
-        return False
+    if not use_wallet_public_did:
+        if not (use_did or "").strip():
+            LOG.error("[%s] Missing use_did for OOB", log_label)
+            return False
+        use_did = use_did.strip()
 
-    issuer = ctx.issuer_client()
-    holder = ctx.holder_client()
+    issuer = context.issuer_client()
+    holder = context.holder_client()
 
     issuer_conns_before = _issuer_connection_ids_snapshot(issuer)
     if issuer_conns_before is None:
         return False
 
-    invitation = _oob_invitation_for_didexchange(issuer, webvh_did)
-    if not invitation:
-        return False
-
-    holder_cid = _holder_receive_oob_and_connection_id(
-        holder, invitation, E2E_HOLDER_CONNECTION_ALIAS
+    oob_created = _oob_invitation_for_didexchange(
+        issuer,
+        issuer_oob_alias=issuer_oob_alias,
+        my_label=my_label,
+        use_did=use_did,
+        use_wallet_public_did=use_wallet_public_did,
     )
-    if not holder_cid:
+    if not oob_created:
         return False
-    ctx.holder_connection_id = holder_cid
-    LOG.info("Holder connection_id=%s", ctx.holder_connection_id)
+    invitation, oob_id = oob_created
+    invitation_msg_id = invitation.get("@id")
+    if invitation_msg_id is not None:
+        invitation_msg_id = str(invitation_msg_id)
 
-    issuer_cid = _poll_issuer_new_active_connection(
+    resolved_holder_connection_id = _holder_receive_oob_and_connection_id(
+        holder, invitation, holder_alias
+    )
+    if not resolved_holder_connection_id:
+        return False
+    context.holder_connection_id = resolved_holder_connection_id
+    LOG.info("Holder connection_id=%s", context.holder_connection_id)
+
+    resolved_issuer_connection_id = _poll_issuer_didexchange_connection(
         issuer,
         issuer_conns_before,
-        poll_sec=E2E_CONNECTION_POLL_SEC,
-        timeout_sec=E2E_CONNECTION_TIMEOUT_SEC,
+        oob_id=oob_id,
+        invitation_msg_id=invitation_msg_id,
+        poll_sec=poll_sec,
+        timeout_sec=timeout_sec,
     )
-    if not issuer_cid:
+    if not resolved_issuer_connection_id:
         return False
-    ctx.issuer_connection_id = issuer_cid
-    LOG.info("Issuer connection_id=%s", ctx.issuer_connection_id)
+    context.issuer_connection_id = resolved_issuer_connection_id
+    LOG.info("Issuer connection_id=%s", context.issuer_connection_id)
 
     _wait_holder_connection_active(
         holder,
-        ctx.holder_connection_id,
-        poll_sec=E2E_CONNECTION_POLL_SEC,
-        timeout_sec=E2E_CONNECTION_TIMEOUT_SEC,
+        context.holder_connection_id,
+        poll_sec=poll_sec,
+        timeout_sec=timeout_sec,
+    )
+    LOG.info(
+        "[%s] DIDComm ready (issuer_conn=%s holder_conn=%s)",
+        log_label,
+        resolved_issuer_connection_id,
+        resolved_holder_connection_id,
     )
     return True
+
+
+def phase_oob_didexchange_webvh_didcomm(context: Context) -> bool:
+    """Issuer (``did:webvh``) ↔ holder; ``use_did`` = WebVH issuer DID."""
+    webvh_did = context.webvh_last_created_did
+    if not webvh_did:
+        LOG.error("No did:webvh on context; run webvh-create first")
+        return False
+    return _oob_didexchange_with_issuer_did(
+        context,
+        issuer_oob_alias=_CONNECTION_ALIAS_ISSUER,
+        holder_alias=E2E_HOLDER_CONNECTION_ALIAS,
+        my_label="WebVH E2E Issuer",
+        log_label="webvh",
+        use_did=webvh_did,
+        use_wallet_public_did=False,
+    )
+
+
+def phase_oob_didexchange_indy_didcomm(context: Context) -> bool:
+    """
+    Issuer (Indy public DID) ↔ holder.
+
+    Uses ``use_public_did: true`` on create-invitation (wallet’s ledger public DID). Do not pass a short
+    ``use_did`` — that yields invalid ``services`` and **422** on receive-invitation.
+    """
+    if not (context.indy_public_did or "").strip():
+        LOG.error("No Indy public DID on context; run indy-register-public-did first")
+        return False
+    return _oob_didexchange_with_issuer_did(
+        context,
+        issuer_oob_alias=E2E_INDY_ISSUER_OOB_ALIAS,
+        holder_alias=E2E_INDY_HOLDER_CONNECTION_ALIAS,
+        my_label="Indy E2E Issuer",
+        log_label="indy",
+        use_did=None,
+        use_wallet_public_did=True,
+        poll_sec=E2E_INDY_CONNECTION_POLL_SEC,
+        timeout_sec=E2E_INDY_CONNECTION_TIMEOUT_SEC,
+    )

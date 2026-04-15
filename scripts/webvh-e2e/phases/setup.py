@@ -3,28 +3,35 @@
 from __future__ import annotations
 
 import json
-import logging
 import time
-
+import uuid
+from collections.abc import Callable
 from typing import Any
 
 from context import Context
 from constants import (
+    E2E_CRED_DEF_POST_RETRY_TIMEOUT_SEC,
     E2E_CRED_DEF_TAG,
+    E2E_INDY_CRED_DEF_TAG_PREFIX,
+    E2E_INDY_CRED_DEF_PUBLISH_SETTLE_SEC,
     E2E_REVOCATION_REGISTRY_SIZE,
+    E2E_REV_REG_ACTIVE_POLL_SEC,
+    E2E_REV_REG_ACTIVE_TIMEOUT_SEC,
+    E2E_REV_REG_WAIT_LOG_INTERVAL_SEC,
     E2E_SCHEMA_ATTR_NAMES,
     E2E_SCHEMA_NAME,
     E2E_SCHEMA_VERSION,
     WALLET_UPGRADE_POLL_SEC,
     WALLET_UPGRADE_TIMEOUT_SEC,
 )
-
-LOG = logging.getLogger(__name__)
-
-
-def _format_json_log(data: Any) -> str:
-    """Pretty JSON for logs (matches ``webvh._format_webvh_config_json`` style)."""
-    return json.dumps(data, indent=2, ensure_ascii=False, default=str)
+from helpers import (
+    LOG,
+    format_json_for_log,
+    log_http_failed,
+    poll_until,
+    tenant_wallet_name,
+    tenant_wallet_storage_type,
+)
 
 
 _CRED_DEF_LOG_OMIT_KEYS = frozenset({"value"})
@@ -58,53 +65,20 @@ def _log_http_response(
         parsed = json.loads(raw)
         if redact_keys:
             parsed = _omit_json_keys(parsed, redact_keys)
-        LOG.debug("%s response body:\n%s", label, _format_json_log(parsed))
+        LOG.debug("%s response body:\n%s", label, format_json_for_log(parsed))
     except (json.JSONDecodeError, TypeError):
         snippet = raw[:2000] if raw else "(empty body)"
         LOG.debug("%s response text:\n%s", label, snippet)
 
 
-def _wallet_settings_blob(wallet: dict[str, Any]) -> dict[str, Any]:
-    settings_value = wallet.get("settings")
-    return settings_value if isinstance(settings_value, dict) else {}
-
-
-def _wallet_name_from_response(wallet: dict[str, Any]) -> str | None:
-    """
-    Multitenant wallet name for ``POST /anoncreds/wallet/upgrade``.
-
-    ACA-Py ``GET /settings`` does not return ``wallet.name`` (filtered dict); use
-    ``GET /tenant/wallet`` → ``settings['wallet.name']``.
-    """
-    name = _wallet_settings_blob(wallet).get("wallet.name")
-    if isinstance(name, str) and name.strip():
-        return name.strip()
-    return None
-
-
-def _wallet_type_from_response(wallet: dict[str, Any]) -> str | None:
-    """Wallet storage type (e.g. askar / askar-anoncreds) from tenant wallet payload."""
-    top_level = wallet.get("type")
-    if isinstance(top_level, str) and top_level:
-        return top_level
-    from_settings = _wallet_settings_blob(wallet).get("wallet.type")
-    return from_settings if isinstance(from_settings, str) else None
-
-
-def phase_upgrade_anoncreds_wallet(ctx: Context) -> bool:
-    """
-    Ensure issuer wallet is upgraded to askar-anoncreds (POST /anoncreds/wallet/upgrade, poll GET /tenant/wallet).
-
-    Requires issuer bearer token. Skips if already askar-anoncreds.
-    """
-    client = ctx.issuer_client()
+def phase_upgrade_anoncreds_wallet(context: Context) -> bool:
+    """POST /anoncreds/wallet/upgrade + poll GET /tenant/wallet until askar-anoncreds (or skip if already)."""
+    client = context.issuer_client()
 
     initial_wallet_response = client.get_tenant_wallet()
     if not initial_wallet_response.ok:
-        LOG.error(
-            "GET /tenant/wallet failed: %s %s",
-            initial_wallet_response.status_code,
-            initial_wallet_response.text[:500],
+        log_http_failed(
+            "GET /tenant/wallet failed", initial_wallet_response, max_body=500
         )
         return False
     try:
@@ -113,14 +87,14 @@ def phase_upgrade_anoncreds_wallet(ctx: Context) -> bool:
         LOG.error("GET /tenant/wallet returned non-JSON")
         return False
 
-    wallet_name = _wallet_name_from_response(wallet)
+    wallet_name = tenant_wallet_name(wallet)
     if not wallet_name:
         LOG.error(
             "GET /tenant/wallet missing settings.wallet.name; cannot upgrade wallet"
         )
         return False
 
-    wallet_storage_type = _wallet_type_from_response(wallet)
+    wallet_storage_type = tenant_wallet_storage_type(wallet)
     if wallet_storage_type == "askar-anoncreds":
         LOG.info("Issuer wallet already askar-anoncreds; skipping upgrade")
         return True
@@ -131,10 +105,8 @@ def phase_upgrade_anoncreds_wallet(ctx: Context) -> bool:
     )
     upgrade_response = client.post_anoncreds_wallet_upgrade(wallet_name)
     if not upgrade_response.ok:
-        LOG.error(
-            "POST /anoncreds/wallet/upgrade failed: %s %s",
-            upgrade_response.status_code,
-            upgrade_response.text[:500],
+        log_http_failed(
+            "POST /anoncreds/wallet/upgrade failed", upgrade_response, max_body=500
         )
         return False
 
@@ -154,7 +126,7 @@ def phase_upgrade_anoncreds_wallet(ctx: Context) -> bool:
         except json.JSONDecodeError:
             time.sleep(poll_interval_sec)
             continue
-        if _wallet_type_from_response(polled_wallet) == "askar-anoncreds":
+        if tenant_wallet_storage_type(polled_wallet) == "askar-anoncreds":
             LOG.info("Issuer wallet upgraded to askar-anoncreds")
             return True
         time.sleep(poll_interval_sec)
@@ -164,55 +136,123 @@ def phase_upgrade_anoncreds_wallet(ctx: Context) -> bool:
 
 
 def _extract_schema_id_from_post(body: dict[str, Any]) -> str | None:
-    state = body.get("schema_state") or body.get("sent") or {}
-    sid = state.get("schema_id")
-    return str(sid) if sid else None
+    schema_state_block = body.get("schema_state") or body.get("sent") or {}
+    schema_id_value = schema_state_block.get("schema_id")
+    return str(schema_id_value) if schema_id_value else None
 
 
 def _extract_cred_def_id_from_post(body: dict[str, Any]) -> str | None:
-    state = body.get("credential_definition_state") or body.get("sent") or {}
-    cid = state.get("credential_definition_id")
-    return str(cid) if cid else None
+    cred_def_state_block = body.get("credential_definition_state") or body.get("sent") or {}
+    credential_definition_id_value = cred_def_state_block.get("credential_definition_id")
+    return str(credential_definition_id_value) if credential_definition_id_value else None
 
 
-def phase_publish_schema(ctx: Context) -> bool:
+def _indy_unqualified_issuer_id(did: str | None) -> str | None:
     """
-    POST /anoncreds/schema for the WebVH issuer DID (``ctx.webvh_last_created_did``).
-
-    Idempotent: if a matching schema exists (name, version, issuer), reuse it.
+    Indy anoncreds list/write APIs on some deployments resolve ``issuerId`` / ``schema_issuer_id``
+    only when the issuer is **unqualified** (no ``did:sov:`` prefix). Short public DID or
+    ``did:sov:…`` both normalize to the ledger short form.
     """
-    issuer_did = ctx.webvh_last_created_did
+    if not did:
+        return None
+    did_str = did.strip()
+    if did_str.startswith("did:sov:"):
+        return did_str[8:]
+    return did_str
+
+
+def _indy_strip_did_sov_prefix(resource_id: str | None) -> str | None:
+    """Strip leading ``did:sov:`` so Indy ledger ids match unqualified anoncreds resolution."""
+    if not resource_id:
+        return None
+    resource_id_str = resource_id.strip()
+    if resource_id_str.startswith("did:sov:"):
+        return resource_id_str[8:]
+    return resource_id_str
+
+
+_SCHEMA_DUP_PHRASES = (
+    "already exists",
+    "already exist",
+    "duplicate",
+    "schema already",
+    "exists on",
+)
+
+
+def _phase_publish_anoncreds_schema(
+    context: Context,
+    *,
+    issuer_did: str | None,
+    schema_attr: str,
+    log_label: str,
+    indy_unqualified_ids: bool = False,
+) -> bool:
+    """POST /anoncreds/schema (idempotent list); store on context.<schema_attr>. Indy path strips did:sov:."""
     if not issuer_did:
-        LOG.error("No did:webvh on context; run webvh-create first")
+        if log_label == "webvh":
+            LOG.error("No did:webvh on context; run webvh-create first")
+        else:
+            LOG.error("No Indy public DID on context; run indy-register-public-did first")
         return False
+
+    if indy_unqualified_ids:
+        issuer_did = _indy_unqualified_issuer_id(issuer_did)
+        if not issuer_did:
+            LOG.error("[%s] Could not derive unqualified issuer id", log_label)
+            return False
 
     name = E2E_SCHEMA_NAME
     version = E2E_SCHEMA_VERSION
     attr_names = E2E_SCHEMA_ATTR_NAMES
-    client = ctx.issuer_client()
-
+    client = context.issuer_client()
     list_query = {
         "schema_name": name,
         "schema_version": version,
         "schema_issuer_id": issuer_did,
     }
-    list_response = client.get_anoncreds_schemas(params=list_query)
-    LOG.info(
-        "GET /anoncreds/schemas\nquery:\n%s",
-        _format_json_log(list_query),
-    )
-    _log_http_response("GET /anoncreds/schemas", list_response.status_code, list_response.text or "")
 
-    if list_response.ok:
+    def _schemas_get(note: str = "") -> Any:
+        suffix = f" {note}" if note else ""
+        LOG.info("[%s] GET /anoncreds/schemas%s", log_label, suffix)
+        LOG.debug("[%s] GET /anoncreds/schemas query:\n%s", log_label, format_json_for_log(list_query))
+        r = client.get_anoncreds_schemas(params=list_query)
+        _log_http_response("GET /anoncreds/schemas", r.status_code, r.text or "")
+        return r
+
+    def _try_schema_reuse_from_list(resp: Any, *, after_dup_post: bool) -> bool:
+        if not resp.ok:
+            return False
         try:
-            data = list_response.json()
+            data = resp.json()
         except json.JSONDecodeError:
             data = {}
         ids = data.get("schema_ids") or []
         if ids:
-            ctx.webvh_schema_id = str(ids[0])
-            LOG.info("Reusing existing schema_id=%s", ctx.webvh_schema_id)
+            sid = (
+                _indy_strip_did_sov_prefix(str(ids[0]))
+                if indy_unqualified_ids
+                else str(ids[0])
+            )
+            setattr(context, schema_attr, sid)
+            if after_dup_post:
+                LOG.info("[%s] Schema already exists; schema_id=%s", log_label, sid)
+            else:
+                LOG.info("[%s] Reusing existing schema_id=%s", log_label, sid)
             return True
+        if after_dup_post and indy_unqualified_ids and issuer_did:
+            sid = f"{issuer_did}:2:{name}:{version}"
+            setattr(context, schema_attr, sid)
+            LOG.info(
+                "[%s] Schema already on ledger (list empty); using Indy schema_id=%s",
+                log_label,
+                sid,
+            )
+            return True
+        return False
+
+    if _try_schema_reuse_from_list(_schemas_get(), after_dup_post=False):
+        return True
 
     post_body = {
         "schema": {
@@ -227,66 +267,210 @@ def phase_publish_schema(ctx: Context) -> bool:
     if not create_response.ok:
         text = create_response.text or ""
         _log_http_response("POST /anoncreds/schema", create_response.status_code, text)
-        if create_response.status_code == 400 and "already exists" in text.lower():
-            list_response = client.get_anoncreds_schemas(params=list_query)
-            LOG.info(
-                "GET /anoncreds/schemas (after already-exists)\nquery:\n%s",
-                _format_json_log(list_query),
-            )
-            _log_http_response(
-                "GET /anoncreds/schemas",
-                list_response.status_code,
-                list_response.text or "",
-            )
-            if list_response.ok:
-                data = list_response.json()
-                ids = data.get("schema_ids") or []
-                if ids:
-                    ctx.webvh_schema_id = str(ids[0])
-                    LOG.info("Schema already exists; schema_id=%s", ctx.webvh_schema_id)
-                    return True
-        LOG.error("POST /anoncreds/schema failed")
+        tl = text.lower()
+        if create_response.status_code == 400 and any(p in tl for p in _SCHEMA_DUP_PHRASES):
+            if _try_schema_reuse_from_list(
+                _schemas_get("(after already-exists)"),
+                after_dup_post=True,
+            ):
+                return True
+        LOG.error("[%s] POST /anoncreds/schema failed", log_label)
         return False
 
     try:
         created = create_response.json()
     except json.JSONDecodeError:
-        LOG.error("POST /anoncreds/schema returned non-JSON")
+        LOG.error("[%s] POST /anoncreds/schema returned non-JSON", log_label)
         return False
 
-    LOG.debug("POST /anoncreds/schema response:\n%s", _format_json_log(created))
+    LOG.debug("[%s] POST /anoncreds/schema response:\n%s", log_label, format_json_for_log(created))
 
     schema_id = _extract_schema_id_from_post(created)
     if not schema_id:
-        LOG.error("Schema create response missing schema_id")
-        LOG.debug("Schema create body:\n%s", _format_json_log(created))
+        LOG.error("[%s] Schema create response missing schema_id", log_label)
+        LOG.debug("Schema create body:\n%s", format_json_for_log(created))
         return False
-    ctx.webvh_schema_id = schema_id
-    LOG.info("Published schema_id=%s", schema_id)
+    if indy_unqualified_ids:
+        schema_id = _indy_strip_did_sov_prefix(schema_id) or schema_id
+    setattr(context, schema_attr, schema_id)
+    LOG.info("[%s] Published schema_id=%s", log_label, schema_id)
     return True
 
 
-def phase_publish_cred_def(ctx: Context) -> bool:
-    """
-    POST /anoncreds/credential-definition with revocation (default registry size 4).
+def _anoncreds_cred_def_tag_from_id(cred_def_id: str) -> str:
+    """Last ``:`` segment of a cred def id (the publish ``tag``)."""
+    parts = cred_def_id.rsplit(":", 1)
+    return parts[-1] if parts else ""
 
-    Requires ``ctx.webvh_schema_id`` and WebVH issuer DID.
-    """
-    issuer_did = ctx.webvh_last_created_did
-    schema_id = ctx.webvh_schema_id
+
+def _rev_reg_record_from_payload(payload: dict[str, Any]) -> dict[str, Any] | None:
+    """Unwrap ``{"result": IssuerRevRegRecord}`` or occasional double-wrapped responses."""
+    top = payload.get("result")
+    if isinstance(top, dict) and isinstance(top.get("result"), dict):
+        return top["result"]
+    if isinstance(top, dict):
+        return top
+    return None
+
+
+# Issuable for issue-credential (Indy often active/posted; WebVH may use finished).
+_REV_REG_READY_STATES = frozenset({"active", "finished"})
+_REV_REG_TERMINAL_BAD = frozenset({"full", "decommissioned"})
+
+
+def _active_registry_poll_step(
+    client: Any,
+    cred_def_id: str,
+    log_label: str,
+    emit_progress: Callable[[str], None],
+) -> bool | None:
+    """Single GET active-registry poll: ``True`` ready, ``False`` error, ``None`` keep waiting."""
+    active_registry_response = client.get_anoncreds_revocation_active_registry(cred_def_id)
+    if active_registry_response.status_code == 404:
+        emit_progress(
+            f"active-registry 404 (no record yet) cred_def_id={cred_def_id} — still waiting"
+        )
+        return None
+    if not active_registry_response.ok:
+        emit_progress(
+            f"active-registry HTTP {active_registry_response.status_code} "
+            f"cred_def_id={cred_def_id} — still waiting"
+        )
+        return None
+    try:
+        payload = active_registry_response.json()
+    except json.JSONDecodeError:
+        emit_progress("active-registry returned non-JSON — still waiting")
+        return None
+    if not isinstance(payload, dict):
+        return None
+    registry_record = _rev_reg_record_from_payload(payload)
+    if registry_record is None:
+        emit_progress(
+            f"active-registry missing result object; keys={list(payload.keys())!r} — still waiting"
+        )
+        return None
+    err = (registry_record.get("error_msg") or "").strip()
+    if err:
+        LOG.error(
+            "[%s] Active revocation registry error for cred_def_id=%s: %s",
+            log_label,
+            cred_def_id,
+            err,
+        )
+        return False
+    state = (registry_record.get("state") or "").strip().lower()
+    rev_reg_id = registry_record.get("revoc_reg_id") or registry_record.get("rev_reg_id")
+    if state in _REV_REG_TERMINAL_BAD:
+        LOG.error(
+            "[%s] Revocation registry in terminal state %r (cred_def_id=%s rev_reg_id=%s)",
+            log_label,
+            state,
+            cred_def_id,
+            rev_reg_id,
+        )
+        return False
+    if state in _REV_REG_READY_STATES:
+        LOG.info(
+            "[%s] Revocation registry ready state=%s (rev_reg_id=%s cred_def_id=%s)",
+            log_label,
+            state,
+            rev_reg_id,
+            cred_def_id,
+        )
+        return True
+    if state == "posted" and rev_reg_id:
+        LOG.info(
+            "[%s] Revocation registry state=posted with rev_reg_id (treating as ready; "
+            "cred_def_id=%s)",
+            log_label,
+            cred_def_id,
+        )
+        return True
+    emit_progress(
+        f"revocation registry state={state or '?'} rev_reg_id={rev_reg_id!r} — still waiting"
+    )
+    return None
+
+
+def _wait_for_active_revocation_registry(client: Any, cred_def_id: str, log_label: str) -> bool:
+    """Poll GET …/active-registry/{cred_def_id} until ready (active/finished/posted+rev_reg_id) or fail."""
+    last_progress_log = 0.0
+
+    def maybe_progress(msg: str) -> None:
+        nonlocal last_progress_log
+        now = time.monotonic()
+        if now - last_progress_log >= E2E_REV_REG_WAIT_LOG_INTERVAL_SEC:
+            last_progress_log = now
+            LOG.info("[%s] %s", log_label, msg)
+
+    LOG.info(
+        "[%s] Checking revocation active-registry for cred_def_id=%s (timeout=%.0fs)",
+        log_label,
+        cred_def_id,
+        E2E_REV_REG_ACTIVE_TIMEOUT_SEC,
+    )
+
+    def fetch() -> bool | None:
+        return _active_registry_poll_step(client, cred_def_id, log_label, maybe_progress)
+
+    registry_poll_result = poll_until(
+        fetch,
+        timeout_sec=E2E_REV_REG_ACTIVE_TIMEOUT_SEC,
+        interval_sec=E2E_REV_REG_ACTIVE_POLL_SEC,
+        description=f"{log_label} revocation registry active (cred_def_id={cred_def_id})",
+    )
+    if registry_poll_result is True:
+        return True
+    if registry_poll_result is False:
+        return False
+    LOG.error(
+        "[%s] Timed out waiting for active revocation registry (cred_def_id=%s)",
+        log_label,
+        cred_def_id,
+    )
+    return False
+
+
+def _phase_publish_anoncreds_cred_def(
+    context: Context,
+    *,
+    issuer_did: str | None,
+    schema_id: str | None,
+    cred_def_attr: str,
+    log_label: str,
+    webvh_resource_retry: bool,
+    indy_unqualified_ids: bool = False,
+    cred_def_tag: str | None = None,
+) -> bool:
+    """POST anoncreds cred-def + rev reg; reuse from list; WebVH optional resolver retry; wait active-registry."""
+    schema_phase = "publish-schema-webvh" if log_label == "webvh" else "publish-schema-indy"
     if not issuer_did or not schema_id:
-        LOG.error("Missing issuer DID or schema_id; run publish-schema-webvh first")
+        LOG.error(
+            "[%s] Missing issuer DID or schema_id; run %s first",
+            log_label,
+            schema_phase,
+        )
         return False
 
-    tag = E2E_CRED_DEF_TAG
+    if indy_unqualified_ids:
+        issuer_did = _indy_unqualified_issuer_id(issuer_did)
+        schema_id = _indy_strip_did_sov_prefix(schema_id)
+        if not issuer_did or not schema_id:
+            LOG.error("[%s] Missing unqualified issuer or schema_id after normalization", log_label)
+            return False
+
+    tag = cred_def_tag if cred_def_tag is not None else E2E_CRED_DEF_TAG
     reg_size = E2E_REVOCATION_REGISTRY_SIZE
-    client = ctx.issuer_client()
+    client = context.issuer_client()
 
     list_query = {"schema_id": schema_id, "issuer_id": issuer_did}
     list_response = client.get_anoncreds_credential_definitions(params=list_query)
-    LOG.info(
-        "GET /anoncreds/credential-definitions\nquery:\n%s",
-        _format_json_log(list_query),
+    LOG.info("[%s] GET /anoncreds/credential-definitions", log_label)
+    LOG.debug(
+        "[%s] GET /anoncreds/credential-definitions query:\n%s",
+        log_label,
+        format_json_for_log(list_query),
     )
     _log_http_response(
         "GET /anoncreds/credential-definitions",
@@ -302,9 +486,26 @@ def phase_publish_cred_def(ctx: Context) -> bool:
             data = {}
         ids = data.get("credential_definition_ids") or []
         if ids:
-            ctx.webvh_cred_def_id = str(ids[0])
-            LOG.info("Reusing existing credential_definition_id=%s", ctx.webvh_cred_def_id)
-            return True
+            chosen: str | None = None
+            for raw in ids:
+                candidate_cred_def_id = str(raw)
+                if indy_unqualified_ids:
+                    candidate_cred_def_id = (
+                        _indy_strip_did_sov_prefix(candidate_cred_def_id) or candidate_cred_def_id
+                    )
+                if cred_def_tag is not None:
+                    if _anoncreds_cred_def_tag_from_id(candidate_cred_def_id) == tag:
+                        chosen = candidate_cred_def_id
+                        break
+                else:
+                    chosen = candidate_cred_def_id
+                    break
+            if chosen:
+                setattr(context, cred_def_attr, chosen)
+                LOG.info("[%s] Reusing existing credential_definition_id=%s", log_label, chosen)
+                if not _wait_for_active_revocation_registry(client, chosen, log_label):
+                    return False
+                return True
 
     body = {
         "credential_definition": {
@@ -318,7 +519,7 @@ def phase_publish_cred_def(ctx: Context) -> bool:
         },
     }
 
-    deadline = time.monotonic() + 120.0
+    deadline = time.monotonic() + E2E_CRED_DEF_POST_RETRY_TIMEOUT_SEC
     attempt = 0
     while time.monotonic() < deadline:
         create_response = client.post_anoncreds_credential_definition(body)
@@ -326,26 +527,39 @@ def phase_publish_cred_def(ctx: Context) -> bool:
             try:
                 created = create_response.json()
             except json.JSONDecodeError:
-                LOG.error("POST /anoncreds/credential-definition returned non-JSON")
+                LOG.error("[%s] POST /anoncreds/credential-definition returned non-JSON", log_label)
                 return False
             LOG.debug(
-                "POST /anoncreds/credential-definition response:\n%s",
-                _format_json_log(_omit_json_keys(created, _CRED_DEF_LOG_OMIT_KEYS)),
+                "[%s] POST /anoncreds/credential-definition response:\n%s",
+                log_label,
+                format_json_for_log(_omit_json_keys(created, _CRED_DEF_LOG_OMIT_KEYS)),
             )
             cred_def_id = _extract_cred_def_id_from_post(created)
             if not cred_def_id:
-                LOG.error("Cred def create response missing credential_definition_id")
+                LOG.error("[%s] Cred def create response missing credential_definition_id", log_label)
                 LOG.debug(
                     "Cred def create body:\n%s",
-                    _format_json_log(_omit_json_keys(created, _CRED_DEF_LOG_OMIT_KEYS)),
+                    format_json_for_log(_omit_json_keys(created, _CRED_DEF_LOG_OMIT_KEYS)),
                 )
                 return False
-            ctx.webvh_cred_def_id = cred_def_id
+            if indy_unqualified_ids:
+                cred_def_id = _indy_strip_did_sov_prefix(cred_def_id) or cred_def_id
+            setattr(context, cred_def_attr, cred_def_id)
             LOG.info(
-                "Published credential_definition_id=%s (revocation_registry_size=%s)",
+                "[%s] Published credential_definition_id=%s (revocation_registry_size=%s)",
+                log_label,
                 cred_def_id,
                 reg_size,
             )
+            if log_label == "indy" and E2E_INDY_CRED_DEF_PUBLISH_SETTLE_SEC > 0:
+                LOG.info(
+                    "[%s] Waiting %.0fs for revocation registry / endorser to settle before issue",
+                    log_label,
+                    E2E_INDY_CRED_DEF_PUBLISH_SETTLE_SEC,
+                )
+                time.sleep(E2E_INDY_CRED_DEF_PUBLISH_SETTLE_SEC)
+            if not _wait_for_active_revocation_registry(client, cred_def_id, log_label):
+                return False
             return True
 
         err_text = (create_response.text or "").lower()
@@ -355,17 +569,68 @@ def phase_publish_cred_def(ctx: Context) -> bool:
             create_response.text or "",
             redact_keys=_CRED_DEF_LOG_OMIT_KEYS,
         )
-        if "resolving resource" in err_text:
+        if webvh_resource_retry and "resolving resource" in err_text:
             attempt += 1
             LOG.info(
-                "Cred-def create retry (attempt %s) after WebVH resource lag…",
+                "[%s] Cred-def create retry (attempt %s) after WebVH resource lag…",
+                log_label,
                 attempt,
             )
             time.sleep(min(2.0 ** min(attempt, 5), 20.0))
             continue
 
-        LOG.error("POST /anoncreds/credential-definition failed")
+        LOG.error("[%s] POST /anoncreds/credential-definition failed", log_label)
         return False
 
-    LOG.error("Timed out publishing credential definition (WebVH resource lag)")
+    LOG.error("[%s] Timed out publishing credential definition", log_label)
     return False
+
+
+def phase_publish_schema(context: Context) -> bool:
+    """WebVH issuer schema publish (idempotent)."""
+    return _phase_publish_anoncreds_schema(
+        context,
+        issuer_did=context.webvh_last_created_did,
+        schema_attr="webvh_schema_id",
+        log_label="webvh",
+    )
+
+
+def phase_publish_cred_def(context: Context) -> bool:
+    """WebVH cred-def + rev reg (needs webvh_schema_id + issuer DID)."""
+    return _phase_publish_anoncreds_cred_def(
+        context,
+        issuer_did=context.webvh_last_created_did,
+        schema_id=context.webvh_schema_id,
+        cred_def_attr="webvh_cred_def_id",
+        log_label="webvh",
+        webvh_resource_retry=True,
+    )
+
+
+def phase_publish_schema_indy(context: Context) -> bool:
+    """Indy issuer schema (unqualified issuer id for anoncreds/ledger)."""
+    return _phase_publish_anoncreds_schema(
+        context,
+        issuer_did=_indy_unqualified_issuer_id(context.indy_public_did),
+        schema_attr="indy_schema_id",
+        log_label="indy",
+        indy_unqualified_ids=True,
+    )
+
+
+def phase_publish_cred_def_indy(context: Context) -> bool:
+    """POST /anoncreds/credential-definition with revocation (same options as WebVH E2E)."""
+    issuer = _indy_unqualified_issuer_id(context.indy_public_did)
+    tag = f"{E2E_INDY_CRED_DEF_TAG_PREFIX}-{uuid.uuid4().hex[:12]}"
+    LOG.info("[indy] Publishing credential definition with unique tag=%s", tag)
+    return _phase_publish_anoncreds_cred_def(
+        context,
+        issuer_did=issuer,
+        schema_id=context.indy_schema_id,
+        cred_def_attr="indy_cred_def_id",
+        log_label="indy",
+        webvh_resource_retry=False,
+        indy_unqualified_ids=True,
+        cred_def_tag=tag,
+    )
