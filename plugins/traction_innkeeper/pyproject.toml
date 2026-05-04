@@ -24,7 +24,7 @@ multitenant-provider = {git = "https://github.com/openwallet-foundation/acapy-pl
 connections = {git = "https://github.com/openwallet-foundation/acapy-plugins", rev = "1.6.0", subdirectory = "connections"}
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.15.9"
+ruff = "^0.15.12"
 pytest = "^9.0.3"
 pytest-cov = "^7.1.0"
 pytest-mock = "^3.15.1"
