@@ -3,20 +3,22 @@ import PrimeVue from 'primevue/config';
 import { describe, expect, test, vi } from 'vitest';
 
 import RowExpandData from '@/components/common/RowExpandData.vue';
+import useGetItem from '@/composables/useGetItem';
 import { defineComponent } from 'vue';
 
-vi.mock('@/composables/useGetItem');
+vi.mock('@/composables/useGetItem', () => ({
+  default: vi.fn(),
+}));
 
 const useGetItemResponse = {
   loading: true,
   item: null as null | object,
+  error: '',
   fetchItem: vi.fn(),
 };
 
-const mockUseGetItem = async () => {
-  vi.mock('@/composables/useGetItem', () => ({
-    default: vi.fn(() => useGetItemResponse),
-  }));
+const mockUseGetItem = () => {
+  vi.mocked(useGetItem).mockReturnValue(useGetItemResponse as any);
 };
 
 const TestComponent = defineComponent({
