@@ -171,7 +171,7 @@
               $t('identifiers.webvh.didPreview')
             }}</label>
             <div class="p-3 surface-100 border-round mt-2">
-              <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
+              <!-- eslint-disable @intlify/vue-i18n/no-raw-text -->
               <code
                 class="text-sm"
                 >did:webvh:{SCID}:{{ didPreviewDomain }}:<strong>{{
@@ -179,6 +179,7 @@
                 }}</strong
                 >:<strong>{{ newDidAlias || '{alias}' }}</strong></code
               >
+              <!-- eslint-enable @intlify/vue-i18n/no-raw-text -->
             </div>
           </div>
         </div>
