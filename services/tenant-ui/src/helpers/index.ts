@@ -6,9 +6,7 @@
  */
 export function buildStatusAutofill(requestBody: any) {
   if (requestBody && requestBody.serverUrlStatusRoute) {
-    return encodeURI(
-      `${requestBody.serverUrlStatusRoute}?email=${requestBody.contactEmail}&id=${requestBody.reservationId}`
-    );
+    return `${requestBody.serverUrlStatusRoute}?email=${encodeURIComponent(requestBody.contactEmail)}&id=${encodeURIComponent(requestBody.reservationId)}`;
   } else {
     return "";
   }
