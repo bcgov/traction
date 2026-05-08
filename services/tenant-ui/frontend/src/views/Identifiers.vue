@@ -479,16 +479,10 @@ const didPreview = computed(() => {
   return `did:webvh:{SCID}:${domain}:${namespace}:${alias}`;
 });
 
-// Domain portion of the DID preview
-const didPreviewDomain = computed(() => {
-  const server = selectedWebvhServer.value;
-  if (!server) return '';
-  try {
-    return new URL(server).hostname;
-  } catch {
-    return server.replace(/^https?:\/\//, '').split('/')[0];
-  }
-});
+// Domain portion of the DID preview — derived from didPreview to avoid
+// duplicating the server URL parsing logic (single source of truth).
+// didPreview format: did:webvh:{SCID}:{domain}:{namespace}:{alias}
+const didPreviewDomain = computed(() => didPreview.value.split(':')[3] ?? '');
 
 const openCreateDialog = () => {
   createFormTouched.value = false;
