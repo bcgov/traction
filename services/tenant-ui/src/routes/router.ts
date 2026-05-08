@@ -63,7 +63,7 @@ router.post("/innkeeperReservation", async (req: any, res: Response) => {
 router.post(
   "/email/reservationConfirmation",
   body("contactEmail").isEmail(),
-  body("contactName").notEmpty().trim().escape(),
+  body("contactName").trim().notEmpty().customSanitizer((v) => v.replace(/[\r\n]/g, "")),
   body("reservationId").not().isEmpty(),
   body("serverUrlStatusRoute").custom(isAllowedStatusRouteUrl),
   async (req: Request, res: Response) => {
@@ -81,7 +81,7 @@ router.post(
 router.post(
   "/email/reservationStatus",
   body("contactEmail").isEmail(),
-  body("contactName").notEmpty().trim().escape(),
+  body("contactName").trim().notEmpty().customSanitizer((v) => v.replace(/[\r\n]/g, "")),
   body("reservationId").not().isEmpty(),
   body("state").not().isEmpty(),
   body("serverUrlStatusRoute").optional().custom(isAllowedStatusRouteUrl),
