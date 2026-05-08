@@ -171,6 +171,7 @@
               $t('identifiers.webvh.didPreview')
             }}</label>
             <div class="p-3 surface-100 border-round mt-2">
+              <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
               <code class="text-sm">did:webvh:{SCID}:{{ didPreviewDomain }}:<strong>{{ newDidNamespace || '{namespace}' }}</strong>:<strong>{{ newDidAlias || '{alias}' }}</strong></code>
             </div>
           </div>
