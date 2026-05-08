@@ -29,9 +29,9 @@ router.get(
       req.claims.realm_access.roles.includes(config.get("server.oidc.roleName"))
     ) {
       const result = await innkeeperComponent.login();
-      res.status(200).send(result);
+      res.status(200).json(result);
     } else {
-      res.status(403).send();
+      res.status(403).json({ error: "Forbidden" });
     }
   }
 );
@@ -42,13 +42,14 @@ router.post("/innkeeperReservation", async (req: any, res: Response) => {
   const { token } = await innkeeperComponent.login();
 
   const result = await innkeeperComponent.createReservation(req, token);
-  res.status(201).send(result);
+  res.status(201).json(result);
 });
 
 // Email endpoint
 router.post(
   "/email/reservationConfirmation",
   body("contactEmail").isEmail(),
+  body("contactName").notEmpty().trim().escape(),
   body("reservationId").not().isEmpty(),
   body("serverUrlStatusRoute").isURL({ protocols: ["https"], require_protocol: true }),
   async (req: Request, res: Response) => {
@@ -58,14 +59,15 @@ router.post(
       return;
     }
 
-    const result = await emailComponent.sendConfirmationEmail(req);
-    res.send(result);
+    await emailComponent.sendConfirmationEmail(req);
+    res.status(204).send();
   }
 );
 
 router.post(
   "/email/reservationStatus",
   body("contactEmail").isEmail(),
+  body("contactName").notEmpty().trim().escape(),
   body("reservationId").not().isEmpty(),
   body("state").not().isEmpty(),
   body("serverUrlStatusRoute").optional().isURL({ protocols: ["https"], require_protocol: true }),
@@ -76,7 +78,7 @@ router.post(
       return;
     }
 
-    const result = await emailComponent.sendStatusEmail(req);
-    res.send(result);
+    await emailComponent.sendStatusEmail(req);
+    res.status(204).send();
   }
 );
