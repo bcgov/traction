@@ -50,6 +50,7 @@ router.post(
   "/email/reservationConfirmation",
   body("contactEmail").isEmail(),
   body("reservationId").not().isEmpty(),
+  body("serverUrlStatusRoute").isURL({ protocols: ["https"], require_protocol: true }),
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -67,6 +68,7 @@ router.post(
   body("contactEmail").isEmail(),
   body("reservationId").not().isEmpty(),
   body("state").not().isEmpty(),
+  body("serverUrlStatusRoute").optional().isURL({ protocols: ["https"], require_protocol: true }),
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
