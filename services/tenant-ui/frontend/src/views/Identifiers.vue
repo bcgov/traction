@@ -172,8 +172,7 @@
             }}</label>
             <div class="p-3 surface-100 border-round mt-2">
               <!-- eslint-disable @intlify/vue-i18n/no-raw-text -->
-              <code
-                class="text-sm"
+              <code class="text-sm"
                 >did:webvh:{SCID}:{{ didPreviewDomain }}:<strong>{{
                   newDidNamespace || '{namespace}'
                 }}</strong
