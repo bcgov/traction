@@ -171,8 +171,7 @@
               $t('identifiers.webvh.didPreview')
             }}</label>
             <div class="p-3 surface-100 border-round mt-2">
-              <!-- eslint-disable-next-line vue/no-v-html -->
-              <code class="text-sm" v-html="didPreviewFormatted"></code>
+              <code class="text-sm">did:webvh:{SCID}:{{ didPreviewDomain }}:<strong>{{ newDidNamespace || '{namespace}' }}</strong>:<strong>{{ newDidAlias || '{alias}' }}</strong></code>
             </div>
           </div>
         </div>
@@ -480,27 +479,15 @@ const didPreview = computed(() => {
   return `did:webvh:{SCID}:${domain}:${namespace}:${alias}`;
 });
 
-// Formatted DID preview with bold namespace and alias
-const didPreviewFormatted = computed(() => {
-  const namespace = newDidNamespace.value.trim() || '{namespace}';
-  const alias = newDidAlias.value.trim() || '{alias}';
+// Domain portion of the DID preview
+const didPreviewDomain = computed(() => {
   const server = selectedWebvhServer.value;
-
-  if (!server) {
-    return '';
-  }
-
-  // Extract domain from server URL
-  let domain;
+  if (!server) return '';
   try {
-    const url = new URL(server);
-    domain = url.hostname;
+    return new URL(server).hostname;
   } catch {
-    // If server is not a valid URL, use it as-is
-    domain = server.replace(/^https?:\/\//, '').split('/')[0];
+    return server.replace(/^https?:\/\//, '').split('/')[0];
   }
-
-  return `did:webvh:{SCID}:${domain}:<strong>${namespace}</strong>:<strong>${alias}</strong>`;
 });
 
 const openCreateDialog = () => {
