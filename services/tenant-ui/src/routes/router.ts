@@ -52,11 +52,16 @@ router.get(
 
 // Protected reservation endpoint
 router.post("/innkeeperReservation", async (req: any, res: Response) => {
-  // Get innkeeper token from login method
-  const { token } = await innkeeperComponent.login();
+  try {
+    // Get innkeeper token from login method
+    const { token } = await innkeeperComponent.login();
 
-  const result = await innkeeperComponent.createReservation(req, token);
-  res.status(201).json(result);
+    const result = await innkeeperComponent.createReservation(req, token);
+    res.status(201).json(result);
+  } catch (error) {
+    console.error("Reservation creation failed", error);
+    res.status(500).json({ error: "Unable to create reservation" });
+  }
 });
 
 // Email endpoint

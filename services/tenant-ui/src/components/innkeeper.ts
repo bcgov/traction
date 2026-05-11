@@ -42,6 +42,7 @@ export const createReservation = async (req: any, token: string) => {
     });
     return res.data;
   } catch (error) {
-    return error;
+    console.error("Failed to create reservation", error);
+    throw new Error("Failed to create reservation");
   }
 };
