@@ -9,7 +9,19 @@ describe("buildStatusAutofill", () => {
 
   it("should return a correctly formed url including the body params", () => {
     expect(buildStatusAutofill(body)).toBe(
-      "http://tenant-ui.gov.bc.ca?email=my.email@gov.fake&id=50542cfe-e9bd-4881-8a71-1b529f40bc2b"
+      "http://tenant-ui.gov.bc.ca?email=my.email%40gov.fake&id=50542cfe-e9bd-4881-8a71-1b529f40bc2b"
+    );
+  });
+
+  it("should percent-encode special characters in email and id", () => {
+    expect(
+      buildStatusAutofill({
+        serverUrlStatusRoute: "https://example.com/check",
+        contactEmail: "user+tag@example.com",
+        reservationId: "id with spaces & symbols=1",
+      })
+    ).toBe(
+      "https://example.com/check?email=user%2Btag%40example.com&id=id%20with%20spaces%20%26%20symbols%3D1"
     );
   });
 

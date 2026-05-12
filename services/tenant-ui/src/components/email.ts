@@ -29,6 +29,21 @@ export function stringOrBooleanTruthy(value: string | boolean) {
   return value === "true" || value === true;
 }
 
+// Shared transporter — created once at module load.
+// requireTLS: true ensures credentials are never sent without TLS, even when
+// secure: false (STARTTLS mode). If the server does not support TLS the
+// connection fails rather than transmitting credentials in plaintext (CWE-523).
+const transporter = nodemailer.createTransport({
+  host: SERVER,
+  port: PORT,
+  secure: stringOrBooleanTruthy(SECURE),
+  requireTLS: true,
+  auth: {
+    user: USER,
+    pass: PASSWORD,
+  },
+});
+
 /**
  * @function sendConfirmationEmail
  * Send the preconfigured emails when a reservation is created
@@ -36,15 +51,6 @@ export function stringOrBooleanTruthy(value: string | boolean) {
  */
 export const sendConfirmationEmail = async (req: Request) => {
   try {
-    const transporter = nodemailer.createTransport({
-      host: SERVER,
-      port: PORT,
-      secure: stringOrBooleanTruthy(SECURE),
-      auth: {
-        user: USER,
-        pass: PASSWORD,
-      },
-    });
 
     req.body.serverUrlStatusRouteAutofill = buildStatusAutofill(req.body);
     const tenantHtml = eta.renderString(
@@ -85,15 +91,6 @@ export const sendConfirmationEmail = async (req: Request) => {
  */
 export const sendStatusEmail = async (req: Request) => {
   try {
-    const transporter = nodemailer.createTransport({
-      host: SERVER,
-      port: PORT,
-      secure: stringOrBooleanTruthy(SECURE),
-      auth: {
-        user: USER,
-        pass: PASSWORD,
-      },
-    });
 
     let template;
     let subject;

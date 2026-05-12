@@ -171,8 +171,14 @@
               $t('identifiers.webvh.didPreview')
             }}</label>
             <div class="p-3 surface-100 border-round mt-2">
-              <!-- eslint-disable-next-line vue/no-v-html -->
-              <code class="text-sm" v-html="didPreviewFormatted"></code>
+              <!-- eslint-disable @intlify/vue-i18n/no-raw-text -->
+              <code class="text-sm"
+                >did:webvh:{SCID}:{{ didPreviewDomain }}:<strong>{{
+                  newDidNamespace || '{namespace}'
+                }}</strong
+                >:<strong>{{ newDidAlias || '{alias}' }}</strong></code
+              >
+              <!-- eslint-enable @intlify/vue-i18n/no-raw-text -->
             </div>
           </div>
         </div>
@@ -480,28 +486,10 @@ const didPreview = computed(() => {
   return `did:webvh:{SCID}:${domain}:${namespace}:${alias}`;
 });
 
-// Formatted DID preview with bold namespace and alias
-const didPreviewFormatted = computed(() => {
-  const namespace = newDidNamespace.value.trim() || '{namespace}';
-  const alias = newDidAlias.value.trim() || '{alias}';
-  const server = selectedWebvhServer.value;
-
-  if (!server) {
-    return '';
-  }
-
-  // Extract domain from server URL
-  let domain;
-  try {
-    const url = new URL(server);
-    domain = url.hostname;
-  } catch {
-    // If server is not a valid URL, use it as-is
-    domain = server.replace(/^https?:\/\//, '').split('/')[0];
-  }
-
-  return `did:webvh:{SCID}:${domain}:<strong>${namespace}</strong>:<strong>${alias}</strong>`;
-});
+// Domain portion of the DID preview — derived from didPreview to avoid
+// duplicating the server URL parsing logic (single source of truth).
+// didPreview format: did:webvh:{SCID}:{domain}:{namespace}:{alias}
+const didPreviewDomain = computed(() => didPreview.value.split(':')[3] ?? '');
 
 const openCreateDialog = () => {
   createFormTouched.value = false;
