@@ -80,14 +80,14 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Checkout services directory from the trust-over-ip-configurations repo
+      - name: Checkout services directory from the ministry-gitops-ditp repo
         uses: actions/checkout@v6
         with:
-          repository: bcgov/trust-over-ip-configurations
+          repository: bcgov-c/ministry-gitops-ditp
           ssh-key: ${{ secrets.DITP_CONFIGS_REPO_SECRET }}
           sparse-checkout: |
             services
-          path: trust-over-ip-configurations
+          path: ministry-gitops-ditp
 
       - name: Install OpenShift CLI tools
         uses: redhat-actions/openshift-tools-installer@v1
@@ -103,8 +103,8 @@ jobs:
 
       - name: Deploy Traction to Development
         run: |
-          cp trust-over-ip-configurations/services/traction/charts/dev/values.yaml ./dev-values.yaml
-          yq e -i 'del(.traction) | . *= load("trust-over-ip-configurations/services/traction/charts/dev/values.yaml").traction' ./dev-values.yaml
+          cp ministry-gitops-ditp/services/traction/charts/dev/values.yaml ./dev-values.yaml
+          yq e -i 'del(.traction) | . *= load("ministry-gitops-ditp/services/traction/charts/dev/values.yaml").traction' ./dev-values.yaml
           helm upgrade --install traction -f ./dev-values.yaml --set acapy.image.tag=${{ needs.build_acapy.outputs.image_version }} --set tenant_proxy.image.tag=${{ needs.build_acapy.outputs.image_version }} --set ui.image.tag=${{ needs.build_ui.outputs.image_version }} ./charts/traction --wait --timeout 10m
 
       - name: Restart Deployments
