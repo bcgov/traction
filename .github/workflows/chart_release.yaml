@@ -60,14 +60,14 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Checkout services directory from the trust-over-ip-configurations repo
+      - name: Checkout services directory from the ministry-gitops-ditp repo
         uses: actions/checkout@v6
         with:
-          repository: bcgov/trust-over-ip-configurations
+          repository: bcgov-c/ministry-gitops-ditp
           ssh-key: ${{ secrets.DITP_CONFIGS_REPO_SECRET }}
           sparse-checkout: |
             services
-          path: trust-over-ip-configurations
+          path: ministry-gitops-ditp
 
       - name: Lookup latest chart
         id: chart_version
@@ -82,7 +82,7 @@ jobs:
           APP_VERSION: ${{ steps.chart_version.outputs.APP_VERSION }}
           CHART_VERSION: ${{ steps.chart_version.outputs.CHART_VERSION }}
         run: |
-          cd trust-over-ip-configurations
+          cd ministry-gitops-ditp
           yq e -i '.appVersion = env(APP_VERSION)' services/traction/charts/test/Chart.yaml
           yq e -i '.version = env(CHART_VERSION)' services/traction/charts/test/Chart.yaml
           yq e -i '.dependencies[0].version = env(CHART_VERSION)' services/traction/charts/test/Chart.yaml
@@ -92,14 +92,14 @@ jobs:
           APP_VERSION: ${{ steps.chart_version.outputs.APP_VERSION }}
           CHART_VERSION: ${{ steps.chart_version.outputs.CHART_VERSION }}
         run: |
-          cd trust-over-ip-configurations
+          cd ministry-gitops-ditp
           yq e -i '.appVersion = env(APP_VERSION)' services/traction/charts/prod/Chart.yaml
           yq e -i '.version = env(CHART_VERSION)' services/traction/charts/prod/Chart.yaml
           yq e -i '.dependencies[0].version = env(CHART_VERSION)' services/traction/charts/prod/Chart.yaml
 
-      - name: Commit and Push to trust-over-ip-configurations Repo
+      - name: Commit and Push to ministry-gitops-ditp Repo
         run: |
-          cd trust-over-ip-configurations
+          cd ministry-gitops-ditp
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add services/traction/charts/test/Chart.yaml services/traction/charts/prod/Chart.yaml
