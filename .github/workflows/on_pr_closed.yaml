@@ -48,7 +48,7 @@ jobs:
     name: Delete closed PR images
     steps:
       - name: Delete Images
-        uses: snok/container-retention-policy@v3.0.1
+        uses: snok/container-retention-policy@v3.1.0
         with:
           account: bcgov
           image-names: traction-plugins-acapy, traction-tenant-proxy, traction-tenant-ui
