@@ -17,16 +17,16 @@ jobs:
     runs-on: ubuntu-22.04
     if: github.repository_owner == 'bcgov'
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - name: Check out manifest repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
           repository: ${{ secrets.MANIFEST_REPO }}
           path: charts-repo
 
       - name: Authenticate and set context
-        uses: redhat-actions/oc-login@v1
+        uses: redhat-actions/oc-login@5eb45e848b168b6bf6b8fe7f1561003c12e3c99d # v1.3
         with:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
@@ -44,11 +44,11 @@ jobs:
 
   clean-ghcr:
     runs-on: ubuntu-22.04
-    if: ${{ false }}
+    if: ${{ always }}
     name: Delete closed PR images
     steps:
       - name: Delete Images
-        uses: snok/container-retention-policy@v3.0.1
+        uses: snok/container-retention-policy@d3bdcf5ce9b05f685154e4a16c39233b245e3d53 # v3.1.0
         with:
           account: bcgov
           image-names: traction-plugins-acapy, traction-tenant-proxy, traction-tenant-ui
