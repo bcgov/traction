@@ -18,16 +18,16 @@ jobs:
       #       Check out repo
       #----------------------------------------------
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       #----------------------------------------------
       #       Install python and poetry with cache
       #----------------------------------------------
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         id: setup-python
         with:
           python-version: "3.13"
       - name: Install poetry
-        uses: snok/install-poetry@v1
+        uses: snok/install-poetry@a783c322200f0519c7926aa6faa857c4e23e9263 # v1.4.2
         with:
           version: 2.1.1
           virtualenvs-create: true
