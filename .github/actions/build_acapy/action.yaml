@@ -45,6 +45,9 @@ runs:
       with:
         ref: ${{ inputs.ref != '' && inputs.ref ||  env.GITHUB_REF }}
 
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v4
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
@@ -73,10 +76,14 @@ runs:
         context: ${{ inputs.context }}
         file: ${{ inputs.dockerfile }}
         push: true
+        platforms: linux/amd64,linux/arm64
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/acapy-buildcache:main
-        cache-to: type=registry,ref=ghcr.io/${{ github.repository }}/acapy-buildcache:main,mode=max,ttl=168h
+        annotations: ${{ steps.meta.outputs.annotations }}
+        provenance: mode=min
+        sbom: true
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
 
     - id: values
       shell: bash
