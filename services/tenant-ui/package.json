@@ -28,7 +28,7 @@
     "express": "^5.2.1",
     "express-validator": "^7.3.2",
     "jose": "^6.2.3",
-    "nodemailer": "^8.0.10"
+    "nodemailer": "^9.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
