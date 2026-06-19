@@ -296,8 +296,8 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | ui.smtp.user | string | `""` | SMTP user (use ui.smtp.existingSecret to provide SERVER_SMTP_PASSWORD) |
 | ui.tolerations | list | `[]` |  |
 | ui.ux.aboutBusiness.imageUrl | string | `"/img/bc/bc_logo.png"` |  |
-| ui.ux.aboutBusiness.link | string | `"https://github.com/bcgov/bc-vcpedia/blob/main/agents/bc-gov-agent-service.md"` |  |
-| ui.ux.aboutBusiness.linkTitle | string | `"BC Digital Trust Service Agreement"` |  |
+| ui.ux.aboutBusiness.link | string | `""` |  |
+| ui.ux.aboutBusiness.linkTitle | string | `""` |  |
 | ui.ux.aboutBusiness.title | string | `"Government of British Columbia"` |  |
 | ui.ux.appInnkeeperTitle | string | `"Traction Innkeeper Console"` | Title of the Innkeeper Console |
 | ui.ux.appTitle | string | `"Traction Tenant Console"` | Title of the application |
