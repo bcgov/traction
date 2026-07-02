@@ -8,6 +8,7 @@ on:
       - "services/tenant-ui/**"
       - "charts/traction/**"
       - "charts/tenant-ui/**"
+      - "deploy/traction/**"
     types:
       - closed
 
@@ -44,7 +45,7 @@ jobs:
 
   clean-ghcr:
     runs-on: ubuntu-22.04
-    if: ${{ always }}
+    if: ${{ always() }}
     name: Delete closed PR images
     steps:
       - name: Delete Images
