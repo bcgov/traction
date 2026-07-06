@@ -1000,6 +1000,7 @@ async def innkeeper_tenant_adopt(request: web.BaseRequest):
         raise web.HTTPConflict(reason=f"Wallet {wallet_id} already belongs to tenant {existing.tenant_id}.")
 
     connected_to_endorsers = [EndorserLedgerConfig(**config) for config in body.get("connect_to_endorser") or []]
+    # Admin adoption persists config as-is; unlike create_wallet, no auto_issuer gating.
     tenant = await mgr.create_tenant(
         wallet_id=wallet_id,
         email=body.get("contact_email"),
