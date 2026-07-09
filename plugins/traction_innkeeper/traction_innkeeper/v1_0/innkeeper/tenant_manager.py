@@ -143,15 +143,17 @@ class TenantManager:
         auto_issuer: bool = False,
         tenant_id: str = None,
         enable_ledger_switch: bool = False,
+        tenant_name: str = None,
     ):
         try:
             async with self._profile.session() as session:
                 wallet_record = await WalletRecord.retrieve_by_id(session, wallet_id)
-                tenant_name = (
-                    wallet_record.settings.get("default_label")
-                    if wallet_record.settings.get("default_label")
-                    else wallet_record.wallet_name
-                )
+                if not tenant_name:
+                    tenant_name = (
+                        wallet_record.settings.get("default_label")
+                        if wallet_record.settings.get("default_label")
+                        else wallet_record.wallet_name
+                    )
                 tenant: TenantRecord = TenantRecord(
                     tenant_id=tenant_id,
                     tenant_name=tenant_name,

@@ -799,6 +799,172 @@ async def test_innkeeper_tenant_restore_not_deleted(
     MockTenantRecordCls.retrieve_by_id.assert_awaited_once_with(ANY, TEST_TENANT_ID)
 
 
+# Test Tenant Adopt (POST /innkeeper/tenants/adopt)
+@pytest.mark.asyncio
+@pytest.mark.usefixtures("mock_tenant_mgr")
+@patch(f"{test_module.__name__}.WalletRecord", autospec=True)
+@patch(f"{test_module.__name__}.TenantRecord", autospec=True)
+async def test_innkeeper_tenant_adopt(
+    MockTenantRecordCls: MagicMock,
+    MockWalletRecordCls: MagicMock,
+    mock_request: MagicMock,
+    mock_context: MagicMock,
+    mock_tenant_mgr: MagicMock,
+):
+    """Test POST /innkeeper/tenants/adopt endpoint."""
+    profile = mock_context.profile
+    adopt_body = {
+        "wallet_id": TEST_WALLET_ID,
+        "tenant_name": "Adopted Tenant",
+        "contact_email": "adopted@example.com",
+        "connect_to_endorser": [{"endorser_alias": "test-endorser", "ledger_id": "ledger-1"}],
+        "create_public_did": ["ledger-1"],
+        "auto_issuer": True,
+    }
+
+    # Mock request body
+    mock_request._set_json_body(adopt_body)
+
+    # Mock WalletRecord retrieval (wallet exists) and no existing TenantRecord
+    MockWalletRecordCls.retrieve_by_id = AsyncMock()
+    MockTenantRecordCls.query_by_wallet_id = AsyncMock(side_effect=StorageNotFoundError("No TenantRecord"))
+
+    # Mock TenantManager create_tenant
+    mock_tenant_rec = MagicMock(spec=TenantRecord)
+    mock_tenant_rec.serialize.return_value = {
+        "tenant_id": TEST_TENANT_ID,
+        "wallet_id": TEST_WALLET_ID,
+    }
+    mock_tenant_mgr.create_tenant = AsyncMock(return_value=mock_tenant_rec)
+
+    mock_context.inject.return_value = mock_tenant_mgr
+
+    response = await test_module.innkeeper_tenant_adopt(mock_request)
+
+    assert profile.settings.get("wallet.innkeeper") is True
+    mock_context.inject.assert_called_once_with(test_module.TenantManager)
+    mock_request.json.assert_awaited_once()
+    MockWalletRecordCls.retrieve_by_id.assert_awaited_once_with(ANY, TEST_WALLET_ID)
+    MockTenantRecordCls.query_by_wallet_id.assert_awaited_once_with(ANY, TEST_WALLET_ID)
+    mock_tenant_mgr.create_tenant.assert_awaited_once_with(
+        wallet_id=TEST_WALLET_ID,
+        email="adopted@example.com",
+        connected_to_endorsers=[EndorserLedgerConfig(endorser_alias="test-endorser", ledger_id="ledger-1")],
+        created_public_did=["ledger-1"],
+        auto_issuer=True,
+        enable_ledger_switch=False,
+        tenant_name="Adopted Tenant",
+    )
+    mock_tenant_rec.serialize.assert_called_once()
+    assert response.status == 200
+    assert json.loads(response.body) == {
+        "tenant_id": TEST_TENANT_ID,
+        "wallet_id": TEST_WALLET_ID,
+    }
+
+
+# Test Tenant Adopt - defaults (minimal body)
+@pytest.mark.asyncio
+@pytest.mark.usefixtures("mock_tenant_mgr")
+@patch(f"{test_module.__name__}.WalletRecord", autospec=True)
+@patch(f"{test_module.__name__}.TenantRecord", autospec=True)
+async def test_innkeeper_tenant_adopt_defaults(
+    MockTenantRecordCls: MagicMock,
+    MockWalletRecordCls: MagicMock,
+    mock_request: MagicMock,
+    mock_context: MagicMock,
+    mock_tenant_mgr: MagicMock,
+):
+    """Test POST /innkeeper/tenants/adopt endpoint with only wallet_id."""
+
+    # Mock request body
+    mock_request._set_json_body({"wallet_id": TEST_WALLET_ID})
+
+    # Mock WalletRecord retrieval (wallet exists) and no existing TenantRecord
+    MockWalletRecordCls.retrieve_by_id = AsyncMock()
+    MockTenantRecordCls.query_by_wallet_id = AsyncMock(side_effect=StorageNotFoundError("No TenantRecord"))
+
+    # Mock TenantManager create_tenant
+    mock_tenant_rec = MagicMock(spec=TenantRecord)
+    mock_tenant_rec.serialize.return_value = {"tenant_id": TEST_TENANT_ID}
+    mock_tenant_mgr.create_tenant = AsyncMock(return_value=mock_tenant_rec)
+
+    mock_context.inject.return_value = mock_tenant_mgr
+
+    response = await test_module.innkeeper_tenant_adopt(mock_request)
+
+    mock_tenant_mgr.create_tenant.assert_awaited_once_with(
+        wallet_id=TEST_WALLET_ID,
+        email=None,
+        connected_to_endorsers=[],
+        created_public_did=[],
+        auto_issuer=False,
+        enable_ledger_switch=False,
+        tenant_name=None,
+    )
+    assert response.status == 200
+    assert json.loads(response.body) == {"tenant_id": TEST_TENANT_ID}
+
+
+# Test Tenant Adopt - Conflict (wallet already belongs to a tenant)
+@pytest.mark.asyncio
+@pytest.mark.usefixtures("mock_tenant_mgr")
+@patch(f"{test_module.__name__}.WalletRecord", autospec=True)
+@patch(f"{test_module.__name__}.TenantRecord", autospec=True)
+async def test_innkeeper_tenant_adopt_conflict(
+    MockTenantRecordCls: MagicMock,
+    MockWalletRecordCls: MagicMock,
+    mock_request: MagicMock,
+    mock_context: MagicMock,
+    mock_tenant_mgr: MagicMock,
+):
+    """Test POST /innkeeper/tenants/adopt endpoint conflict."""
+
+    # Mock request body
+    mock_request._set_json_body({"wallet_id": TEST_WALLET_ID})
+
+    # Mock WalletRecord retrieval (wallet exists) and an existing TenantRecord
+    MockWalletRecordCls.retrieve_by_id = AsyncMock()
+    mock_existing_rec = MagicMock(spec=TenantRecord, tenant_id=TEST_TENANT_ID)
+    MockTenantRecordCls.query_by_wallet_id = AsyncMock(return_value=mock_existing_rec)
+
+    mock_context.inject.return_value = mock_tenant_mgr
+
+    with pytest.raises(web.HTTPConflict) as excinfo:
+        await test_module.innkeeper_tenant_adopt(mock_request)
+    assert f"Wallet {TEST_WALLET_ID} already belongs to tenant {TEST_TENANT_ID}" in str(excinfo.value)
+
+    MockTenantRecordCls.query_by_wallet_id.assert_awaited_once_with(ANY, TEST_WALLET_ID)
+    mock_tenant_mgr.create_tenant.assert_not_awaited()
+
+
+# Test Tenant Adopt - Wallet Not Found
+@pytest.mark.asyncio
+@pytest.mark.usefixtures("mock_tenant_mgr")
+@patch(f"{test_module.__name__}.WalletRecord", autospec=True)
+async def test_innkeeper_tenant_adopt_wallet_not_found(
+    MockWalletRecordCls: MagicMock,
+    mock_request: MagicMock,
+    mock_context: MagicMock,
+    mock_tenant_mgr: MagicMock,
+):
+    """Test POST /innkeeper/tenants/adopt endpoint when wallet does not exist."""
+
+    # Mock request body
+    mock_request._set_json_body({"wallet_id": TEST_WALLET_ID})
+
+    # Mock WalletRecord retrieval to raise error
+    MockWalletRecordCls.retrieve_by_id = AsyncMock(side_effect=StorageNotFoundError("Not found"))
+
+    mock_context.inject.return_value = mock_tenant_mgr
+
+    with pytest.raises(web.HTTPNotFound):
+        await test_module.innkeeper_tenant_adopt(mock_request)
+
+    MockWalletRecordCls.retrieve_by_id.assert_awaited_once_with(ANY, TEST_WALLET_ID)
+    mock_tenant_mgr.create_tenant.assert_not_awaited()
+
+
 # Test Create API Key (POST /innkeeper/authentications/api)
 @pytest.mark.asyncio
 @pytest.mark.usefixtures("mock_tenant_mgr")

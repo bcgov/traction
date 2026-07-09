@@ -57,6 +57,7 @@ This is useful for the innkeeper as the `tenant_id` can be configured, so it is 
 - `GET /innkeeper/reservations`
 - `PUT /innkeeper/reservations/{reservation_id}/approve`
 - `GET /innkeeper/tenants`
+- `POST /innkeeper/tenants/adopt` (create a tenant record over an existing wallet - e.g. one relocated via acapy-tools `tenant-import`)
 - `GET /innkeeper/tenants/{tenant_id}`
 
 innkeeper is a "special" tenant, use middleware to restrict these calls.  

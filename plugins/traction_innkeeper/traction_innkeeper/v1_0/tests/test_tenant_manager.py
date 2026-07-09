@@ -830,6 +830,52 @@ async def test_create_tenant_label_fallback(
     mock_tenant_rec_instance.save.assert_awaited_once()
 
 
+@pytest.mark.asyncio
+@patch("traction_innkeeper.v1_0.innkeeper.tenant_manager.WalletRecord", autospec=True)
+@patch("traction_innkeeper.v1_0.innkeeper.tenant_manager.TenantRecord", autospec=True)
+async def test_create_tenant_name_override(
+    MockTenantRecord: MagicMock,
+    MockWalletRecord: MagicMock,
+    tenant_manager: TenantManager,
+    mock_profile,
+):
+    """Test create_tenant uses a provided tenant_name over the wallet label."""
+    profile, session = mock_profile
+    wallet_id = "test-wallet-id"
+    tenant_email = "test@example.com"
+    tenant_name = "ProvidedTenantName"
+
+    # Setup mock WalletRecord with a default_label that should be ignored
+    mock_wallet_rec_instance = MagicMock(spec=WalletRecord)
+    mock_wallet_rec_instance.wallet_id = wallet_id
+    mock_wallet_rec_instance.wallet_name = "ActualWalletName"
+    mock_wallet_rec_instance.settings = {"default_label": "WalletLabel"}
+    MockWalletRecord.retrieve_by_id = AsyncMock(return_value=mock_wallet_rec_instance)
+
+    mock_tenant_rec_instance = AsyncMock(spec=TenantRecord)
+    MockTenantRecord.return_value = mock_tenant_rec_instance
+
+    await tenant_manager.create_tenant(
+        wallet_id=wallet_id,
+        email=tenant_email,
+        tenant_name=tenant_name,
+    )
+
+    # Assert TenantRecord called with the provided tenant_name
+    MockTenantRecord.assert_called_once_with(
+        tenant_id=None,  # Default
+        tenant_name=tenant_name,  # <<< Should use the provided name
+        contact_email=tenant_email,
+        wallet_id=wallet_id,
+        new_with_id=False,
+        connected_to_endorsers=[],
+        created_public_did=[],
+        enable_ledger_switch=False,
+        auto_issuer=False,
+    )
+    mock_tenant_rec_instance.save.assert_awaited_once()
+
+
 # --- Tests for create_innkeeper ---
 
 

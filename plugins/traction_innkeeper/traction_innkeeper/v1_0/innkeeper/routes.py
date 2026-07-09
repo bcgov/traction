@@ -29,7 +29,7 @@ from multitenant_provider.v1_0.routes import plugin_wallet_create_token
 from marshmallow import fields, validate
 
 from . import TenantManager
-from .config import InnkeeperWalletConfig
+from .config import EndorserLedgerConfig, InnkeeperWalletConfig
 from .models import (
     ReservationRecord,
     ReservationRecordSchema,
@@ -267,6 +267,67 @@ class TenantIdMatchInfoSchema(OpenAPISchema):
     tenant_id = fields.Str(
         required=True,
         metadata={"description": "Tenant identifier", "example": UUIDFour.EXAMPLE},
+    )
+
+
+class TenantAdoptRequestSchema(OpenAPISchema):
+    """Request schema for adopting an existing wallet as a tenant."""
+
+    wallet_id = fields.Str(
+        required=True,
+        metadata={
+            "description": "Existing Wallet Record identifier (e.g. an imported wallet)",
+            "example": UUIDFour.EXAMPLE,
+        },
+    )
+
+    tenant_name = fields.Str(
+        required=False,
+        metadata={
+            "description": "Name of Tenant; defaults to the wallet label/name",
+            "example": "line of business short name",
+        },
+    )
+
+    contact_email = fields.Str(
+        required=False,
+        metadata={
+            "description": "Contact email for this tenant",
+        },
+    )
+
+    connect_to_endorser = fields.List(
+        fields.Nested(EndorserLedgerConfigSchema()),
+        required=False,
+        metadata={
+            "description": "Endorser config",
+        },
+    )
+
+    create_public_did = fields.List(
+        fields.Str(
+            metadata={
+                "description": "Ledger identifier",
+            },
+        ),
+        required=False,
+        metadata={
+            "description": "Public DID config",
+        },
+    )
+
+    auto_issuer = fields.Bool(
+        required=False,
+        metadata={
+            "description": "True if tenant can make itself issuer, false if only innkeeper can",
+        },
+    )
+
+    enable_ledger_switch = fields.Bool(
+        required=False,
+        metadata={
+            "description": "True if tenant can switch endorser/ledger",
+        },
     )
 
 
@@ -913,6 +974,46 @@ async def innkeeper_tenant_restore(request: web.BaseRequest):
             raise web.HTTPNotFound(reason=f"Tenant {tenant_id} not found.")
 
 
+@docs(tags=[SWAGGER_CATEGORY], summary="Adopt an existing wallet as a tenant")
+@request_schema(TenantAdoptRequestSchema())
+@response_schema(TenantRecordSchema(), 200, description="")
+@innkeeper_only
+@error_handler
+async def innkeeper_tenant_adopt(request: web.BaseRequest):
+    context: AdminRequestContext = request["context"]
+
+    body = await request.json()
+    wallet_id = body.get("wallet_id")
+
+    # records are under base/root profile, use Tenant Manager profile
+    mgr = context.inject(TenantManager)
+    profile = mgr.profile
+
+    async with profile.session() as session:
+        # 404 if there is no wallet to adopt...
+        await WalletRecord.retrieve_by_id(session, wallet_id)
+        try:
+            existing = await TenantRecord.query_by_wallet_id(session, wallet_id)
+        except StorageNotFoundError:
+            existing = None
+    if existing:
+        raise web.HTTPConflict(reason=f"Wallet {wallet_id} already belongs to tenant {existing.tenant_id}.")
+
+    connected_to_endorsers = [EndorserLedgerConfig(**config) for config in body.get("connect_to_endorser") or []]
+    # Admin adoption persists config as-is; unlike create_wallet, no auto_issuer gating.
+    tenant = await mgr.create_tenant(
+        wallet_id=wallet_id,
+        email=body.get("contact_email"),
+        connected_to_endorsers=connected_to_endorsers,
+        created_public_did=body.get("create_public_did") or [],
+        auto_issuer=body.get("auto_issuer") or False,
+        enable_ledger_switch=body.get("enable_ledger_switch") or False,
+        tenant_name=body.get("tenant_name"),
+    )
+
+    return web.json_response(tenant.serialize())
+
+
 @docs(tags=[SWAGGER_CATEGORY], summary="Create API Key Record")
 @request_schema(TenantAuthenticationsApiRequestSchema())
 @response_schema(TenantAuthenticationsApiResponseSchema(), 200, description="")
@@ -1101,6 +1202,7 @@ async def register(app: web.Application):
                 innkeeper_reservations_refresh_password,
             ),
             web.get("/innkeeper/tenants/", innkeeper_tenants_list, allow_head=False),
+            web.post("/innkeeper/tenants/adopt", innkeeper_tenant_adopt),
             web.get("/innkeeper/tenants/{tenant_id}", innkeeper_tenant_get, allow_head=False),
             web.put("/innkeeper/tenants/{tenant_id}/config", tenant_config_update),
             web.delete("/innkeeper/tenants/{tenant_id}", innkeeper_tenant_delete),
