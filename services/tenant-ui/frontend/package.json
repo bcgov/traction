@@ -24,7 +24,7 @@
     "@vuelidate/validators": "^2.0.4",
     "axios": "^1.18.1",
     "date-fns": "^4.4.0",
-    "dompurify": "^3.4.11",
+    "dompurify": "^3.4.12",
     "json-editor-vue": "^0.18.1",
     "marked": "^18.0.5",
     "oidc-client-ts": "^3.5.0",
