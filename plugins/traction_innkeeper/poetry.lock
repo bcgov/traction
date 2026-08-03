@@ -2,18 +2,18 @@
 
 [[package]]
 name = "acapy-agent"
-version = "1.6.0"
+version = "1.6.1"
 description = "(ACA-Py) A Cloud Agent Python is a foundation for building decentralized identity applications and services running in non-mobile environments. "
 optional = false
 python-versions = "<4.0,>=3.13"
 groups = ["main"]
 files = [
-    {file = "acapy_agent-1.6.0-py3-none-any.whl", hash = "sha256:fb69b043e0b54d9e46fa2710637a5383045fb7b1b61f42df199d9014fa99878a"},
-    {file = "acapy_agent-1.6.0.tar.gz", hash = "sha256:2a906f31ddeb549a61ffe99841397be7aa51984e769258088723713b9403e194"},
+    {file = "acapy_agent-1.6.1-py3-none-any.whl", hash = "sha256:d91a02f2b9644e49c8781425f2d9f7953aa61e6db78aff6b4cc6f323b1b76f26"},
+    {file = "acapy_agent-1.6.1.tar.gz", hash = "sha256:14fd89825d97dd7d1a9781563607bce08b9c2026c7f10d4d875213453e69999d"},
 ]
 
 [package.dependencies]
-aiohttp = ">=3.11.16,<3.14.0"
+aiohttp = ">=3.11.16,<3.15.0"
 aiohttp-apispec-acapy = ">=3.0.3,<3.1.0"
 aiohttp-cors = ">=0.7,<0.9"
 anoncreds = ">=0.2.3,<0.3.0"
@@ -38,18 +38,18 @@ portalocker = ">=3.1.1,<4.0.0"
 prompt_toolkit = ">=3.0,<3.1"
 psycopg = {version = ">=3.2.1,<4.0.0", extras = ["binary", "pool"]}
 pydid = ">=0.5.1,<0.6.0"
-pyjwt = ">=2.10.1,<2.13.0"
-pyld = ">=2.0.4,<3.0.0"
+pyjwt = ">=2.10.1,<2.14.0"
+pyld = ">=2.0.4,<4.0.0"
 pynacl = ">=1.5,<1.7"
 python-dateutil = ">=2.9.0,<3.0.0"
 python-json-logger = ">=3.2.1,<4.0.0"
 pyyaml = ">=6.0.2,<6.1.0"
 qrcode = {version = ">=8.1,<9.0", extras = ["pil"]}
-requests = ">=2.32.3,<2.34.0"
+requests = ">=2.32.3,<2.35.0"
 rlp = ">=4.1.0,<5.0.0"
 sd-jwt = ">=0.10.3,<0.11.0"
 unflatten = ">=0.2,<0.3"
-uuid_utils = ">=0.10,<0.15"
+uuid_utils = ">=0.10,<0.18"
 
 [package.extras]
 bbs = ["ursa-bbs-signatures (>=1.0.1,<1.1.0)"]
@@ -3471,4 +3471,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.13"
-content-hash = "a9b3b3de83d50fd84208d72d83d6cca9142015fe93b2bdb127d8d55bf81ded3c"
+content-hash = "81751426c893259cf958e3100a0c8c2672b581c3c0ce14fc3e0f8aecdaefd40e"
