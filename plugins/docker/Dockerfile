@@ -1,4 +1,4 @@
-FROM ghcr.io/openwallet-foundation/acapy-agent:py3.13-1.6.0 AS base
+FROM ghcr.io/openwallet-foundation/acapy-agent:py3.13-1.6.1 AS base
 
 # Install and Configure Poetry
 USER root
@@ -24,22 +24,22 @@ RUN poetry install --only main
 RUN ln -s "$(poetry env info -p)"/lib/python3.13/site-packages site-packages
 
 
-FROM ghcr.io/openwallet-foundation/acapy-agent:py3.13-1.6.0
+FROM ghcr.io/openwallet-foundation/acapy-agent:py3.13-1.6.1
 COPY --from=base --chown=aries:aries /home/aries/.venv /home/aries/.venv
 ENV PATH="/home/aries/.venv/bin:$PATH"
 
 COPY --chown=aries:aries docker/default.yml ./
 COPY --chown=aries:aries traction_innkeeper/traction_innkeeper traction_plugins/traction_innkeeper
-RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.6.0#subdirectory=basicmessage_storage
-RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.6.0#subdirectory=connection_update
-RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.6.0#subdirectory=multitenant_provider
-RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.6.0#subdirectory=rpc
-RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.6.0#subdirectory=connections
-RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.6.0#subdirectory=webvh
+RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.6.1#subdirectory=basicmessage_storage
+RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.6.1#subdirectory=connection_update
+RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.6.1#subdirectory=multitenant_provider
+RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.6.1#subdirectory=rpc
+RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.6.1#subdirectory=connections
+RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.6.1#subdirectory=webvh
 
 # TODO: Update main tag once the present_proof and issue_credential plugins are released
-RUN pip install --no-deps git+https://github.com/openwallet-foundation/acapy-plugins@1.6.0#subdirectory=present_proof
-RUN pip install --no-deps git+https://github.com/openwallet-foundation/acapy-plugins@1.6.0#subdirectory=issue_credential
+RUN pip install --no-deps git+https://github.com/openwallet-foundation/acapy-plugins@1.6.1#subdirectory=present_proof
+RUN pip install --no-deps git+https://github.com/openwallet-foundation/acapy-plugins@1.6.1#subdirectory=issue_credential
 
 
 ENTRYPOINT ["/bin/bash", "-c", "aca-py \"$@\"", "--"]
