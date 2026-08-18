@@ -21,6 +21,11 @@ inputs:
     type: string
   registry_password:
     required: true
+  platforms:
+    description: "Comma-separated target platforms for the image build"
+    required: false
+    type: string
+    default: "linux/amd64,linux/arm64"
 
 outputs:
   image_tag:
@@ -113,7 +118,7 @@ runs:
       with:
         context: ${{ inputs.context }}
         push: true
-        platforms: linux/amd64,linux/arm64
+        platforms: ${{ inputs.platforms }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         annotations: ${{ steps.meta.outputs.annotations }}

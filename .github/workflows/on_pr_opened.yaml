@@ -48,6 +48,8 @@ jobs:
           registry: ghcr.io
           registry_username: ${{ github.repository_owner}}
           registry_password: ${{ secrets.GITHUB_TOKEN }}
+          # PR images only ever deploy to OpenShift (amd64); skip the slow QEMU-emulated arm64 build
+          platforms: linux/amd64
     outputs:
       image_tag: ${{ steps.builder.outputs.image_tag }}
       image_version: ${{ steps.builder.outputs.image_version }}
@@ -71,6 +73,7 @@ jobs:
           registry: ghcr.io
           registry_username: ${{ github.repository_owner}}
           registry_password: ${{ secrets.GITHUB_TOKEN }}
+          platforms: linux/amd64
     outputs:
       image_tag: ${{ steps.builder.outputs.image_tag }}
 
@@ -92,6 +95,7 @@ jobs:
           registry: ghcr.io
           registry_username: ${{ github.repository_owner}}
           registry_password: ${{ secrets.GITHUB_TOKEN }}
+          platforms: linux/amd64
     outputs:
       image_tag: ${{ steps.builder.outputs.image_tag }}
 
