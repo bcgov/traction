@@ -1,11 +1,20 @@
 FROM node:24-alpine
 
 WORKDIR /usr/src/app
-COPY . .
+
+# Copy only the dependency manifests first so the npm ci layers
+# stay cached as long as the lockfiles don't change
+COPY package.json package-lock.json ./
+COPY frontend/package.json frontend/package-lock.json ./frontend/
+
 # install backend libs
-RUN npm cache clean --force && npm ci
+RUN npm ci
 # install frontend libs
-RUN cd frontend && npm cache clean --force && npm ci
+RUN cd frontend && npm ci
+
+# Copy in the source - code changes only invalidate layers from here down
+COPY . .
+
 # build backend
 RUN npm run build
 # build frontend
