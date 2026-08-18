@@ -7,10 +7,10 @@ WORKDIR /usr/src/app
 COPY package.json package-lock.json ./
 COPY frontend/package.json frontend/package-lock.json ./frontend/
 
-# install backend libs
-RUN npm ci
+# install backend libs (clean the npm cache in the same layer so it isn't committed to the image)
+RUN npm ci && npm cache clean --force
 # install frontend libs
-RUN cd frontend && npm ci
+RUN cd frontend && npm ci && npm cache clean --force
 
 # Copy in the source - code changes only invalidate layers from here down
 COPY . .
