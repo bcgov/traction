@@ -54,7 +54,7 @@
     "eslint-plugin-vue": "^10.10.0",
     "flat": "^6.0.1",
     "glob": "^13.0.6",
-    "globals": "^17.9.0",
+    "globals": "^17.11.0",
     "jsdom": "^30.0.1",
     "msw": "^2.15.0",
     "prettier": "^3.9.6",
