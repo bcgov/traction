@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 import PrimeVue from 'primevue/config';
-import { describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test } from 'vitest';
 
 import { useTenantStore, useTokenStore } from '@/store';
 import App from '@/App.vue';
@@ -14,6 +14,11 @@ const mountApp = () =>
   });
 
 describe('App', () => {
+  // Every mount sets sessionStorage 'reloaded', which skips the clear-on-open logic in later mounts.
+  beforeEach(() => {
+    sessionStorage.clear();
+  });
+
   test('document title is set', async () => {
     mountApp();
 
