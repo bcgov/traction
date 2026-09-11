@@ -14,7 +14,8 @@ const isAllowedStatusRouteUrl: CustomValidator = (value: string) => {
   } catch {
     throw new Error("Invalid URL");
   }
-  const isLocalhost = url.hostname === "localhost" || url.hostname === "127.0.0.1";
+  const isLocalhost =
+    url.hostname === "localhost" || url.hostname === "127.0.0.1";
   if (url.protocol === "https:") return true;
   if (url.protocol === "http:" && isLocalhost) return true;
   throw new Error("URL must use https, or http for localhost only");
@@ -68,7 +69,10 @@ router.post("/innkeeperReservation", async (req: any, res: Response) => {
 router.post(
   "/email/reservationConfirmation",
   body("contactEmail").isEmail(),
-  body("contactName").trim().notEmpty().customSanitizer((v) => v.replace(/[\r\n]/g, "")),
+  body("contactName")
+    .trim()
+    .notEmpty()
+    .customSanitizer((v) => v.replace(/[\r\n]/g, "")),
   body("reservationId").not().isEmpty(),
   body("serverUrlStatusRoute").custom(isAllowedStatusRouteUrl),
   async (req: Request, res: Response) => {
@@ -86,7 +90,10 @@ router.post(
 router.post(
   "/email/reservationStatus",
   body("contactEmail").isEmail(),
-  body("contactName").trim().notEmpty().customSanitizer((v) => v.replace(/[\r\n]/g, "")),
+  body("contactName")
+    .trim()
+    .notEmpty()
+    .customSanitizer((v) => v.replace(/[\r\n]/g, "")),
   body("reservationId").not().isEmpty(),
   body("state").not().isEmpty(),
   body("serverUrlStatusRoute").optional().custom(isAllowedStatusRouteUrl),

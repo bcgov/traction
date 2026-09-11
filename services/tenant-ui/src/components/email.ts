@@ -51,7 +51,6 @@ const transporter = nodemailer.createTransport({
  */
 export const sendConfirmationEmail = async (req: Request) => {
   try {
-
     req.body.serverUrlStatusRouteAutofill = buildStatusAutofill(req.body);
     const tenantHtml = eta.renderString(
       RESERVATION_RECIEVED_TENANT_TEMPLATE,
@@ -91,7 +90,6 @@ export const sendConfirmationEmail = async (req: Request) => {
  */
 export const sendStatusEmail = async (req: Request) => {
   try {
-
     let template;
     let subject;
     if (req.body.state === RESERVATION_STATUSES.APPROVED) {
