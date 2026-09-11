@@ -23,13 +23,13 @@ export default defineConfig({
       },
     }),
     VueI18nPlugin({
-      include: path.resolve(__dirname, './src/plugins/i18n/locales/**'),
+      include: path.resolve(import.meta.dirname, './src/plugins/i18n/locales/**'),
       strictMessage: false,
     }),
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(import.meta.dirname, './src'),
     },
   },
   server: {
