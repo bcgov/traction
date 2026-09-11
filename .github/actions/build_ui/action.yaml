@@ -45,48 +45,8 @@ runs:
       with:
         ref: ${{ inputs.ref != '' && inputs.ref ||  env.GITHUB_REF }}
 
-    - name: Set up Node
-      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
-      with:
-        node-version: 24
-        cache: npm
-        cache-dependency-path: ./services/tenant-ui/package-lock.json
-
-    - name: Install backend dependencies
-      shell: bash
-      run: |
-        cd ${{ inputs.context }}
-        npm cache clean --force && npm ci
-
-    - name: Install frontend dependencies
-      shell: bash
-      run: |
-        cd ${{ inputs.context }}/frontend
-        npm cache clean --force && npm ci
-
-    - name: Lint backend
-      shell: bash
-      run: |
-        cd ${{ inputs.context }}
-        npm run lint
-
-    - name: Lint frontend
-      shell: bash
-      run: |
-        cd ${{ inputs.context }}/frontend
-        npm run lint
-
-    - name: Build backend
-      shell: bash
-      run: |
-        cd ${{ inputs.context }}
-        npm run build
-
-    - name: Build frontend
-      shell: bash
-      run: |
-        cd ${{ inputs.context }}/frontend
-        npm run build
+    # Dependencies, lint and build all happen inside the image build below;
+    # lint/test for the Tenant UI runs in test_tenant_ui.yml.
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@06116385d9baf250c9f4dcb4858b16962ea869c3 # v4.1.0
