@@ -6,7 +6,7 @@ import { jwtVerify } from "jose";
 import { Mock } from "vitest";
 
 vi.mock("config", async (importOriginal) => {
-  const actual = await importOriginal() as typeof Config;;
+  const actual = (await importOriginal()) as typeof Config;
   return {
     ...actual,
     get: vi.fn().mockReturnValue("http://example.com/.well-known/jwks.json"),
