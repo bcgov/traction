@@ -9,6 +9,10 @@ on:
     paths:
       - 'services/tenant-ui/**'
 
+concurrency:
+  group: pr-${{ github.event.number }}-test_tenant_ui
+  cancel-in-progress: true
+
 jobs:
   backend:
     runs-on: ubuntu-latest
@@ -30,6 +34,8 @@ jobs:
           cache: "npm"
           cache-dependency-path: ./services/tenant-ui/package-lock.json
       - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
       - run: npm run build --if-present
       - run: npm test
 
@@ -53,5 +59,6 @@ jobs:
           cache: "npm"
           cache-dependency-path: ./services/tenant-ui/frontend/package-lock.json
       - run: npm ci
+      - run: npm run lint
       - run: npm run build --if-present
       - run: npm test
