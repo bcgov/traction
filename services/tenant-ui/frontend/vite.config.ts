@@ -23,7 +23,10 @@ export default defineConfig({
       },
     }),
     VueI18nPlugin({
-      include: path.resolve(import.meta.dirname, './src/plugins/i18n/locales/**'),
+      include: path.resolve(
+        import.meta.dirname,
+        './src/plugins/i18n/locales/**'
+      ),
       strictMessage: false,
     }),
   ],
