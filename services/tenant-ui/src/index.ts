@@ -55,12 +55,14 @@ app.use(API_ROOT, router);
 app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   console.error(err);
 
-  const status: number = Number.isInteger(err.status) && err.status >= 400 && err.status < 600
-    ? err.status
-    : 500;
+  const status: number =
+    Number.isInteger(err.status) && err.status >= 400 && err.status < 600
+      ? err.status
+      : 500;
 
   // Do not leak internal error details to the client (CWE-200)
-  const clientMessage = status < 500 ? (err.message || "Bad Request") : "Internal Server Error";
+  const clientMessage =
+    status < 500 ? err.message || "Bad Request" : "Internal Server Error";
 
   res.status(status).json({
     error: {
