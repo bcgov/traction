@@ -46,7 +46,7 @@ test('non-logout path does not clear any token or tenant data', async () => {
   router.push({ path: '/issuance/credentials' });
   await flushPromises();
 
-  expect(innkeeperTokenStore.clearToken).toHaveBeenCalled();
-  expect(tokenStore.clearToken).toHaveBeenCalled();
-  expect(tenantStore.clearTenant).toHaveBeenCalled();
+  expect(innkeeperTokenStore.clearToken).not.toHaveBeenCalled();
+  expect(tokenStore.clearToken).not.toHaveBeenCalled();
+  expect(tenantStore.clearTenant).not.toHaveBeenCalled();
 });
