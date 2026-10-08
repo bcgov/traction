@@ -3,7 +3,7 @@
   "version": "1.4.3",
   "type": "module",
   "engines": {
-    "node": ">=24 <25"
+    "node": ">=24.15.0 <25"
   },
   "description": "The backend for the Tenant UI service, providing API endpoints and serving the static Vue frontend.",
   "main": "index.ts",
