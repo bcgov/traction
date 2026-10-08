@@ -9,6 +9,11 @@ on:
       - "services/tenant-ui/**"
       - "charts/traction/**"
       - "charts/tenant-ui/**"
+
+concurrency:
+  group: on_push_main
+  cancel-in-progress: true
+
 jobs:
   build_ui:
     name: "Build Tenant UI"
