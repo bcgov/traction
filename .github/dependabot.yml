@@ -6,16 +6,19 @@ updates:
   #  - Check for updates once a week
   #  - Group all updates into a single PR
   - package-ecosystem: "github-actions"
-    directory: "/"
+    directories: ["/", "/.github/actions/*"]
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Canada/Pacific"
     groups:
       all-actions:
         patterns: [ "*" ]
 
   # Maintain dependencies for Python Packages
   - package-ecosystem: "pip"
-    directory: "/plugins"
+    directories: ["/plugins/traction_innkeeper", "/scripts/webvh-e2e"]
     schedule:
       interval: "weekly"
       day: "monday"
@@ -24,18 +27,13 @@ updates:
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
-
-  # Maintain dependencies for Python Packages
-  - package-ecosystem: "pip"
-    directory: "/plugins/traction_innkeeper"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "04:00"
-      timezone: "Canada/Pacific"
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
+      - dependency-name: "acapy-agent"
+      - dependency-name: "multitenant-provider"
+      - dependency-name: "connections"
+    groups:
+      python-dependencies:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
 
   # Maintain dependencies for TypeScript and JavaScript
   - package-ecosystem: "npm"
@@ -47,7 +45,11 @@ updates:
       timezone: "Canada/Pacific"
     ignore:
       - dependency-name: "*"
-        update-types: ["version-update:semver-major", "version-update:semver-patch"]
+        update-types: ["version-update:semver-major"]
+    groups:
+      node-dependencies:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
 
   # Maintain dependencies for TypeScript and JavaScript
   - package-ecosystem: "npm"
@@ -59,11 +61,15 @@ updates:
       timezone: "Canada/Pacific"
     ignore:
       - dependency-name: "*"
-        update-types: ["version-update:semver-major", "version-update:semver-patch"]
+        update-types: ["version-update:semver-major"]
+    groups:
+      frontend-dependencies:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
 
   # Maintain dependencies for dev Container
   - package-ecosystem: "devcontainers"
-    directory: "/plugins/.devcontainer"
+    directory: "/plugins"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -72,51 +78,6 @@ updates:
 
   # Maintain dependencies for dev Container
   - package-ecosystem: "devcontainers"
-    directory: "/services/tenant-ui/.devcontainer"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "04:00"
-      timezone: "Canada/Pacific"
-
-  # Maintain dependencies for docker
-  - package-ecosystem: "docker"
-    directory: "/plugins/.devcontainer"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "04:00"
-      timezone: "Canada/Pacific"
-
-  # Maintain dependencies for docker
-  - package-ecosystem: "docker"
-    directory: "/plugins/docker"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "04:00"
-      timezone: "Canada/Pacific"
-
-  # Maintain dependencies for docker
-  - package-ecosystem: "docker"
-    directory: "/plugins/traction_innkeeper/docker"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "04:00"
-      timezone: "Canada/Pacific"
-
-  # Maintain dependencies for docker
-  - package-ecosystem: "docker"
-    directory: "/services/aca-py"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "04:00"
-      timezone: "Canada/Pacific"
-
-  # Maintain dependencies for docker
-  - package-ecosystem: "docker"
     directory: "/services/tenant-ui"
     schedule:
       interval: "weekly"
@@ -124,8 +85,47 @@ updates:
       time: "04:00"
       timezone: "Canada/Pacific"
 
-  # Maintain dependencies for docker images inside manifests
+  # Maintain dependencies for docker
   - package-ecosystem: "docker"
+    directories:
+      - "/plugins/.devcontainer"
+      - "/plugins/docker"
+      - "/plugins/traction_innkeeper/docker"
+      - "/services/tenant-ui"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Canada/Pacific"
+    ignore:
+      - dependency-name: "*acapy-agent"
+      - dependency-name: "node"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "python"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "mcr.microsoft.com/devcontainers/python"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+    groups:
+      docker-images:
+        patterns: ["*"]
+
+  - package-ecosystem: "docker-compose"
+    directories: ["/scripts", "/plugins/.devcontainer"]
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Canada/Pacific"
+    ignore:
+      - dependency-name: "*acapy-agent"
+      - dependency-name: "traction"
+      - dependency-name: "postgres"
+        update-types: ["version-update:semver-major"]
+    groups:
+      compose-images:
+        patterns: ["*"]
+
+  - package-ecosystem: "helm"
     directory: "/charts/traction"
     schedule:
       interval: "weekly"
@@ -133,10 +133,12 @@ updates:
       time: "04:00"
       timezone: "Canada/Pacific"
 
-  - package-ecosystem: "docker"
-    directory: "/deploy/traction"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "04:00"
-      timezone: "Canada/Pacific"
+    ignore:
+      - dependency-name: "*traction-*"
+      - dependency-name: "*acapy-agent"
+      - dependency-name: "postgres"
+        update-types: ["version-update:semver-major"]
+    groups:
+      chart-dependencies:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
