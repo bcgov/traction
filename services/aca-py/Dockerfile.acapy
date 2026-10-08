@@ -2,7 +2,14 @@ FROM traction:plugins-acapy
 
 USER root
 
-ADD https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 ./jq
-RUN chmod +x ./jq
+ARG TARGETARCH
+RUN arch="${TARGETARCH:-$(uname -m)}" \
+	&& case "$arch" in \
+		amd64|x86_64) arch=amd64 ;; \
+		arm64|aarch64) arch=arm64 ;; \
+		*) echo "Unsupported jq architecture: $arch" >&2; exit 1 ;; \
+	esac \
+	&& curl -fsSL "https://github.com/jqlang/jq/releases/download/jq-1.8.2/jq-linux-${arch}" -o ./jq \
+	&& chmod +x ./jq
 COPY ngrok-wait.sh ngrok-wait.sh
 RUN chmod +x ./ngrok-wait.sh

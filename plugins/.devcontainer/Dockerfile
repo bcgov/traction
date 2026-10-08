@@ -1,7 +1,7 @@
-ARG VARIANT="3.12"
+ARG VARIANT="3.13"
 FROM mcr.microsoft.com/devcontainers/python:${VARIANT}
 
-ARG POETRY_VERSION="1.8.3"
+ARG POETRY_VERSION="2.5.1"
 ENV POETRY_HOME="/opt/poetry" \
     POETRY_VERSION=${POETRY_VERSION}
 
@@ -14,8 +14,8 @@ RUN curl -sSL https://install.python-poetry.org | python3 - \
     && poetry completions zsh > /home/vscode/.zfunc/_poetry \
     && echo "fpath+=~/.zfunc\nautoload -Uz compinit && compinit" >> /home/vscode/.zshrc
 
-COPY pyproject.toml poetry.lock ./
-COPY /traction_innkeeper ./traction_innkeeper
+COPY traction_innkeeper/pyproject.toml traction_innkeeper/poetry.lock ./
+COPY traction_innkeeper/traction_innkeeper ./traction_innkeeper
 RUN poetry config virtualenvs.create false \
     && poetry install --no-root --all-extras \
     && rm -rf /root/.cache/pypoetry

@@ -2,7 +2,7 @@ FROM ghcr.io/openwallet-foundation/acapy-agent:py3.13-1.7.0 AS base
 
 # Install and Configure Poetry
 USER root
-ENV POETRY_VERSION=2.1.1
+ENV POETRY_VERSION=2.5.1
 ENV POETRY_HOME=/opt/poetry
 RUN apt-get update && apt-get install -y curl && apt-get clean
 RUN curl -sSL https://install.python-poetry.org | python -
@@ -12,7 +12,7 @@ RUN poetry config virtualenvs.in-project true
 
 # Setup project
 RUN mkdir traction_plugins && touch traction_plugins/__init__.py
-COPY --chown=aries:aries traction_innkeeper/pyproject.toml README.md ./
+COPY --chown=aries:aries traction_innkeeper/pyproject.toml traction_innkeeper/poetry.lock README.md ./
 
 # copy over our local plugins code so we can build/install them
 # these should come from github or some version, published location
@@ -35,7 +35,7 @@ RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.7.0
 RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.7.0#subdirectory=multitenant_provider
 RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.7.0#subdirectory=rpc
 RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.7.0#subdirectory=connections
-RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.7.0#subdirectory=webvh
+RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.7.0.1#subdirectory=webvh
 RUN pip install --no-deps git+https://github.com/openwallet-foundation/acapy-plugins@1.7.0#subdirectory=present_proof
 RUN pip install --no-deps git+https://github.com/openwallet-foundation/acapy-plugins@1.7.0#subdirectory=issue_credential
 
