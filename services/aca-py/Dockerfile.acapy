@@ -2,7 +2,8 @@ FROM traction:plugins-acapy
 
 USER root
 
-ADD https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 ./jq
+ARG TARGETARCH
+ADD https://github.com/jqlang/jq/releases/download/jq-1.8.2/jq-linux-${TARGETARCH} ./jq
 RUN chmod +x ./jq
 COPY ngrok-wait.sh ngrok-wait.sh
 RUN chmod +x ./ngrok-wait.sh
