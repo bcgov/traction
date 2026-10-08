@@ -1,6 +1,6 @@
 # traction
 
-![Version: 0.6.4](https://img.shields.io/badge/Version-0.6.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.4.2](https://img.shields.io/badge/AppVersion-1.4.2-informational?style=flat-square)
+![Version: 0.6.5](https://img.shields.io/badge/Version-0.6.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.4.3](https://img.shields.io/badge/AppVersion-1.4.3-informational?style=flat-square)
 
 The Traction service allows organizations to verify, hold, and issue verifiable credentials. The Traction Tenant UI allows tenants to manage their agent.
 
@@ -90,7 +90,6 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | acapy."argfile.yml".wallet-name | string | `"askar-wallet"` | Specifies the wallet name to be used by the agent. This is useful if your deployment has multiple wallets. |
 | acapy."argfile.yml".wallet-storage-type | string | `"postgres_storage"` | Specifies the type of Indy wallet backend to use. Supported internal storage types are 'basic' (memory), 'default' (sqlite), and 'postgres_storage'.  The default, if not specified, is 'default'. |
 | acapy."argfile.yml".wallet-type | string | `"askar"` | Specifies the type of Indy wallet provider to use. Supported internal storage types are 'basic' (memory) and 'indy'. The default (if not specified) is 'basic'. |
-| acapy."argfile.yml".webhook-url | string | `""` | Send webhooks containing internal state changes to the specified URL. Optional API key to be passed in the request body can be appended using a hash separator [#]. This is useful for a controller to monitor agent events and respond to those events using the admin API. If not specified, webhooks are not published by the agent. |
 | acapy."ledgers.yml"[0].endorser_alias | string | `"bcovrin-test-endorser"` |  |
 | acapy."ledgers.yml"[0].endorser_did | string | `"DfQetNSm7gGEHuzfUvpfPn"` |  |
 | acapy."ledgers.yml"[0].genesis_url | string | `"https://test.bcovrin.vonx.io/genesis"` |  |
@@ -147,7 +146,7 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | acapy.image.pullSecrets | list | `[]` |  |
 | acapy.image.registry | string | `"ghcr.io"` |  |
 | acapy.image.repository | string | `"bcgov/traction-plugins-acapy"` |  |
-| acapy.image.tag | string | `"1.4.2"` | Overrides the image tag which defaults to the chart appVersion. |
+| acapy.image.tag | string | `"1.4.3"` | Overrides the image tag which defaults to the chart appVersion. |
 | acapy.ingress.admin.enabled | bool | `false` | Enable ingress for the admin endpoint |
 | acapy.ingress.admin.hostname | string | `""` | Hostname to expose the admin endpoint |
 | acapy.ingress.agent.enabled | bool | `false` | Enable ingress for the agent endpoint |
@@ -173,7 +172,6 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | acapy.secrets.api.secretKeys.adminApiKey | string | `"adminApiKey"` | Key in the API secret holding the admin API key. |
 | acapy.secrets.api.secretKeys.jwtKey | string | `"jwt"` | Key in the API secret holding the multitenant JWT signing secret. |
 | acapy.secrets.api.secretKeys.walletKey | string | `"walletKey"` | Key in the API secret holding the wallet key. |
-| acapy.secrets.api.secretKeys.webhookapiKey | string | `"webhookapi"` | Key in the API secret holding the webhook API key (used when embedding in webhook-url). |
 | acapy.secrets.seed.enabled | bool | `false` | Disabled by default, turning this on will cause the Traction agent to NOT start unless additional setup steps are completed (refer to ACA-Py chart docs). |
 | acapy.service.ports.admin | int | `8022` | Port to expose for admin service |
 | acapy.service.ports.http | int | `8021` | Port to expose for http service |
@@ -184,6 +182,9 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | acapy.serviceAccount.name | string | `""` | Name of the service account to use. If not set and create is true, a name is generated using the fullname template. |
 | acapy.topologySpreadConstraints | list | `[]` |  |
 | acapy.updateStrategy | object | `{}` |  |
+| acapy.webhook.existingSecret | string | `""` |  |
+| acapy.webhook.secretKey | string | `"ACAPY_WEBHOOK_URL"` |  |
+| acapy.webhook.url | string | `""` |  |
 | acapy.websockets.enabled | bool | `false` | Enable WebSocket transport for ACA-Py |
 | fullnameOverride | string | `""` | String to fully override the helm chart name, full prefix. *Must be provided if using a custom release name that does not include the word traction.* |
 | global.compatibility.openshift.adaptSecurityContext | string | `"auto"` | Adapt the securityContext sections of the deployment to make them compatible with Openshift restricted-v2 SCC: remove runAsUser, runAsGroup and fsGroup and let the platform use their allowed default IDs. Possible values: auto (apply if the detected running cluster is Openshift), force (perform the adaptation always), disabled (do not perform adaptation) |

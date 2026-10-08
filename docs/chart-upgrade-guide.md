@@ -2,6 +2,20 @@
 
 This document contains information related to breaking/major changes to the Traction Helm Chart and provides guidelines for migrating/upgrading deployments to newer chart versions.
 
+## 0.6.5
+
+This chart targets Traction `1.4.3`, upgrades the ACA-Py chart to `1.1.1`, and updates the parent chart's common helpers to `2.41.0`. Publish the `1.4.3` container images before deploying this chart.
+
+Move any configured `acapy."argfile.yml".webhook-url` to `acapy.webhook.url`. For authenticated webhooks, supply the full `<url>#<apikey>` value, or set `acapy.webhook.existingSecret` to a Secret whose `ACAPY_WEBHOOK_URL` key contains that value. Customize the key with `acapy.webhook.secretKey`. The obsolete `acapy.secrets.api.secretKeys.webhookapiKey` setting no longer creates a webhook key.
+
+The ACA-Py startup probe now allows up to ten minutes for startup before liveness and readiness probes begin. Override `acapy.startupProbe` to tune this or set it to `null` to disable it.
+
+The bundled PostgreSQL chart moves from `0.15.5` to `0.19.6`; its default image remains PostgreSQL `18.1`. Back up databases and test an upgrade with your deployed values, existing secrets, and persistent volumes before production rollout.
+
+Chart dependency archives are no longer committed. Run `helm dependency build charts/traction` before local linting or packaging; the release workflow performs this step automatically.
+
+The plugin devcontainer now uses PostgreSQL `18.1` and a new `traction-wallet-pg18` volume mounted at `/var/lib/postgresql`. Existing PostgreSQL 12 volumes are retained but are not reused; export and restore data separately if needed.
+
 ## 0.4.0
 
 The Traction Helm chart has been refactored to use the [ACA-Py Helm chart](https://github.com/openwallet-foundation/helm-charts/tree/main/charts/acapy) from the OpenWallet Foundation as a dependency, replacing the built-in ACA-Py templates. This change improves maintainability and alignment with the broader ACA-Py community.

@@ -1,5 +1,5 @@
 __pycache__
-devops/helm/charts/traction/charts/**
+charts/traction/charts/*.tgz
 **/.env
 .DS_Store
 

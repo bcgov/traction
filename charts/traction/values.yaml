@@ -39,7 +39,7 @@ acapy:
     pullPolicy: IfNotPresent
     pullSecrets: []
     # acapy.image.tag -- Overrides the image tag which defaults to the chart appVersion.
-    tag: "1.4.2"
+    tag: "1.4.3"
     # acapy.image.digest -- Overrides the image digest which is used instead of the tag.
     digest: ""
 
@@ -150,8 +150,10 @@ acapy:
     wallet-storage-type: postgres_storage
     # acapy."argfile.yml".wallet-type -- Specifies the type of Indy wallet provider to use. Supported internal storage types are 'basic' (memory) and 'indy'. The default (if not specified) is 'basic'.
     wallet-type: askar
-    # acapy."argfile.yml".webhook-url -- Send webhooks containing internal state changes to the specified URL. Optional API key to be passed in the request body can be appended using a hash separator [#]. This is useful for a controller to monitor agent events and respond to those events using the admin API. If not specified, webhooks are not published by the agent.
-    webhook-url: ""
+  webhook:
+    url: ""
+    existingSecret: ""
+    secretKey: ACAPY_WEBHOOK_URL
 
   ## ACA-Py ingress configuration (disabled - using Traction's ingress instead)
   ##
@@ -316,8 +318,6 @@ acapy:
         jwtKey: jwt
         # acapy.secrets.api.secretKeys.walletKey -- Key in the API secret holding the wallet key.
         walletKey: walletKey
-        # acapy.secrets.api.secretKeys.webhookapiKey -- Key in the API secret holding the webhook API key (used when embedding in webhook-url).
-        webhookapiKey: webhookapi
     seed:
       # acapy.secrets.seed.enabled -- Disabled by default, turning this on will cause the Traction agent to NOT start unless additional setup steps are completed (refer to ACA-Py chart docs).
       enabled: false
@@ -377,13 +377,11 @@ tenant_proxy:
   podAnnotations: {}
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   ##
-  podSecurityContext:
-    {}
+  podSecurityContext: {}
     # fsGroup: 2000
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   ##
-  containerSecurityContext:
-    {}
+  containerSecurityContext: {}
     # capabilities:
     #   drop:
     #   - ALL
@@ -438,7 +436,6 @@ tenant_proxy:
       # tenant_proxy.resources.requests.memory -- The requested memory for the Tenant proxy containers
       memory: 50Mi
 
-
   ## Add networkpolicies
   ##
   networkPolicy:
@@ -448,8 +445,7 @@ tenant_proxy:
     ingress:
       # tenant_proxy.networkPolicy.ingress.enabled -- Enable ingress rules
       enabled: true
-      namespaceSelector:
-        {}
+      namespaceSelector: {}
         # network.openshift.io/policy-group: ingress
       podSelector: {}
 
@@ -570,8 +566,7 @@ ui:
   serviceAccount:
     # ui.serviceAccount.create -- Specifies whether a ServiceAccount should be created
     create: false
-    annotations:
-      {}
+    annotations: {}
       # network.openshift.io/policy-group: ingress
     # ui.serviceAccount.automountServiceAccountToken -- Automount service account token for the server service account
     automountServiceAccountToken: true
@@ -581,13 +576,11 @@ ui:
   podAnnotations: {}
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   ##
-  podSecurityContext:
-    {}
+  podSecurityContext: {}
     # fsGroup: 2000
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   ##
-  containerSecurityContext:
-    {}
+  containerSecurityContext: {}
     # capabilities:
     #   drop:
     #   - ALL
