@@ -14,7 +14,7 @@ updates:
       timezone: "Canada/Pacific"
     groups:
       all-actions:
-        patterns: [ "*" ]
+        patterns: ["*"]
 
   # Maintain dependencies for Python Packages
   - package-ecosystem: "pip"
@@ -102,9 +102,11 @@ updates:
       - dependency-name: "node"
         update-types: ["version-update:semver-major"]
       - dependency-name: "python"
-        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+        update-types:
+          ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "mcr.microsoft.com/devcontainers/python"
-        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+        update-types:
+          ["version-update:semver-major", "version-update:semver-minor"]
     groups:
       docker-images:
         patterns: ["*"]

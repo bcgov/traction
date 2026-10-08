@@ -2,35 +2,35 @@ name: Build Traction Acapy Image
 description: Build Traction Acapy Image
 inputs:
   ref:
-    description: 'The branch, tag or SHA to checkout'
+    description: "The branch, tag or SHA to checkout"
     required: false
-    default: ''
+    default: ""
   context:
-    description: 'Docker build context'
+    description: "Docker build context"
     required: true
-    default: './plugins'
+    default: "./plugins"
   dockerfile:
-    description: 'Path to the Dockerfile'
+    description: "Path to the Dockerfile"
     required: true
-    default: './plugins/docker/Dockerfile'
+    default: "./plugins/docker/Dockerfile"
   image_name:
-    description: 'Container image name'
+    description: "Container image name"
     required: true
-    default: 'bcgov/traction-plugins-acapy'
+    default: "bcgov/traction-plugins-acapy"
   registry:
-    description: 'Container registry hostname'
+    description: "Container registry hostname"
     required: true
     default: ghcr.io
   registry_username:
-    description: 'Container registry username'
+    description: "Container registry username"
     required: true
   registry_password:
-    description: 'Container registry password or token'
+    description: "Container registry password or token"
     required: true
   platforms:
-    description: 'Comma-separated target platforms for the image build'
+    description: "Comma-separated target platforms for the image build"
     required: false
-    default: 'linux/amd64,linux/arm64'
+    default: "linux/amd64,linux/arm64"
 
 outputs:
   image_tag:
