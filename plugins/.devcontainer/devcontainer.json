@@ -4,8 +4,8 @@
         "dockerfile": "Dockerfile",
         "context": "..",
         "args": {
-          "VARIANT": "3.12-bullseye",
-          "POETRY_VERSION": "1.8.3"
+          "VARIANT": "3.13-bookworm",
+          "POETRY_VERSION": "2.5.1"
         }
     },
     "customizations": {

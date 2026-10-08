@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 # Install and configure poetry
 USER root
 
-ENV POETRY_VERSION=2.1.1
+ENV POETRY_VERSION=2.5.1
 ENV POETRY_HOME=/opt/poetry
 RUN apt-get update && apt-get install -y curl && apt-get clean
 RUN curl -sSL https://install.python-poetry.org | python -
@@ -15,7 +15,7 @@ RUN poetry config virtualenvs.in-project true
 # Setup project
 RUN mkdir traction_innkeeper && touch traction_innkeeper/__init__.py
 COPY pyproject.toml poetry.lock README.md ./
-ARG install_flags=--no-dev
+ARG install_flags=--only=main
 RUN poetry install ${install_flags}
 
 FROM python:3.13-slim

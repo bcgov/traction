@@ -1,12 +1,12 @@
 services:
   traction-db:
-    image: "postgres:12"
+    image: "postgres:18.1"
     environment:
       - POSTGRES_PASSWORD=postgresPass
     ports:
       - 5432:5432
     volumes:
-      - traction-wallet:/var/lib/postgresql/data
+      - traction-wallet-pg18:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -27,4 +27,4 @@ services:
       - host.docker.internal:host-gateway
 
 volumes:
-  traction-wallet:
+  traction-wallet-pg18:
