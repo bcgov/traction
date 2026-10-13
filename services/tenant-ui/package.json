@@ -28,10 +28,10 @@
     "connect-history-api-fallback": "^2.0.0",
     "cors": "^2.8.6",
     "eta": "^4.6.0",
-    "express": "^5.2.1",
+    "express": "^5.3.0",
     "express-validator": "^7.3.2",
     "jose": "^6.2.12",
-    "nodemailer": "^10.0.16"
+    "nodemailer": "^10.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -39,7 +39,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^24.19.1",
+    "@types/node": "^24.19.2",
     "@types/nodemailer": "^8.0.2",
     "@types/ws": "^8.18.2",
     "@typescript-eslint/eslint-plugin": "^8.71.1",
