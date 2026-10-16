@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from unittest.mock import MagicMock, patch
 
@@ -8,6 +9,7 @@ from acapy_agent.core.plugin_registry import PluginRegistry
 from acapy_agent.core.protocol_registry import ProtocolRegistry
 from traction_innkeeper.v1_0.tenant import (
     ContextFilter,
+    context_tenant_id,
     setup_multitenant_logging,
     log_records_inject,
     setup,
@@ -18,28 +20,40 @@ def test_context_filter():
     f = ContextFilter()
     r = logging.LogRecord("n", 0, "", 0, "", (), None)
     assert f.filter(r)
-    r.tenant_id = "x"
-    assert f.filter(r)
+    assert r.tenant_id is None
+    token = context_tenant_id.set("x")
+    try:
+        assert f.filter(r)
+        assert r.tenant_id == "x"
+    finally:
+        context_tenant_id.reset(token)
 
 
-def test_setup_multitenant_logging():
-    h = MagicMock()
-    with patch("traction_innkeeper.v1_0.tenant.logging") as m:
-        m.getLogger.return_value.handlers = [h]
+def test_setup_multitenant_logging_keeps_formatter():
+    h = logging.StreamHandler()
+    fmt = logging.Formatter("%(message)s")
+    h.setFormatter(fmt)
+    root = logging.getLogger()
+    root.addHandler(h)
+    try:
         setup_multitenant_logging()
-    h.setFormatter.assert_called_once()
+        assert h.formatter is fmt
+        assert any(isinstance(f, ContextFilter) for f in h.filters)
+    finally:
+        root.removeHandler(h)
 
 
-def test_log_records_inject():
-    orig = logging.getLogRecordFactory()
-    log_records_inject("t")
-    assert logging.getLogRecordFactory()("n", 0, "", 0, "", (), None).tenant_id == "t"
-    logging.setLogRecordFactory(orig)
+async def test_log_records_inject_is_request_scoped():
+    async def request(tid):
+        log_records_inject(tid)
+        await asyncio.sleep(0)
+        return context_tenant_id.get()
 
-
-def test_log_records_inject_error():
-    with patch("traction_innkeeper.v1_0.tenant.base_log_record_factory", side_effect=Exception):
-        log_records_inject("t")
+    results = await asyncio.gather(
+        asyncio.create_task(request("a")), asyncio.create_task(request("b"))
+    )
+    assert results == ["a", "b"]
+    assert context_tenant_id.get() is None
 
 
 async def test_setup_success():

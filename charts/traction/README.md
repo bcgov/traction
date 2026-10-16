@@ -75,6 +75,7 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | acapy."argfile.yml".emit-new-didcomm-prefix | bool | `true` | Emit protocol messages with new DIDComm prefix; i.e., 'https://didcomm.org/' instead of (default) prefix 'did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/'. |
 | acapy."argfile.yml".endorser-alias | string | `"endorser"` | For transaction Authors, specify the alias of the Endorser connection that will be used to endorse transactions. |
 | acapy."argfile.yml".endorser-protocol-role | string | `"author"` | Specify the role ('author' or 'endorser') which this agent will participate. Authors will request transaction endorsement from an Endorser. Endorsers will endorse transactions from Authors, and may write their own  transactions to the ledger. If no role (or 'none') is specified then the endorsement protocol will not be used and this agent will write transactions to the ledger directly. |
+| acapy."argfile.yml".log-config | string | `"logging_config.yml"` | Path to a logging config file (dictConfig YAML). The default emits JSON logs with discrete wallet_id and tenant_id fields. |
 | acapy."argfile.yml".log-level | string | `"info"` | Specifies a custom logging level as one of: ('debug', 'info', 'warning', 'error', 'critical') |
 | acapy."argfile.yml".monitor-ping | bool | `true` | Send a webhook when a ping is sent or received. |
 | acapy."argfile.yml".monitor-revocation-notification | bool | `true` | Specifies that aca-py will emit webhooks on notification of revocation received. |
