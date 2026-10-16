@@ -49,9 +49,7 @@ async def test_log_records_inject_is_request_scoped():
         await asyncio.sleep(0)
         return context_tenant_id.get()
 
-    results = await asyncio.gather(
-        asyncio.create_task(request("a")), asyncio.create_task(request("b"))
-    )
+    results = await asyncio.gather(asyncio.create_task(request("a")), asyncio.create_task(request("b")))
     assert results == ["a", "b"]
     assert context_tenant_id.get() is None
 
