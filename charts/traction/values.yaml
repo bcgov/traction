@@ -121,8 +121,6 @@ acapy:
     endorser-protocol-role: author
     # acapy."argfile.yml".log-level -- Specifies a custom logging level as one of: ('debug', 'info', 'warning', 'error', 'critical')
     log-level: info
-    # acapy."argfile.yml".log-config -- Path to a logging config file (dictConfig YAML). The default emits JSON logs with discrete wallet_id and tenant_id fields.
-    log-config: logging_config.yml
     # acapy."argfile.yml".monitor-ping -- Send a webhook when a ping is sent or received.
     monitor-ping: true
     # acapy."argfile.yml".monitor-revocation-notification -- Specifies that aca-py will emit webhooks on notification of revocation received.

@@ -7,6 +7,7 @@ acapy:
   extraEnvVarsSecret: 'innkeeper-pr-shared-secret'
 
   argfile.yml:
+    log-config: logging_config.yml
     tails-server-base-url: https://tails-dev.vonx.io
     tails-server-upload-url: https://tails-dev.vonx.io
 
