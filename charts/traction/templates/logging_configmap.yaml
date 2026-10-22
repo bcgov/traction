@@ -1,0 +1,24 @@
+{{- /*
+Fail early if log-config points at this ConfigMap but the volume or mount was dropped:
+the acapy subchart mounts it through extraVolumes/extraVolumeMounts, which Helm replaces rather than merges.
+*/ -}}
+{{- $argfile := (index .Values.acapy "argfile.yml") | default dict }}
+{{- $logConfig := get $argfile "log-config" | default "" | toString }}
+{{- $volume := false }}
+{{- range (.Values.acapy.extraVolumes | default list) }}{{ if eq (.name | toString) "logging-config" }}{{ $volume = true }}{{ end }}{{ end }}
+{{- $mount := false }}
+{{- range (.Values.acapy.extraVolumeMounts | default list) }}{{ if eq (.name | toString) "logging-config" }}{{ $mount = true }}{{ end }}{{ end }}
+{{- if and (hasPrefix "/home/aries/logging/" $logConfig) (not (and $volume $mount)) }}
+  {{- fail "acapy.argfile.yml.log-config points at the logging ConfigMap, but a 'logging-config' entry is missing from acapy.extraVolumes or acapy.extraVolumeMounts (see the logging section in values.yaml)" }}
+{{- end }}
+{{- $config := deepCopy .Values.logging.config }}
+{{- $_ := mergeOverwrite $config (dict "root" (dict "level" (upper .Values.logging.level))) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-logging
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+data:
+  logging_config.yml: |
+    {{- toYaml $config | nindent 4 }}

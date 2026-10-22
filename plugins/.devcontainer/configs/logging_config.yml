@@ -1,0 +1,27 @@
+version: 1
+disable_existing_loggers: false
+formatters:
+  json:
+    # wallet_id: ACA-Py wallet id (set by ACA-Py's ContextFilter, per request)
+    # tenant_id: Traction tenant id (set by the traction_innkeeper plugin, per request)
+    "()": pythonjsonlogger.json.JsonFormatter
+    fmt: "%(asctime)s %(levelname)s %(name)s %(pathname)s %(lineno)d %(message)s %(wallet_id)s %(tenant_id)s"
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: json
+    level: DEBUG
+    stream: ext://sys.stderr
+  # ACA-Py sets this handler's filename from --log-file and raises KeyError if
+  # it is missing. Without --log-file it writes to /dev/null (console only).
+  rotating_file:
+    class: logging.FileHandler
+    formatter: json
+    level: DEBUG
+    filename: /dev/null
+    delay: true
+root:
+  handlers:
+    - console
+    - rotating_file
+  level: INFO

@@ -62,6 +62,7 @@ wallet-key: 'insecure-change-me'
 multitenancy-config: '{"wallet-type":"single-wallet-askar","wallet-name":"askar-wallet"}'
 
 log-level: info
+log-config: .devcontainer/configs/logging_config.yml
 
 multitenant: true
 multitenant-admin: true

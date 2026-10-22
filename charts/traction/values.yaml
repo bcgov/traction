@@ -31,6 +31,51 @@ nameOverride: ""
 # fullnameOverride -- String to fully override the helm chart name, full prefix. *Must be provided if using a custom release name that does not include the word traction.*
 fullnameOverride: ""
 
+## Logging configuration for ACA-Py, rendered into the <release name>-logging ConfigMap.
+## The defaults mirror ACA-Py's built-in plain text logging. For JSON logs, override just the formatter
+## (Helm merges maps, so nothing else needs repeating):
+##
+##   logging:
+##     config:
+##       formatters:
+##         default:
+##           "()": pythonjsonlogger.json.JsonFormatter
+##           # wallet_id is set by ACA-Py per request; tenant_id by the traction_innkeeper plugin
+##           fmt: "%(asctime)s %(levelname)s %(name)s %(pathname)s %(lineno)d %(message)s %(wallet_id)s %(tenant_id)s"
+##
+## The acapy subchart can only mount files through extraVolumes/extraVolumeMounts, and Helm replaces
+## lists, so if you override those keep the logging-config entries below. To use ACA-Py's built-in
+## logging instead, set acapy."argfile.yml".log-config to null and both lists to [].
+logging:
+  # logging.level -- Root log level (DEBUG, INFO, WARNING, ERROR, CRITICAL). ACA-Py's log-level argfile setting also applies.
+  level: INFO
+  # logging.config -- Python logging dictConfig. Maps are merged with your overrides; lists (root.handlers) are replaced.
+  config:
+    version: 1
+    disable_existing_loggers: false
+    formatters:
+      default:
+        "()": logging.Formatter
+        fmt: "%(asctime)s %(name)s %(levelname)s %(message)s"
+    handlers:
+      console:
+        class: logging.StreamHandler
+        formatter: default
+        level: DEBUG
+        stream: ext://sys.stderr
+      # ACA-Py sets this handler's filename from --log-file and raises KeyError if it is
+      # missing. Without --log-file it writes to /dev/null (console only).
+      rotating_file:
+        class: logging.FileHandler
+        formatter: default
+        level: DEBUG
+        filename: /dev/null
+        delay: true
+    root:
+      handlers:
+        - console
+        - rotating_file
+
 acapy:
   ##
   image:
@@ -79,6 +124,8 @@ acapy:
   ## ACA-Py configuration file
   ##
   argfile.yml:
+    # acapy."argfile.yml".log-config -- Path to the logging config, mounted from the ConfigMap rendered from `logging`
+    log-config: /home/aries/logging/logging_config.yml
     # acapy."argfile.yml".auto-accept-invites -- Automatically accept invites without firing a webhook event or waiting for an admin request. Default: false.
     auto-accept-invites: true
     # acapy."argfile.yml".auto-accept-requests -- Automatically accept connection requests without firing a webhook event or waiting for an admin request. Default: false.
@@ -206,8 +253,16 @@ acapy:
   initContainers: []
 
   ## Extra volumes and volume mounts
-  extraVolumes: []
-  extraVolumeMounts: []
+  # acapy.extraVolumes -- Extra volumes. Keep the logging-config entry if you override this (see the logging section).
+  extraVolumes:
+    - name: logging-config
+      configMap:
+        name: "{{ .Release.Name }}-logging"
+  # acapy.extraVolumeMounts -- Extra volume mounts. Keep the logging-config entry if you override this.
+  extraVolumeMounts:
+    - name: logging-config
+      mountPath: /home/aries/logging
+      readOnly: true
 
   ## Update strategy
   updateStrategy: {}
