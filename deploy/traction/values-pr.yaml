@@ -1,13 +1,5 @@
 global:
   ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
-logging:
-  config:
-    formatters:
-      default:
-        "()": pythonjsonlogger.json.JsonFormatter
-        # wallet_id is set by ACA-Py per request; tenant_id by the traction_innkeeper plugin
-        fmt: "%(asctime)s %(levelname)s %(name)s %(pathname)s %(lineno)d %(message)s %(wallet_id)s %(tenant_id)s"
-
 acapy:
   image:
     pullPolicy: Always
