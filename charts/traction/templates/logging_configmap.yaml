@@ -1,3 +1,20 @@
+{{- /*
+Fail early on partial logging setups: the acapy subchart can only mount the ConfigMap
+through extraVolumes/extraVolumeMounts, which Helm replaces rather than merges.
+*/ -}}
+{{- $argfile := (index .Values.acapy "argfile.yml") | default dict }}
+{{- $logConfig := get $argfile "log-config" | default "" }}
+{{- $volume := false }}
+{{- range (.Values.acapy.extraVolumes | default list) }}{{ if eq (.name | toString) "logging-config" }}{{ $volume = true }}{{ end }}{{ end }}
+{{- $mount := false }}
+{{- range (.Values.acapy.extraVolumeMounts | default list) }}{{ if eq (.name | toString) "logging-config" }}{{ $mount = true }}{{ end }}{{ end }}
+{{- if .Values.logging.enabled }}
+  {{- if or (not $logConfig) (not $volume) (not $mount) }}
+    {{- fail "logging.enabled is true, but acapy.argfile.yml.log-config, a 'logging-config' entry in acapy.extraVolumes and one in acapy.extraVolumeMounts are all required (see the logging section in values.yaml)" }}
+  {{- end }}
+{{- else if hasPrefix "/home/aries/logging/" ($logConfig | toString) }}
+  {{- fail "acapy.argfile.yml.log-config points at the logging ConfigMap, but logging.enabled is false" }}
+{{- end }}
 {{- if .Values.logging.enabled }}
 apiVersion: v1
 kind: ConfigMap
