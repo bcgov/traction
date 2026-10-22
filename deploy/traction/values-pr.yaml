@@ -1,7 +1,12 @@
 global:
   ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
 logging:
-  enabled: true
+  config:
+    formatters:
+      default:
+        "()": pythonjsonlogger.json.JsonFormatter
+        # wallet_id is set by ACA-Py per request; tenant_id by the traction_innkeeper plugin
+        fmt: "%(asctime)s %(levelname)s %(name)s %(pathname)s %(lineno)d %(message)s %(wallet_id)s %(tenant_id)s"
 
 acapy:
   image:
@@ -9,17 +14,7 @@ acapy:
 
   extraEnvVarsSecret: 'innkeeper-pr-shared-secret'
 
-  extraVolumes:
-    - name: logging-config
-      configMap:
-        name: "{{ .Release.Name }}-logging"
-  extraVolumeMounts:
-    - name: logging-config
-      mountPath: /home/aries/logging
-      readOnly: true
-
   argfile.yml:
-    log-config: /home/aries/logging/logging_config.yml
     tails-server-base-url: https://tails-dev.vonx.io
     tails-server-upload-url: https://tails-dev.vonx.io
 

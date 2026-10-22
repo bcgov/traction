@@ -1,21 +1,18 @@
 {{- /*
-Fail early on partial logging setups: the acapy subchart can only mount the ConfigMap
-through extraVolumes/extraVolumeMounts, which Helm replaces rather than merges.
+Fail early if log-config points at this ConfigMap but the volume or mount was dropped:
+the acapy subchart mounts it through extraVolumes/extraVolumeMounts, which Helm replaces rather than merges.
 */ -}}
 {{- $argfile := (index .Values.acapy "argfile.yml") | default dict }}
-{{- $logConfig := get $argfile "log-config" | default "" }}
+{{- $logConfig := get $argfile "log-config" | default "" | toString }}
 {{- $volume := false }}
 {{- range (.Values.acapy.extraVolumes | default list) }}{{ if eq (.name | toString) "logging-config" }}{{ $volume = true }}{{ end }}{{ end }}
 {{- $mount := false }}
 {{- range (.Values.acapy.extraVolumeMounts | default list) }}{{ if eq (.name | toString) "logging-config" }}{{ $mount = true }}{{ end }}{{ end }}
-{{- if .Values.logging.enabled }}
-  {{- if or (not $logConfig) (not $volume) (not $mount) }}
-    {{- fail "logging.enabled is true, but acapy.argfile.yml.log-config, a 'logging-config' entry in acapy.extraVolumes and one in acapy.extraVolumeMounts are all required (see the logging section in values.yaml)" }}
-  {{- end }}
-{{- else if hasPrefix "/home/aries/logging/" ($logConfig | toString) }}
-  {{- fail "acapy.argfile.yml.log-config points at the logging ConfigMap, but logging.enabled is false" }}
+{{- if and (hasPrefix "/home/aries/logging/" $logConfig) (not (and $volume $mount)) }}
+  {{- fail "acapy.argfile.yml.log-config points at the logging ConfigMap, but a 'logging-config' entry is missing from acapy.extraVolumes or acapy.extraVolumeMounts (see the logging section in values.yaml)" }}
 {{- end }}
-{{- if .Values.logging.enabled }}
+{{- $config := deepCopy .Values.logging.config }}
+{{- $_ := mergeOverwrite $config (dict "root" (dict "level" (upper .Values.logging.level))) }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -24,9 +21,4 @@ metadata:
     {{- include "common.labels" . | nindent 4 }}
 data:
   logging_config.yml: |
-    {{- if .Values.logging.config }}
-    {{- tpl .Values.logging.config . | nindent 4 }}
-    {{- else }}
-    {{- tpl (.Files.Get "files/logging_config.yml") . | nindent 4 }}
-    {{- end }}
-{{- end }}
+    {{- toYaml $config | nindent 4 }}
