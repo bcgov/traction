@@ -55,7 +55,6 @@ wallet-type: askar
 wallet-key: "insecure, for use in demo only"
 
 log-level: info
-log-config: logging_config.yml
 
 emit-new-didcomm-prefix: true
 

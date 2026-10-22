@@ -75,6 +75,7 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | acapy."argfile.yml".emit-new-didcomm-prefix | bool | `true` | Emit protocol messages with new DIDComm prefix; i.e., 'https://didcomm.org/' instead of (default) prefix 'did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/'. |
 | acapy."argfile.yml".endorser-alias | string | `"endorser"` | For transaction Authors, specify the alias of the Endorser connection that will be used to endorse transactions. |
 | acapy."argfile.yml".endorser-protocol-role | string | `"author"` | Specify the role ('author' or 'endorser') which this agent will participate. Authors will request transaction endorsement from an Endorser. Endorsers will endorse transactions from Authors, and may write their own  transactions to the ledger. If no role (or 'none') is specified then the endorsement protocol will not be used and this agent will write transactions to the ledger directly. |
+| acapy."argfile.yml".log-config | string | `"/home/aries/logging/logging_config.yml"` | Path to the logging config file, mounted from the ConfigMap rendered by this chart |
 | acapy."argfile.yml".log-level | string | `"info"` | Specifies a custom logging level as one of: ('debug', 'info', 'warning', 'error', 'critical') |
 | acapy."argfile.yml".monitor-ping | bool | `true` | Send a webhook when a ping is sent or received. |
 | acapy."argfile.yml".monitor-revocation-notification | bool | `true` | Specifies that aca-py will emit webhooks on notification of revocation received. |
@@ -139,8 +140,11 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | acapy.extraEnvVars | list | `[]` |  |
 | acapy.extraEnvVarsCM | string | `""` | Name of an existing ConfigMap with extra env vars |
 | acapy.extraEnvVarsSecret | string | `"{{- printf \"%s-%s\" (include \"common.names.fullname\" .) \"plugin-innkeeper\" }}"` | Name of an existing Secret with extra env vars (required for innkeeper plugin) |
-| acapy.extraVolumeMounts | list | `[]` |  |
-| acapy.extraVolumes | list | `[]` |  |
+| acapy.extraVolumeMounts[0].mountPath | string | `"/home/aries/logging"` |  |
+| acapy.extraVolumeMounts[0].name | string | `"logging-config"` |  |
+| acapy.extraVolumeMounts[0].readOnly | bool | `true` |  |
+| acapy.extraVolumes[0].configMap.name | string | `"{{ .Release.Name }}-logging"` |  |
+| acapy.extraVolumes[0].name | string | `"logging-config"` |  |
 | acapy.image.digest | string | `""` | Overrides the image digest which is used instead of the tag. |
 | acapy.image.pullPolicy | string | `"IfNotPresent"` |  |
 | acapy.image.pullSecrets | list | `[]` |  |
@@ -197,6 +201,9 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | ingress.className | string | `""` | IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+) |
 | ingress.enabled | bool | `false` | Enable ingress record generation for traction |
 | ingress.tls | list | `[]` |  |
+| logging.config | string | `""` | Full logging config (YAML string, rendered with tpl) replacing the bundled default; level and format are ignored when set |
+| logging.format | string | `"%(asctime)s %(levelname)s %(name)s %(pathname)s %(lineno)d %(message)s %(wallet_id)s %(tenant_id)s"` | Python logging format string used by the JSON formatter |
+| logging.level | string | `"INFO"` | Root log level for the ACA-Py logging config (DEBUG, INFO, WARNING, ERROR, CRITICAL) |
 | nameOverride | string | `""` | String to override the helm chart name, second part of the prefix |
 | tenant_proxy.affinity | object | `{}` |  |
 | tenant_proxy.autoscaling.enabled | bool | `false` | Enable Horizontal POD autoscaling for Tenant proxy |

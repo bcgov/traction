@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-logging
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+data:
+  logging_config.yml: |
+    {{- if .Values.logging.config }}
+    {{- tpl .Values.logging.config . | nindent 4 }}
+    {{- else }}
+    {{- tpl (.Files.Get "files/logging_config.yml") . | nindent 4 }}
+    {{- end }}

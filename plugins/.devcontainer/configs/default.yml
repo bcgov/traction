@@ -62,6 +62,7 @@ wallet-storage-creds: '{"account":"postgres","password":"postgresPass","admin_ac
 multitenancy-config: '{"wallet-type":"single-wallet-askar","wallet-name":"askar-wallet"}'
 
 log-level: info
+log-config: configs/logging_config.yml
 
 multitenant: true
 multitenant-admin: true

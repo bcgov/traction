@@ -28,7 +28,7 @@ FROM ghcr.io/openwallet-foundation/acapy-agent:py3.13-1.7.0
 COPY --from=base --chown=aries:aries /home/aries/.venv /home/aries/.venv
 ENV PATH="/home/aries/.venv/bin:$PATH"
 
-COPY --chown=aries:aries docker/default.yml docker/logging_config.yml ./
+COPY --chown=aries:aries docker/default.yml ./
 COPY --chown=aries:aries traction_innkeeper/traction_innkeeper traction_plugins/traction_innkeeper
 RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.7.0#subdirectory=basicmessage_storage
 RUN pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.7.0#subdirectory=connection_update
