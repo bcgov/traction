@@ -140,11 +140,8 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | acapy.extraEnvVars | list | `[]` |  |
 | acapy.extraEnvVarsCM | string | `""` | Name of an existing ConfigMap with extra env vars |
 | acapy.extraEnvVarsSecret | string | `"{{- printf \"%s-%s\" (include \"common.names.fullname\" .) \"plugin-innkeeper\" }}"` | Name of an existing Secret with extra env vars (required for innkeeper plugin) |
-| acapy.extraVolumeMounts[0].mountPath | string | `"/home/aries/logging"` |  |
-| acapy.extraVolumeMounts[0].name | string | `"logging-config"` |  |
-| acapy.extraVolumeMounts[0].readOnly | bool | `true` |  |
-| acapy.extraVolumes[0].configMap.name | string | `"{{ .Release.Name }}-logging"` |  |
-| acapy.extraVolumes[0].name | string | `"logging-config"` |  |
+| acapy.extraVolumeMounts | list | `[{"mountPath":"/home/aries/logging","name":"logging-config","readOnly":true}]` | Extra volume mounts (see acapy.extraVolumes before overriding) |
+| acapy.extraVolumes | list | `[{"configMap":{"name":"{{ .Release.Name }}-logging"},"name":"logging-config"}]` | Extra volumes. The default entry mounts the logging ConfigMap; Helm replaces lists, so if you override this (or extraVolumeMounts) keep the logging-config entries, otherwise log-config points to a missing file. To use ACA-Py's built-in logging instead, set acapy."argfile.yml".log-config to null and both lists to []. |
 | acapy.image.digest | string | `""` | Overrides the image digest which is used instead of the tag. |
 | acapy.image.pullPolicy | string | `"IfNotPresent"` |  |
 | acapy.image.pullSecrets | list | `[]` |  |

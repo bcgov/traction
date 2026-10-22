@@ -216,10 +216,12 @@ acapy:
   initContainers: []
 
   ## Extra volumes and volume mounts
+  # acapy.extraVolumes -- Extra volumes. The default entry mounts the logging ConfigMap; Helm replaces lists, so if you override this (or extraVolumeMounts) keep the logging-config entries, otherwise log-config points to a missing file. To use ACA-Py's built-in logging instead, set acapy."argfile.yml".log-config to null and both lists to [].
   extraVolumes:
     - name: logging-config
       configMap:
         name: "{{ .Release.Name }}-logging"
+  # acapy.extraVolumeMounts -- Extra volume mounts (see acapy.extraVolumes before overriding)
   extraVolumeMounts:
     - name: logging-config
       mountPath: /home/aries/logging
