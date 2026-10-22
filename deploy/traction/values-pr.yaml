@@ -1,12 +1,25 @@
 global:
   ingressSuffix: -dev.apps.silver.devops.gov.bc.ca
+logging:
+  enabled: true
+
 acapy:
   image:
     pullPolicy: Always
 
   extraEnvVarsSecret: 'innkeeper-pr-shared-secret'
 
+  extraVolumes:
+    - name: logging-config
+      configMap:
+        name: "{{ .Release.Name }}-logging"
+  extraVolumeMounts:
+    - name: logging-config
+      mountPath: /home/aries/logging
+      readOnly: true
+
   argfile.yml:
+    log-config: /home/aries/logging/logging_config.yml
     tails-server-base-url: https://tails-dev.vonx.io
     tails-server-upload-url: https://tails-dev.vonx.io
 
