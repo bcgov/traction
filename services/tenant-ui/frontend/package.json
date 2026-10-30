@@ -19,7 +19,7 @@
     "coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@intlify/unplugin-vue-i18n": "^11.2.5",
+    "@intlify/unplugin-vue-i18n": "^11.2.8",
     "@jsonforms/core": "^3.8.0",
     "@jsonforms/vue": "^3.8.0",
     "@jsonforms/vue-vanilla": "^3.8.0",
@@ -37,7 +37,7 @@
     "primevue": "^3.53.1",
     "qrcode.vue": "^3.11.0",
     "vue": "^3.5.43",
-    "vue-i18n": "^11.4.13",
+    "vue-i18n": "^11.4.16",
     "vue-json-pretty": "^2.6.0",
     "vue-router": "^5.4.0",
     "vue-toastification": "^2.0.0-rc.5"
