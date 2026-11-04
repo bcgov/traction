@@ -1,6 +1,6 @@
 {
   "name": "tenant-ui",
-  "version": "1.4.3",
+  "version": "1.4.39",
   "type": "module",
   "engines": {
     "node": ">=24.15.0 <25"
