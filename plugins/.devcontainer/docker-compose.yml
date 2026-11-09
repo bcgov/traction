@@ -20,7 +20,7 @@ services:
       start --arg-file configs/default.yml
 
   traction-db:
-    image: "postgres:18.1"
+    image: "postgres:18.4"
     environment:
       - POSTGRES_PASSWORD=postgresPass
     ports:
