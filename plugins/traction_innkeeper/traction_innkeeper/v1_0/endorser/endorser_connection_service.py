@@ -107,7 +107,9 @@ async def connections_event_handler(profile: Profile, event: Event):
     LOGGER.info("> connections_event_handler")
     LOGGER.debug(f"profile = {profile}")
     LOGGER.debug(f"event = {event}")
-    record: ConnRecord = ConnRecord.deserialize(event.payload)
+    # deserialize strips dump-only fields (rfc23_state) from its input, and the
+    # payload is the same dict that goes out as the webhook, so pass a copy
+    record: ConnRecord = ConnRecord.deserialize(dict(event.payload))
     LOGGER.debug(f"record = {record}")
 
     endorser_alias = profile.settings.get("endorser.endorser_alias")
