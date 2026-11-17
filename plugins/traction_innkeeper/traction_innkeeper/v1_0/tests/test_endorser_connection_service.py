@@ -520,3 +520,36 @@ async def test_connections_event_handler_metadata_exists(
     mock_conn_record.metadata_get_all.assert_awaited_once_with(session)
     # Ensure setting logic was not called
     mock_conn_record.metadata_set.assert_not_called()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "state, expected_rfc23_state",
+    [
+        (ConnRecord.State.REQUEST, "request-received"),
+        (ConnRecord.State.RESPONSE, "response-sent"),
+        (ConnRecord.State.COMPLETED, "completed"),
+    ],
+)
+async def test_connections_event_handler_leaves_payload_intact(
+    state: ConnRecord.State,
+    expected_rfc23_state: str,
+    mock_profile: tuple[MagicMock, AsyncMock],
+):
+    """The event payload is also sent as the webhook, so the handler must not alter it."""
+    profile, _ = mock_profile
+    profile.settings.get.return_value = TEST_ENDORSER_ALIAS
+
+    payload = ConnRecord(
+        connection_id=TEST_CONN_ID,
+        alias="not-the-endorser",
+        state=state.rfc160,
+        their_role=ConnRecord.Role.REQUESTER.rfc160,
+    ).serialize()
+    assert payload["rfc23_state"] == expected_rfc23_state
+    expected_payload = dict(payload)
+    event = Event(f"acapy::record::connections::{state.rfc160}", payload)
+
+    await connections_event_handler(profile, event)
+
+    assert event.payload == expected_payload
