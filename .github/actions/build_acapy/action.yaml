@@ -87,8 +87,8 @@ runs:
         annotations: ${{ steps.meta.outputs.annotations }}
         provenance: mode=min
         sbom: true
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+        cache-from: type=gha,scope=${{ inputs.image_name }}
+        cache-to: type=gha,mode=max,scope=${{ inputs.image_name }}
 
     - id: values
       shell: bash
