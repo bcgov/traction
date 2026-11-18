@@ -48,7 +48,9 @@ runs:
     # Dependencies, lint and build all happen inside the image build below;
     # lint/test for the Tenant UI runs in test_tenant_ui.yml.
 
+    # QEMU is only needed to emulate arm64 on the amd64 runner
     - name: Set up QEMU
+      if: contains(inputs.platforms, 'arm64')
       uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
 
     - name: Set up Docker Buildx
