@@ -625,7 +625,6 @@ async def tenant_wallet_create_token(request: web.BaseRequest):
     # Tenants must always be fetch by their wallet id.
     async with profile.session() as session:
         rec = await TenantRecord.query_by_wallet_id(session, wallet_id)
-        LOGGER.debug("when creating token ", rec)
         if rec.state == TenantRecord.STATE_DELETED:
             raise web.HTTPUnauthorized(reason="Tenant is disabled")
 
