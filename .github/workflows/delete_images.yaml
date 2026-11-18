@@ -10,6 +10,8 @@ jobs:
     name: Delete old unused container images
     runs-on: ubuntu-22.04
     if: github.repository_owner == 'bcgov'
+    permissions:
+      packages: write
     steps:
       - name: Delete container images older than a Month
         uses: snok/container-retention-policy@d3bdcf5ce9b05f685154e4a16c39233b245e3d53 # v3.1.0
