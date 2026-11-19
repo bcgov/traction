@@ -1,5 +1,6 @@
 import pytest
 import datetime
+import logging
 from unittest.mock import MagicMock, AsyncMock, patch
 
 import bcrypt
@@ -92,6 +93,14 @@ def test_generate_reservation_token_data():
 
     # Check expiry is in the future relative to now
     assert expiry > now_utc
+
+
+def test_generated_secrets_not_logged(caplog):
+    caplog.set_level(logging.DEBUG)
+    key, _, _ = generate_api_key_data()
+    pwd, _, _, _ = generate_reservation_token_data(30)
+    assert key not in caplog.text
+    assert pwd not in caplog.text
 
 
 @pytest.mark.asyncio
