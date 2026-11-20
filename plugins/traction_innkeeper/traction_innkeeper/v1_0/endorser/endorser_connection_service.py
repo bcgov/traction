@@ -81,7 +81,6 @@ class EndorserConnectionService:
                 tenant_mgr = context.inject(TenantManager)
                 wallet_rec, tenant_rec = await tenant_mgr.get_wallet_and_tenant(wallet_id)
                 self.logger.info(f"wallet id = {wallet_id}")
-                self.logger.info(f"wallet_rec = {wallet_rec}")
                 self.logger.info(f"tenant_rec = {tenant_rec}")
                 my_label = tenant_rec.tenant_name if tenant_rec else wallet_rec.wallet_name
                 self.logger.info(f"my_label = {my_label}")
