@@ -19,6 +19,9 @@ jobs:
     name: "Build Tenant UI"
     runs-on: ubuntu-latest
     if: github.repository_owner == 'bcgov'
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Build service
@@ -40,6 +43,9 @@ jobs:
     name: "Build Traction Aca-Py"
     runs-on: ubuntu-latest
     if: github.repository_owner == 'bcgov'
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Build Aca-Py Image
@@ -61,6 +67,9 @@ jobs:
     name: "Build Traction Tenant Proxy"
     runs-on: ubuntu-latest
     if: github.repository_owner == 'bcgov'
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Build Aca-Py Image
