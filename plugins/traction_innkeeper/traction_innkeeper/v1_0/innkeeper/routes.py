@@ -472,7 +472,6 @@ async def tenant_reservation_get(request: web.BaseRequest):
 
     async with profile.session() as session:
         rec = await ReservationRecord.retrieve_by_reservation_id(session, reservation_id)
-        LOGGER.info(rec)
 
     return web.json_response(rec.serialize())
 
@@ -579,7 +578,6 @@ async def tenant_create_token(request: web.BaseRequest):
     if api_key:
         async with profile.session() as session:
             tenant_keys = await TenantAuthenticationApiRecord.query_by_tenant_id(session, tenant_id)
-            LOGGER.warning(f"tenant_keys = {tenant_keys}")
             # if no keys found raise an error
             if not tenant_keys:
                 raise web.HTTPUnauthorized(reason="API Key not found")
@@ -627,7 +625,6 @@ async def tenant_wallet_create_token(request: web.BaseRequest):
     # Tenants must always be fetch by their wallet id.
     async with profile.session() as session:
         rec = await TenantRecord.query_by_wallet_id(session, wallet_id)
-        LOGGER.debug("when creating token ", rec)
         if rec.state == TenantRecord.STATE_DELETED:
             raise web.HTTPUnauthorized(reason="Tenant is disabled")
 
@@ -1083,7 +1080,6 @@ async def innkeeper_authentications_api_get(request: web.BaseRequest):
     async with profile.session() as session:
         # innkeeper can access all tenants..
         rec = await TenantAuthenticationApiRecord.retrieve_by_auth_api_id(session, tenant_authentication_api_id)
-        LOGGER.info(rec)
 
     return web.json_response(rec.serialize())
 
