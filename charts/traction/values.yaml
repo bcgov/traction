@@ -84,7 +84,7 @@ acapy:
     pullPolicy: IfNotPresent
     pullSecrets: []
     # acapy.image.tag -- Overrides the image tag which defaults to the chart appVersion.
-    tag: "1.4.3"
+    tag: "1.4.4"
     # acapy.image.digest -- Overrides the image digest which is used instead of the tag.
     digest: ""
 

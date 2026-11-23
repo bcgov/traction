@@ -2,6 +2,10 @@
 
 This document contains information related to breaking/major changes to the Traction Helm Chart and provides guidelines for migrating/upgrading deployments to newer chart versions.
 
+## 0.6.6
+
+This chart targets Traction `1.4.4`. Publish the `1.4.4` container images before deploying this chart.
+
 ## 0.6.5
 
 This chart targets Traction `1.4.3`, upgrades the ACA-Py chart to `1.1.1`, and updates the parent chart's common helpers to `2.41.0`. Publish the `1.4.3` container images before deploying this chart.
