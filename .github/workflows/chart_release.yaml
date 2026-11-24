@@ -105,17 +105,18 @@ jobs:
           helm repo add traction https://bcgov.github.io/traction
           for attempt in {1..6}; do
             helm repo update traction
-            if helm search repo traction/traction --version "$chart_version" -o json |
+            if helm search repo traction/traction -o json |
               jq -e --arg version "$chart_version" --arg app "$app_version" \
-                'any(.[]; .version == $version and .app_version == $app)' >/dev/null; then
+                '[.[] | select(.name == "traction/traction")] |
+                 length == 1 and .[0].version == $version and .[0].app_version == $app' >/dev/null; then
               echo "APP_VERSION=$app_version" >> "$GITHUB_OUTPUT"
               echo "CHART_VERSION=$chart_version" >> "$GITHUB_OUTPUT"
               exit 0
             fi
-            echo "Waiting for chart $chart_version and app $app_version (attempt $attempt/6)"
+            echo "Waiting for chart $chart_version and app $app_version to be latest (attempt $attempt/6)"
             sleep 10
           done
-          echo "::error::Chart $chart_version with appVersion $app_version is not available in the public index"
+          echo "::error::Chart $chart_version with appVersion $app_version is not the latest chart in the public index"
           exit 1
 
       - name: Update test
