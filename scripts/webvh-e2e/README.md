@@ -41,6 +41,8 @@ poetry install
 cp .env.example .env
 ```
 
+The local `poetry.lock` is not committed. If Poetry reports that it is out of sync after a dependency update, run `poetry lock` before `poetry install`.
+
 Run commands from this directory (`scripts/webvh-e2e`) so `python-dotenv` picks up `./.env` (it does not override variables already set in your shell).
 
 ## Environment variables
