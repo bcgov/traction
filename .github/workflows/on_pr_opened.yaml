@@ -14,6 +14,9 @@ on:
       - reopened
       - ready_for_review
 
+permissions:
+  contents: read
+
 concurrency:
   group: pr-${{ github.event.number }}-on_pr_opened
   cancel-in-progress: true
@@ -22,6 +25,7 @@ jobs:
   ready:
     name: "Install if ready for review"
     runs-on: ubuntu-latest
+    permissions: {}
     outputs:
       deploy: ${{ steps.ready_for_review.outputs.true_false }}
       build: ${{ steps.ready_for_review.outputs.bcgov_true_false }}
@@ -122,9 +126,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Install OpenShift CLI tools
-        uses: redhat-actions/openshift-tools-installer@1f130822bb0930e0ee02a119adcc3271a22b1499 # v3.2
+        uses: redhat-actions/openshift-tools-installer@bf1d8fd8fa963cff1d33688473e51f948748991e # v3.3
         with:
-          oc: "4.22.16"
+          oc: "4.22.22"
 
       - name: Authenticate and set context
         uses: redhat-actions/oc-login@2a1614bc977c054c8786c8e35fc9534bd0ddc156 # v2.0.1

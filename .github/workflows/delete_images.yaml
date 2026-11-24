@@ -5,6 +5,8 @@ on:
     - cron: "0 2 * * 2" # This job runs every Tuesday
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   clean-ghcr:
     name: Delete old unused container images

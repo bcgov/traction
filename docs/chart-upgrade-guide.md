@@ -2,6 +2,14 @@
 
 This document contains information related to breaking/major changes to the Traction Helm Chart and provides guidelines for migrating/upgrading deployments to newer chart versions.
 
+## 0.6.6
+
+This chart targets Traction `1.4.4`. Publish the `1.4.4` container images before deploying this chart.
+
+The Helm Chart Release workflow publishes images before the chart and waits for the matching chart to become latest in the public index before syncing GitOps. Manual workflow runs must use the `v1.4.4` tag.
+
+The bundled PostgreSQL image moves from `18.1` to `18.7`. Back up databases and test the upgrade with your deployed values and persistent volumes before production rollout.
+
 ## 0.6.5
 
 This chart targets Traction `1.4.3`, upgrades the ACA-Py chart to `1.1.1`, and updates the parent chart's common helpers to `2.41.0`. Publish the `1.4.3` container images before deploying this chart.

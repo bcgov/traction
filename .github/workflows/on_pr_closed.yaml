@@ -12,6 +12,9 @@ on:
     types:
       - closed
 
+permissions:
+  contents: read
+
 jobs:
   uninstall:
     name: Uninstall PR

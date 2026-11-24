@@ -1,6 +1,6 @@
 # traction
 
-![Version: 0.6.5](https://img.shields.io/badge/Version-0.6.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.4.3](https://img.shields.io/badge/AppVersion-1.4.3-informational?style=flat-square)
+![Version: 0.6.6](https://img.shields.io/badge/Version-0.6.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.4.4](https://img.shields.io/badge/AppVersion-1.4.4-informational?style=flat-square)
 
 The Traction service allows organizations to verify, hold, and issue verifiable credentials. The Traction Tenant UI allows tenants to manage their agent.
 
@@ -147,7 +147,7 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | acapy.image.pullSecrets | list | `[]` |  |
 | acapy.image.registry | string | `"ghcr.io"` |  |
 | acapy.image.repository | string | `"bcgov/traction-plugins-acapy"` |  |
-| acapy.image.tag | string | `"1.4.3"` | Overrides the image tag which defaults to the chart appVersion. |
+| acapy.image.tag | string | `"1.4.4"` | Overrides the image tag which defaults to the chart appVersion. |
 | acapy.ingress.admin.enabled | bool | `false` | Enable ingress for the admin endpoint |
 | acapy.ingress.admin.hostname | string | `""` | Hostname to expose the admin endpoint |
 | acapy.ingress.agent.enabled | bool | `false` | Enable ingress for the agent endpoint |
@@ -165,6 +165,7 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | acapy.nodeAffinityPreset.values | list | `[]` |  |
 | acapy.podAffinityPreset | string | `""` | Pod affinity preset (soft|hard|empty) |
 | acapy.podAntiAffinityPreset | string | `""` | Pod anti-affinity preset (soft|hard|empty) |
+| acapy.postgres.image.tag | string | `"18.7"` | PostgreSQL image tag used by the bundled chart. |
 | acapy.replicaCount | int | `1` | Number of ACA-Py replicas to deploy |
 | acapy.resources.requests.cpu | string | `"120m"` | The requested cpu for the ACA-Py containers |
 | acapy.resources.requests.memory | string | `"200Mi"` | The requested memory for the ACA-Py containers |

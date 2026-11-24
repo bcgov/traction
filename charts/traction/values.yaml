@@ -84,9 +84,14 @@ acapy:
     pullPolicy: IfNotPresent
     pullSecrets: []
     # acapy.image.tag -- Overrides the image tag which defaults to the chart appVersion.
-    tag: "1.4.3"
+    tag: "1.4.4"
     # acapy.image.digest -- Overrides the image digest which is used instead of the tag.
     digest: ""
+
+  postgres:
+    image:
+      # acapy.postgres.image.tag -- PostgreSQL image tag used by the bundled chart.
+      tag: "18.7"
 
   ## ServiceAccount configuration
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/

@@ -1,2 +1,2 @@
-FROM nginx/nginx-unprivileged:1.30.7-alpine-slim
+FROM nginx/nginx-unprivileged:1.30.8-alpine-slim
 COPY docker/tenant-proxy.conf.template /etc/nginx/templates/default.conf.template

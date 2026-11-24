@@ -5,11 +5,14 @@ on:
     - cron: '30 1 * * *' # This job runs at 1:30 UTC
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   stale:
     runs-on: ubuntu-22.04
     if: github.repository_owner == 'bcgov'
     permissions:
+      actions: write
       issues: write
       pull-requests: write
     steps:

@@ -9,6 +9,9 @@ on:
     paths:
       - 'services/tenant-ui/**'
 
+permissions:
+  contents: read
+
 concurrency:
   group: pr-${{ github.event.number }}-test_tenant_ui
   cancel-in-progress: true

@@ -1,7 +1,7 @@
 ARG VARIANT="3.13"
 FROM mcr.microsoft.com/devcontainers/python:${VARIANT}
 
-ARG POETRY_VERSION="2.5.1"
+ARG POETRY_VERSION="2.5.2"
 ENV POETRY_HOME="/opt/poetry" \
     POETRY_VERSION=${POETRY_VERSION}
 

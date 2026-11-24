@@ -9,6 +9,7 @@ import ToggleJson from '@/components/common/ToggleJson.vue';
 
 const mountToggleJson = () =>
   shallowMount(ToggleJson, {
+    attachTo: document.body,
     props: {
       toJson: () => {
         return "{ 'testing': 1 }";
@@ -30,6 +31,7 @@ describe('Properly Toggle Json Input', () => {
     const wrapper = mountToggleJson();
 
     expect(wrapper.exists()).toBe(true);
+    wrapper.unmount();
   });
   test('text area is only shown after input is toggled', async () => {
     const wrapper = mountToggleJson();
@@ -59,5 +61,6 @@ describe('Properly Toggle Json Input', () => {
     await wrapperVm.toggleJson();
     await flushPromises();
     expect(fromJson).toHaveBeenCalled();
+    wrapper.unmount();
   });
 });
