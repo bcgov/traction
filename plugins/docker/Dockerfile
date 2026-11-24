@@ -2,7 +2,7 @@ FROM ghcr.io/openwallet-foundation/acapy-agent:py3.13-1.7.0 AS base
 
 # Install and Configure Poetry
 USER root
-ENV POETRY_VERSION=2.5.1
+ENV POETRY_VERSION=2.5.2
 ENV POETRY_HOME=/opt/poetry
 RUN apt-get update && apt-get install -y curl && apt-get clean
 RUN curl -sSL https://install.python-poetry.org | python -
@@ -39,14 +39,14 @@ ENV PATH="/home/aries/.venv/bin:$PATH"
 # The base image sets PIP_NO_CACHE_DIR, so unset it to use the cache mount.
 RUN --mount=type=cache,target=/home/aries/.cache/pip,uid=1001,gid=1001 \
     unset PIP_NO_CACHE_DIR && \
-    pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.7.0#subdirectory=basicmessage_storage && \
-    pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.7.0#subdirectory=connection_update && \
-    pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.7.0#subdirectory=multitenant_provider && \
-    pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.7.0#subdirectory=rpc && \
-    pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.7.0#subdirectory=connections && \
+    pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.7.0.1#subdirectory=basicmessage_storage && \
+    pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.7.0.1#subdirectory=connection_update && \
+    pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.7.0.1#subdirectory=multitenant_provider && \
+    pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.7.0.1#subdirectory=rpc && \
+    pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.7.0.1#subdirectory=connections && \
     pip install git+https://github.com/openwallet-foundation/acapy-plugins@1.7.0.1#subdirectory=webvh && \
-    pip install --no-deps git+https://github.com/openwallet-foundation/acapy-plugins@1.7.0#subdirectory=present_proof && \
-    pip install --no-deps git+https://github.com/openwallet-foundation/acapy-plugins@1.7.0#subdirectory=issue_credential
+    pip install --no-deps git+https://github.com/openwallet-foundation/acapy-plugins@1.7.0.1#subdirectory=present_proof && \
+    pip install --no-deps git+https://github.com/openwallet-foundation/acapy-plugins@1.7.0.1#subdirectory=issue_credential
 
 COPY --chown=aries:aries docker/default.yml ./
 COPY --chown=aries:aries traction_innkeeper/traction_innkeeper traction_plugins/traction_innkeeper
