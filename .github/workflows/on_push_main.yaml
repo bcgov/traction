@@ -10,6 +10,9 @@ on:
       - "charts/traction/**"
       - "charts/tenant-ui/**"
 
+permissions:
+  contents: read
+
 concurrency:
   group: on_push_main
   cancel-in-progress: true

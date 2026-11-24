@@ -6,6 +6,9 @@ on:
     paths:
       - "plugins/**"
 
+permissions:
+  contents: read
+
 jobs:
   backend:
     runs-on: ubuntu-latest

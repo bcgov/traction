@@ -14,6 +14,9 @@ on:
       - reopened
       - ready_for_review
 
+permissions:
+  contents: read
+
 concurrency:
   group: pr-${{ github.event.number }}-on_pr_opened
   cancel-in-progress: true
@@ -22,6 +25,7 @@ jobs:
   ready:
     name: "Install if ready for review"
     runs-on: ubuntu-latest
+    permissions: {}
     outputs:
       deploy: ${{ steps.ready_for_review.outputs.true_false }}
       build: ${{ steps.ready_for_review.outputs.bcgov_true_false }}
