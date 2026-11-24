@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-22.04
     if: github.repository_owner == 'bcgov'
     permissions:
+      actions: write
       issues: write
       pull-requests: write
     steps:
