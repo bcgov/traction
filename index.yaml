@@ -35,6 +35,41 @@ entries:
     version: 0.1.1
   traction:
   - apiVersion: v2
+    appVersion: 1.4.4
+    created: "2026-11-24T18:30:16.61584788Z"
+    dependencies:
+    - name: acapy
+      repository: https://openwallet-foundation.github.io/helm-charts/
+      version: 1.1.1
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 2.41.0
+    description: The Traction service allows organizations to verify, hold, and issue
+      verifiable credentials. The Traction Tenant UI allows tenants to manage their
+      agent.
+    digest: 8c3c9fb9f7c27ccf8b7aa4674e31b71b6bd42e483fc46104ea67a90cce72494f
+    home: https://github.com/bcgov/traction
+    icon: https://github.com/bcgov/traction/raw/main/docs/assets/readme-logo.png
+    maintainers:
+    - email: ivan.polchenko@quartech.com
+      name: i5okie
+      url: https://github.com/i5okie
+    - email: emiliano.sune@quartech.com
+      name: esune
+      url: https://github.com/esune
+    - email: lucasoneil@gmail.com
+      name: loneil
+      url: https://github.com/loneil
+    name: traction
+    sources:
+    - https://github.com/bcgov/traction
+    type: application
+    urls:
+    - https://github.com/bcgov/traction/releases/download/traction-0.6.6/traction-0.6.6.tgz
+    version: 0.6.6
+  - apiVersion: v2
     appVersion: 1.4.3
     created: "2026-10-08T17:16:51.596160566Z"
     dependencies:
@@ -1004,4 +1039,4 @@ entries:
     urls:
     - https://github.com/bcgov/traction/releases/download/traction-0.1.1/traction-0.1.1.tgz
     version: 0.1.1
-generated: "2026-10-08T17:16:51.596264942Z"
+generated: "2026-11-24T18:30:16.616033616Z"
