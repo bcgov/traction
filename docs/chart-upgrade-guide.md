@@ -6,6 +6,8 @@ This document contains information related to breaking/major changes to the Trac
 
 This chart targets Traction `1.4.4`. Publish the `1.4.4` container images before deploying this chart.
 
+The Helm Chart Release workflow publishes images before the chart and waits for the matching public chart index before syncing GitOps. Manual workflow runs must use the `v1.4.4` tag.
+
 The bundled PostgreSQL image moves from `18.1` to `18.7`. Back up databases and test the upgrade with your deployed values and persistent volumes before production rollout.
 
 ## 0.6.5

@@ -1,14 +1,12 @@
 name: Release Assets
 
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_call:
   workflow_dispatch:
 
 permissions:
   packages: write
-  contents: write
+  contents: read
 
 jobs:
   build_acapy:
