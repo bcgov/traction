@@ -38,6 +38,7 @@ jobs:
   build_ui:
     name: "Build Tenant UI"
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     if: ${{ always() && fromJSON(needs.ready.outputs.build) == true }}
     needs:
       - ready
@@ -65,6 +66,7 @@ jobs:
   build_acapy:
     name: "Build Traction Aca-Py"
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     if: ${{ always() && fromJSON(needs.ready.outputs.build) == true }}
     needs:
       - ready
@@ -90,6 +92,7 @@ jobs:
   build_proxy:
     name: "Build Traction Tenant Proxy"
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     if: ${{ always() && fromJSON(needs.ready.outputs.build) == true }}
     needs:
       - ready

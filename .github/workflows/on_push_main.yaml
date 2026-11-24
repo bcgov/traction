@@ -21,6 +21,7 @@ jobs:
   build_ui:
     name: "Build Tenant UI"
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     if: github.repository_owner == 'bcgov'
     permissions:
       contents: read
@@ -45,6 +46,7 @@ jobs:
   build_acapy:
     name: "Build Traction Aca-Py"
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     if: github.repository_owner == 'bcgov'
     permissions:
       contents: read
@@ -69,6 +71,7 @@ jobs:
   build_proxy:
     name: "Build Traction Tenant Proxy"
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     if: github.repository_owner == 'bcgov'
     permissions:
       contents: read
