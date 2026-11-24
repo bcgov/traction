@@ -108,9 +108,9 @@ jobs:
           path: ministry-gitops-ditp
 
       - name: Install OpenShift CLI tools
-        uses: redhat-actions/openshift-tools-installer@1f130822bb0930e0ee02a119adcc3271a22b1499 # v3.2
+        uses: redhat-actions/openshift-tools-installer@bf1d8fd8fa963cff1d33688473e51f948991e # v3.3
         with:
-          oc: "4.22.16"
+          oc: "4.22.22"
 
       - name: Authenticate and set context
         uses: redhat-actions/oc-login@2a1614bc977c054c8786c8e35fc9534bd0ddc156 # v2.0.1
