@@ -165,6 +165,7 @@ kubectl delete secret,pvc --selector "app.kubernetes.io/instance"=my-release
 | acapy.nodeAffinityPreset.values | list | `[]` |  |
 | acapy.podAffinityPreset | string | `""` | Pod affinity preset (soft|hard|empty) |
 | acapy.podAntiAffinityPreset | string | `""` | Pod anti-affinity preset (soft|hard|empty) |
+| acapy.postgres.image.tag | string | `"18.7"` | PostgreSQL image tag used by the bundled chart. |
 | acapy.replicaCount | int | `1` | Number of ACA-Py replicas to deploy |
 | acapy.resources.requests.cpu | string | `"120m"` | The requested cpu for the ACA-Py containers |
 | acapy.resources.requests.memory | string | `"200Mi"` | The requested memory for the ACA-Py containers |
