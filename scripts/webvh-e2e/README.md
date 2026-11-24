@@ -29,8 +29,8 @@ Current runtime behavior:
 
 ## Prerequisites
 
-- Python 3.10+
-- Poetry 1.8+
+- Python 3.13 or later, before 4.0
+- Poetry 2.5.2
 - Traction tenant proxy reachable (default BC Gov sandbox URL; override with `TRACTION_TENANT_PROXY_BASE`)
 
 ## Setup
@@ -41,7 +41,7 @@ poetry install
 cp .env.example .env
 ```
 
-The local `poetry.lock` is not committed. If Poetry reports that it is out of sync after a dependency update, run `poetry lock` before `poetry install`.
+The committed `poetry.lock` pins the harness dependencies.
 
 Run commands from this directory (`scripts/webvh-e2e`) so `python-dotenv` picks up `./.env` (it does not override variables already set in your shell).
 

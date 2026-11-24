@@ -1,3 +1,2 @@
 .env
 .venv/
-poetry.lock

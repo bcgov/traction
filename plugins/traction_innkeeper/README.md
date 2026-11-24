@@ -1,7 +1,7 @@
 ### developer notes
 
-- install python 3.12
-- install poetry version 2.1.1
+- install python 3.13
+- install poetry version 2.5.2
 
 ### build and run
 ```
