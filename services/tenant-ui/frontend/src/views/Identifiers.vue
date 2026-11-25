@@ -585,6 +585,7 @@ const createDid = async () => {
     const alias = newDidAlias.value.trim();
 
     const options: Record<string, any> = {
+      apply_policy: true,
       identifier: alias,
       namespace,
       server_url: selectedWebvhServer.value,

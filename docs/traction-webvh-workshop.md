@@ -69,7 +69,7 @@ Go to **Identifiers** in the sidebar. The did:webvh configuration section shows 
 - **Alias** – a unique label for the identifier (e.g., `demo-alias`).
 - **Namespace** – optional, defaults to `default`.
 
-Submit the form. The Tenant UI sends a POST to `/did/webvh/create` with the alias, namespace, server URL, and witness list. ACA-Py returns the identifier request immediately; the identifiers table reflects the new entry once the witness attests.
+Submit the form. The Tenant UI sends a POST to `/did/webvh/create` with the alias, namespace, server URL, and configured witnesses and watchers. It also sets `options.apply_policy: true` so the WebVH plugin applies the registry's server policy, including its required witness rule. ACA-Py returns the identifier request immediately; the identifiers table reflects the new entry once the witness attests.
 
 ## 5. Verify identifiers
 
